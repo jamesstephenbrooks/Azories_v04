@@ -13,7 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { toast } from 'sonner';
 import { 
   FiPlus, FiEdit2, FiTrash2, FiBook, FiEye, FiEyeOff, FiZap, FiStar, FiAward, 
-  FiCheck, FiBarChart2, FiShield, FiLoader
+  FiCheck, FiBarChart2, FiLoader
 } from 'react-icons/fi';
 import Navbar from '@/components/Navbar';
 
@@ -160,16 +160,6 @@ export default function Dashboard() {
       window.location.reload();
     } catch (error) {
       toast.error('Failed to upgrade');
-    }
-  };
-
-  const makeAdmin = async () => {
-    try {
-      await axios.post(`${API}/auth/make-admin`);
-      toast.success('You are now an admin! Refresh to access Admin CMS.');
-      window.location.reload();
-    } catch (error) {
-      toast.error('Failed to make admin');
     }
   };
 
