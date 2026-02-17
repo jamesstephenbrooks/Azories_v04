@@ -43,7 +43,10 @@ export default function Dashboard() {
     idea: '',
     genre: 'Adventure',
     age_rating: 'All Ages',
-    num_pages: 5
+    num_pages: 5,
+    generate_images: true,
+    media_type: 'images',  // 'images', 'videos', 'cinemagraphs', 'none'
+    image_style: 'illustration'
   });
   const [creating, setCreating] = useState(false);
   const [generatingStory, setGeneratingStory] = useState(false);
