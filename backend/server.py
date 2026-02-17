@@ -460,6 +460,8 @@ async def create_book(book_data: BookCreate, current_user: dict = Depends(get_cu
         "layout_mode": book_data.layout_mode or "standard",
         "narrator_voice_id": book_data.narrator_voice_id or "21m00Tcm4TlvDq8ikWAM",
         "age_rating": book_data.age_rating or "All Ages",
+        "series_id": None,
+        "series_order": None,
         "view_count": 0,
         "read_count": 0,
         "created_at": now,
