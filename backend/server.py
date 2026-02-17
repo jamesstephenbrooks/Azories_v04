@@ -808,9 +808,8 @@ async def delete_page(page_id: str, current_user: dict = Depends(get_current_use
 @api_router.post("/ai/generate-image")
 async def generate_image(request: ImageGenerateRequest, current_user: dict = Depends(get_current_user)):
     try:
-        api_key = os.environ.get('OPENAI_API_KEY')
-        if not api_key:
-            raise HTTPException(status_code=500, detail="OpenAI API key not configured")
+        if not EMERGENT_LLM_KEY:
+            raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
         
         style_prompts = {
             "illustration": "Children's book illustration style, colorful, friendly, magical, whimsical, suitable for children",
@@ -820,7 +819,7 @@ async def generate_image(request: ImageGenerateRequest, current_user: dict = Dep
         style_desc = style_prompts.get(request.style, style_prompts["illustration"])
         full_prompt = f"{request.prompt}. Style: {style_desc}"
         
-        image_gen = OpenAIImageGeneration(api_key=api_key)
+        image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
         images = await image_gen.generate_images(
             prompt=full_prompt,
             model="gpt-image-1",
