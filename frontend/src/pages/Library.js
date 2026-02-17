@@ -407,6 +407,7 @@ export default function Library() {
                     Try adjusting your search or filters
                   </p>
                 </div>
+              )
               )}
             </TabsContent>
             
