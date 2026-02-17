@@ -485,7 +485,7 @@ export default function BookReader() {
                 </div>
                 
                 {/* Right Page (Text) with Page Turn Animation */}
-                <div className="w-full max-w-md aspect-[3/4] relative" style={{ transformStyle: 'preserve-3d' }}>
+                <div className={`relative ${isFullscreen ? 'h-full aspect-[3/4]' : 'w-full max-w-md aspect-[3/4]'}`} style={{ transformStyle: 'preserve-3d' }}>
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={`right-${currentPage}`}
