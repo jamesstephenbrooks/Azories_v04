@@ -1,10 +1,6 @@
-import { useRef, useState, Suspense } from 'react';
-import { Canvas, useFrame, useThree, extend } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
+import { useRef, useState, Suspense, useEffect } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-
-// Extend OrbitControls
-extend({ OrbitControls });
 
 // Single book on the shelf
 function Book({ book, position, index, onSelect, isSelected }) {
@@ -175,13 +171,71 @@ function Bookcase({ books, onSelectBook, selectedBook }) {
   );
 }
 
-// Camera controller
+// Simple camera controller without OrbitControls
 function CameraController({ selectedBook }) {
-  const { camera } = useThree();
-  const targetPos = selectedBook ? new THREE.Vector3(0, 1, 6) : new THREE.Vector3(0, 1, 8);
+  const { camera, gl } = useThree();
+  const targetPos = useRef(new THREE.Vector3(0, 1, 8));
+  const isDragging = useRef(false);
+  const previousMousePosition = useRef({ x: 0, y: 0 });
+  const cameraRotation = useRef({ x: 0, y: 0 });
+  
+  useEffect(() => {
+    targetPos.current = selectedBook ? new THREE.Vector3(0, 1, 6) : new THREE.Vector3(0, 1, 8);
+  }, [selectedBook]);
+  
+  useEffect(() => {
+    const canvas = gl.domElement;
+    
+    const handleMouseDown = (e) => {
+      isDragging.current = true;
+      previousMousePosition.current = { x: e.clientX, y: e.clientY };
+    };
+    
+    const handleMouseUp = () => {
+      isDragging.current = false;
+    };
+    
+    const handleMouseMove = (e) => {
+      if (!isDragging.current) return;
+      
+      const deltaX = e.clientX - previousMousePosition.current.x;
+      const deltaY = e.clientY - previousMousePosition.current.y;
+      
+      cameraRotation.current.y += deltaX * 0.005;
+      cameraRotation.current.x = Math.max(-0.5, Math.min(0.5, cameraRotation.current.x + deltaY * 0.005));
+      
+      previousMousePosition.current = { x: e.clientX, y: e.clientY };
+    };
+    
+    const handleWheel = (e) => {
+      const zoomSpeed = 0.5;
+      targetPos.current.z = Math.max(4, Math.min(12, targetPos.current.z + e.deltaY * 0.01 * zoomSpeed));
+    };
+    
+    canvas.addEventListener('mousedown', handleMouseDown);
+    canvas.addEventListener('mouseup', handleMouseUp);
+    canvas.addEventListener('mouseleave', handleMouseUp);
+    canvas.addEventListener('mousemove', handleMouseMove);
+    canvas.addEventListener('wheel', handleWheel);
+    
+    return () => {
+      canvas.removeEventListener('mousedown', handleMouseDown);
+      canvas.removeEventListener('mouseup', handleMouseUp);
+      canvas.removeEventListener('mouseleave', handleMouseUp);
+      canvas.removeEventListener('mousemove', handleMouseMove);
+      canvas.removeEventListener('wheel', handleWheel);
+    };
+  }, [gl]);
   
   useFrame(() => {
-    camera.position.lerp(targetPos, 0.02);
+    // Smooth camera movement
+    const basePos = targetPos.current.clone();
+    const radius = basePos.z;
+    
+    camera.position.x = Math.sin(cameraRotation.current.y) * radius;
+    camera.position.y = THREE.MathUtils.lerp(camera.position.y, basePos.y + cameraRotation.current.x * 2, 0.1);
+    camera.position.z = Math.cos(cameraRotation.current.y) * radius;
+    
     camera.lookAt(0, 0.5, 0);
   });
   
@@ -232,14 +286,6 @@ export default function Bookshelf3D({ books, onSelectBook, selectedBook }) {
           
           {/* Camera controls */}
           <CameraController selectedBook={selectedBook} />
-          <OrbitControls 
-            enablePan={false}
-            enableZoom={true}
-            minDistance={4}
-            maxDistance={12}
-            minPolarAngle={Math.PI / 4}
-            maxPolarAngle={Math.PI / 2}
-          />
         </Suspense>
       </Canvas>
     </div>
