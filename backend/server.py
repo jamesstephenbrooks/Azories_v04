@@ -15,6 +15,7 @@ import jwt
 import bcrypt
 import base64
 import io
+import aiohttp
 from elevenlabs import ElevenLabs
 from elevenlabs.types import VoiceSettings
 from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
@@ -22,6 +23,11 @@ from emergentintegrations.llm.openai.video_generation import OpenAIVideoGenerati
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 import aiofiles
 import json
+from reportlab.lib.pagesizes import letter, A4
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+from reportlab.lib.utils import ImageReader
+from PIL import Image as PILImage
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
