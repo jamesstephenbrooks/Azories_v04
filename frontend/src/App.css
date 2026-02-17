@@ -1,34 +1,113 @@
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+/* App-specific styles - Azories */
+
+/* Remove default centering */
+.App {
+  text-align: left;
+  min-height: 100vh;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+/* Hero section background */
+.hero-bg {
+  background-image: 
+    linear-gradient(to bottom, rgba(253, 251, 247, 0.85), rgba(253, 251, 247, 0.95)),
+    url('https://images.unsplash.com/photo-1630862326852-f8ff75a514c8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzl8MHwxfHNlYXJjaHwxfHxmdXR1cmlzdGljJTIwZGlnaXRhbCUyMGxpYnJhcnklMjBiYWNrZ3JvdW5kfGVufDB8fHx8MTc3MTM1MTU1MHww&ixlib=rb-4.1.0&q=85');
+  background-size: cover;
+  background-position: center;
 }
 
-.App-header {
-    background-color: #0f0f10;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+.dark .hero-bg {
+  background-image: 
+    linear-gradient(to bottom, rgba(11, 10, 20, 0.9), rgba(11, 10, 20, 0.95)),
+    url('https://images.unsplash.com/photo-1630862326852-f8ff75a514c8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzl8MHwxfHNlYXJjaHwxfHxmdXR1cmlzdGljJTIwZGlnaXRhbCUyMGxpYnJhcnklMjBiYWNrZ3JvdW5kfGVufDB8fHx8MTc3MTM1MTU1MHww&ixlib=rb-4.1.0&q=85');
 }
 
-.App-link {
-    color: #61dafb;
+/* Book card hover effects */
+.book-card {
+  transition: transform 0.4s ease-out, box-shadow 0.4s ease-out;
 }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+.book-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(124, 58, 237, 0.2);
+}
+
+.dark .book-card:hover {
+  box-shadow: 0 20px 40px rgba(167, 139, 250, 0.3);
+}
+
+/* Page styles for reader */
+.page-shadow {
+  box-shadow: 
+    inset 7px 0 30px -7px rgba(0, 0, 0, 0.1),
+    inset -7px 0 30px -7px rgba(0, 0, 0, 0.05);
+}
+
+.dark .page-shadow {
+  box-shadow: 
+    inset 7px 0 30px -7px rgba(255, 255, 255, 0.05),
+    inset -7px 0 30px -7px rgba(255, 255, 255, 0.02);
+}
+
+/* Audio player styling */
+.audio-player {
+  background: linear-gradient(135deg, hsl(var(--primary) / 0.1), hsl(var(--secondary) / 0.1));
+}
+
+/* Editor styles */
+.editor-toolbar {
+  background: hsl(var(--card));
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+/* Smooth button interactions */
+.btn-magic {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-magic::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease;
+}
+
+.btn-magic:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Loading shimmer */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted)) 25%,
+    hsl(var(--muted-foreground) / 0.1) 50%,
+    hsl(var(--muted)) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Logo text */
+.logo-text {
+  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
