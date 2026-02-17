@@ -1,14 +1,13 @@
-import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
-import { FiSun, FiMoon, FiBook, FiEdit3, FiHeadphones, FiArrowRight, FiStar, FiZap } from 'react-icons/fi';
+import { FiBook, FiEdit3, FiHeadphones, FiArrowRight, FiStar, FiZap, FiPlay } from 'react-icons/fi';
 import Navbar from '@/components/Navbar';
 
 export default function Landing() {
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -30,8 +29,8 @@ export default function Landing() {
     },
     {
       icon: <FiZap className="w-8 h-8" />,
-      title: "Video Scenes",
-      description: "Bring your stories to life with animated videos"
+      title: "Comic Mode",
+      description: "Create comic strips with multiple panels per page"
     }
   ];
 
@@ -40,8 +39,32 @@ export default function Landing() {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="hero-bg min-h-[90vh] relative overflow-hidden noise-overlay">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 pt-32 pb-20">
+      <section className="min-h-[90vh] relative overflow-hidden">
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: `linear-gradient(to bottom, ${theme === 'dark' ? 'rgba(11, 10, 20, 0.85), rgba(11, 10, 20, 0.95)' : 'rgba(253, 251, 247, 0.8), rgba(253, 251, 247, 0.92)'}, url('https://images.unsplash.com/photo-1770515927761-979f248c64d4?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjh8MHwxfHNlYXJjaHwyfHxtYWdpY2FsJTIwZmFudGFzeSUyMGxpYnJhcnklMjBnbG93aW5nJTIwYm9va3MlMjBuaWdodHxlbnwwfHx8fDE3NzEzNTQ0NzZ8MA&ixlib=rb-4.1.0&q=85')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
+        />
+        <div 
+          className="absolute inset-0 z-0"
+          style={{
+            background: theme === 'dark' 
+              ? 'linear-gradient(to bottom, rgba(11, 10, 20, 0.85), rgba(11, 10, 20, 0.95))' 
+              : 'linear-gradient(to bottom, rgba(253, 251, 247, 0.8), rgba(253, 251, 247, 0.92))'
+          }}
+        />
+        <div 
+          className="absolute inset-0 z-0 bg-cover bg-center opacity-20"
+          style={{
+            backgroundImage: `url('https://images.unsplash.com/photo-1770515927761-979f248c64d4?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjh8MHwxfHNlYXJjaHwyfHxtYWdpY2FsJTIwZmFudGFzeSUyMGxpYnJhcnklMjBnbG93aW5nJTIwYm9va3MlMjBuaWdodHxlbnwwfHx8fDE3NzEzNTQ0NzZ8MA&ixlib=rb-4.1.0&q=85')`
+          }}
+        />
+        
+        <div className="max-w-7xl mx-auto px-6 md:px-12 pt-32 pb-20 relative z-10">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Left content */}
             <motion.div 
@@ -77,14 +100,27 @@ export default function Landing() {
                 </Button>
                 
                 {user ? (
-                  <Button 
-                    data-testid="create-story-btn"
-                    onClick={() => navigate('/dashboard')}
-                    variant="outline"
-                    className="rounded-full px-8 py-6 text-lg font-ui border-2"
-                  >
-                    Create Your Story
-                  </Button>
+                  user.subscription === 'pro' ? (
+                    <Button 
+                      data-testid="create-story-btn"
+                      onClick={() => navigate('/dashboard')}
+                      variant="outline"
+                      className="rounded-full px-8 py-6 text-lg font-ui border-2"
+                    >
+                      <FiEdit3 className="mr-2" />
+                      Create Your Story
+                    </Button>
+                  ) : (
+                    <Button 
+                      data-testid="upgrade-btn"
+                      onClick={() => navigate('/dashboard')}
+                      variant="outline"
+                      className="rounded-full px-8 py-6 text-lg font-ui border-2 border-secondary text-secondary"
+                    >
+                      <FiZap className="mr-2" />
+                      Upgrade to Pro
+                    </Button>
+                  )
                 ) : (
                   <Button 
                     data-testid="get-started-btn"
@@ -95,6 +131,18 @@ export default function Landing() {
                     Get Started Free
                   </Button>
                 )}
+              </div>
+              
+              {/* Subscription info */}
+              <div className="flex items-center gap-6 pt-4 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <FiBook className="w-4 h-4 text-primary" />
+                  <span>Free: Read unlimited books</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <FiEdit3 className="w-4 h-4 text-secondary" />
+                  <span>Pro: Create your own books</span>
+                </div>
               </div>
             </motion.div>
             
@@ -111,32 +159,47 @@ export default function Landing() {
                   className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-float"
                   whileHover={{ scale: 1.05 }}
                 >
-                  <div className="w-72 h-96 rounded-2xl overflow-hidden shadow-2xl magic-glow book-3d">
+                  <div className="w-72 h-96 rounded-2xl overflow-hidden shadow-2xl magic-glow book-3d relative">
                     <img 
-                      src="https://images.unsplash.com/photo-1690023835938-b078c130d58f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTF8MHwxfHNlYXJjaHwyfHxtYWdpY2FsJTIwZmxvYXRpbmclMjBib29rcyUyMDNkJTIwYWVzdGhldGljfGVufDB8fHx8MTc3MTM1MTU0OHww&ixlib=rb-4.1.0&q=85"
-                      alt="Magical Book"
+                      src="https://images.unsplash.com/photo-1681487414305-2b9c0ce7ab50?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NjZ8MHwxfHNlYXJjaHwxfHxvcGVuJTIwYm9vayUyMHBhZ2VzJTIwZmFudGFzeSUyMHN0b3J5dGVsbGluZ3xlbnwwfHx8fDE3NzEzNTQ0ODV8MA&ixlib=rb-4.1.0&q=85"
+                      alt="Open magical book"
                       className="w-full h-full object-cover"
                     />
+                    {/* Overlay gradient */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary/30 to-transparent" />
                   </div>
                 </motion.div>
                 
-                {/* Decorative floating elements */}
+                {/* Smaller floating books */}
                 <motion.div 
-                  className="absolute top-10 right-20 w-16 h-20 rounded-lg bg-secondary/20 backdrop-blur animate-float-slow stagger-2"
-                />
+                  className="absolute top-10 right-16 w-20 h-28 rounded-lg overflow-hidden shadow-xl animate-float-slow stagger-2"
+                  style={{ animationDelay: '0.5s' }}
+                >
+                  <img 
+                    src="https://images.unsplash.com/photo-1765338914703-03c2312fab8d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2OTV8MHwxfHNlYXJjaHwzfHxjb2xvcmZ1bCUyMGJvb2tzaGVsZiUyMGxpYnJhcnklMjBjb3p5fGVufDB8fHx8MTc3MTM1NDQ5Nnww&ixlib=rb-4.1.0&q=85"
+                    alt="Bookshelf"
+                    className="w-full h-full object-cover"
+                  />
+                </motion.div>
+                
                 <motion.div 
-                  className="absolute bottom-20 left-10 w-12 h-16 rounded-lg bg-primary/20 backdrop-blur animate-float-slow stagger-4"
-                />
-                <motion.div 
-                  className="absolute top-32 left-20 w-8 h-10 rounded bg-accent/30 backdrop-blur animate-float-slow stagger-3"
-                />
+                  className="absolute bottom-16 left-10 w-16 h-24 rounded-lg overflow-hidden shadow-xl animate-float-slow stagger-4"
+                  style={{ animationDelay: '1s' }}
+                >
+                  <div className="w-full h-full bg-gradient-to-br from-secondary/40 to-primary/40 backdrop-blur" />
+                </motion.div>
+                
+                {/* Decorative glowing orbs */}
+                <div className="absolute top-20 left-20 w-4 h-4 rounded-full bg-primary/50 animate-pulse" />
+                <div className="absolute bottom-32 right-20 w-3 h-3 rounded-full bg-secondary/50 animate-pulse" style={{ animationDelay: '0.5s' }} />
+                <div className="absolute top-40 right-10 w-2 h-2 rounded-full bg-accent/50 animate-pulse" style={{ animationDelay: '1s' }} />
               </div>
             </motion.div>
           </div>
         </div>
         
         {/* Gradient fade at bottom */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent z-10" />
       </section>
       
       {/* Features Section */}
@@ -180,15 +243,56 @@ export default function Landing() {
         </div>
       </section>
       
+      {/* How it Works */}
+      <section className="py-20 px-6 md:px-12 bg-muted/30">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="font-heading text-4xl md:text-5xl font-bold mb-4">
+              How Azories Works
+            </h2>
+          </motion.div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { num: "01", title: "Write Your Story", desc: "Type or dictate your story, chapter by chapter" },
+              { num: "02", title: "Generate Visuals", desc: "Use AI to create illustrations, videos, or upload your own" },
+              { num: "03", title: "Share & Listen", desc: "Publish to the library and enjoy audiobook narration" }
+            ].map((step, index) => (
+              <motion.div
+                key={step.num}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.2 }}
+                className="relative"
+              >
+                <span className="font-heading text-8xl font-bold text-primary/10 absolute -top-6 -left-4">
+                  {step.num}
+                </span>
+                <div className="relative pt-8 pl-4">
+                  <h3 className="font-heading text-2xl font-semibold mb-3">{step.title}</h3>
+                  <p className="font-body text-muted-foreground">{step.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+      
       {/* CTA Section */}
-      <section className="py-20 px-6 md:px-12 bg-muted/50">
+      <section className="py-20 px-6 md:px-12">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="space-y-8"
+            className="space-y-8 p-12 rounded-3xl bg-gradient-to-br from-primary/5 to-secondary/5 border border-primary/10"
           >
             <h2 className="font-heading text-4xl md:text-5xl font-bold">
               Ready to Start Your Adventure?
@@ -196,14 +300,24 @@ export default function Landing() {
             <p className="font-body text-lg text-muted-foreground">
               Join thousands of young authors creating magical stories every day.
             </p>
-            <Button 
-              data-testid="start-creating-btn"
-              onClick={() => navigate(user ? '/dashboard' : '/auth')}
-              className="rounded-full px-10 py-7 text-xl font-ui bg-primary hover:bg-primary/90"
-            >
-              Start Creating Now
-              <FiArrowRight className="ml-2" />
-            </Button>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Button 
+                data-testid="start-creating-btn"
+                onClick={() => navigate(user ? '/dashboard' : '/auth')}
+                className="rounded-full px-10 py-7 text-xl font-ui bg-primary hover:bg-primary/90"
+              >
+                Start Creating Now
+                <FiArrowRight className="ml-2" />
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={() => navigate('/library')}
+                className="rounded-full px-10 py-7 text-xl font-ui"
+              >
+                <FiPlay className="mr-2" />
+                Browse Library
+              </Button>
+            </div>
           </motion.div>
         </div>
       </section>
