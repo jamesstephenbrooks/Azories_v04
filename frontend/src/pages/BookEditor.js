@@ -558,6 +558,44 @@ export default function BookEditor() {
               <FiDownload className="mr-2 w-4 h-4" />
               Download
             </Button>
+            
+            {/* Generate All Images Dropdown */}
+            <div className="relative group">
+              <Button
+                variant="outline"
+                className="rounded-full"
+                disabled={generatingAllImages}
+                data-testid="generate-all-images-btn"
+              >
+                {generatingAllImages ? (
+                  <FiLoader className="mr-2 w-4 h-4 animate-spin" />
+                ) : (
+                  <FiZap className="mr-2 w-4 h-4" />
+                )}
+                AI Images
+              </Button>
+              <div className="absolute right-0 top-full mt-1 w-56 bg-popover rounded-xl shadow-lg border border-border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                <div className="p-2 space-y-1">
+                  <button
+                    onClick={generateAllImages}
+                    disabled={generatingAllImages}
+                    className="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-muted transition-colors"
+                  >
+                    <span className="font-medium">Generate All Images</span>
+                    <p className="text-xs text-muted-foreground">For pages with stored prompts</p>
+                  </button>
+                  <button
+                    onClick={generateImagesFromText}
+                    disabled={generatingAllImages}
+                    className="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-muted transition-colors"
+                  >
+                    <span className="font-medium">Generate from Text</span>
+                    <p className="text-xs text-muted-foreground">Create images based on page text</p>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
             <Dialog open={coverDialogOpen} onOpenChange={setCoverDialogOpen}>
               <DialogTrigger asChild>
                 <Button
