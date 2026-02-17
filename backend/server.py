@@ -30,7 +30,11 @@ client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
 # ElevenLabs client
-eleven_client = ElevenLabs(api_key=os.environ.get('ELEVENLABS_API_KEY'))
+eleven_client = None
+try:
+    eleven_client = ElevenLabs(api_key=os.environ.get('ELEVENLABS_API_KEY'))
+except Exception as e:
+    logging.warning(f"ElevenLabs client initialization failed: {e}")
 
 # JWT settings
 JWT_SECRET = os.environ.get('JWT_SECRET', 'default_secret_key')
@@ -65,6 +69,7 @@ class UserResponse(BaseModel):
     email: str
     name: str
     role: str
+    subscription: str
     created_at: str
 
 class TokenResponse(BaseModel):
@@ -77,13 +82,25 @@ class BookCreate(BaseModel):
     description: Optional[str] = ""
     genre: Optional[str] = "General"
     cover_image: Optional[str] = ""
+    back_cover_image: Optional[str] = ""
+    cover_title: Optional[str] = ""
+    cover_subtitle: Optional[str] = ""
+    back_cover_text: Optional[str] = ""
+    layout_mode: Optional[str] = "standard"  # standard, comic
 
 class BookUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     genre: Optional[str] = None
     cover_image: Optional[str] = None
+    back_cover_image: Optional[str] = None
+    cover_title: Optional[str] = None
+    cover_subtitle: Optional[str] = None
+    back_cover_text: Optional[str] = None
     is_published: Optional[bool] = None
+    is_featured: Optional[bool] = None
+    is_best_of_week: Optional[bool] = None
+    layout_mode: Optional[str] = None
 
 class BookResponse(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -92,9 +109,16 @@ class BookResponse(BaseModel):
     description: str
     genre: str
     cover_image: str
+    back_cover_image: str
+    cover_title: str
+    cover_subtitle: str
+    back_cover_text: str
     author_id: str
     author_name: str
     is_published: bool
+    is_featured: bool
+    is_best_of_week: bool
+    layout_mode: str
     created_at: str
     updated_at: str
     chapter_count: int = 0
@@ -115,16 +139,24 @@ class ChapterResponse(BaseModel):
 class PageCreate(BaseModel):
     text_content: str = ""
     image_url: Optional[str] = ""
+    image_url_2: Optional[str] = ""
+    image_url_3: Optional[str] = ""
+    image_url_4: Optional[str] = ""
     video_url: Optional[str] = ""
     audio_url: Optional[str] = ""
     order: int = 0
+    layout_type: Optional[str] = "single"  # single, comic_2, comic_3, comic_4
 
 class PageUpdate(BaseModel):
     text_content: Optional[str] = None
     image_url: Optional[str] = None
+    image_url_2: Optional[str] = None
+    image_url_3: Optional[str] = None
+    image_url_4: Optional[str] = None
     video_url: Optional[str] = None
     audio_url: Optional[str] = None
     order: Optional[int] = None
+    layout_type: Optional[str] = None
 
 class PageResponse(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -132,14 +164,19 @@ class PageResponse(BaseModel):
     chapter_id: str
     text_content: str
     image_url: str
+    image_url_2: str
+    image_url_3: str
+    image_url_4: str
     video_url: str
     audio_url: str
     order: int
+    layout_type: str
     created_at: str
 
 class ImageGenerateRequest(BaseModel):
     prompt: str
     book_id: Optional[str] = None
+    style: Optional[str] = "illustration"  # illustration, comic, realistic
 
 class VideoGenerateRequest(BaseModel):
     prompt: str
@@ -157,6 +194,9 @@ class VoiceResponse(BaseModel):
     name: str
     category: Optional[str] = None
     labels: Optional[dict] = None
+
+class UpgradeRequest(BaseModel):
+    subscription: str  # free, pro
 
 # ============ AUTH HELPERS ============
 
@@ -187,6 +227,12 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
+async def get_optional_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    try:
+        return await get_current_user(credentials)
+    except:
+        return None
+
 # ============ AUTH ROUTES ============
 
 @api_router.post("/auth/register", response_model=TokenResponse)
@@ -202,15 +248,16 @@ async def register(user_data: UserCreate):
         "email": user_data.email,
         "password": hash_password(user_data.password),
         "name": user_data.name,
-        "role": "creator",  # Default role
+        "role": "user",
+        "subscription": "free",  # free or pro
         "created_at": now
     }
     await db.users.insert_one(user)
     
-    token = create_token(user_id, user_data.email, "creator")
+    token = create_token(user_id, user_data.email, "user")
     return TokenResponse(
         access_token=token,
-        user=UserResponse(id=user_id, email=user_data.email, name=user_data.name, role="creator", created_at=now)
+        user=UserResponse(id=user_id, email=user_data.email, name=user_data.name, role="user", subscription="free", created_at=now)
     )
 
 @api_router.post("/auth/login", response_model=TokenResponse)
@@ -222,7 +269,14 @@ async def login(user_data: UserLogin):
     token = create_token(user["id"], user["email"], user["role"])
     return TokenResponse(
         access_token=token,
-        user=UserResponse(id=user["id"], email=user["email"], name=user["name"], role=user["role"], created_at=user["created_at"])
+        user=UserResponse(
+            id=user["id"], 
+            email=user["email"], 
+            name=user["name"], 
+            role=user["role"], 
+            subscription=user.get("subscription", "free"),
+            created_at=user["created_at"]
+        )
     )
 
 @api_router.get("/auth/me", response_model=UserResponse)
@@ -232,13 +286,27 @@ async def get_me(current_user: dict = Depends(get_current_user)):
         email=current_user["email"],
         name=current_user["name"],
         role=current_user["role"],
+        subscription=current_user.get("subscription", "free"),
         created_at=current_user["created_at"]
     )
+
+@api_router.post("/auth/upgrade")
+async def upgrade_subscription(request: UpgradeRequest, current_user: dict = Depends(get_current_user)):
+    """Test endpoint to upgrade subscription - in production this would integrate with payment"""
+    await db.users.update_one(
+        {"id": current_user["id"]},
+        {"$set": {"subscription": request.subscription}}
+    )
+    return {"message": f"Subscription updated to {request.subscription}", "subscription": request.subscription}
 
 # ============ BOOK ROUTES ============
 
 @api_router.post("/books", response_model=BookResponse)
 async def create_book(book_data: BookCreate, current_user: dict = Depends(get_current_user)):
+    # Check if user has pro subscription to create books
+    if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Pro subscription required to create books. Upgrade to Pro to start creating!")
+    
     book_id = str(uuid.uuid4())
     now = datetime.now(timezone.utc).isoformat()
     book = {
@@ -247,9 +315,16 @@ async def create_book(book_data: BookCreate, current_user: dict = Depends(get_cu
         "description": book_data.description or "",
         "genre": book_data.genre or "General",
         "cover_image": book_data.cover_image or "",
+        "back_cover_image": book_data.back_cover_image or "",
+        "cover_title": book_data.cover_title or book_data.title,
+        "cover_subtitle": book_data.cover_subtitle or "",
+        "back_cover_text": book_data.back_cover_text or "",
         "author_id": current_user["id"],
         "author_name": current_user["name"],
         "is_published": False,
+        "is_featured": False,
+        "is_best_of_week": False,
+        "layout_mode": book_data.layout_mode or "standard",
         "created_at": now,
         "updated_at": now
     }
@@ -261,7 +336,9 @@ async def get_books(
     search: Optional[str] = None,
     genre: Optional[str] = None,
     author: Optional[str] = None,
-    published_only: bool = True
+    published_only: bool = True,
+    featured: Optional[bool] = None,
+    best_of_week: Optional[bool] = None
 ):
     query = {}
     if published_only:
@@ -275,11 +352,49 @@ async def get_books(
         query["genre"] = genre
     if author:
         query["author_name"] = {"$regex": author, "$options": "i"}
+    if featured is not None:
+        query["is_featured"] = featured
+    if best_of_week is not None:
+        query["is_best_of_week"] = best_of_week
     
     books = await db.books.find(query, {"_id": 0}).to_list(100)
     
     # Get chapter and page counts
     for book in books:
+        # Set defaults for new fields
+        book.setdefault("back_cover_image", "")
+        book.setdefault("cover_title", book.get("title", ""))
+        book.setdefault("cover_subtitle", "")
+        book.setdefault("back_cover_text", "")
+        book.setdefault("is_featured", False)
+        book.setdefault("is_best_of_week", False)
+        book.setdefault("layout_mode", "standard")
+        
+        chapters = await db.chapters.find({"book_id": book["id"]}, {"_id": 0}).to_list(100)
+        book["chapter_count"] = len(chapters)
+        total_pages = 0
+        for chapter in chapters:
+            pages = await db.pages.count_documents({"chapter_id": chapter["id"]})
+            total_pages += pages
+        book["total_pages"] = total_pages
+    
+    return [BookResponse(**book) for book in books]
+
+@api_router.get("/books/featured", response_model=List[BookResponse])
+async def get_featured_books():
+    """Get featured and best of week books"""
+    query = {"is_published": True, "$or": [{"is_featured": True}, {"is_best_of_week": True}]}
+    books = await db.books.find(query, {"_id": 0}).to_list(20)
+    
+    for book in books:
+        book.setdefault("back_cover_image", "")
+        book.setdefault("cover_title", book.get("title", ""))
+        book.setdefault("cover_subtitle", "")
+        book.setdefault("back_cover_text", "")
+        book.setdefault("is_featured", False)
+        book.setdefault("is_best_of_week", False)
+        book.setdefault("layout_mode", "standard")
+        
         chapters = await db.chapters.find({"book_id": book["id"]}, {"_id": 0}).to_list(100)
         book["chapter_count"] = len(chapters)
         total_pages = 0
@@ -295,6 +410,14 @@ async def get_my_books(current_user: dict = Depends(get_current_user)):
     books = await db.books.find({"author_id": current_user["id"]}, {"_id": 0}).to_list(100)
     
     for book in books:
+        book.setdefault("back_cover_image", "")
+        book.setdefault("cover_title", book.get("title", ""))
+        book.setdefault("cover_subtitle", "")
+        book.setdefault("back_cover_text", "")
+        book.setdefault("is_featured", False)
+        book.setdefault("is_best_of_week", False)
+        book.setdefault("layout_mode", "standard")
+        
         chapters = await db.chapters.find({"book_id": book["id"]}, {"_id": 0}).to_list(100)
         book["chapter_count"] = len(chapters)
         total_pages = 0
@@ -311,6 +434,14 @@ async def get_book(book_id: str):
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
     
+    book.setdefault("back_cover_image", "")
+    book.setdefault("cover_title", book.get("title", ""))
+    book.setdefault("cover_subtitle", "")
+    book.setdefault("back_cover_text", "")
+    book.setdefault("is_featured", False)
+    book.setdefault("is_best_of_week", False)
+    book.setdefault("layout_mode", "standard")
+    
     chapters = await db.chapters.find({"book_id": book_id}, {"_id": 0}).to_list(100)
     book["chapter_count"] = len(chapters)
     total_pages = 0
@@ -326,7 +457,7 @@ async def update_book(book_id: str, book_data: BookUpdate, current_user: dict = 
     book = await db.books.find_one({"id": book_id}, {"_id": 0})
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
-    if book["author_id"] != current_user["id"]:
+    if book["author_id"] != current_user["id"] and current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
     update_data = {k: v for k, v in book_data.model_dump().items() if v is not None}
@@ -334,6 +465,14 @@ async def update_book(book_id: str, book_data: BookUpdate, current_user: dict = 
     
     await db.books.update_one({"id": book_id}, {"$set": update_data})
     updated = await db.books.find_one({"id": book_id}, {"_id": 0})
+    
+    updated.setdefault("back_cover_image", "")
+    updated.setdefault("cover_title", updated.get("title", ""))
+    updated.setdefault("cover_subtitle", "")
+    updated.setdefault("back_cover_text", "")
+    updated.setdefault("is_featured", False)
+    updated.setdefault("is_best_of_week", False)
+    updated.setdefault("layout_mode", "standard")
     
     chapters = await db.chapters.find({"book_id": book_id}, {"_id": 0}).to_list(100)
     updated["chapter_count"] = len(chapters)
@@ -350,10 +489,9 @@ async def delete_book(book_id: str, current_user: dict = Depends(get_current_use
     book = await db.books.find_one({"id": book_id}, {"_id": 0})
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
-    if book["author_id"] != current_user["id"]:
+    if book["author_id"] != current_user["id"] and current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
-    # Delete all related data
     chapters = await db.chapters.find({"book_id": book_id}, {"_id": 0}).to_list(100)
     for chapter in chapters:
         await db.pages.delete_many({"chapter_id": chapter["id"]})
@@ -361,6 +499,36 @@ async def delete_book(book_id: str, current_user: dict = Depends(get_current_use
     await db.books.delete_one({"id": book_id})
     
     return {"message": "Book deleted"}
+
+# ============ ADMIN CMS ROUTES ============
+
+@api_router.post("/admin/books/{book_id}/feature")
+async def toggle_featured(book_id: str, current_user: dict = Depends(get_current_user)):
+    """Admin endpoint to toggle featured status"""
+    if current_user.get("role") != "admin" and current_user.get("subscription") != "pro":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    book = await db.books.find_one({"id": book_id}, {"_id": 0})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    new_status = not book.get("is_featured", False)
+    await db.books.update_one({"id": book_id}, {"$set": {"is_featured": new_status}})
+    return {"is_featured": new_status}
+
+@api_router.post("/admin/books/{book_id}/best-of-week")
+async def toggle_best_of_week(book_id: str, current_user: dict = Depends(get_current_user)):
+    """Admin endpoint to toggle best of week status"""
+    if current_user.get("role") != "admin" and current_user.get("subscription") != "pro":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    book = await db.books.find_one({"id": book_id}, {"_id": 0})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    new_status = not book.get("is_best_of_week", False)
+    await db.books.update_one({"id": book_id}, {"$set": {"is_best_of_week": new_status}})
+    return {"is_best_of_week": new_status}
 
 # ============ CHAPTER ROUTES ============
 
@@ -375,7 +543,6 @@ async def create_chapter(book_id: str, chapter_data: ChapterCreate, current_user
     chapter_id = str(uuid.uuid4())
     now = datetime.now(timezone.utc).isoformat()
     
-    # Get max order if not provided
     if chapter_data.order == 0:
         max_order = await db.chapters.find_one({"book_id": book_id}, sort=[("order", -1)])
         chapter_data.order = (max_order["order"] + 1) if max_order else 1
@@ -424,7 +591,6 @@ async def create_page(chapter_id: str, page_data: PageCreate, current_user: dict
     page_id = str(uuid.uuid4())
     now = datetime.now(timezone.utc).isoformat()
     
-    # Get max order if not provided
     if page_data.order == 0:
         max_order = await db.pages.find_one({"chapter_id": chapter_id}, sort=[("order", -1)])
         page_data.order = (max_order["order"] + 1) if max_order else 1
@@ -434,9 +600,13 @@ async def create_page(chapter_id: str, page_data: PageCreate, current_user: dict
         "chapter_id": chapter_id,
         "text_content": page_data.text_content,
         "image_url": page_data.image_url or "",
+        "image_url_2": page_data.image_url_2 or "",
+        "image_url_3": page_data.image_url_3 or "",
+        "image_url_4": page_data.image_url_4 or "",
         "video_url": page_data.video_url or "",
         "audio_url": page_data.audio_url or "",
         "order": page_data.order,
+        "layout_type": page_data.layout_type or "single",
         "created_at": now
     }
     await db.pages.insert_one(page)
@@ -445,6 +615,11 @@ async def create_page(chapter_id: str, page_data: PageCreate, current_user: dict
 @api_router.get("/chapters/{chapter_id}/pages", response_model=List[PageResponse])
 async def get_pages(chapter_id: str):
     pages = await db.pages.find({"chapter_id": chapter_id}, {"_id": 0}).sort("order", 1).to_list(100)
+    for page in pages:
+        page.setdefault("image_url_2", "")
+        page.setdefault("image_url_3", "")
+        page.setdefault("image_url_4", "")
+        page.setdefault("layout_type", "single")
     return [PageResponse(**p) for p in pages]
 
 @api_router.put("/pages/{page_id}", response_model=PageResponse)
@@ -461,6 +636,10 @@ async def update_page(page_id: str, page_data: PageUpdate, current_user: dict = 
     update_data = {k: v for k, v in page_data.model_dump().items() if v is not None}
     await db.pages.update_one({"id": page_id}, {"$set": update_data})
     updated = await db.pages.find_one({"id": page_id}, {"_id": 0})
+    updated.setdefault("image_url_2", "")
+    updated.setdefault("image_url_3", "")
+    updated.setdefault("image_url_4", "")
+    updated.setdefault("layout_type", "single")
     return PageResponse(**updated)
 
 @api_router.delete("/pages/{page_id}")
@@ -482,9 +661,23 @@ async def delete_page(page_id: str, current_user: dict = Depends(get_current_use
 @api_router.post("/ai/generate-image")
 async def generate_image(request: ImageGenerateRequest, current_user: dict = Depends(get_current_user)):
     try:
-        image_gen = OpenAIImageGeneration(api_key=os.environ.get('OPENAI_API_KEY'))
+        api_key = os.environ.get('OPENAI_API_KEY')
+        if not api_key:
+            raise HTTPException(status_code=500, detail="OpenAI API key not configured")
+        
+        # Adjust prompt based on style
+        style_prompts = {
+            "illustration": "Children's book illustration style, colorful, friendly, magical, whimsical, suitable for children",
+            "comic": "Comic book panel style, bold lines, dynamic, colorful, speech bubble friendly, manga-inspired",
+            "realistic": "Photorealistic style, detailed, cinematic lighting, professional photography"
+        }
+        style_desc = style_prompts.get(request.style, style_prompts["illustration"])
+        
+        full_prompt = f"{request.prompt}. Style: {style_desc}"
+        
+        image_gen = OpenAIImageGeneration(api_key=api_key)
         images = await image_gen.generate_images(
-            prompt=f"Children's book illustration: {request.prompt}. Style: colorful, friendly, magical, suitable for children.",
+            prompt=full_prompt,
             model="gpt-image-1",
             number_of_images=1
         )
@@ -501,7 +694,11 @@ async def generate_image(request: ImageGenerateRequest, current_user: dict = Dep
 @api_router.post("/ai/generate-video")
 async def generate_video(request: VideoGenerateRequest, current_user: dict = Depends(get_current_user)):
     try:
-        video_gen = OpenAIVideoGeneration(api_key=os.environ.get('OPENAI_API_KEY'))
+        api_key = os.environ.get('OPENAI_API_KEY')
+        if not api_key:
+            raise HTTPException(status_code=500, detail="OpenAI API key not configured")
+        
+        video_gen = OpenAIVideoGeneration(api_key=api_key)
         video_bytes = video_gen.text_to_video(
             prompt=f"Children's animated scene: {request.prompt}. Style: colorful, friendly, magical animation suitable for children.",
             model="sora-2",
@@ -524,6 +721,13 @@ async def generate_video(request: VideoGenerateRequest, current_user: dict = Dep
 @api_router.get("/voices", response_model=List[VoiceResponse])
 async def get_voices():
     try:
+        if not eleven_client:
+            # Return default voices if client not available
+            return [
+                VoiceResponse(voice_id="default_male", name="Default Male", category="premade"),
+                VoiceResponse(voice_id="default_female", name="Default Female", category="premade"),
+            ]
+        
         voices_response = eleven_client.voices.get_all()
         voices = []
         for voice in voices_response.voices:
@@ -536,11 +740,25 @@ async def get_voices():
         return voices
     except Exception as e:
         logger.error(f"Error fetching voices: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error fetching voices: {str(e)}")
+        # Return fallback voices
+        return [
+            VoiceResponse(voice_id="21m00Tcm4TlvDq8ikWAM", name="Rachel", category="premade"),
+            VoiceResponse(voice_id="AZnzlk1XvdvUeBnXmlld", name="Domi", category="premade"),
+            VoiceResponse(voice_id="EXAVITQu4vr4xnSDxMaL", name="Bella", category="premade"),
+            VoiceResponse(voice_id="ErXwobaYiN019PkySvjV", name="Antoni", category="premade"),
+            VoiceResponse(voice_id="MF3mGyEYCl7XYWbV9V6O", name="Elli", category="premade"),
+            VoiceResponse(voice_id="TxGEqnHWrfWFTfGW9XjX", name="Josh", category="premade"),
+            VoiceResponse(voice_id="VR6AewLTigWG4xSOukaG", name="Arnold", category="premade"),
+            VoiceResponse(voice_id="pNInz6obpgDQGcFmaJgB", name="Adam", category="premade"),
+            VoiceResponse(voice_id="yoZ06aMxZJJ28mfd3POQ", name="Sam", category="premade"),
+        ]
 
 @api_router.post("/tts/generate")
 async def generate_tts(request: TTSRequest):
     try:
+        if not eleven_client:
+            raise HTTPException(status_code=500, detail="TTS service not available")
+        
         voice_settings = VoiceSettings(
             stability=request.stability,
             similarity_boost=request.similarity_boost
@@ -570,10 +788,7 @@ async def upload_image(file: UploadFile = File(...), current_user: dict = Depend
     try:
         contents = await file.read()
         image_base64 = base64.b64encode(contents).decode('utf-8')
-        
-        # Determine content type
         content_type = file.content_type or "image/png"
-        
         return {
             "image_url": f"data:{content_type};base64,{image_base64}",
             "success": True
@@ -581,6 +796,20 @@ async def upload_image(file: UploadFile = File(...), current_user: dict = Depend
     except Exception as e:
         logger.error(f"Error uploading image: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error uploading image: {str(e)}")
+
+@api_router.post("/upload/video")
+async def upload_video(file: UploadFile = File(...), current_user: dict = Depends(get_current_user)):
+    try:
+        contents = await file.read()
+        video_base64 = base64.b64encode(contents).decode('utf-8')
+        content_type = file.content_type or "video/mp4"
+        return {
+            "video_url": f"data:{content_type};base64,{video_base64}",
+            "success": True
+        }
+    except Exception as e:
+        logger.error(f"Error uploading video: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error uploading video: {str(e)}")
 
 # ============ BOOK READING ============
 
@@ -591,11 +820,24 @@ async def get_full_book(book_id: str):
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
     
+    book.setdefault("back_cover_image", "")
+    book.setdefault("cover_title", book.get("title", ""))
+    book.setdefault("cover_subtitle", "")
+    book.setdefault("back_cover_text", "")
+    book.setdefault("is_featured", False)
+    book.setdefault("is_best_of_week", False)
+    book.setdefault("layout_mode", "standard")
+    
     chapters = await db.chapters.find({"book_id": book_id}, {"_id": 0}).sort("order", 1).to_list(100)
     
     full_chapters = []
     for chapter in chapters:
         pages = await db.pages.find({"chapter_id": chapter["id"]}, {"_id": 0}).sort("order", 1).to_list(100)
+        for page in pages:
+            page.setdefault("image_url_2", "")
+            page.setdefault("image_url_3", "")
+            page.setdefault("image_url_4", "")
+            page.setdefault("layout_type", "single")
         full_chapters.append({
             **chapter,
             "pages": pages
@@ -614,7 +856,8 @@ async def get_genres():
         "genres": [
             "Adventure", "Fantasy", "Science Fiction", "Mystery", 
             "Fairy Tales", "Animals", "Friendship", "Family",
-            "Educational", "Humor", "Nature", "Sports", "General"
+            "Educational", "Humor", "Nature", "Sports", "General",
+            "Comic", "Superhero", "Horror", "Romance"
         ]
     }
 
