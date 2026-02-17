@@ -143,6 +143,17 @@ class AzoriesAPITester:
             self.log(f"   ✓ Found {len(response)} voices")
         return success
 
+    def test_upgrade_subscription(self):
+        """Test upgrading to Pro subscription"""
+        success, response = self.run_test(
+            "Upgrade to Pro Subscription",
+            "POST", "/auth/upgrade", 200,
+            data={"subscription": "pro"}
+        )
+        if success:
+            self.log(f"   ✓ Upgraded to Pro subscription")
+        return success
+
     def test_create_book(self):
         """Test creating a new book"""
         success, response = self.run_test(
