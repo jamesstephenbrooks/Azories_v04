@@ -395,6 +395,29 @@ export default function BookEditor() {
 
   const isComicMode = book?.layout_mode === 'comic';
 
+  const downloadBook = async () => {
+    try {
+      toast.info('Preparing download...');
+      const response = await axios.get(`${API}/books/${bookId}/download`, {
+        responseType: 'blob'
+      });
+      
+      // Create download link
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${book?.title || 'book'}_azories.json`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      toast.success('Book downloaded!');
+    } catch (error) {
+      toast.error('Failed to download book');
+    }
+  };
+
   if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
