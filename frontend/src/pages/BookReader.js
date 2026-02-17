@@ -632,15 +632,41 @@ export default function BookReader() {
           </div>
           
           {/* Audio Controls */}
-          <div className="flex items-center justify-center gap-6 text-sm">
-            <div className="flex items-center gap-2 w-32">
+          <div className="flex items-center justify-center gap-4 flex-wrap text-sm">
+            {/* Narrator Voice Selector */}
+            <div className="flex items-center gap-2">
+              <FiMic className="w-4 h-4 text-muted-foreground" />
+              <Select 
+                value={narratorVoice} 
+                onValueChange={(v) => {
+                  setNarratorVoice(v);
+                  // Update the book's narrator voice
+                  if (book?.id) {
+                    axios.put(`${API}/books/${book.id}`, { narrator_voice_id: v }).catch(() => {});
+                  }
+                }}
+              >
+                <SelectTrigger className="w-36 h-8 rounded-full text-xs">
+                  <SelectValue placeholder="Voice" />
+                </SelectTrigger>
+                <SelectContent className="max-h-48">
+                  {voices.map((voice) => (
+                    <SelectItem key={voice.voice_id} value={voice.voice_id} className="text-xs">
+                      {voice.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="flex items-center gap-2 w-28">
               <FiVolume2 className="w-4 h-4 text-muted-foreground" />
               <Slider value={volume} onValueChange={setVolume} max={100} step={1} className="flex-1" />
             </div>
             
             <div className="flex items-center gap-2">
               <span className="text-muted-foreground text-xs">Speed:</span>
-              <Slider value={playbackSpeed} onValueChange={setPlaybackSpeed} min={0.5} max={2} step={0.25} className="w-24" />
+              <Slider value={playbackSpeed} onValueChange={setPlaybackSpeed} min={0.5} max={2} step={0.25} className="w-20" />
               <span className="text-xs font-mono w-8">{playbackSpeed[0]}x</span>
             </div>
             
