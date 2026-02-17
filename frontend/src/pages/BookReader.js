@@ -355,6 +355,19 @@ export default function BookReader() {
           isFullscreen ? 'bg-black/95 fixed inset-0 z-50 pt-4 pb-4' : ''
         }`}
       >
+        {/* Exit Fullscreen Button - Always visible in fullscreen */}
+        {isFullscreen && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleFullscreen}
+            className="absolute top-4 right-4 z-[60] rounded-full bg-white/10 hover:bg-white/20 text-white w-12 h-12"
+            data-testid="exit-fullscreen-btn"
+          >
+            <FiMinimize2 className="w-6 h-6" />
+          </Button>
+        )}
+        
         <div className={`w-full transition-all duration-300 ${
           isFullscreen ? 'max-w-7xl' : 'max-w-5xl'
         }`} style={{ perspective: '2000px' }}>
