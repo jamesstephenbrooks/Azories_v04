@@ -1,7 +1,10 @@
-import { useRef, useState, useEffect, Suspense } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, Text, useTexture, Html } from '@react-three/drei';
+import { useRef, useState, Suspense } from 'react';
+import { Canvas, useFrame, useThree, extend } from '@react-three/fiber';
+import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
+
+// Extend OrbitControls
+extend({ OrbitControls });
 
 // Single book on the shelf
 function Book({ book, position, index, onSelect, isSelected }) {
@@ -17,7 +20,7 @@ function Book({ book, position, index, onSelect, isSelected }) {
   const targetZ = isSelected ? position[2] + 1.5 : hovered ? position[2] + 0.3 : position[2];
   const targetRotY = isSelected ? Math.PI / 6 : 0;
   
-  useFrame((state, delta) => {
+  useFrame(() => {
     if (meshRef.current) {
       // Smooth animation
       meshRef.current.position.z = THREE.MathUtils.lerp(meshRef.current.position.z, targetZ, 0.1);
@@ -48,8 +51,8 @@ function Book({ book, position, index, onSelect, isSelected }) {
     <group position={position} ref={meshRef}>
       {/* Book spine (what you see on shelf) */}
       <mesh
-        onPointerOver={(e) => { e.stopPropagation(); setHovered(true); }}
-        onPointerOut={() => setHovered(false)}
+        onPointerOver={(e) => { e.stopPropagation(); setHovered(true); document.body.style.cursor = 'pointer'; }}
+        onPointerOut={() => { setHovered(false); document.body.style.cursor = 'default'; }}
         onClick={(e) => { e.stopPropagation(); onSelect(book); }}
         castShadow
       >
@@ -61,54 +64,24 @@ function Book({ book, position, index, onSelect, isSelected }) {
         />
       </mesh>
       
-      {/* Book title on spine */}
-      <Text
-        position={[width / 2 + 0.001, 0, 0]}
-        rotation={[0, Math.PI / 2, Math.PI / 2]}
-        fontSize={0.08}
-        color="#ffffff"
-        maxWidth={height - 0.2}
-        textAlign="center"
-        anchorX="center"
-        anchorY="middle"
-      >
-        {book.title.length > 20 ? book.title.substring(0, 18) + '...' : book.title}
-      </Text>
-      
-      {/* Gold text decoration on spine */}
+      {/* Gold text decoration on spine - top */}
       <mesh position={[width / 2 + 0.001, height / 2 - 0.1, 0]}>
         <planeGeometry args={[0.05, 0.02]} />
         <meshStandardMaterial color="#ffd700" metalness={0.8} roughness={0.2} />
       </mesh>
+      
+      {/* Gold text decoration on spine - bottom */}
       <mesh position={[width / 2 + 0.001, -height / 2 + 0.1, 0]}>
         <planeGeometry args={[0.05, 0.02]} />
         <meshStandardMaterial color="#ffd700" metalness={0.8} roughness={0.2} />
       </mesh>
       
-      {/* Show cover when selected/hovered */}
-      {(isSelected || hovered) && book.cover_image && (
-        <Html
-          position={[0, 0, depth / 2 + 0.01]}
-          transform
-          distanceFactor={2}
-          style={{ pointerEvents: 'none' }}
-        >
-          <div 
-            className="rounded-lg overflow-hidden shadow-2xl"
-            style={{ 
-              width: '120px', 
-              height: '180px',
-              transform: 'scale(0.8)',
-              opacity: isSelected ? 1 : 0.9
-            }}
-          >
-            <img 
-              src={book.cover_image} 
-              alt={book.title}
-              className="w-full h-full object-cover"
-            />
-          </div>
-        </Html>
+      {/* Highlight when selected/hovered */}
+      {(isSelected || hovered) && (
+        <mesh>
+          <boxGeometry args={[width + 0.02, height + 0.02, depth + 0.02]} />
+          <meshBasicMaterial color="#ffffff" transparent opacity={0.1} />
+        </mesh>
       )}
     </group>
   );
