@@ -884,7 +884,9 @@ async def create_series(series_data: SeriesCreate, current_user: dict = Depends(
         "updated_at": now
     }
     await db.series.insert_one(series)
-    return {"id": series_id, **series}
+    # Return without _id
+    del series["_id"]
+    return series
 
 @api_router.get("/series")
 async def get_user_series(current_user: dict = Depends(get_current_user)):
