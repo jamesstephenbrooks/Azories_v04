@@ -375,7 +375,7 @@ export default function BookReader() {
       <div 
         id="book-container"
         className={`pt-20 pb-48 px-4 flex items-center justify-center min-h-screen transition-all duration-300 ${
-          isFullscreen ? 'bg-black/95 fixed inset-0 z-50 pt-4 pb-4' : ''
+          isFullscreen ? 'bg-black/95 fixed inset-0 z-50 pt-8 pb-8' : ''
         }`}
       >
         {/* Exit Fullscreen Button - Always visible in fullscreen */}
@@ -391,16 +391,18 @@ export default function BookReader() {
           </Button>
         )}
         
-        <div className={`w-full transition-all duration-300 ${
-          isFullscreen ? 'max-w-7xl' : 'max-w-5xl'
+        <div className={`w-full transition-all duration-500 ${
+          isFullscreen ? 'max-w-[95vw] h-[85vh]' : 'max-w-5xl'
         }`} style={{ perspective: '2000px' }}>
-          <div className={`relative ${isFullscreen ? 'scale-110' : ''}`}>
+          <div className={`relative h-full ${isFullscreen ? 'flex items-center justify-center' : ''}`}>
             {isCover ? (
               // Front Cover - Single Page
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="mx-auto w-full max-w-lg aspect-[3/4] reader-page relative overflow-hidden cursor-pointer group rounded-r-lg shadow-2xl"
+                className={`mx-auto reader-page relative overflow-hidden cursor-pointer group rounded-r-lg shadow-2xl ${
+                  isFullscreen ? 'h-full max-h-[85vh] aspect-[3/4]' : 'w-full max-w-lg aspect-[3/4]'
+                }`}
                 onClick={startReading}
                 style={{
                   background: book?.cover_image ? 'transparent' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
