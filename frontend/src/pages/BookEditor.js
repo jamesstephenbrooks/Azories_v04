@@ -1064,6 +1064,10 @@ export default function BookEditor() {
                               <SelectItem value="comic">Comic Book Style</SelectItem>
                               <SelectItem value="realistic">Realistic/Cinematic</SelectItem>
                               <SelectItem value="scifi">Sci-Fi / Futuristic</SelectItem>
+                              <SelectItem value="anime">Anime Style</SelectItem>
+                              <SelectItem value="fantasy">Fantasy/Magical</SelectItem>
+                              <SelectItem value="pixar">3D Pixar Style</SelectItem>
+                              <SelectItem value="watercolor">Watercolor Animation</SelectItem>
                             </SelectContent>
                           </Select>
                           <div className="flex gap-2">
