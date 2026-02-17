@@ -1108,6 +1108,164 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
         logger.error(f"Error generating story: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error generating story: {str(e)}")
 
+class GenerateAllImagesRequest(BaseModel):
+    book_id: str
+    style: Optional[str] = "illustration"
+
+class GenerateImagesFromTextRequest(BaseModel):
+    book_id: str
+    style: Optional[str] = "illustration"
+
+@api_router.post("/ai/generate-all-images")
+async def generate_all_images(request: GenerateAllImagesRequest, current_user: dict = Depends(get_current_user)):
+    """Generate AI images for all pages in a book that don't have images"""
+    if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Pro subscription required")
+    
+    try:
+        book = await db.books.find_one({"id": request.book_id}, {"_id": 0})
+        if not book:
+            raise HTTPException(status_code=404, detail="Book not found")
+        if book["author_id"] != current_user["id"]:
+            raise HTTPException(status_code=403, detail="Not authorized")
+        
+        if not EMERGENT_LLM_KEY:
+            raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
+        
+        style_prompts = {
+            "illustration": "Children's book illustration style, colorful, friendly, magical, whimsical",
+            "comic": "Comic book panel style, bold lines, dynamic, colorful",
+            "realistic": "Photorealistic style, detailed, cinematic lighting",
+            "scifi": "Science fiction style, futuristic, space themes, neon colors, advanced technology"
+        }
+        style_desc = style_prompts.get(request.style, style_prompts["illustration"])
+        
+        # Get all pages that need images
+        chapters = await db.chapters.find({"book_id": request.book_id}, {"_id": 0}).to_list(100)
+        pages_updated = []
+        
+        for chapter in chapters:
+            pages = await db.pages.find({"chapter_id": chapter["id"]}, {"_id": 0}).to_list(100)
+            for page in pages:
+                # Skip pages that already have images
+                if page.get("image_url"):
+                    continue
+                
+                # Generate image from stored prompt or text content
+                prompt = page.get("image_prompt") or page.get("text_content", "A magical scene")
+                
+                try:
+                    image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
+                    images = await image_gen.generate_images(
+                        prompt=f"{prompt}. Style: {style_desc}",
+                        model="gpt-image-1",
+                        number_of_images=1
+                    )
+                    
+                    if images and len(images) > 0:
+                        image_base64 = base64.b64encode(images[0]).decode('utf-8')
+                        image_url = f"data:image/png;base64,{image_base64}"
+                        
+                        await db.pages.update_one(
+                            {"id": page["id"]},
+                            {"$set": {"image_url": image_url}}
+                        )
+                        pages_updated.append({"page_id": page["id"], "order": page["order"]})
+                except Exception as img_error:
+                    logger.error(f"Error generating image for page {page['id']}: {str(img_error)}")
+                    continue
+        
+        return {
+            "success": True,
+            "pages_updated": len(pages_updated),
+            "pages": pages_updated,
+            "message": f"Generated images for {len(pages_updated)} pages"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error generating all images: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error generating images: {str(e)}")
+
+@api_router.post("/ai/generate-images-from-text")
+async def generate_images_from_text(request: GenerateImagesFromTextRequest, current_user: dict = Depends(get_current_user)):
+    """Generate AI images for all pages based on their text content"""
+    if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Pro subscription required")
+    
+    try:
+        book = await db.books.find_one({"id": request.book_id}, {"_id": 0})
+        if not book:
+            raise HTTPException(status_code=404, detail="Book not found")
+        if book["author_id"] != current_user["id"]:
+            raise HTTPException(status_code=403, detail="Not authorized")
+        
+        if not EMERGENT_LLM_KEY:
+            raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
+        
+        style_prompts = {
+            "illustration": "Children's book illustration style, colorful, friendly, magical, whimsical",
+            "comic": "Comic book panel style, bold lines, dynamic, colorful",
+            "realistic": "Photorealistic style, detailed, cinematic lighting",
+            "scifi": "Science fiction style, futuristic, space themes, neon colors, advanced technology"
+        }
+        style_desc = style_prompts.get(request.style, style_prompts["illustration"])
+        
+        # Get all pages with text content
+        chapters = await db.chapters.find({"book_id": request.book_id}, {"_id": 0}).to_list(100)
+        pages_updated = []
+        
+        for chapter in chapters:
+            pages = await db.pages.find({"chapter_id": chapter["id"]}, {"_id": 0}).to_list(100)
+            for page in pages:
+                text_content = page.get("text_content", "").strip()
+                if not text_content:
+                    continue
+                
+                # First, generate an image prompt from the text
+                try:
+                    chat = LlmChat(
+                        api_key=EMERGENT_LLM_KEY,
+                        session_id=f"img-prompt-{current_user['id']}-{str(uuid.uuid4())[:8]}",
+                        system_message="You create detailed image prompts for children's book illustrations. Keep them safe and appropriate."
+                    ).with_model("openai", "gpt-4o-mini")
+                    
+                    prompt_response = await chat.send_message(UserMessage(
+                        text=f"Create a detailed illustration prompt for this children's book page text. Only output the prompt, no explanation:\n\n{text_content}"
+                    ))
+                    image_prompt = prompt_response.strip()
+                    
+                    # Generate the image
+                    image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
+                    images = await image_gen.generate_images(
+                        prompt=f"{image_prompt}. Style: {style_desc}",
+                        model="gpt-image-1",
+                        number_of_images=1
+                    )
+                    
+                    if images and len(images) > 0:
+                        image_base64 = base64.b64encode(images[0]).decode('utf-8')
+                        image_url = f"data:image/png;base64,{image_base64}"
+                        
+                        await db.pages.update_one(
+                            {"id": page["id"]},
+                            {"$set": {"image_url": image_url, "image_prompt": image_prompt}}
+                        )
+                        pages_updated.append({"page_id": page["id"], "order": page["order"]})
+                except Exception as img_error:
+                    logger.error(f"Error generating image for page {page['id']}: {str(img_error)}")
+                    continue
+        
+        return {
+            "success": True,
+            "pages_updated": len(pages_updated),
+            "pages": pages_updated,
+            "message": f"Generated images for {len(pages_updated)} pages based on text content"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error generating images from text: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error generating images: {str(e)}")
+
 @api_router.post("/ai/generate-summary")
 async def generate_summary(request: SummaryGenerateRequest, current_user: dict = Depends(get_current_user)):
     """Generate an AI summary for the back cover"""
