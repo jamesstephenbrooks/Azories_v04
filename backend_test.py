@@ -315,7 +315,29 @@ class AzoriesAPITester:
             self.log(f"   ✓ Full book: {len(chapters)} chapters, {total_pages} pages")
         return success
 
-    def test_tts_generation(self):
+    def test_get_featured_books(self):
+        """Test getting featured books endpoint"""
+        success, response = self.run_test(
+            "Get Featured Books",
+            "GET", "/books/featured", 200
+        )
+        if success:
+            self.log(f"   ✓ Found {len(response)} featured/best books")
+        return success
+
+    def test_toggle_featured(self):
+        """Test toggling book featured status"""
+        if not self.test_book_id:
+            self.log("❌ Skipping - No test book ID")
+            return False
+            
+        success, response = self.run_test(
+            "Toggle Book Featured Status",
+            "POST", f"/admin/books/{self.test_book_id}/feature", 200
+        )
+        if success:
+            self.log(f"   ✓ Featured status toggled")
+        return success
         """Test TTS audio generation"""
         # Get voices first to use a valid voice ID
         voices_success, voices_response = self.run_test(
