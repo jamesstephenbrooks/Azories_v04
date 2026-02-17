@@ -750,9 +750,6 @@ async def admin_publish_book(book_id: str, admin: dict = Depends(get_admin_user)
 @api_router.delete("/admin/books/{book_id}")
 async def admin_delete_book(book_id: str, admin: dict = Depends(get_admin_user)):
     """Admin can delete any book"""
-    if current_user.get("role") != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
-    
     chapters = await db.chapters.find({"book_id": book_id}, {"_id": 0}).to_list(100)
     for chapter in chapters:
         await db.pages.delete_many({"chapter_id": chapter["id"]})
