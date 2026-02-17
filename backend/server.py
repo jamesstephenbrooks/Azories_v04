@@ -258,6 +258,19 @@ class AnalyticsResponse(BaseModel):
     avg_completion_rate: float
     daily_reads: list
 
+class AdminLogin(BaseModel):
+    username: str
+    password: str
+
+class AdminResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    admin_name: str
+
+# Admin credentials (in production, these should be in environment variables)
+ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'azories_admin')
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'AzoriesAdmin2024!')
+
 # ============ AUTH HELPERS ============
 
 def hash_password(password: str) -> str:
