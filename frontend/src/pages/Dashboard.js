@@ -152,6 +152,22 @@ export default function Dashboard() {
       toast.error('Failed to remove book from series');
     }
   };
+  
+  // Filter books based on search query
+  const filteredBooks = books.filter(book => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      book.title?.toLowerCase().includes(query) ||
+      book.description?.toLowerCase().includes(query) ||
+      book.genre?.toLowerCase().includes(query)
+    );
+  });
+  
+  // Get books not in the selected series (for adding)
+  const booksNotInSeries = (seriesId) => {
+    return books.filter(book => book.series_id !== seriesId);
+  };
 
   const fetchGenres = async () => {
     try {
