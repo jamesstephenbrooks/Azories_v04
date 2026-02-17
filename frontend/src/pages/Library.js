@@ -23,6 +23,8 @@ export default function Library() {
   const [genre, setGenre] = useState('All');
   const [genres, setGenres] = useState([]);
   const [activeTab, setActiveTab] = useState('all');
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' or '3d'
+  const [selectedBook, setSelectedBook] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
