@@ -284,14 +284,14 @@ export default function Dashboard() {
                       className="rounded-full px-6 py-6 font-ui border-accent text-accent hover:bg-accent hover:text-accent-foreground"
                       data-testid="ai-story-btn"
                     >
-                      <FiWand2 className="mr-2" />
+                      <FiZap className="mr-2" />
                       AI Story Creator
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-md">
                     <DialogHeader>
                       <DialogTitle className="font-heading text-2xl flex items-center gap-2">
-                        <FiWand2 className="text-accent" />
+                        <FiZap className="text-accent" />
                         AI Story Creator
                       </DialogTitle>
                       <DialogDescription>
@@ -359,7 +359,7 @@ export default function Dashboard() {
                           </>
                         ) : (
                           <>
-                            <FiWand2 className="mr-2" />
+                            <FiZap className="mr-2" />
                             Generate Story
                           </>
                         )}
@@ -630,7 +630,7 @@ export default function Dashboard() {
                       Create Book
                     </Button>
                     <Button variant="outline" className="rounded-full" onClick={() => setIsAIStoryOpen(true)}>
-                      <FiWand2 className="mr-2" />
+                      <FiZap className="mr-2" />
                       AI Story
                     </Button>
                   </div>
