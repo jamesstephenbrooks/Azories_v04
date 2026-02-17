@@ -16,7 +16,7 @@ Create a digital book creating and reading web application called "Azories" (azo
 ## Architecture
 - **Frontend**: React with Tailwind CSS, Framer Motion animations
 - **Backend**: FastAPI with MongoDB
-- **AI Integrations**: OpenAI GPT Image 1, Sora 2 Video, ElevenLabs TTS
+- **AI Integrations**: Emergent Universal Key for OpenAI GPT Image 1, Sora 2 Video, GPT-4o (text), ElevenLabs TTS
 - **Auth**: JWT-based authentication
 
 ## Core Requirements (Static)
@@ -24,9 +24,10 @@ Create a digital book creating and reading web application called "Azories" (azo
 - [x] Free vs Pro subscription model
 - [x] Book CRUD operations
 - [x] Chapter and page management
-- [x] AI image generation
-- [x] AI video generation (Sora 2)
-- [x] Text-to-speech with multiple voices
+- [x] AI image generation (Emergent LLM Key)
+- [x] AI video generation (Sora 2 via Emergent LLM Key)
+- [x] AI text generation for stories/summaries (GPT-4o via Emergent LLM Key)
+- [x] Text-to-speech with multiple voices (ElevenLabs)
 - [x] Library with search/filter
 - [x] Featured/Best of Week sections
 - [x] Cover editor (front/back)
@@ -34,17 +35,25 @@ Create a digital book creating and reading web application called "Azories" (azo
 - [x] Video upload
 - [x] Dark/Light theme toggle
 
-## What's Been Implemented (January 2026)
+## What's Been Implemented
+
+### December 2026 Updates
+- **Switched to Emergent Universal Key** - Resolved OpenAI billing limit issues
+- **3D CSS Bookshelf** - Interactive library view with drag-to-rotate bookcase
+- **Chapter Title Pages** - Dedicated chapter intro pages in book reader
+- **View Mode Toggle** - Grid/3D view switch in library
 
 ### Backend (100% Working)
 - JWT Authentication with subscription levels
 - Books, Chapters, Pages CRUD
-- AI Image Generation endpoint (OpenAI GPT Image 1)
-- AI Video Generation endpoint (Sora 2)
-- TTS with ElevenLabs (9 fallback voices)
+- AI Image Generation (GPT Image 1 via Emergent Key)
+- AI Video Generation (Sora 2 via Emergent Key)
+- AI Story Generation (GPT-4o via Emergent Key)
+- AI Summary Generation (GPT-4o-mini via Emergent Key)
+- TTS with ElevenLabs (20 narrator voices)
 - File upload (image/video)
 - Admin CMS (featured, best of week toggles)
-- Genres API
+- Book analytics (views, reads)
 
 ### Frontend
 - Landing page with Azories branding
@@ -57,44 +66,53 @@ Create a digital book creating and reading web application called "Azories" (azo
   - AI video generation
   - Video upload
   - Comic book mode (2, 3, 4 panels)
-  - Scrollable visual panel
+  - Narrator voice selection
+  - AI summary generation
 - Library with tabs (All, Featured, Best of Week)
-- Book Reader with page turning
+  - Grid view with hover effects
+  - 3D Bookshelf view (CSS-based)
+  - Search and genre filtering
+- Book Reader with:
+  - Dual-page layout
+  - Chapter title pages
+  - Auto-read with auto-page-turn
+  - Playback speed control
+  - Volume control
 
-## Known Issues
-- AI Image/Video generation requires valid OpenAI API key with billing
-- ElevenLabs API key needs `voices_read` permission for live voice list (fallback voices work)
+## Known Working Integrations
+- **Emergent Universal Key**: All AI features (text, image, video)
+- **ElevenLabs**: Text-to-speech (20 voices available)
 
 ## Prioritized Backlog
 
-### P0 (Critical)
+### P0 (Critical) - COMPLETED
 - [x] Core reading experience
 - [x] Core creation experience
 - [x] Authentication
+- [x] AI generation with working key
 
 ### P1 (High Priority)
 - [ ] Payment integration (Stripe) for Pro subscription
-- [ ] 3D animated book library visualization
-- [ ] Page turning animation in reader
-- [ ] AI story continuation/enhancement
+- [x] 3D animated book library visualization
+- [ ] Page turning animation enhancement
+- [ ] AI story generator from idea
 
 ### P2 (Medium Priority)
-- [ ] Template system for quick book creation
-- [ ] Collaborative book editing
-- [ ] Book sharing/embedding
-- [ ] Audio book player controls
-- [ ] Vector logo download
+- [ ] Admin CMS full UI
+- [ ] Book analytics dashboard for creators
+- [ ] Public book view (cover/summary only for non-auth)
+- [ ] Vector logo creation for Azories branding
+- [ ] More narrator voice options
 
 ### P3 (Nice to Have)
+- [ ] Animate still images feature
+- [ ] Comic book multi-layout options
 - [ ] User profiles and following
 - [ ] Book reviews/ratings
-- [ ] Reading statistics
-- [ ] Gamification (badges)
 
 ## Next Action Items
-1. Add payment integration for Pro subscriptions
-2. Implement 3D book visualization in library
-3. Enhance page turning animation in reader
-4. Add AI story continuation feature
-5. Create downloadable vector logo
-6. Improve audiobook player experience
+1. Complete Admin CMS panel UI
+2. Add book analytics display on creator dashboard
+3. Implement Stripe for Pro subscriptions
+4. Create Azories vector logo
+5. Add public book preview mode
