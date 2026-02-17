@@ -1022,8 +1022,8 @@ async def generate_summary(request: SummaryGenerateRequest, current_user: dict =
         if not all_text:
             raise HTTPException(status_code=400, detail="Book has no content to summarize")
         
-        if not openai_client:
-            raise HTTPException(status_code=500, detail="OpenAI not configured")
+        if not EMERGENT_LLM_KEY:
+            raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
         
         summary_prompt = f"""Create an engaging back cover summary for a children's book.
 
@@ -1036,15 +1036,14 @@ Book content:
 
 Write a captivating 2-3 sentence summary that would make children want to read this book. Keep it age-appropriate and exciting!"""
         
-        response = openai_client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "You write engaging book summaries for children's books."},
-                {"role": "user", "content": summary_prompt}
-            ]
-        )
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"summary-gen-{current_user['id']}-{str(uuid.uuid4())[:8]}",
+            system_message="You write engaging book summaries for children's books."
+        ).with_model("openai", "gpt-4o-mini")
         
-        summary = response.choices[0].message.content.strip()
+        summary = await chat.send_message(UserMessage(text=summary_prompt))
+        summary = summary.strip()
         
         # Update book with summary
         await db.books.update_one(
