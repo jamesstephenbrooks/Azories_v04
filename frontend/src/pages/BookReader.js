@@ -394,40 +394,63 @@ export default function BookReader() {
       </div>
       
       {/* Book Display */}
-      <div className="pt-20 pb-48 px-4 flex items-center justify-center min-h-screen">
-        <div className="w-full max-w-5xl book-perspective">
-          <div className="flex shadow-2xl rounded-3xl overflow-hidden">
+      <div 
+        id="book-container"
+        className={`pt-20 pb-48 px-4 flex items-center justify-center min-h-screen transition-all duration-300 ${
+          isFullscreen ? 'bg-black/95 fixed inset-0 z-50 pt-4 pb-4' : ''
+        }`}
+      >
+        <div className={`w-full book-perspective transition-all duration-300 ${
+          isFullscreen ? 'max-w-7xl' : 'max-w-5xl'
+        }`}>
+          <div className={`flex shadow-2xl rounded-3xl overflow-hidden ${
+            isFullscreen ? 'scale-110' : ''
+          }`}>
             {isCover ? (
-              // Front Cover View
-              <>
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="w-1/2 aspect-[3/4] reader-page relative overflow-hidden"
-                >
-                  {book?.cover_image ? (
-                    <img src={book.cover_image} alt="Cover" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-                      <div className="text-center p-6">
-                        <FiBook className="w-16 h-16 mx-auto text-primary/40 mb-4" />
-                        <h2 className="font-heading text-3xl font-bold">{book?.cover_title || book?.title}</h2>
-                        {book?.cover_subtitle && (
-                          <p className="font-body text-lg text-muted-foreground mt-2">{book.cover_subtitle}</p>
-                        )}
-                      </div>
+              // Front Cover View - Single Page with Play Button
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="w-full aspect-[3/4] max-h-[80vh] reader-page relative overflow-hidden cursor-pointer group"
+                onClick={startReading}
+              >
+                {book?.cover_image ? (
+                  <img src={book.cover_image} alt="Cover" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center">
+                    <div className="text-center p-8">
+                      <FiBook className="w-20 h-20 mx-auto text-primary/50 mb-6" />
+                      <h2 className="font-heading text-4xl md:text-5xl font-bold">{book?.cover_title || book?.title}</h2>
+                      {book?.cover_subtitle && (
+                        <p className="font-body text-xl text-muted-foreground mt-3">{book.cover_subtitle}</p>
+                      )}
+                      <p className="font-body text-lg text-muted-foreground/70 mt-6">By {book?.author_name}</p>
                     </div>
-                  )}
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="w-1/2 aspect-[3/4] reader-page p-8 flex flex-col"
-                >
-                  <h3 className="font-heading text-xl font-bold mb-4">About This Book</h3>
-                  <p className="font-reader text-lg leading-relaxed flex-1">
+                  </div>
+                )}
+                
+                {/* Play overlay */}
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <div className="text-center text-white">
+                    <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur flex items-center justify-center mb-4 mx-auto">
+                      <FiPlay className="w-10 h-10 ml-1" />
+                    </div>
+                    <p className="font-heading text-xl">Click to Start Reading</p>
+                  </div>
+                </div>
+                
+                {/* Book info at bottom */}
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
+                  <p className="text-white/90 font-body text-sm line-clamp-2">
                     {book?.back_cover_text || book?.description || 'A magical story awaits...'}
                   </p>
+                  {book?.age_rating && (
+                    <span className="inline-block mt-2 px-3 py-1 rounded-full bg-white/20 text-white text-xs">
+                      {book.age_rating}
+                    </span>
+                  )}
+                </div>
+              </motion.div>
                   <div className="mt-6 pt-6 border-t border-border">
                     <p className="font-ui text-sm text-muted-foreground">By {book?.author_name}</p>
                     {book?.age_rating && (
