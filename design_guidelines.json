@@ -1,0 +1,169 @@
+{
+  "brand_identity": {
+    "name": "Azories",
+    "mission": "Empowering children to become the authors of their own universes.",
+    "persona": "The Magical Futurist",
+    "tone": {
+      "primary": "Wonder & Limitless Possibility",
+      "secondary": "Playful & Safe",
+      "voice": "Encouraging, simple, and slightly magical."
+    }
+  },
+  "typography": {
+    "font_families": {
+      "headings": "Outfit, sans-serif",
+      "body": "Nunito, sans-serif",
+      "reader_text": "Crimson Pro, serif",
+      "ui_labels": "Fredoka, sans-serif"
+    },
+    "import_instruction": "Import fonts from Google Fonts: Outfit (300, 500, 700), Nunito (400, 600, 700), Crimson Pro (400, 600), Fredoka (500).",
+    "usage_rules": {
+      "h1_hero": "font-heading text-5xl md:text-7xl font-bold tracking-tight",
+      "h2_section": "font-heading text-4xl md:text-5xl font-bold tracking-tight text-primary",
+      "h3_card": "font-heading text-2xl font-semibold",
+      "body_text": "font-body text-lg leading-relaxed text-foreground/90",
+      "reader_content": "font-reader text-xl md:text-2xl leading-loose text-gray-900 dark:text-gray-100",
+      "ui_button": "font-ui text-lg font-medium tracking-wide"
+    }
+  },
+  "colors": {
+    "palette": {
+      "light": {
+        "background": "#FDFBF7",
+        "foreground": "#1A1625",
+        "card": "#FFFFFF",
+        "card_foreground": "#1A1625",
+        "primary": "#7C3AED",
+        "primary_foreground": "#FFFFFF",
+        "secondary": "#FF8C42",
+        "secondary_foreground": "#FFFFFF",
+        "accent": "#06D6A0",
+        "accent_foreground": "#000000",
+        "muted": "#F3F0E6",
+        "muted_foreground": "#6B7280",
+        "border": "#E5E7EB"
+      },
+      "dark": {
+        "background": "#0B0A14",
+        "foreground": "#FDFBF7",
+        "card": "#151320",
+        "card_foreground": "#FDFBF7",
+        "primary": "#A78BFA",
+        "primary_foreground": "#000000",
+        "secondary": "#FF8C42",
+        "secondary_foreground": "#FFFFFF",
+        "accent": "#4ADE80",
+        "accent_foreground": "#000000",
+        "muted": "#1F1D2B",
+        "muted_foreground": "#9CA3AF",
+        "border": "#2D2B3B"
+      }
+    },
+    "special_gradients": {
+      "magic_glow": "bg-gradient-to-r from-violet-600 to-indigo-600",
+      "holographic": "bg-gradient-to-tr from-cyan-400 via-blue-500 to-purple-600 opacity-20",
+      "warm_paper": "bg-[#FDFBF7] dark:bg-[#151320]"
+    }
+  },
+  "visual_enhancers": {
+    "radius": {
+      "default": "rounded-2xl",
+      "buttons": "rounded-full",
+      "cards": "rounded-3xl"
+    },
+    "shadows": {
+      "card": "shadow-[0_8px_30px_rgb(0,0,0,0.12)]",
+      "floating": "shadow-[0_20px_50px_rgba(8,_112,_184,_0.7)]",
+      "glow": "drop-shadow-[0_0_15px_rgba(124,58,237,0.5)]"
+    },
+    "glassmorphism": {
+      "nav": "backdrop-blur-xl bg-white/70 dark:bg-black/60 border-b border-white/20",
+      "overlay": "backdrop-blur-md bg-black/40"
+    }
+  },
+  "layout_strategies": {
+    "grid_system": {
+      "library": "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8",
+      "dashboard": "grid grid-cols-12 gap-6"
+    },
+    "spacing": {
+      "section_padding": "py-20 md:py-32",
+      "container_padding": "px-6 md:px-12",
+      "element_gap": "gap-6"
+    }
+  },
+  "components": {
+    "LibraryBook3D": {
+      "description": "A 3D book component that floats and rotates on hover.",
+      "tech": "React Three Fiber (Canvas, Float, Mesh)",
+      "fallback": "CSS 3D Transform (preserve-3d)",
+      "interactions": "Hover: Scale 1.1 + Glow. Click: Open Book Reader."
+    },
+    "BookReader": {
+      "description": "Dual-page view with realistic page turn animations.",
+      "tech": "react-pageflip or framer-motion",
+      "features": ["TTS Audio Player", "Zoom Text", "Night Mode Toggle"],
+      "layout": "Centered book container, max-width 1200px, aspect ratio 3:2"
+    },
+    "CreatorCanvas": {
+      "description": "Split-screen editor. Left: Visuals (AI/Upload). Right: Story Text.",
+      "layout": "Flex-row, h-screen minus header. Resizable pane optional.",
+      "ui_elements": "Floating toolbar for text formatting. Sidebar for page management."
+    }
+  },
+  "motion_guidelines": {
+    "page_turn": "Smooth, 600ms ease-in-out, mimicking paper weight.",
+    "hover_lift": "transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-xl",
+    "entrance": "staggered fade-in-up (delay-100, delay-200...)",
+    "floating": "animate-float (custom keyframe: translate-y moving up/down gently)"
+  },
+  "image_assets": {
+    "hero_background": {
+      "url": "https://images.unsplash.com/photo-1630862326852-f8ff75a514c8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzl8MHwxfHNlYXJjaHwxfHxmdXR1cmlzdGljJTIwZGlnaXRhbCUyMGxpYnJhcnklMjBiYWNrZ3JvdW5kfGVufDB8fHx8MTc3MTM1MTU1MHww&ixlib=rb-4.1.0&q=85",
+      "description": "Futuristic digital library background for hero section"
+    },
+    "magic_book": {
+      "url": "https://images.unsplash.com/photo-1690023835938-b078c130d58f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTF8MHwxfHNlYXJjaHwyfHxtYWdpY2FsJTIwZmxvYXRpbmclMjBib29rcyUyMDNkJTIwYWVzdGhldGljfGVufDB8fHx8MTc3MTM1MTU0OHww&ixlib=rb-4.1.0&q=85",
+      "description": "Glowing magic book for 'Create' call-to-action"
+    },
+    "kids_reading": {
+      "url": "https://images.unsplash.com/photo-1579102072843-e56fe80e89c5?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MTN8MHwxfHNlYXJjaHw0fHxoYXBweSUyMGRpdmVyc2UlMjBjaGlsZHJlbiUyMHJlYWRpbmclMjBkaWdpdGFsJTIwdGFibGV0fGVufDB8fHx8MTc3MTM1MTU1MHww&ixlib=rb-4.1.0&q=85",
+      "description": "Diverse child reading on tablet"
+    },
+    "creator_placeholder": {
+      "url": "https://images.unsplash.com/photo-1628605007510-696cd5731961?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MTN8MHwxfHNlYXJjaHwxfHxoYXBweSUyMGRpdmVyc2UlMjBjaGlsZHJlbiUyMHJlYWRpbmclMjBkaWdpdGFsJTIwdGFibGV0fGVufDB8fHx8MTc3MTM1MTU1MHww&ixlib=rb-4.1.0&q=85",
+      "description": "Child creating content/drawing"
+    }
+  },
+  "instructions_to_main_agent": [
+    "1. Setup: Install 'react-icons', 'framer-motion', 'clsx', 'tailwind-merge'.",
+    "2. Theme: Implement the ThemeProvider immediately using the palette above. Default to 'light' but ensure 'dark' is a 'Magical Night' mode.",
+    "3. Fonts: Add the Google Fonts link to public/index.html immediately.",
+    "4. 3D Library: Create a 'BookCard3D' component. If R3F is too heavy for the MVP step 1, use CSS 'perspective: 1000px' and 'transform: rotateY' for a 2.5D effect.",
+    "5. Accessibility: Ensure all text on top of the 'Hero Background' has a backdrop blur or gradient overlay for readability.",
+    "6. Navigation: Use a floating glass navbar. Do not attach it to the top edge.",
+    "7. Forms: Use shadcn Input/Form but style them with 'rounded-full' and 'border-2' to feel friendly and robust.",
+    "8. Universal Guidelines: Follow the UNIVERSAL GUIDELINES FOR MAIN AGENT section."
+  ],
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "You tend to converge toward generic, 'on distribution' outputs. In frontend design, this creates what users call the 'AI slop' aesthetic. Avoid this: make creative, distinctive frontends that surprise and delight.",
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy",
+    "Use glass-morphism effects with backdrop filters (12-24px blur)",
+    "You MUST NOT apply universal transition. Eg: 'transition: all'. This results in breaking transforms. Always add transitions for specific interactive elements like button, input excluding transforms",
+    "You MUST NOT center align the app container, ie do not add '.App { text-align: center; }' in the css file. This disrupts the human natural reading flow of text",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style",
+    "NEVER: use AI assistant Emoji characters like 🤖🧠💭💡 etc for icons.",
+    "Every interaction needs micro-animations - hover states, transitions, parallax effects, and entrance animations. Static = dead.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Subtle grain textures, noise overlays, custom cursors, selection states, and loading animations: separates good from extraordinary.",
+    "Main agent relies on these image URLs. Missing categories (especially sponsor logos) = main agent will use placeholder text which is FORBIDDEN",
+    "Prioritize using pre-existing components from src/components/ui when applicable",
+    "Create new components that match the style and conventions of existing components when needed",
+    "Examine existing components to understand the project's component patterns before creating new ones",
+    "Components MUST use named exports (export const ComponentName = ...)",
+    "Pages MUST use default exports (export default function PageName() {...})",
+    "Use 'sonner' for toasts. Sonner component are located in '/app/src/components/ui/sonner.tsx'"
+  ]
+}
