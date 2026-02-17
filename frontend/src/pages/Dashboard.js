@@ -218,11 +218,6 @@ export default function Dashboard() {
                 }`}>
                   {isPro ? 'Pro' : 'Free'}
                 </span>
-                {isAdmin && (
-                  <span className="px-3 py-1 rounded-full text-sm font-ui bg-primary/20 text-primary">
-                    Admin
-                  </span>
-                )}
               </div>
               <p className="font-body text-lg text-muted-foreground">
                 Welcome back, {user.name}! {isPro ? 'Create and manage your stories.' : 'Upgrade to Pro to start creating!'}
