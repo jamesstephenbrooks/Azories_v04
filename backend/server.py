@@ -861,6 +861,147 @@ async def get_book_analytics(book_id: str, current_user: dict = Depends(get_curr
         "daily_reads": [{"date": d["_id"], "count": d["count"]} for d in daily_reads]
     }
 
+# ============ SERIES MANAGEMENT ============
+
+@api_router.post("/series")
+async def create_series(series_data: SeriesCreate, current_user: dict = Depends(get_current_user)):
+    """Create a new book series"""
+    if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Pro subscription required")
+    
+    series_id = str(uuid.uuid4())
+    now = datetime.now(timezone.utc).isoformat()
+    series = {
+        "id": series_id,
+        "name": series_data.name,
+        "description": series_data.description or "",
+        "author_id": current_user["id"],
+        "author_name": current_user["name"],
+        "book_count": 0,
+        "created_at": now,
+        "updated_at": now
+    }
+    await db.series.insert_one(series)
+    return {"id": series_id, **series}
+
+@api_router.get("/series")
+async def get_user_series(current_user: dict = Depends(get_current_user)):
+    """Get all series for the current user"""
+    series_list = await db.series.find({"author_id": current_user["id"]}, {"_id": 0}).to_list(100)
+    
+    # Get book counts for each series
+    for series in series_list:
+        book_count = await db.books.count_documents({"series_id": series["id"]})
+        series["book_count"] = book_count
+        
+        # Get books in this series
+        books = await db.books.find(
+            {"series_id": series["id"]}, 
+            {"_id": 0, "id": 1, "title": 1, "cover_image": 1, "series_order": 1}
+        ).sort("series_order", 1).to_list(100)
+        series["books"] = books
+    
+    return series_list
+
+@api_router.get("/series/{series_id}")
+async def get_series(series_id: str, current_user: dict = Depends(get_current_user)):
+    """Get a specific series with its books"""
+    series = await db.series.find_one({"id": series_id}, {"_id": 0})
+    if not series:
+        raise HTTPException(status_code=404, detail="Series not found")
+    
+    if series["author_id"] != current_user["id"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    books = await db.books.find(
+        {"series_id": series_id}, 
+        {"_id": 0}
+    ).sort("series_order", 1).to_list(100)
+    
+    return {**series, "books": books}
+
+@api_router.put("/series/{series_id}")
+async def update_series(series_id: str, series_data: SeriesUpdate, current_user: dict = Depends(get_current_user)):
+    """Update a series"""
+    series = await db.series.find_one({"id": series_id})
+    if not series:
+        raise HTTPException(status_code=404, detail="Series not found")
+    
+    if series["author_id"] != current_user["id"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    update_data = {k: v for k, v in series_data.model_dump().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.series.update_one({"id": series_id}, {"$set": update_data})
+    updated = await db.series.find_one({"id": series_id}, {"_id": 0})
+    return updated
+
+@api_router.delete("/series/{series_id}")
+async def delete_series(series_id: str, current_user: dict = Depends(get_current_user)):
+    """Delete a series (books will be unlinked, not deleted)"""
+    series = await db.series.find_one({"id": series_id})
+    if not series:
+        raise HTTPException(status_code=404, detail="Series not found")
+    
+    if series["author_id"] != current_user["id"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    # Unlink all books from this series
+    await db.books.update_many(
+        {"series_id": series_id},
+        {"$set": {"series_id": None, "series_order": None}}
+    )
+    
+    await db.series.delete_one({"id": series_id})
+    return {"message": "Series deleted"}
+
+@api_router.post("/series/{series_id}/books/{book_id}")
+async def add_book_to_series(series_id: str, book_id: str, order: int = 0, current_user: dict = Depends(get_current_user)):
+    """Add a book to a series"""
+    series = await db.series.find_one({"id": series_id})
+    if not series:
+        raise HTTPException(status_code=404, detail="Series not found")
+    
+    book = await db.books.find_one({"id": book_id})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    if series["author_id"] != current_user["id"] or book["author_id"] != current_user["id"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    # If no order specified, put at the end
+    if order == 0:
+        max_order = await db.books.find_one(
+            {"series_id": series_id},
+            sort=[("series_order", -1)]
+        )
+        order = (max_order.get("series_order", 0) + 1) if max_order else 1
+    
+    await db.books.update_one(
+        {"id": book_id},
+        {"$set": {"series_id": series_id, "series_order": order}}
+    )
+    
+    return {"message": "Book added to series", "order": order}
+
+@api_router.delete("/series/{series_id}/books/{book_id}")
+async def remove_book_from_series(series_id: str, book_id: str, current_user: dict = Depends(get_current_user)):
+    """Remove a book from a series"""
+    book = await db.books.find_one({"id": book_id})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    if book["author_id"] != current_user["id"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    await db.books.update_one(
+        {"id": book_id},
+        {"$set": {"series_id": None, "series_order": None}}
+    )
+    
+    return {"message": "Book removed from series"}
+
 # ============ ADMIN CMS ROUTES (Separate Admin Auth) ============
 
 # Admin-specific authentication
