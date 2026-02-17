@@ -196,7 +196,6 @@ export default function Dashboard() {
   if (!user) return null;
 
   const isPro = subscription === 'pro';
-  const isAdmin = user.role === 'admin';
 
   return (
     <div className="min-h-screen bg-background">
