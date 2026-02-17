@@ -53,7 +53,6 @@ export default function BookEditor() {
   
   // Cover editing
   const [coverDialogOpen, setCoverDialogOpen] = useState(false);
-  const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
   const [coverData, setCoverData] = useState({
     cover_image: '',
     back_cover_image: '',
