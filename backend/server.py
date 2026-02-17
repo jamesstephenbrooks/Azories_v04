@@ -1502,9 +1502,9 @@ async def seed_test_books(admin: dict = Depends(get_admin_user)):
         
         # Create sample pages
         sample_texts = [
-            f"Once upon a time, in a world not so different from ours, an adventure was about to begin...",
-            f"Our hero looked around nervously. Something amazing was about to happen.",
-            f"And that's when everything changed forever. The End."
+            "Once upon a time, in a world not so different from ours, an adventure was about to begin...",
+            "Our hero looked around nervously. Something amazing was about to happen.",
+            "And that's when everything changed forever. The End."
         ]
         
         for i, text in enumerate(sample_texts):
