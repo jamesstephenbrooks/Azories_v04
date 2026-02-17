@@ -821,6 +821,7 @@ export default function BookEditor() {
                               <SelectItem value="illustration">Children's Illustration</SelectItem>
                               <SelectItem value="comic">Comic Book Style</SelectItem>
                               <SelectItem value="realistic">Realistic</SelectItem>
+                              <SelectItem value="scifi">Sci-Fi / Futuristic</SelectItem>
                             </SelectContent>
                           </Select>
                           <div className="flex gap-2">
