@@ -1144,7 +1144,11 @@ async def generate_video(request: VideoGenerateRequest, current_user: dict = Dep
             "animation": "colorful, friendly, magical animation suitable for children",
             "scifi": "futuristic science fiction style with space themes, neon colors, advanced technology, cosmic visuals",
             "realistic": "photorealistic cinematic style with professional lighting",
-            "comic": "animated comic book style with bold colors and dynamic movement"
+            "comic": "animated comic book style with bold colors and dynamic movement",
+            "anime": "Japanese anime animation style with vibrant colors and expressive characters",
+            "fantasy": "magical fantasy style with enchanted worlds and mystical creatures",
+            "pixar": "3D animated Pixar-style with smooth textures and expressive characters",
+            "watercolor": "dreamy watercolor animation with soft blended colors and artistic brush strokes"
         }
         style_desc = style_prompts.get(request.style, style_prompts["animation"])
         
