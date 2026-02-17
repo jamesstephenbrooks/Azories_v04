@@ -4,12 +4,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
 import { 
   FiArrowLeft, FiChevronLeft, FiChevronRight, FiMaximize2, FiMinimize2,
   FiPlay, FiPause, FiVolume2, FiVolumeX, FiSun, FiMoon, FiLock, FiBook,
-  FiAward, FiTrendingUp
+  FiAward, FiTrendingUp, FiMic
 } from 'react-icons/fi';
 import { useTheme } from '@/context/ThemeContext';
 
