@@ -482,10 +482,34 @@ export default function BookReader() {
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={`right-${currentPage}`}
-                    initial={{ opacity: 0, rotateY: flipDirection === 'next' ? -90 : 0 }}
-                    animate={{ opacity: 1, rotateY: 0 }}
-                    exit={{ opacity: 0, rotateY: flipDirection === 'prev' ? 90 : 0 }}
-                    transition={{ duration: 0.4 }}
+                    initial={{ 
+                      opacity: 0, 
+                      rotateY: flipDirection === 'next' ? -90 : 0,
+                      x: flipDirection === 'next' ? -50 : 0,
+                      scale: 0.95
+                    }}
+                    animate={{ 
+                      opacity: 1, 
+                      rotateY: 0,
+                      x: 0,
+                      scale: 1
+                    }}
+                    exit={{ 
+                      opacity: 0, 
+                      rotateY: flipDirection === 'prev' ? 90 : 0,
+                      x: flipDirection === 'prev' ? 50 : 0,
+                      scale: 0.95
+                    }}
+                    transition={{ 
+                      duration: 0.5,
+                      ease: [0.4, 0, 0.2, 1],
+                      delay: 0.05
+                    }}
+                    style={{
+                      transformStyle: 'preserve-3d',
+                      transformOrigin: flipDirection === 'prev' ? 'left center' : 'right center',
+                      boxShadow: '-4px 4px 20px rgba(0,0,0,0.3)'
+                    }}
                     className="w-1/2 aspect-[3/4] reader-page page-shadow p-8 md:p-12 flex flex-col"
                   >
                     {currentPageData?.isChapterTitle ? (
