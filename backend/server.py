@@ -1075,7 +1075,7 @@ async def get_voices():
                     ))
                 if voices:
                     return voices
-            except:
+            except Exception:
                 pass
         
         # Return extended fallback voices
