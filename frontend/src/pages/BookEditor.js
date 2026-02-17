@@ -461,6 +461,15 @@ export default function BookEditor() {
           </div>
           
           <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              className="rounded-full"
+              onClick={downloadBook}
+              data-testid="download-book-btn"
+            >
+              <FiDownload className="mr-2 w-4 h-4" />
+              Download
+            </Button>
             <Dialog open={coverDialogOpen} onOpenChange={setCoverDialogOpen}>
               <DialogTrigger asChild>
                 <Button
