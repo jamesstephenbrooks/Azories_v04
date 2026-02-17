@@ -1334,6 +1334,206 @@ async def get_genres():
 async def get_age_ratings():
     return {"age_ratings": AGE_RATINGS}
 
+# ============ SEED TEST DATA ============
+
+@api_router.post("/admin/seed-test-books")
+async def seed_test_books(admin: dict = Depends(get_admin_user)):
+    """Seed the database with test books for development"""
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Create test author if not exists
+    test_author = await db.users.find_one({"email": "testauthor@azories.com"}, {"_id": 0})
+    if not test_author:
+        author_id = str(uuid.uuid4())
+        test_author = {
+            "id": author_id,
+            "email": "testauthor@azories.com",
+            "password": bcrypt.hashpw("TestAuthor123!".encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),
+            "name": "Azories Team",
+            "role": "user",
+            "subscription": "pro",
+            "created_at": now
+        }
+        await db.users.insert_one(test_author)
+    
+    author_id = test_author["id"]
+    author_name = test_author["name"]
+    
+    # Test books data
+    test_books = [
+        {
+            "title": "The Dragon's Secret",
+            "description": "A young wizard discovers a baby dragon and must protect it from evil hunters.",
+            "genre": "Fantasy",
+            "cover_image": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400",
+            "back_cover_text": "When 10-year-old Maya finds a dragon egg in the forest, her life changes forever. Join her magical adventure!",
+            "age_rating": "7-9 years"
+        },
+        {
+            "title": "Space Explorers: Mission to Mars",
+            "description": "Three kids embark on humanity's first mission to Mars.",
+            "genre": "Science Fiction",
+            "cover_image": "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=400",
+            "back_cover_text": "In 2050, three brave children become the youngest astronauts to travel to Mars. An exciting sci-fi adventure!",
+            "age_rating": "10-12 years"
+        },
+        {
+            "title": "The Mystery of the Missing Cookies",
+            "description": "Detective Dog and Cat solve the biggest mystery in Petville.",
+            "genre": "Mystery",
+            "cover_image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400",
+            "back_cover_text": "Who took the cookies from the cookie jar? Join Detective Dog in this fun mystery!",
+            "age_rating": "All Ages"
+        },
+        {
+            "title": "Friendship Island",
+            "description": "Five friends get stranded on an island and learn about teamwork.",
+            "genre": "Adventure",
+            "cover_image": "https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?w=400",
+            "back_cover_text": "When their boat drifts away, five friends must work together to survive on a mysterious island.",
+            "age_rating": "7-9 years"
+        },
+        {
+            "title": "The Robot Who Wanted Friends",
+            "description": "A lonely robot learns what it means to have friends.",
+            "genre": "Science Fiction",
+            "cover_image": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400",
+            "back_cover_text": "ROBO-7 was built to work, but all he wants is a friend. A heartwarming story about friendship.",
+            "age_rating": "All Ages"
+        },
+        {
+            "title": "Princess and the Enchanted Forest",
+            "description": "Princess Luna discovers a magical forest full of talking animals.",
+            "genre": "Fairy Tales",
+            "cover_image": "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400",
+            "back_cover_text": "Beyond the castle walls lies a forest where animals talk and magic is real. Join Princess Luna's adventure!",
+            "age_rating": "All Ages"
+        },
+        {
+            "title": "The Dinosaur Time Machine",
+            "description": "Two siblings accidentally travel back to the age of dinosaurs.",
+            "genre": "Adventure",
+            "cover_image": "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400",
+            "back_cover_text": "When Sam and Emma fix grandpa's old machine, they didn't expect to meet real dinosaurs!",
+            "age_rating": "7-9 years"
+        },
+        {
+            "title": "Ocean Wonders",
+            "description": "Explore the magical world beneath the waves.",
+            "genre": "Educational",
+            "cover_image": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400",
+            "back_cover_text": "Dive deep into the ocean and discover amazing creatures you never knew existed!",
+            "age_rating": "All Ages"
+        },
+        {
+            "title": "The Superhero School",
+            "description": "A regular kid discovers they have superpowers on their first day at a new school.",
+            "genre": "Superhero",
+            "cover_image": "https://images.unsplash.com/photo-1531259683007-016a7b628fc3?w=400",
+            "back_cover_text": "Jake thought he was ordinary until his first day at Hero Academy revealed his true powers!",
+            "age_rating": "10-12 years"
+        },
+        {
+            "title": "Cooking Adventures with Chef Cat",
+            "description": "Chef Cat teaches kids fun and easy recipes.",
+            "genre": "Educational",
+            "cover_image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400",
+            "back_cover_text": "Learn to make delicious treats with Chef Cat's simple recipes that kids can make!",
+            "age_rating": "All Ages"
+        },
+        {
+            "title": "The Haunted Treehouse",
+            "description": "Three friends investigate strange sounds coming from an old treehouse.",
+            "genre": "Mystery",
+            "cover_image": "https://images.unsplash.com/photo-1520637836993-a071674a76e7?w=400",
+            "back_cover_text": "Is the old treehouse really haunted? Join the Mystery Kids as they find out the truth!",
+            "age_rating": "7-9 years"
+        },
+        {
+            "title": "Galaxy Racers",
+            "description": "Kids from different planets compete in the ultimate space race.",
+            "genre": "Science Fiction",
+            "cover_image": "https://images.unsplash.com/photo-1454789548928-9efd52dc4031?w=400",
+            "back_cover_text": "In the year 3000, the biggest race in the galaxy is about to begin. Who will win?",
+            "age_rating": "10-12 years"
+        }
+    ]
+    
+    created_books = []
+    for book_data in test_books:
+        # Check if book already exists
+        existing = await db.books.find_one({"title": book_data["title"]}, {"_id": 0})
+        if existing:
+            continue
+            
+        book_id = str(uuid.uuid4())
+        book = {
+            "id": book_id,
+            "title": book_data["title"],
+            "description": book_data["description"],
+            "genre": book_data["genre"],
+            "cover_image": book_data["cover_image"],
+            "back_cover_image": "",
+            "cover_title": book_data["title"],
+            "cover_subtitle": "",
+            "back_cover_text": book_data["back_cover_text"],
+            "author_id": author_id,
+            "author_name": author_name,
+            "is_published": True,
+            "is_featured": book_data["genre"] in ["Fantasy", "Science Fiction"],
+            "is_best_of_week": book_data["genre"] == "Adventure",
+            "layout_mode": "standard",
+            "narrator_voice_id": "21m00Tcm4TlvDq8ikWAM",
+            "age_rating": book_data["age_rating"],
+            "view_count": 0,
+            "read_count": 0,
+            "created_at": now,
+            "updated_at": now
+        }
+        await db.books.insert_one(book)
+        
+        # Create a chapter with sample pages
+        chapter_id = str(uuid.uuid4())
+        chapter = {
+            "id": chapter_id,
+            "book_id": book_id,
+            "title": "Chapter 1: The Beginning",
+            "order": 1,
+            "created_at": now
+        }
+        await db.chapters.insert_one(chapter)
+        
+        # Create sample pages
+        sample_texts = [
+            f"Once upon a time, in a world not so different from ours, an adventure was about to begin...",
+            f"Our hero looked around nervously. Something amazing was about to happen.",
+            f"And that's when everything changed forever. The End."
+        ]
+        
+        for i, text in enumerate(sample_texts):
+            page = {
+                "id": str(uuid.uuid4()),
+                "chapter_id": chapter_id,
+                "text_content": text,
+                "image_url": book_data["cover_image"] if i == 0 else "",
+                "image_url_2": "",
+                "image_url_3": "",
+                "image_url_4": "",
+                "video_url": "",
+                "audio_url": "",
+                "order": i + 1,
+                "layout_type": "single",
+                "created_at": now
+            }
+            await db.pages.insert_one(page)
+        
+        created_books.append({"id": book_id, "title": book_data["title"]})
+    
+    return {
+        "message": f"Created {len(created_books)} test books",
+        "books": created_books
+    }
+
 # ============ ROOT ============
 
 @api_router.get("/")
