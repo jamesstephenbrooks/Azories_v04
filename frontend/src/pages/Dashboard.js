@@ -482,6 +482,7 @@ export default function Dashboard() {
                     </div>
                   </DialogContent>
                 </Dialog>
+              </>
               )}
               
               <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
