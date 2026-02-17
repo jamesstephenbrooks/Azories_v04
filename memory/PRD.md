@@ -1,123 +1,110 @@
 # Azories - Digital Book Creation Platform PRD
 
 ## Original Problem Statement
-Create a digital book creating and reading web application called "Azories" (azories.com). This is for children, by children to start with. Features include:
-- Reader side: 3D library with floating books, search, read or listen (audiobook), full-screen book view with page turning animation
-- Creator side: AI-powered creation tool with text/image/video generation, multiple narrator voices
-- Free vs Pro subscription model
-- Comic book mode for multiple images per page
-- Cover editor for front and back covers
-- Admin CMS for content management
-
-## User Personas
-1. **Reader (Free User)**: Children who want to read/listen to stories
-2. **Creator (Pro User)**: Young authors who create their own books with AI tools
-3. **Admin**: Platform owner managing featured books, users, content moderation
+Create a digital book creating and reading web application called "Azories" (azories.com). This is for children, by children to start with.
 
 ## Architecture
 - **Frontend**: React with Tailwind CSS, Framer Motion animations
 - **Backend**: FastAPI with MongoDB
-- **AI Integrations**: Emergent Universal Key for OpenAI GPT Image 1, Sora 2 Video, GPT-4o (text), ElevenLabs TTS
-- **Auth**: JWT-based authentication (separate admin auth)
+- **AI Integrations**: Emergent Universal Key (OpenAI GPT Image 1, Sora 2 Video, GPT-4o)
+- **Auth**: JWT-based + Separate Admin Auth
 
-## What's Been Implemented
+## What's Been Implemented (December 2026)
 
-### December 2026 - Latest Updates
-- **Book Download Feature**: Creators can download their books as JSON files
-- **Sci-Fi Style**: Added to AI image and video generation options
-- **Separate Admin CMS**: Full admin panel at /admin with its own authentication
-- **Test Books Seeded**: 12 sample books across various genres
-- **Improved 3D Bookshelf**: CSS-based with realistic wooden bookcase, drag-to-rotate
-- **Enhanced Page Turning**: More realistic 3D page flip animation
+### Latest Updates
+- **Play Button Fix**: Starts from cover page, continues through all chapters
+- **Single-Page Front Cover**: With hover overlay showing "Click to Start Reading"
+- **Generate All AI Images**: Batch generate images for entire book
+- **Generate Images from Text**: AI creates images based on page content
+- **Auto-Save**: 2-second debounce in book editor (silent save)
+- **Harry Potter Style Library**: Immersive dark library room with:
+  - Auto-rotating camera view
+  - Wooden bookshelves on all sides
+  - Candlelight ambient effects
+  - Ornate pillars and decorations
+  - Book selection with hover effects
+- **Enhanced Fullscreen**: Dark background, scaled-up book view
+- **Sci-Fi Style**: Added for AI image/video generation
 
-### Admin CMS (at /admin)
-- Separate admin login (username: azories_admin, password: AzoriesAdmin2024!)
-- Dashboard with platform statistics
-- Book management (publish, feature, best-of-week, delete)
-- User list with subscription status
-- Platform analytics with top books
+### Admin CMS
+- **URL**: /admin
+- **Credentials**: azories_admin / AzoriesAdmin2024!
+- Features: Dashboard stats, book management, user list, analytics
 
-### Backend (100% Working)
-- JWT Authentication with subscription levels
+### Backend Features
+- JWT Authentication (Free/Pro tiers)
 - Books, Chapters, Pages CRUD
-- Book Download endpoint (/api/books/{id}/download)
-- AI Image Generation with 4 styles (illustration, comic, realistic, sci-fi)
-- AI Video Generation with 4 styles (animation, comic, realistic, sci-fi)
-- AI Story Generation (GPT-4o via Emergent Key)
-- AI Summary Generation (GPT-4o-mini via Emergent Key)
-- TTS with ElevenLabs (20 narrator voices)
-- File upload (image/video)
-- Separate Admin Auth System
-- Admin CMS endpoints (books, users, analytics, toggles)
-- Test data seeding endpoint
+- Book Download (JSON export for creators)
+- AI Image Generation (4 styles: illustration, comic, realistic, sci-fi)
+- AI Video Generation (Sora 2, 4 styles)
+- Batch Image Generation (generate-all-images, generate-images-from-text)
+- AI Story Generation from idea
+- AI Summary Generation
+- Text-to-Speech (ElevenLabs, 20+ voices)
+- File uploads (image/video)
+- Admin CMS with separate auth
+- Test book seeding
 
-### Frontend
-- Landing page with Azories branding
-- Auth page (login/register)
+### Frontend Features
+- Landing page
+- Auth (login/register)
 - Dashboard with subscription management
-- Book Editor with:
-  - Download button for creators
-  - Cover editor (front/back)
-  - Chapter/page management
-  - AI image generation (4 styles including Sci-Fi)
-  - AI video generation (4 styles including Sci-Fi)
-  - Video upload
-  - Comic book mode (2, 3, 4 panels)
+- Book Editor:
+  - Auto-save (2-second debounce)
+  - Download button
+  - AI Images dropdown (batch generation)
+  - Cover editor
+  - Comic book mode
   - Narrator voice selection
-  - AI summary generation
-- Library with tabs (All, Featured, Best of Week)
-  - Grid view with hover effects
-  - 3D Bookshelf view (CSS-based with wooden bookcase)
-  - Search and genre filtering
-- Book Reader with:
-  - Dual-page layout
+- Library:
+  - Grid view
+  - 3D Harry Potter style library (auto-rotate, candlelight)
+  - Search/filter
+- Book Reader:
+  - Single-page front cover with play overlay
+  - Enhanced page turning animation
   - Chapter title pages
-  - Enhanced 3D page turning animation
-  - Auto-read with auto-page-turn
-  - Playback speed control
-  - Volume control
-- Admin CMS (/admin):
-  - Separate admin login
-  - Stats dashboard
-  - Book management table
-  - User list
-  - Analytics view
+  - Auto-read with page turning
+  - Improved fullscreen mode (dark bg, scaled book)
+  - Volume and speed controls
 
 ## Test Credentials
-- **Admin**: username=azories_admin, password=AzoriesAdmin2024!
-- **Test Author**: email=testauthor@azories.com, password=TestAuthor123! (Pro user)
+- **Admin**: azories_admin / AzoriesAdmin2024!
+- **Test Author**: testauthor@azories.com / TestAuthor123! (Pro)
 
 ## Prioritized Backlog
 
 ### P0 (Critical) - COMPLETED
-- [x] Core reading experience
-- [x] Core creation experience  
+- [x] Core reading/creation experience
 - [x] Authentication
-- [x] AI generation with working key
-- [x] Admin CMS with separate auth
+- [x] AI generation
+- [x] Admin CMS
+- [x] 3D Library
+- [x] Auto-save
 
 ### P1 (High Priority)
-- [ ] Payment integration (Stripe) for Pro subscription
-- [x] 3D animated book library visualization
-- [x] Book download for creators
-- [ ] AI story generator from single idea
+- [ ] Stripe payment integration
+- [ ] AI story generator from single idea (full implementation)
 
 ### P2 (Medium Priority)
-- [x] Sci-fi style for AI generation
 - [ ] Book analytics dashboard for creators
-- [ ] Public book view (cover/summary only for non-auth)
-- [ ] Vector logo creation for Azories branding
-- [ ] More narrator voice options
+- [ ] Public book preview (cover only)
+- [ ] Azories vector logo
 
 ### P3 (Nice to Have)
-- [ ] Animate still images feature
-- [ ] Comic book multi-layout options
+- [ ] Animate still images
+- [ ] Comic book advanced layouts
 - [ ] User profiles and following
 - [ ] Book reviews/ratings
 
-## Next Action Items
-1. Implement Stripe for Pro subscriptions
-2. Add book analytics display on creator dashboard
-3. Create AI story generator from single idea
-4. Create Azories vector logo
-5. Add public book preview mode
+## API Endpoints
+- `/api/auth/*` - Authentication
+- `/api/books/*` - Book CRUD
+- `/api/books/{id}/download` - Download book as JSON
+- `/api/ai/generate-image` - Single image generation
+- `/api/ai/generate-video` - Video generation
+- `/api/ai/generate-all-images` - Batch generate images
+- `/api/ai/generate-images-from-text` - Generate from text content
+- `/api/ai/generate-story` - Generate full story
+- `/api/ai/generate-summary` - Generate back cover summary
+- `/api/admin/*` - Admin CMS (separate auth)
