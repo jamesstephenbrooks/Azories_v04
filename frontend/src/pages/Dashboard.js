@@ -13,7 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { toast } from 'sonner';
 import { 
   FiPlus, FiEdit2, FiTrash2, FiBook, FiEye, FiEyeOff, FiZap, FiStar, FiAward, 
-  FiCheck, FiBarChart2, FiLoader, FiLayers, FiLink, FiX
+  FiCheck, FiBarChart2, FiLoader, FiLayers, FiLink, FiX, FiSearch, FiChevronDown, FiChevronUp
 } from 'react-icons/fi';
 import Navbar from '@/components/Navbar';
 
