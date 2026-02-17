@@ -35,7 +35,8 @@ export default function Dashboard() {
   const [subscription, setSubscription] = useState('free');
 
   useEffect(() => {
-    if (!authLoading && !user) {
+    // Wait for auth to finish loading before redirecting
+    if (!authLoading && !user && !localStorage.getItem('azories-token')) {
       navigate('/auth', { state: { from: '/dashboard' } });
     }
   }, [user, authLoading, navigate]);
