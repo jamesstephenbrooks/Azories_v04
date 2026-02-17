@@ -387,7 +387,7 @@ export default function BookEditor() {
       const res = await axios.post(`${API}/ai/generate-video`, {
         prompt: videoPrompt,
         duration: 5,
-        size: '1920x1080',
+        size: '1280x720',  // Valid: 1280x720, 1792x1024, 1024x1792, 1024x1024
         style: videoStyle
       });
       
