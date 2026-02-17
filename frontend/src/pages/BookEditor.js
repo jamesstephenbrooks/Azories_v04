@@ -682,6 +682,38 @@ export default function BookEditor() {
                     />
                   </div>
                 </div>
+                
+                {/* Narrator Voice Selection */}
+                <div className="pt-4 border-t border-border mt-4">
+                  <h3 className="font-ui font-semibold mb-3 flex items-center gap-2">
+                    <FiMic className="w-4 h-4" />
+                    Narrator Voice
+                  </h3>
+                  <Select 
+                    value={coverData.narrator_voice_id} 
+                    onValueChange={(v) => setCoverData({ ...coverData, narrator_voice_id: v })}
+                  >
+                    <SelectTrigger className="rounded-full border-2" data-testid="narrator-voice-select">
+                      <SelectValue placeholder="Select a narrator voice" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-60">
+                      {voices.map((voice) => (
+                        <SelectItem key={voice.voice_id} value={voice.voice_id}>
+                          <div className="flex items-center gap-2">
+                            <span>{voice.name}</span>
+                            <span className="text-xs text-muted-foreground">
+                              ({voice.category} • {voice.accent})
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    This voice will be used when readers listen to your book
+                  </p>
+                </div>
+                
                 <Button onClick={saveCover} className="w-full rounded-full mt-4">
                   <FiSave className="mr-2" />
                   Save Cover
