@@ -1,31 +1,35 @@
-import { useRef, useState, Suspense, useEffect } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import * as THREE from 'three';
+import { useState, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FiBook, FiUser, FiHeadphones } from 'react-icons/fi';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
-// Single book on the shelf
-function Book({ book, position, index, onSelect, isSelected }) {
-  const meshRef = useRef();
-  const [hovered, setHovered] = useState(false);
+// CSS-based 3D Bookshelf
+export default function Bookshelf3D({ books, onSelectBook, selectedBook }) {
+  const navigate = useNavigate();
+  const [hoveredBook, setHoveredBook] = useState(null);
+  const [rotationY, setRotationY] = useState(0);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
   
-  // Book dimensions (slightly vary by index for realism)
-  const width = 0.15 + (index % 3) * 0.02;
-  const height = 1.0 + (index % 4) * 0.1;
-  const depth = 0.8;
+  const handleMouseDown = (e) => {
+    isDragging.current = true;
+    startX.current = e.clientX;
+  };
   
-  // Animation state
-  const targetZ = isSelected ? position[2] + 1.5 : hovered ? position[2] + 0.3 : position[2];
-  const targetRotY = isSelected ? Math.PI / 6 : 0;
+  const handleMouseMove = (e) => {
+    if (!isDragging.current) return;
+    const deltaX = e.clientX - startX.current;
+    setRotationY(prev => prev + deltaX * 0.2);
+    startX.current = e.clientX;
+  };
   
-  useFrame(() => {
-    if (meshRef.current) {
-      // Smooth animation
-      meshRef.current.position.z = THREE.MathUtils.lerp(meshRef.current.position.z, targetZ, 0.1);
-      meshRef.current.rotation.y = THREE.MathUtils.lerp(meshRef.current.rotation.y, targetRotY, 0.1);
-    }
-  });
+  const handleMouseUp = () => {
+    isDragging.current = false;
+  };
 
   // Generate color based on genre
-  const getBookColor = () => {
+  const getBookColor = (genre) => {
     const colors = {
       'Adventure': '#e74c3c',
       'Fantasy': '#9b59b6',
@@ -40,254 +44,247 @@ function Book({ book, position, index, onSelect, isSelected }) {
       'Nature': '#4caf50',
       'default': '#8b4513'
     };
-    return colors[book.genre] || colors.default;
+    return colors[genre] || colors.default;
   };
 
-  return (
-    <group position={position} ref={meshRef}>
-      {/* Book spine (what you see on shelf) */}
-      <mesh
-        onPointerOver={(e) => { e.stopPropagation(); setHovered(true); document.body.style.cursor = 'pointer'; }}
-        onPointerOut={() => { setHovered(false); document.body.style.cursor = 'default'; }}
-        onClick={(e) => { e.stopPropagation(); onSelect(book); }}
-        castShadow
-      >
-        <boxGeometry args={[width, height, depth]} />
-        <meshStandardMaterial 
-          color={getBookColor()} 
-          roughness={0.8}
-          metalness={0.1}
-        />
-      </mesh>
-      
-      {/* Gold text decoration on spine - top */}
-      <mesh position={[width / 2 + 0.001, height / 2 - 0.1, 0]}>
-        <planeGeometry args={[0.05, 0.02]} />
-        <meshStandardMaterial color="#ffd700" metalness={0.8} roughness={0.2} />
-      </mesh>
-      
-      {/* Gold text decoration on spine - bottom */}
-      <mesh position={[width / 2 + 0.001, -height / 2 + 0.1, 0]}>
-        <planeGeometry args={[0.05, 0.02]} />
-        <meshStandardMaterial color="#ffd700" metalness={0.8} roughness={0.2} />
-      </mesh>
-      
-      {/* Highlight when selected/hovered */}
-      {(isSelected || hovered) && (
-        <mesh>
-          <boxGeometry args={[width + 0.02, height + 0.02, depth + 0.02]} />
-          <meshBasicMaterial color="#ffffff" transparent opacity={0.1} />
-        </mesh>
-      )}
-    </group>
-  );
-}
-
-// Bookshelf structure
-function Shelf({ yPosition }) {
-  return (
-    <group position={[0, yPosition, 0]}>
-      {/* Main shelf board */}
-      <mesh receiveShadow position={[0, -0.6, 0]}>
-        <boxGeometry args={[8, 0.1, 1]} />
-        <meshStandardMaterial color="#5d4037" roughness={0.9} />
-      </mesh>
-      
-      {/* Shelf lip (front edge) */}
-      <mesh position={[0, -0.55, 0.45]}>
-        <boxGeometry args={[8.1, 0.15, 0.1]} />
-        <meshStandardMaterial color="#4e342e" roughness={0.9} />
-      </mesh>
-    </group>
-  );
-}
-
-// Full bookcase
-function Bookcase({ books, onSelectBook, selectedBook }) {
-  const booksPerShelf = 12;
+  // Arrange books on shelves
+  const booksPerShelf = 8;
   const shelves = 3;
-  const shelfSpacing = 1.4;
+  const shelfBooks = [];
   
-  return (
-    <group>
-      {/* Bookcase frame - Left */}
-      <mesh position={[-4.1, 0.5, 0]}>
-        <boxGeometry args={[0.2, 4.5, 1.1]} />
-        <meshStandardMaterial color="#3e2723" roughness={0.9} />
-      </mesh>
-      
-      {/* Bookcase frame - Right */}
-      <mesh position={[4.1, 0.5, 0]}>
-        <boxGeometry args={[0.2, 4.5, 1.1]} />
-        <meshStandardMaterial color="#3e2723" roughness={0.9} />
-      </mesh>
-      
-      {/* Bookcase frame - Top */}
-      <mesh position={[0, 2.8, 0]}>
-        <boxGeometry args={[8.4, 0.15, 1.1]} />
-        <meshStandardMaterial color="#3e2723" roughness={0.9} />
-      </mesh>
-      
-      {/* Bookcase frame - Back */}
-      <mesh position={[0, 0.5, -0.5]}>
-        <boxGeometry args={[8, 4.5, 0.05]} />
-        <meshStandardMaterial color="#1a1a2e" roughness={1} />
-      </mesh>
-      
-      {/* Decorative top trim */}
-      <mesh position={[0, 2.95, 0.1]}>
-        <boxGeometry args={[8.6, 0.1, 0.3]} />
-        <meshStandardMaterial color="#4e342e" roughness={0.8} />
-      </mesh>
-      
-      {/* Shelves */}
-      {[...Array(shelves)].map((_, i) => (
-        <Shelf key={i} yPosition={i * shelfSpacing} />
-      ))}
-      
-      {/* Books on shelves */}
-      {books.map((book, index) => {
-        const shelfIndex = Math.floor(index / booksPerShelf);
-        const positionInShelf = index % booksPerShelf;
-        
-        if (shelfIndex >= shelves) return null;
-        
-        const xPos = -3.5 + positionInShelf * 0.6;
-        const yPos = shelfIndex * shelfSpacing;
-        const zPos = 0;
-        
-        return (
-          <Book
-            key={book.id}
-            book={book}
-            position={[xPos, yPos, zPos]}
-            index={index}
-            onSelect={onSelectBook}
-            isSelected={selectedBook?.id === book.id}
-          />
-        );
-      })}
-    </group>
-  );
-}
+  for (let i = 0; i < shelves; i++) {
+    shelfBooks.push(books.slice(i * booksPerShelf, (i + 1) * booksPerShelf));
+  }
 
-// Simple camera controller without OrbitControls
-function CameraController({ selectedBook }) {
-  const { camera, gl } = useThree();
-  const targetPos = useRef(new THREE.Vector3(0, 1, 8));
-  const isDragging = useRef(false);
-  const previousMousePosition = useRef({ x: 0, y: 0 });
-  const cameraRotation = useRef({ x: 0, y: 0 });
-  
-  useEffect(() => {
-    targetPos.current = selectedBook ? new THREE.Vector3(0, 1, 6) : new THREE.Vector3(0, 1, 8);
-  }, [selectedBook]);
-  
-  useEffect(() => {
-    const canvas = gl.domElement;
-    
-    const handleMouseDown = (e) => {
-      isDragging.current = true;
-      previousMousePosition.current = { x: e.clientX, y: e.clientY };
-    };
-    
-    const handleMouseUp = () => {
-      isDragging.current = false;
-    };
-    
-    const handleMouseMove = (e) => {
-      if (!isDragging.current) return;
-      
-      const deltaX = e.clientX - previousMousePosition.current.x;
-      const deltaY = e.clientY - previousMousePosition.current.y;
-      
-      cameraRotation.current.y += deltaX * 0.005;
-      cameraRotation.current.x = Math.max(-0.5, Math.min(0.5, cameraRotation.current.x + deltaY * 0.005));
-      
-      previousMousePosition.current = { x: e.clientX, y: e.clientY };
-    };
-    
-    const handleWheel = (e) => {
-      const zoomSpeed = 0.5;
-      targetPos.current.z = Math.max(4, Math.min(12, targetPos.current.z + e.deltaY * 0.01 * zoomSpeed));
-    };
-    
-    canvas.addEventListener('mousedown', handleMouseDown);
-    canvas.addEventListener('mouseup', handleMouseUp);
-    canvas.addEventListener('mouseleave', handleMouseUp);
-    canvas.addEventListener('mousemove', handleMouseMove);
-    canvas.addEventListener('wheel', handleWheel);
-    
-    return () => {
-      canvas.removeEventListener('mousedown', handleMouseDown);
-      canvas.removeEventListener('mouseup', handleMouseUp);
-      canvas.removeEventListener('mouseleave', handleMouseUp);
-      canvas.removeEventListener('mousemove', handleMouseMove);
-      canvas.removeEventListener('wheel', handleWheel);
-    };
-  }, [gl]);
-  
-  useFrame(() => {
-    // Smooth camera movement
-    const basePos = targetPos.current.clone();
-    const radius = basePos.z;
-    
-    camera.position.x = Math.sin(cameraRotation.current.y) * radius;
-    camera.position.y = THREE.MathUtils.lerp(camera.position.y, basePos.y + cameraRotation.current.x * 2, 0.1);
-    camera.position.z = Math.cos(cameraRotation.current.y) * radius;
-    
-    camera.lookAt(0, 0.5, 0);
-  });
-  
-  return null;
-}
-
-// Main component
-export default function Bookshelf3D({ books, onSelectBook, selectedBook }) {
   return (
-    <div className="w-full h-[600px] rounded-3xl overflow-hidden bg-gradient-to-b from-[#0a0a1a] to-[#1a1a3e]">
-      <Canvas
-        shadows
-        camera={{ position: [0, 1, 8], fov: 50 }}
-        gl={{ antialias: true }}
+    <div className="w-full">
+      {/* 3D Bookshelf Scene */}
+      <div 
+        className="w-full h-[500px] rounded-3xl overflow-hidden bg-gradient-to-b from-[#0a0a1a] to-[#1a1a3e] cursor-grab active:cursor-grabbing"
+        style={{ perspective: '1500px' }}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
       >
-        <Suspense fallback={null}>
-          {/* Ambient light */}
-          <ambientLight intensity={0.3} />
-          
-          {/* Warm overhead light */}
-          <spotLight
-            position={[0, 5, 3]}
-            angle={0.5}
-            penumbra={1}
-            intensity={1}
-            color="#fff5e6"
-            castShadow
-            shadow-mapSize-width={1024}
-            shadow-mapSize-height={1024}
-          />
-          
-          {/* Side lights for depth */}
-          <pointLight position={[-5, 2, 2]} intensity={0.3} color="#ffe0b2" />
-          <pointLight position={[5, 2, 2]} intensity={0.3} color="#ffe0b2" />
-          
-          {/* Bookcase */}
-          <Bookcase 
-            books={books.slice(0, 36)} // Max 36 books (3 shelves x 12)
-            onSelectBook={onSelectBook}
-            selectedBook={selectedBook}
-          />
-          
-          {/* Floor */}
-          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.1, 0]} receiveShadow>
-            <planeGeometry args={[20, 20]} />
-            <meshStandardMaterial color="#1a1a2e" roughness={0.8} />
-          </mesh>
-          
-          {/* Camera controls */}
-          <CameraController selectedBook={selectedBook} />
-        </Suspense>
-      </Canvas>
+        <div 
+          className="w-full h-full flex items-center justify-center"
+          style={{
+            transformStyle: 'preserve-3d',
+            transform: `rotateX(5deg) rotateY(${rotationY}deg)`,
+            transition: isDragging.current ? 'none' : 'transform 0.3s ease-out'
+          }}
+        >
+          {/* Bookcase Container */}
+          <div 
+            className="relative"
+            style={{
+              width: '700px',
+              height: '400px',
+              transformStyle: 'preserve-3d'
+            }}
+          >
+            {/* Bookcase back */}
+            <div 
+              className="absolute inset-0 bg-gradient-to-b from-[#1a1a2e] to-[#0d0d1a] rounded-lg"
+              style={{ transform: 'translateZ(-40px)' }}
+            />
+            
+            {/* Left side */}
+            <div 
+              className="absolute left-0 top-0 bottom-0 w-4 bg-[#3e2723]"
+              style={{ 
+                transform: 'rotateY(90deg) translateZ(-2px)',
+                transformOrigin: 'left'
+              }}
+            />
+            
+            {/* Right side */}
+            <div 
+              className="absolute right-0 top-0 bottom-0 w-4 bg-[#3e2723]"
+              style={{ 
+                transform: 'rotateY(-90deg) translateZ(-2px)',
+                transformOrigin: 'right'
+              }}
+            />
+            
+            {/* Top */}
+            <div className="absolute top-0 left-0 right-0 h-3 bg-[#4e342e] rounded-t-lg" />
+            
+            {/* Shelves with books */}
+            {shelfBooks.map((shelf, shelfIndex) => (
+              <div 
+                key={shelfIndex}
+                className="absolute left-4 right-4"
+                style={{ 
+                  top: `${30 + shelfIndex * 120}px`,
+                  transformStyle: 'preserve-3d'
+                }}
+              >
+                {/* Shelf board */}
+                <div 
+                  className="absolute left-0 right-0 h-3 bg-[#5d4037] rounded"
+                  style={{ 
+                    transform: 'translateZ(20px)',
+                    boxShadow: '0 4px 8px rgba(0,0,0,0.3)'
+                  }}
+                />
+                
+                {/* Shelf front lip */}
+                <div 
+                  className="absolute left-0 right-0 h-4 bg-[#4e342e]"
+                  style={{ 
+                    top: '-1px',
+                    transform: 'translateZ(35px)',
+                    borderRadius: '2px'
+                  }}
+                />
+                
+                {/* Books on this shelf */}
+                <div 
+                  className="absolute flex items-end gap-1 px-2"
+                  style={{ 
+                    bottom: '5px',
+                    transform: 'translateZ(20px)',
+                    transformStyle: 'preserve-3d'
+                  }}
+                >
+                  {shelf.map((book, bookIndex) => {
+                    const isHovered = hoveredBook === book.id;
+                    const isSelected = selectedBook?.id === book.id;
+                    const bookHeight = 80 + (bookIndex % 3) * 10;
+                    const bookWidth = 20 + (bookIndex % 4) * 3;
+                    
+                    return (
+                      <motion.div
+                        key={book.id}
+                        className="relative cursor-pointer"
+                        style={{
+                          width: `${bookWidth}px`,
+                          height: `${bookHeight}px`,
+                          transformStyle: 'preserve-3d',
+                          transformOrigin: 'bottom center'
+                        }}
+                        animate={{
+                          translateZ: isSelected ? 60 : isHovered ? 30 : 0,
+                          rotateY: isSelected ? 15 : 0,
+                          scale: isHovered ? 1.05 : 1
+                        }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                        onMouseEnter={() => setHoveredBook(book.id)}
+                        onMouseLeave={() => setHoveredBook(null)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onSelectBook(book);
+                        }}
+                      >
+                        {/* Book spine */}
+                        <div 
+                          className="absolute inset-0 rounded-sm shadow-lg flex items-center justify-center overflow-hidden"
+                          style={{ 
+                            backgroundColor: getBookColor(book.genre),
+                            boxShadow: isHovered ? '0 0 20px rgba(255,255,255,0.3)' : '2px 2px 8px rgba(0,0,0,0.4)'
+                          }}
+                        >
+                          {/* Gold decorations */}
+                          <div className="absolute top-2 left-1/2 -translate-x-1/2 w-3 h-0.5 bg-yellow-400 rounded" />
+                          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-3 h-0.5 bg-yellow-400 rounded" />
+                          
+                          {/* Title (vertical) */}
+                          <span 
+                            className="text-white text-[8px] font-bold whitespace-nowrap overflow-hidden text-ellipsis"
+                            style={{ 
+                              writingMode: 'vertical-rl',
+                              textOrientation: 'mixed',
+                              maxHeight: `${bookHeight - 20}px`
+                            }}
+                          >
+                            {book.title.length > 15 ? book.title.substring(0, 13) + '...' : book.title}
+                          </span>
+                        </div>
+                        
+                        {/* Book side (depth) */}
+                        <div 
+                          className="absolute top-0 right-0 h-full w-3"
+                          style={{
+                            backgroundColor: '#2a2a2a',
+                            transform: 'rotateY(90deg) translateZ(0)',
+                            transformOrigin: 'right'
+                          }}
+                        />
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      
+      {/* Selected book details */}
+      <AnimatePresence>
+        {selectedBook && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="mt-6 bg-card rounded-3xl p-6 border border-border"
+          >
+            <div className="flex gap-6">
+              <div className="w-32 h-48 rounded-xl overflow-hidden flex-shrink-0 shadow-lg">
+                {selectedBook.cover_image ? (
+                  <img src={selectedBook.cover_image} alt={selectedBook.title} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                    <FiBook className="w-8 h-8 text-primary/40" />
+                  </div>
+                )}
+              </div>
+              <div className="flex-1">
+                <h3 className="font-heading text-2xl font-bold mb-2">{selectedBook.title}</h3>
+                <p className="font-body text-muted-foreground mb-4 line-clamp-2">
+                  {selectedBook.description || 'A magical story awaits...'}
+                </p>
+                <div className="flex items-center gap-4 mb-4">
+                  <span className="font-ui text-sm text-muted-foreground flex items-center gap-1">
+                    <FiUser className="w-4 h-4" /> {selectedBook.author_name}
+                  </span>
+                  <span className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary font-ui">
+                    {selectedBook.genre}
+                  </span>
+                </div>
+                <div className="flex gap-3">
+                  <Button 
+                    onClick={() => navigate(`/read/${selectedBook.id}`)}
+                    className="rounded-full"
+                  >
+                    <FiBook className="mr-2" /> Read Now
+                  </Button>
+                  <Button 
+                    variant="secondary"
+                    onClick={() => navigate(`/read/${selectedBook.id}?audio=true`)}
+                    className="rounded-full"
+                  >
+                    <FiHeadphones className="mr-2" /> Listen
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => onSelectBook(null)}
+                    className="rounded-full"
+                  >
+                    Close
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
+      <p className="text-center text-sm text-muted-foreground font-body mt-4">
+        Drag to rotate the bookshelf • Click on a book to select it
+      </p>
     </div>
   );
 }
