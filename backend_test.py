@@ -338,6 +338,8 @@ class AzoriesAPITester:
         if success:
             self.log(f"   ✓ Featured status toggled")
         return success
+
+    def test_tts_generation(self):
         """Test TTS audio generation"""
         # Get voices first to use a valid voice ID
         voices_success, voices_response = self.run_test(
