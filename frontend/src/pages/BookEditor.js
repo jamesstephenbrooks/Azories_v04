@@ -978,8 +978,14 @@ export default function BookEditor() {
                             <SelectContent>
                               <SelectItem value="illustration">Children's Illustration</SelectItem>
                               <SelectItem value="comic">Comic Book Style</SelectItem>
-                              <SelectItem value="realistic">Realistic</SelectItem>
+                              <SelectItem value="realistic">Realistic/Photographic</SelectItem>
                               <SelectItem value="scifi">Sci-Fi / Futuristic</SelectItem>
+                              <SelectItem value="sketch">Pencil Sketch</SelectItem>
+                              <SelectItem value="watercolor">Watercolor Painting</SelectItem>
+                              <SelectItem value="anime">Anime / Manga Style</SelectItem>
+                              <SelectItem value="fantasy">Fantasy Art</SelectItem>
+                              <SelectItem value="pixar">3D Pixar Style</SelectItem>
+                              <SelectItem value="storybook">Classic Storybook</SelectItem>
                             </SelectContent>
                           </Select>
                           <div className="flex gap-2">
