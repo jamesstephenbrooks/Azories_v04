@@ -902,36 +902,131 @@ export default function Dashboard() {
               ) : (
                 <div className="space-y-3">
                   {series.map((s) => (
-                    <div key={s.id} className="p-4 rounded-xl bg-card border border-border">
-                      <div className="flex items-start justify-between">
+                    <div key={s.id} className="rounded-xl bg-card border border-border overflow-hidden">
+                      {/* Series Header - Always visible */}
+                      <div 
+                        className="p-4 flex items-center justify-between cursor-pointer hover:bg-muted/30 transition-colors"
+                        onClick={() => setExpandedSeries(expandedSeries === s.id ? null : s.id)}
+                      >
                         <div className="flex-1">
-                          <h4 className="font-heading font-semibold">{s.name}</h4>
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-heading font-semibold">{s.name}</h4>
+                            <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs">
+                              {s.book_count || 0} book{s.book_count !== 1 ? 's' : ''}
+                            </span>
+                          </div>
                           {s.description && (
-                            <p className="text-sm text-muted-foreground mt-1">{s.description}</p>
-                          )}
-                          <p className="text-xs text-muted-foreground mt-2">
-                            {s.book_count || 0} book{s.book_count !== 1 ? 's' : ''}
-                          </p>
-                          {/* Books in series */}
-                          {s.books?.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mt-3">
-                              {s.books.map((book, idx) => (
-                                <span key={book.id} className="px-2 py-1 rounded-full bg-muted text-xs">
-                                  #{book.series_order || idx + 1} {book.title}
-                                </span>
-                              ))}
-                            </div>
+                            <p className="text-sm text-muted-foreground mt-1 line-clamp-1">{s.description}</p>
                           )}
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="rounded-full text-destructive hover:bg-destructive hover:text-destructive-foreground"
-                          onClick={() => deleteSeries(s.id)}
-                        >
-                          <FiTrash2 className="w-4 h-4" />
-                        </Button>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="rounded-full"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setExpandedSeries(expandedSeries === s.id ? null : s.id);
+                            }}
+                          >
+                            {expandedSeries === s.id ? (
+                              <FiChevronUp className="w-4 h-4" />
+                            ) : (
+                              <FiChevronDown className="w-4 h-4" />
+                            )}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="rounded-full text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteSeries(s.id);
+                            }}
+                          >
+                            <FiTrash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </div>
+                      
+                      {/* Expanded Series Content - Books List */}
+                      {expandedSeries === s.id && (
+                        <div className="px-4 pb-4 border-t border-border pt-3 space-y-3">
+                          {/* Books in this series */}
+                          {s.books?.length > 0 ? (
+                            <div className="space-y-2">
+                              <Label className="text-xs text-muted-foreground">Books in this series:</Label>
+                              {s.books.map((book, idx) => (
+                                <div 
+                                  key={book.id} 
+                                  className="flex items-center gap-3 p-2 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
+                                >
+                                  <span className="w-6 h-6 rounded-full bg-primary/20 text-primary text-xs flex items-center justify-center font-semibold">
+                                    {book.series_order || idx + 1}
+                                  </span>
+                                  {book.cover_image ? (
+                                    <img src={book.cover_image} alt="" className="w-8 h-10 object-cover rounded" />
+                                  ) : (
+                                    <div className="w-8 h-10 bg-muted rounded flex items-center justify-center">
+                                      <FiBook className="w-4 h-4 text-muted-foreground" />
+                                    </div>
+                                  )}
+                                  <span className="flex-1 font-ui text-sm truncate">{book.title}</span>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-7 px-2 text-xs rounded-full"
+                                    onClick={() => navigate(`/editor/${book.id}`)}
+                                  >
+                                    Edit
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-7 w-7 rounded-full text-muted-foreground hover:text-destructive"
+                                    onClick={() => removeBookFromSeries({ id: book.id, series_id: s.id })}
+                                  >
+                                    <FiX className="w-3 h-3" />
+                                  </Button>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-sm text-muted-foreground text-center py-2">
+                              No books in this series yet
+                            </p>
+                          )}
+                          
+                          {/* Add Book to Series */}
+                          <div className="pt-2 border-t border-border">
+                            <Label className="text-xs text-muted-foreground mb-2 block">Add a book to this series:</Label>
+                            {booksNotInSeries(s.id).length > 0 ? (
+                              <Select 
+                                onValueChange={(bookId) => {
+                                  setSelectedBookForSeries({ id: bookId });
+                                  addBookToSeries(s.id);
+                                  setSelectedBookForSeries(null);
+                                }}
+                              >
+                                <SelectTrigger className="rounded-full">
+                                  <SelectValue placeholder="Select a book to add..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {booksNotInSeries(s.id).map((book) => (
+                                    <SelectItem key={book.id} value={book.id}>
+                                      {book.title}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              <p className="text-xs text-muted-foreground text-center py-2">
+                                All your books are already in a series
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
