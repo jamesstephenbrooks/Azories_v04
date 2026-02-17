@@ -11,25 +11,39 @@ Create a digital book creating and reading web application called "Azories" (azo
 
 ## What's Been Implemented (February 2026)
 
-### Latest Updates (Feb 17, 2026)
-- **Summary Preview Popup**: Info icon on book cards in Library - hover to reveal, click to open summary popup with book description, author, genre, and Start Reading/Listen buttons
-- **Admin CMS Button Removed**: Removed from Dashboard/My Books page - Admin CMS still accessible at /admin
-- **Video Generation Fix**: Fixed invalid size parameter (1920x1080 → 1280x720)
+### Latest Updates (Feb 17, 2026) - Session 2
+- **Book Series Management**: Create and manage book series in My Books
+  - Manage Series button in header
+  - Create series with name and description
+  - Expandable series view showing books with order numbers and thumbnails
+  - Add books to series from within expanded series view
+  - Remove books from series
+  - Series badge displays on book cards
+- **My Books Search Bar**: Filter books by title, description, or genre
+- **Enhanced Book Reader**:
+  - Auto-Read ON by default
+  - Narrator voice dropdown in bottom controls (22+ voices)
+  - Larger book display in fullscreen mode (95vw × 85vh)
+  - Exit fullscreen button always visible
+  - Auto-advances through chapter title pages (2.5s)
+- **AI Story Creator Enhanced**:
+  - Visual Media options (Images, Videos, Cinemagraphs, None)
+  - 10 image styles (Illustration, Comic, Realistic, Sci-Fi, Sketch, Watercolor, Anime, Fantasy, Pixar, Storybook)
+  - 8 video styles for Sora AI
+
+### Session 1 Updates (Feb 17, 2026)
+- **Summary Preview Popup**: Info icon on book cards in Library
+- **Admin CMS Button Removed**: From Dashboard (still at /admin)
+- **Video Generation Fix**: Size parameter fixed
 
 ### Previous Updates
-- **Play Button Fix**: Starts from cover page, continues through all chapters
-- **Single-Page Front Cover**: With hover overlay showing "Click to Start Reading"
-- **Generate All AI Images**: Batch generate images for entire book
-- **Generate Images from Text**: AI creates images based on page content
-- **Auto-Save**: 2-second debounce in book editor (silent save)
-- **Harry Potter Style Library**: Immersive dark library room with:
-  - Auto-rotating camera view
-  - Wooden bookshelves on all sides
-  - Candlelight ambient effects
-  - Ornate pillars and decorations
-  - Book selection with hover effects
-- **Enhanced Fullscreen**: Dark background, scaled-up book view
-- **Sci-Fi Style**: Added for AI image/video generation
+- Play Button Fix: Continues through all chapters
+- Single-Page Front Cover with hover overlay
+- Generate All AI Images: Batch generation
+- Auto-Save: 2-second debounce
+- Harry Potter Style Library (3D immersive)
+- Enhanced Fullscreen mode
+- Multiple AI styles (Sci-Fi, etc.)
 
 ### Admin CMS
 - **URL**: /admin
@@ -39,21 +53,23 @@ Create a digital book creating and reading web application called "Azories" (azo
 ### Backend Features
 - JWT Authentication (Free/Pro tiers)
 - Books, Chapters, Pages CRUD
-- Book Download (JSON export for creators)
-- AI Image Generation (4 styles: illustration, comic, realistic, sci-fi)
-- AI Video Generation (Sora 2, 4 styles) - Valid sizes: 1280x720, 1792x1024, 1024x1792, 1024x1024
-- Batch Image Generation (generate-all-images, generate-images-from-text)
-- AI Story Generation from idea
+- **Book Series CRUD** (create, list, add/remove books)
+- Book Download (JSON export)
+- AI Image Generation (10 styles)
+- AI Video Generation (8 styles) - Valid sizes: 1280x720, 1792x1024, 1024x1792, 1024x1024
+- Batch Image Generation
+- AI Story Generation with media options
 - AI Summary Generation
-- Text-to-Speech (ElevenLabs, 20+ voices)
+- Text-to-Speech (ElevenLabs, 22+ voices)
 - File uploads (image/video)
 - Admin CMS with separate auth
-- Test book seeding
 
 ### Frontend Features
 - Landing page
 - Auth (login/register)
 - Dashboard with subscription management
+- **My Books with Search Bar**
+- **Series Management Dialog** (expandable view)
 - Book Editor:
   - Auto-save (2-second debounce)
   - Download button
