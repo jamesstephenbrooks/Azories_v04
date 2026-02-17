@@ -41,7 +41,10 @@ export default function Auth() {
         await register(formData.email, formData.password, formData.name);
         toast.success('Account created successfully!');
       }
-      navigate(from);
+      // Small delay to ensure state is updated before navigation
+      setTimeout(() => {
+        navigate(from, { replace: true });
+      }, 100);
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Something went wrong');
     } finally {
