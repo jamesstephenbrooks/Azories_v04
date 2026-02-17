@@ -32,6 +32,7 @@ export default function Dashboard() {
   const [isAIStoryOpen, setIsAIStoryOpen] = useState(false);
   const [analyticsDialog, setAnalyticsDialog] = useState(null);
   const [analyticsData, setAnalyticsData] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');  // Search for books
   const [newBook, setNewBook] = useState({
     title: '',
     description: '',
@@ -57,6 +58,8 @@ export default function Dashboard() {
   const [isSeriesOpen, setIsSeriesOpen] = useState(false);
   const [isAddToSeriesOpen, setIsAddToSeriesOpen] = useState(false);
   const [selectedBookForSeries, setSelectedBookForSeries] = useState(null);
+  const [selectedSeriesForAdding, setSelectedSeriesForAdding] = useState(null);  // For adding book from series view
+  const [expandedSeries, setExpandedSeries] = useState(null);  // To view books in a series
   const [newSeries, setNewSeries] = useState({ name: '', description: '' });
   const [creatingSeries, setCreatingSeries] = useState(false);
 
