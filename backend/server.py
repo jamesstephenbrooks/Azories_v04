@@ -558,8 +558,8 @@ async def delete_book(book_id: str, current_user: dict = Depends(get_current_use
     return {"message": "Book deleted"}
 
 @api_router.get("/books/{book_id}/download")
-async def download_book(book_id: str, current_user: dict = Depends(get_current_user)):
-    """Download a book as JSON file (for the creator only)"""
+async def download_book_pdf(book_id: str, current_user: dict = Depends(get_current_user)):
+    """Download a book as interactive PDF (for the creator only)"""
     book = await db.books.find_one({"id": book_id}, {"_id": 0})
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
@@ -572,41 +572,228 @@ async def download_book(book_id: str, current_user: dict = Depends(get_current_u
         pages = await db.pages.find({"chapter_id": chapter["id"]}, {"_id": 0}).sort("order", 1).to_list(100)
         chapter["pages"] = pages
     
-    # Create download package
-    book_data = {
-        "metadata": {
-            "title": book["title"],
-            "description": book["description"],
-            "genre": book["genre"],
-            "author_name": book["author_name"],
-            "age_rating": book.get("age_rating", "All Ages"),
-            "narrator_voice_id": book.get("narrator_voice_id", ""),
-            "created_at": book["created_at"],
-            "updated_at": book["updated_at"],
-            "exported_at": datetime.now(timezone.utc).isoformat()
-        },
-        "cover": {
-            "front_image": book["cover_image"],
-            "back_image": book["back_cover_image"],
-            "title": book["cover_title"],
-            "subtitle": book["cover_subtitle"],
-            "back_text": book["back_cover_text"]
-        },
-        "chapters": chapters,
-        "settings": {
-            "layout_mode": book["layout_mode"]
-        }
-    }
+    # Create PDF
+    pdf_buffer = io.BytesIO()
+    c = canvas.Canvas(pdf_buffer, pagesize=A4)
+    width, height = A4
     
-    # Return as downloadable JSON
-    json_content = json.dumps(book_data, indent=2, ensure_ascii=False)
-    filename = f"{book['title'].replace(' ', '_')}_azories_book.json"
+    # Cover Page
+    c.setFont("Helvetica-Bold", 36)
+    c.drawCentredString(width / 2, height - 200, book.get("cover_title", book["title"]))
+    
+    if book.get("cover_subtitle"):
+        c.setFont("Helvetica", 18)
+        c.drawCentredString(width / 2, height - 240, book["cover_subtitle"])
+    
+    c.setFont("Helvetica-Oblique", 14)
+    c.drawCentredString(width / 2, height - 300, f"By {book['author_name']}")
+    
+    # Try to add cover image
+    if book.get("cover_image") and book["cover_image"].startswith("data:image"):
+        try:
+            img_data = book["cover_image"].split(",")[1]
+            img_bytes = base64.b64decode(img_data)
+            img = PILImage.open(io.BytesIO(img_bytes))
+            img_buffer = io.BytesIO()
+            img.save(img_buffer, format='PNG')
+            img_buffer.seek(0)
+            c.drawImage(ImageReader(img_buffer), 150, height - 600, width=300, height=250, preserveAspectRatio=True)
+        except Exception:
+            pass
+    
+    c.setFont("Helvetica", 10)
+    c.drawCentredString(width / 2, 50, f"Created with Azories - {book.get('age_rating', 'All Ages')}")
+    c.showPage()
+    
+    # Back cover with description
+    if book.get("back_cover_text"):
+        c.setFont("Helvetica-Bold", 24)
+        c.drawCentredString(width / 2, height - 100, "About This Book")
+        c.setFont("Helvetica", 12)
+        
+        # Word wrap the description
+        description = book["back_cover_text"]
+        lines = []
+        words = description.split()
+        current_line = ""
+        for word in words:
+            test_line = current_line + " " + word if current_line else word
+            if len(test_line) < 70:
+                current_line = test_line
+            else:
+                lines.append(current_line)
+                current_line = word
+        if current_line:
+            lines.append(current_line)
+        
+        y_pos = height - 150
+        for line in lines:
+            c.drawCentredString(width / 2, y_pos, line)
+            y_pos -= 20
+        c.showPage()
+    
+    # Content pages
+    page_num = 1
+    for chapter in chapters:
+        # Chapter title page
+        c.setFont("Helvetica-Bold", 28)
+        c.drawCentredString(width / 2, height / 2 + 50, chapter["title"])
+        c.setFont("Helvetica", 14)
+        c.drawCentredString(width / 2, height / 2, f"Chapter {chapter['order']}")
+        c.showPage()
+        
+        for page in chapter["pages"]:
+            # Add page image if exists
+            if page.get("image_url") and page["image_url"].startswith("data:image"):
+                try:
+                    img_data = page["image_url"].split(",")[1]
+                    img_bytes = base64.b64decode(img_data)
+                    img = PILImage.open(io.BytesIO(img_bytes))
+                    img_buffer = io.BytesIO()
+                    img.save(img_buffer, format='PNG')
+                    img_buffer.seek(0)
+                    c.drawImage(ImageReader(img_buffer), 50, height - 400, width=500, height=350, preserveAspectRatio=True)
+                except Exception:
+                    pass
+            
+            # Add text content
+            if page.get("text_content"):
+                c.setFont("Helvetica", 12)
+                lines = []
+                words = page["text_content"].split()
+                current_line = ""
+                for word in words:
+                    test_line = current_line + " " + word if current_line else word
+                    if len(test_line) < 80:
+                        current_line = test_line
+                    else:
+                        lines.append(current_line)
+                        current_line = word
+                if current_line:
+                    lines.append(current_line)
+                
+                y_pos = 350 if page.get("image_url") else height - 100
+                for line in lines:
+                    c.drawString(50, y_pos, line)
+                    y_pos -= 18
+                    if y_pos < 80:
+                        break
+            
+            # Page number
+            c.setFont("Helvetica", 10)
+            c.drawCentredString(width / 2, 30, f"Page {page_num}")
+            page_num += 1
+            c.showPage()
+    
+    # End page
+    c.setFont("Helvetica-Bold", 24)
+    c.drawCentredString(width / 2, height / 2, "The End")
+    c.setFont("Helvetica", 12)
+    c.drawCentredString(width / 2, height / 2 - 40, f"Thank you for reading {book['title']}")
+    c.drawCentredString(width / 2, height / 2 - 60, "Created with Azories")
+    c.showPage()
+    
+    c.save()
+    pdf_buffer.seek(0)
+    
+    filename = f"{book['title'].replace(' ', '_')}_azories_book.pdf"
     
     return StreamingResponse(
-        io.BytesIO(json_content.encode('utf-8')),
-        media_type="application/json",
+        pdf_buffer,
+        media_type="application/pdf",
         headers={"Content-Disposition": f"attachment; filename={filename}"}
     )
+
+# ============ READING PROGRESS ============
+
+class ReadingProgressUpdate(BaseModel):
+    book_id: str
+    current_page: int
+    total_pages: int
+    chapter_id: Optional[str] = None
+
+@api_router.post("/reading-progress")
+async def update_reading_progress(progress: ReadingProgressUpdate, current_user: dict = Depends(get_current_user)):
+    """Update user's reading progress for a book"""
+    progress_data = {
+        "user_id": current_user["id"],
+        "book_id": progress.book_id,
+        "current_page": progress.current_page,
+        "total_pages": progress.total_pages,
+        "progress_percent": round((progress.current_page / max(progress.total_pages, 1)) * 100, 1),
+        "chapter_id": progress.chapter_id,
+        "last_read": datetime.now(timezone.utc).isoformat(),
+        "completed": progress.current_page >= progress.total_pages - 1
+    }
+    
+    await db.reading_progress.update_one(
+        {"user_id": current_user["id"], "book_id": progress.book_id},
+        {"$set": progress_data},
+        upsert=True
+    )
+    
+    # Update reading streak
+    today = datetime.now(timezone.utc).date().isoformat()
+    await db.reading_streaks.update_one(
+        {"user_id": current_user["id"]},
+        {
+            "$addToSet": {"reading_days": today},
+            "$set": {"last_read_date": today}
+        },
+        upsert=True
+    )
+    
+    return {"message": "Progress saved", "progress_percent": progress_data["progress_percent"]}
+
+@api_router.get("/reading-progress/{book_id}")
+async def get_reading_progress(book_id: str, current_user: dict = Depends(get_current_user)):
+    """Get user's reading progress for a book"""
+    progress = await db.reading_progress.find_one(
+        {"user_id": current_user["id"], "book_id": book_id},
+        {"_id": 0}
+    )
+    return progress or {"current_page": 0, "progress_percent": 0, "completed": False}
+
+@api_router.get("/reading-stats")
+async def get_reading_stats(current_user: dict = Depends(get_current_user)):
+    """Get user's overall reading statistics"""
+    # Get all reading progress
+    all_progress = await db.reading_progress.find(
+        {"user_id": current_user["id"]},
+        {"_id": 0}
+    ).to_list(100)
+    
+    # Get reading streak
+    streak_data = await db.reading_streaks.find_one(
+        {"user_id": current_user["id"]},
+        {"_id": 0}
+    )
+    
+    # Calculate current streak
+    current_streak = 0
+    if streak_data and streak_data.get("reading_days"):
+        from datetime import date
+        today = date.today()
+        sorted_days = sorted(streak_data["reading_days"], reverse=True)
+        for i, day_str in enumerate(sorted_days):
+            day = date.fromisoformat(day_str)
+            expected_day = today - timedelta(days=i)
+            if day == expected_day:
+                current_streak += 1
+            else:
+                break
+    
+    completed_books = sum(1 for p in all_progress if p.get("completed"))
+    in_progress_books = sum(1 for p in all_progress if not p.get("completed") and p.get("current_page", 0) > 0)
+    
+    return {
+        "total_books_started": len(all_progress),
+        "completed_books": completed_books,
+        "in_progress_books": in_progress_books,
+        "current_streak": current_streak,
+        "total_reading_days": len(streak_data.get("reading_days", [])) if streak_data else 0,
+        "recent_books": all_progress[:5]
+    }
 
 # ============ ANALYTICS ============
 
