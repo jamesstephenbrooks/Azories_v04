@@ -244,7 +244,7 @@ export default function Library() {
             </TabsList>
             
             <TabsContent value="all">
-              {/* Search and Filters */}
+              {/* Search, Filters, and View Toggle */}
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
                 <div className="relative flex-1 max-w-md">
                   <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -273,10 +273,112 @@ export default function Library() {
                     ))}
                   </SelectContent>
                 </Select>
+                
+                {/* View Mode Toggle */}
+                <div className="flex gap-2 bg-muted/50 p-1 rounded-full">
+                  <Button
+                    variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                    size="icon"
+                    onClick={() => setViewMode('grid')}
+                    className="rounded-full w-10 h-10"
+                    data-testid="view-grid-btn"
+                  >
+                    <FiGrid className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant={viewMode === '3d' ? 'default' : 'ghost'}
+                    size="icon"
+                    onClick={() => setViewMode('3d')}
+                    className="rounded-full w-10 h-10"
+                    data-testid="view-3d-btn"
+                  >
+                    <FiBox className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
               
-              {/* Books Grid */}
-              {loading ? (
+              {/* 3D Bookshelf View */}
+              {viewMode === '3d' ? (
+                <div className="space-y-6">
+                  <Suspense fallback={
+                    <div className="w-full h-[600px] rounded-3xl bg-muted/30 flex items-center justify-center">
+                      <div className="text-center space-y-4">
+                        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+                        <p className="font-body text-muted-foreground">Loading 3D Library...</p>
+                      </div>
+                    </div>
+                  }>
+                    <Bookshelf3D 
+                      books={books}
+                      onSelectBook={(book) => setSelectedBook(book)}
+                      selectedBook={selectedBook}
+                    />
+                  </Suspense>
+                  
+                  {/* Selected book details */}
+                  {selectedBook && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="bg-card rounded-3xl p-6 border border-border"
+                    >
+                      <div className="flex gap-6">
+                        <div className="w-32 h-48 rounded-xl overflow-hidden flex-shrink-0">
+                          {selectedBook.cover_image ? (
+                            <img src={selectedBook.cover_image} alt={selectedBook.title} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                              <FiBook className="w-8 h-8 text-primary/40" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-heading text-2xl font-bold mb-2">{selectedBook.title}</h3>
+                          <p className="font-body text-muted-foreground mb-4">
+                            {selectedBook.description || 'A magical story awaits...'}
+                          </p>
+                          <div className="flex items-center gap-4 mb-4">
+                            <span className="font-ui text-sm text-muted-foreground flex items-center gap-1">
+                              <FiUser className="w-4 h-4" /> {selectedBook.author_name}
+                            </span>
+                            <span className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary font-ui">
+                              {selectedBook.genre}
+                            </span>
+                          </div>
+                          <div className="flex gap-3">
+                            <Button 
+                              onClick={() => navigate(`/read/${selectedBook.id}`)}
+                              className="rounded-full"
+                            >
+                              <FiBook className="mr-2" /> Read Now
+                            </Button>
+                            <Button 
+                              variant="secondary"
+                              onClick={() => navigate(`/read/${selectedBook.id}?audio=true`)}
+                              className="rounded-full"
+                            >
+                              <FiHeadphones className="mr-2" /> Listen
+                            </Button>
+                            <Button
+                              variant="outline"
+                              onClick={() => setSelectedBook(null)}
+                              className="rounded-full"
+                            >
+                              Close
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                  
+                  <p className="text-center text-sm text-muted-foreground font-body">
+                    Click on a book spine to select it, use mouse to rotate the view
+                  </p>
+                </div>
+              ) : (
+              /* Books Grid */
+              loading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                   {[...Array(8)].map((_, i) => (
                     <div key={i} className="rounded-3xl overflow-hidden">
