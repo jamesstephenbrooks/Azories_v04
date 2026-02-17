@@ -451,16 +451,6 @@ export default function BookReader() {
                   )}
                 </div>
               </motion.div>
-                  <div className="mt-6 pt-6 border-t border-border">
-                    <p className="font-ui text-sm text-muted-foreground">By {book?.author_name}</p>
-                    {book?.age_rating && (
-                      <span className="inline-block mt-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs">
-                        {book.age_rating}
-                      </span>
-                    )}
-                  </div>
-                </motion.div>
-              </>
             ) : (
               // Regular page view or Chapter Title page
               <>
