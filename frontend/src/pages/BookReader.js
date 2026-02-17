@@ -121,12 +121,17 @@ export default function BookReader() {
     }, 500);
   }, [allPages.length, isFlipping, audioElement]);
 
-  const nextPage = () => goToPage(currentPage + 1, 'next');
-  const prevPage = () => goToPage(currentPage - 1, 'prev');
+  const nextPage = useCallback(() => goToPage(currentPage + 1, 'next'), [currentPage, goToPage]);
+  const prevPage = useCallback(() => goToPage(currentPage - 1, 'prev'), [currentPage, goToPage]);
 
   const toggleFullscreen = () => {
+    const bookContainer = document.getElementById('book-container');
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
+      if (bookContainer) {
+        bookContainer.requestFullscreen();
+      } else {
+        document.documentElement.requestFullscreen();
+      }
       setIsFullscreen(true);
     } else {
       document.exitFullscreen();
@@ -134,9 +139,37 @@ export default function BookReader() {
     }
   };
 
+  // Start reading from the beginning
+  const startReading = useCallback(() => {
+    // Go to first content page (after cover)
+    if (currentPage === -1) {
+      setFlipDirection('next');
+      setIsFlipping(true);
+      setTimeout(() => {
+        setCurrentPage(0);
+        setIsFlipping(false);
+        setAutoRead(true);
+      }, 500);
+    } else {
+      setAutoRead(true);
+    }
+  }, [currentPage]);
+
   const playAudio = async () => {
-    // Skip chapter title pages and pages without content
-    if (!narratorVoice || currentPage < 0 || !allPages[currentPage]?.text_content || allPages[currentPage]?.isChapterTitle) {
+    // Skip chapter title pages - auto advance
+    if (allPages[currentPage]?.isChapterTitle) {
+      if (autoRead && currentPage < allPages.length - 1) {
+        setTimeout(() => nextPage(), 1500);
+      }
+      return;
+    }
+    
+    // Skip pages without content
+    if (!narratorVoice || currentPage < 0 || !allPages[currentPage]?.text_content) {
+      // If auto-read, advance to next page
+      if (autoRead && currentPage < allPages.length - 1) {
+        setTimeout(() => nextPage(), 500);
+      }
       return;
     }
 
