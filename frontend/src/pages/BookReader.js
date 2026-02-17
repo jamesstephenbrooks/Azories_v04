@@ -135,7 +135,8 @@ export default function BookReader() {
   };
 
   const playAudio = async () => {
-    if (!narratorVoice || currentPage < 0 || !allPages[currentPage]?.text_content) {
+    // Skip chapter title pages and pages without content
+    if (!narratorVoice || currentPage < 0 || !allPages[currentPage]?.text_content || allPages[currentPage]?.isChapterTitle) {
       return;
     }
 
