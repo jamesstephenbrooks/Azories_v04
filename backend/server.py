@@ -551,6 +551,57 @@ async def delete_book(book_id: str, current_user: dict = Depends(get_current_use
     
     return {"message": "Book deleted"}
 
+@api_router.get("/books/{book_id}/download")
+async def download_book(book_id: str, current_user: dict = Depends(get_current_user)):
+    """Download a book as JSON file (for the creator only)"""
+    book = await db.books.find_one({"id": book_id}, {"_id": 0})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    if book["author_id"] != current_user["id"] and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Only the book creator can download")
+    
+    # Get all chapters and pages
+    chapters = await db.chapters.find({"book_id": book_id}, {"_id": 0}).sort("order", 1).to_list(100)
+    for chapter in chapters:
+        pages = await db.pages.find({"chapter_id": chapter["id"]}, {"_id": 0}).sort("order", 1).to_list(100)
+        chapter["pages"] = pages
+    
+    # Create download package
+    book_data = {
+        "metadata": {
+            "title": book["title"],
+            "description": book["description"],
+            "genre": book["genre"],
+            "author_name": book["author_name"],
+            "age_rating": book.get("age_rating", "All Ages"),
+            "narrator_voice_id": book.get("narrator_voice_id", ""),
+            "created_at": book["created_at"],
+            "updated_at": book["updated_at"],
+            "exported_at": datetime.now(timezone.utc).isoformat()
+        },
+        "cover": {
+            "front_image": book["cover_image"],
+            "back_image": book["back_cover_image"],
+            "title": book["cover_title"],
+            "subtitle": book["cover_subtitle"],
+            "back_text": book["back_cover_text"]
+        },
+        "chapters": chapters,
+        "settings": {
+            "layout_mode": book["layout_mode"]
+        }
+    }
+    
+    # Return as downloadable JSON
+    json_content = json.dumps(book_data, indent=2, ensure_ascii=False)
+    filename = f"{book['title'].replace(' ', '_')}_azories_book.json"
+    
+    return StreamingResponse(
+        io.BytesIO(json_content.encode('utf-8')),
+        media_type="application/json",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
 # ============ ANALYTICS ============
 
 @api_router.post("/books/{book_id}/track-read")
