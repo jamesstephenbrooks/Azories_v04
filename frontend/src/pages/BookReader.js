@@ -71,11 +71,20 @@ export default function BookReader() {
         setRequiresAuth(true);
         setAllPages([]);
       } else {
-        // Flatten pages
+        // Flatten pages with chapter title pages inserted at the start of each chapter
         const pages = [];
-        res.data.chapters?.forEach(chapter => {
+        res.data.chapters?.forEach((chapter, chapterIndex) => {
+          // Add a chapter title page at the start of each chapter
+          pages.push({
+            id: `chapter-title-${chapter.id}`,
+            isChapterTitle: true,
+            chapterTitle: chapter.title,
+            chapterNumber: chapterIndex + 1,
+            totalChapters: res.data.chapters.length
+          });
+          
           chapter.pages?.forEach(page => {
-            pages.push({ ...page, chapterTitle: chapter.title });
+            pages.push({ ...page, chapterTitle: chapter.title, chapterNumber: chapterIndex + 1 });
           });
         });
         setAllPages(pages);
