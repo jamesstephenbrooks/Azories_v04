@@ -43,6 +43,7 @@ export default function BookEditor() {
   const [generatingVideo, setGeneratingVideo] = useState(false);
   const [generatingSummary, setGeneratingSummary] = useState(false);
   const [imageStyle, setImageStyle] = useState('illustration');
+  const [videoStyle, setVideoStyle] = useState('animation');
   
   // Voices
   const [voices, setVoices] = useState([]);
