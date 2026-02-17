@@ -252,14 +252,14 @@ export default function Dashboard() {
                       AI Story Creator
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-md">
+                  <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                       <DialogTitle className="font-heading text-2xl flex items-center gap-2">
                         <FiZap className="text-accent" />
                         AI Story Creator
                       </DialogTitle>
                       <DialogDescription>
-                        Describe your story idea and AI will create the entire book with text and image prompts!
+                        Describe your story idea and AI will create the entire book with text and visuals!
                       </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-5 pt-4">
@@ -310,6 +310,74 @@ export default function Dashboard() {
                           </SelectContent>
                         </Select>
                       </div>
+                      
+                      {/* Visual Media Options */}
+                      <div className="space-y-3 pt-2 border-t border-border">
+                        <Label className="font-ui font-semibold">Visual Media for Pages</Label>
+                        <Select value={aiStory.media_type} onValueChange={(v) => setAIStory({ ...aiStory, media_type: v })}>
+                          <SelectTrigger className="rounded-full border-2">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="images">🖼️ Generate Images</SelectItem>
+                            <SelectItem value="videos">🎬 Generate Videos (Sora AI)</SelectItem>
+                            <SelectItem value="cinemagraphs">✨ Cinemagraphs (Animated Images)</SelectItem>
+                            <SelectItem value="none">📝 Text Only (No Visuals)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <p className="text-xs text-muted-foreground">
+                          {aiStory.media_type === 'videos' && '⏱️ Video generation takes 2-5 minutes per page'}
+                          {aiStory.media_type === 'cinemagraphs' && '⏱️ Cinemagraphs are animated images with subtle motion'}
+                          {aiStory.media_type === 'images' && 'AI will generate an illustration for each page'}
+                          {aiStory.media_type === 'none' && 'Story will be text-only, you can add visuals later in the editor'}
+                        </p>
+                      </div>
+                      
+                      {/* Image Style Selection (show only if generating images/cinemagraphs) */}
+                      {(aiStory.media_type === 'images' || aiStory.media_type === 'cinemagraphs') && (
+                        <div className="space-y-2">
+                          <Label className="font-ui">Visual Style</Label>
+                          <Select value={aiStory.image_style} onValueChange={(v) => setAIStory({ ...aiStory, image_style: v })}>
+                            <SelectTrigger className="rounded-full border-2">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="illustration">🎨 Children's Illustration</SelectItem>
+                              <SelectItem value="comic">💥 Comic Book Style</SelectItem>
+                              <SelectItem value="realistic">📷 Realistic/Photographic</SelectItem>
+                              <SelectItem value="scifi">🚀 Sci-Fi / Futuristic</SelectItem>
+                              <SelectItem value="sketch">✏️ Pencil Sketch</SelectItem>
+                              <SelectItem value="watercolor">🎨 Watercolor Painting</SelectItem>
+                              <SelectItem value="anime">🌸 Anime / Manga Style</SelectItem>
+                              <SelectItem value="fantasy">🏰 Fantasy Art</SelectItem>
+                              <SelectItem value="pixar">🎬 3D Pixar Style</SelectItem>
+                              <SelectItem value="storybook">📖 Classic Storybook</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                      
+                      {/* Video Style Selection (show only if generating videos) */}
+                      {aiStory.media_type === 'videos' && (
+                        <div className="space-y-2">
+                          <Label className="font-ui">Video Style</Label>
+                          <Select value={aiStory.image_style} onValueChange={(v) => setAIStory({ ...aiStory, image_style: v })}>
+                            <SelectTrigger className="rounded-full border-2">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="animation">🎬 Children's Animation</SelectItem>
+                              <SelectItem value="comic">💥 Comic Book Animation</SelectItem>
+                              <SelectItem value="realistic">📷 Realistic/Cinematic</SelectItem>
+                              <SelectItem value="scifi">🚀 Sci-Fi / Futuristic</SelectItem>
+                              <SelectItem value="anime">🌸 Anime Style</SelectItem>
+                              <SelectItem value="fantasy">🏰 Fantasy/Magical</SelectItem>
+                              <SelectItem value="pixar">🎬 3D Pixar Style</SelectItem>
+                              <SelectItem value="watercolor">🎨 Watercolor Animation</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
                       
                       <Button 
                         onClick={generateAIStory}
