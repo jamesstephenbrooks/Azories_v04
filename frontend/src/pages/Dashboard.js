@@ -805,6 +805,22 @@ export default function Dashboard() {
                 </motion.div>
               ))}
             </div>
+          ) : searchQuery ? (
+            // No results from search
+            <div className="text-center py-20">
+              <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-4">
+                <div className="w-20 h-20 mx-auto rounded-full bg-muted/50 flex items-center justify-center">
+                  <FiSearch className="w-10 h-10 text-muted-foreground" />
+                </div>
+                <h3 className="font-heading text-2xl">No books found</h3>
+                <p className="font-body text-muted-foreground max-w-md mx-auto">
+                  No books match "{searchQuery}". Try a different search term.
+                </p>
+                <Button variant="outline" className="rounded-full" onClick={() => setSearchQuery('')}>
+                  Clear Search
+                </Button>
+              </motion.div>
+            </div>
           ) : (
             <div className="text-center py-20">
               <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-4">
