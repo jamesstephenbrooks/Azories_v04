@@ -814,7 +814,8 @@ async def generate_image(request: ImageGenerateRequest, current_user: dict = Dep
         style_prompts = {
             "illustration": "Children's book illustration style, colorful, friendly, magical, whimsical, suitable for children",
             "comic": "Comic book panel style, bold lines, dynamic, colorful, speech bubble friendly, manga-inspired",
-            "realistic": "Photorealistic style, detailed, cinematic lighting, professional photography"
+            "realistic": "Photorealistic style, detailed, cinematic lighting, professional photography",
+            "scifi": "Science fiction style, futuristic, space themes, neon colors, advanced technology, cosmic landscapes, sleek spacecraft, alien worlds, holographic elements"
         }
         style_desc = style_prompts.get(request.style, style_prompts["illustration"])
         full_prompt = f"{request.prompt}. Style: {style_desc}"
@@ -841,9 +842,17 @@ async def generate_video(request: VideoGenerateRequest, current_user: dict = Dep
         if not EMERGENT_LLM_KEY:
             raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
         
+        style_prompts = {
+            "animation": "colorful, friendly, magical animation suitable for children",
+            "scifi": "futuristic science fiction style with space themes, neon colors, advanced technology, cosmic visuals",
+            "realistic": "photorealistic cinematic style with professional lighting",
+            "comic": "animated comic book style with bold colors and dynamic movement"
+        }
+        style_desc = style_prompts.get(request.style, style_prompts["animation"])
+        
         video_gen = OpenAIVideoGeneration(api_key=EMERGENT_LLM_KEY)
         video_bytes = video_gen.text_to_video(
-            prompt=f"Children's animated scene: {request.prompt}. Style: colorful, friendly, magical animation.",
+            prompt=f"{request.prompt}. Style: {style_desc}",
             model="sora-2",
             size=request.size,
             duration=request.duration,
