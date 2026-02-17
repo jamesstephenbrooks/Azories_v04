@@ -38,12 +38,8 @@ try:
 except Exception as e:
     logging.warning(f"ElevenLabs client initialization failed: {e}")
 
-# OpenAI client for text generation
-openai_client = None
-try:
-    openai_client = openai.OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
-except Exception as e:
-    logging.warning(f"OpenAI client initialization failed: {e}")
+# Emergent LLM Key for AI features
+EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY')
 
 # JWT settings
 JWT_SECRET = os.environ.get('JWT_SECRET', 'default_secret_key')
