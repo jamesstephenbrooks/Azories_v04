@@ -866,10 +866,10 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
         raise HTTPException(status_code=403, detail="Pro subscription required")
     
     try:
-        if not openai_client:
-            raise HTTPException(status_code=500, detail="OpenAI not configured")
+        if not EMERGENT_LLM_KEY:
+            raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
         
-        # Generate story structure
+        # Generate story structure using Emergent LLM Chat
         story_prompt = f"""Create a children's story based on this idea: "{request.idea}"
         
         Genre: {request.genre}
@@ -891,18 +891,35 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
         }}
         
         Make it engaging, age-appropriate for {request.age_rating}, and ensure NO inappropriate content, violence, or bad language.
-        """
+        Return ONLY the JSON object, no other text."""
         
-        response = openai_client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": "You are a children's book author. Create engaging, safe, age-appropriate stories."},
-                {"role": "user", "content": story_prompt}
-            ],
-            response_format={"type": "json_object"}
-        )
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"story-gen-{current_user['id']}-{str(uuid.uuid4())[:8]}",
+            system_message="You are a children's book author. Create engaging, safe, age-appropriate stories. Always respond with valid JSON only."
+        ).with_model("openai", "gpt-4o")
         
-        story_data = json.loads(response.choices[0].message.content)
+        response = await chat.send_message(UserMessage(text=story_prompt))
+        
+        # Parse JSON from response
+        try:
+            # Try to extract JSON from the response
+            response_text = response.strip()
+            if response_text.startswith("```json"):
+                response_text = response_text[7:]
+            if response_text.startswith("```"):
+                response_text = response_text[3:]
+            if response_text.endswith("```"):
+                response_text = response_text[:-3]
+            story_data = json.loads(response_text.strip())
+        except json.JSONDecodeError:
+            # Try to find JSON in the response
+            import re
+            json_match = re.search(r'\{[\s\S]*\}', response)
+            if json_match:
+                story_data = json.loads(json_match.group())
+            else:
+                raise HTTPException(status_code=500, detail="Failed to parse story data")
         
         # Create the book
         book_id = str(uuid.uuid4())
