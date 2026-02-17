@@ -691,91 +691,15 @@ export default function BookEditor() {
               </DialogContent>
             </Dialog>
             
-            {/* Preview Dialog with Narrator Voice Selection */}
-            <Dialog open={previewDialogOpen} onOpenChange={setPreviewDialogOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="rounded-full"
-                  data-testid="preview-book"
-                >
-                  <FiBook className="mr-2 w-4 h-4" />
-                  Preview
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                  <DialogTitle className="font-heading text-xl flex items-center gap-2">
-                    <FiBook className="text-primary" />
-                    Preview Settings
-                  </DialogTitle>
-                </DialogHeader>
-                <div className="space-y-5 pt-4">
-                  {/* Book Cover Preview */}
-                  <div className="relative aspect-[3/4] max-h-48 mx-auto rounded-xl overflow-hidden bg-muted">
-                    {book?.cover_image ? (
-                      <img src={book.cover_image} alt={book?.title} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <FiBook className="w-12 h-12 text-muted-foreground" />
-                      </div>
-                    )}
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
-                      <p className="text-white font-heading font-bold text-sm">{book?.title}</p>
-                    </div>
-                  </div>
-                  
-                  {/* Narrator Voice Selection */}
-                  <div className="space-y-3 pt-2 border-t border-border">
-                    <Label className="font-ui font-semibold flex items-center gap-2">
-                      <FiMic className="w-4 h-4" />
-                      Narrator Voice
-                    </Label>
-                    <Select 
-                      value={coverData.narrator_voice_id || '21m00Tcm4TlvDq8ikWAM'} 
-                      onValueChange={(v) => {
-                        setCoverData({ ...coverData, narrator_voice_id: v });
-                        // Auto-save the voice selection
-                        axios.put(`${API}/books/${bookId}`, { narrator_voice_id: v })
-                          .then(() => toast.success('Narrator voice saved'))
-                          .catch(() => toast.error('Failed to save voice'));
-                      }}
-                    >
-                      <SelectTrigger className="rounded-full border-2" data-testid="narrator-voice-select">
-                        <SelectValue placeholder="Select a narrator voice" />
-                      </SelectTrigger>
-                      <SelectContent className="max-h-60">
-                        {voices.map((voice) => (
-                          <SelectItem key={voice.voice_id} value={voice.voice_id}>
-                            <div className="flex items-center gap-2">
-                              <span>{voice.name}</span>
-                              <span className="text-xs text-muted-foreground">
-                                ({voice.category} • {voice.accent})
-                              </span>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-muted-foreground">
-                      This voice will narrate your book when readers use the audiobook feature
-                    </p>
-                  </div>
-                  
-                  {/* Preview Action */}
-                  <Button 
-                    className="w-full rounded-full"
-                    onClick={() => {
-                      setPreviewDialogOpen(false);
-                      navigate(`/read/${bookId}`);
-                    }}
-                  >
-                    <FiEye className="mr-2" />
-                    Open Book Preview
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
+            <Button
+              variant="outline"
+              onClick={() => navigate(`/read/${bookId}`)}
+              className="rounded-full"
+              data-testid="preview-book"
+            >
+              <FiBook className="mr-2 w-4 h-4" />
+              Preview
+            </Button>
             
             <Button
               onClick={savePage}
