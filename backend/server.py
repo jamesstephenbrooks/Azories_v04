@@ -143,6 +143,16 @@ class BookUpdate(BaseModel):
     layout_mode: Optional[str] = None
     narrator_voice_id: Optional[str] = None
     age_rating: Optional[str] = None
+    series_id: Optional[str] = None
+    series_order: Optional[int] = None
+
+class SeriesCreate(BaseModel):
+    name: str
+    description: str = ""
+
+class SeriesUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
 
 class BookResponse(BaseModel):
     model_config = ConfigDict(extra="ignore")
