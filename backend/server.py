@@ -417,6 +417,8 @@ def set_book_defaults(book: dict) -> dict:
     book.setdefault("layout_mode", "standard")
     book.setdefault("narrator_voice_id", "21m00Tcm4TlvDq8ikWAM")  # Default to Rachel
     book.setdefault("age_rating", "All Ages")
+    book.setdefault("series_id", None)
+    book.setdefault("series_order", None)
     book.setdefault("view_count", 0)
     book.setdefault("read_count", 0)
     return book
