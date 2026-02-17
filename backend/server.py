@@ -568,7 +568,6 @@ async def get_book_analytics(book_id: str, current_user: dict = Depends(get_curr
     unique_readers = await db.analytics.distinct("user_id", {"book_id": book_id, "user_id": {"$ne": None}})
     
     # Get daily reads for last 7 days
-    seven_days_ago = datetime.now(timezone.utc) - timedelta(days=7)
     daily_pipeline = [
         {"$match": {"book_id": book_id, "action": "read"}},
         {"$group": {
