@@ -654,14 +654,47 @@ async def get_book_analytics(book_id: str, current_user: dict = Depends(get_curr
         "daily_reads": [{"date": d["_id"], "count": d["count"]} for d in daily_reads]
     }
 
-# ============ ADMIN CMS ROUTES ============
+# ============ ADMIN CMS ROUTES (Separate Admin Auth) ============
+
+# Admin-specific authentication
+async def get_admin_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Verify admin JWT token"""
+    try:
+        payload = jwt.decode(credentials.credentials, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        if payload.get("admin") != True:
+            raise HTTPException(status_code=403, detail="Admin access required")
+        return payload
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid admin token")
+
+@api_router.post("/admin/login", response_model=AdminResponse)
+async def admin_login(login_data: AdminLogin):
+    """Separate admin login endpoint"""
+    if login_data.username != ADMIN_USERNAME or login_data.password != ADMIN_PASSWORD:
+        raise HTTPException(status_code=401, detail="Invalid admin credentials")
+    
+    # Create admin JWT token
+    expiration = datetime.now(timezone.utc) + timedelta(hours=8)
+    token_data = {
+        "admin": True,
+        "username": login_data.username,
+        "exp": expiration
+    }
+    token = jwt.encode(token_data, JWT_SECRET, algorithm=JWT_ALGORITHM)
+    
+    return AdminResponse(
+        access_token=token,
+        admin_name=login_data.username
+    )
+
+@api_router.get("/admin/verify")
+async def verify_admin(admin: dict = Depends(get_admin_user)):
+    """Verify admin token is valid"""
+    return {"valid": True, "username": admin.get("username")}
 
 @api_router.get("/admin/books")
-async def admin_get_all_books(current_user: dict = Depends(get_current_user)):
+async def admin_get_all_books(admin: dict = Depends(get_admin_user)):
     """Admin endpoint to get all books for CMS"""
-    if current_user.get("role") != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
-    
     books = await db.books.find({}, {"_id": 0}).to_list(200)
     result = []
     for book in books:
@@ -669,11 +702,14 @@ async def admin_get_all_books(current_user: dict = Depends(get_current_user)):
         result.append(book)
     return result
 
+@api_router.get("/admin/users")
+async def admin_get_all_users(admin: dict = Depends(get_admin_user)):
+    """Admin endpoint to get all users"""
+    users = await db.users.find({}, {"_id": 0, "password": 0}).to_list(1000)
+    return users
+
 @api_router.post("/admin/books/{book_id}/feature")
-async def toggle_featured(book_id: str, current_user: dict = Depends(get_current_user)):
-    if current_user.get("role") != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
-    
+async def toggle_featured(book_id: str, admin: dict = Depends(get_admin_user)):
     book = await db.books.find_one({"id": book_id}, {"_id": 0})
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
@@ -683,10 +719,7 @@ async def toggle_featured(book_id: str, current_user: dict = Depends(get_current
     return {"is_featured": new_status}
 
 @api_router.post("/admin/books/{book_id}/best-of-week")
-async def toggle_best_of_week(book_id: str, current_user: dict = Depends(get_current_user)):
-    if current_user.get("role") != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
-    
+async def toggle_best_of_week(book_id: str, admin: dict = Depends(get_admin_user)):
     book = await db.books.find_one({"id": book_id}, {"_id": 0})
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
@@ -696,18 +729,26 @@ async def toggle_best_of_week(book_id: str, current_user: dict = Depends(get_cur
     return {"is_best_of_week": new_status}
 
 @api_router.post("/admin/books/{book_id}/age-rating")
-async def set_age_rating(book_id: str, age_rating: str, current_user: dict = Depends(get_current_user)):
-    if current_user.get("role") != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
-    
+async def set_age_rating(book_id: str, age_rating: str, admin: dict = Depends(get_admin_user)):
     if age_rating not in AGE_RATINGS:
         raise HTTPException(status_code=400, detail=f"Invalid age rating. Must be one of: {AGE_RATINGS}")
     
     await db.books.update_one({"id": book_id}, {"$set": {"age_rating": age_rating}})
     return {"age_rating": age_rating}
 
+@api_router.post("/admin/books/{book_id}/publish")
+async def admin_publish_book(book_id: str, admin: dict = Depends(get_admin_user)):
+    """Admin can publish/unpublish any book"""
+    book = await db.books.find_one({"id": book_id}, {"_id": 0})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    new_status = not book.get("is_published", False)
+    await db.books.update_one({"id": book_id}, {"$set": {"is_published": new_status}})
+    return {"is_published": new_status}
+
 @api_router.delete("/admin/books/{book_id}")
-async def admin_delete_book(book_id: str, current_user: dict = Depends(get_current_user)):
+async def admin_delete_book(book_id: str, admin: dict = Depends(get_admin_user)):
     """Admin can delete any book"""
     if current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
