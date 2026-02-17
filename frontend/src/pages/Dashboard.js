@@ -313,17 +313,28 @@ export default function Dashboard() {
               )}
               
               {isPro && (
-                <Dialog open={isAIStoryOpen} onOpenChange={setIsAIStoryOpen}>
-                  <DialogTrigger asChild>
-                    <Button 
-                      variant="outline"
-                      className="rounded-full px-6 py-6 font-ui border-accent text-accent hover:bg-accent hover:text-accent-foreground"
-                      data-testid="ai-story-btn"
-                    >
-                      <FiZap className="mr-2" />
-                      AI Story Creator
-                    </Button>
-                  </DialogTrigger>
+                <>
+                  <Button 
+                    variant="outline"
+                    className="rounded-full px-6 py-6 font-ui"
+                    onClick={() => setIsSeriesOpen(true)}
+                    data-testid="manage-series-btn"
+                  >
+                    <FiLayers className="mr-2" />
+                    Manage Series
+                  </Button>
+                  
+                  <Dialog open={isAIStoryOpen} onOpenChange={setIsAIStoryOpen}>
+                    <DialogTrigger asChild>
+                      <Button 
+                        variant="outline"
+                        className="rounded-full px-6 py-6 font-ui border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+                        data-testid="ai-story-btn"
+                      >
+                        <FiZap className="mr-2" />
+                        AI Story Creator
+                      </Button>
+                    </DialogTrigger>
                   <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                       <DialogTitle className="font-heading text-2xl flex items-center gap-2">
