@@ -201,6 +201,46 @@ export default function BookEditor() {
     }
   };
 
+  // Auto-save functionality
+  const autoSaveTimeoutRef = useRef(null);
+  
+  const triggerAutoSave = useCallback(() => {
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+    
+    autoSaveTimeoutRef.current = setTimeout(async () => {
+      if (selectedPage) {
+        try {
+          await axios.put(`${API}/pages/${selectedPage.id}`, {
+            text_content: selectedPage.text_content,
+            image_url: selectedPage.image_url,
+            image_url_2: selectedPage.image_url_2,
+            image_url_3: selectedPage.image_url_3,
+            image_url_4: selectedPage.image_url_4,
+            video_url: selectedPage.video_url,
+            layout_type: selectedPage.layout_type
+          });
+          // Silent save - no toast for auto-save
+        } catch (error) {
+          console.error('Auto-save failed:', error);
+        }
+      }
+    }, 2000); // Auto-save after 2 seconds of no changes
+  }, [selectedPage]);
+
+  // Trigger auto-save when page content changes
+  useEffect(() => {
+    if (selectedPage) {
+      triggerAutoSave();
+    }
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, [selectedPage?.text_content, selectedPage?.image_url, triggerAutoSave]);
+
   const savePage = async () => {
     if (!selectedPage) return;
     
@@ -231,6 +271,54 @@ export default function BookEditor() {
       fetchBook();
     } catch (error) {
       toast.error('Failed to save cover');
+    }
+  };
+
+  const [generatingAllImages, setGeneratingAllImages] = useState(false);
+  
+  const generateAllImages = async () => {
+    if (!window.confirm('Generate AI images for all pages without images? This may take several minutes.')) return;
+    
+    setGeneratingAllImages(true);
+    toast.info('Generating images for all pages... This may take a few minutes.');
+    
+    try {
+      const res = await axios.post(`${API}/ai/generate-all-images`, {
+        book_id: bookId,
+        style: imageStyle
+      });
+      toast.success(res.data.message);
+      // Refresh pages
+      if (selectedChapter) {
+        await fetchPages(selectedChapter.id);
+      }
+    } catch (error) {
+      toast.error('Failed to generate images');
+    } finally {
+      setGeneratingAllImages(false);
+    }
+  };
+
+  const generateImagesFromText = async () => {
+    if (!window.confirm('Generate AI images for all pages based on their text content? This may take several minutes.')) return;
+    
+    setGeneratingAllImages(true);
+    toast.info('Analyzing text and generating images... This may take a few minutes.');
+    
+    try {
+      const res = await axios.post(`${API}/ai/generate-images-from-text`, {
+        book_id: bookId,
+        style: imageStyle
+      });
+      toast.success(res.data.message);
+      // Refresh pages
+      if (selectedChapter) {
+        await fetchPages(selectedChapter.id);
+      }
+    } catch (error) {
+      toast.error('Failed to generate images from text');
+    } finally {
+      setGeneratingAllImages(false);
     }
   };
 
