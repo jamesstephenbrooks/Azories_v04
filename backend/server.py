@@ -838,11 +838,10 @@ async def generate_image(request: ImageGenerateRequest, current_user: dict = Dep
 @api_router.post("/ai/generate-video")
 async def generate_video(request: VideoGenerateRequest, current_user: dict = Depends(get_current_user)):
     try:
-        api_key = os.environ.get('OPENAI_API_KEY')
-        if not api_key:
-            raise HTTPException(status_code=500, detail="OpenAI API key not configured")
+        if not EMERGENT_LLM_KEY:
+            raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
         
-        video_gen = OpenAIVideoGeneration(api_key=api_key)
+        video_gen = OpenAIVideoGeneration(api_key=EMERGENT_LLM_KEY)
         video_bytes = video_gen.text_to_video(
             prompt=f"Children's animated scene: {request.prompt}. Style: colorful, friendly, magical animation.",
             model="sora-2",
