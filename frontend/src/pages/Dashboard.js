@@ -1003,11 +1003,7 @@ export default function Dashboard() {
                             <Label className="text-xs text-muted-foreground mb-2 block">Add a book to this series:</Label>
                             {booksNotInSeries(s.id).length > 0 ? (
                               <Select 
-                                onValueChange={(bookId) => {
-                                  setSelectedBookForSeries({ id: bookId });
-                                  addBookToSeries(s.id);
-                                  setSelectedBookForSeries(null);
-                                }}
+                                onValueChange={(bookId) => addBookToSeries(s.id, bookId)}
                               >
                                 <SelectTrigger className="rounded-full">
                                   <SelectValue placeholder="Select a book to add..." />
