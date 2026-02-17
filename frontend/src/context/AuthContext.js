@@ -17,6 +17,17 @@ export const AuthProvider = ({ children }) => {
     delete axios.defaults.headers.common['Authorization'];
   }, []);
 
+  const refreshUser = useCallback(async () => {
+    if (token) {
+      try {
+        const res = await axios.get(`${API}/auth/me`);
+        setUser(res.data);
+      } catch {
+        logout();
+      }
+    }
+  }, [token, logout]);
+
   useEffect(() => {
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -56,7 +67,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );
