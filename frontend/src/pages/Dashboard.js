@@ -51,6 +51,14 @@ export default function Dashboard() {
   const [creating, setCreating] = useState(false);
   const [generatingStory, setGeneratingStory] = useState(false);
   const [subscription, setSubscription] = useState('free');
+  
+  // Series state
+  const [series, setSeries] = useState([]);
+  const [isSeriesOpen, setIsSeriesOpen] = useState(false);
+  const [isAddToSeriesOpen, setIsAddToSeriesOpen] = useState(false);
+  const [selectedBookForSeries, setSelectedBookForSeries] = useState(null);
+  const [newSeries, setNewSeries] = useState({ name: '', description: '' });
+  const [creatingSeries, setCreatingSeries] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user && !localStorage.getItem('azories-token')) {
@@ -64,6 +72,7 @@ export default function Dashboard() {
       fetchMyBooks();
       fetchGenres();
       fetchAgeRatings();
+      fetchSeries();
     }
   }, [user]);
 
@@ -75,6 +84,69 @@ export default function Dashboard() {
       toast.error('Failed to load books');
     } finally {
       setLoading(false);
+    }
+  };
+  
+  const fetchSeries = async () => {
+    try {
+      const res = await axios.get(`${API}/series`);
+      setSeries(res.data);
+    } catch (error) {
+      console.error('Failed to load series');
+    }
+  };
+  
+  const createSeries = async () => {
+    if (!newSeries.name.trim()) {
+      toast.error('Please enter a series name');
+      return;
+    }
+    setCreatingSeries(true);
+    try {
+      await axios.post(`${API}/series`, newSeries);
+      toast.success('Series created!');
+      setNewSeries({ name: '', description: '' });
+      fetchSeries();
+    } catch (error) {
+      toast.error('Failed to create series');
+    } finally {
+      setCreatingSeries(false);
+    }
+  };
+  
+  const deleteSeries = async (seriesId) => {
+    if (!window.confirm('Delete this series? Books will be unlinked but not deleted.')) return;
+    try {
+      await axios.delete(`${API}/series/${seriesId}`);
+      toast.success('Series deleted');
+      fetchSeries();
+    } catch (error) {
+      toast.error('Failed to delete series');
+    }
+  };
+  
+  const addBookToSeries = async (seriesId) => {
+    if (!selectedBookForSeries) return;
+    try {
+      await axios.post(`${API}/series/${seriesId}/books/${selectedBookForSeries.id}`);
+      toast.success('Book added to series!');
+      setIsAddToSeriesOpen(false);
+      setSelectedBookForSeries(null);
+      fetchMyBooks();
+      fetchSeries();
+    } catch (error) {
+      toast.error('Failed to add book to series');
+    }
+  };
+  
+  const removeBookFromSeries = async (book) => {
+    try {
+      await axios.delete(`${API}/series/${book.series_id}/books/${book.id}`);
+      toast.success('Book removed from series');
+      fetchMyBooks();
+      fetchSeries();
+    } catch (error) {
+      toast.error('Failed to remove book from series');
     }
   };
 
