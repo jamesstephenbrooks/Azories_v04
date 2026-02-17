@@ -417,6 +417,8 @@ class AzoriesAPITester:
             self.test_get_pages,
             self.test_update_page,
             self.test_get_full_book,
+            self.test_get_featured_books,
+            self.test_toggle_featured,
             self.test_tts_generation,
             # Skip AI image generation due to server issues
             # self.test_ai_image_generation,
