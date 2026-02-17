@@ -669,6 +669,25 @@ export default function Dashboard() {
                           <CardDescription className="font-body mt-1 line-clamp-2">
                             {book.description || 'No description'}
                           </CardDescription>
+                          {/* Series Badge */}
+                          {book.series_id && (
+                            <div className="mt-2 flex items-center gap-2">
+                              <span className="px-2 py-1 rounded-full bg-primary/10 text-primary text-xs font-ui flex items-center gap-1">
+                                <FiLayers className="w-3 h-3" />
+                                {series.find(s => s.id === book.series_id)?.name || 'Series'}
+                                {book.series_order && ` #${book.series_order}`}
+                              </span>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-6 w-6 p-0 rounded-full"
+                                onClick={() => removeBookFromSeries(book)}
+                                title="Remove from series"
+                              >
+                                <FiX className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          )}
                         </div>
                         <div className="flex flex-col gap-1 items-end">
                           <span className={`px-3 py-1 rounded-full text-xs font-ui ${
@@ -703,6 +722,21 @@ export default function Dashboard() {
                         <Button variant="outline" size="icon" className="rounded-full" onClick={() => fetchAnalytics(book.id)}>
                           <FiBarChart2 className="w-4 h-4" />
                         </Button>
+                        {/* Add to Series Button */}
+                        {!book.series_id && (
+                          <Button 
+                            variant="outline" 
+                            size="icon" 
+                            className="rounded-full"
+                            onClick={() => {
+                              setSelectedBookForSeries(book);
+                              setIsAddToSeriesOpen(true);
+                            }}
+                            title="Add to Series"
+                          >
+                            <FiLink className="w-4 h-4" />
+                          </Button>
+                        )}
                         <Button 
                           variant="outline" 
                           size="icon" 
