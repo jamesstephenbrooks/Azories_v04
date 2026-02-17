@@ -89,6 +89,19 @@ export default function Library() {
     >
       <div className="book-perspective">
         <div className={`relative bg-card rounded-3xl overflow-hidden border border-border book-3d ${isFeatured ? 'ring-2 ring-primary/50' : ''}`}>
+          {/* Summary/Back cover button - Top Right */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setSummaryBook(book);
+            }}
+            className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-all duration-200 opacity-0 group-hover:opacity-100"
+            title="View Summary"
+            data-testid={`summary-btn-${book.id}`}
+          >
+            <FiInfo className="w-4 h-4" />
+          </button>
+          
           {/* Featured/Best badges */}
           {(book.is_featured || book.is_best_of_week) && (
             <div className="absolute top-3 left-3 z-10 flex gap-2">
