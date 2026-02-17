@@ -241,29 +241,6 @@ export default function Dashboard() {
             </div>
             
             <div className="flex gap-3 flex-wrap">
-              {isAdmin && (
-                <Button 
-                  variant="outline"
-                  className="rounded-full px-6 font-ui border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-                  onClick={() => navigate('/admin')}
-                  data-testid="admin-cms-btn"
-                >
-                  <FiShield className="mr-2" />
-                  Admin CMS
-                </Button>
-              )}
-              
-              {!isAdmin && isPro && (
-                <Button 
-                  variant="outline"
-                  className="rounded-full px-4 font-ui text-xs"
-                  onClick={makeAdmin}
-                  title="For testing: become admin"
-                >
-                  Become Admin
-                </Button>
-              )}
-              
               {!isPro && (
                 <Button 
                   variant="outline"
