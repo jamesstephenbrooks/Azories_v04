@@ -128,10 +128,11 @@ export default function Dashboard() {
     }
   };
   
-  const addBookToSeries = async (seriesId) => {
-    if (!selectedBookForSeries) return;
+  const addBookToSeries = async (seriesId, bookIdOverride = null) => {
+    const bookId = bookIdOverride || selectedBookForSeries?.id;
+    if (!bookId) return;
     try {
-      await axios.post(`${API}/series/${seriesId}/books/${selectedBookForSeries.id}`);
+      await axios.post(`${API}/series/${seriesId}/books/${bookId}`);
       toast.success('Book added to series!');
       setIsAddToSeriesOpen(false);
       setSelectedBookForSeries(null);
