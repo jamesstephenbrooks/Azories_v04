@@ -14,7 +14,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import { 
   FiArrowLeft, FiPlus, FiSave, FiTrash2, FiImage, FiVideo, FiUpload,
-  FiBook, FiSettings, FiLoader, FiGrid, FiLayout, FiBookOpen
+  FiBook, FiSettings, FiLoader, FiGrid, FiLayout, FiBookOpen, FiMic, FiWand2
 } from 'react-icons/fi';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -41,7 +41,11 @@ export default function BookEditor() {
   const [videoPrompt, setVideoPrompt] = useState('');
   const [generatingImage, setGeneratingImage] = useState(false);
   const [generatingVideo, setGeneratingVideo] = useState(false);
+  const [generatingSummary, setGeneratingSummary] = useState(false);
   const [imageStyle, setImageStyle] = useState('illustration');
+  
+  // Voices
+  const [voices, setVoices] = useState([]);
   
   // Which image slot to generate for (for comic mode)
   const [activeImageSlot, setActiveImageSlot] = useState(1);
@@ -53,7 +57,9 @@ export default function BookEditor() {
     back_cover_image: '',
     cover_title: '',
     cover_subtitle: '',
-    back_cover_text: ''
+    back_cover_text: '',
+    narrator_voice_id: '',
+    age_rating: 'All Ages'
   });
   
   // New chapter/page dialogs
@@ -71,6 +77,7 @@ export default function BookEditor() {
     if (user && bookId) {
       fetchBook();
       fetchChapters();
+      fetchVoices();
     }
   }, [user, bookId]);
 
@@ -79,6 +86,15 @@ export default function BookEditor() {
       fetchPages(selectedChapter.id);
     }
   }, [selectedChapter]);
+
+  const fetchVoices = async () => {
+    try {
+      const res = await axios.get(`${API}/voices`);
+      setVoices(res.data);
+    } catch (error) {
+      console.error('Failed to load voices');
+    }
+  };
 
   const fetchBook = async () => {
     try {
@@ -89,7 +105,9 @@ export default function BookEditor() {
         back_cover_image: res.data.back_cover_image || '',
         cover_title: res.data.cover_title || res.data.title,
         cover_subtitle: res.data.cover_subtitle || '',
-        back_cover_text: res.data.back_cover_text || ''
+        back_cover_text: res.data.back_cover_text || '',
+        narrator_voice_id: res.data.narrator_voice_id || '21m00Tcm4TlvDq8ikWAM',
+        age_rating: res.data.age_rating || 'All Ages'
       });
     } catch (error) {
       toast.error('Failed to load book');
