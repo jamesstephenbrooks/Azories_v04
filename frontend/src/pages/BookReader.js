@@ -192,14 +192,17 @@ export default function BookReader() {
   }, [currentPage]);
 
   const playAudio = async () => {
+    // If this is a chapter title page, auto-advance after a brief display
     if (allPages[currentPage]?.isChapterTitle) {
       if (autoRead && currentPage < allPages.length - 1) {
+        // Show chapter title for 2 seconds then move to first page of chapter
         setTimeout(() => nextPage(), 2000);
       }
       return;
     }
     
     if (!narratorVoice || currentPage < 0 || !allPages[currentPage]?.text_content) {
+      // If page has no text content, move to next page in auto-read mode
       if (autoRead && currentPage < allPages.length - 1) {
         setTimeout(() => nextPage(), 500);
       }
@@ -224,6 +227,7 @@ export default function BookReader() {
         
         audio.onended = () => {
           setIsPlaying(false);
+          // Continue to next page when audio finishes in auto-read mode
           if (autoRead && currentPage < allPages.length - 1) {
             setTimeout(() => nextPage(), 500);
           }
@@ -235,6 +239,10 @@ export default function BookReader() {
       }
     } catch (error) {
       toast.error('Failed to generate audio');
+      // Still continue to next page even if audio fails in auto-read mode
+      if (autoRead && currentPage < allPages.length - 1) {
+        setTimeout(() => nextPage(), 1000);
+      }
     } finally {
       setAudioLoading(false);
     }
