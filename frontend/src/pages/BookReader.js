@@ -1,14 +1,14 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { useAuth } from '@/context/AuthContext';
 import { 
   FiArrowLeft, FiChevronLeft, FiChevronRight, FiMaximize2, FiMinimize2,
-  FiPlay, FiPause, FiVolume2, FiVolumeX, FiSun, FiMoon
+  FiPlay, FiPause, FiVolume2, FiVolumeX, FiSun, FiMoon, FiLock, FiBook
 } from 'react-icons/fi';
 import { useTheme } from '@/context/ThemeContext';
 
@@ -19,49 +19,70 @@ export default function BookReader() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
+  const { user } = useAuth();
+  const audioRef = useRef(null);
   
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(-1); // -1 = front cover, -2 = back cover
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isFlipping, setIsFlipping] = useState(false);
   const [flipDirection, setFlipDirection] = useState('next');
+  const [requiresAuth, setRequiresAuth] = useState(false);
   
   // Audio state
-  const [voices, setVoices] = useState([]);
-  const [selectedVoice, setSelectedVoice] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioLoading, setAudioLoading] = useState(false);
   const [audioElement, setAudioElement] = useState(null);
   const [volume, setVolume] = useState([75]);
+  const [playbackSpeed, setPlaybackSpeed] = useState([1]);
+  const [autoRead, setAutoRead] = useState(false);
+  
+  // Narrator voice (set by creator)
+  const [narratorVoice, setNarratorVoice] = useState('');
   
   // Flatten all pages from all chapters
   const [allPages, setAllPages] = useState([]);
 
   useEffect(() => {
     fetchBook();
-    fetchVoices();
   }, [bookId]);
 
   useEffect(() => {
     if (searchParams.get('audio') === 'true' && allPages.length > 0) {
-      // Auto-start audio mode
+      setAutoRead(true);
     }
   }, [searchParams, allPages]);
+
+  // Auto-read effect
+  useEffect(() => {
+    if (autoRead && !isPlaying && !audioLoading && currentPage >= 0 && allPages[currentPage]?.text_content) {
+      playAudio();
+    }
+  }, [autoRead, currentPage]);
 
   const fetchBook = async () => {
     try {
       const res = await axios.get(`${API}/books/${bookId}/full`);
       setBook(res.data);
+      setNarratorVoice(res.data.narrator_voice_id || '21m00Tcm4TlvDq8ikWAM');
       
-      // Flatten pages
-      const pages = [];
-      res.data.chapters?.forEach(chapter => {
-        chapter.pages?.forEach(page => {
-          pages.push({ ...page, chapterTitle: chapter.title });
+      if (res.data.requires_auth) {
+        setRequiresAuth(true);
+        setAllPages([]);
+      } else {
+        // Flatten pages
+        const pages = [];
+        res.data.chapters?.forEach(chapter => {
+          chapter.pages?.forEach(page => {
+            pages.push({ ...page, chapterTitle: chapter.title });
+          });
         });
-      });
-      setAllPages(pages);
+        setAllPages(pages);
+        
+        // Track read
+        axios.post(`${API}/books/${bookId}/track-read`).catch(() => {});
+      }
     } catch (error) {
       toast.error('Failed to load book');
       navigate('/library');
@@ -70,20 +91,17 @@ export default function BookReader() {
     }
   };
 
-  const fetchVoices = async () => {
-    try {
-      const res = await axios.get(`${API}/voices`);
-      setVoices(res.data);
-      if (res.data.length > 0) {
-        setSelectedVoice(res.data[0].voice_id);
-      }
-    } catch (error) {
-      console.error('Error fetching voices:', error);
-    }
-  };
-
   const goToPage = useCallback((newPage, direction) => {
-    if (newPage < 0 || newPage >= allPages.length || isFlipping) return;
+    const minPage = -1; // Front cover
+    const maxPage = allPages.length - 1;
+    
+    if (newPage < minPage || newPage > maxPage || isFlipping) return;
+    
+    // Stop current audio
+    if (audioElement) {
+      audioElement.pause();
+      setIsPlaying(false);
+    }
     
     setFlipDirection(direction);
     setIsFlipping(true);
@@ -92,7 +110,7 @@ export default function BookReader() {
       setCurrentPage(newPage);
       setIsFlipping(false);
     }, 500);
-  }, [allPages.length, isFlipping]);
+  }, [allPages.length, isFlipping, audioElement]);
 
   const nextPage = () => goToPage(currentPage + 1, 'next');
   const prevPage = () => goToPage(currentPage - 1, 'prev');
@@ -108,8 +126,7 @@ export default function BookReader() {
   };
 
   const playAudio = async () => {
-    if (!selectedVoice || !allPages[currentPage]?.text_content) {
-      toast.error('No text to read on this page');
+    if (!narratorVoice || currentPage < 0 || !allPages[currentPage]?.text_content) {
       return;
     }
 
@@ -117,18 +134,26 @@ export default function BookReader() {
     try {
       const res = await axios.post(`${API}/tts/generate`, {
         text: allPages[currentPage].text_content,
-        voice_id: selectedVoice
+        voice_id: narratorVoice
       });
 
       if (res.data.audio_base64) {
-        // Stop current audio if playing
         if (audioElement) {
           audioElement.pause();
         }
 
         const audio = new Audio(`data:audio/mpeg;base64,${res.data.audio_base64}`);
         audio.volume = volume[0] / 100;
-        audio.onended = () => setIsPlaying(false);
+        audio.playbackRate = playbackSpeed[0];
+        
+        audio.onended = () => {
+          setIsPlaying(false);
+          // Auto advance to next page if auto-read is on
+          if (autoRead && currentPage < allPages.length - 1) {
+            setTimeout(() => nextPage(), 500);
+          }
+        };
+        
         audio.play();
         setAudioElement(audio);
         setIsPlaying(true);
@@ -154,11 +179,24 @@ export default function BookReader() {
     }
   };
 
+  const toggleAutoRead = () => {
+    setAutoRead(!autoRead);
+    if (!autoRead && currentPage >= 0 && !isPlaying) {
+      playAudio();
+    }
+  };
+
   useEffect(() => {
     if (audioElement) {
       audioElement.volume = volume[0] / 100;
     }
   }, [volume, audioElement]);
+
+  useEffect(() => {
+    if (audioElement) {
+      audioElement.playbackRate = playbackSpeed[0];
+    }
+  }, [playbackSpeed, audioElement]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -166,10 +204,14 @@ export default function BookReader() {
       if (e.key === 'ArrowRight') nextPage();
       if (e.key === 'ArrowLeft') prevPage();
       if (e.key === 'Escape' && isFullscreen) toggleFullscreen();
+      if (e.key === ' ') {
+        e.preventDefault();
+        togglePlayPause();
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentPage, isFullscreen, nextPage, prevPage]);
+  }, [currentPage, isFullscreen, nextPage, prevPage, togglePlayPause]);
 
   if (loading) {
     return (
@@ -182,8 +224,85 @@ export default function BookReader() {
     );
   }
 
+  // Show front cover for non-authenticated users
+  if (requiresAuth && !user) {
+    return (
+      <div className={`min-h-screen bg-background ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
+        {/* Top Bar */}
+        <div className="glass fixed top-0 left-0 right-0 z-40 px-4 py-3">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate('/library')}
+                className="rounded-full"
+              >
+                <FiArrowLeft className="w-5 h-5" />
+              </Button>
+              <h1 className="font-heading text-lg font-semibold">{book?.title}</h1>
+            </div>
+          </div>
+        </div>
+        
+        {/* Book Preview */}
+        <div className="pt-20 pb-20 px-4 flex items-center justify-center min-h-screen">
+          <div className="w-full max-w-3xl book-perspective">
+            <div className="flex shadow-2xl rounded-3xl overflow-hidden">
+              {/* Front Cover */}
+              <div className="w-1/2 aspect-[3/4] reader-page relative overflow-hidden">
+                {book?.cover_image ? (
+                  <img src={book.cover_image} alt="Cover" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                    <div className="text-center p-6">
+                      <FiBook className="w-16 h-16 mx-auto text-primary/40 mb-4" />
+                      <h2 className="font-heading text-2xl font-bold">{book?.cover_title || book?.title}</h2>
+                      {book?.cover_subtitle && (
+                        <p className="font-body text-muted-foreground mt-2">{book.cover_subtitle}</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* Back Cover - Summary */}
+              <div className="w-1/2 aspect-[3/4] reader-page p-8 flex flex-col">
+                <h3 className="font-heading text-xl font-bold mb-4">About This Book</h3>
+                <p className="font-reader text-lg leading-relaxed flex-1">
+                  {book?.back_cover_text || book?.description || 'A magical story awaits...'}
+                </p>
+                <div className="mt-6 pt-6 border-t border-border">
+                  <p className="font-ui text-sm text-muted-foreground mb-2">By {book?.author_name}</p>
+                  <p className="font-ui text-sm text-muted-foreground">Genre: {book?.genre}</p>
+                  {book?.age_rating && (
+                    <p className="font-ui text-sm text-muted-foreground">Age: {book.age_rating}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            {/* Sign in prompt */}
+            <div className="mt-8 text-center">
+              <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-muted mb-4">
+                <FiLock className="w-5 h-5 text-muted-foreground" />
+                <span className="font-body text-muted-foreground">Sign in to read this book</span>
+              </div>
+              <div>
+                <Button onClick={() => navigate('/auth')} className="rounded-full px-8">
+                  Sign In to Read
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const currentPageData = allPages[currentPage];
-  const nextPageData = allPages[currentPage + 1];
+  const totalPages = allPages.length;
+  const isCover = currentPage === -1;
 
   return (
     <div className={`min-h-screen bg-background ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
@@ -205,7 +324,7 @@ export default function BookReader() {
                 {book?.title}
               </h1>
               <p className="font-body text-sm text-muted-foreground">
-                {currentPageData?.chapterTitle}
+                {isCover ? 'Front Cover' : currentPageData?.chapterTitle || ''}
               </p>
             </div>
           </div>
@@ -216,7 +335,6 @@ export default function BookReader() {
               size="icon"
               onClick={toggleTheme}
               className="rounded-full"
-              data-testid="reader-theme-toggle"
             >
               {theme === 'dark' ? <FiSun className="w-5 h-5" /> : <FiMoon className="w-5 h-5" />}
             </Button>
@@ -225,7 +343,6 @@ export default function BookReader() {
               size="icon"
               onClick={toggleFullscreen}
               className="rounded-full"
-              data-testid="fullscreen-toggle"
             >
               {isFullscreen ? <FiMinimize2 className="w-5 h-5" /> : <FiMaximize2 className="w-5 h-5" />}
             </Button>
@@ -234,66 +351,110 @@ export default function BookReader() {
       </div>
       
       {/* Book Display */}
-      <div className="pt-20 pb-40 px-4 flex items-center justify-center min-h-screen">
+      <div className="pt-20 pb-48 px-4 flex items-center justify-center min-h-screen">
         <div className="w-full max-w-5xl book-perspective">
           <div className="flex shadow-2xl rounded-3xl overflow-hidden">
-            {/* Left Page - Image/Video */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={`left-${currentPage}`}
-                initial={{ opacity: 0, rotateY: flipDirection === 'prev' ? 90 : 0 }}
-                animate={{ opacity: 1, rotateY: 0 }}
-                exit={{ opacity: 0, rotateY: flipDirection === 'next' ? -90 : 0 }}
-                transition={{ duration: 0.4 }}
-                className="w-1/2 aspect-[3/4] reader-page page-shadow relative"
-              >
-                {currentPageData?.video_url ? (
-                  <video
-                    src={currentPageData.video_url}
-                    className="w-full h-full object-cover"
-                    controls
-                    autoPlay
-                    loop
-                    muted
-                  />
-                ) : currentPageData?.image_url ? (
-                  <img
-                    src={currentPageData.image_url}
-                    alt="Page illustration"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 to-secondary/5">
-                    <span className="font-reader text-4xl text-muted-foreground/30">
-                      {currentPage + 1}
-                    </span>
-                  </div>
-                )}
-              </motion.div>
-            </AnimatePresence>
-            
-            {/* Right Page - Text */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={`right-${currentPage}`}
-                initial={{ opacity: 0, rotateY: flipDirection === 'next' ? -90 : 0 }}
-                animate={{ opacity: 1, rotateY: 0 }}
-                exit={{ opacity: 0, rotateY: flipDirection === 'prev' ? 90 : 0 }}
-                transition={{ duration: 0.4 }}
-                className="w-1/2 aspect-[3/4] reader-page page-shadow p-8 md:p-12 flex flex-col"
-              >
-                <div className="flex-1 overflow-auto">
-                  <p className="font-reader text-lg md:text-xl leading-relaxed whitespace-pre-wrap">
-                    {currentPageData?.text_content || 'This page is empty...'}
+            {isCover ? (
+              // Front Cover View
+              <>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="w-1/2 aspect-[3/4] reader-page relative overflow-hidden"
+                >
+                  {book?.cover_image ? (
+                    <img src={book.cover_image} alt="Cover" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                      <div className="text-center p-6">
+                        <FiBook className="w-16 h-16 mx-auto text-primary/40 mb-4" />
+                        <h2 className="font-heading text-3xl font-bold">{book?.cover_title || book?.title}</h2>
+                        {book?.cover_subtitle && (
+                          <p className="font-body text-lg text-muted-foreground mt-2">{book.cover_subtitle}</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="w-1/2 aspect-[3/4] reader-page p-8 flex flex-col"
+                >
+                  <h3 className="font-heading text-xl font-bold mb-4">About This Book</h3>
+                  <p className="font-reader text-lg leading-relaxed flex-1">
+                    {book?.back_cover_text || book?.description || 'A magical story awaits...'}
                   </p>
-                </div>
-                <div className="text-right mt-4">
-                  <span className="font-ui text-sm text-muted-foreground">
-                    Page {currentPage + 1} of {allPages.length}
-                  </span>
-                </div>
-              </motion.div>
-            </AnimatePresence>
+                  <div className="mt-6 pt-6 border-t border-border">
+                    <p className="font-ui text-sm text-muted-foreground">By {book?.author_name}</p>
+                    {book?.age_rating && (
+                      <span className="inline-block mt-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs">
+                        {book.age_rating}
+                      </span>
+                    )}
+                  </div>
+                </motion.div>
+              </>
+            ) : (
+              // Regular page view
+              <>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={`left-${currentPage}`}
+                    initial={{ opacity: 0, rotateY: flipDirection === 'prev' ? 90 : 0 }}
+                    animate={{ opacity: 1, rotateY: 0 }}
+                    exit={{ opacity: 0, rotateY: flipDirection === 'next' ? -90 : 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="w-1/2 aspect-[3/4] reader-page page-shadow relative"
+                  >
+                    {currentPageData?.video_url ? (
+                      <video
+                        src={currentPageData.video_url}
+                        className="w-full h-full object-cover"
+                        controls
+                        autoPlay
+                        loop
+                        muted
+                      />
+                    ) : currentPageData?.image_url ? (
+                      <img
+                        src={currentPageData.image_url}
+                        alt="Page illustration"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 to-secondary/5">
+                        <span className="font-reader text-4xl text-muted-foreground/30">
+                          {currentPage + 1}
+                        </span>
+                      </div>
+                    )}
+                  </motion.div>
+                </AnimatePresence>
+                
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={`right-${currentPage}`}
+                    initial={{ opacity: 0, rotateY: flipDirection === 'next' ? -90 : 0 }}
+                    animate={{ opacity: 1, rotateY: 0 }}
+                    exit={{ opacity: 0, rotateY: flipDirection === 'prev' ? 90 : 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="w-1/2 aspect-[3/4] reader-page page-shadow p-8 md:p-12 flex flex-col"
+                  >
+                    <div className="flex-1 overflow-auto">
+                      <p className="font-reader text-lg md:text-xl leading-relaxed whitespace-pre-wrap">
+                        {currentPageData?.text_content || 'This page is empty...'}
+                      </p>
+                    </div>
+                    <div className="text-right mt-4">
+                      <span className="font-ui text-sm text-muted-foreground">
+                        Page {currentPage + 1} of {totalPages}
+                      </span>
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -307,7 +468,7 @@ export default function BookReader() {
               variant="outline"
               size="icon"
               onClick={prevPage}
-              disabled={currentPage === 0 || isFlipping}
+              disabled={currentPage <= -1 || isFlipping}
               className="rounded-full w-12 h-12"
               data-testid="prev-page-btn"
             >
@@ -316,7 +477,7 @@ export default function BookReader() {
             
             <div className="px-6 py-2 rounded-full bg-muted">
               <span className="font-ui">
-                {currentPage + 1} / {allPages.length}
+                {isCover ? 'Cover' : `${currentPage + 1} / ${totalPages}`}
               </span>
             </div>
             
@@ -324,7 +485,7 @@ export default function BookReader() {
               variant="outline"
               size="icon"
               onClick={nextPage}
-              disabled={currentPage >= allPages.length - 1 || isFlipping}
+              disabled={currentPage >= totalPages - 1 || isFlipping}
               className="rounded-full w-12 h-12"
               data-testid="next-page-btn"
             >
@@ -334,29 +495,19 @@ export default function BookReader() {
           
           {/* Audio Controls */}
           <div className="flex items-center justify-center gap-4 flex-wrap">
-            <Select value={selectedVoice} onValueChange={setSelectedVoice}>
-              <SelectTrigger 
-                className="w-48 rounded-full"
-                data-testid="voice-select"
-              >
-                <SelectValue placeholder="Select voice" />
-              </SelectTrigger>
-              <SelectContent>
-                {voices.map((voice) => (
-                  <SelectItem 
-                    key={voice.voice_id} 
-                    value={voice.voice_id}
-                    data-testid={`voice-option-${voice.voice_id}`}
-                  >
-                    {voice.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {/* Auto-read toggle */}
+            <Button
+              variant={autoRead ? "default" : "outline"}
+              onClick={toggleAutoRead}
+              className="rounded-full"
+              data-testid="auto-read-btn"
+            >
+              {autoRead ? 'Auto-Read ON' : 'Auto-Read OFF'}
+            </Button>
             
             <Button
               onClick={togglePlayPause}
-              disabled={audioLoading}
+              disabled={audioLoading || isCover}
               className="rounded-full w-12 h-12"
               data-testid="play-audio-btn"
             >
@@ -369,11 +520,12 @@ export default function BookReader() {
               )}
             </Button>
             
-            <div className="flex items-center gap-2 w-32">
+            {/* Volume */}
+            <div className="flex items-center gap-2 w-24">
               {volume[0] === 0 ? (
-                <FiVolumeX className="w-5 h-5 text-muted-foreground" />
+                <FiVolumeX className="w-4 h-4 text-muted-foreground" />
               ) : (
-                <FiVolume2 className="w-5 h-5 text-muted-foreground" />
+                <FiVolume2 className="w-4 h-4 text-muted-foreground" />
               )}
               <Slider
                 value={volume}
@@ -381,8 +533,24 @@ export default function BookReader() {
                 max={100}
                 step={1}
                 className="flex-1"
-                data-testid="volume-slider"
               />
+            </div>
+            
+            {/* Speed Control */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">Speed:</span>
+              <select
+                value={playbackSpeed[0]}
+                onChange={(e) => setPlaybackSpeed([parseFloat(e.target.value)])}
+                className="bg-muted rounded-full px-3 py-1 text-sm font-ui"
+              >
+                <option value={0.5}>0.5x</option>
+                <option value={0.75}>0.75x</option>
+                <option value={1}>1x</option>
+                <option value={1.25}>1.25x</option>
+                <option value={1.5}>1.5x</option>
+                <option value={2}>2x</option>
+              </select>
             </div>
           </div>
         </div>
