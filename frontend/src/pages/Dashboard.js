@@ -783,6 +783,146 @@ export default function Dashboard() {
           )}
         </div>
       </div>
+      
+      {/* Series Management Dialog */}
+      <Dialog open={isSeriesOpen} onOpenChange={setIsSeriesOpen}>
+        <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-heading text-2xl flex items-center gap-2">
+              <FiLayers className="text-primary" />
+              Manage Book Series
+            </DialogTitle>
+            <DialogDescription>
+              Create and organize your books into series
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-6 pt-4">
+            {/* Create New Series */}
+            <div className="space-y-3 p-4 rounded-xl bg-muted/30 border border-border">
+              <Label className="font-ui font-semibold">Create New Series</Label>
+              <Input
+                value={newSeries.name}
+                onChange={(e) => setNewSeries({ ...newSeries, name: e.target.value })}
+                placeholder="Series name (e.g., The Dragon Chronicles)"
+                className="rounded-full"
+              />
+              <Textarea
+                value={newSeries.description}
+                onChange={(e) => setNewSeries({ ...newSeries, description: e.target.value })}
+                placeholder="Series description (optional)"
+                className="rounded-xl min-h-16"
+              />
+              <Button 
+                onClick={createSeries} 
+                disabled={creatingSeries || !newSeries.name.trim()}
+                className="rounded-full w-full"
+              >
+                {creatingSeries ? <FiLoader className="mr-2 animate-spin" /> : <FiPlus className="mr-2" />}
+                Create Series
+              </Button>
+            </div>
+            
+            {/* Existing Series */}
+            <div className="space-y-3">
+              <Label className="font-ui font-semibold">Your Series ({series.length})</Label>
+              {series.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-6">
+                  No series yet. Create one above to start organizing your books!
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {series.map((s) => (
+                    <div key={s.id} className="p-4 rounded-xl bg-card border border-border">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h4 className="font-heading font-semibold">{s.name}</h4>
+                          {s.description && (
+                            <p className="text-sm text-muted-foreground mt-1">{s.description}</p>
+                          )}
+                          <p className="text-xs text-muted-foreground mt-2">
+                            {s.book_count || 0} book{s.book_count !== 1 ? 's' : ''}
+                          </p>
+                          {/* Books in series */}
+                          {s.books?.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-3">
+                              {s.books.map((book, idx) => (
+                                <span key={book.id} className="px-2 py-1 rounded-full bg-muted text-xs">
+                                  #{book.series_order || idx + 1} {book.title}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="rounded-full text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                          onClick={() => deleteSeries(s.id)}
+                        >
+                          <FiTrash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Add to Series Dialog */}
+      <Dialog open={isAddToSeriesOpen} onOpenChange={setIsAddToSeriesOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-heading text-xl flex items-center gap-2">
+              <FiLink className="text-primary" />
+              Add to Series
+            </DialogTitle>
+            <DialogDescription>
+              {selectedBookForSeries ? `Add "${selectedBookForSeries.title}" to a series` : 'Select a series'}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            {series.length === 0 ? (
+              <div className="text-center py-6">
+                <p className="text-sm text-muted-foreground mb-4">
+                  No series yet. Create one first!
+                </p>
+                <Button 
+                  variant="outline" 
+                  className="rounded-full"
+                  onClick={() => {
+                    setIsAddToSeriesOpen(false);
+                    setIsSeriesOpen(true);
+                  }}
+                >
+                  <FiPlus className="mr-2" />
+                  Create Series
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {series.map((s) => (
+                  <Button
+                    key={s.id}
+                    variant="outline"
+                    className="w-full justify-start rounded-xl h-auto py-3"
+                    onClick={() => addBookToSeries(s.id)}
+                  >
+                    <div className="text-left">
+                      <div className="font-semibold">{s.name}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {s.book_count || 0} book{s.book_count !== 1 ? 's' : ''} • Will be #{(s.book_count || 0) + 1}
+                      </div>
+                    </div>
+                  </Button>
+                ))}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
