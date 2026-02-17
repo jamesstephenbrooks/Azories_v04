@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -6,8 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FiSearch, FiBook, FiHeadphones, FiUser, FiStar, FiAward, FiTrendingUp } from 'react-icons/fi';
+import { FiSearch, FiBook, FiHeadphones, FiUser, FiStar, FiAward, FiTrendingUp, FiGrid, FiBox } from 'react-icons/fi';
 import Navbar from '@/components/Navbar';
+
+// Lazy load the 3D bookshelf component
+const Bookshelf3D = lazy(() => import('@/components/Bookshelf3D'));
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
