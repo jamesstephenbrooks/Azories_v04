@@ -891,6 +891,17 @@ export default function BookEditor() {
                         {/* AI Video Generation */}
                         <div className="space-y-3">
                           <Label className="font-ui">Generate with Sora AI</Label>
+                          <Select value={videoStyle} onValueChange={setVideoStyle}>
+                            <SelectTrigger className="rounded-full">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="animation">Children's Animation</SelectItem>
+                              <SelectItem value="comic">Comic Book Style</SelectItem>
+                              <SelectItem value="realistic">Realistic/Cinematic</SelectItem>
+                              <SelectItem value="scifi">Sci-Fi / Futuristic</SelectItem>
+                            </SelectContent>
+                          </Select>
                           <div className="flex gap-2">
                             <Input
                               placeholder="Describe the animated scene..."
