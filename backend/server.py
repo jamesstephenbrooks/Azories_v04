@@ -19,7 +19,7 @@ from elevenlabs import ElevenLabs
 from elevenlabs.types import VoiceSettings
 from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
 from emergentintegrations.llm.openai.video_generation import OpenAIVideoGeneration
-import openai
+from emergentintegrations.llm.chat import LlmChat, UserMessage
 import aiofiles
 import json
 
