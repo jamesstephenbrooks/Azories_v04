@@ -385,6 +385,81 @@ export default function Library() {
           </Tabs>
         </div>
       </div>
+      
+      {/* Summary/Back Cover Popup Dialog */}
+      <Dialog open={!!summaryBook} onOpenChange={() => setSummaryBook(null)}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="font-heading text-2xl flex items-center gap-2">
+              <FiBook className="text-primary" />
+              {summaryBook?.title}
+            </DialogTitle>
+            <DialogDescription className="font-body text-sm">
+              By {summaryBook?.author_name} • {summaryBook?.genre}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="pt-4 space-y-4">
+            {/* Back cover image if exists */}
+            {summaryBook?.back_cover_image && (
+              <div className="rounded-xl overflow-hidden max-h-48">
+                <img 
+                  src={summaryBook.back_cover_image} 
+                  alt="Back cover" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+            
+            {/* Summary text */}
+            <div className="p-4 rounded-xl bg-muted/50 space-y-3">
+              <h4 className="font-heading font-semibold text-sm text-muted-foreground uppercase tracking-wide">Summary</h4>
+              <p className="font-body text-base leading-relaxed">
+                {summaryBook?.back_cover_text || summaryBook?.description || 'A magical story awaits you...'}
+              </p>
+            </div>
+            
+            {/* Quick info */}
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              {summaryBook?.age_rating && summaryBook.age_rating !== 'All Ages' && (
+                <span className="px-3 py-1 rounded-full bg-primary/10 text-primary font-ui">
+                  {summaryBook.age_rating}
+                </span>
+              )}
+              <span className="font-ui flex items-center gap-1">
+                <FiUser className="w-4 h-4" />
+                {summaryBook?.author_name}
+              </span>
+            </div>
+            
+            {/* Action buttons */}
+            <div className="flex gap-3 pt-2">
+              <Button 
+                className="flex-1 rounded-full"
+                onClick={() => {
+                  setSummaryBook(null);
+                  navigate(`/read/${summaryBook?.id}`);
+                }}
+                data-testid="summary-read-btn"
+              >
+                <FiBook className="mr-2" />
+                Start Reading
+              </Button>
+              <Button 
+                variant="outline"
+                className="flex-1 rounded-full"
+                onClick={() => {
+                  setSummaryBook(null);
+                  navigate(`/read/${summaryBook?.id}?audio=true`);
+                }}
+                data-testid="summary-listen-btn"
+              >
+                <FiHeadphones className="mr-2" />
+                Listen
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
