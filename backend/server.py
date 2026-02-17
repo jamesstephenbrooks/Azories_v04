@@ -1107,7 +1107,13 @@ async def generate_image(request: ImageGenerateRequest, current_user: dict = Dep
             "illustration": "Children's book illustration style, colorful, friendly, magical, whimsical, suitable for children",
             "comic": "Comic book panel style, bold lines, dynamic, colorful, speech bubble friendly, manga-inspired",
             "realistic": "Photorealistic style, detailed, cinematic lighting, professional photography",
-            "scifi": "Science fiction style, futuristic, space themes, neon colors, advanced technology, cosmic landscapes, sleek spacecraft, alien worlds, holographic elements"
+            "scifi": "Science fiction style, futuristic, space themes, neon colors, advanced technology, cosmic landscapes, sleek spacecraft, alien worlds, holographic elements",
+            "sketch": "Hand-drawn pencil sketch style, black and white with subtle shading, artistic hatching, rough texture, storyboard feel",
+            "watercolor": "Watercolor painting style, soft blended colors, artistic brush strokes, dreamy atmosphere, gentle gradients",
+            "anime": "Japanese anime style, big expressive eyes, vibrant colors, clean lines, manga-inspired character design",
+            "fantasy": "Epic fantasy art style, magical lighting, dramatic composition, detailed environments, mystical creatures",
+            "pixar": "3D animated Pixar style, smooth textures, expressive characters, warm lighting, playful and appealing design",
+            "storybook": "Classic storybook illustration, vintage children's book style, warm earthy tones, gentle and cozy atmosphere"
         }
         style_desc = style_prompts.get(request.style, style_prompts["illustration"])
         full_prompt = f"{request.prompt}. Style: {style_desc}"
