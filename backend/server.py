@@ -251,6 +251,8 @@ class AIStoryRequest(BaseModel):
     age_rating: str = "All Ages"
     num_pages: int = 5
     generate_images: bool = True
+    media_type: str = "images"  # images, videos, cinemagraphs, none
+    image_style: str = "illustration"
 
 class SummaryGenerateRequest(BaseModel):
     book_id: str
