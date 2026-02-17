@@ -220,8 +220,9 @@ class ImageGenerateRequest(BaseModel):
 
 class VideoGenerateRequest(BaseModel):
     prompt: str
-    duration: int = 4
-    size: str = "1280x720"
+    duration: int = 5
+    size: str = "1920x1080"
+    style: Optional[str] = "animation"
 
 class TTSRequest(BaseModel):
     text: str
