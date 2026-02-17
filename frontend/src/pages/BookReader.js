@@ -446,9 +446,9 @@ export default function BookReader() {
               </motion.div>
             ) : (
               // Book pages with realistic page turn
-              <div className="flex justify-center" style={{ transformStyle: 'preserve-3d' }}>
+              <div className={`flex justify-center ${isFullscreen ? 'h-full' : ''}`} style={{ transformStyle: 'preserve-3d' }}>
                 {/* Left Page (Image/Previous) */}
-                <div className="w-full max-w-md aspect-[3/4] relative">
+                <div className={`relative ${isFullscreen ? 'h-full aspect-[3/4]' : 'w-full max-w-md aspect-[3/4]'}`}>
                   <motion.div
                     key={`left-${currentPage}`}
                     initial={{ opacity: 0 }}
