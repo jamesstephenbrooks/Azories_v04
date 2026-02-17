@@ -54,6 +54,7 @@ export default function BookReader() {
   useEffect(() => {
     if (!authLoading) {
       fetchBook();
+      fetchVoices();
       if (user) {
         fetchReadingProgress();
         fetchReadingStats();
@@ -62,10 +63,26 @@ export default function BookReader() {
   }, [bookId, user, authLoading]);
 
   useEffect(() => {
-    if (autoRead && currentPage >= 0 && allPages[currentPage]?.text_content) {
-      playAudio();
+    // Auto-read: play audio for current page content, or auto-advance for chapter titles
+    if (autoRead && currentPage >= 0) {
+      const page = allPages[currentPage];
+      if (page?.isChapterTitle) {
+        // Chapter title page - show briefly then advance
+        const timer = setTimeout(() => {
+          if (currentPage < allPages.length - 1) {
+            nextPage();
+          }
+        }, 2500);
+        return () => clearTimeout(timer);
+      } else if (page?.text_content) {
+        playAudio();
+      } else if (currentPage < allPages.length - 1) {
+        // No content, advance to next page
+        const timer = setTimeout(() => nextPage(), 1000);
+        return () => clearTimeout(timer);
+      }
     }
-  }, [currentPage, autoRead]);
+  }, [currentPage, autoRead, allPages]);
 
   // Save reading progress when page changes
   useEffect(() => {
@@ -73,6 +90,15 @@ export default function BookReader() {
       saveReadingProgress();
     }
   }, [currentPage, user, totalPages]);
+  
+  const fetchVoices = async () => {
+    try {
+      const res = await axios.get(`${API}/voices`);
+      setVoices(res.data);
+    } catch (error) {
+      console.error('Failed to load voices');
+    }
+  };
 
   const fetchBook = async () => {
     try {
