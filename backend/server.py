@@ -1193,15 +1193,16 @@ async def generate_images_from_text(request: GenerateImagesFromTextRequest, curr
     if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Pro subscription required")
     
+    book = await db.books.find_one({"id": request.book_id}, {"_id": 0})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    if book["author_id"] != current_user["id"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    if not EMERGENT_LLM_KEY:
+        raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
+    
     try:
-        book = await db.books.find_one({"id": request.book_id}, {"_id": 0})
-        if not book:
-            raise HTTPException(status_code=404, detail="Book not found")
-        if book["author_id"] != current_user["id"]:
-            raise HTTPException(status_code=403, detail="Not authorized")
-        
-        if not EMERGENT_LLM_KEY:
-            raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
         
         style_prompts = {
             "illustration": "Children's book illustration style, colorful, friendly, magical, whimsical",
