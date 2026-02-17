@@ -661,7 +661,7 @@ async def get_admin_user(credentials: HTTPAuthorizationCredentials = Depends(sec
     """Verify admin JWT token"""
     try:
         payload = jwt.decode(credentials.credentials, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        if payload.get("admin") != True:
+        if not payload.get("admin"):
             raise HTTPException(status_code=403, detail="Admin access required")
         return payload
     except Exception:
