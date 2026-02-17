@@ -405,7 +405,7 @@ export default function BookReader() {
                 </motion.div>
               </>
             ) : (
-              // Regular page view
+              // Regular page view or Chapter Title page
               <>
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -416,7 +416,21 @@ export default function BookReader() {
                     transition={{ duration: 0.4 }}
                     className="w-1/2 aspect-[3/4] reader-page page-shadow relative"
                   >
-                    {currentPageData?.video_url ? (
+                    {currentPageData?.isChapterTitle ? (
+                      // Chapter Title Page - Left side (decorative)
+                      <div className="w-full h-full bg-gradient-to-br from-primary/10 via-secondary/5 to-primary/10 flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-primary/20 flex items-center justify-center">
+                            <FiBook className="w-16 h-16 text-primary/60" />
+                          </div>
+                          <div className="flex justify-center gap-4 mt-8">
+                            {[...Array(3)].map((_, i) => (
+                              <div key={i} className="w-3 h-3 rounded-full bg-primary/30" />
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ) : currentPageData?.video_url ? (
                       <video
                         src={currentPageData.video_url}
                         className="w-full h-full object-cover"
@@ -450,16 +464,31 @@ export default function BookReader() {
                     transition={{ duration: 0.4 }}
                     className="w-1/2 aspect-[3/4] reader-page page-shadow p-8 md:p-12 flex flex-col"
                   >
-                    <div className="flex-1 overflow-auto">
-                      <p className="font-reader text-lg md:text-xl leading-relaxed whitespace-pre-wrap">
-                        {currentPageData?.text_content || 'This page is empty...'}
-                      </p>
-                    </div>
-                    <div className="text-right mt-4">
-                      <span className="font-ui text-sm text-muted-foreground">
-                        Page {currentPage + 1} of {totalPages}
-                      </span>
-                    </div>
+                    {currentPageData?.isChapterTitle ? (
+                      // Chapter Title Page - Right side (title)
+                      <div className="flex-1 flex flex-col items-center justify-center">
+                        <span className="text-sm font-ui text-muted-foreground mb-4 tracking-widest uppercase">
+                          Chapter {currentPageData.chapterNumber} of {currentPageData.totalChapters}
+                        </span>
+                        <h2 className="font-heading text-4xl md:text-5xl font-bold text-center leading-tight">
+                          {currentPageData.chapterTitle}
+                        </h2>
+                        <div className="mt-8 w-24 h-1 bg-primary/30 rounded-full" />
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex-1 overflow-auto">
+                          <p className="font-reader text-lg md:text-xl leading-relaxed whitespace-pre-wrap">
+                            {currentPageData?.text_content || 'This page is empty...'}
+                          </p>
+                        </div>
+                        <div className="text-right mt-4">
+                          <span className="font-ui text-sm text-muted-foreground">
+                            Page {currentPage + 1} of {totalPages}
+                          </span>
+                        </div>
+                      </>
+                    )}
                   </motion.div>
                 </AnimatePresence>
               </>
