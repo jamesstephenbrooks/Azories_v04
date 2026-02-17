@@ -678,14 +678,37 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
           
+          {/* Search Bar */}
+          <div className="relative mb-6">
+            <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Search your books..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-12 rounded-full border-2 h-12"
+              data-testid="search-books-input"
+            />
+            {searchQuery && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full h-8 w-8"
+                onClick={() => setSearchQuery('')}
+              >
+                <FiX className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
+          
           {/* Books Grid */}
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(3)].map((_, i) => <Card key={i} className="shimmer h-64" />)}
             </div>
-          ) : books.length > 0 ? (
+          ) : filteredBooks.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {books.map((book, index) => (
+              {filteredBooks.map((book, index) => (
                 <motion.div
                   key={book.id}
                   initial={{ opacity: 0, y: 20 }}
