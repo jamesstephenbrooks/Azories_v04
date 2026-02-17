@@ -761,11 +761,8 @@ async def admin_delete_book(book_id: str, admin: dict = Depends(get_admin_user))
     return {"message": "Book deleted by admin"}
 
 @api_router.get("/admin/analytics")
-async def admin_get_analytics(current_user: dict = Depends(get_current_user)):
+async def admin_get_analytics(admin: dict = Depends(get_admin_user)):
     """Get platform-wide analytics"""
-    if current_user.get("role") != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
-    
     total_books = await db.books.count_documents({})
     published_books = await db.books.count_documents({"is_published": True})
     total_users = await db.users.count_documents({})
