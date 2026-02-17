@@ -219,12 +219,8 @@ export default function BookReader() {
   }, [currentPage]);
 
   const playAudio = async () => {
-    // If this is a chapter title page, auto-advance after a brief display
+    // Skip chapter title pages - handled by useEffect
     if (allPages[currentPage]?.isChapterTitle) {
-      if (autoRead && currentPage < allPages.length - 1) {
-        // Show chapter title for 2 seconds then move to first page of chapter
-        setTimeout(() => nextPage(), 2000);
-      }
       return;
     }
     
