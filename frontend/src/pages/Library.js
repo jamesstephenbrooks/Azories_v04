@@ -314,67 +314,6 @@ export default function Library() {
                       selectedBook={selectedBook}
                     />
                   </Suspense>
-                  
-                  {/* Selected book details */}
-                  {selectedBook && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="bg-card rounded-3xl p-6 border border-border"
-                    >
-                      <div className="flex gap-6">
-                        <div className="w-32 h-48 rounded-xl overflow-hidden flex-shrink-0">
-                          {selectedBook.cover_image ? (
-                            <img src={selectedBook.cover_image} alt={selectedBook.title} className="w-full h-full object-cover" />
-                          ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-                              <FiBook className="w-8 h-8 text-primary/40" />
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="font-heading text-2xl font-bold mb-2">{selectedBook.title}</h3>
-                          <p className="font-body text-muted-foreground mb-4">
-                            {selectedBook.description || 'A magical story awaits...'}
-                          </p>
-                          <div className="flex items-center gap-4 mb-4">
-                            <span className="font-ui text-sm text-muted-foreground flex items-center gap-1">
-                              <FiUser className="w-4 h-4" /> {selectedBook.author_name}
-                            </span>
-                            <span className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary font-ui">
-                              {selectedBook.genre}
-                            </span>
-                          </div>
-                          <div className="flex gap-3">
-                            <Button 
-                              onClick={() => navigate(`/read/${selectedBook.id}`)}
-                              className="rounded-full"
-                            >
-                              <FiBook className="mr-2" /> Read Now
-                            </Button>
-                            <Button 
-                              variant="secondary"
-                              onClick={() => navigate(`/read/${selectedBook.id}?audio=true`)}
-                              className="rounded-full"
-                            >
-                              <FiHeadphones className="mr-2" /> Listen
-                            </Button>
-                            <Button
-                              variant="outline"
-                              onClick={() => setSelectedBook(null)}
-                              className="rounded-full"
-                            >
-                              Close
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                  
-                  <p className="text-center text-sm text-muted-foreground font-body">
-                    Click on a book spine to select it, use mouse to rotate the view
-                  </p>
                 </div>
               ) : (
               /* Books Grid */
