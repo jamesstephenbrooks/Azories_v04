@@ -8,6 +8,7 @@ import BookReader from "@/pages/BookReader";
 import Dashboard from "@/pages/Dashboard";
 import BookEditor from "@/pages/BookEditor";
 import Auth from "@/pages/Auth";
+import AdminCMS from "@/pages/AdminCMS";
 import "@/App.css";
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
             <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/editor/:bookId" element={<BookEditor />} />
+            <Route path="/admin" element={<AdminCMS />} />
           </Routes>
         </BrowserRouter>
         <Toaster position="bottom-right" richColors />
