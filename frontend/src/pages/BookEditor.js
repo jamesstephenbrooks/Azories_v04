@@ -1124,10 +1124,27 @@ export default function BookEditor() {
                             onClick={() => videoInputRef.current?.click()}
                             className="w-full rounded-full"
                             data-testid="upload-video-btn"
+                            disabled={isUploading}
                           >
-                            <FiUpload className="mr-2 w-4 h-4" />
-                            Upload Video
+                            {isUploading && videoUploadProgress > 0 ? (
+                              <FiLoader className="mr-2 w-4 h-4 animate-spin" />
+                            ) : (
+                              <FiUpload className="mr-2 w-4 h-4" />
+                            )}
+                            {isUploading && videoUploadProgress > 0 
+                              ? `Uploading... ${videoUploadProgress}%` 
+                              : 'Upload Video'
+                            }
                           </Button>
+                          {/* Video Upload Progress Bar */}
+                          {isUploading && videoUploadProgress > 0 && (
+                            <div className="space-y-1">
+                              <Progress value={videoUploadProgress} className="h-2" />
+                              <p className="text-xs text-muted-foreground text-center">
+                                {videoUploadProgress}% uploaded
+                              </p>
+                            </div>
+                          )}
                         </div>
                       </TabsContent>
                     </Tabs>
