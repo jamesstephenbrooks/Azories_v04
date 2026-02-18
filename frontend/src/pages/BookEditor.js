@@ -63,6 +63,11 @@ export default function BookEditor() {
     age_rating: 'All Ages'
   });
   
+  // Upload progress states
+  const [imageUploadProgress, setImageUploadProgress] = useState(0);
+  const [videoUploadProgress, setVideoUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  
   // New chapter/page dialogs
   const [newChapterOpen, setNewChapterOpen] = useState(false);
   const [newChapterTitle, setNewChapterTitle] = useState('');
