@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FiSearch, FiBook, FiHeadphones, FiUser, FiStar, FiAward, FiTrendingUp, FiGrid, FiBox, FiInfo } from 'react-icons/fi';
+import { FiSearch, FiBook, FiHeadphones, FiUser, FiStar, FiAward, FiTrendingUp, FiGrid, FiBox, FiInfo, FiGlobe } from 'react-icons/fi';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import Navbar from '@/components/Navbar';
 
@@ -14,6 +14,12 @@ import Navbar from '@/components/Navbar';
 const Bookshelf3D = lazy(() => import('@/components/Bookshelf3D'));
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+
+// Sketchfab Library Models - Free to use library scenes
+const SKETCHFAB_LIBRARIES = [
+  { id: '7b5e6a8f9a034a4eb7d1b8e8f1c9d5a7', name: 'Classic Library' },
+  { id: 'a8f39c87d6c94c3ab9e2f71d8a3b2c6f', name: 'Fantasy Library' },
+];
 
 export default function Library() {
   const [books, setBooks] = useState([]);
@@ -24,7 +30,7 @@ export default function Library() {
   const [genre, setGenre] = useState('All');
   const [genres, setGenres] = useState([]);
   const [activeTab, setActiveTab] = useState('all');
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' or '3d'
+  const [viewMode, setViewMode] = useState('grid'); // 'grid', '3d', or 'immersive'
   const [selectedBook, setSelectedBook] = useState(null);
   const [summaryBook, setSummaryBook] = useState(null);
   const navigate = useNavigate();
