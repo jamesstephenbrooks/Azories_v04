@@ -416,9 +416,16 @@ export default function BookEditor() {
     const formData = new FormData();
     formData.append('file', file);
     
+    setIsUploading(true);
+    setImageUploadProgress(0);
+    
     try {
       const res = await axios.post(`${API}/upload/image`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: (progressEvent) => {
+          const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setImageUploadProgress(progress);
+        }
       });
       
       if (res.data.success) {
@@ -437,6 +444,9 @@ export default function BookEditor() {
       }
     } catch (error) {
       toast.error('Failed to upload image');
+    } finally {
+      setIsUploading(false);
+      setImageUploadProgress(0);
     }
   };
 
@@ -447,9 +457,16 @@ export default function BookEditor() {
     const formData = new FormData();
     formData.append('file', file);
     
+    setIsUploading(true);
+    setVideoUploadProgress(0);
+    
     try {
       const res = await axios.post(`${API}/upload/video`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: (progressEvent) => {
+          const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setVideoUploadProgress(progress);
+        }
       });
       
       if (res.data.success) {
@@ -458,6 +475,9 @@ export default function BookEditor() {
       }
     } catch (error) {
       toast.error('Failed to upload video');
+    } finally {
+      setIsUploading(false);
+      setVideoUploadProgress(0);
     }
   };
 
