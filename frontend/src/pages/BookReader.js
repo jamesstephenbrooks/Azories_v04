@@ -452,14 +452,18 @@ export default function BookReader() {
                 <div className={`relative ${isFullscreen ? 'h-full aspect-[3/4]' : 'w-full max-w-md aspect-[3/4]'}`}>
                   <motion.div
                     key={`left-${currentPage}`}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4 }}
                     className="absolute inset-0 reader-page rounded-l-lg overflow-hidden"
                     style={{ 
-                      boxShadow: '-8px 0 20px rgba(0,0,0,0.2)',
+                      boxShadow: '-8px 0 30px rgba(0,0,0,0.25), inset -2px 0 5px rgba(0,0,0,0.1)',
                       transformOrigin: 'right center'
                     }}
                   >
+                    {/* Book spine effect */}
+                    <div className="absolute right-0 top-0 bottom-0 w-3 bg-gradient-to-l from-black/20 to-transparent z-10" />
+                    
                     {currentPageData?.isChapterTitle ? (
                       <div className="w-full h-full bg-gradient-to-br from-primary/10 via-secondary/5 to-primary/10 flex items-center justify-center">
                         <div className="text-center">
@@ -485,36 +489,47 @@ export default function BookReader() {
                   </motion.div>
                 </div>
                 
-                {/* Right Page (Text) with Page Turn Animation */}
-                <div className={`relative ${isFullscreen ? 'h-full aspect-[3/4]' : 'w-full max-w-md aspect-[3/4]'}`} style={{ transformStyle: 'preserve-3d' }}>
+                {/* Right Page (Text) with Realistic Page Turn Animation */}
+                <div className={`relative ${isFullscreen ? 'h-full aspect-[3/4]' : 'w-full max-w-md aspect-[3/4]'}`} style={{ transformStyle: 'preserve-3d', perspective: '1500px' }}>
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={`right-${currentPage}`}
                       initial={{ 
-                        rotateY: flipDirection === 'next' ? -90 : 0,
-                        originX: 0,
-                        opacity: flipDirection === 'next' ? 0 : 1
+                        rotateY: flipDirection === 'next' ? -120 : 0,
+                        scale: flipDirection === 'next' ? 0.9 : 1,
+                        x: flipDirection === 'next' ? 50 : 0,
+                        opacity: 0,
+                        filter: 'brightness(0.8)'
                       }}
                       animate={{ 
                         rotateY: 0,
-                        opacity: 1
+                        scale: 1,
+                        x: 0,
+                        opacity: 1,
+                        filter: 'brightness(1)'
                       }}
                       exit={{ 
-                        rotateY: flipDirection === 'prev' ? -90 : 0,
-                        originX: 0,
-                        opacity: flipDirection === 'prev' ? 0 : 1
+                        rotateY: flipDirection === 'prev' ? -120 : 0,
+                        scale: flipDirection === 'prev' ? 0.9 : 1,
+                        x: flipDirection === 'prev' ? 50 : 0,
+                        opacity: 0,
+                        filter: 'brightness(0.8)'
                       }}
                       transition={{ 
-                        duration: 0.6,
-                        ease: [0.4, 0, 0.2, 1]
+                        duration: 0.5,
+                        ease: [0.25, 0.1, 0.25, 1.0]
                       }}
                       className="absolute inset-0 reader-page rounded-r-lg p-8 md:p-10 flex flex-col overflow-hidden"
                       style={{ 
-                        boxShadow: '8px 0 20px rgba(0,0,0,0.2)',
+                        boxShadow: '8px 0 30px rgba(0,0,0,0.25), inset 2px 0 5px rgba(0,0,0,0.05)',
                         transformStyle: 'preserve-3d',
+                        transformOrigin: 'left center',
                         backfaceVisibility: 'hidden'
                       }}
                     >
+                      {/* Book spine shadow on left edge */}
+                      <div className="absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-black/10 to-transparent" />
+                      
                       {currentPageData?.isChapterTitle ? (
                         <div className="flex-1 flex flex-col items-center justify-center">
                           <span className="text-sm font-ui text-muted-foreground mb-4 tracking-widest uppercase">
