@@ -11,6 +11,14 @@ Create a digital book creating and reading web application called "Azories" (azo
 
 ## What's Been Implemented (February 2026)
 
+### Latest Updates (Feb 18, 2026) - Session 3
+- **Auto-Read Continuous Playback Fix**: Fixed critical bug where audiobook would stop at chapter title pages
+  - Added refs (autoReadRef, currentPageRef) to avoid stale closure issues in setTimeout callbacks
+  - Chapter title pages now properly auto-advance after 2.5 seconds
+  - Audio playback correctly advances to next page on completion
+  - Fixed race condition with auth token on direct URL navigation
+- **Code Quality**: Improved BookReader.js with proper ref usage for async callbacks
+
 ### Latest Updates (Feb 17, 2026) - Session 2
 - **Book Series Management**: Create and manage book series in My Books
   - Manage Series button in header
