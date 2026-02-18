@@ -63,27 +63,42 @@ export default function BookReader() {
     }
   }, [bookId, user, authLoading]);
 
+  // Ref to track if we should continue auto-reading
+  const autoReadRef = useRef(autoRead);
+  autoReadRef.current = autoRead;
+  
+  // Ref to track current page for async operations
+  const currentPageRef = useRef(currentPage);
+  currentPageRef.current = currentPage;
+
   useEffect(() => {
     // Auto-read: play audio for current page content, or auto-advance for chapter titles
-    if (autoRead && currentPage >= 0) {
+    if (autoRead && currentPage >= 0 && allPages.length > 0) {
       const page = allPages[currentPage];
+      
       if (page?.isChapterTitle) {
         // Chapter title page - show briefly then advance
         const timer = setTimeout(() => {
-          if (currentPage < allPages.length - 1) {
-            nextPage();
+          // Use ref to check current state
+          if (autoReadRef.current && currentPageRef.current < allPages.length - 1) {
+            goToPage(currentPageRef.current + 1, 'next');
           }
         }, 2500);
         return () => clearTimeout(timer);
       } else if (page?.text_content) {
+        // Has text content - play audio
         playAudio();
       } else if (currentPage < allPages.length - 1) {
         // No content, advance to next page
-        const timer = setTimeout(() => nextPage(), 1000);
+        const timer = setTimeout(() => {
+          if (autoReadRef.current && currentPageRef.current < allPages.length - 1) {
+            goToPage(currentPageRef.current + 1, 'next');
+          }
+        }, 1000);
         return () => clearTimeout(timer);
       }
     }
-  }, [currentPage, autoRead, allPages]);
+  }, [currentPage, autoRead, allPages.length]);
 
   // Save reading progress when page changes
   useEffect(() => {
