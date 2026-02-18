@@ -21,7 +21,7 @@ export default function BookReader() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
-  const { user, authLoading } = useAuth();
+  const { user, token, loading: authLoading } = useAuth();
   const audioRef = useRef(null);
   
   const [book, setBook] = useState(null);
