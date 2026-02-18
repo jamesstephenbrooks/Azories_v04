@@ -1022,10 +1022,27 @@ export default function BookEditor() {
                             onClick={() => fileInputRef.current?.click()}
                             className="w-full rounded-full"
                             data-testid="upload-image-btn"
+                            disabled={isUploading}
                           >
-                            <FiUpload className="mr-2 w-4 h-4" />
-                            Upload Image {isComicMode ? `(Panel ${activeImageSlot})` : ''}
+                            {isUploading && imageUploadProgress > 0 ? (
+                              <FiLoader className="mr-2 w-4 h-4 animate-spin" />
+                            ) : (
+                              <FiUpload className="mr-2 w-4 h-4" />
+                            )}
+                            {isUploading && imageUploadProgress > 0 
+                              ? `Uploading... ${imageUploadProgress}%` 
+                              : `Upload Image ${isComicMode ? `(Panel ${activeImageSlot})` : ''}`
+                            }
                           </Button>
+                          {/* Image Upload Progress Bar */}
+                          {isUploading && imageUploadProgress > 0 && (
+                            <div className="space-y-1">
+                              <Progress value={imageUploadProgress} className="h-2" />
+                              <p className="text-xs text-muted-foreground text-center">
+                                {imageUploadProgress}% uploaded
+                              </p>
+                            </div>
+                          )}
                         </div>
                       </TabsContent>
                       
