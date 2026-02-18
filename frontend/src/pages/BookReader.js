@@ -236,14 +236,21 @@ export default function BookReader() {
 
   const playAudio = async () => {
     // Skip chapter title pages - handled by useEffect
-    if (allPages[currentPage]?.isChapterTitle) {
+    if (allPages[currentPageRef.current]?.isChapterTitle) {
       return;
     }
     
-    if (!narratorVoice || currentPage < 0 || !allPages[currentPage]?.text_content) {
+    const pageIndex = currentPageRef.current;
+    const pageData = allPages[pageIndex];
+    
+    if (!narratorVoice || pageIndex < 0 || !pageData?.text_content) {
       // If page has no text content, move to next page in auto-read mode
-      if (autoRead && currentPage < allPages.length - 1) {
-        setTimeout(() => nextPage(), 500);
+      if (autoReadRef.current && pageIndex < allPages.length - 1) {
+        setTimeout(() => {
+          if (autoReadRef.current) {
+            goToPage(currentPageRef.current + 1, 'next');
+          }
+        }, 500);
       }
       return;
     }
@@ -251,7 +258,7 @@ export default function BookReader() {
     setAudioLoading(true);
     try {
       const res = await axios.post(`${API}/tts/generate`, {
-        text: allPages[currentPage].text_content,
+        text: pageData.text_content,
         voice_id: narratorVoice
       });
 
@@ -267,8 +274,12 @@ export default function BookReader() {
         audio.onended = () => {
           setIsPlaying(false);
           // Continue to next page when audio finishes in auto-read mode
-          if (autoRead && currentPage < allPages.length - 1) {
-            setTimeout(() => nextPage(), 500);
+          if (autoReadRef.current && currentPageRef.current < allPages.length - 1) {
+            setTimeout(() => {
+              if (autoReadRef.current) {
+                goToPage(currentPageRef.current + 1, 'next');
+              }
+            }, 500);
           }
         };
         
@@ -279,8 +290,12 @@ export default function BookReader() {
     } catch (error) {
       toast.error('Failed to generate audio');
       // Still continue to next page even if audio fails in auto-read mode
-      if (autoRead && currentPage < allPages.length - 1) {
-        setTimeout(() => nextPage(), 1000);
+      if (autoReadRef.current && currentPageRef.current < allPages.length - 1) {
+        setTimeout(() => {
+          if (autoReadRef.current) {
+            goToPage(currentPageRef.current + 1, 'next');
+          }
+        }, 1000);
       }
     } finally {
       setAudioLoading(false);
