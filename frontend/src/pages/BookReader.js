@@ -54,6 +54,10 @@ export default function BookReader() {
 
   useEffect(() => {
     if (!authLoading) {
+      // Ensure axios has the auth header set if user is logged in
+      if (token && !axios.defaults.headers.common['Authorization']) {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      }
       fetchBook();
       fetchVoices();
       if (user) {
@@ -61,7 +65,7 @@ export default function BookReader() {
         fetchReadingStats();
       }
     }
-  }, [bookId, user, authLoading]);
+  }, [bookId, user, authLoading, token]);
 
   // Ref to track if we should continue auto-reading
   const autoReadRef = useRef(autoRead);
