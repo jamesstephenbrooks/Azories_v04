@@ -485,24 +485,24 @@ export default function BookEditor() {
 
   const downloadBook = async () => {
     try {
-      toast.info('Preparing download...');
+      toast.info('Preparing PDF download...');
       const response = await axios.get(`${API}/books/${bookId}/download`, {
         responseType: 'blob'
       });
       
-      // Create download link
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      // Create download link for PDF
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `${book?.title || 'book'}_azories.json`);
+      link.setAttribute('download', `${book?.title || 'book'}_azories.pdf`);
       document.body.appendChild(link);
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
       
-      toast.success('Book downloaded!');
+      toast.success('PDF downloaded!');
     } catch (error) {
-      toast.error('Failed to download book');
+      toast.error('Failed to download PDF');
     }
   };
 
