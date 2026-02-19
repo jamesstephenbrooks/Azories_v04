@@ -119,7 +119,7 @@ function GothicLibraryModel({ onLoaded }) {
   );
 }
 
-// Camera controller for navigation
+// Camera controller for navigation - using Three.js OrbitControls directly
 function CameraController() {
   const { camera, gl } = useThree();
   const controlsRef = useRef();
@@ -127,25 +127,35 @@ function CameraController() {
   useEffect(() => {
     // Set initial camera position for a good view of the library
     camera.position.set(0, 3, 8);
-    camera.lookAt(0, 2, 0);
-  }, [camera]);
+    
+    // Create OrbitControls
+    const controls = new OrbitControls(camera, gl.domElement);
+    controls.enablePan = true;
+    controls.enableZoom = true;
+    controls.enableRotate = true;
+    controls.minDistance = 1;
+    controls.maxDistance = 20;
+    controls.maxPolarAngle = Math.PI / 1.8;
+    controls.minPolarAngle = Math.PI / 6;
+    controls.target.set(0, 2, 0);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.update();
+    
+    controlsRef.current = controls;
 
-  return (
-    <OrbitControls
-      ref={controlsRef}
-      args={[camera, gl.domElement]}
-      enablePan={true}
-      enableZoom={true}
-      enableRotate={true}
-      minDistance={1}
-      maxDistance={20}
-      maxPolarAngle={Math.PI / 1.8}
-      minPolarAngle={Math.PI / 6}
-      target={[0, 2, 0]}
-      enableDamping={true}
-      dampingFactor={0.05}
-    />
-  );
+    return () => {
+      controls.dispose();
+    };
+  }, [camera, gl]);
+
+  useFrame(() => {
+    if (controlsRef.current) {
+      controlsRef.current.update();
+    }
+  });
+
+  return null;
 }
 
 // Progress tracker
