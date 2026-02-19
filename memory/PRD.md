@@ -136,12 +136,16 @@ Create a digital book creating and reading web application called "Azories" (azo
 - [x] Auto-save
 - [x] Summary preview popup on book cards
 - [x] Auto-read continuous playback through chapters (fixed Feb 18, 2026)
+- [x] Analytics Dashboard for creators (Feb 18, 2026)
+- [x] User Profile system with social features (Feb 18, 2026)
+- [x] Ambient reading sounds (Feb 18, 2026)
 
 ### P1 (High Priority)
 - [ ] Stripe payment integration
 - [ ] Realistic page-turning animation (BookReaderV2)
 - [x] Interactive PDF download (working)
 - [x] Loading bars for image/video uploads (working)
+- [x] Social features - follow/unfollow, reviews (Feb 18, 2026)
 
 ### P2 (Medium Priority)
 - [ ] Book analytics dashboard for creators
