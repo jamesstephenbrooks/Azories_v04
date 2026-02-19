@@ -2053,6 +2053,259 @@ async def seed_test_books(admin: dict = Depends(get_admin_user)):
         "books": created_books
     }
 
+
+# ============ USER PROFILE & SOCIAL ROUTES ============
+
+class UserProfileUpdate(BaseModel):
+    display_name: Optional[str] = None
+    bio: Optional[str] = None
+    location: Optional[str] = None
+    website: Optional[str] = None
+    twitter: Optional[str] = None
+    avatar: Optional[str] = None
+
+@api_router.get("/users/{user_id}/profile")
+async def get_user_profile(user_id: str, current_user: dict = Depends(get_optional_user)):
+    """Get a user's public profile"""
+    user = await db.users.find_one({"id": user_id}, {"_id": 0, "password": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Get profile data
+    profile = await db.profiles.find_one({"user_id": user_id}, {"_id": 0})
+    
+    # Get follower/following counts
+    followers_count = await db.follows.count_documents({"following_id": user_id})
+    following_count = await db.follows.count_documents({"follower_id": user_id})
+    
+    # Get published books count and total reads
+    books = await db.books.find({"author_id": user_id, "is_published": True}, {"_id": 0}).to_list(100)
+    books_count = len(books)
+    total_reads = sum(b.get("read_count", 0) for b in books)
+    
+    # Check if current user is following this user
+    is_following = False
+    if current_user and current_user["id"] != user_id:
+        follow = await db.follows.find_one({"follower_id": current_user["id"], "following_id": user_id})
+        is_following = follow is not None
+    
+    return {
+        "id": user["id"],
+        "name": user["name"],
+        "email": user["email"] if current_user and current_user["id"] == user_id else None,
+        "display_name": profile.get("display_name", user["name"]) if profile else user["name"],
+        "bio": profile.get("bio", "") if profile else "",
+        "location": profile.get("location", "") if profile else "",
+        "website": profile.get("website", "") if profile else "",
+        "twitter": profile.get("twitter", "") if profile else "",
+        "avatar": profile.get("avatar") if profile else None,
+        "subscription": user.get("subscription", "free"),
+        "created_at": user.get("created_at"),
+        "followers_count": followers_count,
+        "following_count": following_count,
+        "books_count": books_count,
+        "total_reads": total_reads,
+        "is_following": is_following
+    }
+
+@api_router.put("/users/profile")
+async def update_user_profile(profile_data: UserProfileUpdate, current_user: dict = Depends(get_current_user)):
+    """Update current user's profile"""
+    update_data = {k: v for k, v in profile_data.model_dump().items() if v is not None}
+    update_data["user_id"] = current_user["id"]
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.profiles.update_one(
+        {"user_id": current_user["id"]},
+        {"$set": update_data},
+        upsert=True
+    )
+    
+    return {"message": "Profile updated"}
+
+@api_router.get("/users/{user_id}/books")
+async def get_user_books(user_id: str):
+    """Get a user's published books"""
+    books = await db.books.find(
+        {"author_id": user_id, "is_published": True}, 
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    for book in books:
+        book = set_book_defaults(book)
+    
+    return books
+
+@api_router.post("/users/{user_id}/follow")
+async def follow_user(user_id: str, current_user: dict = Depends(get_current_user)):
+    """Follow a user"""
+    if current_user["id"] == user_id:
+        raise HTTPException(status_code=400, detail="Cannot follow yourself")
+    
+    # Check if user exists
+    target_user = await db.users.find_one({"id": user_id})
+    if not target_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Check if already following
+    existing = await db.follows.find_one({
+        "follower_id": current_user["id"],
+        "following_id": user_id
+    })
+    
+    if existing:
+        return {"message": "Already following"}
+    
+    # Create follow relationship
+    follow = {
+        "id": str(uuid.uuid4()),
+        "follower_id": current_user["id"],
+        "following_id": user_id,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.follows.insert_one(follow)
+    
+    return {"message": "Now following user"}
+
+@api_router.delete("/users/{user_id}/follow")
+async def unfollow_user(user_id: str, current_user: dict = Depends(get_current_user)):
+    """Unfollow a user"""
+    result = await db.follows.delete_one({
+        "follower_id": current_user["id"],
+        "following_id": user_id
+    })
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Not following this user")
+    
+    return {"message": "Unfollowed user"}
+
+@api_router.get("/users/{user_id}/followers")
+async def get_user_followers(user_id: str, current_user: dict = Depends(get_optional_user)):
+    """Get a user's followers"""
+    follows = await db.follows.find({"following_id": user_id}, {"_id": 0}).to_list(100)
+    
+    followers = []
+    for follow in follows:
+        user = await db.users.find_one({"id": follow["follower_id"]}, {"_id": 0, "password": 0})
+        if user:
+            profile = await db.profiles.find_one({"user_id": user["id"]}, {"_id": 0})
+            followers.append({
+                "id": user["id"],
+                "name": user["name"],
+                "display_name": profile.get("display_name", user["name"]) if profile else user["name"],
+                "avatar": profile.get("avatar") if profile else None
+            })
+    
+    return followers
+
+@api_router.get("/users/{user_id}/following")
+async def get_user_following(user_id: str, current_user: dict = Depends(get_optional_user)):
+    """Get users that a user is following"""
+    follows = await db.follows.find({"follower_id": user_id}, {"_id": 0}).to_list(100)
+    
+    following = []
+    for follow in follows:
+        user = await db.users.find_one({"id": follow["following_id"]}, {"_id": 0, "password": 0})
+        if user:
+            profile = await db.profiles.find_one({"user_id": user["id"]}, {"_id": 0})
+            following.append({
+                "id": user["id"],
+                "name": user["name"],
+                "display_name": profile.get("display_name", user["name"]) if profile else user["name"],
+                "avatar": profile.get("avatar") if profile else None
+            })
+    
+    return following
+
+# ============ BOOK REVIEWS & RATINGS ============
+
+class ReviewCreate(BaseModel):
+    book_id: str
+    rating: int = Field(ge=1, le=5)
+    content: str = ""
+
+@api_router.post("/reviews")
+async def create_review(review_data: ReviewCreate, current_user: dict = Depends(get_current_user)):
+    """Create or update a book review"""
+    book = await db.books.find_one({"id": review_data.book_id})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    # Check if user has already reviewed this book
+    existing = await db.reviews.find_one({
+        "book_id": review_data.book_id,
+        "user_id": current_user["id"]
+    })
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    if existing:
+        # Update existing review
+        await db.reviews.update_one(
+            {"id": existing["id"]},
+            {"$set": {
+                "rating": review_data.rating,
+                "content": review_data.content,
+                "updated_at": now
+            }}
+        )
+        return {"message": "Review updated", "id": existing["id"]}
+    
+    # Create new review
+    review_id = str(uuid.uuid4())
+    review = {
+        "id": review_id,
+        "book_id": review_data.book_id,
+        "user_id": current_user["id"],
+        "user_name": current_user["name"],
+        "rating": review_data.rating,
+        "content": review_data.content,
+        "created_at": now,
+        "updated_at": now
+    }
+    await db.reviews.insert_one(review)
+    
+    return {"message": "Review created", "id": review_id}
+
+@api_router.get("/books/{book_id}/reviews")
+async def get_book_reviews(book_id: str):
+    """Get all reviews for a book"""
+    reviews = await db.reviews.find({"book_id": book_id}, {"_id": 0}).sort("created_at", -1).to_list(100)
+    
+    # Calculate average rating
+    if reviews:
+        avg_rating = sum(r["rating"] for r in reviews) / len(reviews)
+    else:
+        avg_rating = 0
+    
+    # Get user profiles for reviews
+    for review in reviews:
+        profile = await db.profiles.find_one({"user_id": review["user_id"]}, {"_id": 0})
+        review["user_display_name"] = profile.get("display_name", review["user_name"]) if profile else review["user_name"]
+        review["user_avatar"] = profile.get("avatar") if profile else None
+    
+    return {
+        "reviews": reviews,
+        "average_rating": round(avg_rating, 1),
+        "total_reviews": len(reviews)
+    }
+
+@api_router.delete("/reviews/{review_id}")
+async def delete_review(review_id: str, current_user: dict = Depends(get_current_user)):
+    """Delete a review (owner only)"""
+    review = await db.reviews.find_one({"id": review_id})
+    if not review:
+        raise HTTPException(status_code=404, detail="Review not found")
+    
+    if review["user_id"] != current_user["id"] and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    await db.reviews.delete_one({"id": review_id})
+    return {"message": "Review deleted"}
+
+
+
 # ============ ROOT ============
 
 @api_router.get("/")
