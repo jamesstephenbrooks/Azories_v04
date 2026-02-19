@@ -869,6 +869,12 @@ export default function Dashboard() {
               </motion.div>
             </div>
           )}
+            </TabsContent>
+            
+            <TabsContent value="analytics">
+              <AnalyticsDashboard books={books} />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
       
