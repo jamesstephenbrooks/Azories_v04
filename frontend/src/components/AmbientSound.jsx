@@ -219,10 +219,10 @@ export default function AmbientSound({ genre = 'General', isReading = false }) {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            className="absolute bottom-full right-0 mb-2 p-4 bg-background/95 backdrop-blur-xl rounded-2xl shadow-2xl border w-72 z-50"
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            className="absolute top-full right-0 mt-2 p-4 bg-background/95 backdrop-blur-xl rounded-2xl shadow-2xl border w-72 z-[100]"
           >
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
