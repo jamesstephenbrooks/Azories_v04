@@ -682,9 +682,23 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
           
-          {/* Search Bar */}
-          <div className="relative mb-6">
-            <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+          {/* Tabs for Books and Analytics */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full max-w-md grid-cols-2 mb-6">
+              <TabsTrigger value="books" className="rounded-full" data-testid="tab-my-books">
+                <FiBook className="w-4 h-4 mr-2" />
+                My Books
+              </TabsTrigger>
+              <TabsTrigger value="analytics" className="rounded-full" data-testid="tab-analytics">
+                <FiBarChart2 className="w-4 h-4 mr-2" />
+                Analytics
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="books">
+              {/* Search Bar */}
+              <div className="relative mb-6">
+                <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <Input
               type="text"
               placeholder="Search your books..."
