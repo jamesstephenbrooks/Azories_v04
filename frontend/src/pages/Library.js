@@ -325,49 +325,23 @@ export default function Library() {
                 </div>
               </div>
               
-              {/* Immersive Sketchfab Library View */}
+              {/* Immersive 3D Gothic Library View */}
               {viewMode === 'immersive' ? (
-                <div className="space-y-6">
-                  <div className="relative w-full h-[700px] rounded-3xl overflow-hidden bg-black">
-                    {/* Sketchfab Embed - Beautiful Library Scene */}
-                    <iframe
-                      title="Immersive Library"
-                      className="w-full h-full"
-                      src="https://sketchfab.com/models/61c74e6c0c4b4dbea89d2c4b23ad5b11/embed?autostart=1&ui_infos=0&ui_controls=1&ui_stop=0&ui_watermark=0"
-                      allow="autoplay; fullscreen; xr-spatial-tracking"
-                      allowFullScreen
-                    />
-                    
-                    {/* Book overlay panel */}
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-6">
-                      <h3 className="font-heading text-xl text-white mb-4">Explore Books</h3>
-                      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                        {books.slice(0, 8).map((book) => (
-                          <motion.div
-                            key={book.id}
-                            whileHover={{ scale: 1.05, y: -5 }}
-                            className="flex-shrink-0 cursor-pointer"
-                            onClick={() => navigate(`/read/${book.id}`)}
-                          >
-                            <div className="w-24 h-32 rounded-lg overflow-hidden border-2 border-white/20 hover:border-primary transition-colors">
-                              {book.cover_image ? (
-                                <img src={book.cover_image} alt={book.title} className="w-full h-full object-cover" />
-                              ) : (
-                                <div className="w-full h-full bg-gradient-to-br from-primary/50 to-secondary/50 flex items-center justify-center">
-                                  <FiBook className="w-6 h-6 text-white/70" />
-                                </div>
-                              )}
-                            </div>
-                            <p className="text-white text-xs mt-1 text-center truncate w-24">{book.title}</p>
-                          </motion.div>
-                        ))}
-                      </div>
+                <Suspense fallback={
+                  <div className="w-full h-[700px] rounded-3xl bg-black flex items-center justify-center">
+                    <div className="text-center space-y-4">
+                      <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+                      <p className="text-white text-lg">Loading Gothic Library...</p>
+                      <p className="text-white/60 text-sm">Preparing an immersive experience</p>
                     </div>
                   </div>
-                  <p className="text-center text-sm text-muted-foreground">
-                    🖱️ Drag to rotate • Scroll to zoom • Click books below to read
-                  </p>
-                </div>
+                }>
+                  <ImmersiveLibrary3D 
+                    books={books}
+                    onClose={() => setViewMode('grid')}
+                    onSelectBook={(book) => navigate(`/read/${book.id}`)}
+                  />
+                </Suspense>
               ) : viewMode === '3d' ? (
                 <div className="space-y-6">
                   <Suspense fallback={
