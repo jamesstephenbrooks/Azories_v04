@@ -21,21 +21,16 @@ const LIBRARY_MODEL_URL = 'https://customer-assets.emergentagent.com/job_513aa01
 function Loader() {
   const { progress } = useProgress();
   return (
-    <Html center>
-      <div className="flex flex-col items-center gap-4">
-        <div className="w-20 h-20 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-        <div className="text-center">
-          <p className="text-lg font-bold text-white">Entering the Library...</p>
-          <p className="text-sm text-white/70">{progress.toFixed(0)}%</p>
-        </div>
-        <div className="w-48 h-2 bg-white/20 rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-300"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-      </div>
-    </Html>
+    <group position={[0, 3, 0]}>
+      <Text
+        fontSize={0.5}
+        color="white"
+        anchorX="center"
+        anchorY="middle"
+      >
+        {`Loading Library... ${progress.toFixed(0)}%`}
+      </Text>
+    </group>
   );
 }
 
