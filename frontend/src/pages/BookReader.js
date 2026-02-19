@@ -387,6 +387,9 @@ export default function BookReader() {
               </div>
             )}
             
+            {/* Ambient Sound Control */}
+            <AmbientSound genre={book?.genre} isReading={currentPage >= 0} />
+            
             <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full">
               {theme === 'dark' ? <FiSun className="w-5 h-5" /> : <FiMoon className="w-5 h-5" />}
             </Button>
