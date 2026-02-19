@@ -36,7 +36,7 @@ class TestUserProfileAndSocial:
         
         if login_response.status_code == 200:
             data = login_response.json()
-            self.token = data.get("token")
+            self.token = data.get("access_token") or data.get("token")
             self.user = data.get("user", {})
             self.user_id = self.user.get("id")
             self.session.headers.update({"Authorization": f"Bearer {self.token}"})
@@ -132,7 +132,7 @@ class TestFollowFeatures:
             pytest.skip("Login failed")
         
         data = login_response.json()
-        self.token = data.get("token")
+        self.token = data.get("access_token") or data.get("token")
         self.user = data.get("user", {})
         self.user_id = self.user.get("id")
         self.session.headers.update({"Authorization": f"Bearer {self.token}"})
