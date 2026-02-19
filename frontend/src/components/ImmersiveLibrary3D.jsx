@@ -14,8 +14,6 @@ import { FiX, FiBook, FiMaximize2, FiMinimize2, FiVolume2, FiVolumeX } from 'rea
 
 // Magical Bookshelf Component
 function MagicalBookshelf({ position, rotation, books, onBookClick, hoveredId, setHoveredId }) {
-  const shelfRef = useRef();
-  
   return (
     <group position={position} rotation={rotation}>
       {/* Bookshelf frame */}
@@ -39,42 +37,61 @@ function MagicalBookshelf({ position, rotation, books, onBookClick, hoveredId, s
         const bookColors = ['#8b5cf6', '#ec4899', '#06b6d4', '#10b981', '#f59e0b', '#ef4444'];
         
         return (
-          <Float
+          <FloatingBook
             key={book.id}
-            speed={2}
-            rotationIntensity={0.1}
-            floatIntensity={0.1}
-          >
-            <group
-              position={[-0.6 + col * 0.6, row * 0.9 + 0.55, 0.1]}
-              onPointerOver={() => setHoveredId(book.id)}
-              onPointerOut={() => setHoveredId(null)}
-              onClick={() => onBookClick(book)}
-            >
-              <mesh castShadow>
-                <boxGeometry args={[0.12, 0.5, 0.25]} />
-                <meshStandardMaterial 
-                  color={hoveredId === book.id ? '#fbbf24' : bookColors[idx % bookColors.length]}
-                  emissive={hoveredId === book.id ? '#fbbf24' : '#000000'}
-                  emissiveIntensity={hoveredId === book.id ? 0.5 : 0}
-                />
-              </mesh>
-              {hoveredId === book.id && (
-                <Text
-                  position={[0, 0.4, 0]}
-                  fontSize={0.08}
-                  color="#ffffff"
-                  anchorX="center"
-                  anchorY="bottom"
-                  maxWidth={1}
-                >
-                  {book.title}
-                </Text>
-              )}
-            </group>
-          </Float>
+            book={book}
+            position={[-0.6 + col * 0.6, row * 0.9 + 0.55, 0.1]}
+            color={bookColors[idx % bookColors.length]}
+            isHovered={hoveredId === book.id}
+            onHover={() => setHoveredId(book.id)}
+            onLeave={() => setHoveredId(null)}
+            onClick={() => onBookClick(book)}
+          />
         );
       })}
+    </group>
+  );
+}
+
+// Floating Book with animation
+function FloatingBook({ book, position, color, isHovered, onHover, onLeave, onClick }) {
+  const meshRef = useRef();
+  const startY = position[1];
+  
+  useFrame((state) => {
+    if (meshRef.current) {
+      meshRef.current.position.y = startY + Math.sin(state.clock.elapsedTime * 2 + position[0]) * 0.02;
+    }
+  });
+
+  return (
+    <group
+      ref={meshRef}
+      position={position}
+      onPointerOver={onHover}
+      onPointerOut={onLeave}
+      onClick={onClick}
+    >
+      <mesh castShadow>
+        <boxGeometry args={[0.12, 0.5, 0.25]} />
+        <meshStandardMaterial 
+          color={isHovered ? '#fbbf24' : color}
+          emissive={isHovered ? '#fbbf24' : '#000000'}
+          emissiveIntensity={isHovered ? 0.5 : 0}
+        />
+      </mesh>
+      {isHovered && (
+        <Text
+          position={[0, 0.4, 0]}
+          fontSize={0.08}
+          color="#ffffff"
+          anchorX="center"
+          anchorY="bottom"
+          maxWidth={1}
+        >
+          {book.title}
+        </Text>
+      )}
     </group>
   );
 }
