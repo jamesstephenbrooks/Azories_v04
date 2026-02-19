@@ -11,6 +11,28 @@ Create a digital book creating and reading web application called "Azories" (azo
 
 ## What's Been Implemented (February 2026)
 
+### Latest Updates (Feb 18, 2026) - Session 4: Best Reading App Vision
+- **Analytics Dashboard**: Added tabbed view in Dashboard with "My Books" and "Analytics" tabs
+  - Total Views, Total Reads, Published Books, Avg Reads/Book stats cards
+  - Book Performance table with Status, Views, Reads, Actions
+  - Per-book detailed analytics modal with daily reads chart
+- **User Profile System**: Full social profiles at `/profile` and `/profile/:userId`
+  - Avatar (initials-based), display name, bio, location, website, twitter
+  - Stats: Followers, Following, Books, Total Reads
+  - Achievement badges (Pro Creator, Prolific Author, Rising Star)
+  - Published books gallery with empty state
+  - Edit Profile dialog with all profile fields
+- **Ambient Sound System**: Immersive reading with background sounds
+  - 8 ambient sounds: Rain, Fireplace, Forest, Ocean, Café, Night, Wind, Library
+  - Genre-based recommendations (Fantasy → Fireplace/Forest, Mystery → Rain/Night)
+  - Volume control and play/stop functionality
+- **Social Features Backend**:
+  - User profiles API (GET /api/users/{id}/profile, PUT /api/users/profile)
+  - Follow/Unfollow system (/api/users/{id}/follow)
+  - Followers/Following lists
+  - Book reviews with ratings (1-5 stars) and average rating calculation
+- **Navigation**: Profile link added to Navbar user dropdown
+
 ### Latest Updates (Feb 18, 2026) - Session 3
 - **Auto-Read Continuous Playback Fix**: Fixed critical bug where audiobook would stop at chapter title pages
   - Added refs (autoReadRef, currentPageRef) to avoid stale closure issues in setTimeout callbacks
