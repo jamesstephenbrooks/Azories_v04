@@ -11,6 +11,20 @@ Create a digital book creating and reading web application called "Azories" (azo
 
 ## What's Been Implemented (February 2026)
 
+### Latest Updates (Feb 18, 2026) - Session 5: Immersive Library
+- **Fixed Ambient Sound Dropdown**: Changed popup to open downward (top-full) instead of upward to prevent off-screen rendering
+- **Immersive 3D Library**: Created CSS 3D library experience with:
+  - Starry night sky background with animated stars
+  - Chandelier with glowing candles
+  - 8 bookshelves arranged in a circular pattern
+  - Colorful books that can be clicked to read
+  - Gothic pillars in the corners
+  - Floating magic orbs with glow effects
+  - Drag to rotate, arrow buttons for navigation
+  - Ambient fireplace audio
+  - Book preview modal when clicking books
+- **Note**: User provided a GLB file of a gothic library, but it was 147MB which is too large for web loading. Used CSS 3D as a performant alternative.
+
 ### Latest Updates (Feb 18, 2026) - Session 4: Best Reading App Vision
 - **Analytics Dashboard**: Added tabbed view in Dashboard with "My Books" and "Analytics" tabs
   - Total Views, Total Reads, Published Books, Avg Reads/Book stats cards
