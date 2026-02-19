@@ -63,9 +63,8 @@ function GothicLibrary({ onBookClick, books = [] }) {
 }
 
 // Floating Book Card in 3D Space
-function FloatingBookCard({ book, position, onClick }) {
+function FloatingBookCard({ book, position, onClick, isHovered, onHover }) {
   const meshRef = useRef();
-  const [hovered, setHovered] = useState(false);
   
   useFrame((state) => {
     if (meshRef.current) {
@@ -79,28 +78,32 @@ function FloatingBookCard({ book, position, onClick }) {
     <group 
       ref={meshRef} 
       position={position}
-      onPointerOver={() => setHovered(true)}
-      onPointerOut={() => setHovered(false)}
+      onPointerOver={() => onHover(book.id)}
+      onPointerOut={() => onHover(null)}
       onClick={onClick}
     >
       {/* Book cover plane */}
       <mesh castShadow>
         <boxGeometry args={[0.4, 0.6, 0.05]} />
         <meshStandardMaterial 
-          color={hovered ? "#8b5cf6" : "#4c1d95"} 
-          emissive={hovered ? "#8b5cf6" : "#000000"}
-          emissiveIntensity={hovered ? 0.3 : 0}
+          color={isHovered ? "#8b5cf6" : "#4c1d95"} 
+          emissive={isHovered ? "#8b5cf6" : "#000000"}
+          emissiveIntensity={isHovered ? 0.3 : 0}
         />
       </mesh>
       
-      {/* Book title HTML overlay */}
-      {hovered && (
-        <Html position={[0, 0.4, 0]} center distanceFactor={10}>
-          <div className="bg-black/80 backdrop-blur px-3 py-2 rounded-lg text-center whitespace-nowrap">
-            <p className="text-white text-sm font-bold">{book.title}</p>
-            <p className="text-white/70 text-xs">{book.author_name}</p>
-          </div>
-        </Html>
+      {/* Book title using drei Text (no Html) */}
+      {isHovered && (
+        <Text
+          position={[0, 0.45, 0.1]}
+          fontSize={0.08}
+          color="white"
+          anchorX="center"
+          anchorY="middle"
+          maxWidth={0.5}
+        >
+          {book.title}
+        </Text>
       )}
     </group>
   );
