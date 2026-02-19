@@ -434,9 +434,6 @@ export default function ImmersiveLibrary3D({ books = [], onClose, onSelectBook }
           <MagicOrb position={[3, 2.5, 3]} />
           <MagicOrb position={[0, 4, -2]} />
           
-          {/* Sparkles throughout */}
-          <Sparkles count={100} scale={20} size={3} speed={0.2} color="#ffd700" />
-          
           {/* Camera */}
           <PerspectiveCamera makeDefault fov={60} near={0.1} far={100} />
           <CameraController />
