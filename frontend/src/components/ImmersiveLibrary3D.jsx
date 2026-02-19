@@ -1,22 +1,52 @@
 import { useState, useEffect, useRef, Suspense, useMemo } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { 
-  OrbitControls, 
-  PerspectiveCamera,
-  Stars,
-  Text
-} from '@react-three/drei';
+import { Canvas, useFrame, useThree, extend } from '@react-three/fiber';
+import { OrbitControls } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import * as THREE from 'three';
 import { Button } from '@/components/ui/button';
 import { FiX, FiBook, FiMaximize2, FiMinimize2, FiVolume2, FiVolumeX } from 'react-icons/fi';
 
-// Magical Bookshelf Component
-function MagicalBookshelf({ position, rotation, books, onBookClick, hoveredId, setHoveredId }) {
+// Extend THREE with needed objects
+extend({ OrbitControls });
+
+// Simple Book Mesh
+function Book({ position, color, isHovered, onClick, onPointerOver, onPointerOut }) {
+  const meshRef = useRef();
+  const startY = useRef(position[1]);
+  
+  useFrame((state) => {
+    if (meshRef.current) {
+      meshRef.current.position.y = startY.current + Math.sin(state.clock.elapsedTime * 2 + position[0]) * 0.02;
+    }
+  });
+
+  return (
+    <mesh 
+      ref={meshRef}
+      position={position}
+      castShadow
+      onClick={onClick}
+      onPointerOver={onPointerOver}
+      onPointerOut={onPointerOut}
+    >
+      <boxGeometry args={[0.15, 0.5, 0.3]} />
+      <meshStandardMaterial 
+        color={isHovered ? '#fbbf24' : color}
+        emissive={isHovered ? '#fbbf24' : '#000000'}
+        emissiveIntensity={isHovered ? 0.5 : 0}
+      />
+    </mesh>
+  );
+}
+
+// Bookshelf
+function Bookshelf({ position, rotation, books, onBookClick, hoveredId, setHoveredId }) {
+  const bookColors = ['#8b5cf6', '#ec4899', '#06b6d4', '#10b981', '#f59e0b', '#ef4444'];
+  
   return (
     <group position={position} rotation={rotation}>
-      {/* Bookshelf frame */}
+      {/* Shelf frame */}
       <mesh position={[0, 1.5, 0]} castShadow receiveShadow>
         <boxGeometry args={[2.5, 3, 0.4]} />
         <meshStandardMaterial color="#3d2817" roughness={0.8} />
@@ -30,22 +60,19 @@ function MagicalBookshelf({ position, rotation, books, onBookClick, hoveredId, s
         </mesh>
       ))}
       
-      {/* Books on shelf */}
+      {/* Books */}
       {books.slice(0, 6).map((book, idx) => {
         const row = Math.floor(idx / 3);
         const col = idx % 3;
-        const bookColors = ['#8b5cf6', '#ec4899', '#06b6d4', '#10b981', '#f59e0b', '#ef4444'];
-        
         return (
-          <FloatingBook
+          <Book
             key={book.id}
-            book={book}
             position={[-0.6 + col * 0.6, row * 0.9 + 0.55, 0.1]}
             color={bookColors[idx % bookColors.length]}
             isHovered={hoveredId === book.id}
-            onHover={() => setHoveredId(book.id)}
-            onLeave={() => setHoveredId(null)}
             onClick={() => onBookClick(book)}
+            onPointerOver={() => setHoveredId(book.id)}
+            onPointerOut={() => setHoveredId(null)}
           />
         );
       })}
@@ -53,56 +80,34 @@ function MagicalBookshelf({ position, rotation, books, onBookClick, hoveredId, s
   );
 }
 
-// Floating Book with animation
-function FloatingBook({ book, position, color, isHovered, onHover, onLeave, onClick }) {
-  const meshRef = useRef();
-  const startY = position[1];
-  
-  useFrame((state) => {
-    if (meshRef.current) {
-      meshRef.current.position.y = startY + Math.sin(state.clock.elapsedTime * 2 + position[0]) * 0.02;
-    }
-  });
-
+// Gothic Pillar
+function Pillar({ position }) {
   return (
-    <group
-      ref={meshRef}
-      position={position}
-      onPointerOver={onHover}
-      onPointerOut={onLeave}
-      onClick={onClick}
-    >
-      <mesh castShadow>
-        <boxGeometry args={[0.12, 0.5, 0.25]} />
-        <meshStandardMaterial 
-          color={isHovered ? '#fbbf24' : color}
-          emissive={isHovered ? '#fbbf24' : '#000000'}
-          emissiveIntensity={isHovered ? 0.5 : 0}
-        />
+    <group position={position}>
+      <mesh position={[0, 0.2, 0]} castShadow>
+        <cylinderGeometry args={[0.4, 0.5, 0.4, 8]} />
+        <meshStandardMaterial color="#4a4a4a" roughness={0.9} />
       </mesh>
-      {isHovered && (
-        <Text
-          position={[0, 0.4, 0]}
-          fontSize={0.08}
-          color="#ffffff"
-          anchorX="center"
-          anchorY="bottom"
-          maxWidth={1}
-        >
-          {book.title}
-        </Text>
-      )}
+      <mesh position={[0, 2.5, 0]} castShadow>
+        <cylinderGeometry args={[0.25, 0.3, 4.5, 8]} />
+        <meshStandardMaterial color="#5a5a5a" roughness={0.8} />
+      </mesh>
+      <mesh position={[0, 4.9, 0]} castShadow>
+        <cylinderGeometry args={[0.5, 0.25, 0.4, 8]} />
+        <meshStandardMaterial color="#4a4a4a" roughness={0.9} />
+      </mesh>
     </group>
   );
 }
 
-// Floating Magic Orb
+// Magic Orb
 function MagicOrb({ position }) {
   const orbRef = useRef();
+  const startPos = useRef(position);
   
   useFrame((state) => {
     if (orbRef.current) {
-      orbRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * 2) * 0.3;
+      orbRef.current.position.y = startPos.current[1] + Math.sin(state.clock.elapsedTime * 2) * 0.3;
       orbRef.current.rotation.y += 0.01;
     }
   });
@@ -124,30 +129,7 @@ function MagicOrb({ position }) {
   );
 }
 
-// Gothic Pillar
-function GothicPillar({ position }) {
-  return (
-    <group position={position}>
-      {/* Base */}
-      <mesh position={[0, 0.2, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.4, 0.5, 0.4, 8]} />
-        <meshStandardMaterial color="#4a4a4a" roughness={0.9} />
-      </mesh>
-      {/* Column */}
-      <mesh position={[0, 2.5, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.25, 0.3, 4.5, 8]} />
-        <meshStandardMaterial color="#5a5a5a" roughness={0.8} />
-      </mesh>
-      {/* Capital */}
-      <mesh position={[0, 4.9, 0]} castShadow>
-        <cylinderGeometry args={[0.5, 0.25, 0.4, 8]} />
-        <meshStandardMaterial color="#4a4a4a" roughness={0.9} />
-      </mesh>
-    </group>
-  );
-}
-
-// Grand Chandelier
+// Chandelier
 function Chandelier({ position }) {
   const chandelierRef = useRef();
   
@@ -159,17 +141,14 @@ function Chandelier({ position }) {
 
   return (
     <group ref={chandelierRef} position={position}>
-      {/* Chain */}
       <mesh position={[0, 1, 0]}>
         <cylinderGeometry args={[0.02, 0.02, 2, 8]} />
         <meshStandardMaterial color="#8B7355" metalness={0.8} />
       </mesh>
-      {/* Ring */}
       <mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[0.8, 0.05, 8, 16]} />
         <meshStandardMaterial color="#CD853F" metalness={0.9} roughness={0.3} />
       </mesh>
-      {/* Candles */}
       {[0, 1, 2, 3, 4, 5].map((i) => {
         const angle = (i / 6) * Math.PI * 2;
         return (
@@ -178,7 +157,6 @@ function Chandelier({ position }) {
               <cylinderGeometry args={[0.03, 0.04, 0.2, 8]} />
               <meshStandardMaterial color="#FFF8DC" />
             </mesh>
-            {/* Flame */}
             <pointLight position={[0, 0.2, 0]} color="#FF6B00" intensity={0.5} distance={3} />
             <mesh position={[0, 0.15, 0]}>
               <sphereGeometry args={[0.04, 8, 8]} />
@@ -191,44 +169,112 @@ function Chandelier({ position }) {
   );
 }
 
-// Floor with carpet
-function FloorWithCarpet() {
+// Scene content
+function Scene({ books, onBookClick, hoveredId, setHoveredId }) {
+  const booksByShelf = useMemo(() => {
+    const shelves = [[], [], [], [], []];
+    books.forEach((book, idx) => {
+      shelves[idx % 5].push(book);
+    });
+    return shelves;
+  }, [books]);
+
   return (
-    <group>
-      {/* Stone floor */}
+    <>
+      {/* Lighting */}
+      <ambientLight intensity={0.2} color="#4a3f6b" />
+      <spotLight
+        position={[0, 10, 0]}
+        angle={0.5}
+        penumbra={0.5}
+        intensity={1}
+        castShadow
+        color="#ffd9a0"
+      />
+      <pointLight position={[-8, 4, 0]} intensity={0.3} color="#ff6b35" />
+      <pointLight position={[8, 4, 0]} intensity={0.3} color="#4ecdc4" />
+      
+      {/* Fog */}
+      <fog attach="fog" args={['#1a0a2e', 10, 40]} />
+      
+      {/* Floor */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
         <planeGeometry args={[30, 30]} />
         <meshStandardMaterial color="#3d3d3d" roughness={0.9} />
       </mesh>
-      {/* Red carpet */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]} receiveShadow>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}>
         <planeGeometry args={[3, 15]} />
         <meshStandardMaterial color="#8B0000" roughness={0.8} />
       </mesh>
-    </group>
-  );
-}
-
-// Camera Controller
-function CameraController() {
-  const { camera } = useThree();
-  
-  useEffect(() => {
-    camera.position.set(0, 4, 12);
-    camera.lookAt(0, 2, 0);
-  }, [camera]);
-
-  return (
-    <OrbitControls 
-      enablePan={true}
-      enableZoom={true}
-      enableRotate={true}
-      minDistance={5}
-      maxDistance={25}
-      maxPolarAngle={Math.PI / 2}
-      minPolarAngle={Math.PI / 6}
-      target={[0, 2, 0]}
-    />
+      
+      {/* Pillars */}
+      <Pillar position={[-6, 0, -5]} />
+      <Pillar position={[6, 0, -5]} />
+      <Pillar position={[-6, 0, 5]} />
+      <Pillar position={[6, 0, 5]} />
+      
+      {/* Chandelier */}
+      <Chandelier position={[0, 7, 0]} />
+      
+      {/* Bookshelves */}
+      <Bookshelf 
+        position={[-5, 0, -3]} 
+        rotation={[0, Math.PI / 6, 0]} 
+        books={booksByShelf[0]}
+        onBookClick={onBookClick}
+        hoveredId={hoveredId}
+        setHoveredId={setHoveredId}
+      />
+      <Bookshelf 
+        position={[0, 0, -5]} 
+        rotation={[0, 0, 0]} 
+        books={booksByShelf[1]}
+        onBookClick={onBookClick}
+        hoveredId={hoveredId}
+        setHoveredId={setHoveredId}
+      />
+      <Bookshelf 
+        position={[5, 0, -3]} 
+        rotation={[0, -Math.PI / 6, 0]} 
+        books={booksByShelf[2]}
+        onBookClick={onBookClick}
+        hoveredId={hoveredId}
+        setHoveredId={setHoveredId}
+      />
+      <Bookshelf 
+        position={[-8, 0, 0]} 
+        rotation={[0, Math.PI / 2, 0]} 
+        books={booksByShelf[3]}
+        onBookClick={onBookClick}
+        hoveredId={hoveredId}
+        setHoveredId={setHoveredId}
+      />
+      <Bookshelf 
+        position={[8, 0, 0]} 
+        rotation={[0, -Math.PI / 2, 0]} 
+        books={booksByShelf[4]}
+        onBookClick={onBookClick}
+        hoveredId={hoveredId}
+        setHoveredId={setHoveredId}
+      />
+      
+      {/* Magic Orbs */}
+      <MagicOrb position={[-3, 3, 2]} />
+      <MagicOrb position={[3, 2.5, 3]} />
+      <MagicOrb position={[0, 4, -2]} />
+      
+      {/* Camera controls */}
+      <OrbitControls 
+        enablePan={true}
+        enableZoom={true}
+        enableRotate={true}
+        minDistance={5}
+        maxDistance={25}
+        maxPolarAngle={Math.PI / 2}
+        minPolarAngle={Math.PI / 6}
+        target={[0, 2, 0]}
+      />
+    </>
   );
 }
 
@@ -266,7 +312,7 @@ function useLibraryAmbience() {
 }
 
 // Main Component
-export default function ImmersiveLibrary3D({ books = [], onClose, onSelectBook }) {
+export default function ImmersiveLibrary3D({ books = [], onClose }) {
   const navigate = useNavigate();
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [selectedBook, setSelectedBook] = useState(null);
@@ -294,22 +340,13 @@ export default function ImmersiveLibrary3D({ books = [], onClose, onSelectBook }
     }
   };
 
-  // Distribute books across bookshelves
-  const booksByShelf = useMemo(() => {
-    const shelves = [[], [], [], [], [], []];
-    books.forEach((book, idx) => {
-      shelves[idx % 6].push(book);
-    });
-    return shelves;
-  }, [books]);
-
   return (
     <div 
       ref={containerRef}
       className="fixed inset-0 z-50 bg-gradient-to-b from-[#1a0a2e] to-[#0d0015]"
       data-testid="immersive-library-3d"
     >
-      {/* Controls Overlay */}
+      {/* Controls */}
       <div className="absolute top-4 left-4 right-4 z-10 flex justify-between items-start">
         <div className="flex items-center gap-4">
           <Button
@@ -346,101 +383,32 @@ export default function ImmersiveLibrary3D({ books = [], onClose, onSelectBook }
         </div>
       </div>
 
+      {/* Hovered book info */}
+      {hoveredBookId && (
+        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-10 bg-black/70 backdrop-blur px-4 py-2 rounded-lg">
+          <p className="text-white text-sm font-medium">
+            {books.find(b => b.id === hoveredBookId)?.title || 'Unknown Book'}
+          </p>
+        </div>
+      )}
+
       {/* 3D Canvas */}
-      <Canvas shadows dpr={[1, 2]} gl={{ antialias: true }}>
+      <Canvas
+        shadows
+        camera={{ position: [0, 4, 12], fov: 60 }}
+        gl={{ antialias: true }}
+      >
         <Suspense fallback={null}>
-          {/* Ambient Lighting */}
-          <ambientLight intensity={0.2} color="#4a3f6b" />
-          
-          {/* Main spotlight */}
-          <spotLight
-            position={[0, 10, 0]}
-            angle={0.5}
-            penumbra={0.5}
-            intensity={1}
-            castShadow
-            shadow-mapSize={[1024, 1024]}
-            color="#ffd9a0"
-          />
-          
-          {/* Side lights */}
-          <pointLight position={[-8, 4, 0]} intensity={0.3} color="#ff6b35" />
-          <pointLight position={[8, 4, 0]} intensity={0.3} color="#4ecdc4" />
-          
-          {/* Fog for atmosphere */}
-          <fog attach="fog" args={['#1a0a2e', 10, 40]} />
-          
-          {/* Stars in background */}
-          <Stars radius={50} depth={50} count={2000} factor={3} fade speed={0.5} />
-          
-          {/* Floor */}
-          <FloorWithCarpet />
-          
-          {/* Gothic Pillars */}
-          <GothicPillar position={[-6, 0, -5]} />
-          <GothicPillar position={[6, 0, -5]} />
-          <GothicPillar position={[-6, 0, 5]} />
-          <GothicPillar position={[6, 0, 5]} />
-          
-          {/* Chandelier */}
-          <Chandelier position={[0, 7, 0]} />
-          
-          {/* Bookshelves in a semi-circle */}
-          <MagicalBookshelf 
-            position={[-5, 0, -3]} 
-            rotation={[0, Math.PI / 6, 0]} 
-            books={booksByShelf[0]}
+          <Scene
+            books={books}
             onBookClick={handleBookClick}
             hoveredId={hoveredBookId}
             setHoveredId={setHoveredBookId}
           />
-          <MagicalBookshelf 
-            position={[0, 0, -5]} 
-            rotation={[0, 0, 0]} 
-            books={booksByShelf[1]}
-            onBookClick={handleBookClick}
-            hoveredId={hoveredBookId}
-            setHoveredId={setHoveredBookId}
-          />
-          <MagicalBookshelf 
-            position={[5, 0, -3]} 
-            rotation={[0, -Math.PI / 6, 0]} 
-            books={booksByShelf[2]}
-            onBookClick={handleBookClick}
-            hoveredId={hoveredBookId}
-            setHoveredId={setHoveredBookId}
-          />
-          
-          {/* Back wall bookshelves */}
-          <MagicalBookshelf 
-            position={[-8, 0, 0]} 
-            rotation={[0, Math.PI / 2, 0]} 
-            books={booksByShelf[3]}
-            onBookClick={handleBookClick}
-            hoveredId={hoveredBookId}
-            setHoveredId={setHoveredBookId}
-          />
-          <MagicalBookshelf 
-            position={[8, 0, 0]} 
-            rotation={[0, -Math.PI / 2, 0]} 
-            books={booksByShelf[4]}
-            onBookClick={handleBookClick}
-            hoveredId={hoveredBookId}
-            setHoveredId={setHoveredBookId}
-          />
-          
-          {/* Magic Orbs */}
-          <MagicOrb position={[-3, 3, 2]} />
-          <MagicOrb position={[3, 2.5, 3]} />
-          <MagicOrb position={[0, 4, -2]} />
-          
-          {/* Camera */}
-          <PerspectiveCamera makeDefault fov={60} near={0.1} far={100} />
-          <CameraController />
         </Suspense>
       </Canvas>
 
-      {/* Book Preview Modal */}
+      {/* Book Modal */}
       <AnimatePresence>
         {selectedBook && (
           <motion.div
@@ -475,11 +443,9 @@ export default function ImmersiveLibrary3D({ books = [], onClose, onSelectBook }
                   <p className="text-white/60 text-xs mb-3 line-clamp-3">
                     {selectedBook.description || selectedBook.back_cover_text || 'A magical story awaits...'}
                   </p>
-                  <div className="flex gap-2">
-                    <span className="px-2 py-1 bg-white/10 rounded-full text-xs text-white/80">
-                      {selectedBook.genre}
-                    </span>
-                  </div>
+                  <span className="px-2 py-1 bg-white/10 rounded-full text-xs text-white/80">
+                    {selectedBook.genre}
+                  </span>
                 </div>
               </div>
               
@@ -489,10 +455,10 @@ export default function ImmersiveLibrary3D({ books = [], onClose, onSelectBook }
                   className="flex-1 rounded-full border-white/20 text-white hover:bg-white/10"
                   onClick={() => setSelectedBook(null)}
                 >
-                  Back to Library
+                  Back
                 </Button>
                 <Button
-                  className="flex-1 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                  className="flex-1 rounded-full bg-gradient-to-r from-purple-500 to-pink-500"
                   onClick={handleReadBook}
                 >
                   <FiBook className="mr-2" />
