@@ -72,6 +72,13 @@ export const Navbar = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem 
+                  onClick={() => navigate('/profile')}
+                  data-testid="menu-profile"
+                >
+                  <FiUser className="mr-2" />
+                  My Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem 
                   onClick={() => navigate('/dashboard')}
                   data-testid="menu-dashboard"
                 >
