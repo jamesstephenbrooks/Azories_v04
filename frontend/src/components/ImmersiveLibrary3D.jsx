@@ -1,14 +1,10 @@
 import { useState, useEffect, useRef, Suspense, useMemo } from 'react';
-import { Canvas, useFrame, useThree, useLoader } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { 
   OrbitControls, 
   PerspectiveCamera,
   Stars,
-  Text,
-  Float,
-  Sparkles,
-  MeshDistortMaterial,
-  RoundedBox
+  Text
 } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
