@@ -111,17 +111,15 @@ function MagicOrb({ position }) {
     <group ref={orbRef} position={position}>
       <mesh>
         <sphereGeometry args={[0.15, 32, 32]} />
-        <MeshDistortMaterial
+        <meshStandardMaterial
           color="#8b5cf6"
           emissive="#8b5cf6"
           emissiveIntensity={2}
-          distort={0.4}
-          speed={3}
           transparent
           opacity={0.8}
         />
       </mesh>
-      <Sparkles count={20} scale={1} size={2} speed={0.3} color="#fbbf24" />
+      <pointLight color="#8b5cf6" intensity={0.5} distance={3} />
     </group>
   );
 }
