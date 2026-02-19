@@ -224,7 +224,7 @@ class TestReviewsAPI:
             pytest.skip("Login failed")
         
         data = login_response.json()
-        self.token = data.get("token")
+        self.token = data.get("access_token") or data.get("token")
         self.user_id = data.get("user", {}).get("id")
         self.session.headers.update({"Authorization": f"Bearer {self.token}"})
         
