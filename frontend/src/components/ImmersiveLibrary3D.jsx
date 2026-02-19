@@ -3,11 +3,10 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { 
   OrbitControls, 
   useGLTF, 
-  Environment, 
-  Html,
   PerspectiveCamera,
   useProgress,
-  Stars
+  Stars,
+  Text
 } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
