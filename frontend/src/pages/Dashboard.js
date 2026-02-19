@@ -64,6 +64,7 @@ export default function Dashboard() {
   const [expandedSeries, setExpandedSeries] = useState(null);  // To view books in a series
   const [newSeries, setNewSeries] = useState({ name: '', description: '' });
   const [creatingSeries, setCreatingSeries] = useState(false);
+  const [activeTab, setActiveTab] = useState('books');  // 'books' or 'analytics'
 
   useEffect(() => {
     if (!authLoading && !user && !localStorage.getItem('azories-token')) {
