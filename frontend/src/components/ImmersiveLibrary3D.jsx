@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, Suspense } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useProgress } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import * as THREE from 'three';
@@ -13,13 +12,12 @@ import { FiX, FiBook, FiMaximize2, FiMinimize2, FiVolume2, FiVolumeX } from 'rea
 // Gothic Library Model URL
 const LIBRARY_MODEL_URL = 'https://customer-assets.emergentagent.com/job_513aa01a-ca6e-4353-9972-f674c11a8691/artifacts/tsx97iom_gothic_library_2_cycles.glb';
 
-// Loading Progress Component
+// Loading Progress Component (outside Canvas)
 function LoadingScreen({ progress }) {
   return (
     <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-gradient-to-b from-[#1a0a2e] to-[#0d0015]">
       <div className="text-center space-y-6">
         <div className="relative w-32 h-32 mx-auto">
-          {/* Animated magic circle */}
           <div className="absolute inset-0 border-4 border-purple-500/30 rounded-full animate-ping" />
           <div className="absolute inset-2 border-4 border-purple-500/50 rounded-full animate-spin" style={{ animationDuration: '3s' }} />
           <div className="absolute inset-4 border-4 border-purple-400/70 rounded-full animate-spin" style={{ animationDuration: '2s', animationDirection: 'reverse' }} />
@@ -33,7 +31,6 @@ function LoadingScreen({ progress }) {
           <p className="text-purple-300 text-sm">Preparing a magical experience...</p>
         </div>
         
-        {/* Progress bar */}
         <div className="w-64 h-2 bg-purple-900/50 rounded-full overflow-hidden mx-auto">
           <motion.div
             className="h-full bg-gradient-to-r from-purple-500 to-pink-500"
@@ -50,13 +47,11 @@ function LoadingScreen({ progress }) {
 }
 
 // The Gothic Library Model Component
-function GothicLibraryModel({ onLoaded }) {
+function GothicLibraryModel({ onProgress, onLoaded }) {
   const [model, setModel] = useState(null);
-  const [error, setError] = useState(null);
   const groupRef = useRef();
 
   useEffect(() => {
-    // Setup loaders with DRACO support
     const dracoLoader = new DRACOLoader();
     dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
     dracoLoader.setDecoderConfig({ type: 'js' });
@@ -64,26 +59,18 @@ function GothicLibraryModel({ onLoaded }) {
     const gltfLoader = new GLTFLoader();
     gltfLoader.setDRACOLoader(dracoLoader);
 
-    // Load the model
     gltfLoader.load(
       LIBRARY_MODEL_URL,
       (gltf) => {
         console.log('Model loaded successfully');
         
-        // Process the scene
         gltf.scene.traverse((child) => {
           if (child.isMesh) {
             child.castShadow = true;
             child.receiveShadow = true;
-            
-            // Optimize materials for web
-            if (child.material) {
-              child.material.needsUpdate = true;
-            }
           }
         });
         
-        // Scale and position the model
         gltf.scene.scale.set(0.5, 0.5, 0.5);
         gltf.scene.position.set(0, 0, 0);
         
@@ -91,26 +78,22 @@ function GothicLibraryModel({ onLoaded }) {
         if (onLoaded) onLoaded();
       },
       (progress) => {
-        // Progress is handled by useProgress
+        if (progress.total > 0) {
+          const percent = (progress.loaded / progress.total) * 100;
+          if (onProgress) onProgress(percent);
+        }
       },
       (err) => {
         console.error('Error loading model:', err);
-        setError(err.message);
       }
     );
 
     return () => {
       dracoLoader.dispose();
     };
-  }, [onLoaded]);
+  }, [onProgress, onLoaded]);
 
-  if (error) {
-    return null;
-  }
-
-  if (!model) {
-    return null;
-  }
+  if (!model) return null;
 
   return (
     <group ref={groupRef}>
@@ -119,16 +102,14 @@ function GothicLibraryModel({ onLoaded }) {
   );
 }
 
-// Camera controller for navigation - using Three.js OrbitControls directly
+// Camera controller using Three.js OrbitControls
 function CameraController() {
   const { camera, gl } = useThree();
   const controlsRef = useRef();
 
   useEffect(() => {
-    // Set initial camera position for a good view of the library
     camera.position.set(0, 3, 8);
     
-    // Create OrbitControls
     const controls = new OrbitControls(camera, gl.domElement);
     controls.enablePan = true;
     controls.enableZoom = true;
@@ -158,15 +139,32 @@ function CameraController() {
   return null;
 }
 
-// Progress tracker
-function ProgressTracker({ onProgress }) {
-  const { progress } = useProgress();
-  
-  useEffect(() => {
-    onProgress(progress);
-  }, [progress, onProgress]);
-  
-  return null;
+// Scene Content
+function SceneContent({ onProgress, onLoaded }) {
+  return (
+    <>
+      {/* Lighting */}
+      <ambientLight intensity={0.4} color="#ffd9a0" />
+      <directionalLight
+        position={[5, 10, 5]}
+        intensity={0.8}
+        castShadow
+        color="#fff5e6"
+      />
+      <pointLight position={[0, 8, 0]} intensity={0.5} color="#ff9500" distance={20} />
+      <pointLight position={[-5, 3, 0]} intensity={0.3} color="#ff6b35" distance={15} />
+      <pointLight position={[5, 3, 0]} intensity={0.3} color="#4ecdc4" distance={15} />
+      
+      {/* Fog for atmosphere */}
+      <fog attach="fog" args={['#1a0a2e', 5, 50]} />
+      
+      {/* The Gothic Library Model */}
+      <GothicLibraryModel onProgress={onProgress} onLoaded={onLoaded} />
+      
+      {/* Camera controls */}
+      <CameraController />
+    </>
+  );
 }
 
 // Ambient Sound Hook
@@ -250,7 +248,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           </Button>
           <div className="bg-black/50 backdrop-blur px-4 py-2 rounded-full">
             <h2 className="text-white font-bold">✨ The Grand Gothic Library ✨</h2>
-            <p className="text-white/70 text-xs">Drag to rotate • Scroll to zoom • WASD to move</p>
+            <p className="text-white/70 text-xs">Drag to rotate • Scroll to zoom • Right-click to pan</p>
           </div>
         </div>
         
@@ -326,32 +324,10 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         }}
         camera={{ fov: 60, near: 0.1, far: 1000 }}
       >
-        <Suspense fallback={null}>
-          {/* Progress tracker */}
-          <ProgressTracker onProgress={setLoadProgress} />
-          
-          {/* Lighting */}
-          <ambientLight intensity={0.4} color="#ffd9a0" />
-          <directionalLight
-            position={[5, 10, 5]}
-            intensity={0.8}
-            castShadow
-            shadow-mapSize={[1024, 1024]}
-            color="#fff5e6"
-          />
-          <pointLight position={[0, 8, 0]} intensity={0.5} color="#ff9500" distance={20} />
-          <pointLight position={[-5, 3, 0]} intensity={0.3} color="#ff6b35" distance={15} />
-          <pointLight position={[5, 3, 0]} intensity={0.3} color="#4ecdc4" distance={15} />
-          
-          {/* Fog for atmosphere */}
-          <fog attach="fog" args={['#1a0a2e', 5, 50]} />
-          
-          {/* The Gothic Library */}
-          <GothicLibraryModel onLoaded={() => setIsLoaded(true)} />
-          
-          {/* Camera controls */}
-          <CameraController />
-        </Suspense>
+        <SceneContent 
+          onProgress={setLoadProgress} 
+          onLoaded={() => setIsLoaded(true)} 
+        />
       </Canvas>
 
       {/* Book Preview Modal */}
