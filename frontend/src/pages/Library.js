@@ -10,16 +10,11 @@ import { FiSearch, FiBook, FiHeadphones, FiUser, FiStar, FiAward, FiTrendingUp, 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import Navbar from '@/components/Navbar';
 
-// Lazy load the 3D bookshelf component
+// Lazy load the 3D components
 const Bookshelf3D = lazy(() => import('@/components/Bookshelf3D'));
+const ImmersiveLibrary3D = lazy(() => import('@/components/ImmersiveLibrary3D'));
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
-
-// Sketchfab Library Models - Free to use library scenes
-const SKETCHFAB_LIBRARIES = [
-  { id: '7b5e6a8f9a034a4eb7d1b8e8f1c9d5a7', name: 'Classic Library' },
-  { id: 'a8f39c87d6c94c3ab9e2f71d8a3b2c6f', name: 'Fantasy Library' },
-];
 
 export default function Library() {
   const [books, setBooks] = useState([]);
