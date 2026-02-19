@@ -291,6 +291,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose, onSelectBook }
               book={book}
               position={bookPositions[idx]}
               onClick={() => handleBookClick(book)}
+              isHovered={hoveredBookId === book.id}
+              onHover={setHoveredBookId}
             />
           ))}
           
