@@ -318,7 +318,7 @@ class TestAnalyticsAPI:
             pytest.skip("Login failed")
         
         data = login_response.json()
-        self.token = data.get("token")
+        self.token = data.get("access_token") or data.get("token")
         self.session.headers.update({"Authorization": f"Bearer {self.token}"})
         
         # Get user's books
