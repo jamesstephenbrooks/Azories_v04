@@ -175,6 +175,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose, onSelectBook }
   const navigate = useNavigate();
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [selectedBook, setSelectedBook] = useState(null);
+  const [hoveredBookId, setHoveredBookId] = useState(null);
   const containerRef = useRef();
   const { isMuted, toggleMute } = useLibraryAmbience();
 
