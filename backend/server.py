@@ -2061,23 +2061,30 @@ async def seed_test_books(admin: dict = Depends(get_admin_user)):
 async def proxy_glb_model(url: str):
     """Proxy GLB model files to bypass CORS issues"""
     try:
-        async with aiohttp.ClientSession() as session:
+        timeout = aiohttp.ClientTimeout(total=300)  # 5 minute timeout for large files
+        async with aiohttp.ClientSession(timeout=timeout) as session:
             async with session.get(url) as response:
                 if response.status != 200:
                     raise HTTPException(status_code=response.status, detail="Failed to fetch model")
                 
                 content = await response.read()
+                content_length = len(content)
                 
                 return StreamingResponse(
                     io.BytesIO(content),
                     media_type="model/gltf-binary",
                     headers={
+                        "Content-Length": str(content_length),
                         "Content-Disposition": "inline",
                         "Access-Control-Allow-Origin": "*",
                         "Cache-Control": "public, max-age=86400"
                     }
                 )
+    except aiohttp.ClientError as e:
+        logger.error(f"Client error proxying GLB: {e}")
+        raise HTTPException(status_code=502, detail=f"Failed to fetch model: {str(e)}")
     except Exception as e:
+        logger.error(f"Error proxying GLB: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
