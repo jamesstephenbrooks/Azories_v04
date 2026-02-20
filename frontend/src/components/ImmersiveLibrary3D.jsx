@@ -132,8 +132,9 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
 
     // Create scene
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x1a0a2e);
-    scene.fog = new THREE.Fog(0x1a0a2e, 1, 80);
+    scene.background = new THREE.Color(0x2a1a4e); // Lighter purple
+    // Reduce fog for better visibility
+    scene.fog = new THREE.Fog(0x2a1a4e, 5, 100);
     sceneRef.current = scene;
 
     // Create camera - first person perspective
