@@ -251,8 +251,9 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         }
       },
       (error) => {
+        clearTimeout(loadTimeout);
         console.error('Error loading model:', error);
-        setLoadError(error.message || 'Failed to load 3D model');
+        setLoadError(error.message || 'Failed to load 3D model. Please try refreshing the page.');
         setLoadProgress(-1);
       }
     );
