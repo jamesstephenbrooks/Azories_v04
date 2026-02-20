@@ -305,8 +305,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         controls.target.set(finalCenter.x, cameraY - 0.2, finalCenter.z - 2);
         controls.update();
         
-        console.log('Camera positioned at:', camera.position);
-        console.log('Looking at:', controls.target);
+        console.log('Camera positioned at:', JSON.stringify({x: camera.position.x, y: camera.position.y, z: camera.position.z}));
+        console.log('Looking at:', JSON.stringify({x: controls.target.x, y: controls.target.y, z: controls.target.z}));
         
         setIsLoaded(true);
         setLoadError(null);
