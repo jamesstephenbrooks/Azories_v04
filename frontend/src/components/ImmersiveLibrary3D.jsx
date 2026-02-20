@@ -179,29 +179,42 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     };
     controlsRef.current = controls;
 
-    // Add lighting - warm library atmosphere
-    const ambientLight = new THREE.AmbientLight(0xffd9a0, 0.5);
+    // Add lighting - BRIGHT library atmosphere for interior visibility
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.0); // Bright white ambient
     scene.add(ambientLight);
 
-    const mainLight = new THREE.DirectionalLight(0xfff5e6, 0.6);
-    mainLight.position.set(5, 15, 5);
+    const mainLight = new THREE.DirectionalLight(0xffffff, 1.0);
+    mainLight.position.set(0, 20, 0);
     mainLight.castShadow = true;
     mainLight.shadow.mapSize.width = 1024;
     mainLight.shadow.mapSize.height = 1024;
     scene.add(mainLight);
 
-    // Warm point lights
-    const warmLight1 = new THREE.PointLight(0xff9500, 0.8, 15);
-    warmLight1.position.set(-3, 3, -3);
+    // Add hemisphere light for natural indoor lighting
+    const hemiLight = new THREE.HemisphereLight(0xffeeb1, 0x080820, 1.0);
+    scene.add(hemiLight);
+
+    // Multiple point lights throughout the space
+    const warmLight1 = new THREE.PointLight(0xffaa55, 1.5, 30);
+    warmLight1.position.set(-5, 5, -5);
     scene.add(warmLight1);
 
-    const warmLight2 = new THREE.PointLight(0xff7b00, 0.8, 15);
-    warmLight2.position.set(3, 3, 3);
+    const warmLight2 = new THREE.PointLight(0xffaa55, 1.5, 30);
+    warmLight2.position.set(5, 5, 5);
     scene.add(warmLight2);
 
-    const warmLight3 = new THREE.PointLight(0xff8c00, 0.6, 20);
-    warmLight3.position.set(0, 5, 0);
+    const warmLight3 = new THREE.PointLight(0xffffff, 1.0, 40);
+    warmLight3.position.set(0, 10, 0);
     scene.add(warmLight3);
+    
+    // Additional fill lights
+    const fillLight1 = new THREE.PointLight(0xffd9a0, 0.8, 25);
+    fillLight1.position.set(-3, 2, 3);
+    scene.add(fillLight1);
+    
+    const fillLight2 = new THREE.PointLight(0xffd9a0, 0.8, 25);
+    fillLight2.position.set(3, 2, -3);
+    scene.add(fillLight2);
 
     // Load the GLB model
     const dracoLoader = new DRACOLoader();
