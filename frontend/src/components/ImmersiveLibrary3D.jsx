@@ -199,26 +199,38 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         
         const model = gltf.scene;
         
-        // Center and scale the model
+        // Get original bounding box
         const box = new THREE.Box3().setFromObject(model);
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
         
-        // Scale to reasonable size (library should be walkable)
+        console.log('Model original size:', size);
+        console.log('Model original center:', center);
+        
+        // Scale to reasonable walkable size
+        // Target: about 20 units wide for comfortable exploration
         const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 10 / maxDim; // Normalize to about 10 units
+        const targetSize = 20;
+        const scale = targetSize / maxDim;
         model.scale.setScalar(scale);
         
-        // Recalculate after scaling
-        box.setFromObject(model);
-        box.getCenter(center);
+        console.log('Applied scale:', scale);
         
-        // Center the model at origin
-        model.position.sub(center);
+        // Recalculate bounds after scaling
+        const scaledBox = new THREE.Box3().setFromObject(model);
+        const scaledCenter = scaledBox.getCenter(new THREE.Vector3());
+        const scaledSize = scaledBox.getSize(new THREE.Vector3());
         
-        // Adjust Y so floor is at y=0
-        const newBox = new THREE.Box3().setFromObject(model);
-        model.position.y -= newBox.min.y;
+        console.log('Model scaled size:', scaledSize);
+        
+        // Center the model horizontally at origin
+        model.position.x = -scaledCenter.x;
+        model.position.z = -scaledCenter.z;
+        
+        // Position model so floor is at y=0
+        model.position.y = -scaledBox.min.y;
+        
+        console.log('Model final position:', model.position);
         
         // Enable shadows on all meshes
         model.traverse((child) => {
