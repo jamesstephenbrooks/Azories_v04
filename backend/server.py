@@ -2054,6 +2054,34 @@ async def seed_test_books(admin: dict = Depends(get_admin_user)):
     }
 
 
+
+# ============ PROXY FOR 3D MODELS (CORS BYPASS) ============
+
+@api_router.get("/proxy/glb")
+async def proxy_glb_model(url: str):
+    """Proxy GLB model files to bypass CORS issues"""
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                if response.status != 200:
+                    raise HTTPException(status_code=response.status, detail="Failed to fetch model")
+                
+                content = await response.read()
+                
+                return StreamingResponse(
+                    io.BytesIO(content),
+                    media_type="model/gltf-binary",
+                    headers={
+                        "Content-Disposition": "inline",
+                        "Access-Control-Allow-Origin": "*",
+                        "Cache-Control": "public, max-age=86400"
+                    }
+                )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
 # ============ USER PROFILE & SOCIAL ROUTES ============
 
 class UserProfileUpdate(BaseModel):
