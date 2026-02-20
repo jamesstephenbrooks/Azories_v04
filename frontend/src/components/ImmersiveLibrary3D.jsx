@@ -233,37 +233,64 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         const size = box.getSize(new THREE.Vector3());
         const center = box.getCenter(new THREE.Vector3());
         
-        console.log('Model size:', size);
+        console.log('Model original size:', size);
+        console.log('Model original center:', center);
+        console.log('Model original bounds:', box.min, box.max);
         
-        // Scale to reasonable walkable size
+        // Scale to reasonable walkable size - library should be about 20 units
         const maxDim = Math.max(size.x, size.y, size.z);
-        const targetSize = 15;
+        const targetSize = 20;
         const scale = targetSize / maxDim;
         model.scale.setScalar(scale);
         
         // Recalculate after scaling
         const scaledBox = new THREE.Box3().setFromObject(model);
+        const scaledSize = scaledBox.getSize(new THREE.Vector3());
         const scaledCenter = scaledBox.getCenter(new THREE.Vector3());
         
-        // Center horizontally
+        console.log('Model scaled size:', scaledSize);
+        console.log('Model scaled center:', scaledCenter);
+        
+        // Center the model at origin
         model.position.x = -scaledCenter.x;
         model.position.z = -scaledCenter.z;
+        // Put floor at y=0
         model.position.y = -scaledBox.min.y;
         
-        // Enable shadows
+        // Calculate new bounds after positioning
+        const finalBox = new THREE.Box3().setFromObject(model);
+        const finalCenter = finalBox.getCenter(new THREE.Vector3());
+        const finalSize = finalBox.getSize(new THREE.Vector3());
+        
+        console.log('Model final bounds:', finalBox.min, finalBox.max);
+        console.log('Model final center:', finalCenter);
+        
+        // Process materials to ensure they render properly
         model.traverse((child) => {
           if (child.isMesh) {
             child.castShadow = true;
             child.receiveShadow = true;
+            // Ensure materials are visible
+            if (child.material) {
+              child.material.side = THREE.DoubleSide; // Render both sides
+              child.material.needsUpdate = true;
+            }
           }
         });
         
         scene.add(model);
         
-        // Position camera inside
-        camera.position.set(0, 2, 5);
-        controls.target.set(0, 1.5, 0);
+        // Position camera at the CENTER of the model (inside the library)
+        // The library's interior should be around the center point
+        const cameraY = Math.max(1.7, finalCenter.y); // Eye level or center, whichever is higher
+        camera.position.set(finalCenter.x, cameraY, finalCenter.z);
+        
+        // Look slightly forward from center
+        controls.target.set(finalCenter.x, cameraY - 0.2, finalCenter.z - 2);
         controls.update();
+        
+        console.log('Camera positioned at:', camera.position);
+        console.log('Looking at:', controls.target);
         
         setIsLoaded(true);
         setLoadError(null);
