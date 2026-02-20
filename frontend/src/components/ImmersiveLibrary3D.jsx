@@ -185,9 +185,16 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
 
     console.log('Loading model from:', LIBRARY_MODEL_URL);
 
+    // Add timeout for the model load
+    const loadTimeout = setTimeout(() => {
+      console.warn('Model load timeout - taking too long');
+      setLoadError('Loading is taking too long. The 50MB model may be too large for your connection. Try refreshing or use a different browser.');
+    }, 120000); // 2 minute timeout
+
     gltfLoader.load(
       LIBRARY_MODEL_URL,
       (gltf) => {
+        clearTimeout(loadTimeout);
         console.log('Gothic Library loaded successfully!');
         
         const model = gltf.scene;
