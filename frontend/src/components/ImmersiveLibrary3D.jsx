@@ -246,8 +246,10 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         
         scene.add(model);
         
-        // Position camera inside the library
-        camera.position.set(0, 1.7, 2);
+        // Position camera at the center of the library at eye level
+        camera.position.set(0, 1.7, 0);
+        
+        console.log('Camera position:', camera.position);
         
         setIsLoaded(true);
         setLoadError(null);
