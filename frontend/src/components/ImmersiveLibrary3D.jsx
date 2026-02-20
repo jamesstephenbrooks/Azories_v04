@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { FiX, FiBook, FiMaximize2, FiMinimize2, FiVolume2, FiVolumeX } from 'react-icons/fi';
 
 // Gothic Library Model URL
-const LIBRARY_MODEL_URL = 'https://customer-assets.emergentagent.com/job_513aa01a-ca6e-4353-9972-f674c11a8691/artifacts/jzsctomi_gothic_library_2_cycles.glb';
+const LIBRARY_MODEL_URL = 'https://customer-assets.emergentagent.com/job_513aa01a-ca6e-4353-9972-f674c11a8691/artifacts/w6xrpyo6_gothic_library_4_cycles.glb';
 
 // Vanilla Three.js Library Viewer
 export default function ImmersiveLibrary3D({ books = [], onClose }) {
