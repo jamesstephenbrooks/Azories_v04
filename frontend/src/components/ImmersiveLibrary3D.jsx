@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { FiX, FiBook, FiMaximize2, FiMinimize2, FiVolume2, FiVolumeX } from 'react-icons/fi';
 
 // Gothic Library Model URL
-const LIBRARY_MODEL_URL = 'https://customer-assets.emergentagent.com/job_513aa01a-ca6e-4353-9972-f674c11a8691/artifacts/tsx97iom_gothic_library_2_cycles.glb';
+const LIBRARY_MODEL_URL = 'https://customer-assets.emergentagent.com/job_513aa01a-ca6e-4353-9972-f674c11a8691/artifacts/tsbv1z7k_gothic_library_2_cycles.glb';
 
 // Loading Progress Component (outside Canvas)
 function LoadingScreen({ progress }) {
