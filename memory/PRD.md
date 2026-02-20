@@ -11,9 +11,21 @@ Create a digital book creating and reading web application called "Azories" (azo
 
 ## What's Been Implemented (February 2026)
 
+### Latest Updates (Feb 20, 2026) - Session 6: 3D GLB Library Integration
+- **3D Gothic Library with User's GLB Model**: Successfully integrated the user's purchased 50MB GLB model
+  - Fixed CORS issues by implementing backend proxy endpoint `/api/proxy/glb`
+  - Added proper Content-Length header for accurate loading progress display
+  - Loading progress now shows correctly (0% → 100%)
+  - Gothic library renders with wooden floors, stone pillars, and decorative elements
+  - OrbitControls for drag to rotate, scroll to zoom, right-click to pan
+  - Library collection panel shows books at the bottom
+  - Fullscreen mode supported
+  - Ambient fireplace audio plays on user interaction
+- **Verified Ambient Sound Popup Fix**: Confirmed the popup now displays correctly on-screen
+
 ### Latest Updates (Feb 18, 2026) - Session 5: Immersive Library
 - **Fixed Ambient Sound Dropdown**: Changed popup to open downward (top-full) instead of upward to prevent off-screen rendering
-- **Immersive 3D Library**: Created CSS 3D library experience with:
+- **Immersive 3D Library (CSS Fallback)**: Created CSS 3D library experience as fallback with:
   - Starry night sky background with animated stars
   - Chandelier with glowing candles
   - 8 bookshelves arranged in a circular pattern
@@ -23,7 +35,6 @@ Create a digital book creating and reading web application called "Azories" (azo
   - Drag to rotate, arrow buttons for navigation
   - Ambient fireplace audio
   - Book preview modal when clicking books
-- **Note**: User provided a GLB file of a gothic library, but it was 147MB which is too large for web loading. Used CSS 3D as a performant alternative.
 
 ### Latest Updates (Feb 18, 2026) - Session 4: Best Reading App Vision
 - **Analytics Dashboard**: Added tabbed view in Dashboard with "My Books" and "Analytics" tabs
