@@ -277,8 +277,9 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         const finalCenter = finalBox.getCenter(new THREE.Vector3());
         const finalSize = finalBox.getSize(new THREE.Vector3());
         
-        console.log('Model final bounds:', finalBox.min, finalBox.max);
-        console.log('Model final center:', finalCenter);
+        console.log('Model final bounds min:', JSON.stringify({x: finalBox.min.x, y: finalBox.min.y, z: finalBox.min.z}));
+        console.log('Model final bounds max:', JSON.stringify({x: finalBox.max.x, y: finalBox.max.y, z: finalBox.max.z}));
+        console.log('Model final center:', JSON.stringify({x: finalCenter.x, y: finalCenter.y, z: finalCenter.z}));
         
         // Process materials to ensure they render properly
         model.traverse((child) => {
