@@ -296,13 +296,12 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         
         scene.add(model);
         
-        // Position camera at the CENTER of the model (inside the library)
-        // The library's interior should be around the center point
-        const cameraY = Math.max(1.7, finalCenter.y); // Eye level or center, whichever is higher
-        camera.position.set(finalCenter.x, cameraY, finalCenter.z);
+        // Position camera at GROUND level inside the library (eye height)
+        const eyeHeight = 1.7;
+        camera.position.set(0, eyeHeight, 5); // Stand at center, slightly back
         
-        // Look slightly forward from center
-        controls.target.set(finalCenter.x, cameraY - 0.2, finalCenter.z - 2);
+        // Look at center of the room
+        controls.target.set(0, eyeHeight, 0);
         controls.update();
         
         console.log('Camera positioned at:', JSON.stringify({x: camera.position.x, y: camera.position.y, z: camera.position.z}));
