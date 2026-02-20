@@ -157,13 +157,14 @@ Create a digital book creating and reading web application called "Azories" (azo
 - [x] Authentication
 - [x] AI generation (image + video)
 - [x] Admin CMS
-- [x] 3D Library
+- [x] 3D Library (CSS fallback + GLB model integration Feb 20, 2026)
 - [x] Auto-save
 - [x] Summary preview popup on book cards
 - [x] Auto-read continuous playback through chapters (fixed Feb 18, 2026)
 - [x] Analytics Dashboard for creators (Feb 18, 2026)
 - [x] User Profile system with social features (Feb 18, 2026)
 - [x] Ambient reading sounds (Feb 18, 2026)
+- [x] Immersive 3D Gothic Library with GLB model (Feb 20, 2026)
 
 ### P1 (High Priority)
 - [ ] Stripe payment integration
