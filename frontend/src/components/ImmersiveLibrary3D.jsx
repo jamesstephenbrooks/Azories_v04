@@ -247,9 +247,10 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         const size = box.getSize(new THREE.Vector3());
         const center = box.getCenter(new THREE.Vector3());
         
-        console.log('Model original size:', size);
-        console.log('Model original center:', center);
-        console.log('Model original bounds:', box.min, box.max);
+        console.log('Model original size:', JSON.stringify({x: size.x, y: size.y, z: size.z}));
+        console.log('Model original center:', JSON.stringify({x: center.x, y: center.y, z: center.z}));
+        console.log('Model original bounds min:', JSON.stringify({x: box.min.x, y: box.min.y, z: box.min.z}));
+        console.log('Model original bounds max:', JSON.stringify({x: box.max.x, y: box.max.y, z: box.max.z}));
         
         // Scale to reasonable walkable size - library should be about 20 units
         const maxDim = Math.max(size.x, size.y, size.z);
