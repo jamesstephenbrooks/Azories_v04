@@ -8,8 +8,9 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { Button } from '@/components/ui/button';
 import { FiX, FiBook, FiMaximize2, FiMinimize2, FiVolume2, FiVolumeX } from 'react-icons/fi';
 
-// Gothic Library Model URL
-const LIBRARY_MODEL_URL = 'https://customer-assets.emergentagent.com/job_513aa01a-ca6e-4353-9972-f674c11a8691/artifacts/w6xrpyo6_gothic_library_4_cycles.glb';
+// Gothic Library Model URL - Using proxy to bypass CORS
+const ORIGINAL_GLB_URL = 'https://customer-assets.emergentagent.com/job_513aa01a-ca6e-4353-9972-f674c11a8691/artifacts/w6xrpyo6_gothic_library_4_cycles.glb';
+const LIBRARY_MODEL_URL = `${process.env.REACT_APP_BACKEND_URL}/api/proxy/glb?url=${encodeURIComponent(ORIGINAL_GLB_URL)}`;
 
 // Vanilla Three.js Library Viewer
 export default function ImmersiveLibrary3D({ books = [], onClose }) {
