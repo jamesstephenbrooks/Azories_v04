@@ -263,8 +263,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         const scaledSize = scaledBox.getSize(new THREE.Vector3());
         const scaledCenter = scaledBox.getCenter(new THREE.Vector3());
         
-        console.log('Model scaled size:', scaledSize);
-        console.log('Model scaled center:', scaledCenter);
+        console.log('Model scaled size:', JSON.stringify({x: scaledSize.x, y: scaledSize.y, z: scaledSize.z}));
+        console.log('Model scaled center:', JSON.stringify({x: scaledCenter.x, y: scaledCenter.y, z: scaledCenter.z}));
         
         // Center the model at origin
         model.position.x = -scaledCenter.x;
