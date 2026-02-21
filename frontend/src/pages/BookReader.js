@@ -50,6 +50,9 @@ export default function BookReader() {
   const [readingProgress, setReadingProgress] = useState(0);
   const [readingStats, setReadingStats] = useState(null);
   
+  // AI Reading Buddy
+  const [showAIBuddy, setShowAIBuddy] = useState(false);
+  
   const isCover = currentPage === -1;
   const totalPages = allPages.length;
   const currentPageData = currentPage >= 0 ? allPages[currentPage] : null;
