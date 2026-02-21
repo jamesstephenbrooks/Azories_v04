@@ -1715,10 +1715,14 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                     </div>
                   )}
                   
-                  {selectedBook.description && (
-                    <p className="text-sm text-white/60 text-center mb-4 line-clamp-3">
-                      {selectedBook.description}
-                    </p>
+                  {/* Book Summary/Description */}
+                  {(selectedBook.summary || selectedBook.description) && (
+                    <div className="mb-4 max-h-32 overflow-y-auto">
+                      <p className="text-xs text-purple-400 mb-1">Summary:</p>
+                      <p className="text-sm text-white/70 leading-relaxed">
+                        {selectedBook.summary || selectedBook.description}
+                      </p>
+                    </div>
                   )}
                   
                   {/* Action Buttons */}
