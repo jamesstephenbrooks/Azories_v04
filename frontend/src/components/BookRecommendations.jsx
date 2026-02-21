@@ -22,15 +22,18 @@ export default function BookRecommendations({ userId }) {
       setBasedOn(res.data.based_on || []);
     } catch (error) {
       console.error('Failed to fetch recommendations:', error);
-      // Fallback to popular books
+      // Fallback to popular books - API returns array directly
       try {
         const fallback = await axios.get(`${API}/api/books`, {
-          params: { limit: 6, sort: 'views' }
+          params: { limit: 6, published_only: 'true' }
         });
-        setRecommendations(fallback.data.books || []);
-        setBasedOn(['Popular books']);
+        // API returns array directly, not {books: [...]}
+        const books = Array.isArray(fallback.data) ? fallback.data : (fallback.data.books || []);
+        setRecommendations(books.slice(0, 6));
+        setBasedOn(['Popular in Azories']);
       } catch (e) {
         console.error('Failed to fetch fallback:', e);
+        setRecommendations([]);
       }
     } finally {
       setLoading(false);
