@@ -797,11 +797,6 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         }
       });
       
-      // Debug: Log render cycle
-      if (isExploringRef.current) {
-        console.log('Render cycle - exploring, camera at:', camera.position.x.toFixed(2), camera.position.y.toFixed(2), camera.position.z.toFixed(2));
-      }
-      
       renderer.render(scene, camera);
     };
     animate();
