@@ -1024,7 +1024,7 @@ export default function ArtStudio() {
 
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* Tab Navigation */}
-        <div className="flex gap-2 mb-6">
+        <div className="flex gap-2 mb-6 flex-wrap">
           <Button
             variant={activeTab === 'character' ? 'default' : 'outline'}
             onClick={() => setActiveTab('character')}
@@ -1040,6 +1040,16 @@ export default function ArtStudio() {
           >
             <FiLayers className="w-4 h-4 mr-2" />
             Scene Creator
+          </Button>
+          <Button
+            variant={activeTab === 'animate' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('animate')}
+            className={activeTab === 'animate' ? 'bg-gradient-to-r from-pink-600 to-purple-600' : 'border-pink-500/50 text-pink-300 hover:bg-pink-500/20'}
+            data-testid="animate-tab-btn"
+          >
+            <FiVideo className="w-4 h-4 mr-2" />
+            Animate
+            <span className="ml-2 text-[10px] px-1.5 py-0.5 bg-pink-500/30 rounded">NEW</span>
           </Button>
           <Button
             variant={activeTab === 'gallery' ? 'default' : 'outline'}
