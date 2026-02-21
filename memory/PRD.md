@@ -36,6 +36,20 @@ Create a digital book creating and reading web application called "Azories" for 
   - "Gallery" button - pick from Art Studio gallery
 - Each reference type has its own file input and upload handler
 
+**Advanced Portrait Styles & Custom Controls:**
+- Added new "Advanced Portrait" category with 6 hyper-detailed styles:
+  - Neon Portrait (pink/blue split lighting, flowing hair)
+  - Surreal Double Exposure (fantasy elements, reflections)
+  - Hyper-Detailed Digital (ultra polished, skin texture)
+  - Aesthetic Portrait (trendy e-girl/e-boy aesthetic)
+  - Fantasy Portrait (magical ethereal lighting)
+  - Dramatic Glamour (high fashion magazine quality)
+- Added Lighting Presets (Pro Options):
+  - Natural, Neon Pink/Blue, Golden Hour, Dramatic, Soft Glow, Studio
+- Added Custom Style Description field (Pro Options):
+  - Free-form text to describe exact style requirements
+  - Perfect for matching complex reference images
+
 **DeepAI-Style Image Quality Enhancement:**
 - Completely overhauled prompt engineering to match DeepAI quality standards
 - New quality boost system:
