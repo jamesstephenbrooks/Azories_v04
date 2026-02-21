@@ -7,62 +7,62 @@ import {
   FiDroplet, FiMusic, FiCoffee, FiFeather
 } from 'react-icons/fi';
 
-// Ambient sound URLs (using free ambient sound sources)
+// Ambient sound URLs - using reliable free sources with CORS support
 const AMBIENT_SOUNDS = {
   rain: {
     name: 'Rain',
     icon: FiDroplet,
     color: 'text-blue-400',
-    url: 'https://assets.mixkit.co/sfx/preview/mixkit-light-rain-loop-2393.mp3',
+    url: 'https://cdn.pixabay.com/audio/2022/05/16/audio_3c27f67d9b.mp3', // Rain sounds
     description: 'Gentle rainfall'
   },
   fireplace: {
     name: 'Fireplace',
     icon: FiSun,
     color: 'text-orange-400',
-    url: 'https://assets.mixkit.co/sfx/preview/mixkit-campfire-crackles-1330.mp3',
+    url: 'https://cdn.pixabay.com/audio/2021/08/08/audio_925904b4c3.mp3', // Fireplace crackle
     description: 'Crackling fire'
   },
   forest: {
     name: 'Forest',
     icon: FiFeather,
     color: 'text-green-400',
-    url: 'https://assets.mixkit.co/sfx/preview/mixkit-forest-birds-ambience-1210.mp3',
+    url: 'https://cdn.pixabay.com/audio/2022/03/10/audio_d9c1b7d6d2.mp3', // Forest birds
     description: 'Birds & nature'
   },
   ocean: {
     name: 'Ocean',
     icon: FiWind,
     color: 'text-cyan-400',
-    url: 'https://assets.mixkit.co/sfx/preview/mixkit-sea-waves-loop-1196.mp3',
+    url: 'https://cdn.pixabay.com/audio/2022/06/25/audio_69a61cd6d6.mp3', // Ocean waves
     description: 'Ocean waves'
   },
   cafe: {
     name: 'Café',
     icon: FiCoffee,
     color: 'text-amber-400',
-    url: 'https://assets.mixkit.co/sfx/preview/mixkit-restaurant-crowd-talking-ambience-444.mp3',
+    url: 'https://cdn.pixabay.com/audio/2022/03/15/audio_8cb749bf85.mp3', // Cafe ambience
     description: 'Coffee shop'
   },
   night: {
     name: 'Night',
     icon: FiMoon,
     color: 'text-indigo-400',
-    url: 'https://assets.mixkit.co/sfx/preview/mixkit-crickets-and-insects-in-the-wild-ambience-39.mp3',
+    url: 'https://cdn.pixabay.com/audio/2021/09/06/audio_0917b61c90.mp3', // Night crickets
     description: 'Crickets & night'
   },
   wind: {
     name: 'Wind',
     icon: FiCloud,
     color: 'text-gray-400',
-    url: 'https://assets.mixkit.co/sfx/preview/mixkit-blizzard-cold-winds-1153.mp3',
+    url: 'https://cdn.pixabay.com/audio/2022/01/18/audio_d0c24f2ddf.mp3', // Wind sound
     description: 'Soft breeze'
   },
   library: {
     name: 'Library',
     icon: FiMusic,
     color: 'text-purple-400',
-    url: 'https://assets.mixkit.co/sfx/preview/mixkit-cinematic-mystery-trailer-2857.mp3',
+    url: 'https://cdn.pixabay.com/audio/2022/02/22/audio_d1718ab41b.mp3', // Calm ambient
     description: 'Quiet ambience'
   }
 };
