@@ -396,13 +396,13 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           .copy(camera.position)
           .add(forward.multiplyScalar(distanceFromCamera));
         
-        // Keep at eye level
-        bookPosition.y = camera.position.y - 0.1;
+        // Lower than eye level
+        bookPosition.y = camera.position.y - 0.35;
         
         bookModel.position.copy(bookPosition);
         
-        // Scale the book - bigger
-        bookModel.scale.setScalar(0.12);
+        // Scale the book - smaller
+        bookModel.scale.setScalar(0.08);
         
         // Make the book upright and facing camera (not tilted)
         // Get camera's Y rotation only for horizontal facing
