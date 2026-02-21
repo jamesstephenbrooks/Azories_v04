@@ -801,8 +801,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
             
             // Only accept floors that are:
             // 1. At or below current foot position (can step DOWN freely)
-            // 2. OR only slightly above (max 0.3m step up - for stairs)
-            const maxStepUp = 0.3; // Maximum height player can step UP (stair step)
+            // 2. OR only slightly above (max 0.5m step up - for stairs including spiral)
+            const maxStepUp = 0.5; // Maximum height player can step UP (larger for spiral stairs)
             const maxStepDown = 2.0; // Can fall/step down further
             
             if (hitY <= currentFootY + maxStepUp && hitY >= currentFootY - maxStepDown) {
