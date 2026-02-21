@@ -746,7 +746,8 @@ export default function ArtStudioExpert() {
       const workflow = {
         name: workflowName,
         nodes: nodes.map(n => ({ ...n, data: { ...n.data, onChange: undefined, onDownload: undefined } })),
-        edges
+        edges,
+        bookId: selectedBookId !== 'general' ? selectedBookId : null
       };
       
       const response = await fetch(`${API_URL}/api/art-studio/workflow/save`, {
