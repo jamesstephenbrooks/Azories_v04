@@ -65,6 +65,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
   const collisionMeshesRef = useRef([]);
   const raycasterRef = useRef(new THREE.Raycaster());
   const bookMeshesRef = useRef([]);
+  const azoraRef = useRef(null);
+  const sceneRef = useRef(null);
   
   // Physics constants - realistic eye level for a child/young person
   const GRAVITY = 20;
