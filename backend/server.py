@@ -2700,11 +2700,9 @@ class ArtStudioSaveRequest(BaseModel):
     sceneData: Optional[dict] = None
 
 @api_router.post("/art-studio/generate")
-async def art_studio_generate(request: ArtStudioGenerateRequest, credentials: HTTPAuthorizationCredentials = Depends(security)):
+async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: dict = Depends(get_current_user)):
     """Generate an image using AI based on character/scene settings"""
-    user = await get_current_user(credentials.credentials)
-    if not user:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+    user = current_user
     
     try:
         if not EMERGENT_LLM_KEY:
