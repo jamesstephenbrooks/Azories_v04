@@ -90,9 +90,12 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
   const touchMoveRef = useRef({ active: false, x: 0, y: 0 });
   const joystickRef = useRef({ active: false, angle: 0, distance: 0 });
   
-  // Mouse look state
+  // Mouse look state - support both pointer lock AND drag-to-look
   const isPointerLocked = useRef(false);
+  const isDragging = useRef(false);
+  const lastMousePos = useRef({ x: 0, y: 0 });
   const [showClickHint, setShowClickHint] = useState(true);
+  const [lookMode, setLookMode] = useState('click'); // 'click' or 'drag'
   const euler = useRef(new THREE.Euler(0, 0, 0, 'YXZ'));
   
   // Load saved positions from localStorage
