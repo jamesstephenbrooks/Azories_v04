@@ -576,18 +576,24 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         const raycaster = new THREE.Raycaster();
         const downRay = new THREE.Vector3(0, -1, 0);
         
-        // Cast ray down from center to find floor
-        raycaster.set(new THREE.Vector3(0, 10, 0), downRay);
+        // Cast ray down from center to find floor - start from higher up to ensure we're inside
+        raycaster.set(new THREE.Vector3(0, 20, 0), downRay);
         const floorHits = raycaster.intersectObjects(collisionMeshesRef.current, true);
         
         let startY = PLAYER_HEIGHT;
         if (floorHits.length > 0) {
+          // Use the FIRST floor hit (highest floor level)
           startY = floorHits[0].point.y + PLAYER_HEIGHT;
           console.log('Found floor at:', floorHits[0].point.y, 'Starting at:', startY);
+        } else {
+          // Fallback - use a reasonable height inside the library
+          startY = 2;
+          console.log('No floor found, using default height:', startY);
         }
         
-        // Position camera inside the library at detected floor level
-        camera.position.set(0, startY, 3);
+        // Position camera inside the library at center, slightly forward
+        // Start at center (0, 0) with correct height
+        camera.position.set(0, startY, 0);
         
         // Create floating book sprites for interactive book selection
         const bookSprites = [];
