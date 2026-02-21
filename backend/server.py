@@ -2703,6 +2703,229 @@ class ArtStudioSaveRequest(BaseModel):
     sceneData: Optional[dict] = None
     bookId: Optional[str] = None  # Book to assign the image to
 
+class CharacterProfileRequest(BaseModel):
+    name: str
+    description: str  # Detailed character description
+    reference_images: List[str] = []  # List of base64 or URL images
+    traits: Optional[dict] = None  # Character traits (gender, age, hair, etc.)
+    style_preferences: Optional[List[str]] = None  # Preferred art styles
+    seed: Optional[int] = None  # Generation seed for consistency
+    book_id: Optional[str] = None  # Associated book
+
+# Character Profile Endpoints for Consistency
+@api_router.post("/art-studio/character-profiles")
+async def create_character_profile(request: CharacterProfileRequest, current_user: dict = Depends(get_current_user)):
+    """Create a character profile for consistent generation"""
+    user = current_user
+    
+    try:
+        import random
+        
+        # Generate a unique seed if not provided
+        seed = request.seed if request.seed else random.randint(1, 2147483647)
+        
+        profile = {
+            "user_id": user["id"],
+            "name": request.name,
+            "description": request.description,
+            "reference_images": request.reference_images[:5],  # Max 5 reference images
+            "traits": request.traits or {},
+            "style_preferences": request.style_preferences or [],
+            "seed": seed,
+            "book_id": request.book_id,
+            "generation_count": 0,
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc)
+        }
+        
+        result = await db.character_profiles.insert_one(profile)
+        
+        return {
+            "id": str(result.inserted_id),
+            "name": request.name,
+            "seed": seed,
+            "message": "Character profile created. Use this profile for consistent character generation."
+        }
+        
+    except Exception as e:
+        logging.error(f"Character profile creation error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to create character profile")
+
+@api_router.get("/art-studio/character-profiles")
+async def get_character_profiles(current_user: dict = Depends(get_current_user)):
+    """Get all character profiles for the user"""
+    user = current_user
+    
+    try:
+        profiles = await db.character_profiles.find(
+            {"user_id": user["id"]},
+            {"_id": 0, "user_id": 0}
+        ).sort("created_at", -1).to_list(50)
+        
+        # Add ID back as string
+        for idx, profile in enumerate(profiles):
+            cursor = db.character_profiles.find({"user_id": user["id"]}).sort("created_at", -1)
+            docs = await cursor.to_list(50)
+            if idx < len(docs):
+                profiles[idx]["id"] = str(docs[idx]["_id"])
+        
+        return {"profiles": profiles}
+        
+    except Exception as e:
+        logging.error(f"Character profiles fetch error: {e}")
+        return {"profiles": []}
+
+@api_router.get("/art-studio/character-profiles/{profile_id}")
+async def get_character_profile(profile_id: str, current_user: dict = Depends(get_current_user)):
+    """Get a specific character profile"""
+    user = current_user
+    
+    try:
+        from bson import ObjectId
+        profile = await db.character_profiles.find_one(
+            {"_id": ObjectId(profile_id), "user_id": user["id"]}
+        )
+        
+        if not profile:
+            raise HTTPException(status_code=404, detail="Character profile not found")
+        
+        return {
+            "id": str(profile["_id"]),
+            "name": profile["name"],
+            "description": profile["description"],
+            "reference_images": profile.get("reference_images", []),
+            "traits": profile.get("traits", {}),
+            "style_preferences": profile.get("style_preferences", []),
+            "seed": profile.get("seed"),
+            "book_id": profile.get("book_id"),
+            "generation_count": profile.get("generation_count", 0)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Character profile fetch error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch character profile")
+
+@api_router.post("/art-studio/generate-consistent")
+async def generate_consistent_character(
+    profile_id: str,
+    prompt: str,
+    scene: Optional[str] = None,
+    style: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    """Generate an image with character consistency using a saved profile"""
+    user = current_user
+    
+    try:
+        from bson import ObjectId
+        
+        # Get the character profile
+        profile = await db.character_profiles.find_one(
+            {"_id": ObjectId(profile_id), "user_id": user["id"]}
+        )
+        
+        if not profile:
+            raise HTTPException(status_code=404, detail="Character profile not found")
+        
+        if not EMERGENT_LLM_KEY:
+            raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
+        
+        # Build consistency-enhanced prompt
+        char_desc = profile["description"]
+        traits = profile.get("traits", {})
+        
+        # Add trait details to description
+        trait_parts = []
+        if traits.get("gender"): trait_parts.append(traits["gender"])
+        if traits.get("age"): trait_parts.append(f"{traits['age']} years old")
+        if traits.get("hairColor"): trait_parts.append(f"{traits['hairColor']} hair")
+        if traits.get("hairStyle"): trait_parts.append(f"{traits['hairStyle']} hairstyle")
+        if traits.get("eyeColor"): trait_parts.append(f"{traits['eyeColor']} eyes")
+        if traits.get("skinTone"): trait_parts.append(f"{traits['skinTone']} skin")
+        
+        traits_desc = ", ".join(trait_parts) if trait_parts else ""
+        
+        # Build the full prompt with consistency anchors
+        full_prompt = f"Character: {profile['name']}. "
+        full_prompt += f"Exact appearance: {char_desc}"
+        if traits_desc:
+            full_prompt += f", {traits_desc}"
+        full_prompt += f". "
+        
+        if scene:
+            full_prompt += f"Scene: {scene}. "
+        
+        full_prompt += f"Action/Pose: {prompt}. "
+        
+        # Add style
+        style_to_use = style or (profile.get("style_preferences", ["fantasy"])[0] if profile.get("style_preferences") else "fantasy")
+        style_prompts = {
+            "realistic": "Photorealistic style, detailed, cinematic lighting",
+            "anime": "Japanese anime style, vibrant colors, clean lines",
+            "fantasy": "Epic fantasy art style, magical lighting, detailed",
+            "cartoon": "Colorful cartoon style, bold outlines",
+            "watercolor": "Watercolor painting style, soft blended colors"
+        }
+        full_prompt += style_prompts.get(style_to_use, "Epic fantasy art style, detailed")
+        
+        # Add consistency keywords
+        full_prompt += ". IMPORTANT: Maintain exact character appearance, same face structure, same proportions, consistent identity throughout."
+        
+        # Generate the image
+        image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
+        images = await image_gen.generate_images(
+            prompt=full_prompt,
+            model="gpt-image-1",
+            number_of_images=1
+        )
+        
+        if images and len(images) > 0:
+            image_base64 = base64.b64encode(images[0]).decode('utf-8')
+            image_url = f"data:image/png;base64,{image_base64}"
+            
+            # Update generation count
+            await db.character_profiles.update_one(
+                {"_id": ObjectId(profile_id)},
+                {
+                    "$inc": {"generation_count": 1},
+                    "$set": {"updated_at": datetime.now(timezone.utc)}
+                }
+            )
+            
+            # Save to generations
+            generation_record = {
+                "user_id": user["id"],
+                "image_url": image_url,
+                "prompt": prompt,
+                "enhanced_prompt": full_prompt,
+                "style": style_to_use,
+                "type": "consistent_character",
+                "character_profile_id": profile_id,
+                "character_name": profile["name"],
+                "scene": scene,
+                "seed": profile.get("seed"),
+                "book_id": profile.get("book_id"),
+                "created_at": datetime.now(timezone.utc)
+            }
+            await db.art_studio_generations.insert_one(generation_record)
+            
+            return {
+                "image_url": image_url,
+                "prompt_used": full_prompt,
+                "character_name": profile["name"],
+                "seed": profile.get("seed")
+            }
+        else:
+            raise HTTPException(status_code=500, detail="No image was generated")
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Consistent character generation error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate image: {str(e)}")
+
 @api_router.post("/art-studio/generate")
 async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: dict = Depends(get_current_user)):
     """Generate an image using AI based on character/scene settings"""
