@@ -381,7 +381,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       }
     );
 
-    // Animation loop with physics
+    // Animation loop with physics and raycasting collision
     const animate = () => {
       if (!mounted) return;
       animationIdRef.current = requestAnimationFrame(animate);
@@ -391,6 +391,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       if (isExploring && cameraRef.current) {
         const camera = cameraRef.current;
         const bounds = boundsRef.current;
+        const raycaster = raycasterRef.current;
+        const collisionMeshes = collisionMeshesRef.current;
         
         // Get camera's forward direction (only horizontal)
         camera.getWorldDirection(cameraDirection.current);
@@ -427,27 +429,79 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           playerVelocity.current.z *= Math.max(0, 1 - FRICTION * delta);
         }
         
-        // Apply gravity
+        // Calculate desired new position
+        let newX = camera.position.x + playerVelocity.current.x * delta;
+        let newZ = camera.position.z + playerVelocity.current.z * delta;
+        
+        // Raycast-based wall collision detection
+        if (collisionMeshes.length > 0 && (playerVelocity.current.x !== 0 || playerVelocity.current.z !== 0)) {
+          const horizontalVelocity = new THREE.Vector3(
+            playerVelocity.current.x,
+            0,
+            playerVelocity.current.z
+          );
+          
+          if (horizontalVelocity.length() > 0.01) {
+            const rayDir = horizontalVelocity.clone().normalize();
+            const rayOrigin = camera.position.clone();
+            rayOrigin.y -= 0.5; // Cast from chest height
+            
+            raycaster.set(rayOrigin, rayDir);
+            raycaster.far = 0.8; // Check 0.8 units ahead
+            
+            const hits = raycaster.intersectObjects(collisionMeshes, true);
+            if (hits.length > 0 && hits[0].distance < 0.6) {
+              // Wall hit - stop movement in that direction
+              newX = camera.position.x;
+              newZ = camera.position.z;
+              playerVelocity.current.x = 0;
+              playerVelocity.current.z = 0;
+            }
+          }
+        }
+        
+        // Apply boundary collision (fallback)
+        newX = Math.max(bounds.minX, Math.min(bounds.maxX, newX));
+        newZ = Math.max(bounds.minZ, Math.min(bounds.maxZ, newZ));
+        
+        camera.position.x = newX;
+        camera.position.z = newZ;
+        
+        // Raycast-based floor detection
+        let floorY = bounds.floorY;
+        if (collisionMeshes.length > 0) {
+          raycaster.set(
+            new THREE.Vector3(camera.position.x, camera.position.y + 1, camera.position.z),
+            new THREE.Vector3(0, -1, 0)
+          );
+          raycaster.far = 10;
+          
+          const floorHits = raycaster.intersectObjects(collisionMeshes, true);
+          if (floorHits.length > 0) {
+            floorY = floorHits[0].point.y;
+          }
+        }
+        
+        // Apply gravity and floor collision
         if (!playerOnGround.current) {
           playerVelocity.current.y -= GRAVITY * delta;
         }
         
-        // Calculate new position
-        const newX = camera.position.x + playerVelocity.current.x * delta;
-        const newY = camera.position.y + playerVelocity.current.y * delta;
-        const newZ = camera.position.z + playerVelocity.current.z * delta;
+        let newY = camera.position.y + playerVelocity.current.y * delta;
         
-        // Apply boundary collision
-        camera.position.x = Math.max(bounds.minX, Math.min(bounds.maxX, newX));
-        camera.position.z = Math.max(bounds.minZ, Math.min(bounds.maxZ, newZ));
-        
-        // Floor collision (gravity)
-        if (newY <= bounds.floorY + PLAYER_HEIGHT) {
-          camera.position.y = bounds.floorY + PLAYER_HEIGHT;
+        if (newY <= floorY + PLAYER_HEIGHT) {
+          camera.position.y = floorY + PLAYER_HEIGHT;
           playerVelocity.current.y = 0;
           playerOnGround.current = true;
         } else {
           camera.position.y = Math.min(bounds.ceilingY, newY);
+          playerOnGround.current = false;
+        }
+      }
+      
+      renderer.render(scene, camera);
+    };
+    animate();
           playerOnGround.current = false;
         }
       }
