@@ -2686,14 +2686,17 @@ async def root():
 
 class ArtStudioGenerateRequest(BaseModel):
     prompt: str
+    negativePrompt: Optional[str] = None  # Things to avoid in generation
     style: str = "fantasy"
-    type: str = "character"  # character or scene
+    type: str = "character"  # character, scene, or workflow
     characterData: Optional[dict] = None
     sceneData: Optional[dict] = None
     referenceImage: Optional[str] = None  # Base64 or URL of reference image
     bookId: Optional[str] = None  # Book to assign the image to
     workflowName: Optional[str] = None  # Name of workflow if from Expert Mode
     transparentBackground: Optional[bool] = False  # Generate with transparent background
+    aspectRatio: Optional[str] = "1:1"  # 1:1, 16:9, 9:16, 4:3, 3:4
+    qualityLevel: Optional[str] = "high"  # low, medium, high, ultra
 
 class ArtStudioSaveRequest(BaseModel):
     image_url: str
