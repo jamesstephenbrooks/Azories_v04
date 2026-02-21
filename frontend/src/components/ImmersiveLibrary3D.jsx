@@ -637,15 +637,15 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         // Store the floor level in bounds for teleportation
         boundsRef.current.floorY = floorLevel;
         
-        // Position camera inside the library, slightly back and elevated to see the floor
-        // Based on user's reference image - should see floor, bookcases, and chandelier
-        camera.position.set(0, startY, 4); // Further back to see more of the room
-        console.log('Camera positioned at:', 0, startY, 4);
+        // Position camera inside the library, centered in the open floor area
+        // Based on user's reference image - should see floor, bookcases in distance, and chandelier
+        camera.position.set(0, startY, 6); // Move further back into the room
+        console.log('Camera positioned at:', 0, startY, 6);
         
         // Initialize euler for camera rotation - looking down slightly at the floor/bookcases
         // X rotation: negative = look down, positive = look up
         // Y rotation: Math.PI = facing negative Z (toward bookcases)
-        euler.current.set(-0.25, Math.PI, 0); // Slight downward tilt to see floor
+        euler.current.set(-0.15, Math.PI, 0); // Slight downward tilt to see floor
         camera.quaternion.setFromEuler(euler.current);
         console.log('Camera facing bookcases with slight downward tilt');
         
