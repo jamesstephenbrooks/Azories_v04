@@ -1509,6 +1509,66 @@ export default function BookEditor() {
           </div>
         </DialogContent>
       </Dialog>
+      
+      {/* Cover Gallery Picker Modal */}
+      <Dialog open={showCoverGalleryPicker} onOpenChange={setShowCoverGalleryPicker}>
+        <DialogContent className="max-w-4xl max-h-[80vh]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FiImage className="text-purple-500" />
+              Select {coverGalleryTarget === 'front' ? 'Front' : 'Back'} Cover from Art Studio
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="mt-4">
+            {(() => {
+              const allImages = [...galleryImages, ...generalGalleryImages];
+              
+              if (allImages.length === 0) {
+                return (
+                  <div className="text-center py-8">
+                    <FiImage className="w-12 h-12 mx-auto text-muted-foreground/50 mb-4" />
+                    <p className="text-muted-foreground">No images in your Art Studio gallery</p>
+                    <Button
+                      onClick={() => {
+                        setShowCoverGalleryPicker(false);
+                        navigate('/art-studio');
+                      }}
+                      className="mt-4 rounded-full"
+                    >
+                      <FiZap className="mr-2" />
+                      Go to Art Studio
+                    </Button>
+                  </div>
+                );
+              }
+              
+              return (
+                <ScrollArea className="h-[50vh]">
+                  <div className="grid grid-cols-3 md:grid-cols-4 gap-3 p-1">
+                    {allImages.map((img, idx) => (
+                      <button
+                        key={img.id || idx}
+                        onClick={() => addCoverFromGallery(img.image_url)}
+                        className="group relative aspect-[3/4] rounded-lg overflow-hidden border-2 border-transparent hover:border-purple-500 transition-all"
+                      >
+                        <img 
+                          src={img.image_url} 
+                          alt={img.name || 'Gallery image'}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <span className="text-white text-sm font-medium">Use as Cover</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </ScrollArea>
+              );
+            })()}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
