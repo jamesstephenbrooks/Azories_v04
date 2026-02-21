@@ -90,6 +90,13 @@ export const Navbar = () => {
                   My Books
                 </DropdownMenuItem>
                 <DropdownMenuItem 
+                  onClick={() => navigate('/art-studio')}
+                  data-testid="menu-art-studio"
+                >
+                  <FiDroplet className="mr-2 text-purple-500" />
+                  Art Studio
+                </DropdownMenuItem>
+                <DropdownMenuItem 
                   onClick={logout}
                   className="text-destructive"
                   data-testid="menu-logout"
