@@ -10,7 +10,7 @@ import {
   FiImage, FiUser, FiLayers, FiGrid, FiSave, FiDownload, 
   FiTrash2, FiPlus, FiZap, FiSliders, FiDroplet, FiRefreshCw,
   FiArrowLeft, FiFolder, FiStar, FiCopy, FiEdit2, FiUpload, FiBook, FiCheck,
-  FiEye, FiMaximize2, FiSettings, FiX, FiChevronDown, FiChevronUp
+  FiEye, FiMaximize2, FiSettings, FiX, FiChevronDown, FiChevronUp, FiSearch
 } from 'react-icons/fi';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
