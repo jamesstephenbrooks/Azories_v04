@@ -653,74 +653,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         // Will need to iterate on the GLB model to find the right coordinates
         console.log('Genre banners disabled - need position calibration');
         
-        // Load Azora 3D model (GLB) - Standing on the floor in open area
-        const AZORA_GLB_URL = 'https://customer-assets.emergentagent.com/job_c72cb56a-2d89-4690-9629-ade6d46638c8/artifacts/t9l9jikb_f0066361-3481-4680-b638-accd998414b5.glb';
-        const AZORA_PROXY_URL = `${process.env.REACT_APP_BACKEND_URL}/api/proxy/glb?url=${encodeURIComponent(AZORA_GLB_URL)}`;
-        
-        const azoraLoader = new GLTFLoader();
-        azoraLoader.setDRACOLoader(dracoLoader);
-        
-        azoraLoader.load(
-          AZORA_PROXY_URL,
-          (gltf) => {
-            const azoraModel = gltf.scene;
-            
-            // Scale Azora down - try 30% to make sure she's not too big
-            azoraModel.scale.set(0.3, 0.3, 0.3);
-            
-            // Position Azora standing on the floor in the open center-right area
-            // Based on user's image, there's open floor space near the right side with a railing
-            const azoraY = floorLevel; // Directly on the floor (Y ~4.72)
-            azoraModel.position.set(2, azoraY, 1); // Center-right area, in front of camera start
-            azoraModel.rotation.y = Math.PI; // Face toward the camera/entrance
-            
-            console.log('Positioning Azora at:', 2, azoraY, 1);
-            
-            // Enable shadows
-            azoraModel.traverse((child) => {
-              if (child.isMesh) {
-                child.castShadow = true;
-                child.receiveShadow = true;
-              }
-            });
-            
-            // Play idle animation if available
-            let mixer = null;
-            if (gltf.animations && gltf.animations.length > 0) {
-              mixer = new THREE.AnimationMixer(azoraModel);
-              // Try to find an idle animation, otherwise use first one
-              const idleAnim = gltf.animations.find(a => a.name.toLowerCase().includes('idle')) || gltf.animations[0];
-              const action = mixer.clipAction(idleAnim);
-              action.play();
-              azoraModel.userData.mixer = mixer;
-              console.log('Azora has', gltf.animations.length, 'animations, playing:', idleAnim.name);
-            }
-            
-            // Azora is stationary - no walking
-            azoraModel.userData = {
-              ...azoraModel.userData,
-              isAzora: true,
-              baseY: azoraY,
-              mixer: mixer
-            };
-            
-            scene.add(azoraModel);
-            azoraRef.current = azoraModel;
-            console.log('Loaded Azora - standing at center, Y:', azoraY);
-          },
-          undefined,
-          (error) => {
-            console.error('Failed to load Azora model:', error);
-            // Fallback to simple placeholder if GLB fails
-            const fallbackGeom = new THREE.CylinderGeometry(0.3, 0.3, 1.5, 8);
-            const fallbackMat = new THREE.MeshBasicMaterial({ color: 0x9333ea });
-            const fallback = new THREE.Mesh(fallbackGeom, fallbackMat);
-            fallback.position.set(2, floorLevel + 0.75, 2);
-            fallback.userData = { isAzora: true, baseY: floorLevel + 0.75 };
-            scene.add(fallback);
-            azoraRef.current = fallback;
-          }
-        );
+        // Azora is disabled for now - will be re-enabled once positioning is calibrated
+        console.log('Azora disabled - needs positioning calibration');
         
         setIsLoaded(true);
         setLoadError(null);
