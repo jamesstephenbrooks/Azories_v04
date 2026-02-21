@@ -820,10 +820,30 @@ export default function ArtStudioExpert() {
         </div>
         
         <div className="flex items-center gap-3">
+          {/* Book Assignment */}
+          <div className="flex items-center gap-2">
+            <FiBook className="text-purple-400 w-4 h-4" />
+            <Select value={selectedBookId} onValueChange={setSelectedBookId}>
+              <SelectTrigger className="w-40 bg-black/30 border-white/20 text-white text-xs">
+                <SelectValue placeholder="Assign to..." />
+              </SelectTrigger>
+              <SelectContent className="bg-[#1a1520] border-white/20">
+                <SelectItem value="general" className="text-white hover:bg-white/10 text-xs">
+                  📁 General Library
+                </SelectItem>
+                {userBooks.map(book => (
+                  <SelectItem key={book.id} value={book.id} className="text-white hover:bg-white/10 text-xs">
+                    📖 {book.title?.substring(0, 20)}...
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
           <Input
             value={workflowName}
             onChange={(e) => setWorkflowName(e.target.value)}
-            className="w-48 bg-black/30 border-white/20 text-white text-sm"
+            className="w-40 bg-black/30 border-white/20 text-white text-sm"
             placeholder="Workflow name..."
           />
           <Button 
