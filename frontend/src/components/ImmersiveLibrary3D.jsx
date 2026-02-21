@@ -164,7 +164,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMappingExposure = 3.0; // Much higher exposure for dark models
     rendererRef.current = renderer;
 
     // Use OrbitControls for both desktop and mobile (works better across devices)
