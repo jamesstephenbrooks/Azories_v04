@@ -229,7 +229,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     }
     
     // Method 2: Drag to look (if dragging)
-    if (isDragging.current && isExploringRef.current) {
+    if (isDragging.current && isExploringRef.current && !selectedBook) {
       const movementX = event.clientX - lastMousePos.current.x;
       const movementY = event.clientY - lastMousePos.current.y;
       
@@ -244,7 +244,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       
       cameraRef.current.quaternion.setFromEuler(euler.current);
     }
-  }, []);
+  }, [selectedBook]);
 
   // Mouse down - start drag look
   const onMouseDown = useCallback((event) => {
