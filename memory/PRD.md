@@ -20,6 +20,22 @@ Create a digital book creating and reading web application called "Azories" for 
 - Added better error messages for debugging
 - Tested and verified working via API
 
+**Image Position Controls (BookEditor):**
+- Added image_position_x, image_position_y, image_fit fields to Page model
+- Changed preview from landscape (4:3) to portrait (3:4) aspect ratio to match actual book pages
+- Added position controls UI:
+  - Fit mode dropdown (Cover, Contain, Fill)
+  - Horizontal position slider (0-100%)
+  - Vertical position slider (0-100%)
+  - Quick preset buttons (Top-Left, Top, Center, Bottom)
+- BookReader also respects position settings
+
+**Dual Reference Image Upload (Art Studio):**
+- Style and Character reference images now have both options:
+  - "Upload" button - upload from device
+  - "Gallery" button - pick from Art Studio gallery
+- Each reference type has its own file input and upload handler
+
 **DeepAI-Style Image Quality Enhancement:**
 - Completely overhauled prompt engineering to match DeepAI quality standards
 - New quality boost system:
