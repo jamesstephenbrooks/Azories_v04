@@ -1673,7 +1673,7 @@ export default function ArtStudio() {
         </div>
       </div>
       
-      {/* Gallery Picker Modal */}
+      {/* Gallery Picker Modal - For selecting style or character reference */}
       <AnimatePresence>
         {showGalleryPicker && (
           <motion.div
@@ -1691,12 +1691,21 @@ export default function ArtStudio() {
               onClick={e => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold text-white">Select Reference Image</h3>
+                <div>
+                  <h3 className="text-xl font-bold text-white">
+                    Select {galleryPickerTarget === 'style' ? 'Style' : 'Character'} Reference
+                  </h3>
+                  <p className="text-sm text-white/50">
+                    {galleryPickerTarget === 'style' 
+                      ? 'Choose an image to match its art style, colors, and mood'
+                      : 'Choose an image to match its character appearance and features'}
+                  </p>
+                </div>
                 <button
                   onClick={() => setShowGalleryPicker(false)}
-                  className="text-white/50 hover:text-white"
+                  className="text-white/50 hover:text-white p-2"
                 >
-                  ✕
+                  <FiX className="w-5 h-5" />
                 </button>
               </div>
               
@@ -1710,8 +1719,19 @@ export default function ArtStudio() {
                   {gallery.map((item) => (
                     <button
                       key={item._id}
-                      onClick={() => selectGalleryAsReference(item.image_url)}
-                      className="relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-purple-500 transition-colors group"
+                      onClick={() => {
+                        if (galleryPickerTarget === 'style') {
+                          setStyleReferenceImage(item.image_url);
+                        } else {
+                          setCharacterReferenceImage(item.image_url);
+                        }
+                        setShowGalleryPicker(false);
+                      }}
+                      className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-colors group ${
+                        galleryPickerTarget === 'style' 
+                          ? 'border-transparent hover:border-purple-500' 
+                          : 'border-transparent hover:border-pink-500'
+                      }`}
                     >
                       <img
                         src={item.image_url}
@@ -1719,7 +1739,7 @@ export default function ArtStudio() {
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <span className="text-white font-medium">Use This</span>
+                        <span className="text-white font-medium">Use as {galleryPickerTarget === 'style' ? 'Style' : 'Character'}</span>
                       </div>
                     </button>
                   ))}
