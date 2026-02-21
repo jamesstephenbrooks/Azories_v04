@@ -933,7 +933,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
               </div>
               <h2 className="text-2xl font-bold text-white mb-2">Welcome to the Grand Library</h2>
               <p className="text-white/60 mb-6">
-                Explore this magical library. Click to look around, use keys to walk.
+                Explore this magical library. Click and drag to look around, use keys to walk.
               </p>
               
               <div className="bg-black/30 rounded-lg p-4 mb-6 text-left">
@@ -944,7 +944,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                     <span className="text-white/70">Walk around</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <kbd className="px-2 py-1 bg-purple-900/50 rounded text-purple-300 text-xs">Mouse</kbd>
+                    <kbd className="px-2 py-1 bg-purple-900/50 rounded text-purple-300 text-xs">Click+Drag</kbd>
                     <span className="text-white/70">Look around</span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -952,8 +952,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                     <span className="text-white/70">Alternative movement</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <kbd className="px-2 py-1 bg-purple-900/50 rounded text-purple-300 text-xs">ESC</kbd>
-                    <span className="text-white/70">Release mouse</span>
+                    <kbd className="px-2 py-1 bg-purple-900/50 rounded text-purple-300 text-xs">Scroll</kbd>
+                    <span className="text-white/70">Zoom (future)</span>
                   </div>
                 </div>
               </div>
