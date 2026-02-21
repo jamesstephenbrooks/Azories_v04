@@ -141,6 +141,16 @@ export const Navbar = () => {
               My Books
             </Link>
           )}
+          {user && (
+            <Link 
+              to="/art-studio" 
+              className="block px-4 py-2 font-ui rounded-full hover:bg-muted flex items-center gap-2"
+              onClick={() => setMobileOpen(false)}
+            >
+              <FiDroplet className="w-4 h-4 text-purple-500" />
+              Art Studio
+            </Link>
+          )}
         </div>
       )}
     </nav>
