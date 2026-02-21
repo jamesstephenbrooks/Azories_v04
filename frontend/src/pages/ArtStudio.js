@@ -626,22 +626,104 @@ export default function ArtStudio() {
                   <FiSliders className="text-purple-400" />
                   Art Style
                 </h3>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                   {ART_STYLES.map(style => (
                     <button
                       key={style.id}
                       onClick={() => setSelectedStyle(style.id)}
-                      className={`p-3 rounded-lg border text-center transition-all ${
+                      data-testid={`style-${style.id}`}
+                      className={`relative rounded-lg border overflow-hidden transition-all group ${
                         selectedStyle === style.id
-                          ? 'border-purple-500 bg-purple-500/20'
-                          : 'border-white/10 bg-black/20 hover:border-white/30'
+                          ? 'border-purple-500 ring-2 ring-purple-500/50'
+                          : 'border-white/10 hover:border-white/30'
                       }`}
                     >
-                      <span className="text-sm font-medium text-white block">{style.name}</span>
-                      <span className="text-xs text-white/50">{style.description}</span>
+                      {/* Example Image */}
+                      <div className="aspect-square w-full bg-black/30">
+                        <img 
+                          src={style.exampleImage} 
+                          alt={style.name}
+                          className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                          loading="lazy"
+                        />
+                      </div>
+                      {/* Overlay with text */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-2">
+                        <span className="text-sm font-medium text-white">{style.name}</span>
+                        <span className="text-xs text-white/60 leading-tight">{style.description}</span>
+                      </div>
+                      {/* Selected indicator */}
+                      {selectedStyle === style.id && (
+                        <div className="absolute top-2 right-2 w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center">
+                          <FiCheck className="w-3 h-3 text-white" />
+                        </div>
+                      )}
                     </button>
                   ))}
                 </div>
+              </div>
+            )}
+            
+            {/* Reference Image Section */}
+            {(activeTab === 'character' || activeTab === 'scene') && (
+              <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-6">
+                <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                  <FiImage className="text-purple-400" />
+                  Reference Image (Optional)
+                </h3>
+                <p className="text-sm text-white/50 mb-4">
+                  Upload a reference image to guide the AI's style or character appearance
+                </p>
+                
+                <div className="flex gap-3">
+                  {/* Current reference preview */}
+                  {referenceImage ? (
+                    <div className="relative w-24 h-24 rounded-lg overflow-hidden border-2 border-purple-500">
+                      <img src={referenceImage} alt="Reference" className="w-full h-full object-cover" />
+                      <button
+                        onClick={() => setReferenceImage(null)}
+                        className="absolute top-1 right-1 p-1 bg-red-500 rounded-full hover:bg-red-600"
+                      >
+                        <FiTrash2 className="w-3 h-3 text-white" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="w-24 h-24 rounded-lg border-2 border-dashed border-white/20 flex items-center justify-center">
+                      <FiImage className="w-8 h-8 text-white/30" />
+                    </div>
+                  )}
+                  
+                  {/* Upload/Select buttons */}
+                  <div className="flex flex-col gap-2 flex-1">
+                    <Button
+                      variant="outline"
+                      onClick={() => referenceInputRef.current?.click()}
+                      className="border-white/20 text-white hover:bg-white/10"
+                      data-testid="upload-reference-btn"
+                    >
+                      <FiUpload className="w-4 h-4 mr-2" />
+                      Upload Image
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowGalleryPicker(true)}
+                      className="border-white/20 text-white hover:bg-white/10"
+                      data-testid="use-gallery-reference-btn"
+                    >
+                      <FiFolder className="w-4 h-4 mr-2" />
+                      Use from Gallery
+                    </Button>
+                  </div>
+                </div>
+                
+                {/* Hidden file input */}
+                <input
+                  ref={referenceInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleReferenceUpload}
+                  className="hidden"
+                />
               </div>
             )}
           </div>
