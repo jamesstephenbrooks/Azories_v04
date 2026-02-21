@@ -1392,8 +1392,73 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
             </div>
           </div>
           
-          {/* AI Librarian - Luna */}
-          <AILibrarian books={books} isVisible={true} />
+          {/* Book Info Card (when a book is selected in 3D view) */}
+          <AnimatePresence>
+            {selectedBook && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
+              >
+                <div className="bg-gradient-to-br from-[#2d1f3d] to-[#1a1520] rounded-2xl p-6 max-w-sm border border-purple-500/30 shadow-2xl shadow-purple-500/20">
+                  {/* Book Cover */}
+                  <div className="relative w-32 h-44 mx-auto mb-4 rounded-lg overflow-hidden shadow-lg">
+                    {selectedBook.cover_image ? (
+                      <img 
+                        src={selectedBook.cover_image} 
+                        alt={selectedBook.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-purple-900 flex items-center justify-center">
+                        <FiBook className="w-8 h-8 text-purple-400" />
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Book Info */}
+                  <h3 className="text-xl font-bold text-white text-center mb-1">{selectedBook.title}</h3>
+                  <p className="text-sm text-purple-300 text-center mb-3">by {selectedBook.author_name || 'Unknown Author'}</p>
+                  
+                  {selectedBook.genre && (
+                    <div className="flex justify-center mb-3">
+                      <span className="px-3 py-1 bg-purple-500/20 rounded-full text-xs text-purple-300">
+                        {selectedBook.genre}
+                      </span>
+                    </div>
+                  )}
+                  
+                  {selectedBook.description && (
+                    <p className="text-sm text-white/60 text-center mb-4 line-clamp-3">
+                      {selectedBook.description}
+                    </p>
+                  )}
+                  
+                  {/* Action Buttons */}
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => setSelectedBook(null)}
+                      className="flex-1 text-white border-white/30 hover:bg-white/10"
+                    >
+                      Close
+                    </Button>
+                    <Button
+                      onClick={() => window.location.href = `/read/${selectedBook.id}`}
+                      className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                    >
+                      <FiBook className="w-4 h-4 mr-2" />
+                      Read
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          
+          {/* AI Librarian - Azora (bottom corner chat) */}
+          <AILibrarian books={books} isVisible={true} onCallAzora={() => setShowAzoraChat(true)} />
         </>
       )}
     </div>
