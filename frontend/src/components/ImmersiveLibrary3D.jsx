@@ -711,6 +711,9 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         let newX = camera.position.x + playerVelocity.current.x * delta;
         let newZ = camera.position.z + playerVelocity.current.z * delta;
         
+        // Get collision meshes from ref
+        const collisionMeshes = collisionMeshesRef.current;
+        
         // Raycast-based wall collision detection
         if (collisionMeshes.length > 0 && (playerVelocity.current.x !== 0 || playerVelocity.current.z !== 0)) {
           const horizontalVelocity = new THREE.Vector3(
