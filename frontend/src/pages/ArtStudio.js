@@ -41,6 +41,17 @@ const CHARACTER_TRAITS = {
 // Art styles with example images - organized by category
 const ART_STYLE_CATEGORIES = [
   {
+    category: 'Advanced Portrait',
+    styles: [
+      { id: 'neon-portrait', name: 'Neon Portrait', description: 'Dramatic pink/blue neon lighting, hyper-detailed', image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&h=100&fit=crop' },
+      { id: 'surreal-portrait', name: 'Surreal Double Exposure', description: 'Double exposure with fantasy elements, flowing hair', image: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=100&h=100&fit=crop' },
+      { id: 'hyper-digital', name: 'Hyper-Detailed Digital', description: 'Ultra polished digital art, extreme detail', image: 'https://images.unsplash.com/photo-1634986666676-ec8fd927c23d?w=100&h=100&fit=crop' },
+      { id: 'aesthetic-portrait', name: 'Aesthetic Portrait', description: 'Trendy aesthetic with soft gradients and glow', image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop' },
+      { id: 'fantasy-portrait', name: 'Fantasy Portrait', description: 'Magical portrait with ethereal lighting', image: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=100&h=100&fit=crop' },
+      { id: 'dramatic-glamour', name: 'Dramatic Glamour', description: 'High fashion with dramatic lighting and detail', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop' },
+    ]
+  },
+  {
     category: 'Realistic',
     styles: [
       { id: 'realistic', name: 'Photorealistic', description: 'Ultra-realistic rendering', image: 'https://images.unsplash.com/photo-1648333676834-d69d732d3528?w=100&h=100&fit=crop' },
