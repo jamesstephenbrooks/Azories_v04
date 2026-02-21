@@ -660,8 +660,9 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         bookMeshesRef.current = bookMeshes;
         console.log('Interactive book markers disabled - use Books panel to select books');
         
-        // Add floating genre text banners above bookcase sections
-        const bannerHeight = floorLevel + 2.8; // Above eye level, visible when looking at bookcases
+        // Add genre text banners sitting on TOP of bookcases
+        // Bookcases are approximately 3m tall, so banners at floorLevel + 3.2
+        const bannerHeight = floorLevel + 3.2;
         
         GENRE_SECTIONS.forEach((section) => {
           // Create text sprite for the banner
@@ -700,13 +701,13 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           });
           
           const sprite = new THREE.Sprite(spriteMaterial);
-          sprite.scale.set(3, 0.75, 1);
+          sprite.scale.set(2.5, 0.6, 1);
           
-          // Position banner at the section location, above the bookcases
-          sprite.position.set(section.position.x, bannerHeight, section.position.z - 2);
+          // Position banner on top of bookcase using the dedicated bannerPos
+          sprite.position.set(section.bannerPos.x, bannerHeight, section.bannerPos.z);
           
           scene.add(sprite);
-          console.log('Added genre banner:', section.name, 'at', section.position.x, bannerHeight, section.position.z - 2);
+          console.log('Added genre banner:', section.name, 'at', section.bannerPos.x, bannerHeight, section.bannerPos.z);
           
           // Add floating animation data
           sprite.userData = { 
