@@ -67,9 +67,9 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
   const bookMeshesRef = useRef([]);
   const azoraRef = useRef(null);
   
-  // Physics constants - realistic eye level for a child/young person
+  // Physics constants - lower eye level for child exploring library
   const GRAVITY = 20;
-  const PLAYER_HEIGHT = 1.4; // Lower eye level for more immersive feel (~4'7")
+  const PLAYER_HEIGHT = 0.8; // Very low eye level to feel immersed in the grand library
   const MOVE_SPEED = 4;
   const FRICTION = 10;
   
