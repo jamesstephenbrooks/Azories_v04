@@ -547,19 +547,32 @@ export default function ArtStudio() {
                           key={style.id}
                           onClick={() => setSelectedStyle(style.id)}
                           data-testid={`style-${style.id}`}
-                          className={`w-full text-left px-3 py-2 rounded-lg transition-all ${
+                          className={`w-full text-left px-2 py-1.5 rounded-lg transition-all flex items-center gap-2 ${
                             selectedStyle === style.id
                               ? 'bg-purple-500/30 border border-purple-500/50 text-white'
-                              : 'hover:bg-white/5 text-white/70 hover:text-white'
+                              : 'hover:bg-white/5 text-white/70 hover:text-white border border-transparent'
                           }`}
                         >
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium">{style.name}</span>
-                            {selectedStyle === style.id && (
-                              <FiCheck className="w-4 h-4 text-purple-400" />
+                          {/* Style Preview Image */}
+                          <div className="w-10 h-10 rounded-md overflow-hidden flex-shrink-0 bg-black/30">
+                            {style.image && (
+                              <img 
+                                src={style.image} 
+                                alt={style.name}
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                              />
                             )}
                           </div>
-                          <p className="text-xs text-white/40 mt-0.5">{style.description}</p>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-medium truncate">{style.name}</span>
+                              {selectedStyle === style.id && (
+                                <FiCheck className="w-3 h-3 text-purple-400 flex-shrink-0" />
+                              )}
+                            </div>
+                            <p className="text-[10px] text-white/40 truncate">{style.description}</p>
+                          </div>
                         </button>
                       ))}
                     </div>
