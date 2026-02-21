@@ -562,6 +562,14 @@ export default function ArtStudio() {
         }
       }
       
+      // Add extracted prompts from reference images if available
+      if (extractedStylePrompt) {
+        fullPrompt += `, art style like: ${extractedStylePrompt}`;
+      }
+      if (extractedCharPrompt && activeTab === 'character') {
+        fullPrompt += `, character reference: ${extractedCharPrompt}`;
+      }
+      
       // Add negative prompt if specified
       const finalNegativePrompt = negativePrompt.trim() || 'blurry, low quality, distorted, deformed, bad anatomy, watermark, signature';
       
@@ -578,7 +586,8 @@ export default function ArtStudio() {
           type: activeTab,
           characterData: activeTab === 'character' ? character : null,
           sceneData: activeTab === 'scene' ? scene : null,
-          referenceImage: referenceImage,
+          styleReferenceImage: styleReferenceImage,
+          characterReferenceImage: characterReferenceImage,
           bookId: selectedBookId !== 'general' ? selectedBookId : null,
           transparentBackground: useTransparentBg,
           aspectRatio: aspectRatio,
