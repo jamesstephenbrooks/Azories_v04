@@ -3183,6 +3183,141 @@ async def analyze_image(request: AnalyzeImageRequest, current_user: dict = Depen
         # Return a fallback description if analysis fails
         return {"extracted_prompt": "", "error": str(e)}
 
+class ConsistentCharacterRequest(BaseModel):
+    prompt: str  # What the character should be doing/wearing
+    characterReferenceImage: str  # URL or base64 of reference image
+    styleReferenceImage: Optional[str] = None  # Optional style reference
+    style: str = "fantasy"
+    scene: Optional[str] = None
+    transparentBackground: bool = False
+
+@api_router.post("/art-studio/generate-with-reference")
+async def generate_with_reference(request: ConsistentCharacterRequest, current_user: dict = Depends(get_current_user)):
+    """
+    IP-Adapter style generation - analyzes reference image and generates consistent character.
+    Uses GPT-4V to extract character details, then generates with strong consistency prompts.
+    """
+    user = current_user
+    
+    try:
+        from emergentintegrations.llm.openai import OpenAI as EmergentOpenAI
+        from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
+        
+        if not EMERGENT_LLM_KEY:
+            raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
+        
+        client = EmergentOpenAI(api_key=EMERGENT_LLM_KEY)
+        
+        # Step 1: Analyze character reference for detailed description
+        char_analysis = await client.chat(
+            messages=[{
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": """Analyze this character image EXTREMELY thoroughly.
+                    Describe with EXACT precision:
+                    - Face shape, exact eye shape and color, nose shape, lip shape
+                    - Exact hair color (with highlights/lowlights), length, style, texture
+                    - Skin tone (be specific: pale porcelain, warm tan, deep brown, etc.)
+                    - Distinctive features (freckles, moles, scars, dimples, etc.)
+                    - Body type and proportions
+                    - Current clothing/outfit in detail
+                    - Expression and pose
+                    Output as a detailed prompt. Be extremely specific to enable recreation."""},
+                    {"type": "image_url", "image_url": {"url": request.characterReferenceImage}}
+                ]
+            }],
+            model="gpt-4o"
+        )
+        char_description = char_analysis.strip() if char_analysis else ""
+        
+        # Step 2: Analyze style reference if provided
+        style_description = ""
+        if request.styleReferenceImage:
+            style_analysis = await client.chat(
+                messages=[{
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": """Describe this image's artistic style:
+                        - Art medium/technique (digital painting, watercolor, anime, etc.)
+                        - Color palette and temperature
+                        - Lighting style and direction
+                        - Texture and brush strokes
+                        - Overall mood/atmosphere
+                        Output as style tags for image generation."""},
+                        {"type": "image_url", "image_url": {"url": request.styleReferenceImage}}
+                    ]
+                }],
+                model="gpt-4o"
+            )
+            style_description = style_analysis.strip() if style_analysis else ""
+        
+        # Step 3: Build the ultimate consistency prompt
+        style_prompts = {
+            "realistic": "hyperrealistic, photographic quality, 8K detail",
+            "anime": "anime style, vibrant colors, clean linework",
+            "fantasy": "fantasy digital art, magical lighting, highly detailed",
+            "cartoon": "cartoon illustration style, bold outlines",
+            "watercolor": "watercolor painting style, soft blending"
+        }
+        base_style = style_prompts.get(request.style, "highly detailed, professional illustration")
+        
+        # Combine everything for maximum consistency
+        full_prompt = f"""EXACT CHARACTER RECREATION - MUST MATCH REFERENCE PRECISELY:
+        {char_description}
+        
+        SCENE/ACTION: {request.prompt}
+        {f'ENVIRONMENT: {request.scene}' if request.scene else ''}
+        
+        ART STYLE: {style_description if style_description else base_style}
+        
+        QUALITY: masterpiece, best quality, ultra detailed, sharp focus, professional lighting,
+        beautiful detailed face, detailed eyes, {base_style}
+        
+        CRITICAL: Maintain EXACT same face, hair, features as reference. Same person, different pose/scene.
+        """
+        
+        if request.transparentBackground:
+            full_prompt += " isolated on transparent background, PNG cutout"
+        
+        full_prompt += " AVOID: different face, wrong hair color, inconsistent features, blurry, low quality"
+        
+        # Step 4: Generate the image
+        image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
+        images = await image_gen.generate_images(
+            prompt=full_prompt.replace('\n', ' ').strip(),
+            model="gpt-image-1",
+            number_of_images=1,
+            quality="low"
+        )
+        
+        if images and len(images) > 0:
+            import base64
+            image_base64 = base64.b64encode(images[0]).decode('utf-8')
+            image_url = f"data:image/png;base64,{image_base64}"
+            
+            # Save to history
+            await db.art_studio_generations.insert_one({
+                "user_id": user["id"],
+                "image_url": image_url,
+                "prompt": request.prompt,
+                "character_description": char_description,
+                "style_description": style_description,
+                "generation_type": "consistent_character",
+                "created_at": datetime.now(timezone.utc)
+            })
+            
+            return {
+                "image_url": image_url,
+                "character_description": char_description,
+                "style_description": style_description
+            }
+        else:
+            raise HTTPException(status_code=500, detail="No image generated")
+            
+    except Exception as e:
+        logging.error(f"Consistent character generation error: {e}")
+        raise HTTPException(status_code=500, detail=f"Generation failed: {str(e)}")
+
 @api_router.get("/art-studio/gallery")
 async def art_studio_gallery(
     book_id: Optional[str] = None,
