@@ -472,9 +472,15 @@ export default function ArtStudio() {
       // Build the full prompt
       let fullPrompt = '';
       const styleData = ART_STYLES.find(s => s.id === selectedStyle);
+      let useTransparentBg = false;
       
       if (activeTab === 'character') {
         fullPrompt = `${buildCharacterPrompt()}, ${styleData?.name || 'fantasy'} art style, highly detailed, professional illustration`;
+        useTransparentBg = character.transparentBackground;
+        // Add transparent background instruction to prompt if enabled
+        if (useTransparentBg) {
+          fullPrompt += ', isolated on transparent background, PNG cutout style, no background, clean edges';
+        }
         // Save additional details to history
         if (character.additionalDetails?.trim()) {
           savePromptToHistory(character.additionalDetails.trim());
@@ -500,7 +506,8 @@ export default function ArtStudio() {
           characterData: activeTab === 'character' ? character : null,
           sceneData: activeTab === 'scene' ? scene : null,
           referenceImage: referenceImage,
-          bookId: selectedBookId !== 'general' ? selectedBookId : null
+          bookId: selectedBookId !== 'general' ? selectedBookId : null,
+          transparentBackground: useTransparentBg
         })
       });
       
