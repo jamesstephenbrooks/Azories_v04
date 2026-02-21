@@ -841,11 +841,14 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           depthWrite: false
         });
         
+        // Position Azora at floor level, standing in the center area
+        const azoraY = floorLevel + 0.9; // Standing height above floor
         const azoraMesh = new THREE.Mesh(azoraGeometry, azoraMaterial);
-        azoraMesh.position.set(2, startY + 0.9, 0); // Standing in the library
-        azoraMesh.userData = { isAzora: true, baseY: startY + 0.9 };
+        azoraMesh.position.set(2, azoraY, 2); // Slightly off-center in the library
+        azoraMesh.userData = { isAzora: true, baseY: azoraY };
         scene.add(azoraMesh);
         azoraRef.current = azoraMesh;
+        console.log('Added Azora at Y:', azoraY);
         
         setIsLoaded(true);
         setLoadError(null);
