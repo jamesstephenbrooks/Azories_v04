@@ -206,9 +206,14 @@ export default function ArtStudio() {
   const [userBooks, setUserBooks] = useState([]);
   const [selectedBookId, setSelectedBookId] = useState('general'); // 'general' or book ID
   
-  // Reference image state
-  const [referenceImage, setReferenceImage] = useState(null);
+  // Reference image state - DUAL REFERENCES
+  const [styleReferenceImage, setStyleReferenceImage] = useState(null); // For art style/look and feel
+  const [characterReferenceImage, setCharacterReferenceImage] = useState(null); // For character appearance
+  const [extractedStylePrompt, setExtractedStylePrompt] = useState(''); // AI-extracted prompt from style ref
+  const [extractedCharPrompt, setExtractedCharPrompt] = useState(''); // AI-extracted prompt from char ref
+  const [isExtractingPrompt, setIsExtractingPrompt] = useState(false);
   const [showGalleryPicker, setShowGalleryPicker] = useState(false);
+  const [galleryPickerTarget, setGalleryPickerTarget] = useState('style'); // 'style' or 'character'
   
   // Prompt history state
   const [promptHistory, setPromptHistory] = useState([]);
