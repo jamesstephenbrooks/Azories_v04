@@ -679,13 +679,6 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       const bookMesh = hits[0].object;
       console.log('Clicked on book mesh:', bookMesh.userData);
       
-      // Check if clicking on highlighted book - start rotation
-      if (bookMesh.userData?.isHighlightedBook && highlightedBookModelRef.current) {
-        isRotatingBookRef.current = true;
-        lastMousePosRef.current = { x: e.clientX, y: e.clientY };
-        return;
-      }
-      
       // Use bookData from userData if available (for 3D book models)
       if (bookMesh.userData?.bookData) {
         setSelectedBook(bookMesh.userData.bookData);
