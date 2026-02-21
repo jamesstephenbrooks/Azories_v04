@@ -1827,7 +1827,38 @@ export default function ArtStudio() {
                             className="w-full"
                           />
                         </div>
-                        <div className="flex gap-2 mt-3">
+                        <div className="grid grid-cols-3 gap-2 mt-3">
+                          <Button
+                            onClick={async () => {
+                              try {
+                                const response = await fetch(`${API_URL}/api/art-studio/save-animation`, {
+                                  method: 'POST',
+                                  headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${token}`
+                                  },
+                                  body: JSON.stringify({
+                                    video_url: animatedVideo,
+                                    name: `Animation ${new Date().toLocaleDateString()}`,
+                                    motion_prompt: animationMotion,
+                                    style: animationStyle
+                                  })
+                                });
+                                if (response.ok) {
+                                  toast.success('Animation saved to gallery!');
+                                  fetchGallery();
+                                } else {
+                                  throw new Error('Failed to save');
+                                }
+                              } catch (error) {
+                                toast.error('Failed to save animation');
+                              }
+                            }}
+                            className="bg-green-600 hover:bg-green-700"
+                          >
+                            <FiSave className="w-4 h-4 mr-2" />
+                            Save
+                          </Button>
                           <Button
                             onClick={() => {
                               const link = document.createElement('a');
@@ -1835,7 +1866,7 @@ export default function ArtStudio() {
                               link.download = `azories-animated-${Date.now()}.mp4`;
                               link.click();
                             }}
-                            className="flex-1 bg-purple-600 hover:bg-purple-700"
+                            className="bg-purple-600 hover:bg-purple-700"
                           >
                             <FiDownload className="w-4 h-4 mr-2" />
                             Download
@@ -1845,7 +1876,7 @@ export default function ArtStudio() {
                             onClick={() => setAnimatedVideo(null)}
                             className="border-white/20 text-white"
                           >
-                            Create Another
+                            New
                           </Button>
                         </div>
                       </div>
