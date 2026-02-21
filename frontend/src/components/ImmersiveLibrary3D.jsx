@@ -1741,13 +1741,6 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                       Read
                     </Button>
                   </div>
-                  
-                  {/* Rotation hint */}
-                  {highlightedBookModelRef.current && (
-                    <p className="text-xs text-purple-300/60 text-center mt-3">
-                      🔄 Drag the 3D book to rotate
-                    </p>
-                  )}
                 </div>
               </motion.div>
             )}
