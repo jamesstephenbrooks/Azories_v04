@@ -230,13 +230,13 @@ class PageResponse(BaseModel):
     chapter_id: str
     text_content: str
     image_url: str
-    image_url_2: str
-    image_url_3: str
-    image_url_4: str
-    video_url: str
-    audio_url: str
+    image_url_2: str = ""
+    image_url_3: str = ""
+    image_url_4: str = ""
+    video_url: str = ""
+    audio_url: str = ""
     order: int
-    layout_type: str
+    layout_type: str = "standard"
     image_position_x: int = 50
     image_position_y: int = 50
     image_fit: str = "cover"
