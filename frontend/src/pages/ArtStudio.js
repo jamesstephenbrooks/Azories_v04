@@ -1748,7 +1748,58 @@ export default function ArtStudio() {
 
               {/* Action Buttons */}
               {(activeTab === 'character' || activeTab === 'scene') && (
-                <div className="mt-4 space-y-2">
+                <div className="mt-4 space-y-3">
+                  {/* LIGHTING & CUSTOM STYLE - Always Visible */}
+                  <div className="bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-500/20 rounded-lg p-3 space-y-3">
+                    <h4 className="text-xs font-semibold text-pink-300 uppercase tracking-wider flex items-center gap-1">
+                      <FiStar className="w-3 h-3" />
+                      Lighting & Style
+                    </h4>
+                    
+                    {/* Lighting Preset */}
+                    <div>
+                      <label className="text-[10px] text-white/60 mb-1.5 block">Lighting</label>
+                      <div className="grid grid-cols-3 gap-1">
+                        {[
+                          { id: 'natural', name: 'Natural', icon: '☀️' },
+                          { id: 'neon-pink-blue', name: 'Neon', icon: '💜' },
+                          { id: 'golden-hour', name: 'Golden', icon: '🌅' },
+                          { id: 'dramatic', name: 'Dramatic', icon: '🎭' },
+                          { id: 'soft-glow', name: 'Soft', icon: '✨' },
+                          { id: 'studio', name: 'Studio', icon: '📸' },
+                        ].map(preset => (
+                          <button
+                            key={preset.id}
+                            onClick={() => setLightingPreset(preset.id)}
+                            className={`py-1.5 px-1 text-[10px] rounded-md transition-all flex items-center justify-center gap-1 ${
+                              lightingPreset === preset.id
+                                ? 'bg-pink-500 text-white shadow-lg shadow-pink-500/30'
+                                : 'bg-white/10 text-white/60 hover:bg-white/20'
+                            }`}
+                            data-testid={`lighting-${preset.id}`}
+                          >
+                            <span>{preset.icon}</span>
+                            <span>{preset.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Custom Style Description */}
+                    <div>
+                      <label className="text-[10px] text-white/60 mb-1 block">
+                        Custom Style (Optional)
+                      </label>
+                      <textarea
+                        value={customStyleDescription}
+                        onChange={(e) => setCustomStyleDescription(e.target.value)}
+                        placeholder="Add extra style details: flowing hair, double exposure, fantasy castle background, dreamy atmosphere..."
+                        className="w-full bg-black/30 border border-white/20 rounded-lg px-2 py-1.5 text-white text-[11px] min-h-[50px] resize-none focus:border-pink-500/50 focus:outline-none"
+                        data-testid="custom-style-quick"
+                      />
+                    </div>
+                  </div>
+                
                   <Button
                     onClick={generateImage}
                     disabled={isGenerating}
