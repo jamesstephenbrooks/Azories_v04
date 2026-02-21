@@ -135,17 +135,10 @@ export default function BookReader() {
         setRequiresAuth(true);
         setAllPages([]);
       } else {
-        // Flatten pages with chapter title pages
+        // Flatten pages WITHOUT chapter title pages - text flows directly with images
         const pages = [];
         res.data.chapters?.forEach((chapter, chapterIndex) => {
-          pages.push({
-            id: `chapter-title-${chapter.id}`,
-            isChapterTitle: true,
-            chapterTitle: chapter.title,
-            chapterNumber: chapterIndex + 1,
-            totalChapters: res.data.chapters.length
-          });
-          
+          // Skip chapter title pages - just add content pages directly
           chapter.pages?.forEach(page => {
             pages.push({ ...page, chapterTitle: chapter.title, chapterNumber: chapterIndex + 1 });
           });
