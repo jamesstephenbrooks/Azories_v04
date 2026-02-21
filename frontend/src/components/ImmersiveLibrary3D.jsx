@@ -746,6 +746,9 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
               </div>
             </div>
           </div>
+          
+          {/* AI Librarian - Luna */}
+          <AILibrarian books={books} isVisible={true} />
         </>
       )}
     </div>
