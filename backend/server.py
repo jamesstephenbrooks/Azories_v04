@@ -109,6 +109,9 @@ class UserResponse(BaseModel):
     role: str
     subscription: str
     created_at: str
+    pro_trial: Optional[bool] = False
+    pro_trial_expires_at: Optional[str] = None
+    trial_days_remaining: Optional[int] = None
 
 class TokenResponse(BaseModel):
     access_token: str
