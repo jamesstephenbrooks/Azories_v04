@@ -2,8 +2,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
-import { FiSun, FiMoon, FiUser, FiLogOut, FiMenu, FiX } from 'react-icons/fi';
+import { FiUser, FiLogOut, FiMenu, FiX, FiZap } from 'react-icons/fi';
 import { useState } from 'react';
+import { ThemeToggleCompact } from './ThemeToggle';
+import { StreakDisplay } from './ReadingStreaks';
 import {
   DropdownMenu,
   DropdownMenuContent,
