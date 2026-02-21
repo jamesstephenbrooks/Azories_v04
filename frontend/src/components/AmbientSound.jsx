@@ -113,12 +113,20 @@ export default function AmbientSound({ genre = 'General', isReading = false }) {
     }
 
     const audio = new Audio(sound.url);
+    audio.crossOrigin = "anonymous"; // Help with CORS
     audio.loop = true;
     audio.volume = volume[0] / 100;
-    audio.play().catch(console.error);
     
-    audioRef.current = audio;
-    setActiveSound(soundKey);
+    audio.play()
+      .then(() => {
+        audioRef.current = audio;
+        setActiveSound(soundKey);
+      })
+      .catch((error) => {
+        console.error('Failed to play audio:', error);
+        // Try alternate approach - some browsers need user interaction first
+        alert('Click again to play sound. Your browser requires user interaction first.');
+      });
   };
 
   const stopSound = () => {
