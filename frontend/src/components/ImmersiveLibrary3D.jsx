@@ -463,7 +463,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         const camera = cameraRef.current;
         
         // Position the book in front of the camera (centered in view)
-        const distanceFromCamera = 1.2;
+        const distanceFromCamera = 0.8; // Closer to camera
         const forward = new THREE.Vector3(0, 0, -1);
         forward.applyQuaternion(camera.quaternion);
         
@@ -471,17 +471,21 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           .copy(camera.position)
           .add(forward.multiplyScalar(distanceFromCamera));
         
-        // Slightly lower than eye level
-        bookPosition.y -= 0.2;
+        // Keep at eye level
+        bookPosition.y = camera.position.y - 0.1;
         
         bookModel.position.copy(bookPosition);
         
-        // Scale the book
-        bookModel.scale.setScalar(0.06);
+        // Scale the book - bigger
+        bookModel.scale.setScalar(0.12);
         
-        // Rotate to face the camera
-        bookModel.lookAt(camera.position);
-        bookModel.rotation.y += Math.PI; // Show front
+        // Make the book upright and facing camera (not tilted)
+        // Get camera's Y rotation only for horizontal facing
+        const cameraDirection = new THREE.Vector3(0, 0, -1);
+        cameraDirection.applyQuaternion(camera.quaternion);
+        const angle = Math.atan2(cameraDirection.x, cameraDirection.z);
+        
+        bookModel.rotation.set(0, angle + Math.PI, 0); // Upright, facing camera
         
         // Store book data
         bookModel.userData = {
