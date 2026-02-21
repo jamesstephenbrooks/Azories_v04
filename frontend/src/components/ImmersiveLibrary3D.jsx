@@ -282,6 +282,22 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     setShowGenreMenu(false);
   }, [PLAYER_HEIGHT]);
 
+  // Change floor (teleport between ground and upper floor)
+  const changeFloor = useCallback((floor) => {
+    if (!cameraRef.current) return;
+    
+    const floorY = FLOOR_LEVELS[floor] || FLOOR_LEVELS.ground;
+    const targetY = floorY + PLAYER_HEIGHT;
+    
+    // Keep X and Z position, just change Y
+    cameraRef.current.position.y = targetY;
+    playerVelocity.current.y = 0;
+    playerOnGround.current = true;
+    setCurrentFloor(floor);
+    
+    console.log('Changed to floor:', floor, 'Y:', targetY);
+  }, [PLAYER_HEIGHT, FLOOR_LEVELS]);
+
   // Save current position
   const saveCurrentPosition = useCallback(() => {
     if (!cameraRef.current || !user) return;
