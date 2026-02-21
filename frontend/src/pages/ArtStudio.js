@@ -2439,9 +2439,20 @@ export default function ArtStudio() {
                           </div>
                         </div>
                         
-                        <p className="text-[10px] text-white/40">
-                          Animation creates a 4-second video. May take 1-3 minutes.
-                        </p>
+                        <div className="text-[10px] text-white/40 space-y-1 bg-black/20 p-2 rounded-lg">
+                          <p className="flex items-center gap-1">
+                            <span className="text-yellow-400">⚡</span>
+                            Animation creates a 4-second video using Sora 2 AI
+                          </p>
+                          <p className="flex items-center gap-1">
+                            <span className="text-blue-400">⏱️</span>
+                            May take 2-5 minutes - please be patient
+                          </p>
+                          <p className="flex items-center gap-1">
+                            <span className="text-purple-400">💎</span>
+                            Uses Emergent Universal Key credits
+                          </p>
+                        </div>
                       </div>
                     </>
                   )}
