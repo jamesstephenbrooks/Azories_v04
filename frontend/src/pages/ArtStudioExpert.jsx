@@ -567,6 +567,66 @@ export default function ArtStudioExpert() {
     }
   }, [token]);
   
+  // Import character from Easy Mode if URL param exists
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('import') === 'character') {
+      const exportData = localStorage.getItem('artStudioExport');
+      if (exportData) {
+        try {
+          const data = JSON.parse(exportData);
+          if (data.character) {
+            // Update the character node with imported data
+            setNodes(nds => nds.map(node => {
+              if (node.type === 'character') {
+                return {
+                  ...node,
+                  data: {
+                    ...node.data,
+                    name: data.character.name || '',
+                    gender: data.character.gender || 'Female',
+                    age: data.character.ageGroup || 'Adult',
+                    description: data.character.additionalDetails || '',
+                    onChange: (k, v) => updateNodeData(node.id, k, v)
+                  }
+                };
+              }
+              if (node.type === 'style' && data.style) {
+                return {
+                  ...node,
+                  data: {
+                    ...node.data,
+                    style: data.style,
+                    onChange: (k, v) => updateNodeData(node.id, k, v)
+                  }
+                };
+              }
+              if (node.type === 'reference' && data.referenceImage) {
+                return {
+                  ...node,
+                  data: {
+                    ...node.data,
+                    image: data.referenceImage,
+                    onChange: (k, v) => updateNodeData(node.id, k, v)
+                  }
+                };
+              }
+              return node;
+            }));
+            
+            // Clear the export data
+            localStorage.removeItem('artStudioExport');
+            
+            // Remove the URL param
+            window.history.replaceState({}, '', '/art-studio/expert');
+          }
+        } catch (e) {
+          console.error('Failed to import character data:', e);
+        }
+      }
+    }
+  }, []);
+  
   const loadUserBooks = async () => {
     try {
       const response = await fetch(`${API_URL}/api/books/my`, {
