@@ -1016,6 +1016,53 @@ export default function ArtStudio() {
                   )}
                 </div>
                 
+                {/* QUICK TEMPLATES - One-click popular styles (EASY FOR KIDS!) */}
+                <div className="mb-4 pb-4 border-b border-white/10">
+                  <h4 className="text-xs font-bold text-yellow-400 uppercase tracking-wider mb-2 flex items-center gap-1">
+                    <FiStar className="w-3 h-3" />
+                    Quick Templates
+                    <span className="text-white/40 font-normal">(1-click!)</span>
+                  </h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {QUICK_TEMPLATES.map(template => (
+                      <button
+                        key={template.id}
+                        onClick={() => applyQuickTemplate(template)}
+                        data-testid={`template-${template.id}`}
+                        className={`relative group rounded-lg overflow-hidden aspect-square border-2 transition-all ${
+                          selectedTemplate === template.id
+                            ? 'border-yellow-400 shadow-lg shadow-yellow-400/30'
+                            : 'border-white/10 hover:border-white/30'
+                        }`}
+                      >
+                        <img 
+                          src={template.image} 
+                          alt={template.name}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                        <div className="absolute bottom-0 left-0 right-0 p-1.5">
+                          <p className="text-[9px] font-medium text-white truncate">{template.name}</p>
+                        </div>
+                        {selectedTemplate === template.id && (
+                          <div className="absolute top-1 right-1 w-4 h-4 bg-yellow-400 rounded-full flex items-center justify-center">
+                            <FiCheck className="w-2.5 h-2.5 text-black" />
+                          </div>
+                        )}
+                        {template.popular && selectedTemplate !== template.id && (
+                          <div className="absolute top-1 left-1">
+                            <span className="text-[8px] bg-pink-500 text-white px-1 py-0.5 rounded">Popular</span>
+                          </div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-[10px] text-white/40 mt-2 text-center">
+                    Click a template to apply style + lighting + effects instantly!
+                  </p>
+                </div>
+                
                 {/* Style Preview Button */}
                 <button
                   onClick={() => setShowStylePreview(true)}
