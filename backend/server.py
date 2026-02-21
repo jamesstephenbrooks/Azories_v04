@@ -1687,6 +1687,69 @@ Write a captivating 2-3 sentence summary that would make children want to read t
         logger.error(f"Error generating summary: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error generating summary: {str(e)}")
 
+
+# ============ AI READING BUDDY ============
+
+class ReadingBuddyRequest(BaseModel):
+    book_id: str
+    book_title: str
+    book_genre: Optional[str] = "General"
+    current_page: int = 0
+    book_context: str = ""
+    question: str
+    chat_history: List[dict] = []
+
+@api_router.post("/ai/reading-buddy")
+async def ai_reading_buddy(request: ReadingBuddyRequest):
+    """AI Reading Buddy - helps readers understand and engage with the story"""
+    try:
+        if not EMERGENT_LLM_KEY:
+            raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
+        
+        # Build context for the AI
+        system_prompt = f"""You are a friendly and enthusiastic reading buddy for children and young readers. 
+You're helping someone read "{request.book_title}" (a {request.book_genre} book).
+
+Your role is to:
+- Help explain parts of the story they don't understand
+- Make predictions about what might happen next (without spoilers if you don't know)
+- Discuss characters, themes, and plot points
+- Keep readers engaged and excited about the story
+- Use age-appropriate language and be encouraging
+- Be warm, supportive, and fun!
+
+Keep your responses concise (2-4 sentences usually) and conversational.
+If asked about something not in the provided context, be honest that you only know what's been read so far."""
+
+        # Build the conversation
+        messages = []
+        
+        # Add context about what's been read
+        if request.book_context:
+            context_msg = f"Here's what the reader has read so far (they're on page {request.current_page + 1}):\n\n{request.book_context}"
+            messages.append({"role": "system", "content": context_msg})
+        
+        # Add chat history
+        for msg in request.chat_history[-4:]:  # Last 4 messages for context
+            messages.append(msg)
+        
+        # Create the chat
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"reading-buddy-{request.book_id}-{str(uuid.uuid4())[:8]}",
+            system_message=system_prompt
+        ).with_model("openai", "gpt-4o-mini")
+        
+        # Send the question
+        response = await chat.send_message(UserMessage(text=request.question))
+        
+        return {"response": response.strip()}
+        
+    except Exception as e:
+        logger.error(f"Error in AI Reading Buddy: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+
 # ============ TTS ROUTES ============
 
 @api_router.get("/voices", response_model=List[VoiceResponse])
