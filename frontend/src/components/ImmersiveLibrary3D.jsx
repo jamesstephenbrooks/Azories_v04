@@ -251,17 +251,39 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     }
   }, []);
 
-  // Teleport to genre section
+  // Teleport to genre section - with proper floor detection
   const teleportToGenre = useCallback((section) => {
-    if (!cameraRef.current) return;
+    if (!cameraRef.current || !collisionMeshesRef.current) return;
+    
+    // Find floor level at the target position
+    const raycaster = new THREE.Raycaster();
+    raycaster.set(
+      new THREE.Vector3(section.position.x, 20, section.position.z),
+      new THREE.Vector3(0, -1, 0)
+    );
+    raycaster.far = 30;
+    
+    const floorHits = raycaster.intersectObjects(collisionMeshesRef.current, true);
+    let targetY = PLAYER_HEIGHT + 5; // Default to a safe height
+    
+    // Find the actual floor at this position
+    for (const hit of floorHits) {
+      if (hit.point.y < 10 && hit.point.y >= 0) {
+        targetY = hit.point.y + PLAYER_HEIGHT;
+        console.log('Teleporting to floor at Y:', hit.point.y);
+        break;
+      }
+    }
     
     cameraRef.current.position.set(
       section.position.x,
-      PLAYER_HEIGHT,
+      targetY,
       section.position.z
     );
+    playerVelocity.current.y = 0;
+    playerOnGround.current = true;
     setShowGenreMenu(false);
-  }, []);
+  }, [PLAYER_HEIGHT]);
 
   // Save current position
   const saveCurrentPosition = useCallback(() => {
