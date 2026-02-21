@@ -692,7 +692,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       
       const delta = Math.min(clockRef.current.getDelta(), 0.05); // Cap delta more aggressively
       
-      if (isExploring && cameraRef.current) {
+      // Use ref instead of state to avoid re-render dependency issues
+      if (isExploringRef.current && cameraRef.current) {
         const camera = cameraRef.current;
         const bounds = boundsRef.current;
         const raycaster = raycasterRef.current;
