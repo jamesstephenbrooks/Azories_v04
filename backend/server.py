@@ -2838,12 +2838,18 @@ async def generate_consistent_character(
         
         # Add trait details to description
         trait_parts = []
-        if traits.get("gender"): trait_parts.append(traits["gender"])
-        if traits.get("age"): trait_parts.append(f"{traits['age']} years old")
-        if traits.get("hairColor"): trait_parts.append(f"{traits['hairColor']} hair")
-        if traits.get("hairStyle"): trait_parts.append(f"{traits['hairStyle']} hairstyle")
-        if traits.get("eyeColor"): trait_parts.append(f"{traits['eyeColor']} eyes")
-        if traits.get("skinTone"): trait_parts.append(f"{traits['skinTone']} skin")
+        if traits.get("gender"):
+            trait_parts.append(traits["gender"])
+        if traits.get("age"):
+            trait_parts.append(f"{traits['age']} years old")
+        if traits.get("hairColor"):
+            trait_parts.append(f"{traits['hairColor']} hair")
+        if traits.get("hairStyle"):
+            trait_parts.append(f"{traits['hairStyle']} hairstyle")
+        if traits.get("eyeColor"):
+            trait_parts.append(f"{traits['eyeColor']} eyes")
+        if traits.get("skinTone"):
+            trait_parts.append(f"{traits['skinTone']} skin")
         
         traits_desc = ", ".join(trait_parts) if trait_parts else ""
         
@@ -2852,7 +2858,7 @@ async def generate_consistent_character(
         full_prompt += f"Exact appearance: {char_desc}"
         if traits_desc:
             full_prompt += f", {traits_desc}"
-        full_prompt += f". "
+        full_prompt += ". "
         
         if scene:
             full_prompt += f"Scene: {scene}. "
