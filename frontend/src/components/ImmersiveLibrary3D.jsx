@@ -44,8 +44,7 @@ const GENRE_SECTIONS = [
   { name: 'Humour', position: { x: 4, z: -1 }, bannerPos: { x: 4.79, y: 6.5, z: -1 }, shelfPos: { x: 4.5, y: 5.4, z: -1 }, rotation: -Math.PI / 2, color: '#f59e0b' },
 ];
 
-// Interactive 3D Book Model URLs - served from public folder to avoid CORS issues
-const ORNATE_BOOK_GLB_URL = '/ornate_book.glb';
+// Interactive 3D Book Model URL - served from public folder to avoid CORS issues
 const ANIMATED_BOOK_GLB_URL = '/animated_book.glb';
 
 // Featured books to display as 3D models in the library
