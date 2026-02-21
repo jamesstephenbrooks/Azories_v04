@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FiSearch, FiBook, FiHeadphones, FiUser, FiStar, FiAward, FiTrendingUp, FiGrid, FiBox, FiInfo, FiGlobe } from 'react-icons/fi';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import Navbar from '@/components/Navbar';
+import BookRecommendations from '@/components/BookRecommendations';
 
 // Lazy load the 3D components
 const Bookshelf3D = lazy(() => import('@/components/Bookshelf3D'));
