@@ -2682,6 +2682,146 @@ async def get_recommendations(current_user: dict = Depends(get_current_user)):
 async def root():
     return {"message": "Welcome to Azories API", "version": "1.1.0"}
 
+# ==================== ART STUDIO ENDPOINTS ====================
+
+class ArtStudioGenerateRequest(BaseModel):
+    prompt: str
+    style: str = "fantasy"
+    type: str = "character"  # character or scene
+    characterData: Optional[dict] = None
+    sceneData: Optional[dict] = None
+
+class ArtStudioSaveRequest(BaseModel):
+    image_url: str
+    name: str = "Untitled"
+    type: str = "character"
+    style: str = "fantasy"
+    characterData: Optional[dict] = None
+    sceneData: Optional[dict] = None
+
+@api_router.post("/art-studio/generate")
+async def art_studio_generate(request: ArtStudioGenerateRequest, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Generate an image using AI based on character/scene settings"""
+    user = await get_current_user(credentials.credentials)
+    if not user:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    
+    try:
+        # Use OpenAI image generation via Emergent
+        image_gen = OpenAIImageGeneration(EMERGENT_LLM_KEY)
+        
+        # Enhance the prompt based on type
+        enhanced_prompt = request.prompt
+        if request.type == "character":
+            enhanced_prompt = f"Character portrait: {request.prompt}, detailed, high quality"
+        elif request.type == "scene":
+            enhanced_prompt = f"Scenic illustration: {request.prompt}, detailed, high quality"
+        
+        # Generate the image
+        result = await image_gen.generate_image(
+            prompt=enhanced_prompt,
+            size="1024x1024",
+            quality="standard"
+        )
+        
+        # Save to user's generation history
+        generation_record = {
+            "user_id": user["id"],
+            "image_url": result.url,
+            "prompt": request.prompt,
+            "enhanced_prompt": enhanced_prompt,
+            "style": request.style,
+            "type": request.type,
+            "character_data": request.characterData,
+            "scene_data": request.sceneData,
+            "created_at": datetime.now(timezone.utc)
+        }
+        await db.art_studio_generations.insert_one(generation_record)
+        
+        return {"image_url": result.url, "prompt_used": enhanced_prompt}
+        
+    except Exception as e:
+        logging.error(f"Art Studio generation error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate image: {str(e)}")
+
+@api_router.post("/art-studio/save")
+async def art_studio_save(request: ArtStudioSaveRequest, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Save an image to user's gallery"""
+    user = await get_current_user(credentials.credentials)
+    if not user:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    
+    try:
+        gallery_item = {
+            "user_id": user["id"],
+            "image_url": request.image_url,
+            "name": request.name,
+            "type": request.type,
+            "style": request.style,
+            "character_data": request.characterData,
+            "scene_data": request.sceneData,
+            "created_at": datetime.now(timezone.utc)
+        }
+        result = await db.art_studio_gallery.insert_one(gallery_item)
+        
+        return {"success": True, "id": str(result.inserted_id)}
+        
+    except Exception as e:
+        logging.error(f"Art Studio save error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to save image")
+
+@api_router.get("/art-studio/gallery")
+async def art_studio_gallery(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get user's saved gallery images"""
+    user = await get_current_user(credentials.credentials)
+    if not user:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    
+    try:
+        cursor = db.art_studio_gallery.find(
+            {"user_id": user["id"]}
+        ).sort("created_at", -1).limit(100)
+        
+        images = []
+        async for item in cursor:
+            images.append({
+                "_id": str(item["_id"]),
+                "image_url": item["image_url"],
+                "name": item.get("name", "Untitled"),
+                "type": item.get("type", "character"),
+                "style": item.get("style", "fantasy"),
+                "created_at": item.get("created_at", datetime.now(timezone.utc)).isoformat()
+            })
+        
+        return {"images": images}
+        
+    except Exception as e:
+        logging.error(f"Art Studio gallery error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to load gallery")
+
+@api_router.delete("/art-studio/gallery/{image_id}")
+async def art_studio_delete(image_id: str, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Delete an image from user's gallery"""
+    user = await get_current_user(credentials.credentials)
+    if not user:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    
+    try:
+        from bson import ObjectId
+        result = await db.art_studio_gallery.delete_one({
+            "_id": ObjectId(image_id),
+            "user_id": user["id"]
+        })
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Image not found")
+        
+        return {"success": True}
+        
+    except Exception as e:
+        logging.error(f"Art Studio delete error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to delete image")
+
 # Include the router
 app.include_router(api_router)
 
