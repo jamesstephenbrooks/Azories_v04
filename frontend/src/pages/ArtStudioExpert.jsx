@@ -390,7 +390,7 @@ const OutputNode = ({ data, selected }) => {
             </div>
           </div>
         ) : (
-          <div className="aspect-video bg-black/30 rounded-lg flex flex-col items-center justify-center">
+          <div className="w-full h-full bg-black/30 rounded-lg flex flex-col items-center justify-center">
             <FiImage className="w-10 h-10 text-pink-300/30 mb-2" />
             <span className="text-xs text-pink-300/50">Run workflow to generate</span>
           </div>
