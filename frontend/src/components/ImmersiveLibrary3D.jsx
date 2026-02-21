@@ -1670,50 +1670,28 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
             </div>
           )}
           
-          {/* Books panel - hide on mobile to not overlap joystick */}
-          {!isMobileDevice && (
-            <div className="absolute bottom-4 right-4 pointer-events-auto">
-              <div className="bg-black/80 backdrop-blur-sm rounded-xl p-3 max-w-xs">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-lg">📚</span>
-                  <span className="text-white font-medium text-sm">Books</span>
-                </div>
-                <div className="flex gap-2 overflow-x-auto pb-1">
-                  {books.slice(0, 5).map((book) => (
-                    <button
-                      key={book.id}
-                      onClick={() => navigate(`/read/${book.id}`)}
-                      className="flex-shrink-0 w-12 h-16 rounded-lg overflow-hidden hover:ring-2 hover:ring-purple-500 transition-all"
-                    >
-                      {book.cover_image ? (
-                        <img 
-                          src={book.cover_image} 
-                          alt={book.title}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-purple-900 flex items-center justify-center">
-                          <FiBook className="text-purple-400" />
-                        </div>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-          
-          {/* Book Info Card (when a book is selected in 3D view) */}
-          {/* Selected Book Info Card - RIGHT SIDE so we can see the 3D book in center */}
+          {/* Book Info Card (when a book is selected in 3D view) - CENTERED */}
+          {/* Selected Book Info Card - CENTERED for better visibility */}
           <AnimatePresence>
             {selectedBook && (
               <motion.div
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 50 }}
-                className="absolute top-1/2 right-4 -translate-y-1/2 pointer-events-auto z-30"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="absolute inset-0 flex items-center justify-center pointer-events-auto z-30"
               >
-                <div className="bg-gradient-to-br from-[#2d1f3d] to-[#1a1520] rounded-2xl p-6 max-w-sm border border-purple-500/30 shadow-2xl shadow-purple-500/20">
+                {/* Backdrop */}
+                <div 
+                  className="absolute inset-0 bg-black/50"
+                  onClick={() => {
+                    setSelectedBook(null);
+                    setSelectedGenre(null);
+                    removeHighlightedBook();
+                  }}
+                />
+                
+                {/* Card */}
+                <div className="relative bg-gradient-to-br from-[#2d1f3d] to-[#1a1520] rounded-2xl p-6 max-w-sm border border-purple-500/30 shadow-2xl shadow-purple-500/20">
                   {/* Book Cover */}
                   <div className="relative w-32 h-44 mx-auto mb-4 rounded-lg overflow-hidden shadow-lg">
                     {selectedBook.cover_image ? (
