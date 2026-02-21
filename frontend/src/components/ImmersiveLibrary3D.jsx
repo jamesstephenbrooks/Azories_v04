@@ -1731,6 +1731,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                       variant="outline"
                       onClick={() => {
                         setSelectedBook(null);
+                        setSelectedGenre(null);
                         removeHighlightedBook();
                       }}
                       className="flex-1 text-white border-white/30 hover:bg-white/10"
