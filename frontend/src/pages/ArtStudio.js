@@ -5,10 +5,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { 
   FiImage, FiUser, FiLayers, FiGrid, FiSave, FiDownload, 
   FiTrash2, FiPlus, FiZap, FiSliders, FiDroplet, FiRefreshCw,
-  FiArrowLeft, FiFolder, FiStar, FiCopy, FiEdit2
+  FiArrowLeft, FiFolder, FiStar, FiCopy, FiEdit2, FiUpload, FiBook, FiCheck
 } from 'react-icons/fi';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
