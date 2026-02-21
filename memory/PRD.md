@@ -11,20 +11,20 @@ Create a digital book creating and reading web application called "Azories" (azo
 
 ## What's Been Implemented
 
-### Latest Updates (Feb 21, 2026) - 3D Library Fixes
-- **Fixed Large Geometry Issue**: Removed ornate_book.glb that was causing large floating purple geometry
-- **Interactive Books**: Replaced with simple small box markers (0.08x0.25x0.15) positioned on back wall bookcases
-- **Genre Banners**: Repositioned above actual bookcases (Fantasy/Mystery/Adventure at z=-4)
-- **Azora Position**: Moved to floor near right bookcase (x=3.5, y=floorLevel, z=-2)
-- **Player Height**: Adjusted from 1.2 to 1.6 for more grounded camera feel
-- **Movement Physics**: Simplified to prevent vertical jumping issues
+### Latest Updates (Feb 21, 2026) - 3D Library Mobile & Gravity Fixes
+- **Floor-following gravity**: Camera now properly follows terrain with raycast detection
+- **Mobile joystick**: Added visual joystick (bottom-left) for touch movement controls
+- **Responsive welcome screen**: Shows joystick instructions on mobile, keyboard on desktop
+- **Disabled Azora**: Removed until positioning can be calibrated
+- **Disabled book markers**: Removed floating boxes until shelf positions determined
+- **Disabled genre banners**: Removed until correct bookcase positions identified
+- **Camera height**: Set to 1.1m for proper library scale
 
-### Previous Session: 3D Library Major Rewrite
-- **Camera-relative controls**: WASD/Arrow keys move in direction facing
-- **Click-and-drag mouse look**: Replaced buggy pointer lock system
-- **Genre teleport sections**: "Jump to Section" with Fantasy, Adventure, Mystery, Sci-Fi zones
-- **AI Librarian "Azora"**: 3D GLB model, clickable for chat
-- **New GLB model**: gothic_library_16_cycles-compressed.glb
+### Previous Session: 3D Library Rendering Fixes
+- Fixed "purple screen" issue
+- Camera positioned correctly facing bookcases
+- Scene background updated to warm brown
+- Removed large floating geometry from ornate_book.glb
 
 ### Core Features Implemented
 - Full-stack book creation platform
@@ -46,50 +46,45 @@ Create a digital book creating and reading web application called "Azories" (azo
 
 ## Prioritized Backlog
 
-### P0 (Critical) - IN PROGRESS
+### P0 (Critical) - COMPLETED
 - [x] Core reading/creation experience
 - [x] Authentication
 - [x] AI generation (image + video)
 - [x] Admin CMS
 - [x] 3D Library with GLB model
-- [ ] **3D Library fine-tuning** - Banner positions, Azora placement, book marker alignment
+- [x] Floor-following gravity
+- [x] Mobile joystick controls
 
-### P1 (High Priority)
+### P1 (High Priority) - IN PROGRESS
+- [ ] Re-enable genre banners with correct positions
+- [ ] Re-enable Azora with proper calibration
+- [ ] Re-enable interactive books on shelves
 - [ ] Stripe payment integration
-- [ ] Voice narration UI improvements (mic access prompt)
-- [ ] Jump to Section teleport fixes
-- [ ] Realistic page-turning animation
+- [ ] Voice narration UI improvements
 
 ### P2 (Medium Priority)
 - [ ] Art Studio node-based UI (React Flow)
-- [ ] AI Librarian knowledge enhancement
-- [ ] "Call Azora Over" feature
 - [ ] Personalized book recommendations
+- [ ] "Call Azora Over" feature
 
 ### P3 (Nice to Have)
 - [ ] Multiplayer library exploration
 - [ ] Animate still images
 - [ ] Comic book advanced layouts
-- [ ] Vector logo creation
-
-## API Endpoints
-- `/api/auth/*` - Authentication
-- `/api/books/*` - Book CRUD
-- `/api/ai/*` - AI generation endpoints
-- `/api/admin/*` - Admin CMS
-- `/api/proxy/glb` - GLB model proxy (CORS bypass)
-- `/api/ambient-sounds/*` - Ambient sound proxy
-- `/api/users/*` - User profiles and social
-- `/api/art-studio/*` - Art Studio (new, placeholder)
 
 ## Key Files
-- `/app/frontend/src/components/ImmersiveLibrary3D.jsx` - 3D library logic (~1050 lines)
+- `/app/frontend/src/components/ImmersiveLibrary3D.jsx` - 3D library logic
 - `/app/frontend/src/pages/Library.js` - Library page with view modes
-- `/app/frontend/src/pages/ArtStudio.jsx` - Art Studio placeholder
-- `/app/backend/server.py` - All backend routes (monolithic)
+- `/app/backend/server.py` - All backend routes
 
-## Known Issues
-1. Genre banners may need coordinate adjustment based on actual bookcase positions
-2. Azora position may need fine-tuning to be visible
-3. Interactive book markers need alignment with visible shelf space
-4. Jump to Section teleport coordinates need updating to match new genre positions
+## Known Issues (Currently Disabled)
+1. Genre banners need position calibration to appear above bookcases
+2. Interactive book markers need shelf position calibration
+3. Azora 3D model needs proper floor positioning
+
+## Technical Notes - 3D Library
+- Floor level detected at Y: 4.72
+- Player height: 1.1m (eye level Y: 5.82)
+- Camera start position: (0, 5.82, 3)
+- GLB model: gothic_library_16_cycles-compressed.glb
+- Mobile uses touch joystick, desktop uses WASD + mouse drag
