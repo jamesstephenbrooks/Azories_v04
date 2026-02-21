@@ -694,6 +694,9 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     
     const gltfLoader = new GLTFLoader();
     gltfLoader.setDRACOLoader(dracoLoader);
+    
+    // Store the loader reference for use in highlighting books
+    gltfLoaderRef.current = gltfLoader;
 
     console.log('Loading model from:', LIBRARY_MODEL_URL);
 
