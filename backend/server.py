@@ -3017,9 +3017,6 @@ async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: d
         # Use OpenAI image generation via Emergent (matching working endpoint)
         image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
         
-        # Set background type based on request
-        background_type = "transparent" if request.transparentBackground else "auto"
-        
         # Map quality to model parameter (gpt-image-1 doesn't have quality param, so we rely on prompt)
         # Higher quality prompts are already added via qualityBoosts in frontend
         
@@ -3027,7 +3024,6 @@ async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: d
             prompt=enhanced_prompt,
             model="gpt-image-1",
             number_of_images=1,
-            background=background_type,
             size=image_size
         )
         
