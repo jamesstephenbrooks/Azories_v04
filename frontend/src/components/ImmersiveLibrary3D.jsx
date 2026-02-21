@@ -101,6 +101,9 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
   const highlightedBookModelRef = useRef(null); // The actual 3D model
   const highlightedBookMixerRef = useRef(null); // Animation mixer for highlighted book
   const gltfLoaderRef = useRef(null); // Shared GLTF loader
+  const isRotatingBookRef = useRef(false); // Track if user is rotating the book
+  const bookRotationStartRef = useRef({ x: 0, y: 0 }); // Starting rotation values
+  const lastMousePosRef = useRef({ x: 0, y: 0 }); // Last mouse position for rotation
   
   // Physics constants - realistic eye level for library scale
   const PLAYER_HEIGHT = 1.1; // Lower eye level for better immersion in scaled library
