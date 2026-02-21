@@ -666,10 +666,9 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         bookMeshesRef.current = bookMeshes;
         console.log('Interactive book markers disabled - use Books panel to select books');
         
-        // Add genre text banners floating just above each bookcase
-        // Bookcases are about 2m tall, so banners at floorLevel + 2.2
-        const bookcaseBannerHeight = floorLevel + 2.2; // Just above bookcase tops
-        const staircaseBannerHeight = floorLevel + 1.8; // Lower for staircase areas
+        // Add genre text banners floating above each bookcase
+        // Height matches the Adventure banner visible in screenshot
+        const bannerHeight = floorLevel + 2.2; // Just above bookcase tops
         
         GENRE_SECTIONS.forEach((section) => {
           // Create text sprite for the banner
