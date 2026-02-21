@@ -2150,6 +2150,77 @@ async def proxy_glb_model(url: str):
         logger.error(f"Error proxying GLB: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# Audio proxy endpoint for ambient sounds
+@api_router.get("/proxy/audio")
+async def proxy_audio(url: str):
+    """Proxy audio files to bypass CORS issues"""
+    try:
+        timeout = aiohttp.ClientTimeout(total=60)
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            async with session.get(url) as response:
+                if response.status != 200:
+                    raise HTTPException(status_code=response.status, detail="Failed to fetch audio")
+                
+                content = await response.read()
+                content_length = len(content)
+                content_type = response.headers.get('Content-Type', 'audio/mpeg')
+                
+                return StreamingResponse(
+                    io.BytesIO(content),
+                    media_type=content_type,
+                    headers={
+                        "Content-Length": str(content_length),
+                        "Content-Disposition": "inline",
+                        "Access-Control-Allow-Origin": "*",
+                        "Cache-Control": "public, max-age=86400"
+                    }
+                )
+    except aiohttp.ClientError as e:
+        logger.error(f"Client error proxying audio: {e}")
+        raise HTTPException(status_code=502, detail=f"Failed to fetch audio: {str(e)}")
+    except Exception as e:
+        logger.error(f"Error proxying audio: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Predefined ambient sounds - hosted as base64 or URLs
+AMBIENT_SOUND_URLS = {
+    "rain": "https://freesound.org/data/previews/462/462065_9386630-lq.mp3",
+    "fireplace": "https://freesound.org/data/previews/145/145098_2607098-lq.mp3",
+    "forest": "https://freesound.org/data/previews/527/527576_4397472-lq.mp3",
+    "ocean": "https://freesound.org/data/previews/531/531015_3575374-lq.mp3",
+    "cafe": "https://freesound.org/data/previews/346/346234_4502859-lq.mp3",
+    "night": "https://freesound.org/data/previews/531/531019_3575374-lq.mp3",
+    "wind": "https://freesound.org/data/previews/438/438702_9082381-lq.mp3",
+    "library": "https://freesound.org/data/previews/432/432749_4397472-lq.mp3"
+}
+
+@api_router.get("/ambient-sounds/{sound_name}")
+async def get_ambient_sound(sound_name: str):
+    """Get ambient sound - proxied through backend to avoid CORS"""
+    if sound_name not in AMBIENT_SOUND_URLS:
+        raise HTTPException(status_code=404, detail="Sound not found")
+    
+    url = AMBIENT_SOUND_URLS[sound_name]
+    try:
+        timeout = aiohttp.ClientTimeout(total=30)
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            async with session.get(url) as response:
+                if response.status != 200:
+                    raise HTTPException(status_code=response.status, detail="Failed to fetch audio")
+                
+                content = await response.read()
+                return StreamingResponse(
+                    io.BytesIO(content),
+                    media_type="audio/mpeg",
+                    headers={
+                        "Content-Length": str(len(content)),
+                        "Access-Control-Allow-Origin": "*",
+                        "Cache-Control": "public, max-age=86400"
+                    }
+                )
+    except Exception as e:
+        logger.error(f"Error fetching ambient sound {sound_name}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # ============ USER PROFILE & SOCIAL ROUTES ============
