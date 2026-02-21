@@ -385,7 +385,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     keysPressed.current = { forward: false, backward: false, left: false, right: false };
   }, []);
 
-  // Click on book in 3D
+  // Click on book in 3D - show info card first
   const onCanvasClick = useCallback((e) => {
     if (!isExploring || !cameraRef.current || isMobileDevice) return;
     if (isPointerLocked.current) return; // Don't process clicks when pointer is locked
@@ -405,10 +405,14 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       const bookMesh = hits[0].object;
       const bookId = bookMesh.userData?.bookId;
       if (bookId) {
-        navigate(`/read/${bookId}`);
+        // Find the book data and show info card
+        const bookData = books.find(b => b.id === bookId);
+        if (bookData) {
+          setSelectedBook(bookData);
+        }
       }
     }
-  }, [isExploring, isMobileDevice, navigate]);
+  }, [isExploring, isMobileDevice, books]);
 
   // Initialize Three.js scene
   useEffect(() => {
