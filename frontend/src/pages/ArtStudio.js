@@ -747,13 +747,27 @@ export default function ArtStudio() {
   };
   
   // Download generated image
-  const downloadImage = (imageUrl, filename) => {
-    const link = document.createElement('a');
-    link.href = imageUrl;
-    link.download = filename || `azories-art-${Date.now()}.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const downloadImage = async (imageUrl, filename) => {
+    try {
+      // Fetch the image as blob to bypass CORS issues
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename || `azories-art-${Date.now()}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Cleanup
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Download failed:', error);
+      // Fallback: open in new tab
+      window.open(imageUrl, '_blank');
+    }
   };
   
   const deleteFromGallery = async (imageId) => {
