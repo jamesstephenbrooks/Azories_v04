@@ -27,8 +27,10 @@ const GENRE_SECTIONS = [
   // CALIBRATED using debug mode - Fiction at X:-4.79, Y:5.93, Z:-1.35
   { name: 'Fiction', position: { x: -4.79, z: -1.35 }, bannerPos: { x: -4.79, y: 6.5, z: -1.35 }, rotation: Math.PI / 2, color: '#9333ea', calibrated: true },
   
+  // CALIBRATED - Adventure at X:-5.79, Y:5.94, Z:0.42 - perpendicular to Fiction
+  { name: 'Adventure', position: { x: -5.79, z: 0.42 }, bannerPos: { x: -5.79, y: 6.5, z: 0.42 }, rotation: 0, color: '#10b981', calibrated: true },
+  
   // Uncalibrated - need debug clicks to position correctly
-  { name: 'Adventure', position: { x: -4, z: 1 }, bannerPos: { x: -4.79, y: 6.5, z: 1 }, rotation: Math.PI / 2, color: '#10b981' },
   { name: 'Mystery', position: { x: -4, z: -3 }, bannerPos: { x: -4.79, y: 6.5, z: -3 }, rotation: Math.PI / 2, color: '#3b82f6' },
   { name: 'Fantasy', position: { x: 4, z: 1 }, bannerPos: { x: 4.79, y: 6.5, z: 1 }, rotation: -Math.PI / 2, color: '#ec4899' },
   { name: 'Humour', position: { x: 4, z: -1 }, bannerPos: { x: 4.79, y: 6.5, z: -1 }, rotation: -Math.PI / 2, color: '#f59e0b' },
