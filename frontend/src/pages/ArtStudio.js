@@ -459,7 +459,7 @@ export default function ArtStudio() {
             >
               <FiStar className="w-4 h-4 mr-2" />
               Expert Mode
-              <span className="ml-2 text-[10px] px-1.5 py-0.5 bg-amber-500/30 rounded">PRO</span>
+              <span className="ml-2 text-[10px] px-1.5 py-0.5 bg-amber-500/30 rounded">Node Workflow</span>
             </Button>
             
             {/* Book Assignment Dropdown */}
