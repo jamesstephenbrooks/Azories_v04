@@ -304,7 +304,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
 
   // Mobile touch handlers
   const onTouchStart = useCallback((e) => {
-    if (!isExploring || !isMobileDevice) return;
+    if (!isExploringRef.current || !isMobileDevice) return;
     
     const touch = e.touches[0];
     const rect = canvasRef.current?.getBoundingClientRect();
@@ -322,10 +322,10 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       touchStartRef.current = { x: touch.clientX, y: touch.clientY };
       touchMoveRef.current = { active: true, x: 0, y: 0 };
     }
-  }, [isExploring, isMobileDevice]);
+  }, [isMobileDevice]);
 
   const onTouchMove = useCallback((e) => {
-    if (!isExploring || !isMobileDevice) return;
+    if (!isExploringRef.current || !isMobileDevice) return;
     e.preventDefault();
     
     const touch = e.touches[0];
