@@ -167,7 +167,23 @@ const SCENE_PRESETS = [
   { id: 'space', name: 'Outer Space', prompt: 'cosmic space scene with stars and nebulae' },
   { id: 'underwater', name: 'Underwater', prompt: 'underwater scene with coral reefs and sea life' },
   { id: 'mountain', name: 'Mountain Peak', prompt: 'majestic mountain peak with snow and clouds' },
-  { id: 'library', name: 'Ancient Library', prompt: 'ancient library with towering bookshelves and warm lighting' }
+  { id: 'library', name: 'Ancient Library', prompt: 'ancient library with towering bookshelves and warm lighting' },
+  { id: 'dreamscape', name: 'Dreamscape', prompt: 'surreal dreamlike landscape with floating islands and ethereal light' },
+  { id: 'sunset-cliffs', name: 'Sunset Cliffs', prompt: 'dramatic coastal cliffs at golden hour with crashing waves below' },
+  { id: 'aurora', name: 'Northern Lights', prompt: 'arctic landscape under dancing aurora borealis lights' },
+  { id: 'cherry-blossom', name: 'Cherry Blossom', prompt: 'peaceful Japanese garden with cherry blossom trees and koi pond' },
+  { id: 'ruins', name: 'Ancient Ruins', prompt: 'mysterious ancient ruins overgrown with vines and moss' },
+  { id: 'throne-room', name: 'Throne Room', prompt: 'majestic royal throne room with red carpets and golden decorations' },
+  { id: 'tavern', name: 'Medieval Tavern', prompt: 'cozy medieval tavern with fireplace and wooden beams' },
+  { id: 'garden', name: 'Secret Garden', prompt: 'hidden secret garden with magical flowers and stone pathways' },
+  { id: 'desert', name: 'Desert Oasis', prompt: 'golden desert dunes with a lush oasis and palm trees' },
+  { id: 'crystal-cave', name: 'Crystal Cave', prompt: 'underground cave filled with glowing crystals and stalactites' },
+  { id: 'floating-islands', name: 'Floating Islands', prompt: 'magical floating islands in the sky with waterfalls' },
+  { id: 'moonlit-lake', name: 'Moonlit Lake', prompt: 'serene lake reflecting the full moon with mist on the water' },
+  { id: 'battlefield', name: 'Battlefield', prompt: 'dramatic battlefield scene with banners and distant armies' },
+  { id: 'village', name: 'Village Square', prompt: 'charming fantasy village square with cobblestone streets' },
+  { id: 'ship-deck', name: 'Ship Deck', prompt: 'wooden sailing ship deck with ocean waves and stormy skies' },
+  { id: 'academy', name: 'Magic Academy', prompt: 'grand magical academy with floating books and mystical artifacts' }
 ];
 
 export default function ArtStudio() {
