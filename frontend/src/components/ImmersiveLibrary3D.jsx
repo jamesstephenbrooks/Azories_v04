@@ -342,6 +342,62 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     cameraRef.current.quaternion.setFromEuler(euler.current);
   }, []);
 
+  // Highlight a book on the shelf for a specific genre
+  const highlightBookAtGenre = useCallback((genreName, book) => {
+    if (!sceneRef.current) return;
+    
+    // Find the genre section
+    const section = GENRE_SECTIONS.find(s => s.name.toLowerCase() === genreName.toLowerCase());
+    if (!section || !section.shelfPos) return;
+    
+    // Remove existing highlighted book
+    if (highlightedBookModelRef.current) {
+      sceneRef.current.remove(highlightedBookModelRef.current);
+      highlightedBookModelRef.current = null;
+    }
+    
+    // Create a glowing book placeholder (simple box for now, can be replaced with GLB)
+    const bookGeometry = new THREE.BoxGeometry(0.15, 0.25, 0.05);
+    const bookMaterial = new THREE.MeshStandardMaterial({
+      color: new THREE.Color(section.color),
+      emissive: new THREE.Color(section.color),
+      emissiveIntensity: 0.8,
+      transparent: true,
+      opacity: 0.9
+    });
+    
+    const bookMesh = new THREE.Mesh(bookGeometry, bookMaterial);
+    
+    // Add slight random offset so it looks natural on shelf
+    const randomOffset = (Math.random() - 0.5) * 0.5;
+    bookMesh.position.set(
+      section.shelfPos.x + randomOffset,
+      section.shelfPos.y,
+      section.shelfPos.z
+    );
+    
+    // Rotate to match genre section
+    bookMesh.rotation.y = section.rotation || 0;
+    
+    // Store book data for click detection
+    bookMesh.userData = {
+      isHighlightedBook: true,
+      bookId: book.id,
+      bookData: book
+    };
+    
+    // Add to scene
+    sceneRef.current.add(bookMesh);
+    highlightedBookModelRef.current = bookMesh;
+    bookMeshesRef.current.push(bookMesh);
+    
+    // Add pulsing animation
+    bookMesh.userData.pulsePhase = 0;
+    
+    setHighlightedBookGenre(genreName);
+    console.log('Highlighted book:', book.title, 'at', section.name);
+  }, []);
+
   // Mobile touch handlers
   const onTouchStart = useCallback((e) => {
     if (!isExploringRef.current || !isMobileDevice) return;
