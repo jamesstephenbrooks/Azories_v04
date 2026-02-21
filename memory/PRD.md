@@ -11,7 +11,28 @@ Create a digital book creating and reading web application called "Azories" (azo
 
 ## What's Been Implemented (February 2026)
 
-### Latest Updates (Feb 20, 2026) - Session 7: User Experience Improvements
+### Latest Updates (Feb 21, 2026) - Session 8: Feature Integration & Bug Fixes
+- **Ambient Sounds Fixed (CORS Fix)**: Implemented backend proxy for audio files
+  - New endpoint: `/api/ambient-sounds/{sound_name}` proxies audio from Soundbible
+  - 8 ambient sounds: Rain, Fireplace, Forest, Ocean, Café, Night, Wind, Library
+  - Frontend updated to use backend proxy URLs instead of direct CDN links
+- **Reading Streaks & Badges on Dashboard**: Integrated StreakDisplay and BadgeCollection
+  - Shows "0 day streak" for new users with motivational message
+  - "Your Badges" section displays earned badges
+- **Book Recommendations in Library**: Added BookRecommendations component
+  - Shows personalized recommendations based on reading history
+  - "Recommended for You" section with refresh button
+- **Collaborative Writing in BookEditor**: Added CollaborativeWriting button
+  - Invite collaborators via email or link
+  - Role-based permissions (Owner, Editor, Viewer)
+- **Voice Narration Upload in BookEditor**: Added VoiceNarrationUpload button
+  - Record custom narration for pages
+  - Upload progress tracking
+- **Offline Indicator**: Added OfflineIndicator component to App.js
+  - Shows banner when user goes offline
+  - Graceful degradation messaging
+
+### Previous: Session 7 (Feb 20, 2026) - User Experience Improvements
 - **Onboarding Tutorial**: 4-step guided tutorial for new users
   - Welcome to Azories (features overview)
   - Explore the Library (browse/search/3D view)
