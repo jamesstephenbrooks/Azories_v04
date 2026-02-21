@@ -743,6 +743,7 @@ export default function ArtStudio() {
                       className="w-12 h-12 border-4 border-purple-500/30 border-t-purple-500 rounded-full mx-auto mb-3"
                     />
                     <p className="text-white/70">Generating...</p>
+                    <p className="text-white/40 text-xs mt-1">This may take a moment</p>
                   </div>
                 ) : generatedImage ? (
                   <img
@@ -773,29 +774,52 @@ export default function ArtStudio() {
                     onClick={generateImage}
                     disabled={isGenerating}
                     className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                    data-testid="generate-image-btn"
                   >
                     <FiZap className="w-4 h-4 mr-2" />
                     {isGenerating ? 'Generating...' : 'Generate Image'}
                   </Button>
                   
                   {generatedImage && (
-                    <div className="flex gap-2">
+                    <>
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={() => saveToGallery(generatedImage, character.name || 'Untitled')}
+                          variant="outline"
+                          className="flex-1 border-white/20 text-white hover:bg-white/10"
+                          data-testid="save-to-gallery-btn"
+                        >
+                          <FiSave className="w-4 h-4 mr-2" />
+                          Save to Gallery
+                        </Button>
+                        <Button
+                          onClick={generateImage}
+                          variant="outline"
+                          className="border-white/20 text-white hover:bg-white/10"
+                          title="Regenerate"
+                        >
+                          <FiRefreshCw className="w-4 h-4" />
+                        </Button>
+                      </div>
                       <Button
-                        onClick={() => saveToGallery(generatedImage, character.name || 'Untitled')}
+                        onClick={() => downloadImage(generatedImage, `${character.name || 'art'}-${selectedStyle}.png`)}
                         variant="outline"
-                        className="flex-1 border-white/20 text-white hover:bg-white/10"
+                        className="w-full border-green-500/50 text-green-400 hover:bg-green-500/20"
+                        data-testid="download-image-btn"
                       >
-                        <FiSave className="w-4 h-4 mr-2" />
-                        Save
+                        <FiDownload className="w-4 h-4 mr-2" />
+                        Download Image
                       </Button>
                       <Button
-                        onClick={generateImage}
+                        onClick={() => useGalleryAsReference(generatedImage)}
                         variant="outline"
-                        className="border-white/20 text-white hover:bg-white/10"
+                        className="w-full border-blue-500/50 text-blue-400 hover:bg-blue-500/20"
+                        data-testid="use-as-reference-btn"
                       >
-                        <FiRefreshCw className="w-4 h-4" />
+                        <FiImage className="w-4 h-4 mr-2" />
+                        Use as Reference
                       </Button>
-                    </div>
+                    </>
                   )}
                 </div>
               )}
@@ -809,24 +833,28 @@ export default function ArtStudio() {
                       alert('Image URL copied!');
                     }}
                     className="w-full bg-purple-600 hover:bg-purple-700"
+                    data-testid="copy-url-btn"
                   >
                     <FiCopy className="w-4 h-4 mr-2" />
                     Copy URL for Book
                   </Button>
-                  <a
-                    href={selectedGalleryItem.image_url}
-                    download
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <Button
+                    onClick={() => downloadImage(selectedGalleryItem.image_url, `${selectedGalleryItem.name}.png`)}
+                    variant="outline"
+                    className="w-full border-green-500/50 text-green-400 hover:bg-green-500/20"
+                    data-testid="download-gallery-image-btn"
                   >
-                    <Button
-                      variant="outline"
-                      className="w-full border-white/20 text-white hover:bg-white/10"
-                    >
-                      <FiDownload className="w-4 h-4 mr-2" />
-                      Download
-                    </Button>
-                  </a>
+                    <FiDownload className="w-4 h-4 mr-2" />
+                    Download
+                  </Button>
+                  <Button
+                    onClick={() => useGalleryAsReference(selectedGalleryItem.image_url)}
+                    variant="outline"
+                    className="w-full border-blue-500/50 text-blue-400 hover:bg-blue-500/20"
+                  >
+                    <FiImage className="w-4 h-4 mr-2" />
+                    Use as Reference
+                  </Button>
                 </div>
               )}
             </div>
