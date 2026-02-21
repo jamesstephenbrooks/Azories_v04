@@ -349,22 +349,28 @@ async def register(user_data: UserCreate):
         raise HTTPException(status_code=400, detail="Email already registered")
     
     user_id = str(uuid.uuid4())
-    now = datetime.now(timezone.utc).isoformat()
+    now = datetime.now(timezone.utc)
+    now_iso = now.isoformat()
+    # 30-day free Pro trial for all new users
+    trial_expires = (now + timedelta(days=30)).isoformat()
+    
     user = {
         "id": user_id,
         "email": user_data.email,
         "password": hash_password(user_data.password),
         "name": user_data.name,
         "role": "user",
-        "subscription": "free",
-        "created_at": now
+        "subscription": "pro",  # Start with Pro
+        "pro_trial": True,  # Mark as trial user
+        "pro_trial_expires_at": trial_expires,  # Trial expiration
+        "created_at": now_iso
     }
     await db.users.insert_one(user)
     
     token = create_token(user_id, user_data.email, "user")
     return TokenResponse(
         access_token=token,
-        user=UserResponse(id=user_id, email=user_data.email, name=user_data.name, role="user", subscription="free", created_at=now)
+        user=UserResponse(id=user_id, email=user_data.email, name=user_data.name, role="user", subscription="pro", created_at=now_iso)
     )
 
 @api_router.post("/auth/login", response_model=TokenResponse)
