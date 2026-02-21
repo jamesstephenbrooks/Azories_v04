@@ -1100,19 +1100,43 @@ export default function ArtStudioExpert() {
             onChange={(e) => setWorkflowName(e.target.value)}
             className="w-40 bg-black/30 border-white/20 text-white text-sm"
             placeholder="Workflow name..."
+            data-testid="workflow-name-input"
           />
+          
+          {/* Workflow Panel Toggle */}
+          <Button 
+            variant="outline" 
+            onClick={() => setShowWorkflowPanel(!showWorkflowPanel)}
+            className="border-cyan-500/50 text-cyan-300 hover:bg-cyan-500/20"
+            data-testid="open-workflows-btn"
+          >
+            <FiList className="w-4 h-4 mr-2" />
+            Workflows
+            {savedWorkflows.length > 0 && (
+              <span className="ml-1.5 text-[10px] bg-cyan-500/30 px-1.5 py-0.5 rounded-full">{savedWorkflows.length}</span>
+            )}
+          </Button>
+          
           <Button 
             variant="outline" 
             onClick={saveWorkflow}
+            disabled={isSavingWorkflow}
             className="border-white/20 text-white"
+            data-testid="save-workflow-btn"
           >
-            <FiSave className="w-4 h-4 mr-2" />
-            Save
+            {isSavingWorkflow ? (
+              <FiRefreshCw className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <FiSave className="w-4 h-4 mr-2" />
+            )}
+            {workflowSaveMessage || 'Save'}
           </Button>
+          
           <Button 
             onClick={runWorkflow}
             disabled={isGenerating}
             className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+            data-testid="run-workflow-btn"
           >
             <FiPlay className="w-4 h-4 mr-2" />
             {isGenerating ? 'Running...' : 'Run Workflow'}
