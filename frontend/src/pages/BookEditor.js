@@ -142,11 +142,13 @@ export default function BookEditor() {
     
     const isComicMode = selectedPage.layout === 'comic_4panel' || selectedPage.layout === 'comic_2panel';
     const imageKey = isComicMode ? `image${slot}_url` : 'image_url';
+    const token = localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
     
     try {
       await axios.put(`${API}/books/${bookId}/pages/${selectedPage.id}`, {
         [imageKey]: imageUrl
-      });
+      }, { headers });
       
       setPages(prevPages => 
         prevPages.map(p => 
@@ -157,6 +159,7 @@ export default function BookEditor() {
       setShowGalleryPicker(false);
       toast.success('Image added from Art Studio');
     } catch (error) {
+      console.error('Gallery add error:', error);
       toast.error('Failed to add image');
     }
   };
