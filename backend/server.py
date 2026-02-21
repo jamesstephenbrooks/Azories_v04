@@ -2978,70 +2978,66 @@ async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: d
         }
         style_desc = style_prompts.get(request.style, "high quality professional illustration, detailed, masterwork quality")
         
-        # ENHANCED prompt building for MAXIMUM quality - DeepAI/MidJourney level
-        # Core quality tags that dramatically improve output
-        QUALITY_CORE = "masterpiece, best quality, ultra detailed, high resolution, 8K UHD"
-        FACE_QUALITY = "beautiful detailed face, detailed eyes, detailed skin texture, realistic skin, perfect features"
-        LIGHTING_QUALITY = "perfect lighting, professional studio lighting, dramatic shadows, volumetric lighting"
-        COMPOSITION = "professional composition, award winning, trending on artstation, featured on behance"
+        # CRITICAL: User prompt comes FIRST and is emphasized
+        # Quality tags should enhance, not override user specifications
+        QUALITY_CORE = "masterpiece, best quality, ultra detailed, high resolution"
+        FACE_QUALITY = "beautiful detailed face, detailed eyes, realistic skin"
+        LIGHTING_QUALITY = "perfect lighting, professional studio lighting"
         
         # Negative prompt additions for cleaner output
-        DEFAULT_NEGATIVE = "blurry, low quality, lowres, bad anatomy, bad hands, deformed, disfigured, mutation, extra limbs, watermark, signature, text, jpeg artifacts, ugly, duplicate, morbid"
+        DEFAULT_NEGATIVE = "blurry, low quality, lowres, bad anatomy, bad hands, deformed, disfigured, watermark, signature, text, jpeg artifacts"
         
+        # Build prompt with USER INPUT as the PRIMARY FOCUS
         enhanced_prompt = request.prompt
         if request.type == "character":
-            # Build comprehensive character prompt for DeepAI-level quality
-            enhanced_prompt = f"""
-            {QUALITY_CORE}, {FACE_QUALITY}, {LIGHTING_QUALITY},
-            Character portrait: {request.prompt},
-            {style_desc},
-            intricate details, sharp focus, professional character design,
-            cinematic lighting, beautiful composition,
-            {COMPOSITION}
-            """.replace('\n', ' ').strip()
+            # USER'S CHARACTER DESCRIPTION IS PRIMARY - emphasize it
+            enhanced_prompt = f"""IMPORTANT - Follow these character specifications EXACTLY:
+            {request.prompt}
+            
+            Style: {style_desc}
+            Quality: {QUALITY_CORE}, {FACE_QUALITY}, {LIGHTING_QUALITY}
+            
+            CRITICAL: The character MUST have the EXACT features specified above. Do not change hair color, eye color, or any specified features.""".replace('\n', ' ').strip()
             
         elif request.type == "scene":
-            enhanced_prompt = f"""
-            {QUALITY_CORE}, {LIGHTING_QUALITY},
-            Scenic masterpiece: {request.prompt},
-            {style_desc},
-            breathtaking environment, atmospheric perspective, detailed background,
-            epic scale, professional environment design,
-            {COMPOSITION}
-            """.replace('\n', ' ').strip()
+            enhanced_prompt = f"""IMPORTANT - Create this exact scene:
+            {request.prompt}
+            
+            Style: {style_desc}
+            Quality: {QUALITY_CORE}, {LIGHTING_QUALITY}, breathtaking environment""".replace('\n', ' ').strip()
             
         elif request.type == "workflow":
-            # Expert Mode workflow - full enhancement
-            enhanced_prompt = f"""
-            {QUALITY_CORE}, {FACE_QUALITY}, {LIGHTING_QUALITY},
-            {request.prompt},
-            {style_desc},
-            intricate details, perfect composition,
-            {COMPOSITION}
-            """.replace('\n', ' ').strip()
+            # Expert Mode workflow - USER PROMPT IS KING
+            enhanced_prompt = f"""CRITICAL - Follow these specifications EXACTLY:
+            {request.prompt}
+            
+            Style: {style_desc}
+            Quality: {QUALITY_CORE}, {FACE_QUALITY}, {LIGHTING_QUALITY}
+            
+            IMPORTANT: Generate EXACTLY what is described. Do not deviate from the specified features like hair color, eye color, clothing, etc.""".replace('\n', ' ').strip()
         else:
             enhanced_prompt = f"{request.prompt}, {style_desc}, {QUALITY_CORE}"
         
         # Handle dual reference images for consistency
         if hasattr(request, 'styleReferenceImage') and request.styleReferenceImage:
-            enhanced_prompt += ", matching the art style and visual aesthetic of the reference"
+            enhanced_prompt += ". Match the art style and visual aesthetic of the reference"
         if hasattr(request, 'characterReferenceImage') and request.characterReferenceImage:
-            enhanced_prompt += ", maintaining exact character appearance, same face, same features as reference"
+            enhanced_prompt += ". CRITICAL: Maintain EXACT same character appearance - same face, same features as reference"
         
         # Legacy single reference support
         if request.referenceImage:
-            enhanced_prompt += ", maintaining visual consistency with the provided reference"
+            enhanced_prompt += ". Maintain visual consistency with the provided reference"
         
         # Add transparent background instruction if requested
         if request.transparentBackground:
-            enhanced_prompt += ", isolated subject on pure transparent background, PNG cutout style, no background elements, clean edges"
+            enhanced_prompt += ". Isolated subject on pure transparent background, PNG cutout style, no background"
         
         # Combine user's negative prompt with defaults
         final_negative = DEFAULT_NEGATIVE
         if request.negativePrompt:
             final_negative = f"{request.negativePrompt}, {DEFAULT_NEGATIVE}"
         
-        # Add negative instruction to prompt (for models that don't support negative prompts separately)
+        # Add negative instruction - but keep it brief so it doesn't override user prompt
         enhanced_prompt += f". AVOID: {final_negative}"
         
         # Map aspect ratio to size
