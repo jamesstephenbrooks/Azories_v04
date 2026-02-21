@@ -916,11 +916,32 @@ export default function ArtStudio() {
           {(activeTab === 'character' || activeTab === 'scene') && (
             <div className="w-64 flex-shrink-0">
               <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-4 sticky top-4 max-h-[calc(100vh-180px)] overflow-y-auto">
-                <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2 sticky top-0 bg-[#1a1520] py-2 -mt-2 -mx-4 px-4 border-b border-white/10">
+                <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2 sticky top-0 bg-[#1a1520] py-2 -mt-2 -mx-4 px-4 border-b border-white/10 z-10">
                   <FiSliders className="text-purple-400" />
                   Art Styles
                   <span className="text-xs text-white/40 ml-auto">{ART_STYLES.length} styles</span>
                 </h3>
+                
+                {/* Search Bar */}
+                <div className="relative mb-3">
+                  <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                  <input
+                    type="text"
+                    placeholder="Search styles..."
+                    value={styleSearchQuery}
+                    onChange={(e) => setStyleSearchQuery(e.target.value)}
+                    className="w-full pl-9 pr-3 py-2 bg-black/30 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/40 focus:border-purple-500/50 focus:outline-none"
+                    data-testid="style-search-input"
+                  />
+                  {styleSearchQuery && (
+                    <button
+                      onClick={() => setStyleSearchQuery('')}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
+                    >
+                      <FiX className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
                 
                 {/* Style Preview Button */}
                 <button
@@ -932,48 +953,76 @@ export default function ArtStudio() {
                   Preview All Styles
                 </button>
                 
-                {ART_STYLE_CATEGORIES.map(category => (
-                  <div key={category.category} className="mb-4">
-                    <h4 className="text-xs font-medium text-purple-400 uppercase tracking-wider mb-2">
-                      {category.category}
-                    </h4>
-                    <div className="space-y-1">
-                      {category.styles.map(style => (
-                        <button
-                          key={style.id}
-                          onClick={() => setSelectedStyle(style.id)}
-                          data-testid={`style-${style.id}`}
-                          className={`w-full text-left px-2 py-1.5 rounded-lg transition-all flex items-center gap-2 ${
-                            selectedStyle === style.id
-                              ? 'bg-purple-500/30 border border-purple-500/50 text-white'
-                              : 'hover:bg-white/5 text-white/70 hover:text-white border border-transparent'
-                          }`}
-                        >
-                          {/* Style Preview Image */}
-                          <div className="w-10 h-10 rounded-md overflow-hidden flex-shrink-0 bg-black/30">
-                            {style.image && (
-                              <img 
-                                src={style.image} 
-                                alt={style.name}
-                                className="w-full h-full object-cover"
-                                loading="lazy"
-                              />
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between">
-                              <span className="text-xs font-medium truncate">{style.name}</span>
-                              {selectedStyle === style.id && (
-                                <FiCheck className="w-3 h-3 text-purple-400 flex-shrink-0" />
-                              )}
-                            </div>
-                            <p className="text-[10px] text-white/40 truncate">{style.description}</p>
-                          </div>
-                        </button>
-                      ))}
+                {ART_STYLE_CATEGORIES.map(category => {
+                  // Filter styles based on search
+                  const filteredStyles = styleSearchQuery
+                    ? category.styles.filter(style =>
+                        style.name.toLowerCase().includes(styleSearchQuery.toLowerCase()) ||
+                        style.description.toLowerCase().includes(styleSearchQuery.toLowerCase())
+                      )
+                    : category.styles;
+                  
+                  // Don't show empty categories when searching
+                  if (styleSearchQuery && filteredStyles.length === 0) return null;
+                  
+                  const isCollapsed = collapsedCategories[category.category];
+                  
+                  return (
+                    <div key={category.category} className="mb-4">
+                      <button
+                        onClick={() => setCollapsedCategories(prev => ({
+                          ...prev,
+                          [category.category]: !prev[category.category]
+                        }))}
+                        className="w-full flex items-center justify-between text-xs font-medium text-purple-400 uppercase tracking-wider mb-2 hover:text-purple-300 transition-colors"
+                      >
+                        <span className="flex items-center gap-1">
+                          {category.category}
+                          <span className="text-white/30 normal-case">({filteredStyles.length})</span>
+                        </span>
+                        {isCollapsed ? <FiChevronDown className="w-3 h-3" /> : <FiChevronUp className="w-3 h-3" />}
+                      </button>
+                      
+                      {!isCollapsed && (
+                        <div className="space-y-1">
+                          {filteredStyles.map(style => (
+                            <button
+                              key={style.id}
+                              onClick={() => setSelectedStyle(style.id)}
+                              data-testid={`style-${style.id}`}
+                              className={`w-full text-left px-2 py-1.5 rounded-lg transition-all flex items-center gap-2 ${
+                                selectedStyle === style.id
+                                  ? 'bg-purple-500/30 border border-purple-500/50 text-white'
+                                  : 'hover:bg-white/5 text-white/70 hover:text-white border border-transparent'
+                              }`}
+                            >
+                              {/* Style Preview Image */}
+                              <div className="w-10 h-10 rounded-md overflow-hidden flex-shrink-0 bg-black/30">
+                                {style.image && (
+                                  <img 
+                                    src={style.image} 
+                                    alt={style.name}
+                                    className="w-full h-full object-cover"
+                                    loading="lazy"
+                                  />
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-xs font-medium truncate">{style.name}</span>
+                                  {selectedStyle === style.id && (
+                                    <FiCheck className="w-3 h-3 text-purple-400 flex-shrink-0" />
+                                  )}
+                                </div>
+                                <p className="text-[10px] text-white/40 truncate">{style.description}</p>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
                 
                 {/* Advanced Options Panel */}
                 <div className="mt-4 pt-4 border-t border-white/10">
