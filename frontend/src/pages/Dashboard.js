@@ -18,6 +18,7 @@ import {
 } from 'react-icons/fi';
 import Navbar from '@/components/Navbar';
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
+import TrialBanner from '@/components/TrialBanner';
 import { StreakDisplay, BadgeCollection, useStreaksAndBadges } from '@/components/ReadingStreaks';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
