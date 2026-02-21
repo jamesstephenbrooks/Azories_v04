@@ -384,6 +384,18 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     );
     
     raycasterRef.current.setFromCamera(mouse, cameraRef.current);
+    
+    // Check for Azora click first
+    if (azoraRef.current) {
+      const azoraHits = raycasterRef.current.intersectObject(azoraRef.current, true);
+      if (azoraHits.length > 0) {
+        // Clicked on Azora - show chat
+        setShowAzoraChat(true);
+        return;
+      }
+    }
+    
+    // Then check for book clicks
     const hits = raycasterRef.current.intersectObjects(bookMeshesRef.current, true);
     
     if (hits.length > 0) {
