@@ -15,7 +15,7 @@ Create a digital book creating and reading web application called "Azories" for 
 
 **Expert Mode ResizeObserver Fix:**
 - Removed NodeResizer from CharacterNode and SceneNode (was causing ResizeObserver errors)
-- CharacterNode now has fixed size: 250x220px
+- CharacterNode now has fixed size: 250x260px (increased for transparent bg option)
 - SceneNode now has fixed size: 250x240px
 - ReferenceNode and OutputNode already had fixed sizes
 
@@ -28,6 +28,28 @@ Create a digital book creating and reading web application called "Azories" for 
 - Changed book info card from center of screen to middle-right position
 - Uses `top-1/2 right-8 -translate-y-1/2` positioning
 - Slides in from right with animation
+
+**Copy to Expert Mode Fix (Feb 21, 2026):**
+- Fixed character data transfer from Easy Mode to Expert Mode
+- Now properly maps all Easy Mode fields (skinTone, hairColor, hairStyle, eyeColor, bodyType, clothing, expression) into appearance string
+- Added Reference node to default Expert Mode workflow
+- Copies transparentBackground setting as well
+
+**Transparent Background for Compositing:**
+- Added "Transparent Background" checkbox in Easy Mode Character Builder
+- Added "Transparent background" checkbox in Expert Mode Character Node
+- Backend updated to use `background='transparent'` for image generation when enabled
+- Allows characters to be generated without background for compositing into scenes
+
+**Image Quality Enhancement (DeepAI-level):**
+- Enhanced backend prompt engineering with professional quality boosters
+- Style-specific quality prompts (22+ styles with detailed descriptions)
+- Character prompts now include: "beautiful detailed face, expressive eyes, sharp focus, masterpiece quality"
+- Improved Easy Mode buildCharacterPrompt() with richer descriptions
+
+**Node Deletion in Expert Mode:**
+- Added Delete/Backspace key support to remove selected nodes
+- Shows "DEL to remove" hint when node is selected
 
 ### Previous Session (Feb 21, 2026) - Art Studio Enhancements & Fixes
 
