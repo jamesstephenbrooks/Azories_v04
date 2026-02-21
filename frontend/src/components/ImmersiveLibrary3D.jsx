@@ -706,11 +706,86 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         camera.quaternion.setFromEuler(euler.current);
         console.log('Camera rotated 80° anticlockwise');
         
-        // For now, DISABLE the interactive book markers as their positions need calibration
-        // The user will use the Books panel at bottom-right to select books to read
+        // Load interactive 3D books
         const bookMeshes = [];
+        
+        // Load the ornate book GLB model for featured books
+        const bookLoader = new GLTFLoader();
+        bookLoader.setDRACOLoader(dracoLoader);
+        
+        FEATURED_3D_BOOKS.forEach((featuredBook) => {
+          // Find the matching book from the books array
+          const bookData = books.find(b => 
+            b.title?.toLowerCase().includes(featuredBook.bookTitle.toLowerCase()) ||
+            featuredBook.bookTitle.toLowerCase().includes(b.title?.toLowerCase())
+          );
+          
+          if (!bookData) {
+            console.log('Book not found in library:', featuredBook.bookTitle);
+            return;
+          }
+          
+          console.log('Loading 3D book:', featuredBook.bookTitle, 'ID:', bookData.id);
+          
+          bookLoader.load(
+            ORNATE_BOOK_GLB_URL,
+            (gltf) => {
+              const bookModel = gltf.scene.clone();
+              
+              // Position the book
+              bookModel.position.set(
+                featuredBook.position.x,
+                featuredBook.position.y,
+                featuredBook.position.z
+              );
+              
+              // Rotate the book
+              bookModel.rotation.set(
+                featuredBook.rotation.x,
+                featuredBook.rotation.y,
+                featuredBook.rotation.z
+              );
+              
+              // Scale the book
+              bookModel.scale.setScalar(featuredBook.scale);
+              
+              // Store book data for click detection
+              bookModel.userData = {
+                isInteractiveBook: true,
+                bookId: bookData.id,
+                bookTitle: bookData.title,
+                bookData: bookData
+              };
+              
+              // Make all children clickable and store reference
+              bookModel.traverse((child) => {
+                if (child.isMesh) {
+                  child.userData = bookModel.userData;
+                  bookMeshes.push(child);
+                }
+              });
+              
+              // Add glow effect to make it stand out
+              bookModel.traverse((child) => {
+                if (child.isMesh && child.material) {
+                  child.material = child.material.clone();
+                  child.material.emissive = new THREE.Color(0xec4899); // Pink glow for Fantasy
+                  child.material.emissiveIntensity = 0.3;
+                }
+              });
+              
+              scene.add(bookModel);
+              console.log('Added interactive book:', featuredBook.bookTitle, 'at', featuredBook.position);
+            },
+            undefined,
+            (error) => {
+              console.error('Error loading book model:', error);
+            }
+          );
+        });
+        
         bookMeshesRef.current = bookMeshes;
-        console.log('Interactive book markers disabled - use Books panel to select books');
+        console.log('Interactive books loading...');
         
         // Add genre text banners floating above each bookcase
         // Height matches the Adventure banner visible in screenshot
