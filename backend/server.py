@@ -202,6 +202,10 @@ class PageCreate(BaseModel):
     audio_url: Optional[str] = ""
     order: int = 0
     layout_type: Optional[str] = "single"
+    # Image position controls (0-100, where 50 is center)
+    image_position_x: Optional[int] = 50
+    image_position_y: Optional[int] = 50
+    image_fit: Optional[str] = "cover"  # cover, contain, fill
 
 class PageUpdate(BaseModel):
     text_content: Optional[str] = None
@@ -213,6 +217,9 @@ class PageUpdate(BaseModel):
     audio_url: Optional[str] = None
     order: Optional[int] = None
     layout_type: Optional[str] = None
+    image_position_x: Optional[int] = None
+    image_position_y: Optional[int] = None
+    image_fit: Optional[str] = None
 
 class PageResponse(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -227,6 +234,9 @@ class PageResponse(BaseModel):
     audio_url: str
     order: int
     layout_type: str
+    image_position_x: int = 50
+    image_position_y: int = 50
+    image_fit: str = "cover"
     created_at: str
 
 class ImageGenerateRequest(BaseModel):
