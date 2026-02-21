@@ -931,6 +931,21 @@ export default function ArtStudio() {
                     className="bg-black/30 border-white/20 text-white min-h-[80px]"
                     data-testid="additional-details-textarea"
                   />
+                  
+                  {/* Transparent Background Option */}
+                  <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg bg-black/20 border border-white/10 hover:border-purple-500/50 transition-colors mt-3">
+                    <input
+                      type="checkbox"
+                      checked={character.transparentBackground || false}
+                      onChange={(e) => setCharacter({ ...character, transparentBackground: e.target.checked })}
+                      className="w-4 h-4 rounded bg-black/30 border-purple-500/30 text-purple-500 focus:ring-purple-400"
+                      data-testid="transparent-bg-checkbox"
+                    />
+                    <div>
+                      <span className="text-sm font-medium text-white">Transparent Background</span>
+                      <p className="text-xs text-white/50">Generate character without background (for compositing into scenes)</p>
+                    </div>
+                  </label>
                 </div>
               </motion.div>
             )}
