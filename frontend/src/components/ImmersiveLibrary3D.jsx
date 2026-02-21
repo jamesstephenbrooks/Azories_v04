@@ -709,9 +709,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           const sprite = new THREE.Sprite(spriteMaterial);
           sprite.scale.set(2.2, 0.55, 1);
           
-          // Use different heights for bookcase vs staircase sections
-          const isStaircaseSection = section.name === 'Adventure' || section.name === 'Fantasy';
-          const bannerY = isStaircaseSection ? staircaseBannerHeight : bookcaseBannerHeight;
+          // All banners at same height
+          const bannerY = bannerHeight;
           
           sprite.position.set(section.bannerPos.x, bannerY, section.bannerPos.z);
           
