@@ -716,42 +716,63 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           return canvas;
         };
         
-        // Add floating genre banners above sections - at a fixed height above floor
-        const bannerHeight = floorLevel + 4; // 4 meters above floor
+        // Add floating genre banners above sections - simple glowing text only
+        const bannerHeight = floorLevel + 3.5; // 3.5 meters above floor
         
         GENRE_SECTIONS.forEach((section) => {
           if (section.name === 'Center') return; // Skip center
           
-          const bannerCanvas = createTextCanvas(section.name, section.color);
-          const bannerTexture = new THREE.CanvasTexture(bannerCanvas);
-          bannerTexture.colorSpace = THREE.SRGBColorSpace;
+          // Create simple text sprite
+          const canvas = document.createElement('canvas');
+          canvas.width = 256;
+          canvas.height = 64;
+          const ctx = canvas.getContext('2d');
           
-          const bannerGeometry = new THREE.PlaneGeometry(3, 0.8);
-          const bannerMaterial = new THREE.MeshBasicMaterial({
-            map: bannerTexture,
+          // Clear canvas
+          ctx.clearRect(0, 0, 256, 64);
+          
+          // Glowing text effect
+          ctx.font = 'bold 32px Georgia, serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          
+          // Outer glow
+          ctx.shadowColor = section.color;
+          ctx.shadowBlur = 20;
+          ctx.fillStyle = section.color;
+          ctx.fillText(section.name, 128, 32);
+          
+          // Inner text (white)
+          ctx.shadowBlur = 10;
+          ctx.fillStyle = '#ffffff';
+          ctx.fillText(section.name, 128, 32);
+          
+          const texture = new THREE.CanvasTexture(canvas);
+          texture.colorSpace = THREE.SRGBColorSpace;
+          
+          // Use sprite for always-facing-camera text
+          const spriteMaterial = new THREE.SpriteMaterial({
+            map: texture,
             transparent: true,
-            side: THREE.DoubleSide,
             depthWrite: false
           });
           
-          const banner = new THREE.Mesh(bannerGeometry, bannerMaterial);
-          banner.position.set(section.position.x, bannerHeight, section.position.z);
+          const sprite = new THREE.Sprite(spriteMaterial);
+          sprite.scale.set(3, 0.75, 1);
+          sprite.position.set(section.position.x, bannerHeight, section.position.z);
           
-          // Make banner face the center of the room
-          banner.lookAt(0, bannerHeight, 0);
-          
-          scene.add(banner);
-          console.log('Added banner:', section.name, 'at Y:', bannerHeight);
+          scene.add(sprite);
+          console.log('Added genre text:', section.name, 'at Y:', bannerHeight);
           
           // Add floating animation via userData
-          banner.userData = { 
+          sprite.userData = { 
             isGenreBanner: true, 
             baseY: bannerHeight,
             phase: Math.random() * Math.PI * 2 
           };
         });
         
-        // Load Azora 3D model (GLB)
+        // Load Azora 3D model (GLB) - Standing stationary near center
         const AZORA_GLB_URL = 'https://customer-assets.emergentagent.com/job_c72cb56a-2d89-4690-9629-ade6d46638c8/artifacts/t9l9jikb_f0066361-3481-4680-b638-accd998414b5.glb';
         const AZORA_PROXY_URL = `${process.env.REACT_APP_BACKEND_URL}/api/proxy/glb?url=${encodeURIComponent(AZORA_GLB_URL)}`;
         
@@ -763,10 +784,13 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           (gltf) => {
             const azoraModel = gltf.scene;
             
-            // Scale and position Azora
-            azoraModel.scale.set(0.8, 0.8, 0.8); // Adjust scale as needed
-            const azoraY = floorLevel + 0.01; // Just above floor
-            azoraModel.position.set(2, azoraY, 2);
+            // Scale Azora to realistic human size
+            azoraModel.scale.set(1.0, 1.0, 1.0);
+            
+            // Position Azora standing in an open area near center, facing the entrance
+            const azoraY = floorLevel;
+            azoraModel.position.set(0, azoraY, -1); // Center of library, slightly back
+            azoraModel.rotation.y = 0; // Face forward (towards entrance)
             
             // Enable shadows
             azoraModel.traverse((child) => {
@@ -776,41 +800,29 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
               }
             });
             
-            // Setup animation if available
+            // Play idle animation if available
             let mixer = null;
             if (gltf.animations && gltf.animations.length > 0) {
               mixer = new THREE.AnimationMixer(azoraModel);
-              const walkAction = mixer.clipAction(gltf.animations[0]);
-              walkAction.play();
+              // Try to find an idle animation, otherwise use first one
+              const idleAnim = gltf.animations.find(a => a.name.toLowerCase().includes('idle')) || gltf.animations[0];
+              const action = mixer.clipAction(idleAnim);
+              action.play();
               azoraModel.userData.mixer = mixer;
-              console.log('Azora has', gltf.animations.length, 'animations');
+              console.log('Azora has', gltf.animations.length, 'animations, playing:', idleAnim.name);
             }
             
-            // Walking path waypoints around the library
-            const walkPath = [
-              { x: 2, z: 2 },
-              { x: 4, z: 0 },
-              { x: 2, z: -2 },
-              { x: 0, z: -3 },
-              { x: -2, z: -2 },
-              { x: -4, z: 0 },
-              { x: -2, z: 2 },
-              { x: 0, z: 3 },
-            ];
-            
+            // Azora is stationary - no walking
             azoraModel.userData = {
               ...azoraModel.userData,
               isAzora: true,
               baseY: azoraY,
-              walkPath: walkPath,
-              currentWaypoint: 0,
-              walkSpeed: 0.8,
               mixer: mixer
             };
             
             scene.add(azoraModel);
             azoraRef.current = azoraModel;
-            console.log('Loaded Azora GLB model at Y:', azoraY);
+            console.log('Loaded Azora - standing at center, Y:', azoraY);
           },
           undefined,
           (error) => {
