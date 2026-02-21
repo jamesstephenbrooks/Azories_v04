@@ -11,8 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import Navbar from '@/components/Navbar';
 import BookRecommendations from '@/components/BookRecommendations';
 
-// Lazy load the 3D components
-const Bookshelf3D = lazy(() => import('@/components/Bookshelf3D'));
+// Lazy load the 3D component
 const ImmersiveLibrary3D = lazy(() => import('@/components/ImmersiveLibrary3D'));
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
