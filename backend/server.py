@@ -3577,9 +3577,10 @@ async def generate_with_reference(request: ConsistentCharacterRequest, current_u
 @api_router.get("/art-studio/gallery")
 async def art_studio_gallery(
     book_id: Optional[str] = None,
+    type_filter: Optional[str] = None,  # 'image', 'animation', or None for all
     current_user: dict = Depends(get_current_user)
 ):
-    """Get user's saved gallery images, optionally filtered by book"""
+    """Get user's saved gallery items, optionally filtered by book or type"""
     user = current_user
     
     try:
@@ -3587,18 +3588,25 @@ async def art_studio_gallery(
         query = {"user_id": user["id"]}
         if book_id:
             query["book_id"] = book_id
+        if type_filter:
+            if type_filter == "image":
+                query["type"] = {"$ne": "animation"}  # All non-animation types
+            elif type_filter == "animation":
+                query["type"] = "animation"
         
         cursor = db.art_studio_gallery.find(query).sort("created_at", -1).limit(100)
         
         images = []
         async for item in cursor:
             images.append({
+                "_id": str(item["_id"]),
                 "id": str(item["_id"]),
                 "image_url": item["image_url"],
                 "name": item.get("name", "Untitled"),
                 "type": item.get("type", "character"),
                 "style": item.get("style", "fantasy"),
                 "book_id": item.get("book_id"),
+                "motion_prompt": item.get("motion_prompt", ""),
                 "created_at": item.get("created_at", datetime.now(timezone.utc)).isoformat()
             })
         
