@@ -805,35 +805,53 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         camera.position.x = newX;
         camera.position.z = newZ;
         
-        // Raycast-based floor detection
+        // Raycast-based floor detection - only detect floor BELOW current position
+        // This prevents jumping to upper floors
         let floorY = bounds.floorY;
+        const currentFloorLevel = camera.position.y - PLAYER_HEIGHT;
+        
         if (collisionMeshes.length > 0) {
           raycaster.set(
-            new THREE.Vector3(camera.position.x, camera.position.y + 1, camera.position.z),
+            new THREE.Vector3(camera.position.x, camera.position.y, camera.position.z),
             new THREE.Vector3(0, -1, 0)
           );
-          raycaster.far = 10;
+          raycaster.far = PLAYER_HEIGHT + 2; // Only check reasonable distance below
           
           const floorHits = raycaster.intersectObjects(collisionMeshes, true);
-          if (floorHits.length > 0) {
-            floorY = floorHits[0].point.y;
+          
+          // Find the highest floor that's BELOW current position
+          for (const hit of floorHits) {
+            // Only accept floors that are below us (with small tolerance for slopes)
+            if (hit.point.y < camera.position.y - PLAYER_HEIGHT + 0.5) {
+              floorY = hit.point.y;
+              break; // Use the first (highest) floor below us
+            }
           }
         }
         
-        // Apply gravity and floor collision
+        // Apply gravity and floor collision - smooth movement
         if (!playerOnGround.current) {
           playerVelocity.current.y -= GRAVITY * delta;
+          // Cap falling speed
+          playerVelocity.current.y = Math.max(playerVelocity.current.y, -15);
         }
         
         let newY = camera.position.y + playerVelocity.current.y * delta;
+        const targetY = floorY + PLAYER_HEIGHT;
         
-        if (newY <= floorY + PLAYER_HEIGHT) {
-          camera.position.y = floorY + PLAYER_HEIGHT;
+        if (newY <= targetY) {
+          // Smooth landing
+          camera.position.y = targetY;
           playerVelocity.current.y = 0;
           playerOnGround.current = true;
-        } else {
+        } else if (newY > targetY + 0.1) {
+          // In the air
           camera.position.y = Math.min(bounds.ceilingY, newY);
           playerOnGround.current = false;
+        } else {
+          // On ground, keep at floor level
+          camera.position.y = targetY;
+          playerOnGround.current = true;
         }
       }
       
