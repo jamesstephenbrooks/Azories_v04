@@ -2945,6 +2945,63 @@ async def delete_workflow(workflow_id: str, current_user: dict = Depends(get_cur
         logging.error(f"Workflow delete error: {e}")
         raise HTTPException(status_code=500, detail="Failed to delete workflow")
 
+# Prompt History Endpoints
+@api_router.get("/art-studio/prompt-history")
+async def get_prompt_history(current_user: dict = Depends(get_current_user)):
+    """Get user's prompt history"""
+    user = current_user
+    
+    try:
+        # Get user's prompt history document
+        history_doc = await db.prompt_history.find_one({"user_id": user["id"]})
+        
+        if history_doc:
+            return {"history": history_doc.get("prompts", [])}
+        return {"history": []}
+        
+    except Exception as e:
+        logging.error(f"Prompt history fetch error: {e}")
+        return {"history": []}
+
+@api_router.post("/art-studio/prompt-history")
+async def save_prompt_to_history(data: dict, current_user: dict = Depends(get_current_user)):
+    """Save a prompt to user's history"""
+    user = current_user
+    prompt = data.get("prompt", "").strip()
+    
+    if not prompt:
+        return {"success": False}
+    
+    try:
+        # Get existing history
+        history_doc = await db.prompt_history.find_one({"user_id": user["id"]})
+        
+        if history_doc:
+            prompts = history_doc.get("prompts", [])
+            # Remove if already exists (to move to top)
+            if prompt in prompts:
+                prompts.remove(prompt)
+            # Add to beginning
+            prompts.insert(0, prompt)
+            # Keep only last 20
+            prompts = prompts[:20]
+            
+            await db.prompt_history.update_one(
+                {"user_id": user["id"]},
+                {"$set": {"prompts": prompts}}
+            )
+        else:
+            await db.prompt_history.insert_one({
+                "user_id": user["id"],
+                "prompts": [prompt]
+            })
+        
+        return {"success": True}
+        
+    except Exception as e:
+        logging.error(f"Prompt history save error: {e}")
+        return {"success": False}
+
 # Include the router
 app.include_router(api_router)
 
