@@ -123,7 +123,10 @@ Create a digital book creating and reading web application called "Azories" for 
 
 ### P1 (High Priority) - NEXT
 - [x] ~~**Character Consistency**~~ - Implemented Character Profile system with seeds and enhanced prompts
-- [ ] **Spiral Staircase Navigation** - Fix 3D library so player can climb stairs
+- [x] ~~**Expert Mode ResizeObserver Error**~~ - Fixed by removing NodeResizer, all nodes now fixed-size
+- [x] ~~**Expert Mode Output Preview**~~ - Added expand/preview modal for generated images
+- [x] ~~**3D Library Book Popup Position**~~ - Moved from center to middle-right of screen
+- [ ] **Spiral Staircase Navigation** - Fix 3D library so player can climb stairs (fix implemented, needs verification)
 - [ ] Creation history view for each book (show how images were generated)
 - [ ] Improve book/image creation experience
 - [ ] AI image generation quality/speed
