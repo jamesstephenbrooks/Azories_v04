@@ -339,25 +339,34 @@ const CombineNode = ({ data, selected }) => {
   );
 };
 
-// Output Node - Final generation
+// Output Node - Final generation - Resizable
 const OutputNode = ({ data, selected }) => {
   return (
-    <div className={`bg-gradient-to-br from-pink-900/90 to-pink-800/90 rounded-xl border-2 ${selected ? 'border-pink-400' : 'border-pink-600/50'} shadow-xl min-w-[280px] backdrop-blur-sm`}>
+    <div className={`bg-gradient-to-br from-pink-900/90 to-pink-800/90 rounded-xl border-2 ${selected ? 'border-pink-400' : 'border-pink-600/50'} shadow-xl backdrop-blur-sm h-full w-full min-w-[200px] min-h-[180px]`}>
+      <NodeResizer 
+        color="#ec4899" 
+        isVisible={selected} 
+        minWidth={200} 
+        minHeight={180}
+        handleStyle={{ width: 8, height: 8 }}
+      />
       <Handle type="target" position={Position.Left} className="!bg-pink-400 !w-3 !h-3" />
       
-      <div className="p-3 border-b border-pink-600/30 flex items-center gap-2">
-        <div className="w-8 h-8 rounded-lg bg-pink-500/30 flex items-center justify-center">
-          <FiZap className="text-pink-300" />
+      <div className="p-2 border-b border-pink-600/30 flex items-center gap-2">
+        <div className="w-6 h-6 rounded-lg bg-pink-500/30 flex items-center justify-center flex-shrink-0">
+          <FiZap className="text-pink-300 w-3 h-3" />
         </div>
-        <div>
-          <h4 className="text-sm font-semibold text-white">Output</h4>
-          <p className="text-xs text-pink-300">Generate result</p>
+        <div className="flex-1 min-w-0">
+          <h4 className="text-xs font-semibold text-white truncate">Output</h4>
         </div>
+        {selected && (
+          <FiMove className="w-3 h-3 text-pink-400 flex-shrink-0" />
+        )}
       </div>
       
-      <div className="p-3">
+      <div className="p-2 h-[calc(100%-40px)]">
         {data.generating ? (
-          <div className="aspect-video bg-black/30 rounded-lg flex items-center justify-center">
+          <div className="w-full h-full bg-black/30 rounded-lg flex items-center justify-center">
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
@@ -365,11 +374,11 @@ const OutputNode = ({ data, selected }) => {
             />
           </div>
         ) : data.image ? (
-          <div className="relative">
+          <div className="relative h-full">
             <img 
               src={data.image} 
               alt="Generated" 
-              className="w-full aspect-video object-cover rounded-lg"
+              className="w-full h-full object-cover rounded-lg"
             />
             <div className="absolute bottom-2 right-2 flex gap-1">
               <button
