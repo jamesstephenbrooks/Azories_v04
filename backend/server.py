@@ -382,6 +382,26 @@ async def login(user_data: UserLogin):
     if not user or not verify_password(user_data.password, user["password"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
+    # Check if trial has expired
+    subscription = user.get("subscription", "free")
+    pro_trial = user.get("pro_trial", False)
+    trial_expires = user.get("pro_trial_expires_at")
+    trial_days_remaining = None
+    
+    if pro_trial and trial_expires:
+        expiry_date = datetime.fromisoformat(trial_expires.replace('Z', '+00:00'))
+        now = datetime.now(timezone.utc)
+        if now > expiry_date:
+            # Trial expired - downgrade to free
+            subscription = "free"
+            await db.users.update_one(
+                {"id": user["id"]},
+                {"$set": {"subscription": "free", "pro_trial": False}}
+            )
+            pro_trial = False
+        else:
+            trial_days_remaining = (expiry_date - now).days
+    
     token = create_token(user["id"], user["email"], user["role"])
     return TokenResponse(
         access_token=token,
@@ -390,20 +410,41 @@ async def login(user_data: UserLogin):
             email=user["email"], 
             name=user["name"], 
             role=user["role"], 
-            subscription=user.get("subscription", "free"),
-            created_at=user["created_at"]
+            subscription=subscription,
+            created_at=user["created_at"],
+            pro_trial=pro_trial,
+            pro_trial_expires_at=trial_expires,
+            trial_days_remaining=trial_days_remaining
         )
     )
 
 @api_router.get("/auth/me", response_model=UserResponse)
 async def get_me(current_user: dict = Depends(get_current_user)):
+    # Check trial status
+    subscription = current_user.get("subscription", "free")
+    pro_trial = current_user.get("pro_trial", False)
+    trial_expires = current_user.get("pro_trial_expires_at")
+    trial_days_remaining = None
+    
+    if pro_trial and trial_expires:
+        expiry_date = datetime.fromisoformat(trial_expires.replace('Z', '+00:00'))
+        now = datetime.now(timezone.utc)
+        if now > expiry_date:
+            subscription = "free"
+            pro_trial = False
+        else:
+            trial_days_remaining = (expiry_date - now).days
+    
     return UserResponse(
         id=current_user["id"],
         email=current_user["email"],
         name=current_user["name"],
         role=current_user["role"],
-        subscription=current_user.get("subscription", "free"),
-        created_at=current_user["created_at"]
+        subscription=subscription,
+        created_at=current_user["created_at"],
+        pro_trial=pro_trial,
+        pro_trial_expires_at=trial_expires,
+        trial_days_remaining=trial_days_remaining
     )
 
 @api_router.post("/auth/upgrade")
