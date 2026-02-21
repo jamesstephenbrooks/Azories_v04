@@ -347,8 +347,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
 
   // Highlight a book on the shelf for a specific genre - uses animated GLB
   const highlightBookAtGenre = useCallback((genreName, book) => {
-    if (!sceneRef.current || !gltfLoaderRef.current) {
-      console.log('Scene or loader not ready, cannot highlight book');
+    if (!sceneRef.current) {
+      console.log('Scene not ready, cannot highlight book');
       return;
     }
     
@@ -371,21 +371,29 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       highlightedBookMixerRef.current = null;
     }
     
-    // Load the animated book GLB using the shared loader
+    // Create a fresh loader for the animated book
+    const bookDracoLoader = new DRACOLoader();
+    bookDracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+    
+    const bookLoader = new GLTFLoader();
+    bookLoader.setDRACOLoader(bookDracoLoader);
+    
     console.log('Loading animated book from:', ANIMATED_BOOK_GLB_URL);
     
-    gltfLoaderRef.current.load(
+    bookLoader.load(
       ANIMATED_BOOK_GLB_URL,
       (gltf) => {
         console.log('Animated book loaded successfully!', gltf);
+        
+        if (!sceneRef.current) return; // Scene might have been cleaned up
+        
         const bookModel = gltf.scene;
         
-        // Add slight random offset so it looks natural on shelf
-        const randomOffset = (Math.random() - 0.5) * 0.3;
+        // Position the book at the shelf
         bookModel.position.set(
-          section.shelfPos.x + randomOffset,
+          section.shelfPos.x,
           section.shelfPos.y,
-          section.shelfPos.z + 0.5 // Pop out from the shelf
+          section.shelfPos.z + 0.3 // Pop out slightly from the shelf
         );
         
         // Scale the book appropriately
@@ -440,14 +448,20 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         highlightedBookModelRef.current = bookModel;
         
         setHighlightedBookGenre(genreName);
-        console.log('Highlighted animated book:', book.title, 'at', section.name);
+        console.log('Highlighted animated book added to scene:', book.title);
       },
       (progress) => {
-        console.log('Loading animated book...', progress.loaded);
+        if (progress.total) {
+          console.log('Loading animated book...', Math.round((progress.loaded / progress.total) * 100) + '%');
+        }
       },
       (error) => {
-        console.error('Error loading animated book:', error);
-        // Fallback to simple box if GLB fails to load
+        console.error('Error loading animated book GLB:', error);
+        
+        if (!sceneRef.current) return;
+        
+        // Fallback to simple glowing box
+        console.log('Using fallback box for book highlight');
         const bookGeometry = new THREE.BoxGeometry(0.2, 0.3, 0.08);
         const bookMaterial = new THREE.MeshStandardMaterial({
           color: new THREE.Color(section.color),
@@ -455,7 +469,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           emissiveIntensity: 0.8
         });
         const bookMesh = new THREE.Mesh(bookGeometry, bookMaterial);
-        bookMesh.position.set(section.shelfPos.x, section.shelfPos.y, section.shelfPos.z + 0.5);
+        bookMesh.position.set(section.shelfPos.x, section.shelfPos.y, section.shelfPos.z + 0.3);
         bookMesh.rotation.y = section.rotation || 0;
         bookMesh.userData = { isHighlightedBook: true, bookId: book.id, bookData: book };
         sceneRef.current.add(bookMesh);
