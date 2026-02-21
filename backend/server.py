@@ -2692,6 +2692,7 @@ class ArtStudioGenerateRequest(BaseModel):
     sceneData: Optional[dict] = None
     referenceImage: Optional[str] = None  # Base64 or URL of reference image
     bookId: Optional[str] = None  # Book to assign the image to
+    workflowName: Optional[str] = None  # Name of workflow if from Expert Mode
 
 class ArtStudioSaveRequest(BaseModel):
     image_url: str
