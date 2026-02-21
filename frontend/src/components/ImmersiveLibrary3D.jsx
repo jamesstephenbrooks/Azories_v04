@@ -64,6 +64,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
   const sidewaysDirection = useRef(new THREE.Vector3());
   const collisionMeshesRef = useRef([]);
   const raycasterRef = useRef(new THREE.Raycaster());
+  const bookMeshesRef = useRef([]);
   
   // Physics constants
   const GRAVITY = 20;
@@ -80,10 +81,32 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
   const [showControls, setShowControls] = useState(false);
   const [showGenreMenu, setShowGenreMenu] = useState(false);
   const [isMobileDevice] = useState(isMobile());
+  const [hoveredBook, setHoveredBook] = useState(null);
+  const [savedPositions, setSavedPositions] = useState([]);
+  const [showBookPanel, setShowBookPanel] = useState(true);
+  
+  // Mobile touch state
+  const touchStartRef = useRef({ x: 0, y: 0 });
+  const touchMoveRef = useRef({ active: false, x: 0, y: 0 });
+  const joystickRef = useRef({ active: false, angle: 0, distance: 0 });
   
   // Mouse look state
   const isPointerLocked = useRef(false);
   const euler = useRef(new THREE.Euler(0, 0, 0, 'YXZ'));
+  
+  // Load saved positions from localStorage
+  useEffect(() => {
+    if (user) {
+      const saved = localStorage.getItem(`azories-3d-positions-${user.id}`);
+      if (saved) {
+        try {
+          setSavedPositions(JSON.parse(saved));
+        } catch (e) {
+          console.error('Failed to load saved positions:', e);
+        }
+      }
+    }
+  }, [user]);
   
   // Check if user should see controls tutorial (first time only)
   useEffect(() => {
