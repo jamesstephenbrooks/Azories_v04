@@ -833,22 +833,44 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         camera.position.x = newX;
         camera.position.z = newZ;
         
-        // SIMPLIFIED floor detection - use stored floor level, don't raycast for floor
-        // This prevents the "jumping to upper floors" bug completely
+        // Floor detection with raycast to follow terrain
         const baseFloorY = bounds.floorY || 0;
-        const targetY = baseFloorY + PLAYER_HEIGHT;
+        let detectedFloorY = baseFloorY;
         
-        // Keep player locked to ground floor - no vertical movement at all
-        // This eliminates all vertical jumping/physics bugs
-        if (Math.abs(camera.position.y - targetY) > 0.01) {
-          // Smoothly interpolate to target height (handles spawning at wrong height)
-          camera.position.y = camera.position.y + (targetY - camera.position.y) * 0.1;
+        if (collisionMeshes.length > 0) {
+          // Cast ray downward from camera position
+          raycaster.set(
+            new THREE.Vector3(camera.position.x, camera.position.y + 1, camera.position.z),
+            new THREE.Vector3(0, -1, 0)
+          );
+          raycaster.far = 5; // Look up to 5 units below
+          
+          const floorHits = raycaster.intersectObjects(collisionMeshes, true);
+          
+          // Find the floor closest to our current position (not upper floors)
+          for (const hit of floorHits) {
+            const hitY = hit.point.y;
+            // Accept floors that are below us but within reasonable range
+            if (hitY < camera.position.y && hitY >= baseFloorY - 0.5) {
+              detectedFloorY = hitY;
+              break;
+            }
+          }
         }
         
-        // Clamp Y to prevent any vertical drift
-        camera.position.y = Math.max(baseFloorY + PLAYER_HEIGHT * 0.5, Math.min(baseFloorY + PLAYER_HEIGHT * 1.5, camera.position.y));
+        const targetY = detectedFloorY + PLAYER_HEIGHT;
         
-        // Player is always on ground (no jumping in this library)
+        // Smoothly follow the floor
+        const yDiff = targetY - camera.position.y;
+        if (Math.abs(yDiff) > 0.01) {
+          // Smooth interpolation - faster for falling, slower for climbing
+          const speed = yDiff < 0 ? 0.2 : 0.15;
+          camera.position.y += yDiff * speed;
+        }
+        
+        // Clamp Y to prevent going too high or too low
+        camera.position.y = Math.max(baseFloorY + PLAYER_HEIGHT * 0.5, Math.min(baseFloorY + PLAYER_HEIGHT * 2, camera.position.y));
+        
         playerOnGround.current = true;
         playerVelocity.current.y = 0;
       }
