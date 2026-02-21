@@ -174,14 +174,14 @@ const SceneNode = ({ data, selected }) => {
   );
 };
 
-// Style Node - Art style selection with dropdown - Expanded with all styles
+// Style Node - Art style selection with dropdown - Expanded with all styles (synced with Easy Mode)
 const ALL_STYLE_CATEGORIES = [
   { category: 'Realistic', styles: ['realistic', 'portrait', 'cinematic', 'hyperrealistic'] },
   { category: 'Illustration', styles: ['cartoon', 'anime', 'manga', 'disney', 'pixar', 'chibi', 'comic', 'graphic-novel'] },
   { category: 'Traditional', styles: ['oil-painting', 'watercolor', 'acrylic', 'pastel', 'charcoal', 'pencil', 'ink', 'gouache'] },
   { category: 'Digital', styles: ['digital-art', 'concept-art', 'matte-painting', 'vector', 'low-poly', 'vaporwave', 'synthwave'] },
   { category: '3D', styles: ['3d-render', 'clay-render', 'isometric', 'diorama', 'unreal-engine'] },
-  { category: 'Fantasy', styles: ['fantasy', 'dark-fantasy', 'sci-fi', 'cyberpunk', 'steampunk', 'solarpunk'] },
+  { category: 'Fantasy', styles: ['fantasy', 'ethereal-fantasy', 'dark-fantasy', 'sci-fi', 'cyberpunk', 'steampunk', 'solarpunk', 'surreal-dreamscape', 'luminous-ethereal', 'celestial-fantasy'] },
   { category: 'Children', styles: ['storybook', 'picture-book', 'whimsical', 'crayon', 'paper-cutout', 'felt'] },
   { category: 'Retro', styles: ['pixel-art', 'retro-game', 'vintage-poster', 'art-deco', 'art-nouveau', 'pop-art'] },
   { category: 'Cultural', styles: ['ukiyo-e', 'chinese-ink', 'persian-miniature', 'aboriginal', 'tribal', 'celtic'] },
@@ -197,8 +197,8 @@ const STYLE_LABELS = {
   'digital-art': 'Digital', 'concept-art': 'Concept', 'matte-painting': 'Matte', 'vector': 'Vector',
   'low-poly': 'Low Poly', 'vaporwave': 'Vaporwave', 'synthwave': 'Synthwave',
   '3d-render': '3D Render', 'clay-render': 'Clay', 'isometric': 'Isometric', 'diorama': 'Diorama', 'unreal-engine': 'Game',
-  'fantasy': 'Fantasy', 'dark-fantasy': 'Dark', 'sci-fi': 'Sci-Fi', 'cyberpunk': 'Cyberpunk',
-  'steampunk': 'Steampunk', 'solarpunk': 'Solarpunk',
+  'fantasy': 'Fantasy', 'ethereal-fantasy': 'Ethereal', 'dark-fantasy': 'Dark', 'sci-fi': 'Sci-Fi', 'cyberpunk': 'Cyberpunk',
+  'steampunk': 'Steampunk', 'solarpunk': 'Solarpunk', 'surreal-dreamscape': 'Dreamscape', 'luminous-ethereal': 'Luminous', 'celestial-fantasy': 'Celestial',
   'storybook': 'Storybook', 'picture-book': 'Picture', 'whimsical': 'Whimsical', 'crayon': 'Crayon',
   'paper-cutout': 'Paper', 'felt': 'Felt',
   'pixel-art': 'Pixel', 'retro-game': 'Retro', 'vintage-poster': 'Vintage', 'art-deco': 'Art Deco',
