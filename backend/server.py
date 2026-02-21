@@ -3203,7 +3203,7 @@ async def generate_with_reference(request: ConsistentCharacterRequest, current_u
         if not EMERGENT_LLM_KEY:
             raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
         
-        chat = LlmChat(api_key=EMERGENT_LLM_KEY, model="gpt-4o")
+        chat = LlmChat(api_key=EMERGENT_LLM_KEY)
         
         # Step 1: Analyze character reference for detailed description
         char_analysis = await chat.chat(
@@ -3221,7 +3221,8 @@ async def generate_with_reference(request: ConsistentCharacterRequest, current_u
                     Output as a detailed prompt. Be extremely specific to enable recreation.""",
                     ImageContent(url=request.characterReferenceImage)
                 ])
-            ]
+            ],
+            model="gpt-4o"
         )
         char_description = char_analysis.strip() if char_analysis else ""
         
@@ -3240,7 +3241,8 @@ async def generate_with_reference(request: ConsistentCharacterRequest, current_u
                         Output as style tags for image generation.""",
                         ImageContent(url=request.styleReferenceImage)
                     ])
-                ]
+                ],
+                model="gpt-4o"
             )
             style_description = style_analysis.strip() if style_analysis else ""
         
