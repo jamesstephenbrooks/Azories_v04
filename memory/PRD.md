@@ -29,6 +29,21 @@ Create a digital book creating and reading web application called "Azories" for 
 - Uses `top-1/2 right-8 -translate-y-1/2` positioning
 - Slides in from right with animation
 
+**Pro Features for Best-in-Class Image Creation (Feb 21, 2026):**
+- **Style Preview Gallery Modal** - Full-screen gallery showing all 66 art styles organized by category with preview images
+- **Pro Options Panel** - Expandable panel with:
+  - Quality Level selector (low/medium/high/ultra) with quality boosters in prompts
+  - Aspect Ratio options (1:1, 16:9, 9:16, 4:3, 3:4)
+  - Negative Prompt textarea to exclude unwanted elements
+- **Generation History Panel** - Floating panel showing last 6 generations for quick access
+- **Enhanced Prompt Engineering** - Professional-quality prompts with style-specific boosters:
+  - "beautiful detailed face, expressive eyes, masterpiece quality, 8K detail"
+  - 22+ enhanced style definitions for DeepAI-level character quality
+- **Backend Improvements:**
+  - ArtStudioGenerateRequest supports negativePrompt, aspectRatio, qualityLevel
+  - Negative prompts appended to avoid unwanted elements
+  - Quality-based prompt enhancement
+
 **Copy to Expert Mode Fix (Feb 21, 2026):**
 - Fixed character data transfer from Easy Mode to Expert Mode
 - Now properly maps all Easy Mode fields (skinTone, hairColor, hairStyle, eyeColor, bodyType, clothing, expression) into appearance string
