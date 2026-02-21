@@ -15,8 +15,11 @@ import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
 import { 
   FiArrowLeft, FiPlus, FiSave, FiTrash2, FiImage, FiVideo, FiUpload,
-  FiBook, FiSettings, FiLoader, FiGrid, FiLayout, FiBookOpen, FiMic, FiZap, FiDownload
+  FiBook, FiSettings, FiLoader, FiGrid, FiLayout, FiBookOpen, FiMic, FiZap, FiDownload,
+  FiUsers
 } from 'react-icons/fi';
+import CollaborativeWriting from '@/components/CollaborativeWriting';
+import VoiceNarrationUpload from '@/components/VoiceNarrationUpload';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
