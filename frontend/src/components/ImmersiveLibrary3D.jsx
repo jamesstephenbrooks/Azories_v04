@@ -932,6 +932,36 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           
           scene.add(sprite);
           genreBanners.push(sprite);
+          
+          // Add "Click to browse" hint below the banner
+          const hintCanvas = document.createElement('canvas');
+          hintCanvas.width = 256;
+          hintCanvas.height = 64;
+          const hintCtx = hintCanvas.getContext('2d');
+          hintCtx.clearRect(0, 0, 256, 64);
+          hintCtx.font = '20px Arial';
+          hintCtx.textAlign = 'center';
+          hintCtx.textBaseline = 'middle';
+          hintCtx.fillStyle = 'rgba(255,255,255,0.5)';
+          hintCtx.fillText('▼ Click to browse', 128, 32);
+          
+          const hintTexture = new THREE.CanvasTexture(hintCanvas);
+          const hintSprite = new THREE.Sprite(new THREE.SpriteMaterial({
+            map: hintTexture,
+            transparent: true,
+            depthWrite: false
+          }));
+          hintSprite.scale.set(0.8, 0.2, 1);
+          hintSprite.position.set(section.bannerPos.x, bannerY - 0.35, section.bannerPos.z);
+          hintSprite.userData = { 
+            isGenreBanner: true, 
+            genreName: section.name,
+            baseY: bannerY - 0.35,
+            phase: sprite.userData.phase
+          };
+          scene.add(hintSprite);
+          genreBanners.push(hintSprite);
+          
           console.log('Added genre banner:', section.name, 'at', section.bannerPos.x, bannerY, section.bannerPos.z, section.calibrated ? '(calibrated)' : '(estimated)');
         });
         
