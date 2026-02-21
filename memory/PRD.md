@@ -11,7 +11,7 @@ Create a digital book creating and reading web application called "Azories" for 
 
 ## What's Been Implemented
 
-### Latest Session (Feb 21, 2026) - Art Studio Phase 2 Fixes
+### Latest Session (Feb 21, 2026) - Art Studio Phase 2 Fixes & Character Consistency
 - **Expert Mode Style Node Dropdown**
   - Changed from tabbed interface to searchable dropdown
   - Categories: Realistic, Illustration, Traditional, Digital, 3D, Fantasy, Children, Retro, Cultural, Stylized
@@ -31,6 +31,22 @@ Create a digital book creating and reading web application called "Azories" for 
   - "History" button appears in Custom Scene Description for Scene Creator
   - Clicking history shows dropdown of recent prompts for quick reuse
   - Prompts auto-save on successful generation
+
+- **ResizeObserver Error Fix**
+  - Added global error handler in index.js to suppress benign ResizeObserver loop warnings
+
+- **Art Studio Navigation**
+  - Added "Art Studio" link to navbar (desktop + mobile + user dropdown)
+  - Purple droplet icon for visual distinction
+
+- **Character Consistency System (NEW)**
+  - Character Profile endpoints: POST/GET /api/art-studio/character-profiles
+  - Save character with name, description, traits, reference images
+  - Auto-generated seed for consistency
+  - "Use Profile" button to generate with saved character
+  - "Save Profile" button to create new profile from current settings
+  - Enhanced prompts with consistency anchors
+  - Generation counter per profile
 
 ### Previous Session (Feb 21, 2026) - Art Studio Enhancement
 - **Phase 1: Easy Mode Art Studio Enhancements**
