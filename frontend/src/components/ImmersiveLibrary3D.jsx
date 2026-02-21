@@ -195,11 +195,21 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
   const requestPointerLock = useCallback(() => {
     if (canvasRef.current && isExploring) {
       console.log('Requesting pointer lock...');
-      canvasRef.current.requestPointerLock().then(() => {
-        console.log('Pointer lock granted');
-      }).catch((err) => {
-        console.log('Pointer lock failed:', err);
-      });
+      try {
+        // Try the Promise-based API first
+        const lockPromise = canvasRef.current.requestPointerLock();
+        if (lockPromise && lockPromise.then) {
+          lockPromise.then(() => {
+            console.log('Pointer lock granted');
+          }).catch((err) => {
+            console.log('Pointer lock failed:', err);
+          });
+        }
+      } catch (err) {
+        console.log('Pointer lock error:', err);
+      }
+    } else {
+      console.log('Cannot request pointer lock - canvas:', !!canvasRef.current, 'exploring:', isExploring);
     }
   }, [isExploring]);
 
@@ -209,6 +219,9 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     console.log('Pointer lock changed:', locked);
     if (locked) {
       setShowClickHint(false);
+    } else {
+      // Show hint again when unlocked
+      setShowClickHint(true);
     }
   }, []);
 
