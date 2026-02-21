@@ -714,7 +714,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         // Get collision meshes from ref
         const collisionMeshes = collisionMeshesRef.current;
         
-        // Raycast-based wall collision detection
+        // Raycast-based wall collision detection - cast multiple rays for better coverage
         if (collisionMeshes.length > 0 && (playerVelocity.current.x !== 0 || playerVelocity.current.z !== 0)) {
           const horizontalVelocity = new THREE.Vector3(
             playerVelocity.current.x,
@@ -724,14 +724,28 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           
           if (horizontalVelocity.length() > 0.01) {
             const rayDir = horizontalVelocity.clone().normalize();
-            const rayOrigin = camera.position.clone();
-            rayOrigin.y -= 0.5; // Cast from chest height
+            let blocked = false;
             
-            raycaster.set(rayOrigin, rayDir);
-            raycaster.far = 0.8; // Check 0.8 units ahead
+            // Cast rays at multiple heights (feet, waist, chest)
+            const rayHeights = [0.2, 0.8, 1.4];
+            for (const height of rayHeights) {
+              const rayOrigin = new THREE.Vector3(
+                camera.position.x,
+                camera.position.y - PLAYER_HEIGHT + height,
+                camera.position.z
+              );
+              
+              raycaster.set(rayOrigin, rayDir);
+              raycaster.far = 1.0; // Check 1 unit ahead
+              
+              const hits = raycaster.intersectObjects(collisionMeshes, true);
+              if (hits.length > 0 && hits[0].distance < 0.5) {
+                blocked = true;
+                break;
+              }
+            }
             
-            const hits = raycaster.intersectObjects(collisionMeshes, true);
-            if (hits.length > 0 && hits[0].distance < 0.6) {
+            if (blocked) {
               // Wall hit - stop movement in that direction
               newX = camera.position.x;
               newZ = camera.position.z;
