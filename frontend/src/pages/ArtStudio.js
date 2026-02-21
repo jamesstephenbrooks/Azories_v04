@@ -1431,15 +1431,28 @@ export default function ArtStudio() {
                           </div>
                         </div>
                       ) : (
-                        <div 
-                          onClick={() => {
-                            setGalleryPickerTarget('style');
-                            setShowGalleryPicker(true);
-                          }}
-                          className="w-full aspect-square rounded-lg border-2 border-dashed border-white/20 hover:border-purple-500/50 flex flex-col items-center justify-center cursor-pointer transition-colors"
-                        >
-                          <FiDroplet className="w-8 h-8 text-white/30 mb-2" />
-                          <span className="text-xs text-white/40">Add style ref</span>
+                        <div className="w-full aspect-square rounded-lg border-2 border-dashed border-white/20 flex flex-col items-center justify-center">
+                          <FiDroplet className="w-6 h-6 text-white/30 mb-2" />
+                          <span className="text-[10px] text-white/40 mb-2">Add style reference</span>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => styleRefInputRef.current?.click()}
+                              className="px-2 py-1 bg-purple-600/50 hover:bg-purple-600 rounded text-[10px] text-white flex items-center gap-1"
+                            >
+                              <FiUpload className="w-3 h-3" />
+                              Upload
+                            </button>
+                            <button
+                              onClick={() => {
+                                setGalleryPickerTarget('style');
+                                setShowGalleryPicker(true);
+                              }}
+                              className="px-2 py-1 bg-white/10 hover:bg-white/20 rounded text-[10px] text-white flex items-center gap-1"
+                            >
+                              <FiImage className="w-3 h-3" />
+                              Gallery
+                            </button>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -1485,15 +1498,28 @@ export default function ArtStudio() {
                           </div>
                         </div>
                       ) : (
-                        <div 
-                          onClick={() => {
-                            setGalleryPickerTarget('character');
-                            setShowGalleryPicker(true);
-                          }}
-                          className="w-full aspect-square rounded-lg border-2 border-dashed border-white/20 hover:border-pink-500/50 flex flex-col items-center justify-center cursor-pointer transition-colors"
-                        >
-                          <FiUser className="w-8 h-8 text-white/30 mb-2" />
-                          <span className="text-xs text-white/40">Add char ref</span>
+                        <div className="w-full aspect-square rounded-lg border-2 border-dashed border-white/20 flex flex-col items-center justify-center">
+                          <FiUser className="w-6 h-6 text-white/30 mb-2" />
+                          <span className="text-[10px] text-white/40 mb-2">Add character reference</span>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => charRefInputRef.current?.click()}
+                              className="px-2 py-1 bg-pink-600/50 hover:bg-pink-600 rounded text-[10px] text-white flex items-center gap-1"
+                            >
+                              <FiUpload className="w-3 h-3" />
+                              Upload
+                            </button>
+                            <button
+                              onClick={() => {
+                                setGalleryPickerTarget('character');
+                                setShowGalleryPicker(true);
+                              }}
+                              className="px-2 py-1 bg-white/10 hover:bg-white/20 rounded text-[10px] text-white flex items-center gap-1"
+                            >
+                              <FiImage className="w-3 h-3" />
+                              Gallery
+                            </button>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -1506,6 +1532,22 @@ export default function ArtStudio() {
                     )}
                   </div>
                 </div>
+                
+                {/* Hidden file inputs for reference uploads */}
+                <input
+                  ref={styleRefInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleReferenceUpload(e, 'style')}
+                  className="hidden"
+                />
+                <input
+                  ref={charRefInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleReferenceUpload(e, 'character')}
+                  className="hidden"
+                />
                 
                 {/* Hidden file inputs */}
                 <input
