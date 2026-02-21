@@ -1338,8 +1338,10 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
             )}
           </AnimatePresence>
           
-          {/* AI Librarian - Azora (bottom corner chat - full chat interface) */}
-          <AILibrarian books={books} isVisible={!showAzoraChat} onCallAzora={() => setShowAzoraChat(true)} />
+          {/* AI Librarian - Azora (bottom corner chat - hide on mobile to not overlap joystick) */}
+          {!isMobileDevice && (
+            <AILibrarian books={books} isVisible={!showAzoraChat} onCallAzora={() => setShowAzoraChat(true)} />
+          )}
         </>
       )}
     </div>
