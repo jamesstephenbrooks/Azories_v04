@@ -2707,38 +2707,63 @@ async def art_studio_generate(request: ArtStudioGenerateRequest, credentials: HT
         raise HTTPException(status_code=401, detail="Unauthorized")
     
     try:
-        # Use OpenAI image generation via Emergent
-        image_gen = OpenAIImageGeneration(EMERGENT_LLM_KEY)
+        if not EMERGENT_LLM_KEY:
+            raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
+        
+        # Style enhancement mapping
+        style_prompts = {
+            "realistic": "Photorealistic style, detailed, cinematic lighting",
+            "anime": "Japanese anime style, vibrant colors, clean lines",
+            "cartoon": "Colorful cartoon style, bold outlines, playful",
+            "watercolor": "Watercolor painting style, soft blended colors",
+            "oil-painting": "Classic oil painting style, rich textures",
+            "pixel-art": "Retro pixel art graphics style",
+            "comic": "Comic book style, bold lines, dynamic",
+            "fantasy": "Epic fantasy art style, magical lighting, detailed",
+            "3d-render": "Modern 3D rendered look, smooth textures",
+            "sketch": "Hand-drawn pencil sketch style"
+        }
+        style_desc = style_prompts.get(request.style, "Epic fantasy art style, magical lighting")
         
         # Enhance the prompt based on type
         enhanced_prompt = request.prompt
         if request.type == "character":
-            enhanced_prompt = f"Character portrait: {request.prompt}, detailed, high quality"
+            enhanced_prompt = f"Character portrait: {request.prompt}, detailed, high quality, {style_desc}"
         elif request.type == "scene":
-            enhanced_prompt = f"Scenic illustration: {request.prompt}, detailed, high quality"
+            enhanced_prompt = f"Scenic illustration: {request.prompt}, detailed, high quality, {style_desc}"
+        else:
+            enhanced_prompt = f"{request.prompt}, {style_desc}"
         
-        # Generate the image
-        result = await image_gen.generate_image(
+        # Use OpenAI image generation via Emergent (matching working endpoint)
+        image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
+        images = await image_gen.generate_images(
             prompt=enhanced_prompt,
-            size="1024x1024",
-            quality="standard"
+            model="gpt-image-1",
+            number_of_images=1
         )
         
-        # Save to user's generation history
-        generation_record = {
-            "user_id": user["id"],
-            "image_url": result.url,
-            "prompt": request.prompt,
-            "enhanced_prompt": enhanced_prompt,
-            "style": request.style,
-            "type": request.type,
-            "character_data": request.characterData,
-            "scene_data": request.sceneData,
-            "created_at": datetime.now(timezone.utc)
-        }
-        await db.art_studio_generations.insert_one(generation_record)
-        
-        return {"image_url": result.url, "prompt_used": enhanced_prompt}
+        if images and len(images) > 0:
+            # Convert to base64 data URL
+            image_base64 = base64.b64encode(images[0]).decode('utf-8')
+            image_url = f"data:image/png;base64,{image_base64}"
+            
+            # Save to user's generation history
+            generation_record = {
+                "user_id": user["id"],
+                "image_url": image_url,
+                "prompt": request.prompt,
+                "enhanced_prompt": enhanced_prompt,
+                "style": request.style,
+                "type": request.type,
+                "character_data": request.characterData,
+                "scene_data": request.sceneData,
+                "created_at": datetime.now(timezone.utc)
+            }
+            await db.art_studio_generations.insert_one(generation_record)
+            
+            return {"image_url": image_url, "prompt_used": enhanced_prompt}
+        else:
+            raise HTTPException(status_code=500, detail="No image was generated")
         
     except Exception as e:
         logging.error(f"Art Studio generation error: {e}")
