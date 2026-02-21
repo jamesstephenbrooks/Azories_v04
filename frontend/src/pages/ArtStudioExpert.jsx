@@ -792,8 +792,8 @@ export default function ArtStudioExpert() {
       return;
     }
     
-    const prompt = buildPromptFromWorkflow();
-    console.log('Built prompt:', prompt);
+    const { prompt, transparentBg } = buildPromptFromWorkflow();
+    console.log('Built prompt:', prompt, 'Transparent BG:', transparentBg);
     
     if (!prompt || prompt === ', highly detailed, professional illustration') {
       alert('Please add some nodes and connect them to the output. Make sure Character or Scene nodes have content.');
@@ -823,7 +823,8 @@ export default function ArtStudioExpert() {
           style: nodes.find(n => n.type === 'style')?.data?.style || 'fantasy',
           type: 'workflow',
           bookId: selectedBookId !== 'general' ? selectedBookId : null,
-          workflowName: workflowName
+          workflowName: workflowName,
+          transparentBackground: transparentBg
         })
       });
       
