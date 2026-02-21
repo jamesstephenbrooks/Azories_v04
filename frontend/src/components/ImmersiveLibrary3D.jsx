@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { Button } from '@/components/ui/button';
-import { FiX, FiBook, FiMaximize2, FiMinimize2, FiVolume2, FiVolumeX, FiMessageCircle, FiMapPin, FiMove } from 'react-icons/fi';
+import { FiX, FiBook, FiMaximize2, FiMinimize2, FiVolume2, FiVolumeX, FiMapPin, FiMove, FiChevronUp, FiRotateCw, FiStar, FiBookmark } from 'react-icons/fi';
 import { useAuth } from '@/context/AuthContext';
 import AILibrarian from './AILibrarian';
 
@@ -21,12 +21,13 @@ const DEFAULT_BOUNDS = {
   ceilingY: 15
 };
 
-// Genre sections for navigation
+// Genre sections for navigation with book shelves
 const GENRE_SECTIONS = [
-  { name: 'Fantasy', position: { x: -6, z: -6 }, color: '#9333ea' },
-  { name: 'Adventure', position: { x: 6, z: -6 }, color: '#f59e0b' },
-  { name: 'Mystery', position: { x: -6, z: 6 }, color: '#3b82f6' },
-  { name: 'Science Fiction', position: { x: 6, z: 6 }, color: '#10b981' },
+  { name: 'Fantasy', position: { x: -6, z: -6 }, color: '#9333ea', icon: '✨' },
+  { name: 'Adventure', position: { x: 6, z: -6 }, color: '#f59e0b', icon: '🗺️' },
+  { name: 'Mystery', position: { x: -6, z: 6 }, color: '#3b82f6', icon: '🔍' },
+  { name: 'Science Fiction', position: { x: 6, z: 6 }, color: '#10b981', icon: '🚀' },
+  { name: 'Center', position: { x: 0, z: 0 }, color: '#ec4899', icon: '📚' },
 ];
 
 // Detect mobile device
@@ -35,7 +36,7 @@ const isMobile = () => {
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
 };
 
-// First-person Library Viewer with proper camera-relative controls
+// First-person Library Viewer with touch controls and interactive books
 export default function ImmersiveLibrary3D({ books = [], onClose }) {
   const navigate = useNavigate();
   const { user } = useAuth();
