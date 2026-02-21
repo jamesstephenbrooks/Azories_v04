@@ -1584,6 +1584,104 @@ export default function ArtStudio() {
           </motion.div>
         )}
       </AnimatePresence>
+      
+      {/* Style Preview Gallery Modal */}
+      <AnimatePresence>
+        {showStylePreview && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 overflow-y-auto"
+            onClick={() => setShowStylePreview(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
+              className="bg-gradient-to-br from-[#2d1f3d] to-[#1a1520] rounded-2xl p-6 max-w-6xl w-full max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-white">Style Gallery</h2>
+                  <p className="text-white/60 text-sm">Preview all {ART_STYLES.length} art styles - click to select</p>
+                </div>
+                <button
+                  onClick={() => setShowStylePreview(false)}
+                  className="p-2 hover:bg-white/10 rounded-lg text-white/60 hover:text-white transition-colors"
+                >
+                  <FiX className="w-6 h-6" />
+                </button>
+              </div>
+              
+              {ART_STYLE_CATEGORIES.map(category => (
+                <div key={category.category} className="mb-8">
+                  <h3 className="text-lg font-semibold text-purple-400 mb-4">{category.category}</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                    {category.styles.map(style => (
+                      <button
+                        key={style.id}
+                        onClick={() => {
+                          setSelectedStyle(style.id);
+                          setShowStylePreview(false);
+                        }}
+                        className={`group relative rounded-xl overflow-hidden transition-all hover:scale-105 ${
+                          selectedStyle === style.id
+                            ? 'ring-2 ring-purple-500 ring-offset-2 ring-offset-[#1a1520]'
+                            : ''
+                        }`}
+                      >
+                        <div className="aspect-square bg-black/30">
+                          {style.image && (
+                            <img
+                              src={style.image.replace('w=100&h=100', 'w=300&h=300')}
+                              alt={style.name}
+                              className="w-full h-full object-cover"
+                              loading="lazy"
+                            />
+                          )}
+                        </div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="absolute bottom-0 left-0 right-0 p-3">
+                            <p className="text-white font-medium text-sm">{style.name}</p>
+                            <p className="text-white/60 text-xs">{style.description}</p>
+                          </div>
+                        </div>
+                        {selectedStyle === style.id && (
+                          <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-purple-500 flex items-center justify-center">
+                            <FiCheck className="w-4 h-4 text-white" />
+                          </div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
+      {/* Generation History Panel - Floating */}
+      {generationHistory.length > 0 && (
+        <div className="fixed bottom-4 right-4 z-40">
+          <div className="bg-black/80 backdrop-blur-sm rounded-xl border border-white/10 p-2 max-w-[200px]">
+            <p className="text-[10px] text-white/50 mb-2 px-1">Recent</p>
+            <div className="flex gap-1 flex-wrap max-h-[100px] overflow-hidden">
+              {generationHistory.slice(0, 6).map((gen, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setGeneratedImage(gen.image)}
+                  className="w-12 h-12 rounded-md overflow-hidden hover:ring-2 hover:ring-purple-500 transition-all flex-shrink-0"
+                >
+                  <img src={gen.image} alt="Recent" className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
