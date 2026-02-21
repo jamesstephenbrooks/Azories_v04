@@ -220,6 +220,12 @@ export default function ArtStudio() {
   // Style state
   const [selectedStyle, setSelectedStyle] = useState('fantasy');
   
+  // Character Profiles state (for consistency)
+  const [characterProfiles, setCharacterProfiles] = useState([]);
+  const [selectedProfile, setSelectedProfile] = useState(null);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showProfileSelector, setShowProfileSelector] = useState(false);
+  
   // Load gallery and books on mount
   useEffect(() => {
     if (token) {
