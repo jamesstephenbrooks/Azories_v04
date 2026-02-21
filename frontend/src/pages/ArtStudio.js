@@ -1341,59 +1341,128 @@ export default function ArtStudio() {
               </motion.div>
             )}
             
-            {/* Reference Image Section */}
+            {/* DUAL Reference Images Section */}
             {(activeTab === 'character' || activeTab === 'scene') && (
               <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-6">
                 <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
                   <FiImage className="text-purple-400" />
-                  Reference Image (Optional)
+                  Reference Images
                 </h3>
                 <p className="text-sm text-white/50 mb-4">
-                  Upload a reference image to guide the AI's style or character appearance
+                  Use separate images for style inspiration and character reference
                 </p>
                 
-                <div className="flex gap-3">
-                  {/* Current reference preview */}
-                  {referenceImage ? (
-                    <div className="relative w-24 h-24 rounded-lg overflow-hidden border-2 border-purple-500">
-                      <img src={referenceImage} alt="Reference" className="w-full h-full object-cover" />
-                      <button
-                        onClick={() => setReferenceImage(null)}
-                        className="absolute top-1 right-1 p-1 bg-red-500 rounded-full hover:bg-red-600"
-                      >
-                        <FiTrash2 className="w-3 h-3 text-white" />
-                      </button>
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Style Reference */}
+                  <div className="space-y-2">
+                    <label className="text-xs text-purple-300 font-medium flex items-center gap-1">
+                      <FiDroplet className="w-3 h-3" />
+                      Style Reference
+                    </label>
+                    <p className="text-[10px] text-white/40">Art style, colors, lighting, mood</p>
+                    
+                    <div className="relative">
+                      {styleReferenceImage ? (
+                        <div className="relative w-full aspect-square rounded-lg overflow-hidden border-2 border-purple-500 group">
+                          <img src={styleReferenceImage} alt="Style ref" className="w-full h-full object-cover" />
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
+                            <button
+                              onClick={() => extractPromptFromImage(styleReferenceImage, 'style')}
+                              disabled={isExtractingPrompt}
+                              className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 rounded-lg text-xs text-white flex items-center gap-1"
+                            >
+                              <FiZap className="w-3 h-3" />
+                              {isExtractingPrompt ? 'Analyzing...' : 'Extract Style'}
+                            </button>
+                            <button
+                              onClick={() => {
+                                setStyleReferenceImage(null);
+                                setExtractedStylePrompt('');
+                              }}
+                              className="px-3 py-1.5 bg-red-600 hover:bg-red-700 rounded-lg text-xs text-white"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div 
+                          onClick={() => {
+                            setGalleryPickerTarget('style');
+                            setShowGalleryPicker(true);
+                          }}
+                          className="w-full aspect-square rounded-lg border-2 border-dashed border-white/20 hover:border-purple-500/50 flex flex-col items-center justify-center cursor-pointer transition-colors"
+                        >
+                          <FiDroplet className="w-8 h-8 text-white/30 mb-2" />
+                          <span className="text-xs text-white/40">Add style ref</span>
+                        </div>
+                      )}
                     </div>
-                  ) : (
-                    <div className="w-24 h-24 rounded-lg border-2 border-dashed border-white/20 flex items-center justify-center">
-                      <FiImage className="w-8 h-8 text-white/30" />
-                    </div>
-                  )}
+                    
+                    {extractedStylePrompt && (
+                      <div className="p-2 bg-purple-500/10 rounded-lg border border-purple-500/20">
+                        <p className="text-[10px] text-purple-300 mb-1">Extracted style:</p>
+                        <p className="text-xs text-white/70">{extractedStylePrompt.substring(0, 100)}...</p>
+                      </div>
+                    )}
+                  </div>
                   
-                  {/* Upload/Select buttons */}
-                  <div className="flex flex-col gap-2 flex-1">
-                    <Button
-                      variant="outline"
-                      onClick={() => referenceInputRef.current?.click()}
-                      className="border-white/20 text-white hover:bg-white/10"
-                      data-testid="upload-reference-btn"
-                    >
-                      <FiUpload className="w-4 h-4 mr-2" />
-                      Upload Image
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowGalleryPicker(true)}
-                      className="border-white/20 text-white hover:bg-white/10"
-                      data-testid="use-gallery-reference-btn"
-                    >
-                      <FiFolder className="w-4 h-4 mr-2" />
-                      Use from Gallery
-                    </Button>
+                  {/* Character Reference */}
+                  <div className="space-y-2">
+                    <label className="text-xs text-pink-300 font-medium flex items-center gap-1">
+                      <FiUser className="w-3 h-3" />
+                      Character Reference
+                    </label>
+                    <p className="text-[10px] text-white/40">Face, pose, outfit, features</p>
+                    
+                    <div className="relative">
+                      {characterReferenceImage ? (
+                        <div className="relative w-full aspect-square rounded-lg overflow-hidden border-2 border-pink-500 group">
+                          <img src={characterReferenceImage} alt="Char ref" className="w-full h-full object-cover" />
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
+                            <button
+                              onClick={() => extractPromptFromImage(characterReferenceImage, 'character')}
+                              disabled={isExtractingPrompt}
+                              className="px-3 py-1.5 bg-pink-600 hover:bg-pink-700 rounded-lg text-xs text-white flex items-center gap-1"
+                            >
+                              <FiZap className="w-3 h-3" />
+                              {isExtractingPrompt ? 'Analyzing...' : 'Extract Char'}
+                            </button>
+                            <button
+                              onClick={() => {
+                                setCharacterReferenceImage(null);
+                                setExtractedCharPrompt('');
+                              }}
+                              className="px-3 py-1.5 bg-red-600 hover:bg-red-700 rounded-lg text-xs text-white"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div 
+                          onClick={() => {
+                            setGalleryPickerTarget('character');
+                            setShowGalleryPicker(true);
+                          }}
+                          className="w-full aspect-square rounded-lg border-2 border-dashed border-white/20 hover:border-pink-500/50 flex flex-col items-center justify-center cursor-pointer transition-colors"
+                        >
+                          <FiUser className="w-8 h-8 text-white/30 mb-2" />
+                          <span className="text-xs text-white/40">Add char ref</span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {extractedCharPrompt && (
+                      <div className="p-2 bg-pink-500/10 rounded-lg border border-pink-500/20">
+                        <p className="text-[10px] text-pink-300 mb-1">Extracted character:</p>
+                        <p className="text-xs text-white/70">{extractedCharPrompt.substring(0, 100)}...</p>
+                      </div>
+                    )}
                   </div>
                 </div>
                 
-                {/* Hidden file input */}
+                {/* Hidden file inputs */}
                 <input
                   ref={referenceInputRef}
                   type="file"
