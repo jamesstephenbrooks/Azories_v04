@@ -775,7 +775,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           };
         });
         
-        // Load Azora 3D model (GLB) - Standing stationary near center
+        // Load Azora 3D model (GLB) - Standing near the right bookcase on the floor
         const AZORA_GLB_URL = 'https://customer-assets.emergentagent.com/job_c72cb56a-2d89-4690-9629-ade6d46638c8/artifacts/t9l9jikb_f0066361-3481-4680-b638-accd998414b5.glb';
         const AZORA_PROXY_URL = `${process.env.REACT_APP_BACKEND_URL}/api/proxy/glb?url=${encodeURIComponent(AZORA_GLB_URL)}`;
         
@@ -790,10 +790,11 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
             // Scale Azora down to 50% as requested by user
             azoraModel.scale.set(0.5, 0.5, 0.5);
             
-            // Position Azora standing in an open area near center, facing the entrance
-            const azoraY = floorLevel;
-            azoraModel.position.set(2, azoraY, 2); // Offset from center to avoid blocking entrance
-            azoraModel.rotation.y = -Math.PI / 4; // Face toward center/entrance
+            // Position Azora standing on the floor near the right bookcase
+            // Based on the user's drawing, she should be on the wooden floor near the railing
+            const azoraY = floorLevel; // Directly on the floor
+            azoraModel.position.set(3.5, azoraY, -2); // Right side of room, near back bookcases
+            azoraModel.rotation.y = -Math.PI / 2; // Face toward center of room
             
             // Enable shadows
             azoraModel.traverse((child) => {
