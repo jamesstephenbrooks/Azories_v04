@@ -13,6 +13,13 @@ Create a digital book creating and reading web application called "Azories" for 
 
 ### Latest Session (Feb 21, 2026) - DeepAI Quality & Workflow UI
 
+**Bug Fix: Gallery to Book Image Upload:**
+- Fixed incorrect API endpoint in BookEditor.js
+- Was calling `/books/{bookId}/pages/{pageId}` (non-existent)
+- Now correctly calls `/pages/{pageId}` 
+- Added better error messages for debugging
+- Tested and verified working via API
+
 **DeepAI-Style Image Quality Enhancement:**
 - Completely overhauled prompt engineering to match DeepAI quality standards
 - New quality boost system:
