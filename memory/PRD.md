@@ -230,6 +230,8 @@ Create a digital book creating and reading web application called "Azories" for 
 - [x] 3D Library with GLB model
 - [x] Genre banners with book selection
 - [x] Interactive 3D book display
+- [x] **DeepAI-Quality Image Generation** - Enhanced prompt engineering with quality tags
+- [x] **Save/Load Workflow UI** - Expert Mode workflow panel
 
 ### P1 (High Priority) - NEXT
 - [x] ~~**Character Consistency**~~ - Implemented Character Profile system with seeds and enhanced prompts
@@ -239,7 +241,6 @@ Create a digital book creating and reading web application called "Azories" for 
 - [ ] **Spiral Staircase Navigation** - Fix 3D library so player can climb stairs (fix implemented, needs verification)
 - [ ] Creation history view for each book (show how images were generated)
 - [ ] Improve book/image creation experience
-- [ ] AI image generation quality/speed
 - [ ] Story editor enhancements
 - [ ] Cover creation tools
 
