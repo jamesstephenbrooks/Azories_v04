@@ -2790,6 +2790,7 @@ async def art_studio_save(request: ArtStudioSaveRequest, current_user: dict = De
             "style": request.style,
             "character_data": request.characterData,
             "scene_data": request.sceneData,
+            "book_id": request.bookId,
             "created_at": datetime.now(timezone.utc)
         }
         result = await db.art_studio_gallery.insert_one(gallery_item)
