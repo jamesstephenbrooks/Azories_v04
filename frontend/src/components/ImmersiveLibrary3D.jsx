@@ -816,6 +816,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         // Add genre text banners floating above each bookcase
         // Height matches the Adventure banner visible in screenshot
         const bannerHeight = floorLevel + 2.2; // Just above bookcase tops
+        const genreBanners = [];
         
         GENRE_SECTIONS.forEach((section) => {
           // Create text sprite for the banner
@@ -861,16 +862,20 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           
           sprite.position.set(section.bannerPos.x, bannerY, section.bannerPos.z);
           
-          scene.add(sprite);
-          console.log('Added genre banner:', section.name, 'at', section.bannerPos.x, bannerY, section.bannerPos.z, section.calibrated ? '(calibrated)' : '(estimated)');
-          
-          // Add gentle floating animation
+          // Store genre name for click detection
           sprite.userData = { 
             isGenreBanner: true, 
+            genreName: section.name,
             baseY: bannerY,
             phase: Math.random() * Math.PI * 2 
           };
+          
+          scene.add(sprite);
+          genreBanners.push(sprite);
+          console.log('Added genre banner:', section.name, 'at', section.bannerPos.x, bannerY, section.bannerPos.z, section.calibrated ? '(calibrated)' : '(estimated)');
         });
+        
+        genreBannersRef.current = genreBanners;
         
         // Azora is disabled for now - will be re-enabled once positioning is calibrated
         console.log('Azora disabled - needs positioning calibration');
