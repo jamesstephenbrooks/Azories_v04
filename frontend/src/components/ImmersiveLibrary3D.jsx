@@ -830,13 +830,13 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           (gltf) => {
             const azoraModel = gltf.scene;
             
-            // Scale Azora to realistic human size
-            azoraModel.scale.set(1.0, 1.0, 1.0);
+            // Scale Azora down to 50% as requested by user
+            azoraModel.scale.set(0.5, 0.5, 0.5);
             
             // Position Azora standing in an open area near center, facing the entrance
             const azoraY = floorLevel;
-            azoraModel.position.set(0, azoraY, -1); // Center of library, slightly back
-            azoraModel.rotation.y = 0; // Face forward (towards entrance)
+            azoraModel.position.set(2, azoraY, 2); // Offset from center to avoid blocking entrance
+            azoraModel.rotation.y = -Math.PI / 4; // Face toward center/entrance
             
             // Enable shadows
             azoraModel.traverse((child) => {
