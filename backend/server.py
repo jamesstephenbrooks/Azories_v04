@@ -2690,6 +2690,8 @@ class ArtStudioGenerateRequest(BaseModel):
     type: str = "character"  # character or scene
     characterData: Optional[dict] = None
     sceneData: Optional[dict] = None
+    referenceImage: Optional[str] = None  # Base64 or URL of reference image
+    bookId: Optional[str] = None  # Book to assign the image to
 
 class ArtStudioSaveRequest(BaseModel):
     image_url: str
@@ -2698,6 +2700,7 @@ class ArtStudioSaveRequest(BaseModel):
     style: str = "fantasy"
     characterData: Optional[dict] = None
     sceneData: Optional[dict] = None
+    bookId: Optional[str] = None  # Book to assign the image to
 
 @api_router.post("/art-studio/generate")
 async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: dict = Depends(get_current_user)):
