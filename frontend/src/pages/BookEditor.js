@@ -75,6 +75,8 @@ export default function BookEditor() {
   // Art Studio Gallery picker
   const [showGalleryPicker, setShowGalleryPicker] = useState(false);
   const [galleryImages, setGalleryImages] = useState([]);
+  const [generalGalleryImages, setGeneralGalleryImages] = useState([]);
+  const [galleryTab, setGalleryTab] = useState('book'); // 'book' or 'all'
   
   // New chapter/page dialogs
   const [newChapterOpen, setNewChapterOpen] = useState(false);
