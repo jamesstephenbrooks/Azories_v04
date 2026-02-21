@@ -2693,6 +2693,7 @@ class ArtStudioGenerateRequest(BaseModel):
     referenceImage: Optional[str] = None  # Base64 or URL of reference image
     bookId: Optional[str] = None  # Book to assign the image to
     workflowName: Optional[str] = None  # Name of workflow if from Expert Mode
+    transparentBackground: Optional[bool] = False  # Generate with transparent background
 
 class ArtStudioSaveRequest(BaseModel):
     image_url: str
