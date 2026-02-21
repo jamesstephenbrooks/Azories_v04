@@ -578,6 +578,21 @@ export default function BookEditor() {
           </div>
           
           <div className="flex items-center gap-2">
+            {/* Collaborative Writing Button */}
+            <CollaborativeWriting 
+              bookId={bookId} 
+              isOwner={book?.author_id === user?.id}
+              currentCollaborators={book?.collaborators || []}
+              onUpdate={() => fetchBook()}
+            />
+            
+            {/* Voice Narration Upload Button */}
+            <VoiceNarrationUpload 
+              bookId={bookId}
+              pages={pages}
+              onNarrationUpdate={() => fetchBook()}
+            />
+            
             <Button
               variant="outline"
               className="rounded-full"
