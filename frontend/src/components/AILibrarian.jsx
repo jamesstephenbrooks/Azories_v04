@@ -133,7 +133,7 @@ Rules:
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className="bg-gradient-to-br from-[#2d1f3d] to-[#1a1520] rounded-2xl shadow-2xl w-80 max-h-[500px] flex flex-col border border-purple-500/30 overflow-hidden"
+            className="absolute bottom-0 left-0 bg-gradient-to-br from-[#2d1f3d] to-[#1a1520] rounded-2xl shadow-2xl w-80 max-h-[500px] flex flex-col border border-purple-500/30"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-purple-500/20 bg-purple-500/10">
