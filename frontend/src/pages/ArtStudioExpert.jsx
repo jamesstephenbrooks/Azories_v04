@@ -178,46 +178,97 @@ const SceneNode = ({ data, selected }) => {
   );
 };
 
-// Style Node - Art style selection
+// Style Node - Art style selection - Expanded with all styles
+const ALL_STYLE_CATEGORIES = [
+  { category: 'Realistic', styles: ['realistic', 'portrait', 'cinematic', 'hyperrealistic'] },
+  { category: 'Illustration', styles: ['cartoon', 'anime', 'manga', 'disney', 'pixar', 'chibi', 'comic', 'graphic-novel'] },
+  { category: 'Traditional', styles: ['oil-painting', 'watercolor', 'acrylic', 'pastel', 'charcoal', 'pencil', 'ink', 'gouache'] },
+  { category: 'Digital', styles: ['digital-art', 'concept-art', 'matte-painting', 'vector', 'low-poly', 'vaporwave', 'synthwave'] },
+  { category: '3D', styles: ['3d-render', 'clay-render', 'isometric', 'diorama', 'unreal-engine'] },
+  { category: 'Fantasy', styles: ['fantasy', 'dark-fantasy', 'sci-fi', 'cyberpunk', 'steampunk', 'solarpunk'] },
+  { category: 'Children', styles: ['storybook', 'picture-book', 'whimsical', 'crayon', 'paper-cutout', 'felt'] },
+  { category: 'Retro', styles: ['pixel-art', 'retro-game', 'vintage-poster', 'art-deco', 'art-nouveau', 'pop-art'] },
+  { category: 'Cultural', styles: ['ukiyo-e', 'chinese-ink', 'persian-miniature', 'aboriginal', 'tribal', 'celtic'] },
+  { category: 'Stylized', styles: ['minimalist', 'abstract', 'surreal', 'impressionist', 'expressionist', 'cubist'] }
+];
+
+const STYLE_LABELS = {
+  'realistic': 'Realistic', 'portrait': 'Portrait', 'cinematic': 'Cinematic', 'hyperrealistic': 'Hyperreal',
+  'cartoon': 'Cartoon', 'anime': 'Anime', 'manga': 'Manga', 'disney': 'Disney', 'pixar': 'Pixar',
+  'chibi': 'Chibi', 'comic': 'Comic', 'graphic-novel': 'Graphic Novel',
+  'oil-painting': 'Oil Paint', 'watercolor': 'Watercolor', 'acrylic': 'Acrylic', 'pastel': 'Pastel',
+  'charcoal': 'Charcoal', 'pencil': 'Pencil', 'ink': 'Ink', 'gouache': 'Gouache',
+  'digital-art': 'Digital', 'concept-art': 'Concept', 'matte-painting': 'Matte', 'vector': 'Vector',
+  'low-poly': 'Low Poly', 'vaporwave': 'Vaporwave', 'synthwave': 'Synthwave',
+  '3d-render': '3D Render', 'clay-render': 'Clay', 'isometric': 'Isometric', 'diorama': 'Diorama', 'unreal-engine': 'Game',
+  'fantasy': 'Fantasy', 'dark-fantasy': 'Dark', 'sci-fi': 'Sci-Fi', 'cyberpunk': 'Cyberpunk',
+  'steampunk': 'Steampunk', 'solarpunk': 'Solarpunk',
+  'storybook': 'Storybook', 'picture-book': 'Picture', 'whimsical': 'Whimsical', 'crayon': 'Crayon',
+  'paper-cutout': 'Paper', 'felt': 'Felt',
+  'pixel-art': 'Pixel', 'retro-game': 'Retro', 'vintage-poster': 'Vintage', 'art-deco': 'Art Deco',
+  'art-nouveau': 'Nouveau', 'pop-art': 'Pop Art',
+  'ukiyo-e': 'Ukiyo-e', 'chinese-ink': 'Chinese', 'persian-miniature': 'Persian', 'aboriginal': 'Aboriginal',
+  'tribal': 'Tribal', 'celtic': 'Celtic',
+  'minimalist': 'Minimal', 'abstract': 'Abstract', 'surreal': 'Surreal', 'impressionist': 'Impress.',
+  'expressionist': 'Express.', 'cubist': 'Cubist'
+};
+
 const StyleNode = ({ data, selected }) => {
-  const styles = [
-    { id: 'realistic', name: 'Realistic' },
-    { id: 'anime', name: 'Anime' },
-    { id: 'cartoon', name: 'Cartoon' },
-    { id: 'watercolor', name: 'Watercolor' },
-    { id: 'fantasy', name: 'Fantasy' },
-    { id: 'comic', name: 'Comic' },
-    { id: '3d-render', name: '3D Render' },
-    { id: 'sketch', name: 'Sketch' }
-  ];
+  const [activeCategory, setActiveCategory] = useState(0);
   
   return (
-    <div className={`bg-gradient-to-br from-amber-900/90 to-amber-800/90 rounded-xl border-2 ${selected ? 'border-amber-400' : 'border-amber-600/50'} shadow-xl min-w-[200px] backdrop-blur-sm`}>
+    <div className={`bg-gradient-to-br from-amber-900/90 to-amber-800/90 rounded-xl border-2 ${selected ? 'border-amber-400' : 'border-amber-600/50'} shadow-xl backdrop-blur-sm h-full w-full min-w-[280px] min-h-[200px]`}>
+      <NodeResizer 
+        color="#f59e0b" 
+        isVisible={selected} 
+        minWidth={280} 
+        minHeight={200}
+        handleStyle={{ width: 8, height: 8 }}
+      />
       <Handle type="target" position={Position.Left} className="!bg-amber-400 !w-3 !h-3" />
       
-      <div className="p-3 border-b border-amber-600/30 flex items-center gap-2">
-        <div className="w-8 h-8 rounded-lg bg-amber-500/30 flex items-center justify-center">
-          <FiSliders className="text-amber-300" />
+      <div className="p-2 border-b border-amber-600/30 flex items-center gap-2">
+        <div className="w-6 h-6 rounded-lg bg-amber-500/30 flex items-center justify-center flex-shrink-0">
+          <FiSliders className="text-amber-300 w-3 h-3" />
         </div>
-        <div>
-          <h4 className="text-sm font-semibold text-white">Style</h4>
-          <p className="text-xs text-amber-300">Art style</p>
+        <div className="flex-1 min-w-0">
+          <h4 className="text-xs font-semibold text-white truncate">Style: {STYLE_LABELS[data.style] || 'Fantasy'}</h4>
         </div>
+        {selected && <FiMove className="w-3 h-3 text-amber-400" />}
       </div>
       
-      <div className="p-3">
-        <div className="grid grid-cols-2 gap-1">
-          {styles.map(style => (
+      <div className="p-2 h-[calc(100%-40px)] overflow-auto">
+        {/* Category tabs */}
+        <div className="flex flex-wrap gap-1 mb-2">
+          {ALL_STYLE_CATEGORIES.map((cat, idx) => (
             <button
-              key={style.id}
-              onClick={() => data.onChange?.('style', style.id)}
-              className={`px-2 py-1.5 rounded text-xs transition-colors ${
-                data.style === style.id 
+              key={cat.category}
+              onClick={() => setActiveCategory(idx)}
+              className={`px-2 py-0.5 rounded text-[10px] transition-colors ${
+                activeCategory === idx 
                   ? 'bg-amber-500 text-white' 
                   : 'bg-black/30 text-amber-200 hover:bg-amber-500/30'
               }`}
             >
-              {style.name}
+              {cat.category}
+            </button>
+          ))}
+        </div>
+        
+        {/* Styles grid */}
+        <div className="grid grid-cols-4 gap-1">
+          {ALL_STYLE_CATEGORIES[activeCategory]?.styles.map(styleId => (
+            <button
+              key={styleId}
+              onClick={() => data.onChange?.('style', styleId)}
+              className={`px-1 py-1 rounded text-[10px] transition-colors truncate ${
+                data.style === styleId 
+                  ? 'bg-amber-500 text-white' 
+                  : 'bg-black/30 text-amber-200 hover:bg-amber-500/30'
+              }`}
+              title={STYLE_LABELS[styleId]}
+            >
+              {STYLE_LABELS[styleId]}
             </button>
           ))}
         </div>
