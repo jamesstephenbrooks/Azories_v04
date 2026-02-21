@@ -279,29 +279,6 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     setShowGenreMenu(false);
   }, [PLAYER_HEIGHT]);
 
-  // Change floor (teleport between ground and upper floor)
-  const changeFloor = useCallback((floor) => {
-    if (!cameraRef.current) return;
-    
-    // Floor positions - specific safe locations
-    const floorPositions = {
-      ground: { x: 0, y: FLOOR_LEVELS.ground + PLAYER_HEIGHT, z: 2 }, // Center of ground floor
-      upper: { x: 0, y: FLOOR_LEVELS.upper + PLAYER_HEIGHT, z: 0 },   // Middle of the bridge
-    };
-    
-    const pos = floorPositions[floor] || floorPositions.ground;
-    
-    // Teleport to the exact position
-    cameraRef.current.position.set(pos.x, pos.y, pos.z);
-    playerVelocity.current.x = 0;
-    playerVelocity.current.y = 0;
-    playerVelocity.current.z = 0;
-    playerOnGround.current = true;
-    setCurrentFloor(floor);
-    
-    console.log('Teleported to floor:', floor, 'Position:', pos);
-  }, [PLAYER_HEIGHT, FLOOR_LEVELS]);
-
   // Save current position
   const saveCurrentPosition = useCallback(() => {
     if (!cameraRef.current || !user) return;
