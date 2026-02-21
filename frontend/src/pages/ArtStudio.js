@@ -37,29 +37,126 @@ const CHARACTER_TRAITS = {
   expression: ['Happy', 'Sad', 'Angry', 'Surprised', 'Neutral', 'Thoughtful', 'Confident', 'Shy']
 };
 
-// Art styles with example images
-const ART_STYLES = [
-  { id: 'realistic', name: 'Realistic', description: 'Photorealistic rendering', 
-    exampleImage: 'https://images.unsplash.com/photo-1767256483514-76135f5a0713?w=200&h=200&fit=crop' },
-  { id: 'anime', name: 'Anime', description: 'Japanese animation style',
-    exampleImage: 'https://images.unsplash.com/photo-1613376023733-0a73315d9b06?w=200&h=200&fit=crop' },
-  { id: 'cartoon', name: 'Cartoon', description: 'Colorful cartoon style',
-    exampleImage: 'https://images.unsplash.com/photo-1767557125491-b3483567d843?w=200&h=200&fit=crop' },
-  { id: 'watercolor', name: 'Watercolor', description: 'Soft watercolor painting',
-    exampleImage: 'https://images.unsplash.com/photo-1700212964225-d31af38e3e91?w=200&h=200&fit=crop' },
-  { id: 'oil-painting', name: 'Oil Painting', description: 'Classic oil painting style',
-    exampleImage: 'https://images.unsplash.com/photo-1767256483514-76135f5a0713?w=200&h=200&fit=crop' },
-  { id: 'pixel-art', name: 'Pixel Art', description: 'Retro pixel graphics',
-    exampleImage: 'https://images.unsplash.com/photo-1759171052927-83f3b3a72b2b?w=200&h=200&fit=crop' },
-  { id: 'comic', name: 'Comic Book', description: 'Bold comic book style',
-    exampleImage: 'https://images.pexels.com/photos/7809123/pexels-photo-7809123.jpeg?w=200&h=200&fit=crop' },
-  { id: 'fantasy', name: 'Fantasy Art', description: 'Magical fantasy illustration',
-    exampleImage: 'https://images.unsplash.com/photo-1770034285769-4a5a3f410346?w=200&h=200&fit=crop' },
-  { id: '3d-render', name: '3D Render', description: 'Modern 3D rendered look',
-    exampleImage: 'https://images.pexels.com/photos/11798029/pexels-photo-11798029.jpeg?w=200&h=200&fit=crop' },
-  { id: 'sketch', name: 'Pencil Sketch', description: 'Hand-drawn pencil sketch',
-    exampleImage: 'https://images.unsplash.com/photo-1758521232708-d738b0eaa94a?w=200&h=200&fit=crop' }
+// Art styles with example images - organized by category
+const ART_STYLE_CATEGORIES = [
+  {
+    category: 'Realistic',
+    styles: [
+      { id: 'realistic', name: 'Photorealistic', description: 'Ultra-realistic rendering' },
+      { id: 'portrait', name: 'Portrait', description: 'Classic portrait photography' },
+      { id: 'cinematic', name: 'Cinematic', description: 'Movie-like dramatic lighting' },
+      { id: 'hyperrealistic', name: 'Hyperrealistic', description: 'Extreme detail and realism' },
+    ]
+  },
+  {
+    category: 'Illustration',
+    styles: [
+      { id: 'cartoon', name: 'Cartoon', description: 'Fun colorful cartoon style' },
+      { id: 'anime', name: 'Anime', description: 'Japanese animation style' },
+      { id: 'manga', name: 'Manga', description: 'Japanese comic style' },
+      { id: 'disney', name: 'Disney Style', description: 'Classic Disney animation' },
+      { id: 'pixar', name: 'Pixar Style', description: '3D animated movie look' },
+      { id: 'chibi', name: 'Chibi', description: 'Cute super-deformed style' },
+      { id: 'comic', name: 'Comic Book', description: 'Western comic book style' },
+      { id: 'graphic-novel', name: 'Graphic Novel', description: 'Detailed comic art' },
+    ]
+  },
+  {
+    category: 'Traditional Art',
+    styles: [
+      { id: 'oil-painting', name: 'Oil Painting', description: 'Classic oil on canvas' },
+      { id: 'watercolor', name: 'Watercolor', description: 'Soft flowing watercolors' },
+      { id: 'acrylic', name: 'Acrylic', description: 'Bold acrylic painting' },
+      { id: 'pastel', name: 'Pastel', description: 'Soft pastel drawing' },
+      { id: 'charcoal', name: 'Charcoal', description: 'Dramatic charcoal sketch' },
+      { id: 'pencil', name: 'Pencil Sketch', description: 'Hand-drawn pencil art' },
+      { id: 'ink', name: 'Ink Drawing', description: 'Clean ink illustration' },
+      { id: 'gouache', name: 'Gouache', description: 'Opaque watercolor style' },
+    ]
+  },
+  {
+    category: 'Digital Art',
+    styles: [
+      { id: 'digital-art', name: 'Digital Art', description: 'Modern digital painting' },
+      { id: 'concept-art', name: 'Concept Art', description: 'Professional concept style' },
+      { id: 'matte-painting', name: 'Matte Painting', description: 'Epic environment art' },
+      { id: 'vector', name: 'Vector Art', description: 'Clean vector graphics' },
+      { id: 'low-poly', name: 'Low Poly', description: 'Geometric low-polygon style' },
+      { id: 'vaporwave', name: 'Vaporwave', description: 'Retro 80s aesthetic' },
+      { id: 'synthwave', name: 'Synthwave', description: 'Neon retro-futurism' },
+    ]
+  },
+  {
+    category: '3D & Render',
+    styles: [
+      { id: '3d-render', name: '3D Render', description: 'Modern 3D rendered look' },
+      { id: 'clay-render', name: 'Clay Render', description: 'Soft clay material look' },
+      { id: 'isometric', name: 'Isometric', description: 'Isometric 3D view' },
+      { id: 'diorama', name: 'Diorama', description: 'Miniature scene look' },
+      { id: 'unreal-engine', name: 'Game Engine', description: 'Video game quality' },
+    ]
+  },
+  {
+    category: 'Fantasy & Sci-Fi',
+    styles: [
+      { id: 'fantasy', name: 'Fantasy Art', description: 'Epic fantasy illustration' },
+      { id: 'dark-fantasy', name: 'Dark Fantasy', description: 'Gothic dark fantasy' },
+      { id: 'sci-fi', name: 'Sci-Fi', description: 'Futuristic science fiction' },
+      { id: 'cyberpunk', name: 'Cyberpunk', description: 'Neon-lit dystopian' },
+      { id: 'steampunk', name: 'Steampunk', description: 'Victorian machinery' },
+      { id: 'solarpunk', name: 'Solarpunk', description: 'Green utopian future' },
+    ]
+  },
+  {
+    category: 'Children\'s Book',
+    styles: [
+      { id: 'storybook', name: 'Storybook', description: 'Classic children\'s book' },
+      { id: 'picture-book', name: 'Picture Book', description: 'Colorful picture book' },
+      { id: 'whimsical', name: 'Whimsical', description: 'Playful and dreamy' },
+      { id: 'crayon', name: 'Crayon', description: 'Child\'s crayon drawing' },
+      { id: 'paper-cutout', name: 'Paper Cutout', description: 'Layered paper craft' },
+      { id: 'felt', name: 'Felt Art', description: 'Soft felt texture' },
+    ]
+  },
+  {
+    category: 'Retro & Vintage',
+    styles: [
+      { id: 'pixel-art', name: 'Pixel Art', description: 'Retro 8-bit graphics' },
+      { id: 'retro-game', name: 'Retro Game', description: '16-bit video game' },
+      { id: 'vintage-poster', name: 'Vintage Poster', description: 'Old advertising poster' },
+      { id: 'art-deco', name: 'Art Deco', description: '1920s art deco style' },
+      { id: 'art-nouveau', name: 'Art Nouveau', description: 'Organic flowing lines' },
+      { id: 'pop-art', name: 'Pop Art', description: 'Bold pop art style' },
+    ]
+  },
+  {
+    category: 'Cultural',
+    styles: [
+      { id: 'ukiyo-e', name: 'Ukiyo-e', description: 'Japanese woodblock print' },
+      { id: 'chinese-ink', name: 'Chinese Ink', description: 'Traditional Chinese ink' },
+      { id: 'persian-miniature', name: 'Persian Miniature', description: 'Detailed Persian art' },
+      { id: 'aboriginal', name: 'Aboriginal', description: 'Dot painting style' },
+      { id: 'tribal', name: 'Tribal', description: 'African tribal art' },
+      { id: 'celtic', name: 'Celtic', description: 'Intricate Celtic designs' },
+    ]
+  },
+  {
+    category: 'Stylized',
+    styles: [
+      { id: 'minimalist', name: 'Minimalist', description: 'Simple clean design' },
+      { id: 'abstract', name: 'Abstract', description: 'Abstract artistic style' },
+      { id: 'surreal', name: 'Surrealist', description: 'Dreamlike surrealism' },
+      { id: 'impressionist', name: 'Impressionist', description: 'Monet-like brushwork' },
+      { id: 'expressionist', name: 'Expressionist', description: 'Emotional bold style' },
+      { id: 'cubist', name: 'Cubist', description: 'Picasso-like cubism' },
+    ]
+  }
 ];
+
+// Flatten for easy access
+const ART_STYLES = ART_STYLE_CATEGORIES.flatMap(cat => 
+  cat.styles.map(style => ({ ...style, category: cat.category }))
+);
 
 // Scene presets
 const SCENE_PRESETS = [
