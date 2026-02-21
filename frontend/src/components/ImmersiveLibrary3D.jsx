@@ -936,10 +936,6 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
               }
             }
           }
-                }
-              }
-            }
-          }
           
           if (bestFloorY !== null) {
             detectedFloorY = bestFloorY;
@@ -948,10 +944,11 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         
         const targetY = detectedFloorY + PLAYER_HEIGHT;
         
-        // Smoothly interpolate to target height
+        // Smoothly interpolate to target height - faster for stairs
         const yDiff = targetY - camera.position.y;
         if (Math.abs(yDiff) > 0.01) {
-          const interpSpeed = yDiff < 0 ? 0.2 : 0.15;
+          // Use faster interpolation when climbing stairs
+          const interpSpeed = yDiff > 0 ? 0.25 : 0.2;
           camera.position.y += yDiff * interpSpeed;
         }
         
