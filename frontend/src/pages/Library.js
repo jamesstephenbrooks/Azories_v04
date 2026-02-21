@@ -291,7 +291,7 @@ export default function Library() {
                 </Select>
                 
                 {/* View Mode Toggle */}
-                <div className="flex gap-2 bg-muted/50 p-1 rounded-full">
+                <div className="flex gap-2 bg-muted/50 p-1 rounded-full items-center">
                   <Button
                     variant={viewMode === 'grid' ? 'default' : 'ghost'}
                     size="icon"
@@ -302,15 +302,22 @@ export default function Library() {
                   >
                     <FiGrid className="w-4 h-4" />
                   </Button>
+                  
+                  {/* 3D Grand Library Button - TODO: Make Pro feature in future */}
                   <Button
                     variant={viewMode === 'immersive' ? 'default' : 'ghost'}
-                    size="icon"
                     onClick={() => setViewMode('immersive')}
-                    className="rounded-full w-10 h-10"
+                    className={`rounded-full px-4 h-10 font-serif italic ${
+                      viewMode === 'immersive' 
+                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30' 
+                        : 'hover:bg-purple-100 dark:hover:bg-purple-900/30'
+                    }`}
                     data-testid="view-immersive-btn"
-                    title="Explore 3D Library"
+                    title="Explore the Grand Library in 3D"
                   >
-                    <FiGlobe className="w-4 h-4" />
+                    <span className="text-sm font-medium bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                      ✨ 3D Grand Library
+                    </span>
                   </Button>
                 </div>
               </div>
