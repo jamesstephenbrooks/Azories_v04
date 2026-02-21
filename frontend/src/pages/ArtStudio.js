@@ -278,7 +278,7 @@ export default function ArtStudio() {
             </Button>
             <div>
               <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-                <FiPalette className="text-purple-400" />
+                <FiDroplet className="text-purple-400" />
                 Art Studio
               </h1>
               <p className="text-sm text-white/50">Create characters, scenes & illustrations for your books</p>
