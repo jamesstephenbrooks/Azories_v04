@@ -713,12 +713,18 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         bookMeshesRef.current = bookMeshes;
         console.log('Placed', bookMeshes.length, 'interactive book markers on shelves');
         
-        // Add floating genre text labels above sections
-        const bannerHeight = floorLevel + 3.5; // 3.5 meters above floor
+        // Add floating genre text labels ABOVE THE BOOKCASES on the back wall
+        // The bookcases are at Z ~ -4.5, and rise to about floorLevel + 3
+        const bannerHeight = floorLevel + 3.2; // Just above the bookcase tops
         
-        GENRE_SECTIONS.forEach((section) => {
-          if (section.name === 'Center') return; // Skip center
-          
+        // Position banners above the three bookcase sections on the back wall
+        const bannerPositions = [
+          { name: 'Fantasy', x: -2.5, z: -4.0, color: '#9333ea' },      // Above left bookcase
+          { name: 'Mystery', x: 0, z: -4.0, color: '#3b82f6' },         // Above center bookcase
+          { name: 'Adventure', x: 2.5, z: -4.0, color: '#f59e0b' },     // Above right bookcase
+        ];
+        
+        bannerPositions.forEach((banner) => {
           // Create simple text sprite
           const canvas = document.createElement('canvas');
           canvas.width = 256;
@@ -734,15 +740,15 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           ctx.textBaseline = 'middle';
           
           // Outer glow
-          ctx.shadowColor = section.color;
+          ctx.shadowColor = banner.color;
           ctx.shadowBlur = 20;
-          ctx.fillStyle = section.color;
-          ctx.fillText(section.name, 128, 32);
+          ctx.fillStyle = banner.color;
+          ctx.fillText(banner.name, 128, 32);
           
           // Inner text (white)
           ctx.shadowBlur = 10;
           ctx.fillStyle = '#ffffff';
-          ctx.fillText(section.name, 128, 32);
+          ctx.fillText(banner.name, 128, 32);
           
           const texture = new THREE.CanvasTexture(canvas);
           texture.colorSpace = THREE.SRGBColorSpace;
@@ -755,11 +761,11 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           });
           
           const sprite = new THREE.Sprite(spriteMaterial);
-          sprite.scale.set(3, 0.75, 1);
-          sprite.position.set(section.position.x, bannerHeight, section.position.z);
+          sprite.scale.set(2.5, 0.65, 1); // Slightly smaller to fit above bookcases
+          sprite.position.set(banner.x, bannerHeight, banner.z);
           
           scene.add(sprite);
-          console.log('Added genre text:', section.name, 'at Y:', bannerHeight);
+          console.log('Added genre banner:', banner.name, 'at position:', banner.x, bannerHeight, banner.z);
           
           // Add floating animation via userData
           sprite.userData = { 
