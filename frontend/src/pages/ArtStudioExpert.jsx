@@ -15,8 +15,7 @@ import ReactFlow, {
   useEdgesState,
   Handle,
   Position,
-  Panel,
-  NodeResizer
+  Panel
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { 
