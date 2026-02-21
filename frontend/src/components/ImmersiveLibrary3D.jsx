@@ -1221,12 +1221,13 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       <AnimatePresence>
         {isLoaded && !isExploring && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="absolute inset-0 flex items-center justify-center"
           >
-            <div className="bg-gradient-to-br from-[#2d1f3d] to-[#1a1520] rounded-2xl p-8 max-w-md mx-4 text-center border border-purple-500/30">
+            <div className="bg-gradient-to-br from-[#2d1f3d]/95 to-[#1a1520]/95 backdrop-blur-md rounded-2xl p-8 max-w-md mx-4 text-center border border-purple-500/30 shadow-2xl">
               <div className="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <FiMove className="w-8 h-8 text-purple-400" />
               </div>
