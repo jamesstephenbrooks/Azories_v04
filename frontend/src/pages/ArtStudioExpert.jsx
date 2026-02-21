@@ -819,7 +819,8 @@ export default function ArtStudioExpert() {
                 generating: false,
                 image: data.image_url,
                 onDownload: (url) => downloadImage(url),
-                onSaveToGallery: (url) => saveToGallery(url)
+                onSaveToGallery: (url) => saveToGallery(url),
+                onExpand: (url) => setExpandedImage(url)
               }
             };
           }
