@@ -420,8 +420,10 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
 
     // Create scene with warm library atmosphere
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x1a1520);
+    scene.background = new THREE.Color(0x2a1a1f); // Dark warm brown (distinct from loading screen purple)
     sceneRef.current = scene;
+    
+    console.log('Scene created with background color');
 
     // Create camera - first person perspective
     const camera = new THREE.PerspectiveCamera(
