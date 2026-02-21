@@ -3012,7 +3012,8 @@ async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: d
             "4:3": "1024x768",     # Classic landscape (will use 1024x1024 as closest)
             "3:4": "768x1024"      # Classic portrait (will use 1024x1024 as closest)
         }
-        image_size = aspect_ratio_sizes.get(request.aspectRatio, "1024x1024")
+        # Note: image_size not used currently as emergent library doesn't support size param
+        _ = aspect_ratio_sizes.get(request.aspectRatio, "1024x1024")
         
         # Use OpenAI image generation via Emergent
         image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
