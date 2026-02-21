@@ -313,12 +313,62 @@ export default function ArtStudio() {
   const [collapsedCategories, setCollapsedCategories] = useState({}); // All expanded by default
   const [selectedTemplate, setSelectedTemplate] = useState(null); // Quick template selection
   
+  // Animation state
+  const [showAnimateModal, setShowAnimateModal] = useState(false);
+  const [animatingImage, setAnimatingImage] = useState(null);
+  const [animationMotion, setAnimationMotion] = useState('gentle breathing, hair flowing');
+  const [animationStyle, setAnimationStyle] = useState('natural');
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [animatedVideo, setAnimatedVideo] = useState(null);
+  
   // Apply a quick template (one-click setup)
   const applyQuickTemplate = (template) => {
     setSelectedTemplate(template.id);
     setSelectedStyle(template.style);
     setLightingPreset(template.lighting);
     setCustomStyleDescription(template.customStyle);
+  };
+  
+  // Animate an image using Sora 2
+  const animateImage = async () => {
+    if (!animatingImage) return;
+    
+    setIsAnimating(true);
+    try {
+      const response = await fetch(`${API_URL}/api/art-studio/animate-image`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          image_url: animatingImage,
+          motion_prompt: animationMotion,
+          duration: 4,
+          style: animationStyle
+        })
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        setAnimatedVideo(`data:video/mp4;base64,${data.video_base64}`);
+        toast.success('Image animated successfully!');
+      } else {
+        throw new Error(data.detail || 'Animation failed');
+      }
+    } catch (error) {
+      console.error('Animation error:', error);
+      toast.error('Failed to animate image: ' + error.message);
+    } finally {
+      setIsAnimating(false);
+    }
+  };
+  
+  // Open animate modal for a specific image
+  const openAnimateModal = (imageUrl) => {
+    setAnimatingImage(imageUrl);
+    setAnimatedVideo(null);
+    setShowAnimateModal(true);
   };
   
   // PRO FEATURES STATE
