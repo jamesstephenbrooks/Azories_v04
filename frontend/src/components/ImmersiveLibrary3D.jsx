@@ -462,9 +462,17 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     
     if (hits.length > 0) {
       const bookMesh = hits[0].object;
+      console.log('Clicked on book mesh:', bookMesh.userData);
+      
+      // Use bookData from userData if available (for 3D book models)
+      if (bookMesh.userData?.bookData) {
+        setSelectedBook(bookMesh.userData.bookData);
+        return;
+      }
+      
+      // Fallback: find by bookId
       const bookId = bookMesh.userData?.bookId;
       if (bookId) {
-        // Find the book data and show info card
         const bookData = books.find(b => b.id === bookId);
         if (bookData) {
           setSelectedBook(bookData);
