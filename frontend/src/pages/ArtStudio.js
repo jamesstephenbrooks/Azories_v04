@@ -1166,6 +1166,57 @@ export default function ArtStudio() {
                   onChange={handleReferenceUpload}
                   className="hidden"
                 />
+                
+                {/* Prompt History Scroll - Under Reference Image */}
+                {promptHistory.length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-white/10">
+                    <h4 className="text-sm font-medium text-white/70 mb-2 flex items-center gap-2">
+                      <FiRefreshCw className="w-3 h-3 text-purple-400" />
+                      Recent Prompts ({promptHistory.length})
+                    </h4>
+                    <div className="max-h-32 overflow-y-auto space-y-1 pr-2 custom-scrollbar">
+                      {promptHistory.map((prompt, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => {
+                            if (activeTab === 'character') {
+                              setCharacter({ ...character, additionalDetails: prompt });
+                            } else {
+                              setScene({ ...scene, customPrompt: prompt });
+                            }
+                          }}
+                          className="w-full px-3 py-2 text-left text-xs text-white/60 hover:text-white hover:bg-purple-500/20 rounded-lg transition-colors"
+                        >
+                          <p className="truncate">{prompt}</p>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Copy to Expert Mode Button */}
+                {activeTab === 'character' && (
+                  <div className="mt-4 pt-4 border-t border-white/10">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        // Save current character to localStorage for Expert Mode
+                        const exportData = {
+                          character: character,
+                          style: selectedStyle,
+                          referenceImage: referenceImage
+                        };
+                        localStorage.setItem('artStudioExport', JSON.stringify(exportData));
+                        navigate('/art-studio/expert?import=character');
+                      }}
+                      className="w-full border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/20"
+                      data-testid="copy-to-expert-btn"
+                    >
+                      <FiZap className="w-4 h-4 mr-2" />
+                      Copy to Expert Mode (Node Editor)
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
           </div>
