@@ -819,7 +819,7 @@ export default function ArtStudioExpert() {
             
             <Panel position="bottom-left" className="!bg-black/50 !border-white/10 rounded-lg p-2">
               <p className="text-xs text-white/50">
-                Drag nodes from palette • Connect handles • Run workflow to generate
+                Drag nodes • Connect handles • Select to resize • Run workflow
               </p>
             </Panel>
           </ReactFlow>
