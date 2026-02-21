@@ -554,6 +554,51 @@ export default function ArtStudio() {
         if (character.additionalDetails?.trim()) {
           savePromptToHistory(character.additionalDetails.trim());
         }
+        
+        // Use IP-Adapter style endpoint if character reference is provided
+        if (characterReferenceImage) {
+          try {
+            const consistentResponse = await fetch(`${API_URL}/api/art-studio/generate-with-reference`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                prompt: fullPrompt,
+                characterReferenceImage: characterReferenceImage,
+                styleReferenceImage: styleReferenceImage,
+                style: selectedStyle,
+                transparentBackground: useTransparentBg
+              })
+            });
+            
+            if (consistentResponse.ok) {
+              const data = await consistentResponse.json();
+              setGeneratedImage(data.image_url);
+              // Update extracted prompts with the detailed descriptions
+              if (data.character_description) {
+                setExtractedCharPrompt(data.character_description);
+              }
+              if (data.style_description) {
+                setExtractedStylePrompt(data.style_description);
+              }
+              setGenerationHistory(prev => [{
+                image: data.image_url,
+                prompt: fullPrompt,
+                style: selectedStyle,
+                timestamp: new Date(),
+                type: 'consistent_character'
+              }, ...prev].slice(0, 20));
+              loadGallery();
+              setIsGenerating(false);
+              return; // Exit early - we used the consistent endpoint
+            }
+          } catch (err) {
+            console.log('Consistent generation failed, falling back to standard:', err);
+            // Fall through to standard generation
+          }
+        }
       } else if (activeTab === 'scene') {
         fullPrompt = `${buildScenePrompt()}, ${styleData?.name || 'fantasy'} art style${qualityBoosts[qualityLevel] || qualityBoosts.high}`;
         // Save custom prompt to history
@@ -562,7 +607,7 @@ export default function ArtStudio() {
         }
       }
       
-      // Add extracted prompts from reference images if available
+      // Add extracted prompts from reference images if available (for fallback standard generation)
       if (extractedStylePrompt) {
         fullPrompt += `, art style like: ${extractedStylePrompt}`;
       }
