@@ -764,6 +764,16 @@ export default function ArtStudio() {
                   <span className="text-xs text-white/40 ml-auto">{ART_STYLES.length} styles</span>
                 </h3>
                 
+                {/* Style Preview Button */}
+                <button
+                  onClick={() => setShowStylePreview(true)}
+                  className="w-full mb-4 py-2 px-3 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 text-white text-sm flex items-center justify-center gap-2 hover:from-purple-500/30 hover:to-pink-500/30 transition-all"
+                  data-testid="open-style-preview-btn"
+                >
+                  <FiEye className="w-4 h-4" />
+                  Preview All Styles
+                </button>
+                
                 {ART_STYLE_CATEGORIES.map(category => (
                   <div key={category.category} className="mb-4">
                     <h4 className="text-xs font-medium text-purple-400 uppercase tracking-wider mb-2">
@@ -806,6 +816,87 @@ export default function ArtStudio() {
                     </div>
                   </div>
                 ))}
+                
+                {/* Advanced Options Panel */}
+                <div className="mt-4 pt-4 border-t border-white/10">
+                  <button
+                    onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
+                    className="w-full flex items-center justify-between text-white/70 hover:text-white transition-colors"
+                  >
+                    <span className="flex items-center gap-2 text-sm font-medium">
+                      <FiSettings className="w-4 h-4" />
+                      Pro Options
+                    </span>
+                    {showAdvancedOptions ? <FiChevronUp className="w-4 h-4" /> : <FiChevronDown className="w-4 h-4" />}
+                  </button>
+                  
+                  <AnimatePresence>
+                    {showAdvancedOptions && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="pt-4 space-y-4">
+                          {/* Quality Level */}
+                          <div>
+                            <label className="text-xs text-white/60 mb-1.5 block">Quality Level</label>
+                            <div className="grid grid-cols-4 gap-1">
+                              {['low', 'medium', 'high', 'ultra'].map(q => (
+                                <button
+                                  key={q}
+                                  onClick={() => setQualityLevel(q)}
+                                  className={`py-1.5 px-2 text-[10px] rounded-md transition-all capitalize ${
+                                    qualityLevel === q
+                                      ? 'bg-purple-500 text-white'
+                                      : 'bg-white/10 text-white/60 hover:bg-white/20'
+                                  }`}
+                                >
+                                  {q}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          
+                          {/* Aspect Ratio */}
+                          <div>
+                            <label className="text-xs text-white/60 mb-1.5 block">Aspect Ratio</label>
+                            <div className="grid grid-cols-5 gap-1">
+                              {['1:1', '16:9', '9:16', '4:3', '3:4'].map(ar => (
+                                <button
+                                  key={ar}
+                                  onClick={() => setAspectRatio(ar)}
+                                  className={`py-1.5 px-1 text-[10px] rounded-md transition-all ${
+                                    aspectRatio === ar
+                                      ? 'bg-purple-500 text-white'
+                                      : 'bg-white/10 text-white/60 hover:bg-white/20'
+                                  }`}
+                                >
+                                  {ar}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          
+                          {/* Negative Prompt */}
+                          <div>
+                            <label className="text-xs text-white/60 mb-1.5 block">
+                              Negative Prompt <span className="text-white/40">(things to avoid)</span>
+                            </label>
+                            <Textarea
+                              value={negativePrompt}
+                              onChange={(e) => setNegativePrompt(e.target.value)}
+                              placeholder="blurry, low quality, distorted, watermark..."
+                              className="bg-black/30 border-white/20 text-white text-xs min-h-[60px]"
+                              data-testid="negative-prompt-input"
+                            />
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
             </div>
           )}
