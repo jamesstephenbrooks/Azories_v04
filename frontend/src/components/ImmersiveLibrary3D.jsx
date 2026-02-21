@@ -614,7 +614,10 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         }
         
         let startY = foundFloor ? floorLevel + PLAYER_HEIGHT : PLAYER_HEIGHT;
-        console.log('Starting at Y:', startY);
+        console.log('Starting at Y:', startY, 'Floor level:', floorLevel);
+        
+        // Store the floor level in bounds for teleportation
+        boundsRef.current.floorY = floorLevel;
         
         // Position camera inside the library at center
         camera.position.set(0, startY, 0);
