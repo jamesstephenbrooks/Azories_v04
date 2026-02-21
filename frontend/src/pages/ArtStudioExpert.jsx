@@ -691,7 +691,9 @@ export default function ArtStudioExpert() {
         body: JSON.stringify({
           prompt,
           style: nodes.find(n => n.type === 'style')?.data?.style || 'fantasy',
-          type: 'workflow'
+          type: 'workflow',
+          bookId: selectedBookId !== 'general' ? selectedBookId : null,
+          workflowName: workflowName
         })
       });
       
