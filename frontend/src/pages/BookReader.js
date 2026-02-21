@@ -14,6 +14,7 @@ import {
 } from 'react-icons/fi';
 import { useTheme } from '@/context/ThemeContext';
 import AmbientSound from '@/components/AmbientSound';
+import AIReadingBuddy from '@/components/AIReadingBuddy';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
