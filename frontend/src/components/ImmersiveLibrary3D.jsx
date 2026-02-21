@@ -387,8 +387,9 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
   }, []);
 
   // Click on book in 3D - show info card first
+  // Also handles DEBUG MODE - logs click coordinates
   const onCanvasClick = useCallback((e) => {
-    if (!isExploringRef.current || !cameraRef.current || isMobileDevice) return;
+    if (!isExploringRef.current || !cameraRef.current) return;
     if (isPointerLocked.current) return; // Don't process clicks when pointer is locked
     
     const rect = canvasRef.current?.getBoundingClientRect();
@@ -400,6 +401,28 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     );
     
     raycasterRef.current.setFromCamera(mouse, cameraRef.current);
+    
+    // DEBUG MODE: Log click coordinates on any mesh
+    if (debugMode) {
+      const allMeshes = collisionMeshesRef.current;
+      raycasterRef.current.far = 100; // Long range for debug clicks
+      const hits = raycasterRef.current.intersectObjects(allMeshes, true);
+      
+      if (hits.length > 0) {
+        const hit = hits[0];
+        const coords = {
+          x: hit.point.x.toFixed(2),
+          y: hit.point.y.toFixed(2),
+          z: hit.point.z.toFixed(2),
+          meshName: hit.object.name || 'unnamed'
+        };
+        console.log('🎯 DEBUG CLICK:', coords);
+        setDebugCoords(coords);
+        return; // Don't process book clicks in debug mode
+      }
+    }
+    
+    if (isMobileDevice) return; // Skip book click handling on mobile
     
     // Check for Azora click first
     if (azoraRef.current) {
@@ -425,7 +448,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         }
       }
     }
-  }, [isMobileDevice, books]);
+  }, [isMobileDevice, books, debugMode]);
 
   // Initialize Three.js scene
   useEffect(() => {
