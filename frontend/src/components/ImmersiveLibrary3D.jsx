@@ -732,13 +732,13 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           const sprite = new THREE.Sprite(spriteMaterial);
           sprite.scale.set(2.2, 0.55, 1);
           
-          // All banners at same height
-          const bannerY = bannerHeight;
+          // Use explicit Y from bannerPos if available, otherwise use default bannerHeight
+          const bannerY = section.bannerPos.y !== undefined ? section.bannerPos.y : bannerHeight;
           
           sprite.position.set(section.bannerPos.x, bannerY, section.bannerPos.z);
           
           scene.add(sprite);
-          console.log('Added genre banner:', section.name, 'at', section.bannerPos.x, bannerY, section.bannerPos.z);
+          console.log('Added genre banner:', section.name, 'at', section.bannerPos.x, bannerY, section.bannerPos.z, section.calibrated ? '(calibrated)' : '(estimated)');
           
           // Add gentle floating animation
           sprite.userData = { 
