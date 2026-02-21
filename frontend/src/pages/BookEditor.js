@@ -172,6 +172,17 @@ export default function BookEditor() {
     }
   };
   
+  // Add cover image from Art Studio gallery
+  const addCoverFromGallery = (imageUrl) => {
+    if (coverGalleryTarget === 'front') {
+      setCoverData({ ...coverData, cover_image: imageUrl });
+    } else {
+      setCoverData({ ...coverData, back_cover_image: imageUrl });
+    }
+    setShowCoverGalleryPicker(false);
+    toast.success(`${coverGalleryTarget === 'front' ? 'Front' : 'Back'} cover image added from Art Studio`);
+  };
+  
   // Update image position/fit settings
   const updateImagePosition = async (key, value) => {
     if (!selectedPage) return;
