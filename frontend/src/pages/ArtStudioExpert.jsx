@@ -14,14 +14,15 @@ import ReactFlow, {
   useEdgesState,
   Handle,
   Position,
-  Panel
+  Panel,
+  NodeResizer
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { 
   FiUser, FiImage, FiLayers, FiType, FiZap, FiGrid, 
   FiSave, FiDownload, FiPlus, FiTrash2, FiPlay,
   FiArrowLeft, FiFolder, FiSettings, FiCopy, FiRefreshCw,
-  FiUpload, FiSliders, FiMaximize, FiStar
+  FiUpload, FiSliders, FiMaximize, FiStar, FiMove
 } from 'react-icons/fi';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
