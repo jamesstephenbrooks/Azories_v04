@@ -338,6 +338,7 @@ export default function ArtStudio() {
               variant="ghost" 
               onClick={() => navigate('/library')}
               className="text-white/70 hover:text-white"
+              data-testid="back-button"
             >
               <FiArrowLeft className="w-5 h-5 mr-2" />
               Back
@@ -351,11 +352,32 @@ export default function ArtStudio() {
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            {/* Book Assignment Dropdown */}
+            <div className="flex items-center gap-2">
+              <FiBook className="text-purple-400 w-4 h-4" />
+              <Select value={selectedBookId} onValueChange={setSelectedBookId}>
+                <SelectTrigger className="w-48 bg-black/30 border-white/20 text-white text-sm" data-testid="book-assignment-select">
+                  <SelectValue placeholder="Assign to book..." />
+                </SelectTrigger>
+                <SelectContent className="bg-[#1a1520] border-white/20">
+                  <SelectItem value="general" className="text-white hover:bg-white/10">
+                    📁 General Library
+                  </SelectItem>
+                  {userBooks.map(book => (
+                    <SelectItem key={book.id} value={book.id} className="text-white hover:bg-white/10">
+                      📖 {book.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
             <Button 
               variant="outline" 
               className="border-purple-500/50 text-purple-300 hover:bg-purple-500/20"
               onClick={() => setActiveTab('gallery')}
+              data-testid="gallery-button"
             >
               <FiFolder className="w-4 h-4 mr-2" />
               My Gallery ({gallery.length})
