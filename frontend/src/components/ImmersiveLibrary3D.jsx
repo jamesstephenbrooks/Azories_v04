@@ -351,14 +351,16 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       keysPressed.current.right = dx > threshold;
     }
     
-    // Look around (right side)
-    if (touchMoveRef.current.active && x >= rect.width / 2 && cameraRef.current) {
+    // Look around - ANYWHERE on screen (not just right side)
+    // This makes it easier to look around on mobile
+    if (touchMoveRef.current.active && cameraRef.current) {
       const movementX = touch.clientX - touchStartRef.current.x;
       const movementY = touch.clientY - touchStartRef.current.y;
       
       euler.current.setFromQuaternion(cameraRef.current.quaternion);
-      euler.current.y -= movementX * 0.003;
-      euler.current.x -= movementY * 0.003;
+      // Increased sensitivity from 0.003 to 0.008 for faster panning
+      euler.current.y -= movementX * 0.008;
+      euler.current.x -= movementY * 0.008;
       euler.current.x = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, euler.current.x));
       cameraRef.current.quaternion.setFromEuler(euler.current);
       
