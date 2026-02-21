@@ -21,13 +21,14 @@ const DEFAULT_BOUNDS = {
   ceilingY: 15
 };
 
-// Genre sections for navigation with book shelves
+// Genre sections - positioned to match actual bookcase locations in the library GLB
+// The library has bookcases along the back wall (negative Z direction)
 const GENRE_SECTIONS = [
-  { name: 'Fantasy', position: { x: -6, z: -6 }, color: '#9333ea', icon: '✨' },
-  { name: 'Adventure', position: { x: 6, z: -6 }, color: '#f59e0b', icon: '🗺️' },
-  { name: 'Mystery', position: { x: -6, z: 6 }, color: '#3b82f6', icon: '🔍' },
-  { name: 'Science Fiction', position: { x: 6, z: 6 }, color: '#10b981', icon: '🚀' },
-  { name: 'Center', position: { x: 0, z: 0 }, color: '#ec4899', icon: '📚' },
+  { name: 'Fantasy', position: { x: -3, z: 0 }, color: '#9333ea', icon: '✨' },      // Left bookcase
+  { name: 'Adventure', position: { x: 3, z: 0 }, color: '#f59e0b', icon: '🗺️' },    // Right bookcase
+  { name: 'Mystery', position: { x: -1.5, z: -3 }, color: '#3b82f6', icon: '🔍' },   // Back left
+  { name: 'Science Fiction', position: { x: 1.5, z: -3 }, color: '#10b981', icon: '🚀' }, // Back right
+  { name: 'Center', position: { x: 0, z: 2 }, color: '#ec4899', icon: '📚' },        // Center of room
 ];
 
 // Detect mobile device
