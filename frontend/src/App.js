@@ -13,6 +13,7 @@ import Auth from "@/pages/Auth";
 import AdminCMS from "@/pages/AdminCMS";
 import UserProfile from "@/pages/UserProfile";
 import ArtStudio from "@/pages/ArtStudio";
+import ArtStudioExpert from "@/pages/ArtStudioExpert";
 import "@/App.css";
 
 function AppContent() {
@@ -33,6 +34,7 @@ function AppContent() {
         <Route path="/profile" element={<UserProfile />} />
         <Route path="/profile/:userId" element={<UserProfile />} />
         <Route path="/art-studio" element={<ArtStudio />} />
+        <Route path="/art-studio/expert" element={<ArtStudioExpert />} />
       </Routes>
       <Toaster position="bottom-right" richColors />
     </>
