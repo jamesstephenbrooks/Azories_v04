@@ -11,19 +11,21 @@ Create a digital book creating and reading web application called "Azories" (azo
 
 ## What's Been Implemented
 
-### Latest Updates (Feb 21, 2026) - 3D Library Mobile & Camera Fixes
-- **Camera starting angle**: Now tilted down (-0.2 rad) to see floor, bookcases, and room
-- **Camera position**: Set at (0, floorY+1.1, 2) looking toward bookcases
-- **Gravity simplified**: Fixed to floor level (4.72) to prevent floating/jumping
-- **Touch panning sensitivity**: Increased 3x (0.003 → 0.008) for faster look-around
-- **Mobile UI cleanup**: Hidden Azora button and Books panel on mobile for clear joystick
-- **Mobile joystick**: Visual joystick at bottom-left for touch movement
+### Latest Updates (Feb 21, 2026) - Debug Mode & Physics Improvements
+- **Coordinate Debug Mode**: Toggle in 3D library to click and get exact (x, y, z) coordinates
+- **Debug Panel**: Shows last click coords, mesh name, camera position, copy button
+- **Enhanced Stair Physics**: Multi-ray foot sensor (center, forward, forward-left, forward-right)
+- **Increased Step Height**: 1.0m for stairs (was 0.7m) to handle spiral stairs
+- **Removed Simple 3D View**: Library now only has Grid and Immersive views
+- **Click-to-explore**: Canvas now uses onCanvasClick for both debug mode and book selection
 
-### Previous Session: Core Fixes
-- Fixed floor-following gravity
-- Added mobile joystick controls
-- Responsive welcome screen (touch vs keyboard instructions)
-- Disabled Azora, banners, and book markers (need calibration)
+### Previous Session: Core 3D Library Fixes
+- Camera starting angle: Tilted down (-0.2 rad) to see floor, bookcases, and room
+- Camera position: Set at (0, floorY+1.1, 2) looking toward bookcases
+- Gravity simplified: Fixed to floor level to prevent floating/jumping
+- Touch panning sensitivity: Increased 3x for faster look-around
+- Mobile UI cleanup: Hidden Azora button and Books panel on mobile
+- Mobile joystick: Visual joystick at bottom-left for touch movement
 
 ### Core Features Implemented
 - Full-stack book creation platform
@@ -53,28 +55,30 @@ Create a digital book creating and reading web application called "Azories" (azo
 - [x] 3D Library with GLB model
 - [x] Floor-following gravity
 - [x] Mobile joystick controls
-- [x] Camera starting angle (see floor + bookcases)
+- [x] Camera starting angle
+- [x] Coordinate debug mode for positioning
 
 ### P1 (High Priority) - IN PROGRESS
-- [ ] Test mobile joystick on device
-- [ ] Verify walking works properly
-- [ ] Re-enable Azora with correct floor position
-- [ ] Re-enable genre banners above bookcases
-- [ ] Stripe payment integration
+- [ ] Use debug mode to get correct banner positions
+- [ ] Fix genre banner placement with real coordinates
+- [ ] Test spiral staircase climbing with new physics
+- [ ] Fix mobile joystick UI obstruction
 
 ### P2 (Medium Priority)
-- [ ] Interactive books on shelves
+- [ ] Re-enable interactive books on shelves
+- [ ] Re-enable Azora AI librarian with correct position
 - [ ] Art Studio node-based UI (React Flow)
-- [ ] Personalized book recommendations
+- [ ] Stripe payment integration
 
 ### P3 (Nice to Have)
 - [ ] "Call Azora Over" walking feature
 - [ ] Multiplayer library exploration
 - [ ] Animate still images
+- [ ] Comic book layout support
 
 ## Key Files
-- `/app/frontend/src/components/ImmersiveLibrary3D.jsx` - 3D library logic
-- `/app/frontend/src/pages/Library.js` - Library page with view modes
+- `/app/frontend/src/components/ImmersiveLibrary3D.jsx` - 3D library logic with debug mode
+- `/app/frontend/src/pages/Library.js` - Library page (grid + immersive views only)
 - `/app/backend/server.py` - All backend routes
 
 ## Technical Notes - 3D Library
@@ -85,8 +89,15 @@ Create a digital book creating and reading web application called "Azories" (azo
 - Camera tilt: -0.2 radians (looking down)
 - Touch sensitivity: 0.008 (panning), threshold 15px (joystick)
 - Mobile UI: Joystick visible, Books panel and Azora button hidden
+- **Debug Mode**: Click anywhere in 3D scene to get exact coordinates
 
-## Currently Disabled (Need Calibration)
-1. Azora 3D model - position needs calibration
-2. Genre banners - need correct bookcase positions
+## Stair Climbing Physics
+- Multi-ray foot sensor: center, forward, forward-left, forward-right
+- Max step up: 1.0m for stairs, 0.7m for regular surfaces
+- Max step down: 3.0m
+- Interpolation speed: 0.25 (climbing) / 0.2 (descending)
+
+## Currently Disabled (Need Calibration via Debug Mode)
+1. Genre banners - need correct bookcase positions from debug clicks
+2. Azora 3D model - position needs calibration
 3. Interactive book markers - need shelf position mapping
