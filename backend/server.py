@@ -2340,6 +2340,207 @@ async def delete_review(review_id: str, current_user: dict = Depends(get_current
     return {"message": "Review deleted"}
 
 
+# ============ READING STREAKS & BADGES ============
+
+BADGE_REQUIREMENTS = {
+    'first_book': {'type': 'books_completed', 'count': 1},
+    'bookworm': {'type': 'books_completed', 'count': 5},
+    'streak_3': {'type': 'streak', 'count': 3},
+    'streak_7': {'type': 'streak', 'count': 7},
+    'streak_30': {'type': 'streak', 'count': 30},
+    'night_owl': {'type': 'reading_time', 'hour_start': 0, 'hour_end': 4},
+    'early_bird': {'type': 'reading_time', 'hour_start': 5, 'hour_end': 7},
+    'genre_explorer': {'type': 'genres_read', 'count': 5},
+    'supporter': {'type': 'following', 'count': 5},
+    'creator': {'type': 'books_published', 'count': 1}
+}
+
+@api_router.get("/user/reading-stats")
+async def get_reading_stats(current_user: dict = Depends(get_current_user)):
+    """Get user's reading statistics including streak and badges"""
+    user_id = current_user["id"]
+    
+    # Get or create reading stats
+    stats = await db.reading_stats.find_one({"user_id": user_id})
+    if not stats:
+        stats = {
+            "user_id": user_id,
+            "streak": 0,
+            "last_read_date": None,
+            "total_books_read": 0,
+            "total_time_read": 0,
+            "genres_read": [],
+            "badges": [],
+            "reading_history": []
+        }
+        await db.reading_stats.insert_one(stats)
+    
+    return {
+        "streak": stats.get("streak", 0),
+        "badges": stats.get("badges", []),
+        "total_books_read": stats.get("total_books_read", 0),
+        "total_time_read": stats.get("total_time_read", 0),
+        "genres_read": stats.get("genres_read", [])
+    }
+
+class RecordReadingRequest(BaseModel):
+    book_id: str
+    time_spent: int = 0  # in seconds
+    completed: bool = False
+
+@api_router.post("/user/record-reading")
+async def record_reading(request: RecordReadingRequest, current_user: dict = Depends(get_current_user)):
+    """Record reading activity and update streaks/badges"""
+    user_id = current_user["id"]
+    now = datetime.now(timezone.utc)
+    today = now.date().isoformat()
+    current_hour = now.hour
+    
+    # Get book info for genre tracking
+    book = await db.books.find_one({"id": request.book_id})
+    book_genre = book.get("genre", "General") if book else "General"
+    
+    # Get or create stats
+    stats = await db.reading_stats.find_one({"user_id": user_id})
+    if not stats:
+        stats = {
+            "user_id": user_id,
+            "streak": 0,
+            "last_read_date": None,
+            "total_books_read": 0,
+            "total_time_read": 0,
+            "genres_read": [],
+            "badges": [],
+            "reading_history": []
+        }
+    
+    new_badges = []
+    
+    # Update streak
+    last_read = stats.get("last_read_date")
+    if last_read:
+        last_date = datetime.fromisoformat(last_read).date() if isinstance(last_read, str) else last_read.date()
+        today_date = now.date()
+        days_diff = (today_date - last_date).days
+        
+        if days_diff == 0:
+            # Same day, streak continues
+            pass
+        elif days_diff == 1:
+            # Next day, increment streak
+            stats["streak"] = stats.get("streak", 0) + 1
+        else:
+            # Streak broken, reset to 1
+            stats["streak"] = 1
+    else:
+        # First time reading
+        stats["streak"] = 1
+    
+    stats["last_read_date"] = today
+    stats["total_time_read"] = stats.get("total_time_read", 0) + request.time_spent
+    
+    # Update genres read
+    if book_genre and book_genre not in stats.get("genres_read", []):
+        stats.setdefault("genres_read", []).append(book_genre)
+    
+    # If book completed
+    if request.completed:
+        stats["total_books_read"] = stats.get("total_books_read", 0) + 1
+    
+    # Check for new badges
+    current_badges = set(stats.get("badges", []))
+    
+    # Streak badges
+    streak = stats["streak"]
+    if streak >= 3 and 'streak_3' not in current_badges:
+        new_badges.append('streak_3')
+    if streak >= 7 and 'streak_7' not in current_badges:
+        new_badges.append('streak_7')
+    if streak >= 30 and 'streak_30' not in current_badges:
+        new_badges.append('streak_30')
+    
+    # Books completed badges
+    books_read = stats["total_books_read"]
+    if books_read >= 1 and 'first_book' not in current_badges:
+        new_badges.append('first_book')
+    if books_read >= 5 and 'bookworm' not in current_badges:
+        new_badges.append('bookworm')
+    
+    # Time-based badges
+    if 0 <= current_hour < 5 and 'night_owl' not in current_badges:
+        new_badges.append('night_owl')
+    if 5 <= current_hour < 8 and 'early_bird' not in current_badges:
+        new_badges.append('early_bird')
+    
+    # Genre explorer
+    if len(stats.get("genres_read", [])) >= 5 and 'genre_explorer' not in current_badges:
+        new_badges.append('genre_explorer')
+    
+    # Check creator badge
+    user_books = await db.books.count_documents({"author_id": user_id, "status": "published"})
+    if user_books >= 1 and 'creator' not in current_badges:
+        new_badges.append('creator')
+    
+    # Check supporter badge
+    user = await db.users.find_one({"id": user_id})
+    if len(user.get("following", [])) >= 5 and 'supporter' not in current_badges:
+        new_badges.append('supporter')
+    
+    # Add new badges
+    if new_badges:
+        stats["badges"] = list(current_badges | set(new_badges))
+    
+    # Save stats
+    await db.reading_stats.update_one(
+        {"user_id": user_id},
+        {"$set": stats},
+        upsert=True
+    )
+    
+    return {
+        "streak": stats["streak"],
+        "new_badge": new_badges[0] if new_badges else None,
+        "all_badges": stats["badges"]
+    }
+
+@api_router.get("/user/recommendations")
+async def get_recommendations(current_user: dict = Depends(get_current_user)):
+    """Get personalized book recommendations"""
+    user_id = current_user["id"]
+    
+    # Get user's reading stats
+    stats = await db.reading_stats.find_one({"user_id": user_id})
+    genres_read = stats.get("genres_read", []) if stats else []
+    
+    # Get user's read books
+    read_books = await db.reading_history.find({"user_id": user_id}).to_list(100)
+    read_book_ids = [r["book_id"] for r in read_books]
+    
+    recommendations = []
+    
+    # Get books from genres user has read (excluding already read)
+    if genres_read:
+        genre_books = await db.books.find({
+            "id": {"$nin": read_book_ids},
+            "genre": {"$in": genres_read},
+            "status": "published"
+        }, {"_id": 0}).sort("views", -1).limit(6).to_list(6)
+        recommendations.extend(genre_books)
+    
+    # Get featured/popular books if not enough recommendations
+    if len(recommendations) < 10:
+        popular_books = await db.books.find({
+            "id": {"$nin": read_book_ids + [b["id"] for b in recommendations]},
+            "status": "published"
+        }, {"_id": 0}).sort("views", -1).limit(10 - len(recommendations)).to_list(10)
+        recommendations.extend(popular_books)
+    
+    return {
+        "recommendations": recommendations,
+        "based_on": genres_read if genres_read else ["Popular books"]
+    }
+
+
 
 # ============ ROOT ============
 
