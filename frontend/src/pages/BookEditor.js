@@ -1311,7 +1311,7 @@ export default function BookEditor() {
                   {galleryImages.map((img, idx) => (
                     <button
                       key={img.id || idx}
-                      onClick={() => useGalleryImage(img.image_url, activeImageSlot)}
+                      onClick={() => addGalleryImageToPage(img.image_url, activeImageSlot)}
                       className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-purple-500 transition-all"
                     >
                       <img 
