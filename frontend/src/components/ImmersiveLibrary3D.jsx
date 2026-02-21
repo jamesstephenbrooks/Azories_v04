@@ -121,7 +121,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
 
   // Handle keyboard input - camera relative
   const onKeyDown = useCallback((event) => {
-    if (!isExploring) return;
+    if (!isExploringRef.current) return;
     switch (event.code) {
       case 'KeyW':
       case 'ArrowUp':
@@ -142,7 +142,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       default:
         break;
     }
-  }, [isExploring]);
+  }, []);
 
   const onKeyUp = useCallback((event) => {
     switch (event.code) {
