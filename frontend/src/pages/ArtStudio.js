@@ -1215,52 +1215,82 @@ export default function ArtStudio() {
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-6"
               >
-                <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                  <FiGrid className="text-purple-400" />
-                  My Gallery
-                </h2>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                    <FiGrid className="text-purple-400" />
+                    My Gallery
+                  </h2>
+                  
+                  {/* Gallery Filter */}
+                  <div className="flex items-center gap-2">
+                    <label className="text-xs text-white/50">Filter:</label>
+                    <select
+                      value={galleryFilter}
+                      onChange={(e) => setGalleryFilter(e.target.value)}
+                      className="bg-black/30 border border-white/20 rounded-lg px-3 py-1.5 text-white text-xs"
+                      data-testid="gallery-filter"
+                    >
+                      <option value="all">All Images</option>
+                      {userBooks.map(book => (
+                        <option key={book.id || book._id} value={book.id || book._id}>
+                          {book.title}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
                 
-                {gallery.length === 0 ? (
-                  <div className="text-center py-12">
-                    <FiImage className="w-16 h-16 text-white/20 mx-auto mb-4" />
-                    <p className="text-white/50">No images yet. Start creating!</p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {gallery.map((item) => (
-                      <div
-                        key={item._id}
-                        className={`relative group rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
-                          selectedGalleryItem?._id === item._id
-                            ? 'border-purple-500'
-                            : 'border-transparent hover:border-white/30'
-                        }`}
-                        onClick={() => setSelectedGalleryItem(item)}
-                      >
-                        <img
-                          src={item.image_url}
-                          alt={item.name}
-                          className="w-full aspect-square object-cover"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                          <div className="absolute bottom-0 left-0 right-0 p-3">
-                            <p className="text-white text-sm font-medium truncate">{item.name}</p>
-                            <p className="text-white/50 text-xs">{item.style}</p>
-                          </div>
-                        </div>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteFromGallery(item._id);
-                          }}
-                          className="absolute top-2 right-2 p-1.5 bg-red-500/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                {(() => {
+                  const filteredGallery = galleryFilter === 'all' 
+                    ? gallery 
+                    : gallery.filter(item => item.book_id === galleryFilter);
+                  
+                  return filteredGallery.length === 0 ? (
+                    <div className="text-center py-12">
+                      <FiImage className="w-16 h-16 text-white/20 mx-auto mb-4" />
+                      <p className="text-white/50">
+                        {galleryFilter === 'all' 
+                          ? 'No images yet. Start creating!' 
+                          : 'No images for this book yet.'}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {filteredGallery.map((item) => (
+                        <div
+                          key={item._id}
+                          className={`relative group rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
+                            selectedGalleryItem?._id === item._id
+                              ? 'border-purple-500'
+                              : 'border-transparent hover:border-white/30'
+                          }`}
+                          onClick={() => setSelectedGalleryItem(item)}
                         >
-                          <FiTrash2 className="w-3 h-3 text-white" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                          <img
+                            src={item.image_url}
+                            alt={item.name}
+                            className="w-full aspect-square object-cover"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="absolute bottom-0 left-0 right-0 p-3">
+                              <p className="text-white text-sm font-medium truncate">{item.name}</p>
+                              <p className="text-white/50 text-xs">{item.style}</p>
+                            </div>
+                          </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteFromGallery(item._id);
+                            }}
+                            className="absolute top-2 right-2 p-1.5 bg-red-500/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <FiTrash2 className="w-3 h-3 text-white" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
               </motion.div>
             )}
             
