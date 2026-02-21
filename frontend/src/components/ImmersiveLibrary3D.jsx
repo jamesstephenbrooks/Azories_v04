@@ -304,17 +304,29 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         console.log('Model final center:', JSON.stringify({x: finalCenter.x, y: finalCenter.y, z: finalCenter.z}));
         
         // Process materials to ensure they render properly
+        let meshCount = 0;
         model.traverse((child) => {
           if (child.isMesh) {
+            meshCount++;
             child.castShadow = true;
             child.receiveShadow = true;
             // Ensure materials are visible
             if (child.material) {
               child.material.side = THREE.DoubleSide; // Render both sides
+              // If material is MeshStandardMaterial or has metalness, adjust for better visibility
+              if (child.material.isMeshStandardMaterial) {
+                child.material.roughness = Math.max(child.material.roughness, 0.3);
+                child.material.metalness = Math.min(child.material.metalness, 0.8);
+              }
+              // Make sure material is visible
+              if (child.material.transparent) {
+                child.material.opacity = Math.max(child.material.opacity, 0.5);
+              }
               child.material.needsUpdate = true;
             }
           }
         });
+        console.log('Total meshes found:', meshCount);
         
         scene.add(model);
         
