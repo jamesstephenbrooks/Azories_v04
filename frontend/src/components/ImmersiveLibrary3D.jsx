@@ -21,14 +21,13 @@ const DEFAULT_BOUNDS = {
   ceilingY: 15
 };
 
-// Genre sections - positioned to match actual bookcase locations in the library GLB
-// The library has bookcases along the back wall (negative Z direction)
+// Genre sections - player position in front of each bookcase, facing toward it
+// The library has bookcases along the walls
 const GENRE_SECTIONS = [
-  { name: 'Fantasy', position: { x: -3, z: 0 }, color: '#9333ea', icon: '✨' },      // Left bookcase
-  { name: 'Adventure', position: { x: 3, z: 0 }, color: '#f59e0b', icon: '🗺️' },    // Right bookcase
-  { name: 'Mystery', position: { x: -1.5, z: -3 }, color: '#3b82f6', icon: '🔍' },   // Back left
-  { name: 'Science Fiction', position: { x: 1.5, z: -3 }, color: '#10b981', icon: '🚀' }, // Back right
-  { name: 'Center', position: { x: 0, z: 2 }, color: '#ec4899', icon: '📚' },        // Center of room
+  { name: 'Fantasy', position: { x: -3, z: -2 }, rotation: Math.PI, color: '#9333ea' },      // Left bookcase, face back wall
+  { name: 'Adventure', position: { x: 3, z: -2 }, rotation: Math.PI, color: '#f59e0b' },     // Right bookcase, face back wall
+  { name: 'Mystery', position: { x: -2, z: 2 }, rotation: 0, color: '#3b82f6' },             // Face forward
+  { name: 'Science Fiction', position: { x: 2, z: 2 }, rotation: 0, color: '#10b981' },      // Face forward
 ];
 
 // Detect mobile device
