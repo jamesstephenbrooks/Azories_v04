@@ -648,7 +648,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         // Will need to iterate on the GLB model to find the right coordinates
         console.log('Genre banners disabled - need position calibration');
         
-        // Load Azora 3D model (GLB) - Standing near the right bookcase on the floor
+        // Load Azora 3D model (GLB) - Standing on the floor in open area
         const AZORA_GLB_URL = 'https://customer-assets.emergentagent.com/job_c72cb56a-2d89-4690-9629-ade6d46638c8/artifacts/t9l9jikb_f0066361-3481-4680-b638-accd998414b5.glb';
         const AZORA_PROXY_URL = `${process.env.REACT_APP_BACKEND_URL}/api/proxy/glb?url=${encodeURIComponent(AZORA_GLB_URL)}`;
         
@@ -660,14 +660,16 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           (gltf) => {
             const azoraModel = gltf.scene;
             
-            // Scale Azora down to 50% as requested by user
-            azoraModel.scale.set(0.5, 0.5, 0.5);
+            // Scale Azora down - try 30% to make sure she's not too big
+            azoraModel.scale.set(0.3, 0.3, 0.3);
             
-            // Position Azora standing on the floor near the right bookcase
-            // Based on the user's drawing, she should be on the wooden floor near the railing
-            const azoraY = floorLevel; // Directly on the floor
-            azoraModel.position.set(3.5, azoraY, -2); // Right side of room, near back bookcases
-            azoraModel.rotation.y = -Math.PI / 2; // Face toward center of room
+            // Position Azora standing on the floor in the open center-right area
+            // Based on user's image, there's open floor space near the right side with a railing
+            const azoraY = floorLevel; // Directly on the floor (Y ~4.72)
+            azoraModel.position.set(2, azoraY, 1); // Center-right area, in front of camera start
+            azoraModel.rotation.y = Math.PI; // Face toward the camera/entrance
+            
+            console.log('Positioning Azora at:', 2, azoraY, 1);
             
             // Enable shadows
             azoraModel.traverse((child) => {
