@@ -570,6 +570,9 @@ export default function ArtStudioExpert() {
   const [userBooks, setUserBooks] = useState([]);
   const [selectedBookId, setSelectedBookId] = useState('general');
   const [expandedImage, setExpandedImage] = useState(null); // For full-size preview modal
+  const [showWorkflowPanel, setShowWorkflowPanel] = useState(false); // Workflow save/load panel
+  const [isSavingWorkflow, setIsSavingWorkflow] = useState(false);
+  const [workflowSaveMessage, setWorkflowSaveMessage] = useState('');
   
   // Load user's books
   useEffect(() => {
