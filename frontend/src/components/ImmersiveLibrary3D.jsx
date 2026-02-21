@@ -723,7 +723,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         let newX = camera.position.x + playerVelocity.current.x * delta;
         let newZ = camera.position.z + playerVelocity.current.z * delta;
         
-        // Raycast-based wall collision detection - cast multiple rays for better coverage
+        // Raycast-based wall collision detection - cast multiple rays and implement wall sliding
         if (collisionMeshes.length > 0 && (playerVelocity.current.x !== 0 || playerVelocity.current.z !== 0)) {
           const horizontalVelocity = new THREE.Vector3(
             playerVelocity.current.x,
@@ -733,10 +733,11 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           
           if (horizontalVelocity.length() > 0.01) {
             const rayDir = horizontalVelocity.clone().normalize();
-            let blocked = false;
+            let hitNormal = null;
+            let minDistance = Infinity;
             
             // Cast rays at multiple heights (feet, waist, chest)
-            const rayHeights = [0.2, 0.8, 1.4];
+            const rayHeights = [0.3, 0.8, 1.4];
             for (const height of rayHeights) {
               const rayOrigin = new THREE.Vector3(
                 camera.position.x,
@@ -745,22 +746,55 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
               );
               
               raycaster.set(rayOrigin, rayDir);
-              raycaster.far = 1.0; // Check 1 unit ahead
+              raycaster.far = 0.8; // Check 0.8 units ahead
               
               const hits = raycaster.intersectObjects(collisionMeshes, true);
-              if (hits.length > 0 && hits[0].distance < 0.5) {
-                blocked = true;
-                break;
+              if (hits.length > 0 && hits[0].distance < minDistance) {
+                minDistance = hits[0].distance;
+                hitNormal = hits[0].face?.normal?.clone();
               }
             }
             
-            if (blocked) {
-              // Wall hit - stop movement in that direction
-              newX = camera.position.x;
-              newZ = camera.position.z;
-              playerVelocity.current.x = 0;
-              playerVelocity.current.z = 0;
+            if (minDistance < 0.5) {
+              // Wall hit - implement wall sliding instead of stopping
+              if (hitNormal) {
+                // Transform normal to world space
+                hitNormal.transformDirection(raycaster.intersectObjects(collisionMeshes, true)[0]?.object?.matrixWorld || new THREE.Matrix4());
+                hitNormal.y = 0;
+                hitNormal.normalize();
+                
+                // Project velocity onto the wall plane (slide along wall)
+                const dot = playerVelocity.current.x * hitNormal.x + playerVelocity.current.z * hitNormal.z;
+                newX = camera.position.x + (playerVelocity.current.x - hitNormal.x * dot) * delta * 0.5;
+                newZ = camera.position.z + (playerVelocity.current.z - hitNormal.z * dot) * delta * 0.5;
+              } else {
+                // Fallback: just stop
+                newX = camera.position.x;
+                newZ = camera.position.z;
+              }
+              playerVelocity.current.x *= 0.3;
+              playerVelocity.current.z *= 0.3;
             }
+          }
+        }
+        
+        // Secondary collision check after position update to prevent going through walls
+        const finalCheckOrigin = new THREE.Vector3(newX, camera.position.y - 0.5, newZ);
+        const directions = [
+          new THREE.Vector3(1, 0, 0),
+          new THREE.Vector3(-1, 0, 0),
+          new THREE.Vector3(0, 0, 1),
+          new THREE.Vector3(0, 0, -1)
+        ];
+        
+        for (const dir of directions) {
+          raycaster.set(finalCheckOrigin, dir);
+          raycaster.far = 0.3;
+          const hits = raycaster.intersectObjects(collisionMeshes, true);
+          if (hits.length > 0 && hits[0].distance < 0.25) {
+            // Too close to wall - push back
+            newX -= dir.x * (0.25 - hits[0].distance);
+            newZ -= dir.z * (0.25 - hits[0].distance);
           }
         }
         
