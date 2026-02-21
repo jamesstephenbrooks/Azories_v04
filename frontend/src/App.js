@@ -12,6 +12,7 @@ import BookEditor from "@/pages/BookEditor";
 import Auth from "@/pages/Auth";
 import AdminCMS from "@/pages/AdminCMS";
 import UserProfile from "@/pages/UserProfile";
+import ArtStudio from "@/pages/ArtStudio";
 import "@/App.css";
 
 function AppContent() {
@@ -31,6 +32,7 @@ function AppContent() {
         <Route path="/admin" element={<AdminCMS />} />
         <Route path="/profile" element={<UserProfile />} />
         <Route path="/profile/:userId" element={<UserProfile />} />
+        <Route path="/art-studio" element={<ArtStudio />} />
       </Routes>
       <Toaster position="bottom-right" richColors />
     </>
