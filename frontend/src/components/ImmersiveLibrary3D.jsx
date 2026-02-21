@@ -94,6 +94,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
   const [hoveredBook, setHoveredBook] = useState(null);
   const [savedPositions, setSavedPositions] = useState([]);
   const [showBookPanel, setShowBookPanel] = useState(true);
+  const [debugMode, setDebugMode] = useState(false);
+  const [debugCoords, setDebugCoords] = useState(null);
   
   // Mobile touch state
   const touchStartRef = useRef({ x: 0, y: 0 });
