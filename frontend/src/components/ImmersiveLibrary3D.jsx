@@ -1670,27 +1670,17 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
             </div>
           )}
           
-          {/* Book Info Card (when a book is selected in 3D view) - CENTERED */}
-          {/* Selected Book Info Card - CENTERED for better visibility */}
+          {/* Book Info Card (when a book is selected in 3D view) - MIDDLE RIGHT */}
+          {/* Selected Book Info Card - Positioned on the right side of the screen */}
           <AnimatePresence>
             {selectedBook && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className="absolute inset-0 flex items-center justify-center pointer-events-auto z-30"
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 50 }}
+                className="absolute top-1/2 right-8 -translate-y-1/2 pointer-events-auto z-30"
               >
-                {/* Backdrop */}
-                <div 
-                  className="absolute inset-0 bg-black/50"
-                  onClick={() => {
-                    setSelectedBook(null);
-                    setSelectedGenre(null);
-                    removeHighlightedBook();
-                  }}
-                />
-                
-                {/* Card */}
+                {/* Card - no backdrop, just the panel on the right */}
                 <div className="relative bg-gradient-to-br from-[#2d1f3d] to-[#1a1520] rounded-2xl p-6 max-w-sm border border-purple-500/30 shadow-2xl shadow-purple-500/20">
                   {/* Book Cover */}
                   <div className="relative w-32 h-44 mx-auto mb-4 rounded-lg overflow-hidden shadow-lg">
