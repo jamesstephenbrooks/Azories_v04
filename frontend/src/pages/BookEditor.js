@@ -1292,52 +1292,100 @@ export default function BookEditor() {
             </DialogTitle>
           </DialogHeader>
           
+          {/* Gallery Tabs */}
+          <div className="flex gap-2 mt-2 border-b border-border pb-2">
+            <button
+              onClick={() => setGalleryTab('book')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                galleryTab === 'book' 
+                  ? 'bg-purple-500 text-white' 
+                  : 'bg-muted hover:bg-muted/80'
+              }`}
+            >
+              This Book ({galleryImages.length})
+            </button>
+            <button
+              onClick={() => setGalleryTab('all')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                galleryTab === 'all' 
+                  ? 'bg-purple-500 text-white' 
+                  : 'bg-muted hover:bg-muted/80'
+              }`}
+            >
+              All Gallery ({generalGalleryImages.length})
+            </button>
+          </div>
+          
           <div className="mt-4">
-            {galleryImages.length === 0 ? (
-              <div className="text-center py-12">
-                <FiImage className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
-                <h3 className="font-medium text-lg mb-2">No images in gallery</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Create images in the Art Studio first, then use them here.
-                </p>
-                <Button
-                  onClick={() => {
-                    setShowGalleryPicker(false);
-                    navigate('/art-studio');
-                  }}
-                  className="rounded-full"
-                >
-                  <FiZap className="mr-2" />
-                  Go to Art Studio
-                </Button>
-              </div>
-            ) : (
-              <ScrollArea className="h-[50vh]">
-                <div className="grid grid-cols-3 md:grid-cols-4 gap-3 p-1">
-                  {galleryImages.map((img, idx) => (
-                    <button
-                      key={img.id || idx}
-                      onClick={() => addGalleryImageToPage(img.image_url, activeImageSlot)}
-                      className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-purple-500 transition-all"
-                    >
-                      <img 
-                        src={img.image_url} 
-                        alt={img.name || 'Gallery image'}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <span className="text-white text-sm font-medium">Use Image</span>
-                      </div>
-                      {img.name && (
-                        <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-2 py-1">
-                          <p className="text-white text-xs truncate">{img.name}</p>
+            {/* Current tab images */}
+            {(() => {
+              const currentImages = galleryTab === 'book' ? galleryImages : generalGalleryImages;
+              
+              if (currentImages.length === 0) {
+                return (
+                  <div className="text-center py-12">
+                    <FiImage className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
+                    <h3 className="font-medium text-lg mb-2">
+                      {galleryTab === 'book' ? 'No images for this book' : 'No images in gallery'}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      {galleryTab === 'book' 
+                        ? 'Create images in Art Studio and assign them to this book, or check "All Gallery".'
+                        : 'Create images in the Art Studio first, then use them here.'
+                      }
+                    </p>
+                    {galleryTab === 'book' && generalGalleryImages.length > 0 ? (
+                      <Button
+                        onClick={() => setGalleryTab('all')}
+                        variant="outline"
+                        className="rounded-full"
+                      >
+                        View All Gallery ({generalGalleryImages.length} images)
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() => {
+                          setShowGalleryPicker(false);
+                          navigate('/art-studio');
+                        }}
+                        className="rounded-full"
+                      >
+                        <FiZap className="mr-2" />
+                        Go to Art Studio
+                      </Button>
+                    )}
+                  </div>
+                );
+              }
+              
+              return (
+                <ScrollArea className="h-[50vh]">
+                  <div className="grid grid-cols-3 md:grid-cols-4 gap-3 p-1">
+                    {currentImages.map((img, idx) => (
+                      <button
+                        key={img.id || idx}
+                        onClick={() => addGalleryImageToPage(img.image_url, activeImageSlot)}
+                        className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-purple-500 transition-all"
+                      >
+                        <img 
+                          src={img.image_url} 
+                          alt={img.name || 'Gallery image'}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <span className="text-white text-sm font-medium">Use Image</span>
                         </div>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </ScrollArea>
-            )}
+                        {img.name && (
+                          <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-2 py-1">
+                            <p className="text-white text-xs truncate">{img.name}</p>
+                          </div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </ScrollArea>
+              );
+            })()}
           </div>
         </DialogContent>
       </Dialog>
