@@ -558,23 +558,46 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         const raycaster = new THREE.Raycaster();
         const downRay = new THREE.Vector3(0, -1, 0);
         
-        // Cast ray down from center to find floor - start from higher up to ensure we're inside
-        raycaster.set(new THREE.Vector3(0, 20, 0), downRay);
-        const floorHits = raycaster.intersectObjects(collisionMeshesRef.current, true);
+        // Cast ray down from center to find floor
+        // Find a floor mesh specifically named "floor" and get its Y position
+        let floorLevel = 0;
+        let foundFloor = false;
         
-        let startY = PLAYER_HEIGHT;
-        if (floorHits.length > 0) {
-          // Use the FIRST floor hit (highest floor level)
-          startY = floorHits[0].point.y + PLAYER_HEIGHT;
-          console.log('Found floor at:', floorHits[0].point.y, 'Starting at:', startY);
-        } else {
-          // Fallback - use a reasonable height inside the library
-          startY = 2;
-          console.log('No floor found, using default height:', startY);
+        model.traverse((child) => {
+          if (child.isMesh) {
+            const name = child.name.toLowerCase();
+            if (name.includes('floor') && !name.includes('edge')) {
+              const meshBox = new THREE.Box3().setFromObject(child);
+              // Get the top of the floor mesh
+              if (!foundFloor || meshBox.max.y < floorLevel + 5) {
+                floorLevel = meshBox.max.y;
+                foundFloor = true;
+                console.log('Found floor mesh:', child.name, 'at Y:', floorLevel);
+              }
+            }
+          }
+        });
+        
+        // Fallback: use raycast but filter for low Y values
+        if (!foundFloor) {
+          raycaster.set(new THREE.Vector3(0, 50, 0), downRay);
+          const floorHits = raycaster.intersectObjects(collisionMeshesRef.current, true);
+          
+          // Find the lowest hit point that's above Y=0
+          for (const hit of floorHits) {
+            if (hit.point.y >= 0 && hit.point.y < 10) {
+              floorLevel = hit.point.y;
+              foundFloor = true;
+              console.log('Found floor via raycast at:', floorLevel);
+              break;
+            }
+          }
         }
         
-        // Position camera inside the library at center, slightly forward
-        // Start at center (0, 0) with correct height
+        let startY = foundFloor ? floorLevel + PLAYER_HEIGHT : PLAYER_HEIGHT;
+        console.log('Starting at Y:', startY);
+        
+        // Position camera inside the library at center
         camera.position.set(0, startY, 0);
         
         // Create floating book sprites for interactive book selection
