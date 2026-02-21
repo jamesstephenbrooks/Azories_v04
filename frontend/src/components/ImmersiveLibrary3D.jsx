@@ -773,43 +773,14 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         camera.position.x = newX;
         camera.position.z = newZ;
         
-        // Floor detection with raycast to follow terrain
+        // Floor detection - SIMPLE approach that was working before
+        // Just use the stored base floor level, don't raycast for floor
         const baseFloorY = bounds.floorY || 0;
-        let detectedFloorY = baseFloorY;
+        const targetY = baseFloorY + PLAYER_HEIGHT;
         
-        if (collisionMeshes.length > 0) {
-          // Cast ray downward from camera position
-          raycaster.set(
-            new THREE.Vector3(camera.position.x, camera.position.y + 1, camera.position.z),
-            new THREE.Vector3(0, -1, 0)
-          );
-          raycaster.far = 5; // Look up to 5 units below
-          
-          const floorHits = raycaster.intersectObjects(collisionMeshes, true);
-          
-          // Find the floor closest to our current position (not upper floors)
-          for (const hit of floorHits) {
-            const hitY = hit.point.y;
-            // Accept floors that are below us but within reasonable range
-            if (hitY < camera.position.y && hitY >= baseFloorY - 0.5) {
-              detectedFloorY = hitY;
-              break;
-            }
-          }
-        }
-        
-        const targetY = detectedFloorY + PLAYER_HEIGHT;
-        
-        // Smoothly follow the floor
-        const yDiff = targetY - camera.position.y;
-        if (Math.abs(yDiff) > 0.01) {
-          // Smooth interpolation - faster for falling, slower for climbing
-          const speed = yDiff < 0 ? 0.2 : 0.15;
-          camera.position.y += yDiff * speed;
-        }
-        
-        // Clamp Y to prevent going too high or too low
-        camera.position.y = Math.max(baseFloorY + PLAYER_HEIGHT * 0.5, Math.min(baseFloorY + PLAYER_HEIGHT * 2, camera.position.y));
+        // Keep camera at consistent floor height
+        // This avoids the jumping issues from raycast hitting wrong geometry
+        camera.position.y = targetY;
         
         playerOnGround.current = true;
         playerVelocity.current.y = 0;
