@@ -3196,20 +3196,19 @@ async def generate_with_reference(request: ConsistentCharacterRequest, current_u
     user = current_user
     
     try:
-        from emergentintegrations.llm.openai import OpenAI as EmergentOpenAI
+        from emergentintegrations.llm.openai import LlmChat, ImageContent, UserMessage
         from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
         
         if not EMERGENT_LLM_KEY:
             raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
         
-        client = EmergentOpenAI(api_key=EMERGENT_LLM_KEY)
+        chat = LlmChat(api_key=EMERGENT_LLM_KEY, model="gpt-4o")
         
         # Step 1: Analyze character reference for detailed description
-        char_analysis = await client.chat(
-            messages=[{
-                "role": "user",
-                "content": [
-                    {"type": "text", "text": """Analyze this character image EXTREMELY thoroughly.
+        char_analysis = await chat.chat(
+            messages=[
+                UserMessage(content=[
+                    """Analyze this character image EXTREMELY thoroughly.
                     Describe with EXACT precision:
                     - Face shape, exact eye shape and color, nose shape, lip shape
                     - Exact hair color (with highlights/lowlights), length, style, texture
@@ -3218,32 +3217,29 @@ async def generate_with_reference(request: ConsistentCharacterRequest, current_u
                     - Body type and proportions
                     - Current clothing/outfit in detail
                     - Expression and pose
-                    Output as a detailed prompt. Be extremely specific to enable recreation."""},
-                    {"type": "image_url", "image_url": {"url": request.characterReferenceImage}}
-                ]
-            }],
-            model="gpt-4o"
+                    Output as a detailed prompt. Be extremely specific to enable recreation.""",
+                    ImageContent(url=request.characterReferenceImage)
+                ])
+            ]
         )
         char_description = char_analysis.strip() if char_analysis else ""
         
         # Step 2: Analyze style reference if provided
         style_description = ""
         if request.styleReferenceImage:
-            style_analysis = await client.chat(
-                messages=[{
-                    "role": "user",
-                    "content": [
-                        {"type": "text", "text": """Describe this image's artistic style:
+            style_analysis = await chat.chat(
+                messages=[
+                    UserMessage(content=[
+                        """Describe this image's artistic style:
                         - Art medium/technique (digital painting, watercolor, anime, etc.)
                         - Color palette and temperature
                         - Lighting style and direction
                         - Texture and brush strokes
                         - Overall mood/atmosphere
-                        Output as style tags for image generation."""},
-                        {"type": "image_url", "image_url": {"url": request.styleReferenceImage}}
-                    ]
-                }],
-                model="gpt-4o"
+                        Output as style tags for image generation.""",
+                        ImageContent(url=request.styleReferenceImage)
+                    ])
+                ]
             )
             style_description = style_analysis.strip() if style_analysis else ""
         
