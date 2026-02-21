@@ -1157,6 +1157,12 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         if (child.userData?.isGenreBanner) {
           child.position.y = child.userData.baseY + Math.sin(time + child.userData.phase) * 0.1;
         }
+        // Pulsing animation for highlighted book
+        if (child.userData?.isHighlightedBook && child.material) {
+          const pulse = 0.5 + Math.sin(time * 3) * 0.3;
+          child.material.emissiveIntensity = pulse;
+          child.scale.setScalar(1 + Math.sin(time * 2) * 0.05);
+        }
       });
       
       renderer.render(scene, camera);
