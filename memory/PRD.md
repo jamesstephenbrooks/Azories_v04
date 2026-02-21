@@ -11,9 +11,30 @@ Create a digital book creating and reading web application called "Azories" for 
 
 ## What's Been Implemented
 
-### Latest Session (Feb 21, 2026) - Art Studio Enhancement
+### Latest Session (Feb 21, 2026) - Art Studio Phase 2 Fixes
+- **Expert Mode Style Node Dropdown**
+  - Changed from tabbed interface to searchable dropdown
+  - Categories: Realistic, Illustration, Traditional, Digital, 3D, Fantasy, Children, Retro, Cultural, Stylized
+  - 62 art styles with search functionality
+  - Grouped display by category
+  
+- **Expert Mode Image Node Resizing Fix**
+  - Fixed Reference and Output nodes - images now properly scale with node resize
+  - Changed from `object-cover` to `object-contain` for proper image display
+  - Added `absolute inset-0` positioning for full container coverage
+  - NodeResizer component properly integrated with flex layout
+
+- **Easy Mode Prompt History**
+  - New backend endpoints: GET/POST /api/art-studio/prompt-history
+  - History stored per user with deduplication (max 20 prompts)
+  - "History" button appears in Additional Details for Character Builder
+  - "History" button appears in Custom Scene Description for Scene Creator
+  - Clicking history shows dropdown of recent prompts for quick reuse
+  - Prompts auto-save on successful generation
+
+### Previous Session (Feb 21, 2026) - Art Studio Enhancement
 - **Phase 1: Easy Mode Art Studio Enhancements**
-  - Art style example images with preview thumbnails (10 styles)
+  - Art style example images with preview thumbnails (62 styles total)
   - Book assignment dropdown (assign images to specific books or General Library)
   - Reference image upload option
   - "Use from Gallery" to reuse previously generated images as references
@@ -29,6 +50,7 @@ Create a digital book creating and reading web application called "Azories" for 
   - Save/Load workflow functionality
   - Run workflow to generate images
   - Minimap and zoom controls
+  - Resizable nodes for Character, Scene, Reference, Output
   - PRO feature badge
 
 ### Previous Session - 3D Grand Library
