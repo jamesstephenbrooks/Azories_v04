@@ -983,6 +983,8 @@ export default function ArtStudio() {
             )}
           </div>
         </div>
+        </div>
+        </div>
       </div>
       
       {/* Gallery Picker Modal */}
