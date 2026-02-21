@@ -1275,6 +1275,66 @@ export default function BookEditor() {
           )}
         </div>
       </div>
+      
+      {/* Art Studio Gallery Picker Modal */}
+      <Dialog open={showGalleryPicker} onOpenChange={setShowGalleryPicker}>
+        <DialogContent className="max-w-4xl max-h-[80vh]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FiImage className="text-purple-500" />
+              Select from Art Studio Gallery
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="mt-4">
+            {galleryImages.length === 0 ? (
+              <div className="text-center py-12">
+                <FiImage className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
+                <h3 className="font-medium text-lg mb-2">No images in gallery</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Create images in the Art Studio first, then use them here.
+                </p>
+                <Button
+                  onClick={() => {
+                    setShowGalleryPicker(false);
+                    navigate('/art-studio');
+                  }}
+                  className="rounded-full"
+                >
+                  <FiZap className="mr-2" />
+                  Go to Art Studio
+                </Button>
+              </div>
+            ) : (
+              <ScrollArea className="h-[50vh]">
+                <div className="grid grid-cols-3 md:grid-cols-4 gap-3 p-1">
+                  {galleryImages.map((img, idx) => (
+                    <button
+                      key={img.id || idx}
+                      onClick={() => useGalleryImage(img.image_url, activeImageSlot)}
+                      className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-purple-500 transition-all"
+                    >
+                      <img 
+                        src={img.image_url} 
+                        alt={img.name || 'Gallery image'}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <span className="text-white text-sm font-medium">Use Image</span>
+                      </div>
+                      {img.name && (
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-2 py-1">
+                          <p className="text-white text-xs truncate">{img.name}</p>
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </ScrollArea>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
