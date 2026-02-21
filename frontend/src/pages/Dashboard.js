@@ -683,6 +683,16 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
           
+          {/* Reading Streak Tracker */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="mb-8"
+          >
+            <ReadingStreakTracker />
+          </motion.div>
+          
           {/* Tabs for Books and Analytics */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full max-w-md grid-cols-2 mb-6">
