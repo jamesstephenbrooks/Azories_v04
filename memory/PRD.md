@@ -238,5 +238,6 @@ Create a digital book creating and reading web application called "Azories" (azo
 - `/api/ai/generate-summary` - Generate back cover summary
 - `/api/admin/*` - Admin CMS (separate auth)
 - `/api/proxy/glb` - Proxy for CORS-bypassing GLB 3D model files
+- `/api/ambient-sounds/{sound}` - Proxy ambient sounds (rain, fireplace, forest, etc.)
 - `/api/users/{id}/profile` - User profile (GET/PUT)
 - `/api/users/{id}/follow` - Follow/unfollow user
