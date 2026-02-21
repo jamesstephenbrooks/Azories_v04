@@ -739,116 +739,80 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           };
         });
         
-        // Create Azora 3D sprite (young witch librarian)
-        const azoraGeometry = new THREE.PlaneGeometry(1.2, 1.8);
-        const azoraCanvas = document.createElement('canvas');
-        azoraCanvas.width = 256;
-        azoraCanvas.height = 384;
-        const azoraCtx = azoraCanvas.getContext('2d');
+        // Load Azora 3D model (GLB)
+        const AZORA_GLB_URL = 'https://customer-assets.emergentagent.com/job_c72cb56a-2d89-4690-9629-ade6d46638c8/artifacts/t9l9jikb_f0066361-3481-4680-b638-accd998414b5.glb';
+        const AZORA_PROXY_URL = `${window.location.origin}/api/glb-proxy?url=${encodeURIComponent(AZORA_GLB_URL)}`;
         
-        // Draw stylized Azora (young witch)
-        // Background glow
-        const azoraGlow = azoraCtx.createRadialGradient(128, 192, 0, 128, 192, 150);
-        azoraGlow.addColorStop(0, 'rgba(147, 51, 234, 0.3)');
-        azoraGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
-        azoraCtx.fillStyle = azoraGlow;
-        azoraCtx.fillRect(0, 0, 256, 384);
+        const azoraLoader = new GLTFLoader();
+        azoraLoader.setDRACOLoader(dracoLoader);
         
-        // Robe/Cloak (dark with purple tint)
-        azoraCtx.fillStyle = '#1a1030';
-        azoraCtx.beginPath();
-        azoraCtx.moveTo(128, 100);
-        azoraCtx.bezierCurveTo(60, 150, 50, 350, 70, 380);
-        azoraCtx.lineTo(186, 380);
-        azoraCtx.bezierCurveTo(206, 350, 196, 150, 128, 100);
-        azoraCtx.fill();
-        
-        // Hood
-        azoraCtx.fillStyle = '#2d1f50';
-        azoraCtx.beginPath();
-        azoraCtx.ellipse(128, 95, 50, 60, 0, Math.PI, 0);
-        azoraCtx.fill();
-        
-        // Face (simple, warm tone)
-        azoraCtx.fillStyle = '#f5d5c8';
-        azoraCtx.beginPath();
-        azoraCtx.ellipse(128, 90, 28, 35, 0, 0, Math.PI * 2);
-        azoraCtx.fill();
-        
-        // Hair (flowing, light brown/blonde)
-        azoraCtx.fillStyle = '#c4a574';
-        azoraCtx.beginPath();
-        azoraCtx.ellipse(128, 70, 32, 25, 0, Math.PI, 0);
-        azoraCtx.fill();
-        // Hair sides
-        azoraCtx.beginPath();
-        azoraCtx.moveTo(96, 80);
-        azoraCtx.quadraticCurveTo(80, 120, 85, 170);
-        azoraCtx.quadraticCurveTo(95, 140, 100, 100);
-        azoraCtx.fill();
-        azoraCtx.beginPath();
-        azoraCtx.moveTo(160, 80);
-        azoraCtx.quadraticCurveTo(176, 120, 171, 170);
-        azoraCtx.quadraticCurveTo(161, 140, 156, 100);
-        azoraCtx.fill();
-        
-        // Eyes (friendly)
-        azoraCtx.fillStyle = '#6b5344';
-        azoraCtx.beginPath();
-        azoraCtx.ellipse(115, 88, 5, 6, 0, 0, Math.PI * 2);
-        azoraCtx.ellipse(141, 88, 5, 6, 0, 0, Math.PI * 2);
-        azoraCtx.fill();
-        
-        // Smile
-        azoraCtx.strokeStyle = '#c49a87';
-        azoraCtx.lineWidth = 2;
-        azoraCtx.beginPath();
-        azoraCtx.arc(128, 100, 12, 0.1 * Math.PI, 0.9 * Math.PI);
-        azoraCtx.stroke();
-        
-        // Magic wand (held out)
-        azoraCtx.strokeStyle = '#4a3728';
-        azoraCtx.lineWidth = 4;
-        azoraCtx.beginPath();
-        azoraCtx.moveTo(170, 200);
-        azoraCtx.lineTo(210, 160);
-        azoraCtx.stroke();
-        
-        // Wand tip glow
-        azoraCtx.fillStyle = '#a855f7';
-        azoraCtx.shadowColor = '#a855f7';
-        azoraCtx.shadowBlur = 15;
-        azoraCtx.beginPath();
-        azoraCtx.arc(212, 158, 8, 0, Math.PI * 2);
-        azoraCtx.fill();
-        azoraCtx.shadowBlur = 0;
-        
-        // Sparkles around wand
-        azoraCtx.fillStyle = '#e9d5ff';
-        [[-10, -15], [15, -8], [5, 12], [-8, 8]].forEach(([ox, oy]) => {
-          azoraCtx.beginPath();
-          azoraCtx.arc(212 + ox, 158 + oy, 2, 0, Math.PI * 2);
-          azoraCtx.fill();
-        });
-        
-        const azoraTexture = new THREE.CanvasTexture(azoraCanvas);
-        azoraTexture.colorSpace = THREE.SRGBColorSpace;
-        
-        const azoraMaterial = new THREE.MeshBasicMaterial({
-          map: azoraTexture,
-          transparent: true,
-          side: THREE.DoubleSide,
-          depthWrite: false
-        });
-        
-        // Position Azora at floor level, standing in the center area
-        const azoraY = floorLevel + 0.9; // Standing height above floor
-        const azoraMesh = new THREE.Mesh(azoraGeometry, azoraMaterial);
-        azoraMesh.position.set(2, azoraY, 2); // Slightly off-center in the library
-        azoraMesh.userData = { isAzora: true, baseY: azoraY };
-        scene.add(azoraMesh);
-        azoraRef.current = azoraMesh;
-        console.log('Added Azora at Y:', azoraY);
+        azoraLoader.load(
+          AZORA_PROXY_URL,
+          (gltf) => {
+            const azoraModel = gltf.scene;
+            
+            // Scale and position Azora
+            azoraModel.scale.set(0.8, 0.8, 0.8); // Adjust scale as needed
+            const azoraY = floorLevel + 0.01; // Just above floor
+            azoraModel.position.set(2, azoraY, 2);
+            
+            // Enable shadows
+            azoraModel.traverse((child) => {
+              if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+              }
+            });
+            
+            // Setup animation if available
+            let mixer = null;
+            if (gltf.animations && gltf.animations.length > 0) {
+              mixer = new THREE.AnimationMixer(azoraModel);
+              const walkAction = mixer.clipAction(gltf.animations[0]);
+              walkAction.play();
+              azoraModel.userData.mixer = mixer;
+              console.log('Azora has', gltf.animations.length, 'animations');
+            }
+            
+            // Walking path waypoints around the library
+            const walkPath = [
+              { x: 2, z: 2 },
+              { x: 4, z: 0 },
+              { x: 2, z: -2 },
+              { x: 0, z: -3 },
+              { x: -2, z: -2 },
+              { x: -4, z: 0 },
+              { x: -2, z: 2 },
+              { x: 0, z: 3 },
+            ];
+            
+            azoraModel.userData = {
+              ...azoraModel.userData,
+              isAzora: true,
+              baseY: azoraY,
+              walkPath: walkPath,
+              currentWaypoint: 0,
+              walkSpeed: 0.8,
+              mixer: mixer
+            };
+            
+            scene.add(azoraModel);
+            azoraRef.current = azoraModel;
+            console.log('Loaded Azora GLB model at Y:', azoraY);
+          },
+          undefined,
+          (error) => {
+            console.error('Failed to load Azora model:', error);
+            // Fallback to simple placeholder if GLB fails
+            const fallbackGeom = new THREE.CylinderGeometry(0.3, 0.3, 1.5, 8);
+            const fallbackMat = new THREE.MeshBasicMaterial({ color: 0x9333ea });
+            const fallback = new THREE.Mesh(fallbackGeom, fallbackMat);
+            fallback.position.set(2, floorLevel + 0.75, 2);
+            fallback.userData = { isAzora: true, baseY: floorLevel + 0.75 };
+            scene.add(fallback);
+            azoraRef.current = fallback;
+          }
+        );
         
         setIsLoaded(true);
         setLoadError(null);
