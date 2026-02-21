@@ -1699,6 +1699,18 @@ export default function ArtStudio() {
                               <p className="text-white/50 text-xs">{item.style}</p>
                             </div>
                           </div>
+                          {/* Animate button */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openAnimateModal(item.image_url);
+                            }}
+                            className="absolute top-2 left-2 p-1.5 bg-pink-500/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                            title="Animate this image"
+                          >
+                            <FiPlay className="w-3 h-3 text-white" />
+                          </button>
+                          {/* Delete button */}
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
