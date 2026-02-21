@@ -1024,10 +1024,20 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           </div>
           
           {/* Bottom controls hint */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
-            <div className="bg-black/50 backdrop-blur-sm rounded-full px-4 py-2 text-white/70 text-sm">
-              WASD to walk • Click to look • ESC to release mouse
-            </div>
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 pointer-events-none">
+            {showClickHint ? (
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-purple-600 backdrop-blur-sm rounded-full px-6 py-3 text-white text-sm font-medium shadow-lg shadow-purple-500/30"
+              >
+                👆 Click anywhere to look around with mouse
+              </motion.div>
+            ) : (
+              <div className="bg-black/50 backdrop-blur-sm rounded-full px-4 py-2 text-white/70 text-sm">
+                WASD to walk • Mouse to look • ESC to release
+              </div>
+            )}
           </div>
           
           {/* Books panel */}
