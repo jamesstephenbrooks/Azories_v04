@@ -524,29 +524,76 @@ export default function ArtStudio() {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Panel - Builder/Controls */}
-          <div className="lg:col-span-2 space-y-6">
-            {activeTab === 'character' && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-6"
-              >
-                <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                  <FiUser className="text-purple-400" />
-                  Character Builder
-                </h2>
+        {/* Main Content with Art Styles Sidebar */}
+        <div className="flex gap-6">
+          {/* Left Sidebar - Art Styles (scrollable) */}
+          {(activeTab === 'character' || activeTab === 'scene') && (
+            <div className="w-64 flex-shrink-0">
+              <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-4 sticky top-4 max-h-[calc(100vh-180px)] overflow-y-auto">
+                <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2 sticky top-0 bg-[#1a1520] py-2 -mt-2 -mx-4 px-4 border-b border-white/10">
+                  <FiSliders className="text-purple-400" />
+                  Art Styles
+                  <span className="text-xs text-white/40 ml-auto">{ART_STYLES.length} styles</span>
+                </h3>
                 
-                {/* Character Name */}
-                <div className="mb-4">
-                  <label className="text-sm text-white/70 mb-1 block">Character Name</label>
-                  <Input
-                    value={character.name}
-                    onChange={(e) => setCharacter({ ...character, name: e.target.value })}
-                    placeholder="Enter character name..."
-                    className="bg-black/30 border-white/20 text-white"
-                  />
+                {ART_STYLE_CATEGORIES.map(category => (
+                  <div key={category.category} className="mb-4">
+                    <h4 className="text-xs font-medium text-purple-400 uppercase tracking-wider mb-2">
+                      {category.category}
+                    </h4>
+                    <div className="space-y-1">
+                      {category.styles.map(style => (
+                        <button
+                          key={style.id}
+                          onClick={() => setSelectedStyle(style.id)}
+                          data-testid={`style-${style.id}`}
+                          className={`w-full text-left px-3 py-2 rounded-lg transition-all ${
+                            selectedStyle === style.id
+                              ? 'bg-purple-500/30 border border-purple-500/50 text-white'
+                              : 'hover:bg-white/5 text-white/70 hover:text-white'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium">{style.name}</span>
+                            {selectedStyle === style.id && (
+                              <FiCheck className="w-4 h-4 text-purple-400" />
+                            )}
+                          </div>
+                          <p className="text-xs text-white/40 mt-0.5">{style.description}</p>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Main Content Area */}
+          <div className="flex-1">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Center Panel - Builder/Controls */}
+              <div className="lg:col-span-2 space-y-6">
+                {activeTab === 'character' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-6"
+                  >
+                    <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                      <FiUser className="text-purple-400" />
+                      Character Builder
+                    </h2>
+                    
+                    {/* Character Name */}
+                    <div className="mb-4">
+                      <label className="text-sm text-white/70 mb-1 block">Character Name</label>
+                      <Input
+                        value={character.name}
+                        onChange={(e) => setCharacter({ ...character, name: e.target.value })}
+                        placeholder="Enter character name..."
+                        className="bg-black/30 border-white/20 text-white"
+                      />
                 </div>
                 
                 {/* Trait Selectors */}
