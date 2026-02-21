@@ -502,13 +502,6 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       renderer.render(scene, camera);
     };
     animate();
-          playerOnGround.current = false;
-        }
-      }
-      
-      renderer.render(scene, camera);
-    };
-    animate();
 
     // Event listeners
     const handleResize = () => {
