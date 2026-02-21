@@ -1055,6 +1055,21 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         }
       }
       
+      // Animate floating genre banners and Azora
+      const time = Date.now() * 0.001;
+      scene.traverse((child) => {
+        if (child.userData?.isGenreBanner) {
+          // Floating animation
+          child.position.y = child.userData.baseY + Math.sin(time + child.userData.phase) * 0.15;
+        }
+        if (child.userData?.isAzora && cameraRef.current) {
+          // Make Azora face the camera (billboard)
+          child.lookAt(cameraRef.current.position.x, child.position.y, cameraRef.current.position.z);
+          // Gentle floating
+          child.position.y = child.userData.baseY + Math.sin(time * 0.5) * 0.05;
+        }
+      });
+      
       renderer.render(scene, camera);
     };
     animate();
