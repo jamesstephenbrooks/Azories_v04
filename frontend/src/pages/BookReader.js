@@ -522,7 +522,15 @@ export default function BookReader() {
                     ) : currentPageData?.video_url ? (
                       <video src={currentPageData.video_url} className="w-full h-full object-cover" controls autoPlay loop muted />
                     ) : currentPageData?.image_url ? (
-                      <img src={currentPageData.image_url} alt="" className="w-full h-full object-cover" />
+                      <img 
+                        src={currentPageData.image_url} 
+                        alt="" 
+                        className="w-full h-full"
+                        style={{
+                          objectFit: currentPageData.image_fit || 'cover',
+                          objectPosition: `${currentPageData.image_position_x || 50}% ${currentPageData.image_position_y || 50}%`
+                        }}
+                      />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 to-secondary/5">
                         <span className="font-reader text-6xl text-muted-foreground/20">{currentPage + 1}</span>
