@@ -633,135 +633,85 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         boundsRef.current.floorY = floorLevel;
         
         // Position camera inside the library at center
-        camera.position.set(0, startY, 0);
+        camera.position.set(0, startY, 2); // Start a bit forward from center
         
-        // Load the ornate book GLB model for books on shelves
-        const BOOK_GLB_URL = 'https://customer-assets.emergentagent.com/job_c72cb56a-2d89-4690-9629-ade6d46638c8/artifacts/a67239en_ornate_book.glb';
-        const BOOK_PROXY_URL = `${process.env.REACT_APP_BACKEND_URL}/api/proxy/glb?url=${encodeURIComponent(BOOK_GLB_URL)}`;
+        // DISABLE the ornate book GLB loading for now - it's causing the large geometry issue
+        // Instead, use simple box geometry books that are properly scaled to fit on shelves
+        // The interactive books will appear as small colored rectangles on the actual bookcase shelves
         
-        const bookLoader = new GLTFLoader();
-        bookLoader.setDRACOLoader(dracoLoader);
+        console.log('Setting up interactive book markers...');
         
-        // Bookshelf positions around the library (matching the GLB layout)
-        const shelfPositions = [
-          // Left side shelves
-          { x: -7, z: -3, rotation: Math.PI / 2, levels: [floorLevel + 0.8, floorLevel + 1.5, floorLevel + 2.2] },
-          { x: -7, z: 0, rotation: Math.PI / 2, levels: [floorLevel + 0.8, floorLevel + 1.5, floorLevel + 2.2] },
-          { x: -7, z: 3, rotation: Math.PI / 2, levels: [floorLevel + 0.8, floorLevel + 1.5, floorLevel + 2.2] },
-          // Right side shelves
-          { x: 7, z: -3, rotation: -Math.PI / 2, levels: [floorLevel + 0.8, floorLevel + 1.5, floorLevel + 2.2] },
-          { x: 7, z: 0, rotation: -Math.PI / 2, levels: [floorLevel + 0.8, floorLevel + 1.5, floorLevel + 2.2] },
-          { x: 7, z: 3, rotation: -Math.PI / 2, levels: [floorLevel + 0.8, floorLevel + 1.5, floorLevel + 2.2] },
-          // Back shelves
-          { x: -3, z: -7, rotation: 0, levels: [floorLevel + 0.8, floorLevel + 1.5, floorLevel + 2.2] },
-          { x: 0, z: -7, rotation: 0, levels: [floorLevel + 0.8, floorLevel + 1.5, floorLevel + 2.2] },
-          { x: 3, z: -7, rotation: 0, levels: [floorLevel + 0.8, floorLevel + 1.5, floorLevel + 2.2] },
+        // The bookcases in the GLB are along the back wall
+        // We'll place small clickable book markers near the existing book textures
+        const bookMeshes = [];
+        const booksToPlace = books.slice(0, 12); // Limit to 12 books for performance
+        
+        // Approximate positions where the bookcases are (based on the GLB structure)
+        // Back wall has 3 main bookcase sections
+        const bookPositions = [
+          // Left bookcase - 4 books
+          { x: -2.8, y: floorLevel + 1.0, z: -4.5 },
+          { x: -2.5, y: floorLevel + 1.5, z: -4.5 },
+          { x: -2.2, y: floorLevel + 2.0, z: -4.5 },
+          { x: -1.9, y: floorLevel + 1.3, z: -4.5 },
+          // Center bookcase - 4 books
+          { x: -0.3, y: floorLevel + 1.0, z: -4.5 },
+          { x: 0.0, y: floorLevel + 1.5, z: -4.5 },
+          { x: 0.3, y: floorLevel + 2.0, z: -4.5 },
+          { x: 0.6, y: floorLevel + 1.3, z: -4.5 },
+          // Right bookcase - 4 books
+          { x: 2.0, y: floorLevel + 1.0, z: -4.5 },
+          { x: 2.3, y: floorLevel + 1.5, z: -4.5 },
+          { x: 2.6, y: floorLevel + 2.0, z: -4.5 },
+          { x: 2.9, y: floorLevel + 1.3, z: -4.5 },
         ];
         
-        // Load the book model once, then clone for each book
-        bookLoader.load(
-          BOOK_PROXY_URL,
-          (gltf) => {
-            const bookTemplate = gltf.scene;
-            const bookMeshes = [];
-            
-            console.log('Loaded ornate book model, placing', books.length, 'books on shelves');
-            
-            // Place books on shelves
-            let bookIndex = 0;
-            shelfPositions.forEach((shelf, shelfIdx) => {
-              shelf.levels.forEach((levelY, levelIdx) => {
-                // Put 2-3 books per shelf level
-                const booksPerLevel = 2 + (shelfIdx % 2);
-                for (let i = 0; i < booksPerLevel && bookIndex < books.length; i++) {
-                  const book = books[bookIndex];
-                  
-                  // Clone the book model
-                  const bookMesh = bookTemplate.clone();
-                  
-                  // Scale the book appropriately
-                  bookMesh.scale.set(0.15, 0.15, 0.15);
-                  
-                  // Position on shelf - spread books along the shelf
-                  const offsetX = (i - (booksPerLevel - 1) / 2) * 0.25;
-                  const offsetZ = (i - (booksPerLevel - 1) / 2) * 0.25;
-                  
-                  if (Math.abs(shelf.rotation) === Math.PI / 2) {
-                    // Side shelves (facing X direction)
-                    bookMesh.position.set(shelf.x, levelY, shelf.z + offsetZ);
-                  } else {
-                    // Front/back shelves (facing Z direction)
-                    bookMesh.position.set(shelf.x + offsetX, levelY, shelf.z);
-                  }
-                  
-                  bookMesh.rotation.y = shelf.rotation + (Math.random() * 0.1 - 0.05); // Slight random tilt
-                  
-                  // Traverse and setup materials/shadows
-                  bookMesh.traverse((child) => {
-                    if (child.isMesh) {
-                      child.castShadow = true;
-                      child.receiveShadow = true;
-                      // Add slight color variation to make books unique
-                      if (child.material) {
-                        child.material = child.material.clone();
-                        // Tint based on genre
-                        const genreColors = {
-                          'Fantasy': 0x9333ea,
-                          'Adventure': 0x22c55e,
-                          'Mystery': 0x3b82f6,
-                          'Science Fiction': 0x06b6d4,
-                          'Romance': 0xec4899,
-                          'Horror': 0xef4444
-                        };
-                        const tintColor = genreColors[book.genre] || 0x8b5cf6;
-                        if (child.material.color) {
-                          child.material.color.lerp(new THREE.Color(tintColor), 0.3);
-                        }
-                      }
-                    }
-                  });
-                  
-                  // Store book data for click detection
-                  bookMesh.userData = { 
-                    bookId: book.id, 
-                    title: book.title,
-                    isBook: true 
-                  };
-                  
-                  scene.add(bookMesh);
-                  bookMeshes.push(bookMesh);
-                  bookIndex++;
-                }
-              });
-            });
-            
-            bookMeshesRef.current = bookMeshes;
-            console.log('Placed', bookMeshes.length, 'books on shelves');
-          },
-          undefined,
-          (error) => {
-            console.error('Failed to load book model:', error);
-            // Fallback to simple box books
-            const bookMeshes = [];
-            books.slice(0, 20).forEach((book, index) => {
-              const geometry = new THREE.BoxGeometry(0.1, 0.2, 0.15);
-              const material = new THREE.MeshStandardMaterial({ color: 0x8b5cf6 });
-              const bookMesh = new THREE.Mesh(geometry, material);
-              
-              const angle = (index / 20) * Math.PI * 2;
-              const radius = 6;
-              bookMesh.position.set(
-                Math.cos(angle) * radius,
-                floorLevel + 1 + (index % 3) * 0.3,
-                Math.sin(angle) * radius
-              );
-              bookMesh.userData = { bookId: book.id, title: book.title, isBook: true };
-              scene.add(bookMesh);
-              bookMeshes.push(bookMesh);
-            });
-            bookMeshesRef.current = bookMeshes;
-          }
-        );
+        booksToPlace.forEach((book, index) => {
+          if (index >= bookPositions.length) return;
+          
+          const pos = bookPositions[index];
+          
+          // Create a small book-shaped geometry (like a book spine visible on shelf)
+          const geometry = new THREE.BoxGeometry(0.08, 0.25, 0.15); // Small book size
+          
+          // Color based on genre
+          const genreColors = {
+            'Fantasy': 0x9333ea,
+            'Adventure': 0x22c55e,
+            'Mystery': 0x3b82f6,
+            'Science Fiction': 0x06b6d4,
+            'Romance': 0xec4899,
+            'Horror': 0xef4444
+          };
+          const bookColor = genreColors[book.genre] || 0x8b5cf6;
+          
+          const material = new THREE.MeshStandardMaterial({ 
+            color: bookColor,
+            emissive: bookColor,
+            emissiveIntensity: 0.2, // Slight glow to make them visible
+            roughness: 0.7,
+            metalness: 0.1
+          });
+          
+          const bookMesh = new THREE.Mesh(geometry, material);
+          bookMesh.position.set(pos.x, pos.y, pos.z);
+          bookMesh.rotation.y = Math.PI; // Face outward
+          bookMesh.castShadow = true;
+          bookMesh.receiveShadow = true;
+          
+          // Store book data for click detection
+          bookMesh.userData = { 
+            bookId: book.id, 
+            title: book.title,
+            isBook: true 
+          };
+          
+          scene.add(bookMesh);
+          bookMeshes.push(bookMesh);
+        });
+        
+        bookMeshesRef.current = bookMeshes;
+        console.log('Placed', bookMeshes.length, 'interactive book markers on shelves');
         
         // Add floating genre text labels above sections
         const bannerHeight = floorLevel + 3.5; // 3.5 meters above floor
