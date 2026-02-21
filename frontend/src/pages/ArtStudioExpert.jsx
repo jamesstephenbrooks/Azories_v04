@@ -90,17 +90,10 @@ const CharacterNode = ({ data, selected }) => {
   );
 };
 
-// Scene Node - Define environment/setting - Resizable
+// Scene Node - Define environment/setting - Fixed size
 const SceneNode = ({ data, selected }) => {
   return (
-    <div className={`bg-gradient-to-br from-emerald-900/90 to-emerald-800/90 rounded-xl border-2 ${selected ? 'border-emerald-400' : 'border-emerald-600/50'} shadow-xl backdrop-blur-sm h-full w-full min-w-[250px] min-h-[200px]`}>
-      <NodeResizer 
-        color="#10b981" 
-        isVisible={selected} 
-        minWidth={250} 
-        minHeight={200}
-        handleStyle={{ width: 8, height: 8 }}
-      />
+    <div className={`bg-gradient-to-br from-emerald-900/90 to-emerald-800/90 rounded-xl border-2 ${selected ? 'border-emerald-400' : 'border-emerald-600/50'} shadow-xl backdrop-blur-sm w-[250px] h-[240px]`}>
       <Handle type="target" position={Position.Left} className="!bg-emerald-400 !w-3 !h-3" />
       
       <div className="p-2 border-b border-emerald-600/30 flex items-center gap-2">
@@ -110,9 +103,6 @@ const SceneNode = ({ data, selected }) => {
         <div className="flex-1 min-w-0">
           <h4 className="text-xs font-semibold text-white truncate">Scene</h4>
         </div>
-        {selected && (
-          <FiMove className="w-3 h-3 text-emerald-400 flex-shrink-0" />
-        )}
       </div>
       
       <div className="p-2 space-y-2 overflow-auto h-[calc(100%-40px)]">
