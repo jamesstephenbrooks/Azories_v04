@@ -7,7 +7,7 @@ import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
 import { 
   FiImage, FiUser, FiLayers, FiGrid, FiSave, FiDownload, 
-  FiTrash2, FiPlus, FiZap, FiSliders, FiPalette, FiRefreshCw,
+  FiTrash2, FiPlus, FiZap, FiSliders, FiDroplet, FiRefreshCw,
   FiArrowLeft, FiFolder, FiStar, FiCopy, FiEdit2
 } from 'react-icons/fi';
 
