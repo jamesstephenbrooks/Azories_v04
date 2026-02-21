@@ -7,62 +7,64 @@ import {
   FiDroplet, FiMusic, FiCoffee, FiFeather
 } from 'react-icons/fi';
 
-// Ambient sound URLs - using reliable free sources with CORS support
+const API = process.env.REACT_APP_BACKEND_URL;
+
+// Ambient sounds - served through backend proxy to avoid CORS
 const AMBIENT_SOUNDS = {
   rain: {
     name: 'Rain',
     icon: FiDroplet,
     color: 'text-blue-400',
-    url: 'https://cdn.pixabay.com/audio/2022/05/16/audio_3c27f67d9b.mp3', // Rain sounds
+    key: 'rain',
     description: 'Gentle rainfall'
   },
   fireplace: {
     name: 'Fireplace',
     icon: FiSun,
     color: 'text-orange-400',
-    url: 'https://cdn.pixabay.com/audio/2021/08/08/audio_925904b4c3.mp3', // Fireplace crackle
+    key: 'fireplace',
     description: 'Crackling fire'
   },
   forest: {
     name: 'Forest',
     icon: FiFeather,
     color: 'text-green-400',
-    url: 'https://cdn.pixabay.com/audio/2022/03/10/audio_d9c1b7d6d2.mp3', // Forest birds
+    key: 'forest',
     description: 'Birds & nature'
   },
   ocean: {
     name: 'Ocean',
     icon: FiWind,
     color: 'text-cyan-400',
-    url: 'https://cdn.pixabay.com/audio/2022/06/25/audio_69a61cd6d6.mp3', // Ocean waves
+    key: 'ocean',
     description: 'Ocean waves'
   },
   cafe: {
     name: 'Café',
     icon: FiCoffee,
     color: 'text-amber-400',
-    url: 'https://cdn.pixabay.com/audio/2022/03/15/audio_8cb749bf85.mp3', // Cafe ambience
+    key: 'cafe',
     description: 'Coffee shop'
   },
   night: {
     name: 'Night',
     icon: FiMoon,
     color: 'text-indigo-400',
-    url: 'https://cdn.pixabay.com/audio/2021/09/06/audio_0917b61c90.mp3', // Night crickets
+    key: 'night',
     description: 'Crickets & night'
   },
   wind: {
     name: 'Wind',
     icon: FiCloud,
     color: 'text-gray-400',
-    url: 'https://cdn.pixabay.com/audio/2022/01/18/audio_d0c24f2ddf.mp3', // Wind sound
+    key: 'wind',
     description: 'Soft breeze'
   },
   library: {
     name: 'Library',
     icon: FiMusic,
     color: 'text-purple-400',
-    url: 'https://cdn.pixabay.com/audio/2022/02/22/audio_d1718ab41b.mp3', // Calm ambient
+    key: 'library',
     description: 'Quiet ambience'
   }
 };
