@@ -196,6 +196,8 @@ export default function ArtStudio() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const referenceInputRef = useRef(null);
+  const styleRefInputRef = useRef(null);
+  const charRefInputRef = useRef(null);
   
   // Main state
   const [activeTab, setActiveTab] = useState('character'); // character, scene, gallery
