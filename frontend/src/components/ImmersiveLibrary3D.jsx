@@ -257,17 +257,19 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     if (!cameraRef.current || !boundsRef.current) return;
     
     // Use the known floor level from when the library loaded
-    const floorY = boundsRef.current.floorY || 4.7; // Default to detected floor level
+    const floorY = boundsRef.current.floorY || 0;
     const targetY = floorY + PLAYER_HEIGHT;
     
     console.log('Teleporting to:', section.name, 'Floor Y:', floorY, 'Target Y:', targetY);
     
-    cameraRef.current.position.set(
-      section.position.x,
-      targetY,
-      section.position.z
-    );
+    // Clamp X and Z to stay within bounds
+    const newX = Math.max(boundsRef.current.minX + 1, Math.min(boundsRef.current.maxX - 1, section.position.x));
+    const newZ = Math.max(boundsRef.current.minZ + 1, Math.min(boundsRef.current.maxZ - 1, section.position.z));
+    
+    cameraRef.current.position.set(newX, targetY, newZ);
+    playerVelocity.current.x = 0;
     playerVelocity.current.y = 0;
+    playerVelocity.current.z = 0;
     playerOnGround.current = true;
     setShowGenreMenu(false);
   }, [PLAYER_HEIGHT]);
