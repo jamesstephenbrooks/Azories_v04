@@ -1366,9 +1366,13 @@ async def animate_image(request: AnimateImageRequest, current_user: dict = Depen
             raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
         
         # Analyze the image to create a detailed prompt
-        from emergentintegrations.llm.openai.chat import OpenAIChat
+        from emergentintegrations.llm.openai import LlmChat, UserMessage, ImageContent
         
-        chat = OpenAIChat(api_key=EMERGENT_LLM_KEY)
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"animate-{current_user['id']}-{str(uuid.uuid4())[:8]}",
+            system_message="You are an image analysis expert. Describe images in detail for video animation."
+        ).with_model("openai", "gpt-4o")
         
         # Get description of the image for the video prompt
         analysis_prompt = """Analyze this image and describe it in detail for video animation. 
@@ -1376,22 +1380,25 @@ async def animate_image(request: AnimateImageRequest, current_user: dict = Depen
         Be specific and detailed. Format as a single paragraph."""
         
         if request.image_url.startswith('data:'):
-            # Base64 image
-            image_content = request.image_url
+            # Base64 image - extract just the base64 part
+            if ',' in request.image_url:
+                image_base64 = request.image_url.split(',')[1]
+            else:
+                image_base64 = request.image_url
         else:
             # URL - fetch and convert to base64
             import httpx
             async with httpx.AsyncClient() as client:
                 response = await client.get(request.image_url, timeout=30)
                 image_bytes = response.content
-                image_content = f"data:image/png;base64,{base64.b64encode(image_bytes).decode('utf-8')}"
+                image_base64 = base64.b64encode(image_bytes).decode('utf-8')
         
-        # Analyze the image
-        image_description = chat.chat(
-            user_prompt=analysis_prompt,
-            model="gpt-4o",
-            images=[image_content]
+        # Analyze the image using multimodal message
+        user_msg = UserMessage(
+            text=analysis_prompt,
+            file_contents=[ImageContent(image_base64=image_base64)]
         )
+        image_description = await chat.send_message(user_msg)
         
         # Motion style descriptions
         motion_styles = {
