@@ -128,7 +128,7 @@ export default function BookEditor() {
   };
   
   // Use image from Art Studio gallery
-  const useGalleryImage = async (imageUrl, slot = 1) => {
+  const addGalleryImageToPage = async (imageUrl, slot = 1) => {
     if (!selectedPage) return;
     
     const isComicMode = selectedPage.layout === 'comic_4panel' || selectedPage.layout === 'comic_2panel';
