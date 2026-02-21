@@ -76,6 +76,8 @@ const SCENE_PRESETS = [
 export default function ArtStudio() {
   const { user, token } = useAuth();
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
+  const referenceInputRef = useRef(null);
   
   // Main state
   const [activeTab, setActiveTab] = useState('character'); // character, scene, gallery
@@ -83,6 +85,12 @@ export default function ArtStudio() {
   const [generatedImage, setGeneratedImage] = useState(null);
   const [gallery, setGallery] = useState([]);
   const [selectedGalleryItem, setSelectedGalleryItem] = useState(null);
+  const [userBooks, setUserBooks] = useState([]);
+  const [selectedBookId, setSelectedBookId] = useState('general'); // 'general' or book ID
+  
+  // Reference image state
+  const [referenceImage, setReferenceImage] = useState(null);
+  const [showGalleryPicker, setShowGalleryPicker] = useState(false);
   
   // Character builder state
   const [character, setCharacter] = useState({
@@ -111,12 +119,27 @@ export default function ArtStudio() {
   // Style state
   const [selectedStyle, setSelectedStyle] = useState('fantasy');
   
-  // Load gallery on mount
+  // Load gallery and books on mount
   useEffect(() => {
     if (token) {
       loadGallery();
+      loadUserBooks();
     }
   }, [token]);
+  
+  const loadUserBooks = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/books/my`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setUserBooks(data || []);
+      }
+    } catch (error) {
+      console.error('Failed to load books:', error);
+    }
+  };
   
   const loadGallery = async () => {
     try {
