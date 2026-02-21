@@ -2970,6 +2970,14 @@ async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: d
         
         # Style enhancement mapping - ENHANCED for variations and quality
         style_prompts = {
+            # SCI-FI & FUTURISTIC STYLES - Stylized digital art for stories
+            "scifi-portrait": "highly stylized sci-fi digital portrait, chrome metallic elements on clothing or accessories, flowing silky hair, ethereal atmospheric background, doll-like stylized features, smooth porcelain skin, professional concept art, trending on ArtStation, 8K ultra detailed",
+            "stylized-digital": "highly stylized digital art portrait, doll-like features, smooth porcelain skin texture, flowing detailed hair, soft ethereal background, NOT photorealistic, artistic stylization, professional digital painting, elegant composition",
+            "concept-portrait": "AAA game concept art portrait, professional character design, stylized yet detailed, cinematic composition, dramatic lighting, trending on ArtStation, industry quality concept art",
+            "chrome-aesthetic": "chrome aesthetic portrait, liquid metal elements, reflective chrome surfaces, metallic skin accents, futuristic fashion, smooth stylized features, professional digital art, 8K quality",
+            "ethereal-scifi": "ethereal sci-fi portrait, dreamy soft atmosphere, flowing hair with subtle iridescence, smooth stylized skin, delicate features, soft color palette with pink and silver tones, professional digital art, painterly quality",
+            "cyberpunk": "cyberpunk neon masterpiece, futuristic dystopian aesthetic, detailed tech elements, Blade Runner quality, neon-lit rain, holographic displays, chrome implants",
+            
             # ADVANCED PORTRAIT STYLES - Hyper-detailed digital art
             "neon-portrait": "hyper-detailed digital portrait, dramatic neon pink and blue split lighting, flowing detailed hair with individual strands visible, extremely polished skin, professional digital art, 8K ultra HD, trending on ArtStation, glossy finish, studio quality, cinematic color grading, volumetric lighting, rim light glow",
             "surreal-portrait": "surreal double exposure portrait, fantasy castle in background, dramatic sunset sky reflected in glasses, flowing wavy hair with purple and teal highlights, extremely detailed face, hyper-realistic digital painting, dreamy ethereal atmosphere, 8K ultra HD, trending on ArtStation, masterpiece quality",
@@ -2994,7 +3002,6 @@ async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: d
             "luminous-ethereal": "luminous ethereal fantasy, celestial divine quality, cosmic atmosphere, highly polished digital art, volumetric god rays, angelic lighting",
             "celestial-fantasy": "celestial divine fantasy art, cosmic ethereal beauty, nebula starry atmosphere, luminous polished rendering, otherworldly masterpiece",
             "dark-fantasy": "dark gothic fantasy masterpiece, dramatic chiaroscuro lighting, moody atmospheric, detailed dark art, Berserk/Dark Souls quality",
-            "cyberpunk": "cyberpunk neon masterpiece, futuristic dystopian aesthetic, detailed tech elements, Blade Runner quality, neon-lit rain, holographic displays",
             "steampunk": "steampunk Victorian masterpiece, intricate brass machinery, detailed clockwork mechanisms, premium steampunk illustration, antique quality",
             "concept-art": "professional concept art, industry AAA quality, detailed character design, cinematic composition, trending on ArtStation",
             "storybook": "beautiful children's book illustration, whimsical charming style, warm inviting colors, professional storybook art, enchanting quality",
