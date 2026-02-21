@@ -11,20 +11,19 @@ Create a digital book creating and reading web application called "Azories" (azo
 
 ## What's Been Implemented
 
-### Latest Updates (Feb 21, 2026) - 3D Library Mobile & Gravity Fixes
-- **Floor-following gravity**: Camera now properly follows terrain with raycast detection
-- **Mobile joystick**: Added visual joystick (bottom-left) for touch movement controls
-- **Responsive welcome screen**: Shows joystick instructions on mobile, keyboard on desktop
-- **Disabled Azora**: Removed until positioning can be calibrated
-- **Disabled book markers**: Removed floating boxes until shelf positions determined
-- **Disabled genre banners**: Removed until correct bookcase positions identified
-- **Camera height**: Set to 1.1m for proper library scale
+### Latest Updates (Feb 21, 2026) - 3D Library Mobile & Camera Fixes
+- **Camera starting angle**: Now tilted down (-0.2 rad) to see floor, bookcases, and room
+- **Camera position**: Set at (0, floorY+1.1, 2) looking toward bookcases
+- **Gravity simplified**: Fixed to floor level (4.72) to prevent floating/jumping
+- **Touch panning sensitivity**: Increased 3x (0.003 → 0.008) for faster look-around
+- **Mobile UI cleanup**: Hidden Azora button and Books panel on mobile for clear joystick
+- **Mobile joystick**: Visual joystick at bottom-left for touch movement
 
-### Previous Session: 3D Library Rendering Fixes
-- Fixed "purple screen" issue
-- Camera positioned correctly facing bookcases
-- Scene background updated to warm brown
-- Removed large floating geometry from ornate_book.glb
+### Previous Session: Core Fixes
+- Fixed floor-following gravity
+- Added mobile joystick controls
+- Responsive welcome screen (touch vs keyboard instructions)
+- Disabled Azora, banners, and book markers (need calibration)
 
 ### Core Features Implemented
 - Full-stack book creation platform
@@ -54,37 +53,40 @@ Create a digital book creating and reading web application called "Azories" (azo
 - [x] 3D Library with GLB model
 - [x] Floor-following gravity
 - [x] Mobile joystick controls
+- [x] Camera starting angle (see floor + bookcases)
 
 ### P1 (High Priority) - IN PROGRESS
-- [ ] Re-enable genre banners with correct positions
-- [ ] Re-enable Azora with proper calibration
-- [ ] Re-enable interactive books on shelves
+- [ ] Test mobile joystick on device
+- [ ] Verify walking works properly
+- [ ] Re-enable Azora with correct floor position
+- [ ] Re-enable genre banners above bookcases
 - [ ] Stripe payment integration
-- [ ] Voice narration UI improvements
 
 ### P2 (Medium Priority)
+- [ ] Interactive books on shelves
 - [ ] Art Studio node-based UI (React Flow)
 - [ ] Personalized book recommendations
-- [ ] "Call Azora Over" feature
 
 ### P3 (Nice to Have)
+- [ ] "Call Azora Over" walking feature
 - [ ] Multiplayer library exploration
 - [ ] Animate still images
-- [ ] Comic book advanced layouts
 
 ## Key Files
 - `/app/frontend/src/components/ImmersiveLibrary3D.jsx` - 3D library logic
 - `/app/frontend/src/pages/Library.js` - Library page with view modes
 - `/app/backend/server.py` - All backend routes
 
-## Known Issues (Currently Disabled)
-1. Genre banners need position calibration to appear above bookcases
-2. Interactive book markers need shelf position calibration
-3. Azora 3D model needs proper floor positioning
-
 ## Technical Notes - 3D Library
-- Floor level detected at Y: 4.72
+- Library bounds: X: -9.5 to 9.5, Z: -9.5 to 9.5
+- Floor level: Y = 4.722
 - Player height: 1.1m (eye level Y: 5.82)
-- Camera start position: (0, 5.82, 3)
-- GLB model: gothic_library_16_cycles-compressed.glb
-- Mobile uses touch joystick, desktop uses WASD + mouse drag
+- Camera start: (0, 5.82, 2) facing negative Z
+- Camera tilt: -0.2 radians (looking down)
+- Touch sensitivity: 0.008 (panning), threshold 15px (joystick)
+- Mobile UI: Joystick visible, Books panel and Azora button hidden
+
+## Currently Disabled (Need Calibration)
+1. Azora 3D model - position needs calibration
+2. Genre banners - need correct bookcase positions
+3. Interactive book markers - need shelf position mapping
