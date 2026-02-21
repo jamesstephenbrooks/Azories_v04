@@ -78,6 +78,10 @@ export default function BookEditor() {
   const [generalGalleryImages, setGeneralGalleryImages] = useState([]);
   const [galleryTab, setGalleryTab] = useState('book'); // 'book' or 'all'
   
+  // Cover Gallery picker
+  const [showCoverGalleryPicker, setShowCoverGalleryPicker] = useState(false);
+  const [coverGalleryTarget, setCoverGalleryTarget] = useState('front'); // 'front' or 'back'
+  
   // New chapter/page dialogs
   const [newChapterOpen, setNewChapterOpen] = useState(false);
   const [newChapterTitle, setNewChapterTitle] = useState('');
