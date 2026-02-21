@@ -67,11 +67,9 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
   const bookMeshesRef = useRef([]);
   const azoraRef = useRef(null);
   
-  // Physics constants - lower eye level for child exploring library
-  const GRAVITY = 20;
-  const PLAYER_HEIGHT = 0.8; // Very low eye level to feel immersed in the grand library
+  // Physics constants - low eye level for immersive experience
+  const PLAYER_HEIGHT = 1.2; // Slightly higher eye level for better viewing
   const MOVE_SPEED = 4;
-  const FRICTION = 10;
   
   // Azora (AI assistant) state
   const [azoraPosition, setAzoraPosition] = useState({ x: 2, z: 0 }); // Center of room
