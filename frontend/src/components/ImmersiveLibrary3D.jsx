@@ -447,6 +447,22 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       }
     }
     
+    // Check for genre banner clicks first
+    if (genreBannersRef.current.length > 0) {
+      raycasterRef.current.far = 50;
+      const bannerHits = raycasterRef.current.intersectObjects(genreBannersRef.current, true);
+      
+      if (bannerHits.length > 0) {
+        const banner = bannerHits[0].object;
+        const genreName = banner.userData?.genreName;
+        if (genreName) {
+          console.log('Clicked genre banner:', genreName);
+          setSelectedGenre(genreName);
+          return;
+        }
+      }
+    }
+    
     if (isMobileDevice) return; // Skip book click handling on mobile
     
     // Check for Azora click first
