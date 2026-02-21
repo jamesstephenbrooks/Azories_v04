@@ -3476,7 +3476,7 @@ async def generate_with_reference(request: ConsistentCharacterRequest, current_u
         if request.styleReferenceImage:
             async with httpx.AsyncClient() as client:
                 style_response = await client.get(request.styleReferenceImage, timeout=30.0)
-                style_base64 = base64.b64encode(style_response.content).decode('utf-8')
+                style_base64 = base64_module.b64encode(style_response.content).decode('utf-8')
             
             style_chat = LlmChat(
                 api_key=EMERGENT_LLM_KEY,
