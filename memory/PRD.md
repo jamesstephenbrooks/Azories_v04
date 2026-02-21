@@ -30,12 +30,12 @@ Create a digital book creating and reading web application called "Azories" for 
 - Moved book popup to **center of screen** with backdrop
 - Enhanced spiral staircase climbing physics
 
-**Part 4: Additional Enhancements**
-- **More Scene Presets** (24 total): Added Dreamscape, Sunset Cliffs, Aurora, Cherry Blossom, Ruins, Throne Room, Tavern, Garden, Desert, Crystal Cave, Floating Islands, Moonlit Lake, Battlefield, Village, Ship Deck, Magic Academy
-- **New Art Styles**: Added "Ethereal Fantasy" and "Surreal Dreamscape" styles (matching user's reference image)
-- **Prompt History Scroll** - Moved under Reference Image section with custom scrollbar
-- **Copy to Expert Mode** - Button to transfer character data from Easy Mode to Node Editor
-- **Expert Mode Fixes** - Added better error handling and logging
+**Part 5: Gallery Integration Between Art Studio & Book Editor**
+- **Expert Mode Save to Gallery** - Green save button on output node saves to gallery with book assignment
+- **Book Editor "Use from Art Studio Gallery"** - New button in Image upload section
+- **Gallery Picker Modal** - Shows saved images, click to add to current page
+- **Book-filtered Gallery** - GET /api/art-studio/gallery?book_id=xxx filters by book
+- **Scene Presets Expanded** - 24 scene presets in both Easy Mode and Expert Mode
 
 ### Previous Session (Feb 21, 2026) - Art Studio Enhancement
 - **Phase 1: Easy Mode Art Studio Enhancements**
