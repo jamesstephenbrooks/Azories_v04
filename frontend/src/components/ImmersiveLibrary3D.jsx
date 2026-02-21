@@ -194,12 +194,22 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
   // Pointer lock handlers
   const requestPointerLock = useCallback(() => {
     if (canvasRef.current && isExploring) {
-      canvasRef.current.requestPointerLock();
+      console.log('Requesting pointer lock...');
+      canvasRef.current.requestPointerLock().then(() => {
+        console.log('Pointer lock granted');
+      }).catch((err) => {
+        console.log('Pointer lock failed:', err);
+      });
     }
   }, [isExploring]);
 
   const onPointerLockChange = useCallback(() => {
-    isPointerLocked.current = document.pointerLockElement === canvasRef.current;
+    const locked = document.pointerLockElement === canvasRef.current;
+    isPointerLocked.current = locked;
+    console.log('Pointer lock changed:', locked);
+    if (locked) {
+      setShowClickHint(false);
+    }
   }, []);
 
   // Teleport to genre section
