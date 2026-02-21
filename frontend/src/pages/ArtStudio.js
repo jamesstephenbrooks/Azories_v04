@@ -750,10 +750,83 @@ export default function ArtStudio() {
                     animate={{ opacity: 1, y: 0 }}
                     className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-6"
                   >
-                    <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                      <FiUser className="text-purple-400" />
-                      Character Builder
-                    </h2>
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                        <FiUser className="text-purple-400" />
+                        Character Builder
+                      </h2>
+                      
+                      {/* Character Profile Actions */}
+                      <div className="flex items-center gap-2">
+                        {characterProfiles.length > 0 && (
+                          <div className="relative">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setShowProfileSelector(!showProfileSelector)}
+                              className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/20 text-xs"
+                              data-testid="use-profile-btn"
+                            >
+                              <FiUser className="w-3 h-3 mr-1" />
+                              Use Profile ({characterProfiles.length})
+                            </Button>
+                            
+                            {/* Profile Selector Dropdown */}
+                            {showProfileSelector && (
+                              <div className="absolute right-0 top-full mt-1 z-20 w-64 bg-[#1a1520] border border-cyan-500/30 rounded-lg shadow-xl max-h-64 overflow-y-auto">
+                                <div className="p-2 border-b border-white/10">
+                                  <span className="text-xs text-white/50">Saved Character Profiles</span>
+                                </div>
+                                {characterProfiles.map((profile, idx) => (
+                                  <button
+                                    key={profile.id || idx}
+                                    onClick={() => {
+                                      setSelectedProfile(profile);
+                                      generateWithProfile(profile.id);
+                                      setShowProfileSelector(false);
+                                    }}
+                                    className="w-full px-3 py-2 text-left hover:bg-cyan-500/20 border-b border-white/5 last:border-0"
+                                  >
+                                    <div className="text-sm text-white font-medium">{profile.name}</div>
+                                    <div className="text-xs text-white/50 truncate">{profile.description?.substring(0, 50)}...</div>
+                                    <div className="text-[10px] text-cyan-400 mt-1">
+                                      {profile.generation_count || 0} images generated
+                                    </div>
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={saveCharacterProfile}
+                          className="border-green-500/50 text-green-400 hover:bg-green-500/20 text-xs"
+                          data-testid="save-profile-btn"
+                        >
+                          <FiSave className="w-3 h-3 mr-1" />
+                          Save Profile
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    {/* Info about character consistency */}
+                    {selectedProfile && (
+                      <div className="mb-4 p-3 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
+                        <div className="flex items-center gap-2 text-cyan-400 text-sm">
+                          <FiUser className="w-4 h-4" />
+                          <span>Using profile: <strong>{selectedProfile.name}</strong></span>
+                          <button 
+                            onClick={() => setSelectedProfile(null)}
+                            className="ml-auto text-xs text-white/50 hover:text-white"
+                          >
+                            Clear
+                          </button>
+                        </div>
+                      </div>
+                    )}
                     
                     {/* Character Name */}
                     <div className="mb-4">
