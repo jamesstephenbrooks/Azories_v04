@@ -188,7 +188,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     }
     
     // Method 2: Drag to look (if dragging)
-    if (isDragging.current && isExploring) {
+    if (isDragging.current && isExploringRef.current) {
       const movementX = event.clientX - lastMousePos.current.x;
       const movementY = event.clientY - lastMousePos.current.y;
       
@@ -203,16 +203,16 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       
       cameraRef.current.quaternion.setFromEuler(euler.current);
     }
-  }, [isExploring]);
+  }, []);
 
   // Mouse down - start drag look
   const onMouseDown = useCallback((event) => {
-    if (!isExploring || isMobileDevice) return;
+    if (!isExploringRef.current || isMobileDevice) return;
     // Right click or left click to drag
     isDragging.current = true;
     lastMousePos.current = { x: event.clientX, y: event.clientY };
     setShowClickHint(false);
-  }, [isExploring, isMobileDevice]);
+  }, [isMobileDevice]);
 
   // Mouse up - stop drag look
   const onMouseUp = useCallback(() => {
@@ -221,7 +221,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
 
   // Pointer lock handlers
   const requestPointerLock = useCallback(() => {
-    if (canvasRef.current && isExploring) {
+    if (canvasRef.current && isExploringRef.current) {
       console.log('Requesting pointer lock...');
       try {
         // Try the Promise-based API first
