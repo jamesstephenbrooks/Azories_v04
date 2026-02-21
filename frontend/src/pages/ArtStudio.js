@@ -225,7 +225,8 @@ export default function ArtStudio() {
     eyeColor: 'Brown',
     clothing: 'Fantasy',
     expression: 'Confident',
-    additionalDetails: ''
+    additionalDetails: '',
+    transparentBackground: false  // For compositing characters into scenes
   });
   
   // Scene builder state
