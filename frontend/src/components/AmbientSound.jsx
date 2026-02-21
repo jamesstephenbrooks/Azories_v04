@@ -114,8 +114,9 @@ export default function AmbientSound({ genre = 'General', isReading = false }) {
       audioRef.current.pause();
     }
 
-    const audio = new Audio(sound.url);
-    audio.crossOrigin = "anonymous"; // Help with CORS
+    // Use backend proxy to avoid CORS issues
+    const audioUrl = `${API}/api/ambient-sounds/${sound.key}`;
+    const audio = new Audio(audioUrl);
     audio.loop = true;
     audio.volume = volume[0] / 100;
     
