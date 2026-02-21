@@ -1384,12 +1384,18 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     document.addEventListener('pointerlockchange', onPointerLockChange);
     document.addEventListener('pointerlockerror', onPointerLockError);
     
+    // Book rotation event listeners
+    document.addEventListener('mousemove', handleBookRotationMove);
+    document.addEventListener('mouseup', handleBookRotationEnd);
+    
     // Touch events for mobile
     const canvas = canvasRef.current;
     if (canvas) {
       canvas.addEventListener('touchstart', onTouchStart, { passive: false });
       canvas.addEventListener('touchmove', onTouchMove, { passive: false });
       canvas.addEventListener('touchend', onTouchEnd);
+      canvas.addEventListener('touchmove', handleBookRotationMove, { passive: false });
+      canvas.addEventListener('touchend', handleBookRotationEnd);
     }
 
     // Cleanup
