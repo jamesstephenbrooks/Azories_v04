@@ -2062,8 +2062,10 @@ export default function ArtStudio() {
                                 <FiTrash2 className="w-3 h-3 text-white" />
                               </button>
                             </div>
-                      ))}
-                    </div>
+                          ))}
+                        </div>
+                      )}
+                    </>
                   );
                 })()}
               </motion.div>
