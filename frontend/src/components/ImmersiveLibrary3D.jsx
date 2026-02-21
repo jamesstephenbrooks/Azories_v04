@@ -905,12 +905,12 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       }
     );
 
-    // Animation loop with physics and raycasting collision
+    // Animation loop with SIMPLIFIED physics - focus on stable movement
     const animate = () => {
       if (!mounted) return;
       animationIdRef.current = requestAnimationFrame(animate);
       
-      const delta = Math.min(clockRef.current.getDelta(), 0.1);
+      const delta = Math.min(clockRef.current.getDelta(), 0.05); // Cap delta more aggressively
       
       if (isExploring && cameraRef.current) {
         const camera = cameraRef.current;
@@ -942,151 +942,77 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           moveDirection.sub(sidewaysDirection.current);
         }
         
-        // Normalize and apply speed
+        // Normalize and apply speed - direct velocity, no acceleration
         if (moveDirection.length() > 0) {
           moveDirection.normalize();
           playerVelocity.current.x = moveDirection.x * MOVE_SPEED;
           playerVelocity.current.z = moveDirection.z * MOVE_SPEED;
         } else {
-          // Apply friction when not moving
-          playerVelocity.current.x *= Math.max(0, 1 - FRICTION * delta);
-          playerVelocity.current.z *= Math.max(0, 1 - FRICTION * delta);
+          // Stop immediately when not pressing keys (no friction sliding)
+          playerVelocity.current.x = 0;
+          playerVelocity.current.z = 0;
         }
         
         // Calculate desired new position
         let newX = camera.position.x + playerVelocity.current.x * delta;
         let newZ = camera.position.z + playerVelocity.current.z * delta;
         
-        // Raycast-based wall collision detection - cast multiple rays and implement wall sliding
+        // SIMPLIFIED wall collision - cast ray in movement direction only
+        const COLLISION_RADIUS = 0.4;
+        
         if (collisionMeshes.length > 0 && (playerVelocity.current.x !== 0 || playerVelocity.current.z !== 0)) {
           const horizontalVelocity = new THREE.Vector3(
             playerVelocity.current.x,
             0,
             playerVelocity.current.z
+          ).normalize();
+          
+          // Ray from chest height in movement direction
+          const rayOrigin = new THREE.Vector3(
+            camera.position.x,
+            camera.position.y - 0.3, // chest height
+            camera.position.z
           );
           
-          if (horizontalVelocity.length() > 0.01) {
-            const rayDir = horizontalVelocity.clone().normalize();
-            let hitNormal = null;
-            let minDistance = Infinity;
-            
-            // Cast rays at multiple heights (feet, waist, chest)
-            const rayHeights = [0.3, 0.8, 1.4];
-            for (const height of rayHeights) {
-              const rayOrigin = new THREE.Vector3(
-                camera.position.x,
-                camera.position.y - PLAYER_HEIGHT + height,
-                camera.position.z
-              );
-              
-              raycaster.set(rayOrigin, rayDir);
-              raycaster.far = 0.8; // Check 0.8 units ahead
-              
-              const hits = raycaster.intersectObjects(collisionMeshes, true);
-              if (hits.length > 0 && hits[0].distance < minDistance) {
-                minDistance = hits[0].distance;
-                hitNormal = hits[0].face?.normal?.clone();
-              }
-            }
-            
-            if (minDistance < 0.5) {
-              // Wall hit - implement wall sliding instead of stopping
-              if (hitNormal) {
-                // Transform normal to world space
-                hitNormal.transformDirection(raycaster.intersectObjects(collisionMeshes, true)[0]?.object?.matrixWorld || new THREE.Matrix4());
-                hitNormal.y = 0;
-                hitNormal.normalize();
-                
-                // Project velocity onto the wall plane (slide along wall)
-                const dot = playerVelocity.current.x * hitNormal.x + playerVelocity.current.z * hitNormal.z;
-                newX = camera.position.x + (playerVelocity.current.x - hitNormal.x * dot) * delta * 0.5;
-                newZ = camera.position.z + (playerVelocity.current.z - hitNormal.z * dot) * delta * 0.5;
-              } else {
-                // Fallback: just stop
-                newX = camera.position.x;
-                newZ = camera.position.z;
-              }
-              playerVelocity.current.x *= 0.3;
-              playerVelocity.current.z *= 0.3;
-            }
-          }
-        }
-        
-        // Secondary collision check after position update to prevent going through walls
-        const finalCheckOrigin = new THREE.Vector3(newX, camera.position.y - 0.5, newZ);
-        const directions = [
-          new THREE.Vector3(1, 0, 0),
-          new THREE.Vector3(-1, 0, 0),
-          new THREE.Vector3(0, 0, 1),
-          new THREE.Vector3(0, 0, -1)
-        ];
-        
-        for (const dir of directions) {
-          raycaster.set(finalCheckOrigin, dir);
-          raycaster.far = 0.3;
+          raycaster.set(rayOrigin, horizontalVelocity);
+          raycaster.far = COLLISION_RADIUS + 0.2;
+          
           const hits = raycaster.intersectObjects(collisionMeshes, true);
-          if (hits.length > 0 && hits[0].distance < 0.25) {
-            // Too close to wall - push back
-            newX -= dir.x * (0.25 - hits[0].distance);
-            newZ -= dir.z * (0.25 - hits[0].distance);
+          
+          if (hits.length > 0 && hits[0].distance < COLLISION_RADIUS) {
+            // Wall hit - STOP movement, don't slide
+            newX = camera.position.x;
+            newZ = camera.position.z;
+            playerVelocity.current.x = 0;
+            playerVelocity.current.z = 0;
           }
         }
         
         // Apply boundary collision (fallback)
-        newX = Math.max(bounds.minX, Math.min(bounds.maxX, newX));
-        newZ = Math.max(bounds.minZ, Math.min(bounds.maxZ, newZ));
+        newX = Math.max(bounds.minX + 0.5, Math.min(bounds.maxX - 0.5, newX));
+        newZ = Math.max(bounds.minZ + 0.5, Math.min(bounds.maxZ - 0.5, newZ));
         
         camera.position.x = newX;
         camera.position.z = newZ;
         
-        // Raycast-based floor detection - only detect floor BELOW current position
-        // This prevents jumping to upper floors
-        let floorY = bounds.floorY;
-        const currentFloorLevel = camera.position.y - PLAYER_HEIGHT;
+        // SIMPLIFIED floor detection - use stored floor level, don't raycast for floor
+        // This prevents the "jumping to upper floors" bug completely
+        const baseFloorY = bounds.floorY || 0;
+        const targetY = baseFloorY + PLAYER_HEIGHT;
         
-        if (collisionMeshes.length > 0) {
-          raycaster.set(
-            new THREE.Vector3(camera.position.x, camera.position.y, camera.position.z),
-            new THREE.Vector3(0, -1, 0)
-          );
-          raycaster.far = PLAYER_HEIGHT + 2; // Only check reasonable distance below
-          
-          const floorHits = raycaster.intersectObjects(collisionMeshes, true);
-          
-          // Find the highest floor that's BELOW current position
-          for (const hit of floorHits) {
-            // Only accept floors that are below us (with small tolerance for slopes)
-            if (hit.point.y < camera.position.y - PLAYER_HEIGHT + 0.5) {
-              floorY = hit.point.y;
-              break; // Use the first (highest) floor below us
-            }
-          }
+        // Keep player locked to ground floor - no vertical movement at all
+        // This eliminates all vertical jumping/physics bugs
+        if (Math.abs(camera.position.y - targetY) > 0.01) {
+          // Smoothly interpolate to target height (handles spawning at wrong height)
+          camera.position.y = camera.position.y + (targetY - camera.position.y) * 0.1;
         }
         
-        // Apply gravity and floor collision - smooth movement
-        if (!playerOnGround.current) {
-          playerVelocity.current.y -= GRAVITY * delta;
-          // Cap falling speed
-          playerVelocity.current.y = Math.max(playerVelocity.current.y, -15);
-        }
+        // Clamp Y to prevent any vertical drift
+        camera.position.y = Math.max(baseFloorY + PLAYER_HEIGHT * 0.5, Math.min(baseFloorY + PLAYER_HEIGHT * 1.5, camera.position.y));
         
-        let newY = camera.position.y + playerVelocity.current.y * delta;
-        const targetY = floorY + PLAYER_HEIGHT;
-        
-        if (newY <= targetY) {
-          // Smooth landing
-          camera.position.y = targetY;
-          playerVelocity.current.y = 0;
-          playerOnGround.current = true;
-        } else if (newY > targetY + 0.1) {
-          // In the air
-          camera.position.y = Math.min(bounds.ceilingY, newY);
-          playerOnGround.current = false;
-        } else {
-          // On ground, keep at floor level
-          camera.position.y = targetY;
-          playerOnGround.current = true;
-        }
+        // Player is always on ground (no jumping in this library)
+        playerOnGround.current = true;
+        playerVelocity.current.y = 0;
       }
       
       // Animate floating genre banners
