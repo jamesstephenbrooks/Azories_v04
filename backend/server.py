@@ -2819,11 +2819,9 @@ async def art_studio_gallery(current_user: dict = Depends(get_current_user)):
         raise HTTPException(status_code=500, detail="Failed to load gallery")
 
 @api_router.delete("/art-studio/gallery/{image_id}")
-async def art_studio_delete(image_id: str, credentials: HTTPAuthorizationCredentials = Depends(security)):
+async def art_studio_delete(image_id: str, current_user: dict = Depends(get_current_user)):
     """Delete an image from user's gallery"""
-    user = await get_current_user(credentials.credentials)
-    if not user:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+    user = current_user
     
     try:
         from bson import ObjectId
