@@ -550,8 +550,9 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
               
               // Also add structural elements to collision detection
               if (name.includes('wall') || name.includes('floor') || name.includes('ceiling') ||
-                  name.includes('pillar') || name.includes('column') || name.includes('rail') ||
-                  name.includes('stair') || name.includes('shelf') || name.includes('bookshelf')) {
+                  name.includes('pillar') || name.includes('column') || name.includes('collum') ||
+                  name.includes('rail') || name.includes('stair') || name.includes('shelf') || 
+                  name.includes('bookshelf') || name.includes('door') || name.includes('arch')) {
                 collisionMeshes.push(child);
                 console.log('✓ Structural collision:', child.name);
               }
