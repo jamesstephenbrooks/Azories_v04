@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { Toaster } from "@/components/ui/sonner";
 import OnboardingTutorial, { useOnboarding } from "@/components/OnboardingTutorial";
+import { OfflineIndicator } from "@/components/OfflineReading";
 import Landing from "@/pages/Landing";
 import Library from "@/pages/Library";
 import BookReader from "@/pages/BookReader";
@@ -18,6 +19,7 @@ function AppContent() {
   
   return (
     <>
+      <OfflineIndicator />
       {shouldShow && <OnboardingTutorial onComplete={() => setShouldShow(false)} />}
       <Routes>
         <Route path="/" element={<Landing />} />
