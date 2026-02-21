@@ -980,30 +980,49 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
               </div>
               <h2 className="text-2xl font-bold text-white mb-2">Welcome to the Grand Library</h2>
               <p className="text-white/60 mb-6">
-                Explore this magical library. Click and drag to look around, use keys to walk.
+                {isMobileDevice 
+                  ? "Explore this magical library. Use the joystick to walk, drag to look around."
+                  : "Explore this magical library. Click and drag to look around, use keys to walk."
+                }
               </p>
               
-              <div className="bg-black/30 rounded-lg p-4 mb-6 text-left">
-                <p className="text-sm font-medium text-purple-300 mb-3">Controls:</p>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div className="flex items-center gap-2">
-                    <kbd className="px-2 py-1 bg-purple-900/50 rounded text-purple-300 text-xs">W A S D</kbd>
-                    <span className="text-white/70">Walk around</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <kbd className="px-2 py-1 bg-purple-900/50 rounded text-purple-300 text-xs">Click+Drag</kbd>
-                    <span className="text-white/70">Look around</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <kbd className="px-2 py-1 bg-purple-900/50 rounded text-purple-300 text-xs">↑ ↓ ← →</kbd>
-                    <span className="text-white/70">Alternative movement</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <kbd className="px-2 py-1 bg-purple-900/50 rounded text-purple-300 text-xs">Scroll</kbd>
-                    <span className="text-white/70">Zoom (future)</span>
+              {/* Show keyboard controls only on desktop */}
+              {!isMobileDevice && (
+                <div className="bg-black/30 rounded-lg p-4 mb-6 text-left">
+                  <p className="text-sm font-medium text-purple-300 mb-3">Controls:</p>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <kbd className="px-2 py-1 bg-purple-900/50 rounded text-purple-300 text-xs">W A S D</kbd>
+                      <span className="text-white/70">Walk around</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <kbd className="px-2 py-1 bg-purple-900/50 rounded text-purple-300 text-xs">Click+Drag</kbd>
+                      <span className="text-white/70">Look around</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <kbd className="px-2 py-1 bg-purple-900/50 rounded text-purple-300 text-xs">↑ ↓ ← →</kbd>
+                      <span className="text-white/70">Alternative movement</span>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
+              
+              {/* Mobile instructions */}
+              {isMobileDevice && (
+                <div className="bg-black/30 rounded-lg p-4 mb-6 text-left">
+                  <p className="text-sm font-medium text-purple-300 mb-3">Touch Controls:</p>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="text-purple-300">🕹️</span>
+                      <span className="text-white/70">Use joystick (bottom-left) to walk</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-purple-300">👆</span>
+                      <span className="text-white/70">Drag anywhere to look around</span>
+                    </div>
+                  </div>
+                </div>
+              )}
               
               <div className="flex gap-3 justify-center">
                 <Button variant="outline" onClick={onClose} className="text-white border-white/30">
