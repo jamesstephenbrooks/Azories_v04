@@ -522,24 +522,30 @@ const defaultNodes = [
     id: 'character-1',
     type: 'character',
     position: { x: 50, y: 50 },
-    data: { name: '', gender: 'Female', age: 'Adult', appearance: '' }
+    data: { name: '', gender: 'Female', age: 'Adult', appearance: '', transparentBg: false }
   },
   {
     id: 'style-1',
     type: 'style',
-    position: { x: 50, y: 350 },
+    position: { x: 50, y: 320 },
     data: { style: 'fantasy' }
+  },
+  {
+    id: 'reference-1',
+    type: 'reference',
+    position: { x: 50, y: 450 },
+    data: { image: null }
   },
   {
     id: 'combine-1',
     type: 'combine',
-    position: { x: 400, y: 150 },
+    position: { x: 350, y: 180 },
     data: {}
   },
   {
     id: 'output-1',
     type: 'output',
-    position: { x: 600, y: 100 },
+    position: { x: 550, y: 130 },
     data: { image: null, generating: false }
   }
 ];
@@ -547,7 +553,8 @@ const defaultNodes = [
 const defaultEdges = [
   { id: 'e1', source: 'character-1', target: 'combine-1', targetHandle: 'a', animated: true },
   { id: 'e2', source: 'style-1', target: 'combine-1', targetHandle: 'b', animated: true },
-  { id: 'e3', source: 'combine-1', target: 'output-1', animated: true }
+  { id: 'e3', source: 'reference-1', target: 'combine-1', targetHandle: 'c', animated: true },
+  { id: 'e4', source: 'combine-1', target: 'output-1', animated: true }
 ];
 
 export default function ArtStudioExpert() {
