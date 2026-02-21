@@ -720,6 +720,14 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     document.addEventListener('keyup', onKeyUp);
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('pointerlockchange', onPointerLockChange);
+    
+    // Touch events for mobile
+    const canvas = canvasRef.current;
+    if (canvas) {
+      canvas.addEventListener('touchstart', onTouchStart, { passive: false });
+      canvas.addEventListener('touchmove', onTouchMove, { passive: false });
+      canvas.addEventListener('touchend', onTouchEnd);
+    }
 
     // Cleanup
     return () => {
@@ -731,6 +739,12 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('pointerlockchange', onPointerLockChange);
       
+      if (canvas) {
+        canvas.removeEventListener('touchstart', onTouchStart);
+        canvas.removeEventListener('touchmove', onTouchMove);
+        canvas.removeEventListener('touchend', onTouchEnd);
+      }
+      
       if (animationIdRef.current) {
         cancelAnimationFrame(animationIdRef.current);
       }
@@ -739,7 +753,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       }
       dracoLoader.dispose();
     };
-  }, [onKeyDown, onKeyUp, onMouseMove, onPointerLockChange, isExploring]);
+  }, [onKeyDown, onKeyUp, onMouseMove, onPointerLockChange, onTouchStart, onTouchMove, onTouchEnd, isExploring, books]);
 
   // Start exploring
   const handleStartExploring = () => {
