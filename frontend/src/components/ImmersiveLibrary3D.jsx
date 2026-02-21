@@ -644,17 +644,17 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         // Store the floor level in bounds for teleportation
         boundsRef.current.floorY = floorLevel;
         
-        // Position camera to see the grand hall with bookcases, chandelier, and vaulted ceiling
-        // Matches the reference image - standing on floor looking at the 3 bookcases
-        camera.position.set(0, startY, 4); // Center of room, back from bookcases
-        console.log('Camera positioned at:', 0, startY, 4);
+        // Position camera on the GROUND FLOOR looking at bookcases
+        // The ground floor is at floorLevel (4.72), need to start there not on upper balcony
+        camera.position.set(0, startY, 0); // Center of ground floor
+        console.log('Camera positioned at:', 0, startY, 0);
         
-        // Look straight at the bookcases (negative Z direction)
-        camera.lookAt(0, startY, -5);
+        // Look toward the bookcases (they appear to be at negative Z based on the model)
+        camera.lookAt(0, startY, -8);
         
         // Store the euler for drag controls
         euler.current.setFromQuaternion(camera.quaternion);
-        console.log('Camera looking at bookcases and chandelier');
+        console.log('Camera looking at bookcases');
         
         // For now, DISABLE the interactive book markers as their positions need calibration
         // The user will use the Books panel at bottom-right to select books to read
