@@ -990,19 +990,121 @@ export default function BookEditor() {
                             })}
                           </div>
                         ) : (
-                          <div className="aspect-[4/3] rounded-2xl border-2 border-dashed border-border bg-muted/30 overflow-hidden flex items-center justify-center">
-                            {selectedPage.image_url ? (
-                              <img 
-                                src={selectedPage.image_url} 
-                                alt="Page illustration"
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="text-center p-4">
-                                <FiImage className="w-12 h-12 mx-auto text-muted-foreground/50 mb-2" />
-                                <p className="font-body text-sm text-muted-foreground">
-                                  No image yet
-                                </p>
+                          /* Portrait aspect ratio to match book pages */
+                          <div className="space-y-3">
+                            <div 
+                              className="aspect-[3/4] rounded-2xl border-2 border-dashed border-border bg-muted/30 overflow-hidden flex items-center justify-center relative"
+                              data-testid="page-image-preview"
+                            >
+                              {selectedPage.image_url ? (
+                                <img 
+                                  src={selectedPage.image_url} 
+                                  alt="Page illustration"
+                                  className="w-full h-full"
+                                  style={{
+                                    objectFit: selectedPage.image_fit || 'cover',
+                                    objectPosition: `${selectedPage.image_position_x || 50}% ${selectedPage.image_position_y || 50}%`
+                                  }}
+                                />
+                              ) : (
+                                <div className="text-center p-4">
+                                  <FiImage className="w-12 h-12 mx-auto text-muted-foreground/50 mb-2" />
+                                  <p className="font-body text-sm text-muted-foreground">
+                                    No image yet
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                            
+                            {/* Image Position Controls */}
+                            {selectedPage.image_url && (
+                              <div className="bg-muted/30 rounded-xl p-3 space-y-3">
+                                <h4 className="text-xs font-semibold text-foreground/70 flex items-center gap-2">
+                                  <FiGrid className="w-3 h-3" />
+                                  Image Position & Fit
+                                </h4>
+                                
+                                {/* Fit Mode */}
+                                <div className="flex items-center gap-2">
+                                  <Label className="text-xs text-muted-foreground w-16">Fit:</Label>
+                                  <Select 
+                                    value={selectedPage.image_fit || 'cover'} 
+                                    onValueChange={(value) => updateImagePosition('image_fit', value)}
+                                  >
+                                    <SelectTrigger className="h-8 text-xs flex-1">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="cover">Cover (fill & crop)</SelectItem>
+                                      <SelectItem value="contain">Contain (show all)</SelectItem>
+                                      <SelectItem value="fill">Stretch to fill</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                
+                                {/* Position X */}
+                                <div className="flex items-center gap-2">
+                                  <Label className="text-xs text-muted-foreground w-16">Horizontal:</Label>
+                                  <input
+                                    type="range"
+                                    min="0"
+                                    max="100"
+                                    value={selectedPage.image_position_x || 50}
+                                    onChange={(e) => updateImagePosition('image_position_x', parseInt(e.target.value))}
+                                    className="flex-1 h-2 accent-primary"
+                                  />
+                                  <span className="text-xs text-muted-foreground w-8 text-right">{selectedPage.image_position_x || 50}%</span>
+                                </div>
+                                
+                                {/* Position Y */}
+                                <div className="flex items-center gap-2">
+                                  <Label className="text-xs text-muted-foreground w-16">Vertical:</Label>
+                                  <input
+                                    type="range"
+                                    min="0"
+                                    max="100"
+                                    value={selectedPage.image_position_y || 50}
+                                    onChange={(e) => updateImagePosition('image_position_y', parseInt(e.target.value))}
+                                    className="flex-1 h-2 accent-primary"
+                                  />
+                                  <span className="text-xs text-muted-foreground w-8 text-right">{selectedPage.image_position_y || 50}%</span>
+                                </div>
+                                
+                                {/* Quick position presets */}
+                                <div className="flex gap-1 pt-1">
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    className="flex-1 h-7 text-[10px]"
+                                    onClick={() => { updateImagePosition('image_position_x', 0); updateImagePosition('image_position_y', 0); }}
+                                  >
+                                    Top-Left
+                                  </Button>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    className="flex-1 h-7 text-[10px]"
+                                    onClick={() => { updateImagePosition('image_position_x', 50); updateImagePosition('image_position_y', 0); }}
+                                  >
+                                    Top
+                                  </Button>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    className="flex-1 h-7 text-[10px]"
+                                    onClick={() => { updateImagePosition('image_position_x', 50); updateImagePosition('image_position_y', 50); }}
+                                  >
+                                    Center
+                                  </Button>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    className="flex-1 h-7 text-[10px]"
+                                    onClick={() => { updateImagePosition('image_position_x', 50); updateImagePosition('image_position_y', 100); }}
+                                  >
+                                    Bottom
+                                  </Button>
+                                </div>
                               </div>
                             )}
                           </div>
