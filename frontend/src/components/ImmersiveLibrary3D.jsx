@@ -359,6 +359,64 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       highlightedBookMixerRef.current = null;
     }
     setHighlightedBookGenre(null);
+    isRotatingBookRef.current = false;
+  }, []);
+
+  // Handle book rotation on mouse/touch drag
+  const handleBookRotationStart = useCallback((e) => {
+    if (!highlightedBookModelRef.current || !selectedBook) return;
+    
+    // Check if click is on the book (raycast)
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    
+    const mouse = new THREE.Vector2(
+      ((clientX - rect.left) / rect.width) * 2 - 1,
+      -((clientY - rect.top) / rect.height) * 2 + 1
+    );
+    
+    raycasterRef.current.setFromCamera(mouse, cameraRef.current);
+    const bookMeshes = [];
+    highlightedBookModelRef.current.traverse((child) => {
+      if (child.isMesh) bookMeshes.push(child);
+    });
+    
+    const hits = raycasterRef.current.intersectObjects(bookMeshes, true);
+    if (hits.length > 0) {
+      isRotatingBookRef.current = true;
+      lastMousePosRef.current = { x: clientX, y: clientY };
+      bookRotationStartRef.current = {
+        x: highlightedBookModelRef.current.rotation.x,
+        y: highlightedBookModelRef.current.rotation.y
+      };
+      e.preventDefault();
+    }
+  }, [selectedBook]);
+
+  const handleBookRotationMove = useCallback((e) => {
+    if (!isRotatingBookRef.current || !highlightedBookModelRef.current) return;
+    
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    
+    const deltaX = clientX - lastMousePosRef.current.x;
+    const deltaY = clientY - lastMousePosRef.current.y;
+    
+    // Rotate the book based on mouse movement
+    highlightedBookModelRef.current.rotation.y += deltaX * 0.01;
+    highlightedBookModelRef.current.rotation.x += deltaY * 0.01;
+    
+    // Clamp X rotation to prevent flipping
+    highlightedBookModelRef.current.rotation.x = Math.max(-Math.PI / 4, Math.min(Math.PI / 4, highlightedBookModelRef.current.rotation.x));
+    
+    lastMousePosRef.current = { x: clientX, y: clientY };
+  }, []);
+
+  const handleBookRotationEnd = useCallback(() => {
+    isRotatingBookRef.current = false;
   }, []);
 
   // Highlight a book on the shelf for a specific genre - uses animated GLB
