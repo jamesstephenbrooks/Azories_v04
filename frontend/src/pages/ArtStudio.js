@@ -39,6 +39,70 @@ const CHARACTER_TRAITS = {
 };
 
 // Art styles with example images - organized by category
+// QUICK TEMPLATES - One-click style presets for popular looks (easy for kids!)
+const QUICK_TEMPLATES = [
+  {
+    id: 'fantasy-sunset',
+    name: 'Fantasy Sunset Portrait',
+    description: 'Dreamy portrait with castle, sunset sky & flowing hair',
+    image: 'https://customer-assets.emergentagent.com/job_d83020fd-599b-40ee-9260-c2ebcb28493d/artifacts/xb429ogq_u5425155785_httpss.mj.runjZ4M-NmR9eE_swap_this_girl_into_this_9e29b079-46de-4c87-a9b3-027581d9bbfa_0%20%281%29.png',
+    style: 'surreal-portrait',
+    lighting: 'golden-hour',
+    customStyle: 'fantasy double exposure portrait, castle on cliff in background, dramatic sunset sky with orange and purple clouds, flowing wavy hair with teal blue and blonde highlights, stylish glasses reflecting fantasy scene, extremely detailed digital painting, 8K masterpiece, trending on ArtStation',
+    popular: true
+  },
+  {
+    id: 'neon-cyberpunk',
+    name: 'Neon Cyberpunk',
+    description: 'Pink & blue neon lighting, futuristic vibes',
+    image: 'https://static.prod-images.emergentagent.com/jobs/d83020fd-599b-40ee-9260-c2ebcb28493d/images/2aca1b80f7281f04f681e4b095ecc45747ca4144ced5a77a0727272b14942396.png',
+    style: 'neon-portrait',
+    lighting: 'neon-pink-blue',
+    customStyle: 'cyberpunk neon portrait, dramatic pink and blue split lighting, futuristic city background, glowing neon accents, hyper detailed digital art',
+    popular: true
+  },
+  {
+    id: 'ethereal-fairy',
+    name: 'Ethereal Fairy Tale',
+    description: 'Magical glowing portrait with soft dreamy lighting',
+    image: 'https://images.pexels.com/photos/31882421/pexels-photo-31882421.jpeg?w=100&h=100&fit=crop',
+    style: 'fantasy-portrait',
+    lighting: 'soft-glow',
+    customStyle: 'ethereal fairy tale portrait, soft magical glow, enchanted forest background, flowing silky hair, luminous skin, butterfly particles, dreamy atmosphere, professional fantasy art',
+    popular: true
+  },
+  {
+    id: 'anime-hero',
+    name: 'Anime Hero',
+    description: 'Bold anime style with dramatic action pose',
+    image: 'https://images.unsplash.com/photo-1613376023733-0a73315d9b06?w=100&h=100&fit=crop',
+    style: 'anime',
+    lighting: 'dramatic',
+    customStyle: 'epic anime portrait, vibrant colors, dynamic wind effect on hair, detailed cel shading, Studio Ghibli quality, expressive eyes, heroic expression',
+    popular: true
+  },
+  {
+    id: 'chrome-future',
+    name: 'Chrome Future',
+    description: 'Metallic futuristic with liquid chrome elements',
+    image: 'https://images.unsplash.com/photo-1637317099769-ecf4d610d30c?w=100&h=100&fit=crop',
+    style: 'chrome-aesthetic',
+    lighting: 'studio',
+    customStyle: 'chrome metallic portrait, liquid metal collar and accessories, futuristic fashion, smooth stylized features, pink and silver color palette, professional digital art',
+    popular: true
+  },
+  {
+    id: 'storybook-magic',
+    name: 'Storybook Magic',
+    description: 'Whimsical children\'s book illustration style',
+    image: 'https://images.unsplash.com/photo-1608889825103-eb5ed706fc64?w=100&h=100&fit=crop',
+    style: 'storybook',
+    lighting: 'soft-glow',
+    customStyle: 'beautiful children\'s book illustration, whimsical charming style, warm inviting colors, magical sparkles, enchanting quality, appealing character design',
+    popular: true
+  }
+];
+
 const ART_STYLE_CATEGORIES = [
   {
     category: 'Sci-Fi & Futuristic',
