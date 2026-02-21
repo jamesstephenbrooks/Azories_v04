@@ -1345,6 +1345,111 @@ async def generate_video(request: VideoGenerateRequest, current_user: dict = Dep
         logger.error(f"Error generating video: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error generating video: {str(e)}")
 
+# Image Animation Request Model
+class AnimateImageRequest(BaseModel):
+    image_url: str  # URL or base64 of the image to animate
+    motion_prompt: str = "gentle subtle movement, breathing, hair flowing"  # How to animate
+    duration: int = 4  # 4, 8, or 12 seconds
+    style: str = "natural"  # natural, dramatic, subtle
+
+@api_router.post("/art-studio/animate-image")
+async def animate_image(request: AnimateImageRequest, current_user: dict = Depends(get_current_user)):
+    """
+    Animate a still image using Sora 2.
+    Takes an image and creates a short video with subtle motion.
+    """
+    if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Pro subscription required")
+    
+    try:
+        if not EMERGENT_LLM_KEY:
+            raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
+        
+        # Analyze the image to create a detailed prompt
+        from emergentintegrations.llm.openai.chat import OpenAIChat
+        
+        chat = OpenAIChat(api_key=EMERGENT_LLM_KEY)
+        
+        # Get description of the image for the video prompt
+        analysis_prompt = """Analyze this image and describe it in detail for video animation. 
+        Include: subject, pose, expression, clothing, background, lighting, art style.
+        Be specific and detailed. Format as a single paragraph."""
+        
+        if request.image_url.startswith('data:'):
+            # Base64 image
+            image_content = request.image_url
+        else:
+            # URL - fetch and convert to base64
+            import httpx
+            async with httpx.AsyncClient() as client:
+                response = await client.get(request.image_url, timeout=30)
+                image_bytes = response.content
+                image_content = f"data:image/png;base64,{base64.b64encode(image_bytes).decode('utf-8')}"
+        
+        # Analyze the image
+        image_description = chat.chat(
+            user_prompt=analysis_prompt,
+            model="gpt-4o",
+            images=[image_content]
+        )
+        
+        # Motion style descriptions
+        motion_styles = {
+            "natural": "natural subtle movement, gentle breathing, soft hair movement, slight eye blinks",
+            "dramatic": "dramatic cinematic movement, wind blowing, dynamic camera motion, emotional expression changes",
+            "subtle": "very subtle almost still, only slight breathing movement, peaceful and calm"
+        }
+        motion_desc = motion_styles.get(request.style, motion_styles["natural"])
+        
+        # Create the animation prompt
+        animation_prompt = f"""Animate this exact scene with {motion_desc}:
+{image_description}
+
+Additional motion: {request.motion_prompt}
+
+Keep the character and scene exactly the same, only add subtle natural movement."""
+        
+        # Generate video with Sora 2
+        video_gen = OpenAIVideoGeneration(api_key=EMERGENT_LLM_KEY)
+        video_bytes = video_gen.text_to_video(
+            prompt=animation_prompt,
+            model="sora-2",
+            size="1280x720",
+            duration=request.duration,
+            max_wait_time=900  # 15 minutes for animation
+        )
+        
+        if video_bytes:
+            video_base64 = base64.b64encode(video_bytes).decode('utf-8')
+            
+            # Save to gallery
+            video_id = str(uuid.uuid4())
+            generation_record = {
+                "id": video_id,
+                "user_id": current_user["id"],
+                "type": "animation",
+                "source_image": request.image_url[:500],  # Truncate if too long
+                "motion_prompt": request.motion_prompt,
+                "video_data": f"data:video/mp4;base64,{video_base64[:100]}...",  # Store reference only
+                "duration": request.duration,
+                "style": request.style,
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+            await db.art_studio_animations.insert_one(generation_record)
+            
+            return {
+                "success": True,
+                "video_base64": video_base64,
+                "video_id": video_id,
+                "message": "Image animated successfully"
+            }
+        else:
+            raise HTTPException(status_code=500, detail="Animation generation failed")
+            
+    except Exception as e:
+        logger.error(f"Error animating image: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error animating image: {str(e)}")
+
 @api_router.post("/ai/generate-story")
 async def generate_story(request: AIStoryRequest, current_user: dict = Depends(get_current_user)):
     """Generate a complete story from an idea using AI"""
