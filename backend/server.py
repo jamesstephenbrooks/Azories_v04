@@ -2976,23 +2976,57 @@ async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: d
         }
         style_desc = style_prompts.get(request.style, "high quality professional illustration, detailed, masterwork quality")
         
-        # ENHANCED prompt building for character quality - DeepAI level
+        # ENHANCED prompt building for MAXIMUM quality - DeepAI/MidJourney level
+        # Core quality tags that dramatically improve output
+        QUALITY_CORE = "masterpiece, best quality, ultra detailed, high resolution, 8K UHD"
+        FACE_QUALITY = "beautiful detailed face, detailed eyes, detailed skin texture, realistic skin, perfect features"
+        LIGHTING_QUALITY = "perfect lighting, professional studio lighting, dramatic shadows, volumetric lighting"
+        COMPOSITION = "professional composition, award winning, trending on artstation, featured on behance"
+        
+        # Negative prompt additions for cleaner output
+        DEFAULT_NEGATIVE = "blurry, low quality, lowres, bad anatomy, bad hands, deformed, disfigured, mutation, extra limbs, watermark, signature, text, jpeg artifacts, ugly, duplicate, morbid"
+        
         enhanced_prompt = request.prompt
         if request.type == "character":
-            # Build a comprehensive character prompt for high quality output
-            quality_boosters = "beautiful detailed face, expressive eyes, sharp focus, professional lighting, highly detailed, masterpiece quality, best quality, ultra detailed"
-            enhanced_prompt = f"Character portrait of {request.prompt}, {style_desc}, {quality_boosters}"
+            # Build comprehensive character prompt for DeepAI-level quality
+            enhanced_prompt = f"""
+            {QUALITY_CORE}, {FACE_QUALITY}, {LIGHTING_QUALITY},
+            Character portrait: {request.prompt},
+            {style_desc},
+            intricate details, sharp focus, professional character design,
+            cinematic lighting, beautiful composition,
+            {COMPOSITION}
+            """.replace('\n', ' ').strip()
+            
         elif request.type == "scene":
-            quality_boosters = "breathtaking scenery, atmospheric lighting, highly detailed environment, masterpiece quality, best quality"
-            enhanced_prompt = f"Scenic illustration: {request.prompt}, {style_desc}, {quality_boosters}"
+            enhanced_prompt = f"""
+            {QUALITY_CORE}, {LIGHTING_QUALITY},
+            Scenic masterpiece: {request.prompt},
+            {style_desc},
+            breathtaking environment, atmospheric perspective, detailed background,
+            epic scale, professional environment design,
+            {COMPOSITION}
+            """.replace('\n', ' ').strip()
+            
         elif request.type == "workflow":
-            # Workflow type from Expert Mode - use full quality enhancement
-            quality_boosters = "beautiful detailed, expressive, sharp focus, professional quality, highly detailed, masterpiece, best quality, ultra detailed"
-            enhanced_prompt = f"{request.prompt}, {style_desc}, {quality_boosters}"
+            # Expert Mode workflow - full enhancement
+            enhanced_prompt = f"""
+            {QUALITY_CORE}, {FACE_QUALITY}, {LIGHTING_QUALITY},
+            {request.prompt},
+            {style_desc},
+            intricate details, perfect composition,
+            {COMPOSITION}
+            """.replace('\n', ' ').strip()
         else:
-            enhanced_prompt = f"{request.prompt}, {style_desc}, highly detailed, professional quality"
+            enhanced_prompt = f"{request.prompt}, {style_desc}, {QUALITY_CORE}"
         
-        # Add reference image note to prompt if provided
+        # Handle dual reference images for consistency
+        if hasattr(request, 'styleReferenceImage') and request.styleReferenceImage:
+            enhanced_prompt += ", matching the art style and visual aesthetic of the reference"
+        if hasattr(request, 'characterReferenceImage') and request.characterReferenceImage:
+            enhanced_prompt += ", maintaining exact character appearance, same face, same features as reference"
+        
+        # Legacy single reference support
         if request.referenceImage:
             enhanced_prompt += ", maintaining visual consistency with the provided reference"
         
@@ -3000,9 +3034,13 @@ async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: d
         if request.transparentBackground:
             enhanced_prompt += ", isolated subject on pure transparent background, PNG cutout style, no background elements, clean edges"
         
-        # Add negative prompt if specified (append as instruction to avoid)
+        # Combine user's negative prompt with defaults
+        final_negative = DEFAULT_NEGATIVE
         if request.negativePrompt:
-            enhanced_prompt += f". Avoid: {request.negativePrompt}"
+            final_negative = f"{request.negativePrompt}, {DEFAULT_NEGATIVE}"
+        
+        # Add negative instruction to prompt (for models that don't support negative prompts separately)
+        enhanced_prompt += f". AVOID: {final_negative}"
         
         # Map aspect ratio to size
         aspect_ratio_sizes = {
