@@ -33,14 +33,7 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 // Character Node - Define character traits - Resizable
 const CharacterNode = ({ data, selected }) => {
   return (
-    <div className={`bg-gradient-to-br from-purple-900/90 to-purple-800/90 rounded-xl border-2 ${selected ? 'border-purple-400' : 'border-purple-600/50'} shadow-xl backdrop-blur-sm h-full w-full min-w-[250px] min-h-[200px]`}>
-      <NodeResizer 
-        color="#a855f7" 
-        isVisible={selected} 
-        minWidth={250} 
-        minHeight={200}
-        handleStyle={{ width: 8, height: 8 }}
-      />
+    <div className={`bg-gradient-to-br from-purple-900/90 to-purple-800/90 rounded-xl border-2 ${selected ? 'border-purple-400' : 'border-purple-600/50'} shadow-xl backdrop-blur-sm w-[250px] h-[220px]`}>
       <Handle type="target" position={Position.Left} className="!bg-purple-400 !w-3 !h-3" />
       
       <div className="p-2 border-b border-purple-600/30 flex items-center gap-2">
@@ -50,9 +43,6 @@ const CharacterNode = ({ data, selected }) => {
         <div className="flex-1 min-w-0">
           <h4 className="text-xs font-semibold text-white truncate">Character</h4>
         </div>
-        {selected && (
-          <FiMove className="w-3 h-3 text-purple-400 flex-shrink-0" />
-        )}
       </div>
       
       <div className="p-2 space-y-2 overflow-auto h-[calc(100%-40px)]">
