@@ -353,6 +353,18 @@ export default function ArtStudio() {
           </div>
           
           <div className="flex items-center gap-3">
+            {/* Expert Mode Link */}
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/art-studio/expert')}
+              className="border-amber-500/50 text-amber-300 hover:bg-amber-500/20"
+              data-testid="expert-mode-btn"
+            >
+              <FiStar className="w-4 h-4 mr-2" />
+              Expert Mode
+              <span className="ml-2 text-[10px] px-1.5 py-0.5 bg-amber-500/30 rounded">PRO</span>
+            </Button>
+            
             {/* Book Assignment Dropdown */}
             <div className="flex items-center gap-2">
               <FiBook className="text-purple-400 w-4 h-4" />
