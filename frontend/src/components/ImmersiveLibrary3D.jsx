@@ -389,11 +389,11 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         
         const bookModel = gltf.scene;
         
-        // Position the book at the shelf
+        // Position the book at the shelf - stay close to bookcase
         bookModel.position.set(
           section.shelfPos.x,
           section.shelfPos.y,
-          section.shelfPos.z + 0.3 // Pop out slightly from the shelf
+          section.shelfPos.z + 0.1 // Very slight pop out from the shelf
         );
         
         // Scale the book appropriately - smaller size
