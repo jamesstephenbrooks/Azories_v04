@@ -710,8 +710,7 @@ export default function BookEditor() {
                   <div className="space-y-4">
                     <h3 className="font-ui font-semibold">Front Cover</h3>
                     <div 
-                      className="aspect-[3/4] rounded-2xl border-2 border-dashed border-border bg-muted/30 overflow-hidden cursor-pointer relative"
-                      onClick={() => coverInputRef.current?.click()}
+                      className="aspect-[3/4] rounded-2xl border-2 border-dashed border-border bg-muted/30 overflow-hidden relative"
                     >
                       {coverData.cover_image ? (
                         <img src={coverData.cover_image} alt="Cover" className="w-full h-full object-cover" />
@@ -737,6 +736,31 @@ export default function BookEditor() {
                         />
                       </div>
                     </div>
+                    {/* Cover Image Options */}
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => coverInputRef.current?.click()}
+                        className="flex-1"
+                      >
+                        <FiUpload className="w-3 h-3 mr-1" />
+                        Upload
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setCoverGalleryTarget('front');
+                          setShowCoverGalleryPicker(true);
+                        }}
+                        className="flex-1"
+                        data-testid="add-cover-from-gallery"
+                      >
+                        <FiImage className="w-3 h-3 mr-1" />
+                        Art Studio
+                      </Button>
+                    </div>
                     <input
                       type="file"
                       ref={coverInputRef}
@@ -750,8 +774,7 @@ export default function BookEditor() {
                   <div className="space-y-4">
                     <h3 className="font-ui font-semibold">Back Cover</h3>
                     <div 
-                      className="aspect-[3/4] rounded-2xl border-2 border-dashed border-border bg-muted/30 overflow-hidden cursor-pointer relative"
-                      onClick={() => backCoverInputRef.current?.click()}
+                      className="aspect-[3/4] rounded-2xl border-2 border-dashed border-border bg-muted/30 overflow-hidden relative"
                     >
                       {coverData.back_cover_image ? (
                         <img src={coverData.back_cover_image} alt="Back Cover" className="w-full h-full object-cover" />
@@ -760,6 +783,31 @@ export default function BookEditor() {
                           <FiUpload className="w-8 h-8 text-muted-foreground" />
                         </div>
                       )}
+                    </div>
+                    {/* Back Cover Image Options */}
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => backCoverInputRef.current?.click()}
+                        className="flex-1"
+                      >
+                        <FiUpload className="w-3 h-3 mr-1" />
+                        Upload
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setCoverGalleryTarget('back');
+                          setShowCoverGalleryPicker(true);
+                        }}
+                        className="flex-1"
+                        data-testid="add-back-cover-from-gallery"
+                      >
+                        <FiImage className="w-3 h-3 mr-1" />
+                        Art Studio
+                      </Button>
                     </div>
                     <input
                       type="file"
