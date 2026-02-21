@@ -726,11 +726,17 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       renderer.setSize(window.innerWidth, window.innerHeight);
     };
     
+    // Pointer lock error handler
+    const onPointerLockError = () => {
+      console.error('Pointer lock error - may need user interaction first');
+    };
+    
     window.addEventListener('resize', handleResize);
     document.addEventListener('keydown', onKeyDown);
     document.addEventListener('keyup', onKeyUp);
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('pointerlockchange', onPointerLockChange);
+    document.addEventListener('pointerlockerror', onPointerLockError);
     
     // Touch events for mobile
     const canvas = canvasRef.current;
@@ -749,6 +755,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       document.removeEventListener('keyup', onKeyUp);
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('pointerlockchange', onPointerLockChange);
+      document.removeEventListener('pointerlockerror', onPointerLockError);
       
       if (canvas) {
         canvas.removeEventListener('touchstart', onTouchStart);
