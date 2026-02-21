@@ -345,6 +345,19 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     cameraRef.current.quaternion.setFromEuler(euler.current);
   }, []);
 
+  // Remove the highlighted book from the scene
+  const removeHighlightedBook = useCallback(() => {
+    if (highlightedBookModelRef.current && sceneRef.current) {
+      sceneRef.current.remove(highlightedBookModelRef.current);
+      highlightedBookModelRef.current = null;
+    }
+    if (highlightedBookMixerRef.current) {
+      highlightedBookMixerRef.current.stopAllAction();
+      highlightedBookMixerRef.current = null;
+    }
+    setHighlightedBookGenre(null);
+  }, []);
+
   // Highlight a book on the shelf for a specific genre - uses animated GLB
   const highlightBookAtGenre = useCallback((genreName, book) => {
     if (!sceneRef.current) {
