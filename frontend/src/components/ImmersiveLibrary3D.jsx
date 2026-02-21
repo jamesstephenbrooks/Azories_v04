@@ -632,148 +632,21 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         // Store the floor level in bounds for teleportation
         boundsRef.current.floorY = floorLevel;
         
-        // Position camera inside the library at center
-        camera.position.set(0, startY, 2); // Start a bit forward from center
+        // Position camera inside the library at center, facing the bookcases
+        camera.position.set(0, startY, 3); // Start further forward from center
         
-        // DISABLE the ornate book GLB loading for now - it's causing the large geometry issue
-        // Instead, use simple box geometry books that are properly scaled to fit on shelves
-        // The interactive books will appear as small colored rectangles on the actual bookcase shelves
+        // Initialize euler for camera rotation
+        euler.current.setFromQuaternion(camera.quaternion);
         
-        console.log('Setting up interactive book markers...');
-        
-        // The bookcases in the GLB are along the back wall
-        // We'll place small clickable book markers near the existing book textures
+        // For now, DISABLE the interactive book markers as their positions need calibration
+        // The user will use the Books panel at bottom-right to select books to read
         const bookMeshes = [];
-        const booksToPlace = books.slice(0, 12); // Limit to 12 books for performance
-        
-        // Approximate positions where the bookcases are (based on the GLB structure)
-        // Back wall has 3 main bookcase sections
-        const bookPositions = [
-          // Left bookcase - 4 books
-          { x: -2.8, y: floorLevel + 1.0, z: -4.5 },
-          { x: -2.5, y: floorLevel + 1.5, z: -4.5 },
-          { x: -2.2, y: floorLevel + 2.0, z: -4.5 },
-          { x: -1.9, y: floorLevel + 1.3, z: -4.5 },
-          // Center bookcase - 4 books
-          { x: -0.3, y: floorLevel + 1.0, z: -4.5 },
-          { x: 0.0, y: floorLevel + 1.5, z: -4.5 },
-          { x: 0.3, y: floorLevel + 2.0, z: -4.5 },
-          { x: 0.6, y: floorLevel + 1.3, z: -4.5 },
-          // Right bookcase - 4 books
-          { x: 2.0, y: floorLevel + 1.0, z: -4.5 },
-          { x: 2.3, y: floorLevel + 1.5, z: -4.5 },
-          { x: 2.6, y: floorLevel + 2.0, z: -4.5 },
-          { x: 2.9, y: floorLevel + 1.3, z: -4.5 },
-        ];
-        
-        booksToPlace.forEach((book, index) => {
-          if (index >= bookPositions.length) return;
-          
-          const pos = bookPositions[index];
-          
-          // Create a small book-shaped geometry (like a book spine visible on shelf)
-          const geometry = new THREE.BoxGeometry(0.08, 0.25, 0.15); // Small book size
-          
-          // Color based on genre
-          const genreColors = {
-            'Fantasy': 0x9333ea,
-            'Adventure': 0x22c55e,
-            'Mystery': 0x3b82f6,
-            'Science Fiction': 0x06b6d4,
-            'Romance': 0xec4899,
-            'Horror': 0xef4444
-          };
-          const bookColor = genreColors[book.genre] || 0x8b5cf6;
-          
-          const material = new THREE.MeshStandardMaterial({ 
-            color: bookColor,
-            emissive: bookColor,
-            emissiveIntensity: 0.2, // Slight glow to make them visible
-            roughness: 0.7,
-            metalness: 0.1
-          });
-          
-          const bookMesh = new THREE.Mesh(geometry, material);
-          bookMesh.position.set(pos.x, pos.y, pos.z);
-          bookMesh.rotation.y = Math.PI; // Face outward
-          bookMesh.castShadow = true;
-          bookMesh.receiveShadow = true;
-          
-          // Store book data for click detection
-          bookMesh.userData = { 
-            bookId: book.id, 
-            title: book.title,
-            isBook: true 
-          };
-          
-          scene.add(bookMesh);
-          bookMeshes.push(bookMesh);
-        });
-        
         bookMeshesRef.current = bookMeshes;
-        console.log('Placed', bookMeshes.length, 'interactive book markers on shelves');
+        console.log('Interactive book markers disabled - use Books panel to select books');
         
-        // Add floating genre text labels ABOVE THE BOOKCASES on the back wall
-        // The bookcases are at Z ~ -4.5, and rise to about floorLevel + 3
-        const bannerHeight = floorLevel + 3.2; // Just above the bookcase tops
-        
-        // Position banners above the three bookcase sections on the back wall
-        const bannerPositions = [
-          { name: 'Fantasy', x: -2.5, z: -4.0, color: '#9333ea' },      // Above left bookcase
-          { name: 'Mystery', x: 0, z: -4.0, color: '#3b82f6' },         // Above center bookcase
-          { name: 'Adventure', x: 2.5, z: -4.0, color: '#f59e0b' },     // Above right bookcase
-        ];
-        
-        bannerPositions.forEach((banner) => {
-          // Create simple text sprite
-          const canvas = document.createElement('canvas');
-          canvas.width = 256;
-          canvas.height = 64;
-          const ctx = canvas.getContext('2d');
-          
-          // Clear canvas
-          ctx.clearRect(0, 0, 256, 64);
-          
-          // Glowing text effect
-          ctx.font = 'bold 32px Georgia, serif';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          
-          // Outer glow
-          ctx.shadowColor = banner.color;
-          ctx.shadowBlur = 20;
-          ctx.fillStyle = banner.color;
-          ctx.fillText(banner.name, 128, 32);
-          
-          // Inner text (white)
-          ctx.shadowBlur = 10;
-          ctx.fillStyle = '#ffffff';
-          ctx.fillText(banner.name, 128, 32);
-          
-          const texture = new THREE.CanvasTexture(canvas);
-          texture.colorSpace = THREE.SRGBColorSpace;
-          
-          // Use sprite for always-facing-camera text
-          const spriteMaterial = new THREE.SpriteMaterial({
-            map: texture,
-            transparent: true,
-            depthWrite: false
-          });
-          
-          const sprite = new THREE.Sprite(spriteMaterial);
-          sprite.scale.set(2.5, 0.65, 1); // Slightly smaller to fit above bookcases
-          sprite.position.set(banner.x, bannerHeight, banner.z);
-          
-          scene.add(sprite);
-          console.log('Added genre banner:', banner.name, 'at position:', banner.x, bannerHeight, banner.z);
-          
-          // Add floating animation via userData
-          sprite.userData = { 
-            isGenreBanner: true, 
-            baseY: bannerHeight,
-            phase: Math.random() * Math.PI * 2 
-          };
-        });
+        // DISABLE banners for now until we can determine correct bookcase positions
+        // Will need to iterate on the GLB model to find the right coordinates
+        console.log('Genre banners disabled - need position calibration');
         
         // Load Azora 3D model (GLB) - Standing near the right bookcase on the floor
         const AZORA_GLB_URL = 'https://customer-assets.emergentagent.com/job_c72cb56a-2d89-4690-9629-ade6d46638c8/artifacts/t9l9jikb_f0066361-3481-4680-b638-accd998414b5.glb';
