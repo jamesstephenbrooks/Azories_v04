@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="8" time="32.419" timestamp="2026-02-21T22:05:41.576745+00:00" hostname="agent-env-14614916-a056-4070-b285-ff94e5f5cf18"><testcase classname="backend.tests.test_art_studio_workflows.TestArtStudioWorkflows" name="test_get_workflows_returns_list" time="0.587" /><testcase classname="backend.tests.test_art_studio_workflows.TestArtStudioWorkflows" name="test_save_new_workflow" time="0.589" /><testcase classname="backend.tests.test_art_studio_workflows.TestArtStudioWorkflows" name="test_save_and_update_workflow" time="0.878" /><testcase classname="backend.tests.test_art_studio_workflows.TestArtStudioWorkflows" name="test_delete_workflow" time="0.725" /><testcase classname="backend.tests.test_art_studio_workflows.TestArtStudioWorkflows" name="test_workflow_data_structure" time="0.447" /><testcase classname="backend.tests.test_art_studio_workflows.TestArtStudioGeneratePromptEngineering" name="test_generate_request_schema_accepts_all_params" time="5.394" /><testcase classname="backend.tests.test_art_studio_workflows.TestArtStudioGeneratePromptEngineering" name="test_generate_endpoint_accessible" time="12.443"><failure message="requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='azories-studio.preview.emergentagent.com', port=443): Read timed out. (read timeout=2)">/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:534: in _make_request
+    response = conn.getresponse()
+               ^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:571: in getresponse
+    httplib_response = super().getresponse()
+                       ^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/http/client.py:1395: in getresponse
+    response.begin()
+/usr/local/lib/python3.11/http/client.py:325: in begin
+    version, status, reason = self._read_status()
+                              ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/http/client.py:286: in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/socket.py:718: in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/ssl.py:1314: in recv_into
+    return self.read(nbytes, buffer)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/ssl.py:1166: in read
+    return self._sslobj.read(len, buffer)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TimeoutError: The read operation timed out
+
+The above exception was the direct cause of the following exception:
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:644: in send
+    resp = conn.urlopen(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:841: in urlopen
+    retries = retries.increment(
+/root/.venv/lib/python3.11/site-packages/urllib3/util/retry.py:490: in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/urllib3/util/util.py:39: in reraise
+    raise value
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:787: in urlopen
+    response = self._make_request(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:536: in _make_request
+    self._raise_timeout(err=e, url=url, timeout_value=read_timeout)
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:367: in _raise_timeout
+    raise ReadTimeoutError(
+E   urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='azories-studio.preview.emergentagent.com', port=443): Read timed out. (read timeout=2)
+
+During handling of the above exception, another exception occurred:
+backend/tests/test_art_studio_workflows.py:243: in test_generate_endpoint_accessible
+    response = requests.post(
+/root/.venv/lib/python3.11/site-packages/requests/api.py:115: in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:589: in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:703: in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:690: in send
+    raise ReadTimeout(e, request=request)
+E   requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='azories-studio.preview.emergentagent.com', port=443): Read timed out. (read timeout=2)</failure></testcase><testcase classname="backend.tests.test_art_studio_workflows.TestArtStudioGallery" name="test_get_gallery" time="11.098"><failure message="AssertionError: assert 'items' in {'images': []}">backend/tests/test_art_studio_workflows.py:280: in test_get_gallery
+    assert "items" in data
+E   AssertionError: assert 'items' in {'images': []}</failure></testcase></testsuite></testsuites>
