@@ -1225,13 +1225,20 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
               const hitY = hit.point.y;
               const meshName = hit.object.name?.toLowerCase() || '';
               
-              // Check if this is a stair mesh - allow higher step-up
-              const isStair = meshName.includes('stair') || meshName.includes('plane05') || meshName.includes('plane06');
-              const maxStepUp = isStair ? 1.0 : 0.7; // More generous step-up for stairs
+              // Check if this is a stair mesh - allow higher step-up for stairs
+              const isStair = meshName.includes('stair') || meshName.includes('plane05') || 
+                              meshName.includes('plane06') || meshName.includes('step') ||
+                              meshName.includes('ramp');
+              const isFloor = meshName.includes('floor');
+              
+              // More generous step-up for stairs and when moving
+              const maxStepUp = isStair ? 1.5 : (isFloor ? 0.8 : 0.7);
               const maxStepDown = 3.0; // Allow dropping down further
               
               if (hitY <= currentFootY + maxStepUp && hitY >= currentFootY - maxStepDown) {
-                if (bestFloorY === null || hitY > bestFloorY) {
+                // For stairs, prefer the highest valid point (to climb up)
+                // For regular floor, use closest to current level
+                if (bestFloorY === null || (isStair && hitY > bestFloorY) || (!isStair && Math.abs(hitY - currentFootY) < Math.abs(bestFloorY - currentFootY))) {
                   bestFloorY = hitY;
                   if (isStair) detectedStairMesh = meshName;
                 }
