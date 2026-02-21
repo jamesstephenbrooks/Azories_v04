@@ -110,23 +110,6 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       }
     }
   }, [user]);
-  
-  // Check if user should see controls tutorial (first time only)
-  useEffect(() => {
-    if (user && isLoaded) {
-      const hasSeenControls = localStorage.getItem(`azories-3d-controls-seen-${user.id}`);
-      if (!hasSeenControls) {
-        setShowControls(true);
-      }
-    }
-  }, [user, isLoaded]);
-
-  const dismissControls = () => {
-    if (user) {
-      localStorage.setItem(`azories-3d-controls-seen-${user.id}`, 'true');
-    }
-    setShowControls(false);
-  };
 
   // Handle keyboard input - camera relative
   const onKeyDown = useCallback((event) => {
