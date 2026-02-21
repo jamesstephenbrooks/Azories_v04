@@ -732,7 +732,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           });
           
           const sprite = new THREE.Sprite(spriteMaterial);
-          sprite.scale.set(2.2, 0.55, 1);
+          sprite.scale.set(1.6, 0.4, 1); // Smaller banners to avoid wall intersection
           
           // Use explicit Y from bannerPos if available, otherwise use default bannerHeight
           const bannerY = section.bannerPos.y !== undefined ? section.bannerPos.y : bannerHeight;
