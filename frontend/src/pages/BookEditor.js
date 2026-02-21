@@ -109,6 +109,48 @@ export default function BookEditor() {
       console.error('Failed to load voices');
     }
   };
+  
+  // Fetch Art Studio gallery images for this book
+  const fetchGalleryImages = async () => {
+    try {
+      const res = await axios.get(`${API}/art-studio/gallery?book_id=${bookId}`);
+      setGalleryImages(res.data.images || []);
+    } catch (error) {
+      console.error('Failed to load gallery images');
+      // Also try general gallery
+      try {
+        const res = await axios.get(`${API}/art-studio/gallery`);
+        setGalleryImages(res.data.images || []);
+      } catch (e) {
+        console.error('Failed to load any gallery images');
+      }
+    }
+  };
+  
+  // Use image from Art Studio gallery
+  const useGalleryImage = async (imageUrl, slot = 1) => {
+    if (!selectedPage) return;
+    
+    const isComicMode = selectedPage.layout === 'comic_4panel' || selectedPage.layout === 'comic_2panel';
+    const imageKey = isComicMode ? `image${slot}_url` : 'image_url';
+    
+    try {
+      await axios.put(`${API}/books/${bookId}/pages/${selectedPage.id}`, {
+        [imageKey]: imageUrl
+      });
+      
+      setPages(prevPages => 
+        prevPages.map(p => 
+          p.id === selectedPage.id ? { ...p, [imageKey]: imageUrl } : p
+        )
+      );
+      setSelectedPage(prev => ({ ...prev, [imageKey]: imageUrl }));
+      setShowGalleryPicker(false);
+      toast.success('Image added from Art Studio');
+    } catch (error) {
+      toast.error('Failed to add image');
+    }
+  };
 
   const fetchBook = async () => {
     try {
