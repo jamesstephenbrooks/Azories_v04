@@ -333,23 +333,6 @@ export default function Library() {
                     onSelectBook={(book) => navigate(`/read/${book.id}`)}
                   />
                 </Suspense>
-              ) : viewMode === '3d' ? (
-                <div className="space-y-6">
-                  <Suspense fallback={
-                    <div className="w-full h-[600px] rounded-3xl bg-muted/30 flex items-center justify-center">
-                      <div className="text-center space-y-4">
-                        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-                        <p className="font-body text-muted-foreground">Loading 3D Library...</p>
-                      </div>
-                    </div>
-                  }>
-                    <Bookshelf3D 
-                      books={books}
-                      onSelectBook={(book) => setSelectedBook(book)}
-                      selectedBook={selectedBook}
-                    />
-                  </Suspense>
-                </div>
               ) : (
               /* Books Grid with Recommendations */
               <>
