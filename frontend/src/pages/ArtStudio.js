@@ -223,7 +223,9 @@ export default function ArtStudio() {
           style: selectedStyle,
           type: activeTab,
           characterData: activeTab === 'character' ? character : null,
-          sceneData: activeTab === 'scene' ? scene : null
+          sceneData: activeTab === 'scene' ? scene : null,
+          referenceImage: referenceImage,
+          bookId: selectedBookId !== 'general' ? selectedBookId : null
         })
       });
       
