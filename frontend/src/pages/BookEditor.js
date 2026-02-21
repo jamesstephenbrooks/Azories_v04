@@ -167,6 +167,30 @@ export default function BookEditor() {
       toast.error('Failed to add image: ' + (error.response?.data?.detail || error.message));
     }
   };
+  
+  // Update image position/fit settings
+  const updateImagePosition = async (key, value) => {
+    if (!selectedPage) return;
+    
+    const token = localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    
+    try {
+      await axios.put(`${API}/pages/${selectedPage.id}`, {
+        [key]: value
+      }, { headers });
+      
+      setPages(prevPages => 
+        prevPages.map(p => 
+          p.id === selectedPage.id ? { ...p, [key]: value } : p
+        )
+      );
+      setSelectedPage(prev => ({ ...prev, [key]: value }));
+    } catch (error) {
+      console.error('Position update error:', error);
+      toast.error('Failed to update image position');
+    }
+  };
 
   const fetchBook = async () => {
     try {
