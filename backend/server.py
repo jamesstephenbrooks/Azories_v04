@@ -2764,6 +2764,7 @@ async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: d
                 "character_data": request.characterData,
                 "scene_data": request.sceneData,
                 "book_id": request.bookId,
+                "workflow_name": request.workflowName,
                 "has_reference": bool(request.referenceImage),
                 "created_at": datetime.now(timezone.utc)
             }
