@@ -1895,22 +1895,54 @@ export default function ArtStudio() {
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-6"
               >
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
                   <h2 className="text-xl font-bold text-white flex items-center gap-2">
                     <FiGrid className="text-purple-400" />
                     My Gallery
                   </h2>
                   
-                  {/* Gallery Filter */}
-                  <div className="flex items-center gap-2">
-                    <label className="text-xs text-white/50">Filter:</label>
+                  {/* Gallery Filters */}
+                  <div className="flex items-center gap-3">
+                    {/* Type Filter */}
+                    <div className="flex items-center gap-2">
+                      <div className="flex bg-black/30 rounded-lg p-0.5">
+                        <button
+                          onClick={() => setGalleryTypeFilter('all')}
+                          className={`px-3 py-1.5 text-xs rounded-md transition-all ${
+                            galleryTypeFilter === 'all' ? 'bg-purple-600 text-white' : 'text-white/60 hover:text-white'
+                          }`}
+                        >
+                          All
+                        </button>
+                        <button
+                          onClick={() => setGalleryTypeFilter('images')}
+                          className={`px-3 py-1.5 text-xs rounded-md transition-all flex items-center gap-1 ${
+                            galleryTypeFilter === 'images' ? 'bg-purple-600 text-white' : 'text-white/60 hover:text-white'
+                          }`}
+                        >
+                          <FiImage className="w-3 h-3" />
+                          Images
+                        </button>
+                        <button
+                          onClick={() => setGalleryTypeFilter('animations')}
+                          className={`px-3 py-1.5 text-xs rounded-md transition-all flex items-center gap-1 ${
+                            galleryTypeFilter === 'animations' ? 'bg-pink-600 text-white' : 'text-white/60 hover:text-white'
+                          }`}
+                        >
+                          <FiVideo className="w-3 h-3" />
+                          Animations
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {/* Book Filter */}
                     <select
                       value={galleryFilter}
                       onChange={(e) => setGalleryFilter(e.target.value)}
                       className="bg-black/30 border border-white/20 rounded-lg px-3 py-1.5 text-white text-xs"
                       data-testid="gallery-filter"
                     >
-                      <option value="all">All Images</option>
+                      <option value="all">All Books</option>
                       {userBooks.map(book => (
                         <option key={book.id || book._id} value={book.id || book._id}>
                           {book.title}
@@ -1921,64 +1953,115 @@ export default function ArtStudio() {
                 </div>
                 
                 {(() => {
-                  const filteredGallery = galleryFilter === 'all' 
-                    ? gallery 
-                    : gallery.filter(item => item.book_id === galleryFilter);
+                  // Apply both filters
+                  let filteredGallery = gallery;
                   
-                  return filteredGallery.length === 0 ? (
-                    <div className="text-center py-12">
-                      <FiImage className="w-16 h-16 text-white/20 mx-auto mb-4" />
-                      <p className="text-white/50">
-                        {galleryFilter === 'all' 
-                          ? 'No images yet. Start creating!' 
-                          : 'No images for this book yet.'}
+                  // Filter by book
+                  if (galleryFilter !== 'all') {
+                    filteredGallery = filteredGallery.filter(item => item.book_id === galleryFilter);
+                  }
+                  
+                  // Filter by type
+                  if (galleryTypeFilter === 'images') {
+                    filteredGallery = filteredGallery.filter(item => item.type !== 'animation');
+                  } else if (galleryTypeFilter === 'animations') {
+                    filteredGallery = filteredGallery.filter(item => item.type === 'animation');
+                  }
+                  
+                  const imageCount = gallery.filter(g => g.type !== 'animation').length;
+                  const animationCount = gallery.filter(g => g.type === 'animation').length;
+                  
+                  return (
+                    <>
+                      <p className="text-xs text-white/40 mb-4">
+                        {imageCount} images, {animationCount} animations
                       </p>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {filteredGallery.map((item) => (
-                        <div
-                          key={item._id}
-                          className={`relative group rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
-                            selectedGalleryItem?._id === item._id
-                              ? 'border-purple-500'
-                              : 'border-transparent hover:border-white/30'
-                          }`}
-                          onClick={() => setSelectedGalleryItem(item)}
-                        >
-                          <img
-                            src={item.image_url}
-                            alt={item.name}
-                            className="w-full aspect-square object-cover"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                            <div className="absolute bottom-0 left-0 right-0 p-3">
-                              <p className="text-white text-sm font-medium truncate">{item.name}</p>
-                              <p className="text-white/50 text-xs">{item.style}</p>
-                            </div>
-                          </div>
-                          {/* Animate button */}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              openAnimateModal(item.image_url);
-                            }}
-                            className="absolute top-2 left-2 p-1.5 bg-pink-500/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                            title="Animate this image"
-                          >
-                            <FiPlay className="w-3 h-3 text-white" />
-                          </button>
-                          {/* Delete button */}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteFromGallery(item._id);
-                            }}
-                            className="absolute top-2 right-2 p-1.5 bg-red-500/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <FiTrash2 className="w-3 h-3 text-white" />
-                          </button>
+                      {filteredGallery.length === 0 ? (
+                        <div className="text-center py-12">
+                          {galleryTypeFilter === 'animations' ? (
+                            <>
+                              <FiVideo className="w-16 h-16 text-white/20 mx-auto mb-4" />
+                              <p className="text-white/50">No animations yet. Create some in the Animate tab!</p>
+                            </>
+                          ) : (
+                            <>
+                              <FiImage className="w-16 h-16 text-white/20 mx-auto mb-4" />
+                              <p className="text-white/50">
+                                {galleryFilter === 'all' 
+                                  ? 'No images yet. Start creating!' 
+                                  : 'No images for this book yet.'}
+                              </p>
+                            </>
+                          )}
                         </div>
+                      ) : (
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                          {filteredGallery.map((item) => (
+                            <div
+                              key={item._id}
+                              className={`relative group rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
+                                selectedGalleryItem?._id === item._id
+                                  ? item.type === 'animation' ? 'border-pink-500' : 'border-purple-500'
+                                  : 'border-transparent hover:border-white/30'
+                              }`}
+                              onClick={() => setSelectedGalleryItem(item)}
+                            >
+                              {item.type === 'animation' ? (
+                                <video
+                                  src={item.image_url}
+                                  className="w-full aspect-square object-cover"
+                                  muted
+                                  loop
+                                  onMouseEnter={(e) => e.target.play()}
+                                  onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
+                                />
+                              ) : (
+                                <img
+                                  src={item.image_url}
+                                  alt={item.name}
+                                  className="w-full aspect-square object-cover"
+                                />
+                              )}
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div className="absolute bottom-0 left-0 right-0 p-3">
+                                  <p className="text-white text-sm font-medium truncate">{item.name}</p>
+                                  <p className="text-white/50 text-xs flex items-center gap-1">
+                                    {item.type === 'animation' ? <FiVideo className="w-3 h-3" /> : <FiImage className="w-3 h-3" />}
+                                    {item.type === 'animation' ? 'Animation' : item.style}
+                                  </p>
+                                </div>
+                              </div>
+                              {/* Animation badge */}
+                              {item.type === 'animation' && (
+                                <div className="absolute top-2 left-2 px-2 py-0.5 bg-pink-500 rounded text-xs text-white flex items-center gap-1">
+                                  <FiPlay className="w-2.5 h-2.5" />
+                                  Video
+                                </div>
+                              )}
+                              {/* Animate button (only for images) */}
+                              {item.type !== 'animation' && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openAnimateModal(item.image_url);
+                                  }}
+                                  className="absolute top-2 left-2 p-1.5 bg-pink-500/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                  title="Animate this image"
+                                >
+                                  <FiPlay className="w-3 h-3 text-white" />
+                                </button>
+                              )}
+                              {/* Delete button */}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteFromGallery(item._id);
+                                }}
+                                className="absolute top-2 right-2 p-1.5 bg-red-500/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <FiTrash2 className="w-3 h-3 text-white" />
+                              </button>
+                            </div>
                       ))}
                     </div>
                   );
