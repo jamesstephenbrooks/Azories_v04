@@ -485,8 +485,16 @@ const OutputNode = ({ data, selected }) => {
             />
             <div className="absolute bottom-2 right-2 flex gap-1 z-10">
               <button
+                onClick={() => data.onSaveToGallery?.(data.image)}
+                className="p-1.5 bg-green-600/80 rounded-lg hover:bg-green-600"
+                title="Save to Gallery"
+              >
+                <FiSave className="w-4 h-4 text-white" />
+              </button>
+              <button
                 onClick={() => data.onDownload?.(data.image)}
                 className="p-1.5 bg-black/50 rounded-lg hover:bg-black/70"
+                title="Download"
               >
                 <FiDownload className="w-4 h-4 text-white" />
               </button>
