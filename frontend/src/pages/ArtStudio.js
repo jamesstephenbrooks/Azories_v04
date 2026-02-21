@@ -2327,6 +2327,158 @@ export default function ArtStudio() {
           </div>
         </div>
       )}
+      
+      {/* Animation Modal */}
+      <AnimatePresence>
+        {showAnimateModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+            onClick={() => setShowAnimateModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
+              className="bg-gradient-to-br from-[#2d1f3d] to-[#1a1520] rounded-2xl p-6 max-w-2xl w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                    <FiVideo className="text-pink-400" />
+                    Animate Image
+                  </h2>
+                  <p className="text-white/60 text-sm">Bring your image to life with AI animation</p>
+                </div>
+                <button
+                  onClick={() => setShowAnimateModal(false)}
+                  className="p-2 hover:bg-white/10 rounded-lg text-white/60 hover:text-white"
+                >
+                  <FiX className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-6">
+                {/* Original Image */}
+                <div>
+                  <p className="text-xs text-white/50 mb-2">Original Image</p>
+                  <div className="aspect-square rounded-xl overflow-hidden bg-black/30">
+                    {animatingImage && (
+                      <img src={animatingImage} alt="To animate" className="w-full h-full object-cover" />
+                    )}
+                  </div>
+                </div>
+                
+                {/* Animated Result or Settings */}
+                <div>
+                  {animatedVideo ? (
+                    <>
+                      <p className="text-xs text-white/50 mb-2">Animated Result</p>
+                      <div className="aspect-square rounded-xl overflow-hidden bg-black/30">
+                        <video 
+                          src={animatedVideo} 
+                          controls 
+                          autoPlay 
+                          loop 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-xs text-white/50 mb-2">Animation Settings</p>
+                      <div className="space-y-4">
+                        {/* Motion Description */}
+                        <div>
+                          <label className="text-xs text-white/70 mb-1 block">Motion Description</label>
+                          <textarea
+                            value={animationMotion}
+                            onChange={(e) => setAnimationMotion(e.target.value)}
+                            placeholder="gentle breathing, hair flowing, soft blinking..."
+                            className="w-full bg-black/30 border border-white/20 rounded-lg px-3 py-2 text-white text-sm min-h-[80px]"
+                          />
+                        </div>
+                        
+                        {/* Animation Style */}
+                        <div>
+                          <label className="text-xs text-white/70 mb-1 block">Animation Style</label>
+                          <div className="grid grid-cols-3 gap-2">
+                            {['natural', 'dramatic', 'subtle'].map(style => (
+                              <button
+                                key={style}
+                                onClick={() => setAnimationStyle(style)}
+                                className={`py-2 px-3 rounded-lg text-xs capitalize transition-all ${
+                                  animationStyle === style
+                                    ? 'bg-pink-500 text-white'
+                                    : 'bg-white/10 text-white/60 hover:bg-white/20'
+                                }`}
+                              >
+                                {style}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        <p className="text-[10px] text-white/40">
+                          Animation creates a 4-second video. May take 1-3 minutes.
+                        </p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+              
+              {/* Action Buttons */}
+              <div className="mt-6 flex gap-3">
+                {animatedVideo ? (
+                  <>
+                    <Button
+                      onClick={() => {
+                        const link = document.createElement('a');
+                        link.href = animatedVideo;
+                        link.download = `azories-animated-${Date.now()}.mp4`;
+                        link.click();
+                      }}
+                      className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600"
+                    >
+                      <FiDownload className="w-4 h-4 mr-2" />
+                      Download Video
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setAnimatedVideo(null)}
+                      className="border-white/20 text-white"
+                    >
+                      Animate Again
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    onClick={animateImage}
+                    disabled={isAnimating || !animatingImage}
+                    className="flex-1 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700"
+                  >
+                    {isAnimating ? (
+                      <>
+                        <FiRefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                        Animating... (1-3 min)
+                      </>
+                    ) : (
+                      <>
+                        <FiPlay className="w-4 h-4 mr-2" />
+                        Animate Image
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
