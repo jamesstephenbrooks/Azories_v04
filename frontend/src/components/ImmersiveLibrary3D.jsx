@@ -1678,6 +1678,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                           key={book.id}
                           onClick={() => {
                             setSelectedBook(book);
+                            highlightBookAtGenre(selectedGenre, book);
                             setSelectedGenre(null);
                           }}
                           className="w-full flex items-center gap-3 p-2 rounded-xl bg-black/20 hover:bg-purple-500/20 transition-colors text-left group"
