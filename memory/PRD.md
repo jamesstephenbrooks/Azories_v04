@@ -11,26 +11,46 @@ Create a digital book creating and reading web application called "Azories" for 
 
 ## What's Been Implemented
 
-### Latest Session (Feb 21, 2026) - Expert Mode Fixes & 3D Library UI
+### Latest Session (Feb 21, 2026) - Major UI & Feature Enhancements
 
-**Expert Mode ResizeObserver Fix:**
-- Removed NodeResizer from CharacterNode and SceneNode (was causing ResizeObserver errors)
-- CharacterNode now has fixed size: 250x260px (increased for transparent bg option)
-- SceneNode now has fixed size: 250x240px
-- ReferenceNode and OutputNode already had fixed sizes
+**3D Library Book Popup - Dramatic Flying Animation:**
+- Book cover flies out from right with 3D rotation animation (-15deg rotateY)
+- Info panel slides in from edge with gradient fade
+- Uses spring physics for natural motion
+- Book spine shadow effect for 3D depth
+- Panel extends from screen edge for immersive feel
 
-**Expert Mode Output Preview:**
-- Added full-size image preview modal with FiMaximize2 icon button
-- Users can now expand generated images to full screen before saving/downloading
-- Modal includes Save to Gallery and Download buttons
+**Dual Reference Image System:**
+- **Style Reference** - For art style, colors, lighting, mood (purple border)
+- **Character Reference** - For character appearance, features (pink border)
+- Each has its own slot with "Extract" button
+- AI-powered prompt extraction using GPT-4o vision
+- Extracted prompts displayed under each reference
+- Backend endpoint: `/api/art-studio/analyze-image`
 
-**3D Library Book Popup Position:**
-- Changed book info card from center of screen to middle-right position
-- Uses `top-1/2 right-8 -translate-y-1/2` positioning
-- Slides in from right with animation
+**Book Editor Simplification:**
+- Removed AI Generation from Book Editor (use Art Studio instead)
+- Added authorization headers to gallery API calls
+- Streamlined image panel to Upload + Art Studio Gallery only
 
-**Pro Features for Best-in-Class Image Creation (Feb 21, 2026):**
-- **Style Preview Gallery Modal** - Full-screen gallery showing all 66 art styles organized by category with preview images
+**Scene Creator Improvement:**
+- Changed scene presets from grid buttons to dropdown selector
+- Easier selection from 24+ preset scenes
+
+**Gallery Filtering:**
+- Added filter dropdown in Gallery tab
+- Filter by "All Images" or specific book
+- Filtered view shows only relevant images
+
+**Bug Fixes:**
+- Fixed gallery picker authorization issues
+- Cleaned up leftover code in 3D library popup
+- Fixed AILibrarian chat panel positioning
+
+### Previous Enhancements (Feb 21, 2026)
+
+**Pro Features for Best-in-Class Image Creation:**
+- **Style Preview Gallery Modal** - Full-screen gallery showing all 66 art styles
 - **Pro Options Panel** - Expandable panel with:
   - Quality Level selector (low/medium/high/ultra) with quality boosters in prompts
   - Aspect Ratio options (1:1, 16:9, 9:16, 4:3, 3:4)
