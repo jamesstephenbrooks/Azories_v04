@@ -678,6 +678,176 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         
         bookMeshesRef.current = bookSprites;
         
+        // Create floating magical genre banners
+        const createTextCanvas = (text, color) => {
+          const canvas = document.createElement('canvas');
+          canvas.width = 512;
+          canvas.height = 128;
+          const ctx = canvas.getContext('2d');
+          
+          // Gradient background
+          const gradient = ctx.createLinearGradient(0, 0, 512, 0);
+          gradient.addColorStop(0, 'rgba(0,0,0,0)');
+          gradient.addColorStop(0.2, color + '40');
+          gradient.addColorStop(0.5, color + '80');
+          gradient.addColorStop(0.8, color + '40');
+          gradient.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, 0, 512, 128);
+          
+          // Glowing text
+          ctx.font = 'bold 48px "Georgia", serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          
+          // Glow effect
+          ctx.shadowColor = color;
+          ctx.shadowBlur = 20;
+          ctx.fillStyle = '#ffffff';
+          ctx.fillText(text, 256, 64);
+          ctx.fillText(text, 256, 64); // Double for stronger glow
+          
+          return canvas;
+        };
+        
+        // Add floating genre banners above sections
+        GENRE_SECTIONS.forEach((section) => {
+          if (section.name === 'Center') return; // Skip center
+          
+          const bannerCanvas = createTextCanvas(section.name, section.color);
+          const bannerTexture = new THREE.CanvasTexture(bannerCanvas);
+          bannerTexture.colorSpace = THREE.SRGBColorSpace;
+          
+          const bannerGeometry = new THREE.PlaneGeometry(4, 1);
+          const bannerMaterial = new THREE.MeshBasicMaterial({
+            map: bannerTexture,
+            transparent: true,
+            side: THREE.DoubleSide,
+            depthWrite: false
+          });
+          
+          const banner = new THREE.Mesh(bannerGeometry, bannerMaterial);
+          banner.position.set(section.position.x, startY + 3.5, section.position.z);
+          banner.rotation.y = Math.atan2(section.position.x, section.position.z); // Face outward
+          
+          scene.add(banner);
+          
+          // Add floating animation via userData
+          banner.userData = { 
+            isGenreBanner: true, 
+            baseY: startY + 3.5,
+            phase: Math.random() * Math.PI * 2 
+          };
+        });
+        
+        // Create Azora 3D sprite (young witch librarian)
+        const azoraGeometry = new THREE.PlaneGeometry(1.2, 1.8);
+        const azoraCanvas = document.createElement('canvas');
+        azoraCanvas.width = 256;
+        azoraCanvas.height = 384;
+        const azoraCtx = azoraCanvas.getContext('2d');
+        
+        // Draw stylized Azora (young witch)
+        // Background glow
+        const azoraGlow = azoraCtx.createRadialGradient(128, 192, 0, 128, 192, 150);
+        azoraGlow.addColorStop(0, 'rgba(147, 51, 234, 0.3)');
+        azoraGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        azoraCtx.fillStyle = azoraGlow;
+        azoraCtx.fillRect(0, 0, 256, 384);
+        
+        // Robe/Cloak (dark with purple tint)
+        azoraCtx.fillStyle = '#1a1030';
+        azoraCtx.beginPath();
+        azoraCtx.moveTo(128, 100);
+        azoraCtx.bezierCurveTo(60, 150, 50, 350, 70, 380);
+        azoraCtx.lineTo(186, 380);
+        azoraCtx.bezierCurveTo(206, 350, 196, 150, 128, 100);
+        azoraCtx.fill();
+        
+        // Hood
+        azoraCtx.fillStyle = '#2d1f50';
+        azoraCtx.beginPath();
+        azoraCtx.ellipse(128, 95, 50, 60, 0, Math.PI, 0);
+        azoraCtx.fill();
+        
+        // Face (simple, warm tone)
+        azoraCtx.fillStyle = '#f5d5c8';
+        azoraCtx.beginPath();
+        azoraCtx.ellipse(128, 90, 28, 35, 0, 0, Math.PI * 2);
+        azoraCtx.fill();
+        
+        // Hair (flowing, light brown/blonde)
+        azoraCtx.fillStyle = '#c4a574';
+        azoraCtx.beginPath();
+        azoraCtx.ellipse(128, 70, 32, 25, 0, Math.PI, 0);
+        azoraCtx.fill();
+        // Hair sides
+        azoraCtx.beginPath();
+        azoraCtx.moveTo(96, 80);
+        azoraCtx.quadraticCurveTo(80, 120, 85, 170);
+        azoraCtx.quadraticCurveTo(95, 140, 100, 100);
+        azoraCtx.fill();
+        azoraCtx.beginPath();
+        azoraCtx.moveTo(160, 80);
+        azoraCtx.quadraticCurveTo(176, 120, 171, 170);
+        azoraCtx.quadraticCurveTo(161, 140, 156, 100);
+        azoraCtx.fill();
+        
+        // Eyes (friendly)
+        azoraCtx.fillStyle = '#6b5344';
+        azoraCtx.beginPath();
+        azoraCtx.ellipse(115, 88, 5, 6, 0, 0, Math.PI * 2);
+        azoraCtx.ellipse(141, 88, 5, 6, 0, 0, Math.PI * 2);
+        azoraCtx.fill();
+        
+        // Smile
+        azoraCtx.strokeStyle = '#c49a87';
+        azoraCtx.lineWidth = 2;
+        azoraCtx.beginPath();
+        azoraCtx.arc(128, 100, 12, 0.1 * Math.PI, 0.9 * Math.PI);
+        azoraCtx.stroke();
+        
+        // Magic wand (held out)
+        azoraCtx.strokeStyle = '#4a3728';
+        azoraCtx.lineWidth = 4;
+        azoraCtx.beginPath();
+        azoraCtx.moveTo(170, 200);
+        azoraCtx.lineTo(210, 160);
+        azoraCtx.stroke();
+        
+        // Wand tip glow
+        azoraCtx.fillStyle = '#a855f7';
+        azoraCtx.shadowColor = '#a855f7';
+        azoraCtx.shadowBlur = 15;
+        azoraCtx.beginPath();
+        azoraCtx.arc(212, 158, 8, 0, Math.PI * 2);
+        azoraCtx.fill();
+        azoraCtx.shadowBlur = 0;
+        
+        // Sparkles around wand
+        azoraCtx.fillStyle = '#e9d5ff';
+        [[-10, -15], [15, -8], [5, 12], [-8, 8]].forEach(([ox, oy]) => {
+          azoraCtx.beginPath();
+          azoraCtx.arc(212 + ox, 158 + oy, 2, 0, Math.PI * 2);
+          azoraCtx.fill();
+        });
+        
+        const azoraTexture = new THREE.CanvasTexture(azoraCanvas);
+        azoraTexture.colorSpace = THREE.SRGBColorSpace;
+        
+        const azoraMaterial = new THREE.MeshBasicMaterial({
+          map: azoraTexture,
+          transparent: true,
+          side: THREE.DoubleSide,
+          depthWrite: false
+        });
+        
+        const azoraMesh = new THREE.Mesh(azoraGeometry, azoraMaterial);
+        azoraMesh.position.set(2, startY + 0.9, 0); // Standing in the library
+        azoraMesh.userData = { isAzora: true, baseY: startY + 0.9 };
+        scene.add(azoraMesh);
+        azoraRef.current = azoraMesh;
+        
         setIsLoaded(true);
         setLoadError(null);
       },
