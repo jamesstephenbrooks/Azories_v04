@@ -1764,7 +1764,10 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                   <div className="flex gap-2">
                     <Button
                       variant="outline"
-                      onClick={() => setSelectedBook(null)}
+                      onClick={() => {
+                        setSelectedBook(null);
+                        removeHighlightedBook();
+                      }}
                       className="flex-1 text-white border-white/30 hover:bg-white/10"
                     >
                       Close
