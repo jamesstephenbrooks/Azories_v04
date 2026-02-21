@@ -100,6 +100,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
   const highlightedBookRef = useRef(null); // Reference to the highlighted book model
   const highlightedBookModelRef = useRef(null); // The actual 3D model
   const highlightedBookMixerRef = useRef(null); // Animation mixer for highlighted book
+  const gltfLoaderRef = useRef(null); // Shared GLTF loader
   
   // Physics constants - realistic eye level for library scale
   const PLAYER_HEIGHT = 1.1; // Lower eye level for better immersion in scaled library
