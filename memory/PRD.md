@@ -1,33 +1,32 @@
 # Azories - Digital Book Creation Platform PRD
 
 ## Original Problem Statement
-Create a digital book creating and reading web application called "Azories" (azories.com). This is for children, by children to start with.
+Create a digital book creating and reading web application called "Azories" for children, by children.
 
 ## Architecture
-- **Frontend**: React with Tailwind CSS, Framer Motion animations, Three.js for 3D
+- **Frontend**: React with Tailwind CSS, Framer Motion, Three.js for 3D
 - **Backend**: FastAPI with MongoDB
 - **AI Integrations**: Emergent Universal Key (OpenAI GPT Image 1, Sora 2 Video, GPT-4o)
 - **Auth**: JWT-based + Separate Admin Auth
 
 ## What's Been Implemented
 
-### Latest Updates (Feb 21, 2026) - Debug Mode & Physics Improvements
-- **Coordinate Debug Mode**: Toggle in 3D library to click and get exact (x, y, z) coordinates
-- **Debug Panel**: Shows last click coords, mesh name, camera position, copy button
-- **Enhanced Stair Physics**: Multi-ray foot sensor (center, forward, forward-left, forward-right)
-- **Increased Step Height**: 1.0m for stairs (was 0.7m) to handle spiral stairs
-- **Removed Simple 3D View**: Library now only has Grid and Immersive views
-- **Click-to-explore**: Canvas now uses onCanvasClick for both debug mode and book selection
+### Latest Session (Feb 21, 2026) - 3D Grand Library
+- **Coordinate Debug Mode**: Click in 3D to get exact (x, y, z) positions
+- **Genre Banners**: Fiction, Adventure, Fantasy, Comic, Science Fiction with calibrated positions
+- **"Click to browse" hints**: Below each banner pointing up
+- **Interactive Book Selection**: 
+  - Click banner → genre book list panel appears on left
+  - Select book → animated GLB book appears in front of camera
+  - Book info panel on right with cover, title, summary, Read button
+  - Genre panel stays open for quick book switching
+  - Selected book highlighted in list
+- **3D Grand Library Button**: Fancy gradient text, marked for Pro feature
+- **Removed simple 3D view**: Only grid + immersive views
+- **Removed book rotation feature**: Was causing purple screen issues
+- **Camera controls**: 80° left rotation on start, drag to look
 
-### Previous Session: Core 3D Library Fixes
-- Camera starting angle: Tilted down (-0.2 rad) to see floor, bookcases, and room
-- Camera position: Set at (0, floorY+1.1, 2) looking toward bookcases
-- Gravity simplified: Fixed to floor level to prevent floating/jumping
-- Touch panning sensitivity: Increased 3x for faster look-around
-- Mobile UI cleanup: Hidden Azora button and Books panel on mobile
-- Mobile joystick: Visual joystick at bottom-left for touch movement
-
-### Core Features Implemented
+### Core Features (Previous Sessions)
 - Full-stack book creation platform
 - AI image/video generation (10 image styles, 8 video styles)
 - AI story generation with media options
@@ -53,51 +52,51 @@ Create a digital book creating and reading web application called "Azories" (azo
 - [x] AI generation (image + video)
 - [x] Admin CMS
 - [x] 3D Library with GLB model
-- [x] Floor-following gravity
-- [x] Mobile joystick controls
-- [x] Camera starting angle
-- [x] Coordinate debug mode for positioning
+- [x] Genre banners with book selection
+- [x] Interactive 3D book display
 
-### P1 (High Priority) - IN PROGRESS
-- [ ] Use debug mode to get correct banner positions
-- [ ] Fix genre banner placement with real coordinates
-- [ ] Test spiral staircase climbing with new physics
-- [ ] Fix mobile joystick UI obstruction
+### P1 (High Priority) - NEXT
+- [ ] Improve book/image creation experience
+- [ ] AI image generation quality/speed
+- [ ] Story editor enhancements
+- [ ] Cover creation tools
 
-### P2 (Medium Priority)
-- [ ] Re-enable interactive books on shelves
-- [ ] Re-enable Azora AI librarian with correct position
-- [ ] Art Studio node-based UI (React Flow)
-- [ ] Stripe payment integration
+### P2 (Medium Priority) - LATER
+- [ ] Add more genre banners (Mystery, Humour)
+- [ ] Fix spiral staircase climbing
+- [ ] Make 3D Library Pro-only feature
+- [ ] Art Studio node-based UI
 
 ### P3 (Nice to Have)
-- [ ] "Call Azora Over" walking feature
+- [ ] Re-integrate Azora AI librarian
 - [ ] Multiplayer library exploration
 - [ ] Animate still images
 - [ ] Comic book layout support
 
 ## Key Files
-- `/app/frontend/src/components/ImmersiveLibrary3D.jsx` - 3D library logic with debug mode
-- `/app/frontend/src/pages/Library.js` - Library page (grid + immersive views only)
+- `/app/frontend/src/components/ImmersiveLibrary3D.jsx` - 3D library with debug mode, genre banners, book selection
+- `/app/frontend/src/pages/Library.js` - Library page (grid + immersive views)
+- `/app/frontend/public/animated_book.glb` - Animated book model
 - `/app/backend/server.py` - All backend routes
 
 ## Technical Notes - 3D Library
 - Library bounds: X: -9.5 to 9.5, Z: -9.5 to 9.5
 - Floor level: Y = 4.722
-- Player height: 1.1m (eye level Y: 5.82)
-- Camera start: (0, 5.82, 2) facing negative Z
-- Camera tilt: -0.2 radians (looking down)
-- Touch sensitivity: 0.008 (panning), threshold 15px (joystick)
-- Mobile UI: Joystick visible, Books panel and Azora button hidden
-- **Debug Mode**: Click anywhere in 3D scene to get exact coordinates
+- Player height: 1.1m
+- Camera start: Rotated 80° left
+- Book display: 0.8 units in front of camera, Y-0.35 from eye level, scale 0.08
+- Genre banners: Calibrated positions with shelfPos for each
 
-## Stair Climbing Physics
-- Multi-ray foot sensor: center, forward, forward-left, forward-right
-- Max step up: 1.0m for stairs, 0.7m for regular surfaces
-- Max step down: 3.0m
-- Interpolation speed: 0.25 (climbing) / 0.2 (descending)
+## Genre Sections (Calibrated)
+- Fiction: X:-4.79, Y:6.5, Z:-1.35
+- Adventure: X:-5.0, Y:6.5, Z:0.42
+- Fantasy: X:-1.01, Y:5.7, Z:-7.5
+- Comic: X:-2.5, Y:5.7, Z:-6.5
+- Science Fiction: X:-5.5, Y:6.5, Z:-1.29
+- Mystery: Uncalibrated
+- Humour: Uncalibrated
 
-## Currently Disabled (Need Calibration via Debug Mode)
-1. Genre banners - need correct bookcase positions from debug clicks
-2. Azora 3D model - position needs calibration
-3. Interactive book markers - need shelf position mapping
+## Currently Disabled
+- Azora AI librarian - needs position calibration
+- Book rotation feature - was causing issues
+- Auto-loading featured books - simplified
