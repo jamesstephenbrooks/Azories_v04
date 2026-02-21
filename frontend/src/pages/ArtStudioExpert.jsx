@@ -759,8 +759,10 @@ export default function ArtStudioExpert() {
     }
     
     const prompt = buildPromptFromWorkflow();
+    console.log('Built prompt:', prompt);
+    
     if (!prompt || prompt === ', highly detailed, professional illustration') {
-      alert('Please add some nodes and connect them to the output');
+      alert('Please add some nodes and connect them to the output. Make sure Character or Scene nodes have content.');
       return;
     }
     
@@ -775,6 +777,7 @@ export default function ArtStudioExpert() {
     }));
     
     try {
+      console.log('Sending request to API...');
       const response = await fetch(`${API_URL}/api/art-studio/generate`, {
         method: 'POST',
         headers: {
@@ -790,8 +793,11 @@ export default function ArtStudioExpert() {
         })
       });
       
+      console.log('Response status:', response.status);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('Generation successful, image received');
         
         // Update output node with result
         setNodes(nds => nds.map(node => {
@@ -809,11 +815,13 @@ export default function ArtStudioExpert() {
           return node;
         }));
       } else {
-        throw new Error('Generation failed');
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Generation failed:', errorData);
+        throw new Error(errorData.detail || 'Generation failed');
       }
     } catch (error) {
       console.error('Workflow error:', error);
-      alert('Failed to generate image');
+      alert(`Failed to generate image: ${error.message}`);
       
       setNodes(nds => nds.map(node => {
         if (node.type === 'output') {
