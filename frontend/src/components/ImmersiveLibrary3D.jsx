@@ -809,19 +809,13 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         playerVelocity.current.y = 0;
       }
       
-      // Animate floating genre banners
+      // Animate floating genre banners (if any enabled)
       const time = Date.now() * 0.001;
       scene.traverse((child) => {
         if (child.userData?.isGenreBanner) {
-          // Floating animation
           child.position.y = child.userData.baseY + Math.sin(time + child.userData.phase) * 0.1;
         }
       });
-      
-      // Update Azora's animation mixer (for idle animation)
-      if (azoraRef.current && azoraRef.current.userData?.mixer) {
-        azoraRef.current.userData.mixer.update(delta);
-      }
       
       renderer.render(scene, camera);
     };
