@@ -1111,22 +1111,102 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
             </AnimatePresence>
           </div>
           
-          {/* Bottom controls hint */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 pointer-events-none">
-            {showClickHint ? (
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-purple-600 backdrop-blur-sm rounded-full px-6 py-3 text-white text-sm font-medium shadow-lg shadow-purple-500/30"
+          {/* Bottom controls hint - only on desktop */}
+          {!isMobileDevice && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 pointer-events-none">
+              {showClickHint ? (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-purple-600 backdrop-blur-sm rounded-full px-6 py-3 text-white text-sm font-medium shadow-lg shadow-purple-500/30"
+                >
+                  🖱️ Click & drag to look around
+                </motion.div>
+              ) : (
+                <div className="bg-black/50 backdrop-blur-sm rounded-full px-4 py-2 text-white/70 text-sm">
+                  WASD to walk • Click+drag to look
+                </div>
+              )}
+            </div>
+          )}
+          
+          {/* Mobile Joystick */}
+          {isMobileDevice && (
+            <div 
+              className="absolute bottom-8 left-8 pointer-events-auto"
+              style={{ touchAction: 'none' }}
+            >
+              <div 
+                className="relative w-32 h-32 rounded-full bg-black/40 border-2 border-white/20 backdrop-blur-sm"
+                onTouchStart={(e) => {
+                  e.preventDefault();
+                  const touch = e.touches[0];
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const centerX = rect.left + rect.width / 2;
+                  const centerY = rect.top + rect.height / 2;
+                  joystickRef.current = {
+                    active: true,
+                    startX: centerX,
+                    startY: centerY,
+                    currentX: touch.clientX,
+                    currentY: touch.clientY
+                  };
+                }}
+                onTouchMove={(e) => {
+                  e.preventDefault();
+                  if (!joystickRef.current.active) return;
+                  const touch = e.touches[0];
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const centerX = rect.left + rect.width / 2;
+                  const centerY = rect.top + rect.height / 2;
+                  
+                  const dx = touch.clientX - centerX;
+                  const dy = touch.clientY - centerY;
+                  const distance = Math.min(Math.sqrt(dx * dx + dy * dy), 50);
+                  const angle = Math.atan2(dy, dx);
+                  
+                  joystickRef.current = {
+                    ...joystickRef.current,
+                    currentX: centerX + Math.cos(angle) * distance,
+                    currentY: centerY + Math.sin(angle) * distance,
+                    angle: angle,
+                    distance: distance / 50 // Normalize to 0-1
+                  };
+                  
+                  // Update movement keys based on joystick
+                  const threshold = 0.3;
+                  keysPressed.current = {
+                    forward: dy < -threshold * 50,
+                    backward: dy > threshold * 50,
+                    left: dx < -threshold * 50,
+                    right: dx > threshold * 50
+                  };
+                }}
+                onTouchEnd={(e) => {
+                  e.preventDefault();
+                  joystickRef.current = { active: false, angle: 0, distance: 0 };
+                  keysPressed.current = { forward: false, backward: false, left: false, right: false };
+                }}
               >
-                🖱️ Click & drag to look around
-              </motion.div>
-            ) : (
-              <div className="bg-black/50 backdrop-blur-sm rounded-full px-4 py-2 text-white/70 text-sm">
-                WASD to walk • Click+drag to look
+                {/* Joystick knob */}
+                <div 
+                  className="absolute w-14 h-14 rounded-full bg-purple-500/80 border-2 border-white/40 shadow-lg"
+                  style={{
+                    left: '50%',
+                    top: '50%',
+                    transform: joystickRef.current.active 
+                      ? `translate(calc(-50% + ${(joystickRef.current.currentX - joystickRef.current.startX) || 0}px), calc(-50% + ${(joystickRef.current.currentY - joystickRef.current.startY) || 0}px))`
+                      : 'translate(-50%, -50%)'
+                  }}
+                />
+                {/* Directional hints */}
+                <div className="absolute top-2 left-1/2 -translate-x-1/2 text-white/40 text-xs">▲</div>
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-white/40 text-xs">▼</div>
+                <div className="absolute left-2 top-1/2 -translate-y-1/2 text-white/40 text-xs">◀</div>
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 text-white/40 text-xs">▶</div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
           
           {/* Books panel */}
           <div className="absolute bottom-4 right-4 pointer-events-auto">
