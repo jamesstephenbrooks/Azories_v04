@@ -305,7 +305,7 @@ export default function ArtStudio() {
         body: JSON.stringify({
           name: character.name,
           description: buildCharacterPrompt(),
-          reference_images: referenceImage ? [referenceImage] : [],
+          reference_images: characterReferenceImage ? [characterReferenceImage] : [],
           traits: {
             gender: character.gender,
             ageGroup: character.ageGroup,
@@ -1553,7 +1553,7 @@ export default function ArtStudio() {
                         const exportData = {
                           character: character,
                           style: selectedStyle,
-                          referenceImage: referenceImage
+                          referenceImage: characterReferenceImage
                         };
                         localStorage.setItem('artStudioExport', JSON.stringify(exportData));
                         navigate('/art-studio/expert?import=character');
@@ -1708,7 +1708,7 @@ export default function ArtStudio() {
                 <p className="text-xs text-white/50 leading-relaxed">
                   {activeTab === 'character' ? buildCharacterPrompt() : buildScenePrompt()}
                   , {ART_STYLES.find(s => s.id === selectedStyle)?.name || 'fantasy'} art style
-                  {referenceImage && ' (with reference image)'}
+                  {(styleReferenceImage || characterReferenceImage) && ' (with reference image)'}
                 </p>
               </div>
             )}
