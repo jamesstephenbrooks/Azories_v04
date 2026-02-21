@@ -704,7 +704,9 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           return canvas;
         };
         
-        // Add floating genre banners above sections
+        // Add floating genre banners above sections - at a fixed height above floor
+        const bannerHeight = floorLevel + 4; // 4 meters above floor
+        
         GENRE_SECTIONS.forEach((section) => {
           if (section.name === 'Center') return; // Skip center
           
@@ -712,7 +714,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           const bannerTexture = new THREE.CanvasTexture(bannerCanvas);
           bannerTexture.colorSpace = THREE.SRGBColorSpace;
           
-          const bannerGeometry = new THREE.PlaneGeometry(4, 1);
+          const bannerGeometry = new THREE.PlaneGeometry(3, 0.8);
           const bannerMaterial = new THREE.MeshBasicMaterial({
             map: bannerTexture,
             transparent: true,
@@ -721,15 +723,18 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           });
           
           const banner = new THREE.Mesh(bannerGeometry, bannerMaterial);
-          banner.position.set(section.position.x, startY + 3.5, section.position.z);
-          banner.rotation.y = Math.atan2(section.position.x, section.position.z); // Face outward
+          banner.position.set(section.position.x, bannerHeight, section.position.z);
+          
+          // Make banner face the center of the room
+          banner.lookAt(0, bannerHeight, 0);
           
           scene.add(banner);
+          console.log('Added banner:', section.name, 'at Y:', bannerHeight);
           
           // Add floating animation via userData
           banner.userData = { 
             isGenreBanner: true, 
-            baseY: startY + 3.5,
+            baseY: bannerHeight,
             phase: Math.random() * Math.PI * 2 
           };
         });
