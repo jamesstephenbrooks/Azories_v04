@@ -3036,6 +3036,23 @@ async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: d
         else:
             enhanced_prompt = f"{user_prompt}. {style_desc}. {QUALITY_TAGS}"
         
+        # LIGHTING PRESETS - Add dramatic lighting effects
+        lighting_prompts = {
+            "natural": "",  # No extra lighting, use style default
+            "neon-pink-blue": "dramatic neon lighting, pink and blue split lighting, cyberpunk glow, neon rim light, colored light reflections on skin",
+            "golden-hour": "golden hour lighting, warm sunset glow, soft orange light, magical hour photography",
+            "dramatic": "dramatic chiaroscuro lighting, strong shadows, high contrast, cinematic spotlight",
+            "soft-glow": "soft diffused lighting, ethereal glow, gentle luminescence, dreamy soft light",
+            "studio": "professional studio lighting, three-point lighting setup, softbox, clean white background lighting"
+        }
+        lighting_desc = lighting_prompts.get(request.lightingPreset or "natural", "")
+        if lighting_desc:
+            enhanced_prompt += f". {lighting_desc}"
+        
+        # CUSTOM STYLE DESCRIPTION - User can add their own style details
+        if request.customStyleDescription:
+            enhanced_prompt += f". {request.customStyleDescription}"
+        
         # Handle dual reference images for consistency
         if hasattr(request, 'styleReferenceImage') and request.styleReferenceImage:
             enhanced_prompt += ". Match the art style and visual aesthetic of the reference"
