@@ -870,44 +870,72 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         let detectedFloorY = currentFootY; // Default to staying at current level
         
         if (collisionMeshes.length > 0) {
-          // Cast multiple rays to better detect stairs:
-          // 1. One straight down from current position
-          // 2. One slightly forward (in movement direction) to detect upcoming stairs
+          // Cast multiple rays in a "foot" pattern for better stair detection:
+          // - Center ray (current position)
+          // - Forward ray (for detecting upcoming stairs)
+          // - Forward-left and forward-right (for spiral stairs at angles)
+          
+          const isMoving = playerVelocity.current.x !== 0 || playerVelocity.current.z !== 0;
+          const moveDir = isMoving 
+            ? new THREE.Vector3(playerVelocity.current.x, 0, playerVelocity.current.z).normalize()
+            : new THREE.Vector3(0, 0, -1);
+          
+          // Get perpendicular direction for side rays
+          const sideDir = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), moveDir).normalize();
           
           const rayPositions = [
-            new THREE.Vector3(camera.position.x, camera.position.y, camera.position.z),
+            // Center (below player)
+            new THREE.Vector3(camera.position.x, camera.position.y + 0.5, camera.position.z),
           ];
           
-          // Add forward ray if moving
-          if (playerVelocity.current.x !== 0 || playerVelocity.current.z !== 0) {
-            const moveDir = new THREE.Vector3(playerVelocity.current.x, 0, playerVelocity.current.z).normalize();
+          // Add forward rays when moving (for stair climbing detection)
+          if (isMoving) {
+            // Forward center
             rayPositions.push(new THREE.Vector3(
-              camera.position.x + moveDir.x * 0.3,
-              camera.position.y,
-              camera.position.z + moveDir.z * 0.3
+              camera.position.x + moveDir.x * 0.4,
+              camera.position.y + 0.5,
+              camera.position.z + moveDir.z * 0.4
+            ));
+            // Forward left (for spiral stairs)
+            rayPositions.push(new THREE.Vector3(
+              camera.position.x + moveDir.x * 0.3 + sideDir.x * 0.25,
+              camera.position.y + 0.5,
+              camera.position.z + moveDir.z * 0.3 + sideDir.z * 0.25
+            ));
+            // Forward right (for spiral stairs)
+            rayPositions.push(new THREE.Vector3(
+              camera.position.x + moveDir.x * 0.3 - sideDir.x * 0.25,
+              camera.position.y + 0.5,
+              camera.position.z + moveDir.z * 0.3 - sideDir.z * 0.25
             ));
           }
           
           let bestFloorY = null;
+          let detectedStairMesh = null;
           
           for (const rayPos of rayPositions) {
-            const rayOrigin = new THREE.Vector3(rayPos.x, rayPos.y, rayPos.z);
-            
-            raycaster.set(rayOrigin, new THREE.Vector3(0, -1, 0));
-            raycaster.far = PLAYER_HEIGHT + 2;
+            raycaster.set(rayPos, new THREE.Vector3(0, -1, 0));
+            raycaster.far = PLAYER_HEIGHT + 3; // Extended range for tall stairs
             
             const floorHits = raycaster.intersectObjects(collisionMeshes, true);
             
             for (const hit of floorHits) {
               const hitY = hit.point.y;
+              const meshName = hit.object.name?.toLowerCase() || '';
               
-              // Spiral stairs can have taller steps - allow up to 0.7m step up
-              const maxStepUp = 0.7;
-              const maxStepDown = 2.0;
+              // Check if this is a stair mesh - allow higher step-up
+              const isStair = meshName.includes('stair') || meshName.includes('plane05') || meshName.includes('plane06');
+              const maxStepUp = isStair ? 1.0 : 0.7; // More generous step-up for stairs
+              const maxStepDown = 3.0; // Allow dropping down further
               
               if (hitY <= currentFootY + maxStepUp && hitY >= currentFootY - maxStepDown) {
                 if (bestFloorY === null || hitY > bestFloorY) {
                   bestFloorY = hitY;
+                  if (isStair) detectedStairMesh = meshName;
+                }
+              }
+            }
+          }
                 }
               }
             }
