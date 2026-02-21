@@ -776,14 +776,45 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         camera.position.x = newX;
         camera.position.z = newZ;
         
-        // Floor detection - SIMPLE approach that was working before
-        // Just use the stored base floor level, don't raycast for floor
+        // Floor detection with downward raycast - find the floor directly below the player
         const baseFloorY = bounds.floorY || 0;
-        const targetY = baseFloorY + PLAYER_HEIGHT;
+        let detectedFloorY = baseFloorY;
         
-        // Keep camera at consistent floor height
-        // This avoids the jumping issues from raycast hitting wrong geometry
-        camera.position.y = targetY;
+        if (collisionMeshes.length > 0) {
+          // Cast ray straight down from player position
+          const rayOrigin = new THREE.Vector3(
+            camera.position.x,
+            camera.position.y + 2, // Start ray from above current position
+            camera.position.z
+          );
+          
+          raycaster.set(rayOrigin, new THREE.Vector3(0, -1, 0));
+          raycaster.far = 10; // Look far enough down
+          
+          const floorHits = raycaster.intersectObjects(collisionMeshes, true);
+          
+          // Find the first floor hit that's reasonably close to expected floor level
+          for (const hit of floorHits) {
+            const hitY = hit.point.y;
+            // Accept hits within reasonable range of base floor (handles ramps, stairs, slight variations)
+            if (hitY >= baseFloorY - 1 && hitY <= baseFloorY + 3) {
+              detectedFloorY = hitY;
+              break;
+            }
+          }
+        }
+        
+        const targetY = detectedFloorY + PLAYER_HEIGHT;
+        
+        // Smoothly interpolate to target height for natural walking feel
+        const yDiff = targetY - camera.position.y;
+        if (Math.abs(yDiff) > 0.02) {
+          // Speed based on direction - faster falling, gentler rising
+          const interpSpeed = yDiff < 0 ? 0.15 : 0.1;
+          camera.position.y += yDiff * interpSpeed;
+        } else {
+          camera.position.y = targetY;
+        }
         
         playerOnGround.current = true;
         playerVelocity.current.y = 0;
