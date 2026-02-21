@@ -361,8 +361,15 @@ export default function Library() {
                   </Suspense>
                 </div>
               ) : (
-              /* Books Grid */
-              loading ? (
+              /* Books Grid with Recommendations */
+              <>
+              {/* Recommendations Section */}
+              <div className="mb-12">
+                <BookRecommendations />
+              </div>
+              
+              {/* Books Grid */}
+              {loading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                   {[...Array(8)].map((_, i) => (
                     <div key={i} className="rounded-3xl overflow-hidden">
