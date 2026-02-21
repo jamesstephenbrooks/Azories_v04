@@ -47,18 +47,6 @@ const GENRE_SECTIONS = [
 // Interactive 3D Book Model URL - served from public folder to avoid CORS issues
 const ANIMATED_BOOK_GLB_URL = '/animated_book.glb';
 
-// Featured books to display as 3D models in the library
-// Position calibrated using debug mode - place on shelves in genre sections
-const FEATURED_3D_BOOKS = [
-  {
-    bookTitle: 'My Amazing Story', // Will match with books array by title
-    genre: 'Fantasy',
-    position: { x: -1.0, y: 5.3, z: -7.8 }, // On shelf in Fantasy section
-    rotation: { x: 0, y: Math.PI / 4, z: 0 }, // Angled for visibility
-    scale: 0.3
-  }
-];
-
 // Detect mobile device
 const isMobile = () => {
   if (typeof window === 'undefined') return false;
