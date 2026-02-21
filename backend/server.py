@@ -2792,11 +2792,9 @@ async def art_studio_save(request: ArtStudioSaveRequest, current_user: dict = De
         raise HTTPException(status_code=500, detail="Failed to save image")
 
 @api_router.get("/art-studio/gallery")
-async def art_studio_gallery(credentials: HTTPAuthorizationCredentials = Depends(security)):
+async def art_studio_gallery(current_user: dict = Depends(get_current_user)):
     """Get user's saved gallery images"""
-    user = await get_current_user(credentials.credentials)
-    if not user:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+    user = current_user
     
     try:
         cursor = db.art_studio_gallery.find(
