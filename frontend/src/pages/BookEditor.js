@@ -115,17 +115,21 @@ export default function BookEditor() {
   // Fetch Art Studio gallery images for this book
   const fetchGalleryImages = async () => {
     try {
-      const res = await axios.get(`${API}/art-studio/gallery?book_id=${bookId}`);
-      setGalleryImages(res.data.images || []);
+      // Fetch book-specific images
+      const bookRes = await axios.get(`${API}/art-studio/gallery?book_id=${bookId}`);
+      setGalleryImages(bookRes.data.images || []);
     } catch (error) {
-      console.error('Failed to load gallery images');
-      // Also try general gallery
-      try {
-        const res = await axios.get(`${API}/art-studio/gallery`);
-        setGalleryImages(res.data.images || []);
-      } catch (e) {
-        console.error('Failed to load any gallery images');
-      }
+      console.error('Failed to load book gallery images');
+      setGalleryImages([]);
+    }
+    
+    try {
+      // Fetch all gallery images
+      const allRes = await axios.get(`${API}/art-studio/gallery`);
+      setGeneralGalleryImages(allRes.data.images || []);
+    } catch (error) {
+      console.error('Failed to load general gallery images');
+      setGeneralGalleryImages([]);
     }
   };
   
