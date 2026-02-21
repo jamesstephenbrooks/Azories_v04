@@ -237,9 +237,9 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         console.log('Pointer lock error:', err);
       }
     } else {
-      console.log('Cannot request pointer lock - canvas:', !!canvasRef.current, 'exploring:', isExploring);
+      console.log('Cannot request pointer lock - canvas:', !!canvasRef.current, 'exploring:', isExploringRef.current);
     }
-  }, [isExploring]);
+  }, []);
 
   const onPointerLockChange = useCallback(() => {
     const locked = document.pointerLockElement === canvasRef.current;
