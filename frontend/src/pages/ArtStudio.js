@@ -189,6 +189,10 @@ export default function ArtStudio() {
   const [referenceImage, setReferenceImage] = useState(null);
   const [showGalleryPicker, setShowGalleryPicker] = useState(false);
   
+  // Prompt history state
+  const [promptHistory, setPromptHistory] = useState([]);
+  const [showHistoryDropdown, setShowHistoryDropdown] = useState(false);
+  
   // Character builder state
   const [character, setCharacter] = useState({
     name: '',
