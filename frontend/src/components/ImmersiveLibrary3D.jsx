@@ -66,11 +66,17 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
   const raycasterRef = useRef(new THREE.Raycaster());
   const bookMeshesRef = useRef([]);
   
-  // Physics constants
+  // Physics constants - realistic eye level for a child/young person
   const GRAVITY = 20;
-  const PLAYER_HEIGHT = 1.7;
-  const MOVE_SPEED = 5;
+  const PLAYER_HEIGHT = 1.4; // Lower eye level for more immersive feel (~4'7")
+  const MOVE_SPEED = 4;
   const FRICTION = 10;
+  
+  // Azora (AI assistant) state
+  const [azoraPosition, setAzoraPosition] = useState({ x: 2, z: 0 }); // Center of room
+  const [isAzoraComing, setIsAzoraComing] = useState(false);
+  const [showAzoraChat, setShowAzoraChat] = useState(false);
+  const [selectedBook, setSelectedBook] = useState(null); // For book info card
   
   const [isLoaded, setIsLoaded] = useState(false);
   const [loadProgress, setLoadProgress] = useState(0);
