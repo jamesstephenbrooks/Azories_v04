@@ -243,6 +243,10 @@ export default function ArtStudio() {
   const [promptHistory, setPromptHistory] = useState([]);
   const [showHistoryDropdown, setShowHistoryDropdown] = useState(false);
   
+  // Style search and category collapse state
+  const [styleSearchQuery, setStyleSearchQuery] = useState('');
+  const [collapsedCategories, setCollapsedCategories] = useState({}); // All expanded by default
+  
   // PRO FEATURES STATE
   const [showStylePreview, setShowStylePreview] = useState(false);
   const [negativePrompt, setNegativePrompt] = useState('');
