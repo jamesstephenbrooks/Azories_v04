@@ -6,13 +6,13 @@ import axios from 'axios';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
-// AI Librarian for the 3D Library - helps users find books
-export default function AILibrarian({ books = [], isVisible = true }) {
+// Azora - AI Librarian for the 3D Library - helps users find books
+export default function AILibrarian({ books = [], isVisible = true, onCallAzora }) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: "Hello! I'm Luna, your magical library guide! ✨ I can help you find the perfect book, tell you about any story in our collection, or answer questions. What would you like to explore today?"
+      content: "Hello! I'm Azora, your magical library guide! ✨ I can help you find the perfect book, tell you about any story in our collection, or answer questions. What would you like to explore today?"
     }
   ]);
   const [input, setInput] = useState('');
@@ -46,7 +46,7 @@ export default function AILibrarian({ books = [], isVisible = true }) {
 
     try {
       // Build system prompt with book context
-      const systemPrompt = `You are Luna, a friendly and magical AI librarian assistant in a beautiful digital library called Azories. You are designed to help children and young readers.
+      const systemPrompt = `You are Azora, a friendly and magical AI librarian assistant in a beautiful digital library called Azories. You are a young witch with magical powers who loves books. You are designed to help children and young readers.
 
 Your personality:
 - Warm, encouraging, and slightly whimsical
