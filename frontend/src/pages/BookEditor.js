@@ -138,7 +138,10 @@ export default function BookEditor() {
   
   // Use image from Art Studio gallery
   const addGalleryImageToPage = async (imageUrl, slot = 1) => {
-    if (!selectedPage) return;
+    if (!selectedPage) {
+      toast.error('Please select a page first');
+      return;
+    }
     
     const isComicMode = selectedPage.layout === 'comic_4panel' || selectedPage.layout === 'comic_2panel';
     const imageKey = isComicMode ? `image${slot}_url` : 'image_url';
@@ -146,7 +149,8 @@ export default function BookEditor() {
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
     
     try {
-      await axios.put(`${API}/books/${bookId}/pages/${selectedPage.id}`, {
+      // Use the correct endpoint: /pages/{page_id}
+      await axios.put(`${API}/pages/${selectedPage.id}`, {
         [imageKey]: imageUrl
       }, { headers });
       
@@ -160,7 +164,7 @@ export default function BookEditor() {
       toast.success('Image added from Art Studio');
     } catch (error) {
       console.error('Gallery add error:', error);
-      toast.error('Failed to add image');
+      toast.error('Failed to add image: ' + (error.response?.data?.detail || error.message));
     }
   };
 
