@@ -1179,36 +1179,38 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
             </div>
           )}
           
-          {/* Books panel */}
-          <div className="absolute bottom-4 right-4 pointer-events-auto">
-            <div className="bg-black/80 backdrop-blur-sm rounded-xl p-3 max-w-xs">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-lg">📚</span>
-                <span className="text-white font-medium text-sm">Books</span>
-              </div>
-              <div className="flex gap-2 overflow-x-auto pb-1">
-                {books.slice(0, 5).map((book) => (
-                  <button
-                    key={book.id}
-                    onClick={() => navigate(`/read/${book.id}`)}
-                    className="flex-shrink-0 w-12 h-16 rounded-lg overflow-hidden hover:ring-2 hover:ring-purple-500 transition-all"
-                  >
-                    {book.cover_image ? (
-                      <img 
-                        src={book.cover_image} 
-                        alt={book.title}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-purple-900 flex items-center justify-center">
-                        <FiBook className="text-purple-400" />
-                      </div>
-                    )}
-                  </button>
-                ))}
+          {/* Books panel - hide on mobile to not overlap joystick */}
+          {!isMobileDevice && (
+            <div className="absolute bottom-4 right-4 pointer-events-auto">
+              <div className="bg-black/80 backdrop-blur-sm rounded-xl p-3 max-w-xs">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">📚</span>
+                  <span className="text-white font-medium text-sm">Books</span>
+                </div>
+                <div className="flex gap-2 overflow-x-auto pb-1">
+                  {books.slice(0, 5).map((book) => (
+                    <button
+                      key={book.id}
+                      onClick={() => navigate(`/read/${book.id}`)}
+                      className="flex-shrink-0 w-12 h-16 rounded-lg overflow-hidden hover:ring-2 hover:ring-purple-500 transition-all"
+                    >
+                      {book.cover_image ? (
+                        <img 
+                          src={book.cover_image} 
+                          alt={book.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-purple-900 flex items-center justify-center">
+                          <FiBook className="text-purple-400" />
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+          )}
           
           {/* Book Info Card (when a book is selected in 3D view) */}
           <AnimatePresence>
