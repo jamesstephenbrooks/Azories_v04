@@ -344,7 +344,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     cameraRef.current.quaternion.setFromEuler(euler.current);
   }, []);
 
-  // Highlight a book on the shelf for a specific genre
+  // Highlight a book on the shelf for a specific genre - uses animated GLB
   const highlightBookAtGenre = useCallback((genreName, book) => {
     if (!sceneRef.current) return;
     
@@ -352,52 +352,104 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     const section = GENRE_SECTIONS.find(s => s.name.toLowerCase() === genreName.toLowerCase());
     if (!section || !section.shelfPos) return;
     
-    // Remove existing highlighted book
+    // Remove existing highlighted book and stop animation
     if (highlightedBookModelRef.current) {
       sceneRef.current.remove(highlightedBookModelRef.current);
       highlightedBookModelRef.current = null;
     }
+    if (highlightedBookMixerRef.current) {
+      highlightedBookMixerRef.current.stopAllAction();
+      highlightedBookMixerRef.current = null;
+    }
     
-    // Create a glowing book placeholder (simple box for now, can be replaced with GLB)
-    const bookGeometry = new THREE.BoxGeometry(0.15, 0.25, 0.05);
-    const bookMaterial = new THREE.MeshStandardMaterial({
-      color: new THREE.Color(section.color),
-      emissive: new THREE.Color(section.color),
-      emissiveIntensity: 0.8,
-      transparent: true,
-      opacity: 0.9
-    });
+    // Load the animated book GLB
+    const loader = new GLTFLoader();
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+    loader.setDRACOLoader(dracoLoader);
     
-    const bookMesh = new THREE.Mesh(bookGeometry, bookMaterial);
-    
-    // Add slight random offset so it looks natural on shelf
-    const randomOffset = (Math.random() - 0.5) * 0.5;
-    bookMesh.position.set(
-      section.shelfPos.x + randomOffset,
-      section.shelfPos.y,
-      section.shelfPos.z
+    loader.load(
+      ANIMATED_BOOK_GLB_URL,
+      (gltf) => {
+        const bookModel = gltf.scene;
+        
+        // Add slight random offset so it looks natural on shelf
+        const randomOffset = (Math.random() - 0.5) * 0.3;
+        bookModel.position.set(
+          section.shelfPos.x + randomOffset,
+          section.shelfPos.y,
+          section.shelfPos.z + 0.3 // Pop out from the shelf
+        );
+        
+        // Scale the book appropriately
+        bookModel.scale.setScalar(0.4);
+        
+        // Rotate to face the viewer based on genre section rotation
+        bookModel.rotation.y = section.rotation || 0;
+        
+        // Store book data for click detection
+        bookModel.userData = {
+          isHighlightedBook: true,
+          bookId: book.id,
+          bookData: book
+        };
+        
+        // Make all meshes clickable and add glow effect
+        bookModel.traverse((child) => {
+          if (child.isMesh) {
+            child.userData = bookModel.userData;
+            bookMeshesRef.current.push(child);
+            
+            // Add emissive glow
+            if (child.material) {
+              child.material = child.material.clone();
+              child.material.emissive = new THREE.Color(section.color);
+              child.material.emissiveIntensity = 0.4;
+            }
+          }
+        });
+        
+        // Setup animation
+        if (gltf.animations && gltf.animations.length > 0) {
+          const mixer = new THREE.AnimationMixer(bookModel);
+          highlightedBookMixerRef.current = mixer;
+          
+          // Play all animations (or just the first one)
+          gltf.animations.forEach((clip) => {
+            const action = mixer.clipAction(clip);
+            action.setLoop(THREE.LoopOnce);
+            action.clampWhenFinished = true;
+            action.play();
+          });
+          
+          console.log('Playing book animation with', gltf.animations.length, 'clips');
+        }
+        
+        // Add to scene
+        sceneRef.current.add(bookModel);
+        highlightedBookModelRef.current = bookModel;
+        
+        setHighlightedBookGenre(genreName);
+        console.log('Highlighted animated book:', book.title, 'at', section.name);
+      },
+      undefined,
+      (error) => {
+        console.error('Error loading animated book:', error);
+        // Fallback to simple box if GLB fails to load
+        const bookGeometry = new THREE.BoxGeometry(0.15, 0.25, 0.05);
+        const bookMaterial = new THREE.MeshStandardMaterial({
+          color: new THREE.Color(section.color),
+          emissive: new THREE.Color(section.color),
+          emissiveIntensity: 0.8
+        });
+        const bookMesh = new THREE.Mesh(bookGeometry, bookMaterial);
+        bookMesh.position.set(section.shelfPos.x, section.shelfPos.y, section.shelfPos.z + 0.3);
+        bookMesh.userData = { isHighlightedBook: true, bookId: book.id, bookData: book };
+        sceneRef.current.add(bookMesh);
+        highlightedBookModelRef.current = bookMesh;
+        bookMeshesRef.current.push(bookMesh);
+      }
     );
-    
-    // Rotate to match genre section
-    bookMesh.rotation.y = section.rotation || 0;
-    
-    // Store book data for click detection
-    bookMesh.userData = {
-      isHighlightedBook: true,
-      bookId: book.id,
-      bookData: book
-    };
-    
-    // Add to scene
-    sceneRef.current.add(bookMesh);
-    highlightedBookModelRef.current = bookMesh;
-    bookMeshesRef.current.push(bookMesh);
-    
-    // Add pulsing animation
-    bookMesh.userData.pulsePhase = 0;
-    
-    setHighlightedBookGenre(genreName);
-    console.log('Highlighted book:', book.title, 'at', section.name);
   }, []);
 
   // Mobile touch handlers
