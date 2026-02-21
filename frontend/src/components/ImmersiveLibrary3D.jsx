@@ -44,8 +44,9 @@ const GENRE_SECTIONS = [
   { name: 'Humour', position: { x: 4, z: -1 }, bannerPos: { x: 4.79, y: 6.5, z: -1 }, shelfPos: { x: 4.79, y: 5.3, z: -1 }, rotation: -Math.PI / 2, color: '#f59e0b' },
 ];
 
-// Interactive 3D Book Model URL
+// Interactive 3D Book Model URLs
 const ORNATE_BOOK_GLB_URL = 'https://customer-assets.emergentagent.com/job_62143c17-c72b-4578-be62-c4ad9840fad0/artifacts/tv2ys6v4_ornate_book.glb';
+const ANIMATED_BOOK_GLB_URL = 'https://customer-assets.emergentagent.com/job_62143c17-c72b-4578-be62-c4ad9840fad0/artifacts/5kuua8iz_book_animated_book__historical_book.glb';
 
 // Featured books to display as 3D models in the library
 // Position calibrated using debug mode - place on shelves in genre sections
