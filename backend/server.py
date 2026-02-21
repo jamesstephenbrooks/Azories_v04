@@ -3013,7 +3013,7 @@ async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: d
         if hasattr(request, 'styleReferenceImage') and request.styleReferenceImage:
             enhanced_prompt += ". Match the art style and visual aesthetic of the reference"
         if hasattr(request, 'characterReferenceImage') and request.characterReferenceImage:
-            enhanced_prompt += ". CRITICAL: Maintain EXACT same character appearance - same face, same features as reference"
+            enhanced_prompt += ". Maintain exact same character appearance, same face and features as reference"
         
         # Legacy single reference support
         if request.referenceImage:
@@ -3021,15 +3021,18 @@ async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: d
         
         # Add transparent background instruction if requested
         if request.transparentBackground:
-            enhanced_prompt += ". Isolated subject on pure transparent background, PNG cutout style, no background"
+            enhanced_prompt += ". Isolated subject on pure transparent background, PNG cutout, no background elements"
         
-        # Combine user's negative prompt with defaults
+        # Combine user's negative prompt with defaults for cleaner output
         final_negative = DEFAULT_NEGATIVE
         if request.negativePrompt:
             final_negative = f"{request.negativePrompt}, {DEFAULT_NEGATIVE}"
         
-        # Add negative instruction - but keep it brief so it doesn't override user prompt
-        enhanced_prompt += f". AVOID: {final_negative}"
+        # Append negative prompts at end (DALL-E handles these internally)
+        enhanced_prompt += f". Negative: {final_negative}"
+        
+        # Log the prompt for debugging
+        logging.info(f"Art Studio Generate - Final prompt: {enhanced_prompt[:500]}...")
         
         # Map aspect ratio to size
         aspect_ratio_sizes = {
