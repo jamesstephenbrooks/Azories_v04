@@ -2186,8 +2186,8 @@ async def proxy_audio(url: str):
 AMBIENT_SOUND_URLS = {
     "rain": "https://soundbible.com/grab.php?id=2065&type=mp3",  # Rain Inside House
     "fireplace": "https://soundbible.com/grab.php?id=2178&type=mp3",  # Fireplace
-    "forest": "https://soundbible.com/grab.php?id=2212&type=mp3",  # Forest Birds
-    "ocean": "https://soundbible.com/grab.php?id=2179&type=mp3",  # Ocean Waves
+    "forest": "https://soundbible.com/grab.php?id=1818&type=mp3",  # Rainforest Ambience with birds
+    "ocean": "https://soundbible.com/grab.php?id=1935&type=mp3",  # Ocean Waves
     "cafe": "https://soundbible.com/grab.php?id=1664&type=mp3",  # Restaurant Ambience
     "night": "https://soundbible.com/grab.php?id=2083&type=mp3",  # Night Crickets
     "wind": "https://soundbible.com/grab.php?id=2033&type=mp3",  # Wind Sound
