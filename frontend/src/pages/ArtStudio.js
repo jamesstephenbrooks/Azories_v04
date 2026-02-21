@@ -1095,24 +1095,22 @@ export default function ArtStudio() {
                   Scene Creator
                 </h2>
                 
-                {/* Scene Presets */}
+                {/* Scene Presets - Dropdown */}
                 <div className="mb-4">
-                  <label className="text-sm text-white/70 mb-2 block">Scene Presets</label>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  <label className="text-sm text-white/70 mb-2 block">Scene Preset</label>
+                  <select
+                    value={scene.preset}
+                    onChange={(e) => setScene({ ...scene, preset: e.target.value })}
+                    className="w-full bg-black/30 border border-white/20 rounded-lg px-3 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                    data-testid="scene-preset-dropdown"
+                  >
+                    <option value="">Select a preset...</option>
                     {SCENE_PRESETS.map(preset => (
-                      <button
-                        key={preset.id}
-                        onClick={() => setScene({ ...scene, preset: preset.id })}
-                        className={`p-3 rounded-lg border text-left transition-all ${
-                          scene.preset === preset.id
-                            ? 'border-purple-500 bg-purple-500/20'
-                            : 'border-white/10 bg-black/20 hover:border-white/30'
-                        }`}
-                      >
-                        <span className="text-sm font-medium text-white">{preset.name}</span>
-                      </button>
+                      <option key={preset.id} value={preset.id}>
+                        {preset.name}
+                      </option>
                     ))}
-                  </div>
+                  </select>
                 </div>
                 
                 {/* Scene Options */}
