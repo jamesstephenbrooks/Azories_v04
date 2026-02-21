@@ -446,68 +446,65 @@ const CombineNode = ({ data, selected }) => {
   );
 };
 
-// Output Node - Final generation - Resizable with proper image scaling
+// Output Node - Fixed size with expand preview option
 const OutputNode = ({ data, selected }) => {
   return (
-    <div className={`bg-gradient-to-br from-pink-900/90 to-pink-800/90 rounded-xl border-2 ${selected ? 'border-pink-400' : 'border-pink-600/50'} shadow-xl backdrop-blur-sm flex flex-col`} style={{ width: '100%', height: '100%', minWidth: '200px', minHeight: '180px' }}>
-      <NodeResizer 
-        color="#ec4899" 
-        isVisible={selected} 
-        minWidth={200} 
-        minHeight={180}
-        handleStyle={{ width: 8, height: 8 }}
-      />
+    <div className={`bg-gradient-to-br from-pink-900/90 to-pink-800/90 rounded-xl border-2 ${selected ? 'border-pink-400' : 'border-pink-600/50'} shadow-xl backdrop-blur-sm w-[220px] h-[240px]`}>
       <Handle type="target" position={Position.Left} className="!bg-pink-400 !w-3 !h-3" />
       
-      <div className="p-2 border-b border-pink-600/30 flex items-center gap-2 flex-shrink-0">
-        <div className="w-6 h-6 rounded-lg bg-pink-500/30 flex items-center justify-center flex-shrink-0">
+      <div className="p-2 border-b border-pink-600/30 flex items-center gap-2">
+        <div className="w-5 h-5 rounded-lg bg-pink-500/30 flex items-center justify-center flex-shrink-0">
           <FiZap className="text-pink-300 w-3 h-3" />
         </div>
-        <div className="flex-1 min-w-0">
-          <h4 className="text-xs font-semibold text-white truncate">Output</h4>
-        </div>
-        {selected && (
-          <FiMove className="w-3 h-3 text-pink-400 flex-shrink-0" />
-        )}
+        <h4 className="text-xs font-semibold text-white flex-1">Output</h4>
       </div>
       
-      <div className="p-2 flex-1 min-h-0 overflow-hidden">
+      <div className="p-2 h-[190px]">
         {data.generating ? (
-          <div className="w-full h-full bg-black/30 rounded-lg flex items-center justify-center">
+          <div className="w-full h-full bg-black/30 rounded-lg flex flex-col items-center justify-center">
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
               className="w-10 h-10 border-4 border-pink-500/30 border-t-pink-500 rounded-full"
             />
+            <span className="text-xs text-pink-300 mt-2">Generating...</span>
           </div>
         ) : data.image ? (
           <div className="relative w-full h-full">
             <img 
               src={data.image} 
               alt="Generated" 
-              className="absolute inset-0 w-full h-full object-contain rounded-lg"
+              className="w-full h-full object-cover rounded-lg"
             />
-            <div className="absolute bottom-2 right-2 flex gap-1 z-10">
+            {/* Action buttons */}
+            <div className="absolute bottom-2 left-2 right-2 flex gap-1 justify-center">
+              <button
+                onClick={() => data.onExpand?.(data.image)}
+                className="p-1.5 bg-blue-600/80 rounded-lg hover:bg-blue-600 flex-1 flex items-center justify-center"
+                title="Expand Preview"
+              >
+                <FiMaximize2 className="w-3 h-3 text-white" />
+              </button>
               <button
                 onClick={() => data.onSaveToGallery?.(data.image)}
-                className="p-1.5 bg-green-600/80 rounded-lg hover:bg-green-600"
+                className="p-1.5 bg-green-600/80 rounded-lg hover:bg-green-600 flex-1 flex items-center justify-center"
                 title="Save to Gallery"
               >
-                <FiSave className="w-4 h-4 text-white" />
+                <FiSave className="w-3 h-3 text-white" />
               </button>
               <button
                 onClick={() => data.onDownload?.(data.image)}
-                className="p-1.5 bg-black/50 rounded-lg hover:bg-black/70"
+                className="p-1.5 bg-purple-600/80 rounded-lg hover:bg-purple-600 flex-1 flex items-center justify-center"
                 title="Download"
               >
-                <FiDownload className="w-4 h-4 text-white" />
+                <FiDownload className="w-3 h-3 text-white" />
               </button>
             </div>
           </div>
         ) : (
           <div className="w-full h-full bg-black/30 rounded-lg flex flex-col items-center justify-center">
-            <FiImage className="w-10 h-10 text-pink-300/30 mb-2" />
-            <span className="text-xs text-pink-300/50">Run workflow to generate</span>
+            <FiImage className="w-8 h-8 text-pink-300/30 mb-2" />
+            <span className="text-[10px] text-pink-300/50 text-center px-2">Run workflow to generate</span>
           </div>
         )}
       </div>
