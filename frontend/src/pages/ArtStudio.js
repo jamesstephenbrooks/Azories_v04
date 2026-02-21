@@ -345,8 +345,16 @@ export default function ArtStudio() {
       
       if (activeTab === 'character') {
         fullPrompt = `${buildCharacterPrompt()}, ${styleData?.name || 'fantasy'} art style, highly detailed, professional illustration`;
+        // Save additional details to history
+        if (character.additionalDetails?.trim()) {
+          savePromptToHistory(character.additionalDetails.trim());
+        }
       } else if (activeTab === 'scene') {
         fullPrompt = `${buildScenePrompt()}, ${styleData?.name || 'fantasy'} art style, highly detailed, professional illustration`;
+        // Save custom prompt to history
+        if (scene.customPrompt?.trim()) {
+          savePromptToHistory(scene.customPrompt.trim());
+        }
       }
       
       const response = await fetch(`${API_URL}/api/art-studio/generate`, {
