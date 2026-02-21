@@ -1103,41 +1103,59 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         let newX = camera.position.x + playerVelocity.current.x * delta;
         let newZ = camera.position.z + playerVelocity.current.z * delta;
         
-        // SIMPLIFIED wall collision - cast ray in movement direction only
-        // BUT allow passage when there's a climbable floor ahead (stairs)
+        // ENHANCED wall collision with better stair detection
+        // Cast rays at multiple heights to detect stairs vs walls
         const COLLISION_RADIUS = 0.4;
         
         if (collisionMeshes.length > 0 && (playerVelocity.current.x !== 0 || playerVelocity.current.z !== 0)) {
-          const horizontalVelocity = new THREE.Vector3(
+          const moveDir = new THREE.Vector3(
             playerVelocity.current.x,
             0,
             playerVelocity.current.z
           ).normalize();
           
-          // Ray from chest height in movement direction
-          const rayOrigin = new THREE.Vector3(
-            camera.position.x,
-            camera.position.y - 0.3, // chest height
-            camera.position.z
-          );
+          // Cast rays at multiple heights - knee, waist, and chest level
+          // This helps detect stairs at different points
+          const rayHeights = [
+            camera.position.y - PLAYER_HEIGHT + 0.2,  // Near floor (20cm up)
+            camera.position.y - PLAYER_HEIGHT + 0.5,  // Knee level
+            camera.position.y - 0.3                    // Chest level
+          ];
           
-          raycaster.set(rayOrigin, horizontalVelocity);
-          raycaster.far = COLLISION_RADIUS + 0.2;
+          let blocked = false;
+          let stairDetected = false;
           
-          const hits = raycaster.intersectObjects(collisionMeshes, true);
-          
-          if (hits.length > 0 && hits[0].distance < COLLISION_RADIUS) {
-            const hitMesh = hits[0].object.name?.toLowerCase() || '';
-            // Don't block if we hit stairs - we can climb over them
-            const isStair = hitMesh.includes('stair') || hitMesh.includes('plane05') || hitMesh.includes('plane06');
+          for (const rayY of rayHeights) {
+            const rayOrigin = new THREE.Vector3(camera.position.x, rayY, camera.position.z);
             
-            if (!isStair) {
-              // Wall hit - STOP movement, don't slide
-              newX = camera.position.x;
-              newZ = camera.position.z;
-              playerVelocity.current.x = 0;
-              playerVelocity.current.z = 0;
+            raycaster.set(rayOrigin, moveDir);
+            raycaster.far = COLLISION_RADIUS + 0.3;
+            
+            const hits = raycaster.intersectObjects(collisionMeshes, true);
+            
+            if (hits.length > 0 && hits[0].distance < COLLISION_RADIUS + 0.1) {
+              const hitMesh = hits[0].object.name?.toLowerCase() || '';
+              // Check if it's a stair, ramp, or floor segment
+              const isClimbable = hitMesh.includes('stair') || hitMesh.includes('plane05') || 
+                                  hitMesh.includes('plane06') || hitMesh.includes('ramp') ||
+                                  hitMesh.includes('step') || hitMesh.includes('floor');
+              
+              if (isClimbable) {
+                stairDetected = true;
+              } else if (rayY > camera.position.y - PLAYER_HEIGHT + 0.4) {
+                // Only consider it a wall block at knee level or higher
+                blocked = true;
+              }
             }
+          }
+          
+          // If we detected climbable surface, allow passage (floor detection handles climbing)
+          // Only block if we hit a real wall at waist/chest level without any stairs nearby
+          if (blocked && !stairDetected) {
+            newX = camera.position.x;
+            newZ = camera.position.z;
+            playerVelocity.current.x = 0;
+            playerVelocity.current.z = 0;
           }
         }
         
