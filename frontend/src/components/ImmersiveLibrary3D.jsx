@@ -684,39 +684,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         
         bookMeshesRef.current = bookSprites;
         
-        // Create floating magical genre banners
-        const createTextCanvas = (text, color) => {
-          const canvas = document.createElement('canvas');
-          canvas.width = 512;
-          canvas.height = 128;
-          const ctx = canvas.getContext('2d');
-          
-          // Gradient background
-          const gradient = ctx.createLinearGradient(0, 0, 512, 0);
-          gradient.addColorStop(0, 'rgba(0,0,0,0)');
-          gradient.addColorStop(0.2, color + '40');
-          gradient.addColorStop(0.5, color + '80');
-          gradient.addColorStop(0.8, color + '40');
-          gradient.addColorStop(1, 'rgba(0,0,0,0)');
-          ctx.fillStyle = gradient;
-          ctx.fillRect(0, 0, 512, 128);
-          
-          // Glowing text
-          ctx.font = 'bold 48px "Georgia", serif';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          
-          // Glow effect
-          ctx.shadowColor = color;
-          ctx.shadowBlur = 20;
-          ctx.fillStyle = '#ffffff';
-          ctx.fillText(text, 256, 64);
-          ctx.fillText(text, 256, 64); // Double for stronger glow
-          
-          return canvas;
-        };
-        
-        // Add floating genre banners above sections - simple glowing text only
+        // Add floating genre text labels above sections
         const bannerHeight = floorLevel + 3.5; // 3.5 meters above floor
         
         GENRE_SECTIONS.forEach((section) => {
