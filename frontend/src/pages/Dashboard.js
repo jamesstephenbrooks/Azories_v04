@@ -683,14 +683,29 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
           
-          {/* Reading Streak Tracker */}
+          {/* Reading Streak & Badges Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
             className="mb-8"
           >
-            <ReadingStreakTracker />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="p-6 rounded-2xl bg-card border border-border">
+                <h3 className="font-heading text-lg font-semibold mb-4 flex items-center gap-2">
+                  <FiZap className="text-secondary" />
+                  Reading Streak
+                </h3>
+                <StreakDisplay compact={false} />
+              </div>
+              <div className="p-6 rounded-2xl bg-card border border-border">
+                <h3 className="font-heading text-lg font-semibold mb-4 flex items-center gap-2">
+                  <FiAward className="text-primary" />
+                  Your Badges
+                </h3>
+                <BadgeCollection showAll={false} />
+              </div>
+            </div>
           </motion.div>
           
           {/* Tabs for Books and Analytics */}
