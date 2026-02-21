@@ -1583,6 +1583,95 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
             )}
           </AnimatePresence>
           
+          {/* Genre Books Panel - Shows when a genre banner is clicked */}
+          <AnimatePresence>
+            {selectedGenre && (
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                className="absolute top-20 left-4 bottom-20 w-72 pointer-events-auto"
+              >
+                <div className="h-full bg-gradient-to-br from-[#2d1f3d]/95 to-[#1a1520]/95 backdrop-blur-lg rounded-2xl border border-purple-500/30 shadow-2xl flex flex-col overflow-hidden">
+                  {/* Header */}
+                  <div className="p-4 border-b border-purple-500/20 flex items-center justify-between">
+                    <div>
+                      <h3 className="text-lg font-bold text-white">{selectedGenre}</h3>
+                      <p className="text-xs text-purple-300">
+                        {books.filter(b => b.genre?.toLowerCase() === selectedGenre.toLowerCase()).length} books
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setSelectedGenre(null)}
+                      className="text-white/50 hover:text-white p-1"
+                    >
+                      <FiX className="w-5 h-5" />
+                    </button>
+                  </div>
+                  
+                  {/* Scrollable Book List */}
+                  <div className="flex-1 overflow-y-auto p-3 space-y-2">
+                    {books
+                      .filter(b => b.genre?.toLowerCase() === selectedGenre.toLowerCase())
+                      .map((book) => (
+                        <button
+                          key={book.id}
+                          onClick={() => {
+                            setSelectedBook(book);
+                            setSelectedGenre(null);
+                          }}
+                          className="w-full flex items-center gap-3 p-2 rounded-xl bg-black/20 hover:bg-purple-500/20 transition-colors text-left group"
+                        >
+                          {/* Book Cover Thumbnail */}
+                          <div className="w-12 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-purple-900/50">
+                            {book.cover_image ? (
+                              <img 
+                                src={book.cover_image} 
+                                alt={book.title}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <FiBook className="w-5 h-5 text-purple-400" />
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Book Info */}
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-sm font-medium text-white truncate group-hover:text-purple-200">
+                              {book.title}
+                            </h4>
+                            <p className="text-xs text-purple-300/70 truncate">
+                              by {book.author_name || 'Unknown'}
+                            </p>
+                          </div>
+                          
+                          {/* Arrow */}
+                          <FiChevronUp className="w-4 h-4 text-purple-400 rotate-90 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </button>
+                      ))}
+                    
+                    {/* Empty State */}
+                    {books.filter(b => b.genre?.toLowerCase() === selectedGenre.toLowerCase()).length === 0 && (
+                      <div className="text-center py-8">
+                        <FiBook className="w-10 h-10 text-purple-500/30 mx-auto mb-2" />
+                        <p className="text-sm text-purple-300/50">No books in this section yet</p>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Footer hint */}
+                  <div className="p-3 border-t border-purple-500/20">
+                    <p className="text-xs text-purple-300/50 text-center">
+                      Click a book to view details
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          
           {/* Azora Speech Bubble (when clicked in 3D) */}
           <AnimatePresence>
             {showAzoraChat && (
