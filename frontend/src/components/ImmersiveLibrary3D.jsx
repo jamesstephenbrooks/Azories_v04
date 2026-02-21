@@ -132,10 +132,15 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
 
     // Create scene
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x2a1a4e); // Lighter purple
-    // Reduce fog for better visibility
-    scene.fog = new THREE.Fog(0x2a1a4e, 5, 100);
+    scene.background = new THREE.Color(0x1a1a2e); // Dark blue-ish
+    // Remove fog for better visibility while debugging
+    // scene.fog = new THREE.Fog(0x1a1a2e, 10, 50);
     sceneRef.current = scene;
+
+    // Add a ground helper plane so we can see the ground level
+    const gridHelper = new THREE.GridHelper(30, 30, 0x444444, 0x222222);
+    gridHelper.position.y = 0;
+    scene.add(gridHelper);
 
     // Create camera - first person perspective
     const camera = new THREE.PerspectiveCamera(
