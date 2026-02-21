@@ -753,6 +753,16 @@ export default function BookReader() {
           </div>
         </div>
       )}
+      
+      {/* AI Reading Buddy */}
+      {book && user && (
+        <AIReadingBuddy
+          book={book}
+          currentPage={currentPage}
+          isOpen={showAIBuddy}
+          onToggle={() => setShowAIBuddy(!showAIBuddy)}
+        />
+      )}
     </div>
   );
 }
