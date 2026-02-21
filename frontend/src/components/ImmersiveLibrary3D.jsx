@@ -776,39 +776,45 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         camera.position.x = newX;
         camera.position.z = newZ;
         
-        // Floor detection with downward raycast - realistic walking, no jumping to upper floors
+        // Floor detection with downward raycast - realistic walking with stair support
         const baseFloorY = bounds.floorY || 0;
         const currentFootY = camera.position.y - PLAYER_HEIGHT;
         let detectedFloorY = currentFootY; // Default to staying at current level
         
         if (collisionMeshes.length > 0) {
-          // Cast ray straight down from player position
+          // Cast ray straight down from foot level (not head level)
+          // This helps detect stairs better
           const rayOrigin = new THREE.Vector3(
             camera.position.x,
-            camera.position.y + 0.5, // Start ray from just above eye level
+            camera.position.y - PLAYER_HEIGHT + 0.8, // Start from knee height
             camera.position.z
           );
           
           raycaster.set(rayOrigin, new THREE.Vector3(0, -1, 0));
-          raycaster.far = PLAYER_HEIGHT + 1; // Only look slightly below feet
+          raycaster.far = 3; // Look further down to catch stairs
           
           const floorHits = raycaster.intersectObjects(collisionMeshes, true);
           
-          // Find the highest floor that's at or BELOW current foot level
-          // This prevents jumping UP to higher floors - you can only go up via stairs
+          // Find the highest floor that we can step onto
+          let bestFloorY = null;
           for (const hit of floorHits) {
             const hitY = hit.point.y;
             
-            // Only accept floors that are:
-            // 1. At or below current foot position (can step DOWN freely)
-            // 2. OR only slightly above (max 0.5m step up - for stairs including spiral)
-            const maxStepUp = 0.5; // Maximum height player can step UP (larger for spiral stairs)
-            const maxStepDown = 2.0; // Can fall/step down further
+            // Maximum step up: 0.5m (handles most stairs)
+            // Maximum step down: 2m (can fall/step down)
+            const maxStepUp = 0.5;
+            const maxStepDown = 2.0;
             
             if (hitY <= currentFootY + maxStepUp && hitY >= currentFootY - maxStepDown) {
-              detectedFloorY = hitY;
-              break; // Take the first (highest) valid floor
+              // Take the highest valid floor (closest to current level when going up stairs)
+              if (bestFloorY === null || hitY > bestFloorY) {
+                bestFloorY = hitY;
+              }
             }
+          }
+          
+          if (bestFloorY !== null) {
+            detectedFloorY = bestFloorY;
           }
         }
         
@@ -818,7 +824,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         const yDiff = targetY - camera.position.y;
         if (Math.abs(yDiff) > 0.01) {
           // Smooth movement - faster for falling, slower for climbing
-          const interpSpeed = yDiff < 0 ? 0.2 : 0.15;
+          const interpSpeed = yDiff < 0 ? 0.2 : 0.12;
           camera.position.y += yDiff * interpSpeed;
         }
         
