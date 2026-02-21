@@ -396,8 +396,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           section.shelfPos.z + 0.3 // Pop out slightly from the shelf
         );
         
-        // Scale the book appropriately
-        bookModel.scale.setScalar(0.5);
+        // Scale the book appropriately - smaller size
+        bookModel.scale.setScalar(0.15);
         
         // Rotate to face the viewer based on genre section rotation
         bookModel.rotation.y = section.rotation || 0;
