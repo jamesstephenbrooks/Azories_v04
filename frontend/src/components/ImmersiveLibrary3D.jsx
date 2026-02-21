@@ -917,10 +917,12 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         // Store the floor level in bounds for teleportation
         boundsRef.current.floorY = floorLevel;
         
-        // Position camera on the GROUND FLOOR looking at bookcases
-        // The ground floor is at floorLevel (4.72), need to start there not on upper balcony
-        camera.position.set(0, startY, 0); // Center of ground floor
-        console.log('Camera positioned at:', 0, startY, 0);
+        // Position camera at user-specified coordinates
+        // User coordinates: X: -1.13, Y: 4.72, Z: -0.84 (click on Floor002)
+        const startX = -1.13;
+        const startZ = -0.84;
+        camera.position.set(startX, startY, startZ);
+        console.log('Camera positioned at:', startX, startY, startZ);
         
         // Set initial camera rotation - 80 degrees to the left (anticlockwise)
         // 80 degrees = 80 * (Math.PI / 180) ≈ 1.396 radians
