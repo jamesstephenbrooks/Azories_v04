@@ -862,6 +862,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
   // Start exploring
   const handleStartExploring = () => {
     setIsExploring(true);
+    isExploringRef.current = true; // Update ref for animation loop
     // Controls are already shown in the welcome dialog, no need for extra popup
   };
 
