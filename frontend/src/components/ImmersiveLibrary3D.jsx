@@ -305,22 +305,58 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         
         console.log('Library bounds:', boundsRef.current);
         
-        // Process materials
+        // Collect collision meshes and regular meshes
+        const collisionMeshes = [];
+        const visibleMeshes = [];
+        
         model.traverse((child) => {
           if (child.isMesh) {
-            child.castShadow = true;
-            child.receiveShadow = true;
-            if (child.material) {
-              child.material.side = THREE.DoubleSide;
-              child.material.needsUpdate = true;
+            const name = child.name.toLowerCase();
+            
+            // Check if this is a collision mesh (common naming conventions)
+            if (name.includes('collision') || name.includes('collider') || 
+                name.includes('_col') || name.includes('wall') || 
+                name.includes('floor') || name.includes('boundary')) {
+              // Make collision meshes invisible but keep for raycasting
+              child.visible = false;
+              collisionMeshes.push(child);
+              console.log('Found collision mesh:', child.name);
+            } else {
+              // Regular visible meshes
+              child.castShadow = true;
+              child.receiveShadow = true;
+              if (child.material) {
+                child.material.side = THREE.DoubleSide;
+                child.material.needsUpdate = true;
+              }
+              visibleMeshes.push(child);
             }
           }
         });
         
+        console.log(`Found ${collisionMeshes.length} collision meshes, ${visibleMeshes.length} visible meshes`);
+        
+        // Store collision meshes for raycasting
+        collisionMeshesRef.current = collisionMeshes.length > 0 ? collisionMeshes : visibleMeshes;
+        
         scene.add(model);
         
-        // Position camera inside the library
-        camera.position.set(0, PLAYER_HEIGHT, 5);
+        // Try to find a good starting position using raycasting
+        const raycaster = new THREE.Raycaster();
+        const downRay = new THREE.Vector3(0, -1, 0);
+        
+        // Cast ray down from center to find floor
+        raycaster.set(new THREE.Vector3(0, 10, 0), downRay);
+        const floorHits = raycaster.intersectObjects(collisionMeshesRef.current, true);
+        
+        let startY = PLAYER_HEIGHT;
+        if (floorHits.length > 0) {
+          startY = floorHits[0].point.y + PLAYER_HEIGHT;
+          console.log('Found floor at:', floorHits[0].point.y, 'Starting at:', startY);
+        }
+        
+        // Position camera inside the library at detected floor level
+        camera.position.set(0, startY, 3);
         
         setIsLoaded(true);
         setLoadError(null);
