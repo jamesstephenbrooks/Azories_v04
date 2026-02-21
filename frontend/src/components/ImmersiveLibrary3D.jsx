@@ -492,7 +492,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         const bookPosition = new THREE.Vector3()
           .copy(camera.position)
           .add(forward.multiplyScalar(0.8));
-        bookPosition.y = camera.position.y - 0.1;
+        bookPosition.y = camera.position.y - 0.35;
         
         // Get camera's Y rotation for facing
         const cameraDirection = new THREE.Vector3(0, 0, -1);
