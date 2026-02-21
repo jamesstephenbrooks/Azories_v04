@@ -61,6 +61,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
   const playerOnGround = useRef(true);
   const cameraDirection = useRef(new THREE.Vector3());
   const sidewaysDirection = useRef(new THREE.Vector3());
+  const collisionMeshesRef = useRef([]);
+  const raycasterRef = useRef(new THREE.Raycaster());
   
   // Physics constants
   const GRAVITY = 20;
