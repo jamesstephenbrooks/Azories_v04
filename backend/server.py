@@ -2768,11 +2768,9 @@ async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: d
         raise HTTPException(status_code=500, detail=f"Failed to generate image: {str(e)}")
 
 @api_router.post("/art-studio/save")
-async def art_studio_save(request: ArtStudioSaveRequest, credentials: HTTPAuthorizationCredentials = Depends(security)):
+async def art_studio_save(request: ArtStudioSaveRequest, current_user: dict = Depends(get_current_user)):
     """Save an image to user's gallery"""
-    user = await get_current_user(credentials.credentials)
-    if not user:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+    user = current_user
     
     try:
         gallery_item = {
