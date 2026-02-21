@@ -41,6 +41,17 @@ const CHARACTER_TRAITS = {
 // Art styles with example images - organized by category
 const ART_STYLE_CATEGORIES = [
   {
+    category: 'Sci-Fi & Futuristic',
+    styles: [
+      { id: 'scifi-portrait', name: 'Sci-Fi Portrait', description: 'Futuristic stylized portrait with chrome elements', image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=100&h=100&fit=crop' },
+      { id: 'stylized-digital', name: 'Stylized Digital', description: 'Highly stylized digital art, doll-like features', image: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=100&h=100&fit=crop' },
+      { id: 'concept-portrait', name: 'Concept Art Portrait', description: 'AAA game concept art quality', image: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=100&h=100&fit=crop' },
+      { id: 'chrome-aesthetic', name: 'Chrome Aesthetic', description: 'Liquid metal, chrome, reflective surfaces', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=100&h=100&fit=crop' },
+      { id: 'ethereal-scifi', name: 'Ethereal Sci-Fi', description: 'Dreamy sci-fi with soft atmospheric effects', image: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=100&h=100&fit=crop' },
+      { id: 'cyberpunk', name: 'Cyberpunk', description: 'Neon-lit futuristic dystopia', image: 'https://images.unsplash.com/photo-1515630278258-407f66498911?w=100&h=100&fit=crop' },
+    ]
+  },
+  {
     category: 'Advanced Portrait',
     styles: [
       { id: 'neon-portrait', name: 'Neon Portrait', description: 'Dramatic pink/blue neon lighting, hyper-detailed', image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&h=100&fit=crop' },
