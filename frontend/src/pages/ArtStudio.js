@@ -653,7 +653,9 @@ export default function ArtStudio() {
           bookId: selectedBookId !== 'general' ? selectedBookId : null,
           transparentBackground: useTransparentBg,
           aspectRatio: aspectRatio,
-          qualityLevel: qualityLevel
+          qualityLevel: qualityLevel,
+          customStyleDescription: customStyleDescription,
+          lightingPreset: lightingPreset
         })
       });
       
