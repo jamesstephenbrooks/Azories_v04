@@ -662,9 +662,10 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         bookMeshesRef.current = bookMeshes;
         console.log('Interactive book markers disabled - use Books panel to select books');
         
-        // Add genre text banners sitting on TOP of bookcases
-        // Bookcases are approximately 3m tall, so banners at floorLevel + 3.2
-        const bannerHeight = floorLevel + 3.2;
+        // Add genre text banners floating on TOP of each bookcase
+        // Position them to be visible when looking at the bookcases
+        const bookcaseBannerHeight = floorLevel + 3.0; // Just above bookcase tops
+        const staircaseBannerHeight = floorLevel + 2.0; // Lower for staircase areas
         
         GENRE_SECTIONS.forEach((section) => {
           // Create text sprite for the banner
@@ -677,18 +678,18 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           ctx.clearRect(0, 0, 512, 128);
           
           // Glowing text effect
-          ctx.font = 'bold 48px Georgia, serif';
+          ctx.font = 'bold 56px Georgia, serif';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           
           // Outer glow
           ctx.shadowColor = section.color;
-          ctx.shadowBlur = 30;
+          ctx.shadowBlur = 25;
           ctx.fillStyle = section.color;
           ctx.fillText(section.name, 256, 64);
           
-          // Inner text (white with colored tint)
-          ctx.shadowBlur = 15;
+          // Inner text (white)
+          ctx.shadowBlur = 10;
           ctx.fillStyle = '#ffffff';
           ctx.fillText(section.name, 256, 64);
           
@@ -703,18 +704,21 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           });
           
           const sprite = new THREE.Sprite(spriteMaterial);
-          sprite.scale.set(2.5, 0.6, 1);
+          sprite.scale.set(2.2, 0.55, 1);
           
-          // Position banner on top of bookcase using the dedicated bannerPos
-          sprite.position.set(section.bannerPos.x, bannerHeight, section.bannerPos.z);
+          // Use different heights for bookcase vs staircase sections
+          const isStaircaseSection = section.name === 'Adventure' || section.name === 'Fantasy';
+          const bannerY = isStaircaseSection ? staircaseBannerHeight : bookcaseBannerHeight;
+          
+          sprite.position.set(section.bannerPos.x, bannerY, section.bannerPos.z);
           
           scene.add(sprite);
-          console.log('Added genre banner:', section.name, 'at', section.bannerPos.x, bannerHeight, section.bannerPos.z);
+          console.log('Added genre banner:', section.name, 'at', section.bannerPos.x, bannerY, section.bannerPos.z);
           
-          // Add floating animation data
+          // Add gentle floating animation
           sprite.userData = { 
             isGenreBanner: true, 
-            baseY: bannerHeight,
+            baseY: bannerY,
             phase: Math.random() * Math.PI * 2 
           };
         });
