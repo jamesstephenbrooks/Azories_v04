@@ -3436,6 +3436,7 @@ async def generate_with_reference(request: ConsistentCharacterRequest, current_u
         from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
         import httpx
         import uuid
+        import base64 as base64_module
         
         if not EMERGENT_LLM_KEY:
             raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
@@ -3443,7 +3444,7 @@ async def generate_with_reference(request: ConsistentCharacterRequest, current_u
         # Download character reference image
         async with httpx.AsyncClient() as client:
             char_response = await client.get(request.characterReferenceImage, timeout=30.0)
-            char_base64 = base64.b64encode(char_response.content).decode('utf-8')
+            char_base64 = base64_module.b64encode(char_response.content).decode('utf-8')
         
         # Initialize chat for analysis
         chat = LlmChat(
