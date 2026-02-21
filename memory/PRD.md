@@ -4,246 +4,92 @@
 Create a digital book creating and reading web application called "Azories" (azories.com). This is for children, by children to start with.
 
 ## Architecture
-- **Frontend**: React with Tailwind CSS, Framer Motion animations
+- **Frontend**: React with Tailwind CSS, Framer Motion animations, Three.js for 3D
 - **Backend**: FastAPI with MongoDB
 - **AI Integrations**: Emergent Universal Key (OpenAI GPT Image 1, Sora 2 Video, GPT-4o)
 - **Auth**: JWT-based + Separate Admin Auth
 
-## What's Been Implemented (February 2026)
+## What's Been Implemented
 
-### Latest Updates (Feb 21, 2026) - Session 9: 3D Library Major Rewrite
-- **3D Library Complete Rewrite** (`ImmersiveLibrary3D.jsx`):
-  - **Camera-relative controls**: WASD/Arrow keys now move in the direction you're facing
-  - **Raycasting collision detection**: Uses collision meshes from GLB for wall detection
-  - **Floor collision/gravity**: Player stays grounded on the floor
-  - **Boundary collision**: Can't walk outside the library bounds
-  - **Genre teleport sections**: "Jump to Section" button with Fantasy, Adventure, Mystery, Sci-Fi zones
-  - **Controls tutorial**: Only shows for logged-in users, first time only (stored in localStorage per user)
-  - **New GLB model**: Using `gothic_library_13_cycles-compressed.glb` with built-in collision meshes
-- **AI Librarian "Luna"** (`AILibrarian.jsx`):
-  - Floating chat bubble in 3D library view
-  - Uses GPT-4o via `/api/ai/reading-buddy` endpoint
-  - Knows about all books in the library
-  - Can recommend books, answer questions, help find stories
-  - Quick suggestion buttons for first-time users
-- **Ambient Sounds Updated**:
-  - Forest sound changed to Rainforest Ambience (ID: 1818)
-  - Ocean sound changed to proper Ocean Waves (ID: 1935)
+### Latest Updates (Feb 21, 2026) - 3D Library Fixes
+- **Fixed Large Geometry Issue**: Removed ornate_book.glb that was causing large floating purple geometry
+- **Interactive Books**: Replaced with simple small box markers (0.08x0.25x0.15) positioned on back wall bookcases
+- **Genre Banners**: Repositioned above actual bookcases (Fantasy/Mystery/Adventure at z=-4)
+- **Azora Position**: Moved to floor near right bookcase (x=3.5, y=floorLevel, z=-2)
+- **Player Height**: Adjusted from 1.2 to 1.6 for more grounded camera feel
+- **Movement Physics**: Simplified to prevent vertical jumping issues
 
-### Session 8 (Feb 21, 2026): Feature Integration & Bug Fixes
-- **Ambient Sounds Fixed (CORS Fix)**: Backend proxy at `/api/ambient-sounds/{sound_name}`
-- **Reading Streaks & Badges on Dashboard**: StreakDisplay and BadgeCollection
-- **Book Recommendations in Library**: "Recommended for You" section with refresh
-- **Collaborative Writing in BookEditor**: Invite collaborators button
-- **Voice Narration Upload in BookEditor**: Record narration button
-- **Offline Indicator**: Shows banner when browser goes offline
+### Previous Session: 3D Library Major Rewrite
+- **Camera-relative controls**: WASD/Arrow keys move in direction facing
+- **Click-and-drag mouse look**: Replaced buggy pointer lock system
+- **Genre teleport sections**: "Jump to Section" with Fantasy, Adventure, Mystery, Sci-Fi zones
+- **AI Librarian "Azora"**: 3D GLB model, clickable for chat
+- **New GLB model**: gothic_library_16_cycles-compressed.glb
 
-### Previous: Session 7 (Feb 20, 2026) - User Experience Improvements
-- **Onboarding Tutorial**: 4-step guided tutorial for new users
-  - Welcome to Azories (features overview)
-  - Explore the Library (browse/search/3D view)
-  - Immersive Reading (auto-read, ambient sounds)
-  - Create Your Stories (Pro features, AI tools)
-  - Progress dots, skip option, animated transitions
-- **Reading Streaks & Badges System**: Gamification to encourage reading
-  - Daily reading streak tracking (3, 7, 30 day badges)
-  - Achievement badges: First Book, Bookworm, Night Owl, Early Bird, Genre Explorer, Creator, Supporter
-  - New badge popup with confetti animation
-  - Backend endpoints: `/api/user/reading-stats`, `/api/user/record-reading`
-- **Book Recommendations**: Personalized suggestions
-  - Based on genres user has read
-  - Fallback to popular books
-  - Backend endpoint: `/api/user/recommendations`
-- **Animated Book Cards**: Hover effects, shimmer, floating particles
-- **Improved Theme Toggle**: Animated sun/moon toggle with smooth transitions
-- **Ambient Sounds Fixed**: Changed to Pixabay audio sources (more reliable CORS support)
-
-### Previous: Session 6 (Feb 20, 2026) - 3D GLB Library Integration
-- **3D Gothic Library with User's GLB Model**: Successfully integrated the user's purchased 50MB GLB model
-  - Fixed CORS issues by implementing backend proxy endpoint `/api/proxy/glb`
-  - Added proper Content-Length header for accurate loading progress display
-  - Loading progress now shows correctly (0% → 100%)
-  - Gothic library renders with wooden floors, stone pillars, and decorative elements
-  - OrbitControls for drag to rotate, scroll to zoom, right-click to pan
-  - Library collection panel shows books at the bottom
-  - Fullscreen mode supported
-  - Ambient fireplace audio plays on user interaction
-- **Verified Ambient Sound Popup Fix**: Confirmed the popup now displays correctly on-screen
-
-### Latest Updates (Feb 18, 2026) - Session 5: Immersive Library
-- **Fixed Ambient Sound Dropdown**: Changed popup to open downward (top-full) instead of upward to prevent off-screen rendering
-- **Immersive 3D Library (CSS Fallback)**: Created CSS 3D library experience as fallback with:
-  - Starry night sky background with animated stars
-  - Chandelier with glowing candles
-  - 8 bookshelves arranged in a circular pattern
-  - Colorful books that can be clicked to read
-  - Gothic pillars in the corners
-  - Floating magic orbs with glow effects
-  - Drag to rotate, arrow buttons for navigation
-  - Ambient fireplace audio
-  - Book preview modal when clicking books
-
-### Latest Updates (Feb 18, 2026) - Session 4: Best Reading App Vision
-- **Analytics Dashboard**: Added tabbed view in Dashboard with "My Books" and "Analytics" tabs
-  - Total Views, Total Reads, Published Books, Avg Reads/Book stats cards
-  - Book Performance table with Status, Views, Reads, Actions
-  - Per-book detailed analytics modal with daily reads chart
-- **User Profile System**: Full social profiles at `/profile` and `/profile/:userId`
-  - Avatar (initials-based), display name, bio, location, website, twitter
-  - Stats: Followers, Following, Books, Total Reads
-  - Achievement badges (Pro Creator, Prolific Author, Rising Star)
-  - Published books gallery with empty state
-  - Edit Profile dialog with all profile fields
-- **Ambient Sound System**: Immersive reading with background sounds
-  - 8 ambient sounds: Rain, Fireplace, Forest, Ocean, Café, Night, Wind, Library
-  - Genre-based recommendations (Fantasy → Fireplace/Forest, Mystery → Rain/Night)
-  - Volume control and play/stop functionality
-- **Social Features Backend**:
-  - User profiles API (GET /api/users/{id}/profile, PUT /api/users/profile)
-  - Follow/Unfollow system (/api/users/{id}/follow)
-  - Followers/Following lists
-  - Book reviews with ratings (1-5 stars) and average rating calculation
-- **Navigation**: Profile link added to Navbar user dropdown
-
-### Latest Updates (Feb 18, 2026) - Session 3
-- **Auto-Read Continuous Playback Fix**: Fixed critical bug where audiobook would stop at chapter title pages
-  - Added refs (autoReadRef, currentPageRef) to avoid stale closure issues in setTimeout callbacks
-  - Chapter title pages now properly auto-advance after 2.5 seconds
-  - Audio playback correctly advances to next page on completion
-  - Fixed race condition with auth token on direct URL navigation
-- **Code Quality**: Improved BookReader.js with proper ref usage for async callbacks
-
-### Latest Updates (Feb 17, 2026) - Session 2
-- **Book Series Management**: Create and manage book series in My Books
-  - Manage Series button in header
-  - Create series with name and description
-  - Expandable series view showing books with order numbers and thumbnails
-  - Add books to series from within expanded series view
-  - Remove books from series
-  - Series badge displays on book cards
-- **My Books Search Bar**: Filter books by title, description, or genre
-- **Enhanced Book Reader**:
-  - Auto-Read ON by default
-  - Narrator voice dropdown in bottom controls (22+ voices)
-  - Larger book display in fullscreen mode (95vw × 85vh)
-  - Exit fullscreen button always visible
-  - Auto-advances through chapter title pages (2.5s)
-- **AI Story Creator Enhanced**:
-  - Visual Media options (Images, Videos, Cinemagraphs, None)
-  - 10 image styles (Illustration, Comic, Realistic, Sci-Fi, Sketch, Watercolor, Anime, Fantasy, Pixar, Storybook)
-  - 8 video styles for Sora AI
-
-### Session 1 Updates (Feb 17, 2026)
-- **Summary Preview Popup**: Info icon on book cards in Library
-- **Admin CMS Button Removed**: From Dashboard (still at /admin)
-- **Video Generation Fix**: Size parameter fixed
-
-### Previous Updates
-- Play Button Fix: Continues through all chapters
-- Single-Page Front Cover with hover overlay
-- Generate All AI Images: Batch generation
-- Auto-Save: 2-second debounce
-- Harry Potter Style Library (3D immersive)
-- Enhanced Fullscreen mode
-- Multiple AI styles (Sci-Fi, etc.)
-
-### Admin CMS
-- **URL**: /admin
-- **Credentials**: azories_admin / AzoriesAdmin2024!
-- Features: Dashboard stats, book management, user list, analytics
-
-### Backend Features
-- JWT Authentication (Free/Pro tiers)
-- Books, Chapters, Pages CRUD
-- **Book Series CRUD** (create, list, add/remove books)
-- Book Download (JSON export)
-- AI Image Generation (10 styles)
-- AI Video Generation (8 styles) - Valid sizes: 1280x720, 1792x1024, 1024x1792, 1024x1024
-- Batch Image Generation
-- AI Story Generation with media options
-- AI Summary Generation
+### Core Features Implemented
+- Full-stack book creation platform
+- AI image/video generation (10 image styles, 8 video styles)
+- AI story generation with media options
 - Text-to-Speech (ElevenLabs, 22+ voices)
-- File uploads (image/video)
-- Admin CMS with separate auth
-
-### Frontend Features
-- Landing page
-- Auth (login/register)
-- Dashboard with subscription management
-- **My Books with Search Bar**
-- **Series Management Dialog** (expandable view)
-- Book Editor:
-  - Auto-save (2-second debounce)
-  - Download button
-  - AI Images dropdown (batch generation)
-  - Cover editor
-  - Comic book mode
-  - Narrator voice selection
-- Library:
-  - Grid view
-  - 3D Harry Potter style library (auto-rotate, candlelight)
-  - Search/filter
-  - **Summary Preview Popup** on book cards (hover for info icon, click to view summary)
-- Book Reader:
-  - Single-page front cover with play overlay
-  - Enhanced page turning animation
-  - Chapter title pages
-  - Auto-read with page turning
-  - Improved fullscreen mode (dark bg, scaled book)
-  - Volume and speed controls
+- Auto-save (2-second debounce)
+- Book series management
+- Reading streaks & badges
+- User profiles with social features
+- Ambient sounds system
+- Offline reading support
+- Admin CMS at /admin
 
 ## Test Credentials
 - **Admin**: azories_admin / AzoriesAdmin2024!
 - **Test Author**: testauthor@azories.com / TestAuthor123! (Pro)
-- **Test User**: testuser2@example.com / TestPass123! (Pro)
+- **Test User**: testuser@example.com / password123 (Pro)
 
 ## Prioritized Backlog
 
-### P0 (Critical) - COMPLETED
+### P0 (Critical) - IN PROGRESS
 - [x] Core reading/creation experience
 - [x] Authentication
 - [x] AI generation (image + video)
 - [x] Admin CMS
-- [x] 3D Library (CSS fallback + GLB model integration Feb 20, 2026)
-- [x] Auto-save
-- [x] Summary preview popup on book cards
-- [x] Auto-read continuous playback through chapters (fixed Feb 18, 2026)
-- [x] Analytics Dashboard for creators (Feb 18, 2026)
-- [x] User Profile system with social features (Feb 18, 2026)
-- [x] Ambient reading sounds (Feb 18, 2026)
-- [x] Immersive 3D Gothic Library with GLB model (Feb 20, 2026)
+- [x] 3D Library with GLB model
+- [ ] **3D Library fine-tuning** - Banner positions, Azora placement, book marker alignment
 
 ### P1 (High Priority)
 - [ ] Stripe payment integration
-- [ ] Realistic page-turning animation (BookReaderV2)
-- [x] Interactive PDF download (working)
-- [x] Loading bars for image/video uploads (working)
-- [x] Social features - follow/unfollow, reviews (Feb 18, 2026)
+- [ ] Voice narration UI improvements (mic access prompt)
+- [ ] Jump to Section teleport fixes
+- [ ] Realistic page-turning animation
 
 ### P2 (Medium Priority)
-- [ ] Book analytics dashboard for creators
-- [ ] Playback speed control for audiobook
-- [ ] Animated image options during AI book creation
-- [ ] Azories vector logo
+- [ ] Art Studio node-based UI (React Flow)
+- [ ] AI Librarian knowledge enhancement
+- [ ] "Call Azora Over" feature
+- [ ] Personalized book recommendations
 
 ### P3 (Nice to Have)
+- [ ] Multiplayer library exploration
 - [ ] Animate still images
 - [ ] Comic book advanced layouts
-- [ ] User profiles and following
-- [ ] Book reviews/ratings
+- [ ] Vector logo creation
 
 ## API Endpoints
 - `/api/auth/*` - Authentication
 - `/api/books/*` - Book CRUD
-- `/api/books/{id}/download` - Download book as JSON
-- `/api/ai/generate-image` - Single image generation
-- `/api/ai/generate-video` - Video generation
-- `/api/ai/generate-all-images` - Batch generate images
-- `/api/ai/generate-images-from-text` - Generate from text content
-- `/api/ai/generate-story` - Generate full story
-- `/api/ai/generate-summary` - Generate back cover summary
-- `/api/admin/*` - Admin CMS (separate auth)
-- `/api/proxy/glb` - Proxy for CORS-bypassing GLB 3D model files
-- `/api/ambient-sounds/{sound}` - Proxy ambient sounds (rain, fireplace, forest, etc.)
-- `/api/users/{id}/profile` - User profile (GET/PUT)
-- `/api/users/{id}/follow` - Follow/unfollow user
+- `/api/ai/*` - AI generation endpoints
+- `/api/admin/*` - Admin CMS
+- `/api/proxy/glb` - GLB model proxy (CORS bypass)
+- `/api/ambient-sounds/*` - Ambient sound proxy
+- `/api/users/*` - User profiles and social
+- `/api/art-studio/*` - Art Studio (new, placeholder)
+
+## Key Files
+- `/app/frontend/src/components/ImmersiveLibrary3D.jsx` - 3D library logic (~1050 lines)
+- `/app/frontend/src/pages/Library.js` - Library page with view modes
+- `/app/frontend/src/pages/ArtStudio.jsx` - Art Studio placeholder
+- `/app/backend/server.py` - All backend routes (monolithic)
+
+## Known Issues
+1. Genre banners may need coordinate adjustment based on actual bookcase positions
+2. Azora position may need fine-tuning to be visible
+3. Interactive book markers need alignment with visible shelf space
+4. Jump to Section teleport coordinates need updating to match new genre positions
