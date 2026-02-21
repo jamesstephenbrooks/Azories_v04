@@ -8,8 +8,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { Button } from '@/components/ui/button';
 import { FiX, FiBook, FiMaximize2, FiMinimize2, FiVolume2, FiVolumeX, FiMove, FiArrowUp, FiArrowDown, FiArrowLeft, FiArrowRight } from 'react-icons/fi';
 
-// Gothic Library Model URL - Using proxy to bypass CORS
-const ORIGINAL_GLB_URL = 'https://customer-assets.emergentagent.com/job_f7ce8ac7-f125-4781-b4a2-bc90bdbc8e87/artifacts/pspisxvd_gothic_library_12_cycles-compressed.glb';
+// Gothic Library Model URL - Using proxy to bypass CORS (smaller compressed version)
+const ORIGINAL_GLB_URL = 'https://customer-assets.emergentagent.com/job_f7ce8ac7-f125-4781-b4a2-bc90bdbc8e87/artifacts/tlr5jivt_gothic_library_12_cycles-compressed%20%281%29.glb';
 const LIBRARY_MODEL_URL = `${process.env.REACT_APP_BACKEND_URL}/api/proxy/glb?url=${encodeURIComponent(ORIGINAL_GLB_URL)}`;
 
 // Detect mobile device
