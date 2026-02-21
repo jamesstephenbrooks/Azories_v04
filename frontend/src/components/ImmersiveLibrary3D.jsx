@@ -858,7 +858,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       }
       dracoLoader.dispose();
     };
-  }, [onKeyDown, onKeyUp, onMouseMove, onMouseDown, onMouseUp, onPointerLockChange, onTouchStart, onTouchMove, onTouchEnd, isExploring, books]);
+  }, [onKeyDown, onKeyUp, onMouseMove, onMouseDown, onMouseUp, onPointerLockChange, onTouchStart, onTouchMove, onTouchEnd, books]);
 
   // Start exploring
   const handleStartExploring = () => {
