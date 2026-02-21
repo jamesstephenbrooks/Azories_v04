@@ -725,12 +725,14 @@ export default function ArtStudioExpert() {
   // Build prompt from connected nodes
   const buildPromptFromWorkflow = () => {
     const outputNode = nodes.find(n => n.type === 'output');
-    if (!outputNode) return '';
+    if (!outputNode) return { prompt: '', transparentBg: false };
     
     const getConnectedNodes = (targetId) => {
       const connectedEdges = edges.filter(e => e.target === targetId);
       return connectedEdges.map(e => nodes.find(n => n.id === e.source)).filter(Boolean);
     };
+    
+    let hasTransparentBg = false;
     
     const processNode = (node) => {
       if (!node) return '';
@@ -746,6 +748,11 @@ export default function ArtStudioExpert() {
         if (node.data.gender) parts.push(node.data.gender.toLowerCase() + ' character');
         if (node.data.age) parts.push(node.data.age.toLowerCase());
         if (node.data.appearance) parts.push(node.data.appearance);
+        // Check for transparent background
+        if (node.data.transparentBg) {
+          hasTransparentBg = true;
+          parts.push('isolated on transparent background, no background, PNG cutout style');
+        }
         return parts.join(', ');
       }
       
@@ -772,7 +779,10 @@ export default function ArtStudioExpert() {
     const connectedToOutput = getConnectedNodes(outputNode.id);
     const promptParts = connectedToOutput.map(processNode).filter(Boolean);
     
-    return promptParts.join(', ') + ', highly detailed, professional illustration';
+    return {
+      prompt: promptParts.join(', ') + ', highly detailed, professional illustration',
+      transparentBg: hasTransparentBg
+    };
   };
   
   // Run the workflow
