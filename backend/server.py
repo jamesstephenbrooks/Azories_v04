@@ -2968,6 +2968,15 @@ async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: d
         
         # Style enhancement mapping - ENHANCED for variations and quality
         style_prompts = {
+            # ADVANCED PORTRAIT STYLES - Hyper-detailed digital art
+            "neon-portrait": "hyper-detailed digital portrait, dramatic neon pink and blue split lighting, flowing detailed hair with individual strands visible, extremely polished skin, professional digital art, 8K ultra HD, trending on ArtStation, glossy finish, studio quality, cinematic color grading, volumetric lighting, rim light glow",
+            "surreal-portrait": "surreal double exposure portrait, fantasy castle in background, dramatic sunset sky reflected in glasses, flowing wavy hair with purple and teal highlights, extremely detailed face, hyper-realistic digital painting, dreamy ethereal atmosphere, 8K ultra HD, trending on ArtStation, masterpiece quality",
+            "hyper-digital": "hyper-detailed digital art portrait, extremely polished rendering, every hair strand visible, porcelain skin texture, professional studio lighting, 8K resolution, photorealistic yet stylized, trending on ArtStation, premium digital painting, subsurface scattering, rim lighting",
+            "aesthetic-portrait": "aesthetic portrait, soft pastel color grading, trendy e-girl/e-boy aesthetic, soft glow effect, detailed flowing hair, smooth skin, professional digital art, dreamy atmosphere, 8K quality, Instagram aesthetic, soft bokeh background",
+            "fantasy-portrait": "fantasy portrait, magical ethereal lighting, flowing detailed hair with fantasy colors, luminous skin, otherworldly beauty, extremely detailed eyes with reflections, professional fantasy art, 8K HD, trending on ArtStation, volumetric god rays",
+            "dramatic-glamour": "high fashion glamour portrait, dramatic studio lighting, extreme detail, magazine cover quality, professional photography aesthetic, sharp focus, bokeh background, 8K resolution, runway model quality, perfect makeup and styling",
+            
+            # STANDARD STYLES
             "realistic": "ultra photorealistic, hyperdetailed, studio photography, 8K UHD, DSLR quality, sharp focus, depth of field, bokeh background, professional lighting, Ray tracing",
             "anime": "premium anime art, detailed cel shading, Studio Ghibli quality, vibrant saturated colors, clean precise lineart, expressive detailed eyes, anime key visual, trending on Pixiv",
             "cartoon": "premium cartoon illustration, bold clean vector outlines, vibrant saturated colors, Disney/Pixar quality character design, smooth gradients, appealing proportions",
