@@ -1037,52 +1037,9 @@ export default function BookEditor() {
                           </div>
                         )}
                         
-                        {/* AI Image Generation */}
-                        <div className="space-y-3">
-                          <Label className="font-ui">Generate with AI</Label>
-                          <Select value={imageStyle} onValueChange={setImageStyle}>
-                            <SelectTrigger className="rounded-full">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="illustration">Children's Illustration</SelectItem>
-                              <SelectItem value="comic">Comic Book Style</SelectItem>
-                              <SelectItem value="realistic">Realistic/Photographic</SelectItem>
-                              <SelectItem value="scifi">Sci-Fi / Futuristic</SelectItem>
-                              <SelectItem value="sketch">Pencil Sketch</SelectItem>
-                              <SelectItem value="watercolor">Watercolor Painting</SelectItem>
-                              <SelectItem value="anime">Anime / Manga Style</SelectItem>
-                              <SelectItem value="fantasy">Fantasy Art</SelectItem>
-                              <SelectItem value="pixar">3D Pixar Style</SelectItem>
-                              <SelectItem value="storybook">Classic Storybook</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <div className="flex gap-2">
-                            <Input
-                              placeholder={`Describe the image for ${isComicMode ? `panel ${activeImageSlot}` : 'this page'}...`}
-                              value={imagePrompt}
-                              onChange={(e) => setImagePrompt(e.target.value)}
-                              className="rounded-full border-2"
-                              data-testid="image-prompt"
-                            />
-                            <Button
-                              onClick={generateImage}
-                              disabled={generatingImage}
-                              className="rounded-full"
-                              data-testid="generate-image-btn"
-                            >
-                              {generatingImage ? (
-                                <FiLoader className="w-4 h-4 animate-spin" />
-                              ) : (
-                                'Generate'
-                              )}
-                            </Button>
-                          </div>
-                        </div>
-                        
                         {/* Upload */}
                         <div className="space-y-3">
-                          <Label className="font-ui">Or upload your own</Label>
+                          <Label className="font-ui">Upload Image</Label>
                           <input
                             type="file"
                             ref={fileInputRef}
