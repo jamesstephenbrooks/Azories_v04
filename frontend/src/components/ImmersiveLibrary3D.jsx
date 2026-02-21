@@ -1779,22 +1779,6 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
               </motion.div>
             )}
           </AnimatePresence>
-                      className="flex-1 text-white border-white/30 hover:bg-white/10"
-                    >
-                      Close
-                    </Button>
-                    <Button
-                      onClick={() => window.location.href = `/read/${selectedBook.id}`}
-                      className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                    >
-                      <FiBook className="w-4 h-4 mr-2" />
-                      Read
-                    </Button>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
           
           {/* Genre Books Panel - Shows when a genre banner is clicked */}
           <AnimatePresence>
