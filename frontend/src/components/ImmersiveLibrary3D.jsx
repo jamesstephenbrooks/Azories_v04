@@ -1033,7 +1033,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       <canvas 
         ref={canvasRef} 
         className="w-full h-full cursor-crosshair"
-        onClick={isMobileDevice ? onCanvasClick : requestPointerLock}
+        onClick={onCanvasClick}
       />
       
       {/* Loading Screen */}
