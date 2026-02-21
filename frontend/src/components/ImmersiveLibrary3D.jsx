@@ -420,20 +420,18 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
   }, []);
 
   // Highlight a book on the shelf for a specific genre - uses animated GLB
+  // Now positions the book in front of camera and applies cover texture
   const highlightBookAtGenre = useCallback((genreName, book) => {
-    if (!sceneRef.current) {
-      console.log('Scene not ready, cannot highlight book');
+    if (!sceneRef.current || !cameraRef.current) {
+      console.log('Scene or camera not ready, cannot highlight book');
       return;
     }
     
-    // Find the genre section
+    // Find the genre section (for color)
     const section = GENRE_SECTIONS.find(s => s.name.toLowerCase() === genreName.toLowerCase());
-    if (!section || !section.shelfPos) {
-      console.log('Genre section not found:', genreName);
-      return;
-    }
+    const bookColor = section?.color || '#ec4899';
     
-    console.log('Highlighting book at genre:', genreName, 'section:', section);
+    console.log('Highlighting book:', book.title, 'genre:', genreName);
     
     // Remove existing highlighted book and stop animation
     if (highlightedBookModelRef.current) {
@@ -459,41 +457,72 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       (gltf) => {
         console.log('Animated book loaded successfully!', gltf);
         
-        if (!sceneRef.current) return; // Scene might have been cleaned up
+        if (!sceneRef.current || !cameraRef.current) return;
         
         const bookModel = gltf.scene;
+        const camera = cameraRef.current;
         
-        // Position the book at the shelf - stay close to bookcase
-        bookModel.position.set(
-          section.shelfPos.x,
-          section.shelfPos.y,
-          section.shelfPos.z + 0.1 // Very slight pop out from the shelf
-        );
+        // Position the book in front of the camera (centered in view)
+        const distanceFromCamera = 1.2;
+        const forward = new THREE.Vector3(0, 0, -1);
+        forward.applyQuaternion(camera.quaternion);
         
-        // Scale the book appropriately - smaller size
-        bookModel.scale.setScalar(0.08);
+        const bookPosition = new THREE.Vector3()
+          .copy(camera.position)
+          .add(forward.multiplyScalar(distanceFromCamera));
         
-        // Rotate to face the viewer based on genre section rotation
-        bookModel.rotation.y = section.rotation || 0;
+        // Slightly lower than eye level
+        bookPosition.y -= 0.2;
         
-        // Store book data for click detection
+        bookModel.position.copy(bookPosition);
+        
+        // Scale the book
+        bookModel.scale.setScalar(0.06);
+        
+        // Rotate to face the camera
+        bookModel.lookAt(camera.position);
+        bookModel.rotation.y += Math.PI; // Show front
+        
+        // Store book data
         bookModel.userData = {
           isHighlightedBook: true,
           bookId: book.id,
           bookData: book
         };
         
-        // Make all meshes clickable and add glow effect
+        // Try to apply book cover texture
+        if (book.cover_image) {
+          const textureLoader = new THREE.TextureLoader();
+          textureLoader.load(book.cover_image, (coverTexture) => {
+            coverTexture.colorSpace = THREE.SRGBColorSpace;
+            coverTexture.flipY = false;
+            
+            // Apply to meshes that might be the cover
+            bookModel.traverse((child) => {
+              if (child.isMesh) {
+                const meshName = (child.name || '').toLowerCase();
+                if (meshName.includes('cover') || meshName.includes('front') || 
+                    meshName.includes('face') || meshName.includes('page')) {
+                  child.material = child.material.clone();
+                  child.material.map = coverTexture;
+                  child.material.needsUpdate = true;
+                  console.log('Applied cover texture to:', child.name);
+                }
+              }
+            });
+          });
+        }
+        
+        // Make meshes clickable and add glow
         bookModel.traverse((child) => {
           if (child.isMesh) {
             child.userData = bookModel.userData;
             bookMeshesRef.current.push(child);
             
-            // Add emissive glow
             if (child.material) {
               child.material = child.material.clone();
-              child.material.emissive = new THREE.Color(section.color);
-              child.material.emissiveIntensity = 0.5;
+              child.material.emissive = new THREE.Color(bookColor);
+              child.material.emissiveIntensity = 0.2;
             }
           }
         });
@@ -503,49 +532,63 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           const mixer = new THREE.AnimationMixer(bookModel);
           highlightedBookMixerRef.current = mixer;
           
-          // Play all animations
           gltf.animations.forEach((clip) => {
-            console.log('Playing animation clip:', clip.name);
             const action = mixer.clipAction(clip);
             action.setLoop(THREE.LoopOnce);
             action.clampWhenFinished = true;
             action.play();
           });
-          
-          console.log('Playing book animation with', gltf.animations.length, 'clips');
-        } else {
-          console.log('No animations found in the book model');
         }
         
-        // Add to scene
         sceneRef.current.add(bookModel);
         highlightedBookModelRef.current = bookModel;
-        
         setHighlightedBookGenre(genreName);
-        console.log('Highlighted animated book added to scene:', book.title);
+        console.log('Book positioned in front of camera:', book.title);
       },
       (progress) => {
         if (progress.total) {
-          console.log('Loading animated book...', Math.round((progress.loaded / progress.total) * 100) + '%');
+          console.log('Loading book...', Math.round((progress.loaded / progress.total) * 100) + '%');
         }
       },
       (error) => {
-        console.error('Error loading animated book GLB:', error);
+        console.error('Error loading book GLB:', error);
         
-        if (!sceneRef.current) return;
+        if (!sceneRef.current || !cameraRef.current) return;
         
-        // Fallback to simple glowing box
-        console.log('Using fallback box for book highlight');
-        const bookGeometry = new THREE.BoxGeometry(0.2, 0.3, 0.08);
-        const bookMaterial = new THREE.MeshStandardMaterial({
-          color: new THREE.Color(section.color),
-          emissive: new THREE.Color(section.color),
-          emissiveIntensity: 0.8
-        });
-        const bookMesh = new THREE.Mesh(bookGeometry, bookMaterial);
-        bookMesh.position.set(section.shelfPos.x, section.shelfPos.y, section.shelfPos.z + 0.3);
-        bookMesh.rotation.y = section.rotation || 0;
+        // Fallback - simple book box with cover texture in front of camera
+        const camera = cameraRef.current;
+        const forward = new THREE.Vector3(0, 0, -1);
+        forward.applyQuaternion(camera.quaternion);
+        
+        const bookPosition = new THREE.Vector3()
+          .copy(camera.position)
+          .add(forward.multiplyScalar(1.2));
+        bookPosition.y -= 0.2;
+        
+        const bookGeometry = new THREE.BoxGeometry(0.2, 0.28, 0.04);
+        
+        let materials;
+        if (book.cover_image) {
+          const textureLoader = new THREE.TextureLoader();
+          const coverTexture = textureLoader.load(book.cover_image);
+          coverTexture.colorSpace = THREE.SRGBColorSpace;
+          
+          const sideMat = new THREE.MeshStandardMaterial({ color: bookColor });
+          const coverMat = new THREE.MeshStandardMaterial({ map: coverTexture });
+          materials = [sideMat, sideMat, sideMat, sideMat, coverMat, sideMat];
+        } else {
+          materials = new THREE.MeshStandardMaterial({
+            color: new THREE.Color(bookColor),
+            emissive: new THREE.Color(bookColor),
+            emissiveIntensity: 0.3
+          });
+        }
+        
+        const bookMesh = new THREE.Mesh(bookGeometry, materials);
+        bookMesh.position.copy(bookPosition);
+        bookMesh.lookAt(camera.position);
         bookMesh.userData = { isHighlightedBook: true, bookId: book.id, bookData: book };
+        
         sceneRef.current.add(bookMesh);
         highlightedBookModelRef.current = bookMesh;
         bookMeshesRef.current.push(bookMesh);
