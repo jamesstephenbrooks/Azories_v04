@@ -2942,31 +2942,38 @@ async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: d
         if not EMERGENT_LLM_KEY:
             raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
         
-        # Style enhancement mapping
+        # Style enhancement mapping - HIGH QUALITY character-focused prompts
         style_prompts = {
-            "realistic": "Photorealistic style, detailed, cinematic lighting",
-            "anime": "Japanese anime style, vibrant colors, clean lines",
-            "cartoon": "Colorful cartoon style, bold outlines, playful",
-            "watercolor": "Watercolor painting style, soft blended colors",
-            "oil-painting": "Classic oil painting style, rich textures",
-            "pixel-art": "Retro pixel art graphics style",
-            "comic": "Comic book style, bold lines, dynamic",
-            "fantasy": "Epic fantasy art style, magical lighting, detailed",
-            "3d-render": "Modern 3D rendered look, smooth textures",
-            "sketch": "Hand-drawn pencil sketch style",
-            "ethereal-fantasy": "Ethereal dreamy art style, soft flowing digital painting, mystical atmosphere, surreal dreamscape with flowing elements, magical glow, soft diffused lighting",
-            "surreal-dreamscape": "Surreal dreamscape style, flowing impossible landscapes, magical atmosphere, soft ethereal lighting, dreamlike quality",
-            "luminous-ethereal": "Luminous ethereal fantasy style, celestial dreamscape, cosmic swirling sky, divine glowing figures, highly polished digital painting, smooth gradients, volumetric lighting, subsurface scattering on skin, cool blue-purple palette with warm accent lighting",
-            "celestial-fantasy": "Celestial fantasy art style, divine cosmic beings, nebula starry sky, luminous polished rendering, ethereal otherworldly atmosphere, masterpiece quality digital painting, 8k detail",
-            "dark-fantasy": "Dark gothic fantasy style, dramatic shadows, moody atmosphere",
-            "cyberpunk": "Cyberpunk neon-lit style, futuristic dystopian aesthetic",
-            "steampunk": "Steampunk Victorian machinery style, brass and gears",
-            "concept-art": "Professional concept art style, detailed environment design",
-            "storybook": "Classic children's storybook illustration style, whimsical and colorful"
+            "realistic": "ultra-realistic digital portrait, hyperdetailed skin texture, studio lighting, 8K resolution, professional photography quality, sharp focus, photorealistic rendering",
+            "anime": "high quality anime style, detailed cel shading, vibrant colors, clean lineart, anime key visual quality, professional anime illustration, expressive eyes",
+            "cartoon": "high quality cartoon illustration, bold clean outlines, vibrant saturated colors, professional character design, Disney/Pixar quality",
+            "watercolor": "masterful watercolor painting, soft color blending, delicate brushstrokes, artistic watercolor texture, professional illustration quality",
+            "oil-painting": "museum quality oil painting, rich impasto textures, masterful brushwork, classical portrait lighting, fine art quality",
+            "pixel-art": "high quality pixel art, clean pixel work, retro game aesthetic, detailed sprite work, professional pixel artist quality",
+            "comic": "professional comic book art, dynamic linework, bold inking, Marvel/DC quality illustration, detailed comic style",
+            "fantasy": "epic fantasy digital art, magical atmosphere, dramatic lighting, highly detailed, professional fantasy illustration, concept art quality, masterwork",
+            "3d-render": "high quality 3D render, realistic materials, professional lighting setup, octane render quality, smooth subsurface scattering",
+            "sketch": "professional pencil sketch, detailed linework, artistic shading, master artist quality drawing",
+            "ethereal-fantasy": "ethereal dreamy digital painting, soft glowing light, mystical atmosphere, flowing ethereal elements, professional fantasy art, luminous quality, magical realism",
+            "surreal-dreamscape": "surreal dreamscape masterpiece, impossible beautiful landscapes, soft ethereal lighting, dreamlike quality, professional surrealist art",
+            "luminous-ethereal": "luminous ethereal fantasy, celestial divine quality, cosmic atmosphere, highly polished digital painting, volumetric god rays, subsurface skin scattering, masterpiece quality, 8K detail",
+            "celestial-fantasy": "celestial divine fantasy art, cosmic ethereal beauty, nebula starry atmosphere, luminous polished rendering, otherworldly masterpiece, professional concept art quality",
+            "dark-fantasy": "dark gothic fantasy masterpiece, dramatic chiaroscuro lighting, moody atmospheric, detailed dark art, professional dark fantasy illustration",
+            "cyberpunk": "cyberpunk neon-lit masterpiece, futuristic aesthetic, detailed tech elements, professional sci-fi art, blade runner quality",
+            "steampunk": "steampunk Victorian masterpiece, intricate brass machinery, detailed clockwork, professional steampunk illustration",
+            "concept-art": "professional concept art, industry standard quality, detailed character design, AAA game quality, artstation trending",
+            "storybook": "beautiful children's book illustration, whimsical charm, warm colors, professional storybook art, enchanting quality",
+            "portrait": "professional portrait photography, studio lighting, sharp focus, 8K detail, beautiful composition",
+            "cinematic": "cinematic movie still quality, dramatic lighting, film grain, professional cinematography, blockbuster quality",
+            "disney": "Disney animation quality, charming character design, expressive features, professional Disney style",
+            "pixar": "Pixar 3D animation quality, appealing character design, professional rendering, modern 3D animation",
+            "manga": "professional manga illustration, detailed linework, dynamic composition, Japanese manga quality",
+            "digital-art": "high quality digital art, professional illustration, detailed rendering, artstation quality",
+            "hyperrealistic": "hyperrealistic digital art, extreme detail, photorealistic quality, 8K resolution, professional quality"
         }
-        style_desc = style_prompts.get(request.style, "Epic fantasy art style, magical lighting")
+        style_desc = style_prompts.get(request.style, "high quality professional illustration, detailed, masterwork quality")
         
-        # Enhance the prompt based on type
+        # ENHANCED prompt building for character quality
         enhanced_prompt = request.prompt
         if request.type == "character":
             enhanced_prompt = f"Character portrait: {request.prompt}, detailed, high quality, {style_desc}"
