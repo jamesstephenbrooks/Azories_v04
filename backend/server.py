@@ -3144,10 +3144,22 @@ class AnalyzeImageRequest(BaseModel):
 async def analyze_image(request: AnalyzeImageRequest, current_user: dict = Depends(get_current_user)):
     """Analyze an image and extract a prompt that could recreate it"""
     try:
-        from emergentintegrations.llm.openai import LlmChat, ImageContent, UserMessage
+        from emergentintegrations.llm.chat import LlmChat, UserMessage, ImageContent
+        import httpx
+        import uuid
         
-        # Initialize OpenAI client for GPT-4 vision
-        chat = LlmChat(api_key=EMERGENT_LLM_KEY)
+        # Download image and convert to base64
+        async with httpx.AsyncClient() as client:
+            img_response = await client.get(request.image_url, timeout=30.0)
+            image_bytes = img_response.content
+            image_base64 = base64.b64encode(image_bytes).decode('utf-8')
+        
+        # Initialize the chat with vision model
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=str(uuid.uuid4()),
+            system_message="You are an expert image analyst. Provide detailed, accurate descriptions."
+        ).with_model("openai", "gpt-4o")
         
         if request.analysis_type == "style":
             analysis_prompt = """Analyze this image and describe its artistic style in detail. 
@@ -3160,17 +3172,15 @@ async def analyze_image(request: AnalyzeImageRequest, current_user: dict = Depen
             Output a concise prompt (under 100 words) describing the character that could be used to recreate them.
             Format: Just the character description, no explanations."""
         
-        # Use GPT-4 vision to analyze the image
-        response = await chat.chat(
-            messages=[
-                UserMessage(content=[
-                    analysis_prompt,
-                    ImageContent(url=request.image_url)
-                ])
-            ],
-            model="gpt-4o"
+        # Create message with image
+        image_content = ImageContent(image_base64=image_base64)
+        user_message = UserMessage(
+            text=analysis_prompt,
+            file_contents=[image_content]
         )
         
+        # Send and get response
+        response = await chat.send_message(user_message)
         extracted_prompt = response.strip() if response else ""
         
         return {"extracted_prompt": extracted_prompt}
