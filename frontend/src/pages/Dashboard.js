@@ -18,7 +18,7 @@ import {
 } from 'react-icons/fi';
 import Navbar from '@/components/Navbar';
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
-import ReadingStreakTracker from '@/components/ReadingStreaks';
+import ReadingStreakTracker, { StreakDisplay, BadgeCollection } from '@/components/ReadingStreaks';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
