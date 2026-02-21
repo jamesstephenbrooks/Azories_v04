@@ -7,158 +7,195 @@ The user wants to create a digital book creation and reading web application nam
 -   **Admin/CMS:** A secure admin panel at  to manage content.
 -   **Business Model:** Free users can read; Pro (paid) users can create.
 -   **Recent User Requests:**
-    -   An interactive, navigable 3D library with clickable books and genre sections.
-    -   **New:** A separate Art Studio page for node-based AI image creation (e.g., using Higgsfield) to ensure character and scene consistency in books. This will be a Pro feature.
-    -   **New:** The user wants to improve the book and image creation experience.
-    -   The button to access the 3D library should be styled with text (3D Grand Library) instead of an icon and marked as a future Pro feature.
+    -   An interactive, navigable 3D library.
+    -   A separate Art Studio page for AI image creation with two modes: Easy Mode (form-based) and Expert Mode (node-based).
+    -   Ability to maintain character consistency (requested IP-Adapter).
+    -   Image quality should be on par with services like DeepAI.
+    -   Ability to remove the background from generated characters.
+    -   Ability to delete nodes in the Expert Mode editor.
+    -   Fix numerous bugs related to gallery uploads, UI, and generation errors.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The agent has successfully stabilized the  component and implemented a robust workflow for interacting with the 3D library. A debug mode was created to solve the long-standing issue of object placement, allowing the agent and user to collaboratively position genre banners correctly.
+The application is a full-stack React/FastAPI app featuring a 3D library, a book editor, and a sophisticated two-mode Art Studio for AI image generation.
 
-A new user experience has been implemented: users can click on a genre banner, which opens a slide-out panel listing books in that genre. Selecting a book from the list displays an animated 3D book model in front of the camera, along with a book information panel on the right. Stability issues (purple screen) were resolved by removing a buggy feature that allowed users to rotate the 3D book model.
-
-The focus has now shifted to the book creation experience. The agent has started building a new Art Studio page at  using React Flow, which will serve as the foundation for a node-based image generation system.
+-   **Art Studio (Easy Mode):** A form-based UI with many Pro features like negative prompts, aspect ratio controls, and a quality slider. It supports a dual-reference system (one image for character, one for style) and can extract text prompts from uploaded images.
+-   **Art Studio (Expert Mode):** A node-based editor for advanced image generation workflows. Node deletion has been implemented, and a previous  error was fixed by making nodes a fixed size.
+-   **Image Generation Backend:** The backend uses the  library to connect to OpenAI DALL-E. It features advanced prompt engineering to enhance quality and an IP-Adapter-style system that analyzes reference images to improve character consistency.
+-   **3D Library:** Features an animated book pop-up effect. The starting camera position has been customized per user request.
+-   **Book Editor:** The original AI tools have been removed in favor of the Art Studio. It includes a feature to upload images from the Art Studio gallery, for which a bug fix was recently attempted.
 
 **Last working item**:
-The agent was beginning the implementation of the Art Studio page for node-based image creation.
+The agent was addressing the user's complaint that the Expert (Node) Mode image generation does not follow specific details in the prompt (e.g., blue hair, blue eyes) or the provided reference images.
 
-- **Last item agent was working:** Creating the initial structure of the  component using  after getting the integration playbook. The basic page with initial nodes, edges, and controls is now in place.
-- **Status:** IN PROGRESS
-- **Agent Testing Done:** N
-- **Which testing method agent to use?** frontend testing agent
-- **User Testing Done:** N
+-   **Last item agent was working:** The agent identified that the backend prompt-building logic was not prioritizing the user's specific inputs strongly enough. The last action was to modify the prompt construction logic in  to be much stricter and give higher weight to the user's explicit details.
+-   **Status:** IN PROGRESS
+-   **Agent Testing Done:** N
+-   **Which testing method agent to use?** both
+-   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Cannot Climb Spiral Staircases (P0)**: The user cannot walk up the spiral staircases (, ) in the 3D library. An initial attempt to fix this with a multi-ray foot sensor was started but never completed or verified. This remains a critical navigation bug.
--   **Issue 2: Mobile Joystick UI is Obstructed (P1)**: A previously reported issue where the mobile joystick is hidden by other UI elements. The fix for this has not been verified.
--   **Issue 3: Incomplete Genre Banner Placement (P2)**: The user mentioned, we will come backl to thsi and add the other banners. The current set of banners is not exhaustive, and more need to be added and positioned.
+-   **Issue 1: Node Studio generation doesn't follow prompt/reference (P0)**
+-   **Issue 2: Cannot access Art Studio (user reports it is erroring) (P0)**
+-   **Issue 3: Easy character builder not working and erroring (P1)**
+-   **Issue 4: run workflow on the node editor is erroring (P1)**
+-   **Issue 5: failed to add image from gallery in edit book mode (P1)**
+-   **Issue 6: Cannot Climb Spiral Staircases in 3D Library (P1)**
+-   **Issue 7: Azora AI chat UI is broken (P2)**
+-   **Issue 8: Mobile Joystick UI is Obstructed (P2)**
+-   **Issue 9: A place to save/load workflows is needed (P2)**
 
 **Issues Detail:**
--   **Issue 1: Cannot Climb Spiral Staircases**
-    -   **Attempted fixes:** The agent started implementing a multi-ray sensor in the physics loop within  but was sidetracked before completing it.
+-   **Issue 1: Node Studio Generation Quality**
+    -   **Attempted fixes:** The backend prompt generation logic in  was updated to make user-provided details more prominent and explicit in the final prompt sent to the AI.
     -   **Next debug checklist:**
-        1.  Re-examine the physics code in  within .
-        2.  Verify that the multi-ray casting logic that was partially added is complete and correct.
-        3.  Add console logs to check which meshes the rays are intersecting with as the player approaches the stairs.
-        4.  Ensure the stair meshes are correctly identified and included in the  array.
-    -   **Why fix this issue and what will be achieved with the fix?** Restores full navigability of the 3D library, making the entire space accessible as intended.
+        1.  Restart the backend service.
+        2.  Test the Expert Mode with a specific prompt (e.g., character with blue hair and green eyes) and a reference image.
+        3.  If it fails, add  statements in  to inspect the exact prompt being sent to the generation API.
+    -   **Why fix this issue and what will be achieved with the fix?** The Art Studio is unusable if it cannot create specific images based on user input. This is a critical functionality.
     -   **Status:** IN PROGRESS
+    -   **Is recurring issue?** Y
+    -   **Should Test frontend/backend/both after fix?** both
+    -   **Blocked on other issue:** None
+
+-   **Issue 2: Cannot Access Art Studio**
+    -   **Attempted fixes:** The agent previously concluded this was a login issue, but the user insists it is erroring.
+    -   **Next debug checklist:**
+        1.  Use the testing agent to log in and navigate to .
+        2.  Check the browser console and backend supervisor logs for any errors on page load.
+    -   **Why fix this issue and what will be achieved with the fix?** A core page of the application is inaccessible.
+    -   **Status:** IN PROGRESS
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** frontend
+    -   **Blocked on other issue:** None
+
+-   **Issue 3, 4, 5 (and others): Multiple Unverified Fixes**
+    -   **Attempted fixes:** The agent implemented fixes for the Easy Character Builder, Node workflow errors, and gallery uploads by addressing  parameter issues and adding missing  headers.
+    -   **Next debug checklist:**
+        1.  Create a comprehensive test plan for the .
+        2.  The plan must include scenarios to verify: Easy Mode generation, Expert Mode workflow execution, and adding an image from the gallery to the book editor.
+    -   **Why fix this issue and what will be achieved with the fix?** These are core user workflows that were reported as broken.
+    -   **Status:** USER VERIFICATION PENDING
+    -   **Is recurring issue?** Y
+    -   **Should Test frontend/backend/both after fix?** both
+    -   **Blocked on other issue:** None
+
+-   **Issue 6: Cannot Climb Spiral Staircases**
+    -   **Attempted fixes:** A fix was implemented in a previous session but never verified.
+    -   **Next debug checklist:**
+        1.  Navigate the 3D library and attempt to use the spiral staircases.
+        2.  If it fails, use  in the  physics loop in  to debug raycasting intersections.
+    -   **Why fix this issue and what will be achieved with the fix?** To restore full navigability of the 3D library experience.
+    -   **Status:** NOT STARTED
     -   **Is recurring issue?** Y
     -   **Should Test frontend/backend/both after fix?** frontend
     -   **Blocked on other issue:** None
 
 **In progress Task List**:
--   **Task 1: Build Art Studio Node-Based UI (P0)**
-    -   **Where to resume:** Continue building out . The basic React Flow canvas is set up.
-    -   **What will be achieved with this?** A functional UI for creating node-based image generation workflows, which is the user's current top priority for improving the creator experience.
-    -   **Next Steps:**
-        1.  Design and implement custom nodes for different image generation steps (e.g., , , , ).
-        2.  Call  for a node-based image generation API like Higgsfield (via Fal.ai), which will require handling API keys.
-        3.  Integrate the chosen API so that the node graph can be executed to generate an image.
-        4.  Implement logic to save and load node graphs.
-    -   **Status:** IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?** frontend
-    -   **Blocked on something:** Needs user confirmation on which image generation backend to integrate (e.g., Fal.ai, which requires an API key).
+-   There are no new feature tasks in progress; the current focus is entirely on bug fixing and stabilization.
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
--   **(P0)** Integrate an image generation model (e.g., Higgsfield via Fal.ai) into the Art Studio.
--   **(P1)** Place the remaining genre banners in the 3D library.
--   **(P2)** Implement Pro feature gating for the Art Studio and 3D Grand Library.
--   **(P2)** Verify and fix the mobile joystick UI.
+-   **(P1)** Verify the fix for the spiral staircases in the 3D library.
+-   **(P2)** Implement Pro feature gating for Expert Mode and other advanced features.
+-   **(P2)** Place the remaining genre banners in the 3D library.
+-   **(P2)** Verify and fix the mobile joystick UI obstruction.
+-   **(P2)** Implement a UI for saving and loading node-based workflows.
 
 **Future Tasks:**
--   Re-integrate the Azora AI Librarian, placing her correctly in the scene.
+-   Re-integrate the Azora AI Librarian's conversational functionality.
 -   Implement automatic book positioning on shelves based on genre.
--   Enhance Azora's backend to provide book recommendations.
 -   Multiplayer library exploration.
 -   Vector Logo Creation for Azories.
 -   Animate still images feature.
 -   Comic Book layout support in the editor.
 
 **Completed work in this session**
--   **Resolved 3D Object Placement:** Implemented a debug mode to get precise coordinates from user clicks, successfully resolving the long-standing banner placement issue.
--   **New 3D Library UX:**
-    -   Created a Click to browse feature on genre banners, which opens a slide-out panel () listing books of that genre.
-    -   When a book is selected from the panel, an animated 3D book GLB appears in front of the camera for inspection.
-    -   A book info panel appears on the right, showing the book's summary.
--   **Fixed Critical Stability Bug:** Resolved a purple screen crash by removing a complex and buggy book-rotation feature.
--   **Resolved CORS Issue:** Fixed a CORS error that prevented 3D models from loading by downloading the GLB assets to the  folder and serving them locally.
--   **UI/UX Improvements:**
-    -   Replaced the 3D Library icon with styled text (✨ 3D Grand Library).
-    -   Refined the positioning, size, and behavior of the pop-up 3D book model.
-    -   Improved UI hints and panel closing logic.
--   **Initiated Art Studio:** Began development of the new node-based Art Studio page using React Flow.
+-   **Image Quality & Consistency:** Implemented an IP-Adapter-style system using a dual-reference (character/style) image approach and backend image analysis. Significantly enhanced prompt engineering to improve quality and adherence.
+-   **Art Studio (Easy Mode):** Added a full suite of Pro features (Negative Prompts, Aspect Ratio, Quality Slider), a Style Preview gallery, a transparent background option, and an Extract Prompt from image tool.
+-   **Art Studio (Expert Mode):** Fixed the  error by using fixed-size nodes, added a preview modal to the output node, and implemented node deletion.
+-   **3D Library:** Adjusted the camera's starting position, moved the book popup to the middle-right, added a new book opening animation, and fixed a component import error ().
+-   **Book Editor:** Removed obsolete AI generation tools and attempted a fix for the add image from gallery bug by adding auth headers.
+-   **Bug Fixes:** Addressed numerous bugs related to backend parameters for the  library, synced art styles, and added a dropdown for Scene presets.
 
 **Earlier issues found/mentioned but not fixed**
--   **Issue 1: Cannot Climb Spiral Staircases:** As detailed in the Pending/In progress Issue list. The agent started a fix but did not complete it.
--   **Issue 2: Mobile Joystick UI is Obstructed:** As detailed in the Pending/In progress Issue list. This was not addressed in this session.
+-   **Issue 1: Mobile Joystick UI is Obstructed:** This was mentioned in the initial handoff summary and has not been addressed.
 
 **Known issue recurrence from previous fork**
--   **3D Library Physics:** While object placement has been solved with the debug mode, complex physics interactions like stair climbing remain an unsolved recurring issue. The agent's attempt to fix it was incomplete.
+-   **Issue recurrence in previous fork**: Character consistency and image quality issues are a recurring theme. The  error was a recurring issue that is now resolved. The spiral staircase bug is a long-standing recurring issue.
+-   **Recurrence count**: 3+
+-   **Status**: IN PROGRESS
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Frontend:** React (v19), Three.js, React Three Fiber, Tailwind CSS, **React Flow**
--   **3D Interaction:** A new UX pattern was established (banner click -> list -> select -> show model in front of camera).
--   **Debugging:** Successfully used a user-driven debug mode to get scene coordinates. Identified and solved a CORS issue by localizing assets.
+-   **Frontend:** React, Three.js, React Three Fiber, Tailwind CSS, React Flow
+-   **Backend:** FastAPI, Pydantic, MongoDB
+-   **Image Generation:**  library for OpenAI DALL-E and GPT-4o (Vision).
+-   **Prompt Engineering:** Complex, multi-part prompts are constructed on the backend to enforce style, character consistency, and user-specified details.
+-   **Image Analysis:** Using  via  to extract descriptive text prompts from user-uploaded images.
+
+**key DB schema**
+-   : {, , }
+-   : {, , , }
+-   : {..., : ObjectId}
+-   : {, , , }
 
 **All files of reference**
--   : **(Current Focus)** The new page for node-based image creation.
--   : The core 3D library component. Contains logic for banners, book highlighting, and physics.
--   : Contains the view-switching logic and the new 3D Grand Library button.
--   : The new slide-out panel component.
+-   
+-   
+-   
+-   
+-   
+-   
+
+**Areas that need refactoring**:
+- The prompt generation logic in  has been modified multiple times and is becoming very complex. It could benefit from being broken down into smaller, more manageable functions.
+-  has grown very large with the addition of all the new features and modals. It could be split into smaller components.
 
 **Critical Info for New Agent**
-1.  **Focus on Art Studio:** The user's priority has shifted to the creator experience. Your main task is to build out the  page.
-2.  **Plan for Integration:** The Art Studio will need to connect to a real image generation API. Use the  subagent to research and implement this (e.g., for Higgsfield via Fal.ai). Be prepared to ask the user for an API key if necessary.
-3.  **Don't Forget Old Bugs:** The inability to climb stairs is a P0 bug that was started but not finished. Once you reach a good stopping point with the Art Studio, you must return to fix this in .
-4.  **Follow the New UX Patterns:** The interactive book flow (click banner -> list -> select book) is the new standard. Any future interactions with books in the 3D library should build upon this, not revert to finding individual books on shelves.
+-   The user's top priority is fixing the image generation quality. The node editor is not following prompts correctly. Your first action should be to test the last agent's fix in  and iterate until it works reliably.
+-   A large number of bug fixes were attempted in the last session but remain unverified by the user. It is crucial to use the  to create a comprehensive test suite to validate all these fixes (gallery uploads, node workflows, easy mode generation, etc.) before moving on to new features.
+-   The image generation backend relies on the  library, which has specific constraints (e.g., no  parameter). All fixes and features must be implemented through prompt engineering rather than assuming direct parameter support.
 
 **documents and test reports created in this job**
--   None.
+-   /app/memory/PRD.md
 
 **Last 10 User Messages and any pending HUMAN messages**
--   **User:** lets resume wiht next steps - **Status: ADDRESSED**.
--   **User:** sorry one more thing when you close the book popout the right hand side menu should close aswell now let move on to all next steps - **Status: COMPLETED**.
--   **User:** looking good let move on - **Status: ADDRESSED**.
--   **User:** i think we need ot keep the menu on the righ to pen so we can [pick anothe rbook quickly and also the pop out needs ot have the summary of the book if it doesnt already - **Status: COMPLETED**.
--   **User:** the book need to be lower to the camers and a little smaller. after this i thin kwe need ot concentrate on the crewating of images and book sand make this a better experience. we will come backl to thsi and add the other banners - **Status: COMPLETED**.
--   **User:** some issuies now since adding the interactive glb ther screen keep goig purple and the amazing sotry book is open for no reason please look at this maybe we have to remove the feature to control and omve the glb boiok that opens - **Status: COMPLETED**.
--   **User:** also in stead of the glod icon mayeb we have the 3d grand library in a fancy text or image and also make it a pro feature in the future - **Status: COMPLETED**.
--   **User:** Reports issues with the interactive book: it's too big, moves with the mouse-look, and isn't flat when it appears. - **Status: COMPLETED**.
--   **User:** we weere looking at node based image creation such as higgsfiled for charaters and scene creation is this possbile because this would give more consistance for the books. - **Status: ADDRESSED (led to current task)**.
--   **User:** this can be in a seperate at under art studio which will be part of the pro creators version yes please go a head - **Status: ADDRESSED (confirmed current task)**.
+-   **User:** cant access art sutfdio it is erroring / looking at the node studio and the images creates are nto following the refernce oimages or the promt. **Status: IN PROGRESS.** This is the current highest-priority task.
+-   **User:** grand lirayry looking good / failed to uplaod image from art studio into book / contune next steps and also thsi one IP-Adapter integration for better character consistency / the quality of images ar ento great. **Status: Partially Addressed.** IP-Adapter style system implemented, gallery upload fix attempted. Verification needed.
+-   **User:** in the 3d gran dlibabry can the starting camer still face the same way but start here at the coordinate / when selecting book there is an error FiBookOpen is not defined / cant acces art studio either. **Status: Mostly Addressed.** Camera and  error fixed. Art studio access issue persists.
+-   **User:** I think the book pop out should actually extend out of the menu on the right and the animation of th book on right side of the screen / all of our image cratrion seme to be the same style and bot using the refence image... **Status: Implemented.** New animation and dual-reference system were created in response.
+-   **User:** [Batch bug report #1]: failed to add image from gallery, remove ai generate form the edit book area, styles to match deep ai, scene presets can be a drop down, gallery area filtering, run workflow erroring, save workflow location needed, easy character builder erroring, azora ai not working. **Status: Partially Addressed.** Agent attempted fixes for most items, but they need verification.
 
 **Project Health Check:**
 -   **Broken:**
-    -   **3D Navigation:** Player cannot walk up spiral staircases.
+    -   Node Studio prompt adherence is the most critical broken feature.
+    -   Multiple core workflows (Art Studio access, gallery upload, easy/expert generation) are reported as erroring by the user and their fixes are unverified.
 -   **Mocked:**
-    -   The  page is a basic placeholder with a React Flow canvas but no actual image generation logic.
--   **Incomplete/Disabled:**
-    -   The Azora AI Librarian remains disabled.
-    -   The set of genre banners is incomplete.
-    -   The mobile joystick UI may still be obstructed.
+    -   The Azora AI Librarian has a UI but limited functionality.
+    -   A UI for saving/loading workflows is needed.
+-   **Incomplete:**
+    -   3D Navigation: Player may still be unable to climb spiral staircases (fix is unverified).
+    -   Mobile joystick UI fix remains unaddressed.
 
 **3rd Party Integrations**
--   **Emergent LLM Key:** Available for AI features.
--   **:** For PDF generation.
--   ****: The core 3D rendering library.
--   ****: For the new Art Studio node-based UI.
+-   **OpenAI GPT Image 1 & GPT-4o** — uses Emergent LLM Key
+-   **reactflow** (Node-based UI library)
 
 **Testing status**
--   **Testing agent used after significant changes:** NO
+-   **Testing agent used after significant changes:** YES, but not after the most recent fixes and bug reports.
 -   **Troubleshoot agent used after agent stuck in loop:** NO
 -   **Test files created:** []
--   **Known regressions:** None from this session. The agent successfully fixed the stability issues it introduced.
+-   **Known regressions:** Image quality and prompt adherence have been a recurring cycle of user complaints and agent fixes. Core workflows like gallery uploads and generation have also regressed.
 
 **Credentials to test flow:**
--   **Regular User:**  /  (Pro access)
+-   **Regular User:**  / 
 -   **Admin User:** , , 
 
 **What agent forgot to execute**
--   The agent started implementing a fix for the stair-climbing physics in  but was sidetracked by other user requests and never completed or verified it. This remains a P0 bug.</analysis>
+-   The agent has consistently failed to verify the long-standing spiral staircase fix from a previous session.
+-   The agent has not addressed the mobile joystick UI issue mentioned in the original handoff.
+-   The agent implemented a large number of fixes in response to a user's batch bug report but did not perform a comprehensive verification test, leading to the user reporting the same or similar issues again.</analysis>
