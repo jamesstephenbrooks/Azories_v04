@@ -373,7 +373,17 @@ async def register(user_data: UserCreate):
     token = create_token(user_id, user_data.email, "user")
     return TokenResponse(
         access_token=token,
-        user=UserResponse(id=user_id, email=user_data.email, name=user_data.name, role="user", subscription="pro", created_at=now_iso)
+        user=UserResponse(
+            id=user_id, 
+            email=user_data.email, 
+            name=user_data.name, 
+            role="user", 
+            subscription="pro", 
+            created_at=now_iso,
+            pro_trial=True,
+            pro_trial_expires_at=trial_expires,
+            trial_days_remaining=30
+        )
     )
 
 @api_router.post("/auth/login", response_model=TokenResponse)
