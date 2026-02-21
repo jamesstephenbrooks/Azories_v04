@@ -213,6 +213,129 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     setShowGenreMenu(false);
   }, []);
 
+  // Save current position
+  const saveCurrentPosition = useCallback(() => {
+    if (!cameraRef.current || !user) return;
+    
+    const pos = {
+      id: Date.now(),
+      name: `Position ${savedPositions.length + 1}`,
+      x: cameraRef.current.position.x,
+      y: cameraRef.current.position.y,
+      z: cameraRef.current.position.z,
+      rotation: euler.current.y
+    };
+    
+    const newPositions = [...savedPositions, pos].slice(-5); // Keep last 5
+    setSavedPositions(newPositions);
+    localStorage.setItem(`azories-3d-positions-${user.id}`, JSON.stringify(newPositions));
+  }, [savedPositions, user]);
+
+  // Teleport to saved position
+  const teleportToSaved = useCallback((pos) => {
+    if (!cameraRef.current) return;
+    
+    cameraRef.current.position.set(pos.x, pos.y, pos.z);
+    euler.current.y = pos.rotation || 0;
+    cameraRef.current.quaternion.setFromEuler(euler.current);
+  }, []);
+
+  // Mobile touch handlers
+  const onTouchStart = useCallback((e) => {
+    if (!isExploring || !isMobileDevice) return;
+    
+    const touch = e.touches[0];
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    
+    const x = touch.clientX - rect.left;
+    const y = touch.clientY - rect.top;
+    const screenWidth = rect.width;
+    
+    // Left side - joystick for movement
+    if (x < screenWidth / 2) {
+      joystickRef.current = { active: true, startX: x, startY: y, x: 0, y: 0 };
+    } else {
+      // Right side - look around
+      touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+      touchMoveRef.current = { active: true, x: 0, y: 0 };
+    }
+  }, [isExploring, isMobileDevice]);
+
+  const onTouchMove = useCallback((e) => {
+    if (!isExploring || !isMobileDevice) return;
+    e.preventDefault();
+    
+    const touch = e.touches[0];
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    
+    const x = touch.clientX - rect.left;
+    
+    // Joystick movement (left side)
+    if (joystickRef.current.active && x < rect.width / 2) {
+      const dx = x - joystickRef.current.startX;
+      const dy = touch.clientY - rect.top - joystickRef.current.startY;
+      const distance = Math.min(Math.sqrt(dx * dx + dy * dy), 50);
+      const angle = Math.atan2(dy, dx);
+      
+      joystickRef.current.distance = distance;
+      joystickRef.current.angle = angle;
+      
+      // Convert to movement keys
+      const threshold = 15;
+      keysPressed.current.forward = dy < -threshold;
+      keysPressed.current.backward = dy > threshold;
+      keysPressed.current.left = dx < -threshold;
+      keysPressed.current.right = dx > threshold;
+    }
+    
+    // Look around (right side)
+    if (touchMoveRef.current.active && x >= rect.width / 2 && cameraRef.current) {
+      const movementX = touch.clientX - touchStartRef.current.x;
+      const movementY = touch.clientY - touchStartRef.current.y;
+      
+      euler.current.setFromQuaternion(cameraRef.current.quaternion);
+      euler.current.y -= movementX * 0.003;
+      euler.current.x -= movementY * 0.003;
+      euler.current.x = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, euler.current.x));
+      cameraRef.current.quaternion.setFromEuler(euler.current);
+      
+      touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+    }
+  }, [isExploring, isMobileDevice]);
+
+  const onTouchEnd = useCallback(() => {
+    joystickRef.current = { active: false, angle: 0, distance: 0 };
+    touchMoveRef.current = { active: false, x: 0, y: 0 };
+    keysPressed.current = { forward: false, backward: false, left: false, right: false };
+  }, []);
+
+  // Click on book in 3D
+  const onCanvasClick = useCallback((e) => {
+    if (!isExploring || !cameraRef.current || isMobileDevice) return;
+    if (isPointerLocked.current) return; // Don't process clicks when pointer is locked
+    
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    
+    const mouse = new THREE.Vector2(
+      ((e.clientX - rect.left) / rect.width) * 2 - 1,
+      -((e.clientY - rect.top) / rect.height) * 2 + 1
+    );
+    
+    raycasterRef.current.setFromCamera(mouse, cameraRef.current);
+    const hits = raycasterRef.current.intersectObjects(bookMeshesRef.current, true);
+    
+    if (hits.length > 0) {
+      const bookMesh = hits[0].object;
+      const bookId = bookMesh.userData?.bookId;
+      if (bookId) {
+        navigate(`/read/${bookId}`);
+      }
+    }
+  }, [isExploring, isMobileDevice, navigate]);
+
   // Initialize Three.js scene
   useEffect(() => {
     if (!canvasRef.current) return;
