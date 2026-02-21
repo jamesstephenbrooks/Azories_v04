@@ -2955,6 +2955,8 @@ async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: d
             "sketch": "Hand-drawn pencil sketch style",
             "ethereal-fantasy": "Ethereal dreamy art style, soft flowing digital painting, mystical atmosphere, surreal dreamscape with flowing elements, magical glow, soft diffused lighting",
             "surreal-dreamscape": "Surreal dreamscape style, flowing impossible landscapes, magical atmosphere, soft ethereal lighting, dreamlike quality",
+            "luminous-ethereal": "Luminous ethereal fantasy style, celestial dreamscape, cosmic swirling sky, divine glowing figures, highly polished digital painting, smooth gradients, volumetric lighting, subsurface scattering on skin, cool blue-purple palette with warm accent lighting",
+            "celestial-fantasy": "Celestial fantasy art style, divine cosmic beings, nebula starry sky, luminous polished rendering, ethereal otherworldly atmosphere, masterpiece quality digital painting, 8k detail",
             "dark-fantasy": "Dark gothic fantasy style, dramatic shadows, moody atmosphere",
             "cyberpunk": "Cyberpunk neon-lit style, futuristic dystopian aesthetic",
             "steampunk": "Steampunk Victorian machinery style, brass and gears",
