@@ -866,12 +866,70 @@ export default function ArtStudio() {
                 <p className="text-xs text-white/50 leading-relaxed">
                   {activeTab === 'character' ? buildCharacterPrompt() : buildScenePrompt()}
                   , {ART_STYLES.find(s => s.id === selectedStyle)?.name || 'fantasy'} art style
+                  {referenceImage && ' (with reference image)'}
                 </p>
               </div>
             )}
           </div>
         </div>
       </div>
+      
+      {/* Gallery Picker Modal */}
+      <AnimatePresence>
+        {showGalleryPicker && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+            onClick={() => setShowGalleryPicker(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-[#1a1520] rounded-xl border border-white/10 p-6 max-w-2xl w-full max-h-[80vh] overflow-auto"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold text-white">Select Reference Image</h3>
+                <button
+                  onClick={() => setShowGalleryPicker(false)}
+                  className="text-white/50 hover:text-white"
+                >
+                  ✕
+                </button>
+              </div>
+              
+              {gallery.length === 0 ? (
+                <div className="text-center py-12">
+                  <FiImage className="w-16 h-16 text-white/20 mx-auto mb-4" />
+                  <p className="text-white/50">No images in your gallery yet</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-3 gap-3">
+                  {gallery.map((item) => (
+                    <button
+                      key={item._id}
+                      onClick={() => useGalleryAsReference(item.image_url)}
+                      className="relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-purple-500 transition-colors group"
+                    >
+                      <img
+                        src={item.image_url}
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <span className="text-white font-medium">Use This</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
