@@ -1132,8 +1132,33 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
             </div>
           </div>
           
-          {/* Genre navigation menu */}
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 pointer-events-auto">
+          {/* Genre navigation and Floor buttons */}
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 pointer-events-auto flex gap-2">
+            {/* Floor selector */}
+            <div className="flex bg-black/50 rounded-full overflow-hidden">
+              <button
+                onClick={() => changeFloor('ground')}
+                className={`px-3 py-2 text-sm font-medium transition-colors ${
+                  currentFloor === 'ground' 
+                    ? 'bg-purple-600 text-white' 
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                Floor 1
+              </button>
+              <button
+                onClick={() => changeFloor('upper')}
+                className={`px-3 py-2 text-sm font-medium transition-colors ${
+                  currentFloor === 'upper' 
+                    ? 'bg-purple-600 text-white' 
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                Floor 2
+              </button>
+            </div>
+            
+            {/* Jump to section */}
             <Button
               variant="ghost"
               className="bg-black/50 hover:bg-black/70 text-white rounded-full px-4"
@@ -1149,7 +1174,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-black/90 rounded-xl p-2 min-w-[200px]"
+                  className="absolute top-full right-0 mt-2 bg-black/90 rounded-xl p-2 min-w-[200px]"
                 >
                   {GENRE_SECTIONS.map((section) => (
                     <button
