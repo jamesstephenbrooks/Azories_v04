@@ -774,51 +774,6 @@ export default function ArtStudio() {
                 )}
               </motion.div>
             )}
-
-            {/* Style Selector (always visible for character/scene) */}
-            {(activeTab === 'character' || activeTab === 'scene') && (
-              <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-6">
-                <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                  <FiSliders className="text-purple-400" />
-                  Art Style
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                  {ART_STYLES.map(style => (
-                    <button
-                      key={style.id}
-                      onClick={() => setSelectedStyle(style.id)}
-                      data-testid={`style-${style.id}`}
-                      className={`relative rounded-lg border overflow-hidden transition-all group ${
-                        selectedStyle === style.id
-                          ? 'border-purple-500 ring-2 ring-purple-500/50'
-                          : 'border-white/10 hover:border-white/30'
-                      }`}
-                    >
-                      {/* Example Image */}
-                      <div className="aspect-square w-full bg-black/30">
-                        <img 
-                          src={style.exampleImage} 
-                          alt={style.name}
-                          className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
-                          loading="lazy"
-                        />
-                      </div>
-                      {/* Overlay with text */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-2">
-                        <span className="text-sm font-medium text-white">{style.name}</span>
-                        <span className="text-xs text-white/60 leading-tight">{style.description}</span>
-                      </div>
-                      {/* Selected indicator */}
-                      {selectedStyle === style.id && (
-                        <div className="absolute top-2 right-2 w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center">
-                          <FiCheck className="w-3 h-3 text-white" />
-                        </div>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
             
             {/* Reference Image Section */}
             {(activeTab === 'character' || activeTab === 'scene') && (
