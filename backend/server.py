@@ -3000,17 +3000,35 @@ async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: d
         if request.transparentBackground:
             enhanced_prompt += ", isolated subject on pure transparent background, PNG cutout style, no background elements, clean edges"
         
+        # Add negative prompt if specified (append as instruction to avoid)
+        if request.negativePrompt:
+            enhanced_prompt += f". Avoid: {request.negativePrompt}"
+        
+        # Map aspect ratio to size
+        aspect_ratio_sizes = {
+            "1:1": "1024x1024",
+            "16:9": "1536x1024",   # Landscape wide
+            "9:16": "1024x1536",   # Portrait tall
+            "4:3": "1024x768",     # Classic landscape (will use 1024x1024 as closest)
+            "3:4": "768x1024"      # Classic portrait (will use 1024x1024 as closest)
+        }
+        image_size = aspect_ratio_sizes.get(request.aspectRatio, "1024x1024")
+        
         # Use OpenAI image generation via Emergent (matching working endpoint)
         image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
         
         # Set background type based on request
         background_type = "transparent" if request.transparentBackground else "auto"
         
+        # Map quality to model parameter (gpt-image-1 doesn't have quality param, so we rely on prompt)
+        # Higher quality prompts are already added via qualityBoosts in frontend
+        
         images = await image_gen.generate_images(
             prompt=enhanced_prompt,
             model="gpt-image-1",
             number_of_images=1,
-            background=background_type
+            background=background_type,
+            size=image_size
         )
         
         if images and len(images) > 0:
@@ -3024,8 +3042,11 @@ async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: d
                 "image_url": image_url,
                 "prompt": request.prompt,
                 "enhanced_prompt": enhanced_prompt,
+                "negative_prompt": request.negativePrompt,
                 "style": request.style,
                 "type": request.type,
+                "aspect_ratio": request.aspectRatio,
+                "quality_level": request.qualityLevel,
                 "character_data": request.characterData,
                 "scene_data": request.sceneData,
                 "book_id": request.bookId,
