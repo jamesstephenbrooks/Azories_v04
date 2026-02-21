@@ -662,6 +662,27 @@ export default function ArtStudioExpert() {
     setEdges(eds => addEdge({ ...params, animated: true }, eds));
   }, [setEdges]);
   
+  // Delete selected nodes
+  const deleteSelectedNodes = useCallback(() => {
+    setNodes(nds => nds.filter(node => !node.selected));
+    setEdges(eds => eds.filter(edge => {
+      const sourceExists = nodes.find(n => n.id === edge.source && !n.selected);
+      const targetExists = nodes.find(n => n.id === edge.target && !n.selected);
+      return sourceExists && targetExists;
+    }));
+  }, [setNodes, setEdges, nodes]);
+  
+  // Handle keyboard shortcuts for deletion
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.key === 'Delete' || e.key === 'Backspace') && !e.target.matches('input, textarea')) {
+        deleteSelectedNodes();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [deleteSelectedNodes]);
+  
   // Add new node
   const addNode = (type) => {
     const newNode = {
