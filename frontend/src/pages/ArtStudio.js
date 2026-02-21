@@ -848,7 +848,7 @@ export default function ArtStudio() {
                     Download
                   </Button>
                   <Button
-                    onClick={() => useGalleryAsReference(selectedGalleryItem.image_url)}
+                    onClick={() => selectGalleryAsReference(selectedGalleryItem.image_url)}
                     variant="outline"
                     className="w-full border-blue-500/50 text-blue-400 hover:bg-blue-500/20"
                   >
