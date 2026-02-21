@@ -4,13 +4,29 @@ import { useNavigate } from 'react-router-dom';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { Button } from '@/components/ui/button';
-import { FiX, FiBook, FiMaximize2, FiMinimize2, FiVolume2, FiVolumeX, FiMove, FiArrowUp, FiArrowDown, FiArrowLeft, FiArrowRight } from 'react-icons/fi';
+import { FiX, FiBook, FiMaximize2, FiMinimize2, FiVolume2, FiVolumeX, FiMessageCircle, FiMapPin } from 'react-icons/fi';
+import { useAuth } from '@/context/AuthContext';
 
 // Gothic Library Model URL - Using proxy to bypass CORS (smaller compressed version)
 const ORIGINAL_GLB_URL = 'https://customer-assets.emergentagent.com/job_f7ce8ac7-f125-4781-b4a2-bc90bdbc8e87/artifacts/tlr5jivt_gothic_library_12_cycles-compressed%20%281%29.glb';
 const LIBRARY_MODEL_URL = `${process.env.REACT_APP_BACKEND_URL}/api/proxy/glb?url=${encodeURIComponent(ORIGINAL_GLB_URL)}`;
+
+// Library boundaries (will be set after model loads)
+const DEFAULT_BOUNDS = {
+  minX: -9, maxX: 9,
+  minZ: -9, maxZ: 9,
+  floorY: 0,
+  ceilingY: 15
+};
+
+// Genre sections for navigation
+const GENRE_SECTIONS = [
+  { name: 'Fantasy', position: { x: -6, z: -6 }, color: '#9333ea' },
+  { name: 'Adventure', position: { x: 6, z: -6 }, color: '#f59e0b' },
+  { name: 'Mystery', position: { x: -6, z: 6 }, color: '#3b82f6' },
+  { name: 'Science Fiction', position: { x: 6, z: 6 }, color: '#10b981' },
+];
 
 // Detect mobile device
 const isMobile = () => {
@@ -18,111 +34,157 @@ const isMobile = () => {
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
 };
 
-// First-person Library Viewer with WASD + Mobile touch controls
+// First-person Library Viewer with proper camera-relative controls
 export default function ImmersiveLibrary3D({ books = [], onClose }) {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
   const rendererRef = useRef(null);
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
-  const controlsRef = useRef(null);
   const animationIdRef = useRef(null);
   const clockRef = useRef(new THREE.Clock());
+  const boundsRef = useRef(DEFAULT_BOUNDS);
   
-  // Movement state
-  const moveForward = useRef(false);
-  const moveBackward = useRef(false);
-  const moveLeft = useRef(false);
-  const moveRight = useRef(false);
-  const velocity = useRef(new THREE.Vector3());
-  const direction = useRef(new THREE.Vector3());
+  // Movement state - using refs for real-time updates
+  const keysPressed = useRef({
+    forward: false,
+    backward: false,
+    left: false,
+    right: false
+  });
+  
+  // Player state
+  const playerVelocity = useRef(new THREE.Vector3());
+  const playerOnGround = useRef(true);
+  const cameraDirection = useRef(new THREE.Vector3());
+  const sidewaysDirection = useRef(new THREE.Vector3());
+  
+  // Physics constants
+  const GRAVITY = 20;
+  const PLAYER_HEIGHT = 1.7;
+  const MOVE_SPEED = 5;
+  const FRICTION = 10;
   
   const [isLoaded, setIsLoaded] = useState(false);
   const [loadProgress, setLoadProgress] = useState(0);
   const [loadError, setLoadError] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [selectedBook, setSelectedBook] = useState(null);
-  const [isMuted, setIsMuted] = useState(true); // Start muted
+  const [isMuted, setIsMuted] = useState(true);
   const [isExploring, setIsExploring] = useState(false);
+  const [showControls, setShowControls] = useState(false);
+  const [showGenreMenu, setShowGenreMenu] = useState(false);
   const [isMobileDevice] = useState(isMobile());
-  const audioRef = useRef(null);
+  
+  // Mouse look state
+  const isPointerLocked = useRef(false);
+  const euler = useRef(new THREE.Euler(0, 0, 0, 'YXZ'));
+  
+  // Check if user should see controls tutorial (first time only)
+  useEffect(() => {
+    if (user && isLoaded) {
+      const hasSeenControls = localStorage.getItem(`azories-3d-controls-seen-${user.id}`);
+      if (!hasSeenControls) {
+        setShowControls(true);
+      }
+    }
+  }, [user, isLoaded]);
 
-  // Touch controls state for mobile
-  const touchStartRef = useRef({ x: 0, y: 0 });
-  const lastTouchRef = useRef({ x: 0, y: 0 });
+  const dismissControls = () => {
+    if (user) {
+      localStorage.setItem(`azories-3d-controls-seen-${user.id}`, 'true');
+    }
+    setShowControls(false);
+  };
 
-  // Handle keyboard input (desktop)
+  // Handle keyboard input - camera relative
   const onKeyDown = useCallback((event) => {
+    if (!isExploring) return;
     switch (event.code) {
       case 'KeyW':
       case 'ArrowUp':
-        moveForward.current = true;
-        break;
-      case 'KeyA':
-      case 'ArrowLeft':
-        moveLeft.current = true;
+        keysPressed.current.forward = true;
         break;
       case 'KeyS':
       case 'ArrowDown':
-        moveBackward.current = true;
+        keysPressed.current.backward = true;
+        break;
+      case 'KeyA':
+      case 'ArrowLeft':
+        keysPressed.current.left = true;
         break;
       case 'KeyD':
       case 'ArrowRight':
-        moveRight.current = true;
+        keysPressed.current.right = true;
         break;
       default:
         break;
     }
-  }, []);
+  }, [isExploring]);
 
   const onKeyUp = useCallback((event) => {
     switch (event.code) {
       case 'KeyW':
       case 'ArrowUp':
-        moveForward.current = false;
-        break;
-      case 'KeyA':
-      case 'ArrowLeft':
-        moveLeft.current = false;
+        keysPressed.current.forward = false;
         break;
       case 'KeyS':
       case 'ArrowDown':
-        moveBackward.current = false;
+        keysPressed.current.backward = false;
+        break;
+      case 'KeyA':
+      case 'ArrowLeft':
+        keysPressed.current.left = false;
         break;
       case 'KeyD':
       case 'ArrowRight':
-        moveRight.current = false;
+        keysPressed.current.right = false;
         break;
       default:
         break;
     }
   }, []);
 
-  // Touch handlers for mobile camera rotation
-  const handleTouchStart = useCallback((e) => {
-    if (e.touches.length === 1) {
-      touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-      lastTouchRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-    }
+  // Mouse movement for looking around
+  const onMouseMove = useCallback((event) => {
+    if (!isPointerLocked.current || !cameraRef.current) return;
+    
+    const movementX = event.movementX || 0;
+    const movementY = event.movementY || 0;
+    
+    euler.current.setFromQuaternion(cameraRef.current.quaternion);
+    euler.current.y -= movementX * 0.002;
+    euler.current.x -= movementY * 0.002;
+    
+    // Clamp vertical look
+    euler.current.x = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, euler.current.x));
+    
+    cameraRef.current.quaternion.setFromEuler(euler.current);
   }, []);
 
-  const handleTouchMove = useCallback((e) => {
-    if (!isExploring || e.touches.length !== 1 || !cameraRef.current) return;
-    
-    const touch = e.touches[0];
-    const deltaX = touch.clientX - lastTouchRef.current.x;
-    const deltaY = touch.clientY - lastTouchRef.current.y;
-    
-    // Rotate camera based on touch movement
-    if (controlsRef.current) {
-      // For OrbitControls, we rotate the target around
-      const rotationSpeed = 0.005;
-      controlsRef.current.target.x += deltaX * rotationSpeed;
+  // Pointer lock handlers
+  const requestPointerLock = useCallback(() => {
+    if (canvasRef.current && isExploring) {
+      canvasRef.current.requestPointerLock();
     }
-    
-    lastTouchRef.current = { x: touch.clientX, y: touch.clientY };
   }, [isExploring]);
+
+  const onPointerLockChange = useCallback(() => {
+    isPointerLocked.current = document.pointerLockElement === canvasRef.current;
+  }, []);
+
+  // Teleport to genre section
+  const teleportToGenre = useCallback((section) => {
+    if (!cameraRef.current) return;
+    
+    cameraRef.current.position.set(
+      section.position.x,
+      PLAYER_HEIGHT,
+      section.position.z
+    );
+    setShowGenreMenu(false);
+  }, []);
 
   // Initialize Three.js scene
   useEffect(() => {
@@ -130,17 +192,10 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
 
     let mounted = true;
 
-    // Create scene
+    // Create scene with warm library atmosphere
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x1a1a2e); // Dark blue-ish
-    // Remove fog for better visibility while debugging
-    // scene.fog = new THREE.Fog(0x1a1a2e, 10, 50);
+    scene.background = new THREE.Color(0x1a1520);
     sceneRef.current = scene;
-
-    // Add a ground helper plane so we can see the ground level
-    const gridHelper = new THREE.GridHelper(30, 30, 0x444444, 0x222222);
-    gridHelper.position.y = 0;
-    scene.add(gridHelper);
 
     // Create camera - first person perspective
     const camera = new THREE.PerspectiveCamera(
@@ -149,7 +204,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       0.1,
       1000
     );
-    camera.position.set(0, 1.7, 5);
+    camera.position.set(0, PLAYER_HEIGHT, 5);
     cameraRef.current = camera;
 
     // Create renderer
@@ -164,50 +219,31 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 3.0; // Much higher exposure for dark models
+    renderer.toneMappingExposure = 1.5;
     rendererRef.current = renderer;
 
-    // Use OrbitControls for both desktop and mobile (works better across devices)
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-    controls.minDistance = 0.5;
-    controls.maxDistance = 30;
-    controls.maxPolarAngle = Math.PI * 0.85;
-    controls.minPolarAngle = Math.PI * 0.15;
-    controls.target.set(0, 1.5, 0);
-    controls.enablePan = true;
-    controls.panSpeed = 0.5;
-    // Enable touch for mobile
-    controls.touches = {
-      ONE: THREE.TOUCH.ROTATE,
-      TWO: THREE.TOUCH.DOLLY_PAN
-    };
-    controlsRef.current = controls;
-
-    // Add lighting - EXTREME lighting for dark models
-    const ambientLight = new THREE.AmbientLight(0xffffff, 5.0); // Very high intensity
+    // Add warm library lighting
+    const ambientLight = new THREE.AmbientLight(0xfff5e6, 0.6);
     scene.add(ambientLight);
 
-    const mainLight = new THREE.DirectionalLight(0xffffff, 3.0);
-    mainLight.position.set(0, 30, 0);
-    mainLight.castShadow = false; // Disable shadows for performance
+    const mainLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    mainLight.position.set(0, 20, 10);
+    mainLight.castShadow = true;
     scene.add(mainLight);
 
-    // Add hemisphere light for natural indoor lighting
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 3.0);
-    scene.add(hemiLight);
-
-    // Multiple bright point lights throughout the space
-    const positions = [
-      [0, 10, 0], [5, 5, 5], [-5, 5, -5], [5, 5, -5], [-5, 5, 5],
-      [0, 5, 8], [0, 5, -8], [8, 5, 0], [-8, 5, 0]
+    // Warm point lights like candles/lamps
+    const warmLightPositions = [
+      [0, 8, 0], [-5, 4, -5], [5, 4, -5], [-5, 4, 5], [5, 4, 5]
     ];
-    positions.forEach(pos => {
-      const light = new THREE.PointLight(0xffffff, 5.0, 100);
+    warmLightPositions.forEach(pos => {
+      const light = new THREE.PointLight(0xffaa55, 1.5, 20);
       light.position.set(pos[0], pos[1], pos[2]);
       scene.add(light);
     });
+
+    // Hemisphere light for natural feel
+    const hemiLight = new THREE.HemisphereLight(0xffeedd, 0x222211, 0.5);
+    scene.add(hemiLight);
 
     // Load the GLB model
     const dracoLoader = new DRACOLoader();
@@ -218,7 +254,6 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
 
     console.log('Loading model from:', LIBRARY_MODEL_URL);
 
-    // Timeout for slow connections
     const loadTimeout = setTimeout(() => {
       if (mounted && !isLoaded) {
         console.warn('Model load timeout warning');
@@ -239,12 +274,9 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         const size = box.getSize(new THREE.Vector3());
         const center = box.getCenter(new THREE.Vector3());
         
-        console.log('Model original size:', JSON.stringify({x: size.x, y: size.y, z: size.z}));
-        console.log('Model original center:', JSON.stringify({x: center.x, y: center.y, z: center.z}));
-        console.log('Model original bounds min:', JSON.stringify({x: box.min.x, y: box.min.y, z: box.min.z}));
-        console.log('Model original bounds max:', JSON.stringify({x: box.max.x, y: box.max.y, z: box.max.z}));
+        console.log('Model size:', size);
         
-        // Scale to reasonable walkable size - library should be about 20 units
+        // Scale to reasonable size - library about 20 units wide
         const maxDim = Math.max(size.x, size.y, size.z);
         const targetSize = 20;
         const scale = targetSize / maxDim;
@@ -252,68 +284,42 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         
         // Recalculate after scaling
         const scaledBox = new THREE.Box3().setFromObject(model);
-        const scaledSize = scaledBox.getSize(new THREE.Vector3());
         const scaledCenter = scaledBox.getCenter(new THREE.Vector3());
         
-        console.log('Model scaled size:', JSON.stringify({x: scaledSize.x, y: scaledSize.y, z: scaledSize.z}));
-        console.log('Model scaled center:', JSON.stringify({x: scaledCenter.x, y: scaledCenter.y, z: scaledCenter.z}));
-        
-        // Center the model at origin
+        // Center the model and put floor at y=0
         model.position.x = -scaledCenter.x;
         model.position.z = -scaledCenter.z;
-        // Put floor at y=0
         model.position.y = -scaledBox.min.y;
         
-        // Calculate new bounds after positioning
+        // Update bounds for collision
         const finalBox = new THREE.Box3().setFromObject(model);
-        const finalCenter = finalBox.getCenter(new THREE.Vector3());
-        const finalSize = finalBox.getSize(new THREE.Vector3());
+        boundsRef.current = {
+          minX: finalBox.min.x + 0.5,
+          maxX: finalBox.max.x - 0.5,
+          minZ: finalBox.min.z + 0.5,
+          maxZ: finalBox.max.z - 0.5,
+          floorY: 0,
+          ceilingY: finalBox.max.y
+        };
         
-        console.log('Model final bounds min:', JSON.stringify({x: finalBox.min.x, y: finalBox.min.y, z: finalBox.min.z}));
-        console.log('Model final bounds max:', JSON.stringify({x: finalBox.max.x, y: finalBox.max.y, z: finalBox.max.z}));
-        console.log('Model final center:', JSON.stringify({x: finalCenter.x, y: finalCenter.y, z: finalCenter.z}));
+        console.log('Library bounds:', boundsRef.current);
         
-        // Process materials to ensure they render properly
-        let meshCount = 0;
+        // Process materials
         model.traverse((child) => {
           if (child.isMesh) {
-            meshCount++;
             child.castShadow = true;
             child.receiveShadow = true;
-            // Ensure materials are visible
             if (child.material) {
-              child.material.side = THREE.DoubleSide; // Render both sides
-              // If material is MeshStandardMaterial or has metalness, adjust for better visibility
-              if (child.material.isMeshStandardMaterial) {
-                child.material.roughness = Math.max(child.material.roughness, 0.3);
-                child.material.metalness = Math.min(child.material.metalness, 0.8);
-              }
-              // Make sure material is visible
-              if (child.material.transparent) {
-                child.material.opacity = Math.max(child.material.opacity, 0.5);
-              }
+              child.material.side = THREE.DoubleSide;
               child.material.needsUpdate = true;
             }
           }
         });
-        console.log('Total meshes found:', meshCount);
         
         scene.add(model);
         
-        // Position camera to SEE THE WHOLE ROOM from above first
-        // After user can scroll/zoom to explore
-        camera.position.set(0, 15, 15); // High up, looking at center
-        
-        // Look at center of the room
-        controls.target.set(0, 5, 0);
-        controls.minDistance = 0.5;  // Can get close
-        controls.maxDistance = 50;   // Can pull back far
-        controls.maxPolarAngle = Math.PI * 0.95;
-        controls.minPolarAngle = 0.05;
-        controls.update();
-        
-        console.log('Camera positioned at:', JSON.stringify({x: camera.position.x, y: camera.position.y, z: camera.position.z}));
-        console.log('Looking at:', JSON.stringify({x: controls.target.x, y: controls.target.y, z: controls.target.z}));
+        // Position camera inside the library
+        camera.position.set(0, PLAYER_HEIGHT, 5);
         
         setIsLoaded(true);
         setLoadError(null);
@@ -336,58 +342,94 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       }
     );
 
-    // Animation loop
+    // Animation loop with physics
     const animate = () => {
       if (!mounted) return;
       animationIdRef.current = requestAnimationFrame(animate);
       
-      const delta = clockRef.current.getDelta();
+      const delta = Math.min(clockRef.current.getDelta(), 0.1);
       
-      // Handle WASD movement (desktop)
-      if (isExploring && controlsRef.current) {
-        const speed = 5.0 * delta;
+      if (isExploring && cameraRef.current) {
+        const camera = cameraRef.current;
+        const bounds = boundsRef.current;
         
-        if (moveForward.current) {
-          controlsRef.current.target.z -= speed;
-          camera.position.z -= speed;
+        // Get camera's forward direction (only horizontal)
+        camera.getWorldDirection(cameraDirection.current);
+        cameraDirection.current.y = 0;
+        cameraDirection.current.normalize();
+        
+        // Get sideways direction (perpendicular to forward)
+        sidewaysDirection.current.crossVectors(camera.up, cameraDirection.current).normalize();
+        
+        // Calculate movement based on keys pressed
+        const moveDirection = new THREE.Vector3();
+        
+        if (keysPressed.current.forward) {
+          moveDirection.add(cameraDirection.current);
         }
-        if (moveBackward.current) {
-          controlsRef.current.target.z += speed;
-          camera.position.z += speed;
+        if (keysPressed.current.backward) {
+          moveDirection.sub(cameraDirection.current);
         }
-        if (moveLeft.current) {
-          controlsRef.current.target.x -= speed;
-          camera.position.x -= speed;
+        if (keysPressed.current.left) {
+          moveDirection.add(sidewaysDirection.current);
         }
-        if (moveRight.current) {
-          controlsRef.current.target.x += speed;
-          camera.position.x += speed;
+        if (keysPressed.current.right) {
+          moveDirection.sub(sidewaysDirection.current);
         }
-      }
-      
-      if (controlsRef.current) {
-        controlsRef.current.update();
+        
+        // Normalize and apply speed
+        if (moveDirection.length() > 0) {
+          moveDirection.normalize();
+          playerVelocity.current.x = moveDirection.x * MOVE_SPEED;
+          playerVelocity.current.z = moveDirection.z * MOVE_SPEED;
+        } else {
+          // Apply friction when not moving
+          playerVelocity.current.x *= Math.max(0, 1 - FRICTION * delta);
+          playerVelocity.current.z *= Math.max(0, 1 - FRICTION * delta);
+        }
+        
+        // Apply gravity
+        if (!playerOnGround.current) {
+          playerVelocity.current.y -= GRAVITY * delta;
+        }
+        
+        // Calculate new position
+        const newX = camera.position.x + playerVelocity.current.x * delta;
+        const newY = camera.position.y + playerVelocity.current.y * delta;
+        const newZ = camera.position.z + playerVelocity.current.z * delta;
+        
+        // Apply boundary collision
+        camera.position.x = Math.max(bounds.minX, Math.min(bounds.maxX, newX));
+        camera.position.z = Math.max(bounds.minZ, Math.min(bounds.maxZ, newZ));
+        
+        // Floor collision (gravity)
+        if (newY <= bounds.floorY + PLAYER_HEIGHT) {
+          camera.position.y = bounds.floorY + PLAYER_HEIGHT;
+          playerVelocity.current.y = 0;
+          playerOnGround.current = true;
+        } else {
+          camera.position.y = Math.min(bounds.ceilingY, newY);
+          playerOnGround.current = false;
+        }
       }
       
       renderer.render(scene, camera);
     };
     animate();
 
-    // Handle resize
+    // Event listeners
     const handleResize = () => {
       if (!mounted) return;
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      
-      camera.aspect = width / height;
+      camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(width, height);
+      renderer.setSize(window.innerWidth, window.innerHeight);
     };
-    window.addEventListener('resize', handleResize);
     
-    // Keyboard listeners
+    window.addEventListener('resize', handleResize);
     document.addEventListener('keydown', onKeyDown);
     document.addEventListener('keyup', onKeyUp);
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('pointerlockchange', onPointerLockChange);
 
     // Cleanup
     return () => {
@@ -396,83 +438,43 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       window.removeEventListener('resize', handleResize);
       document.removeEventListener('keydown', onKeyDown);
       document.removeEventListener('keyup', onKeyUp);
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('pointerlockchange', onPointerLockChange);
       
       if (animationIdRef.current) {
         cancelAnimationFrame(animationIdRef.current);
-      }
-      if (controlsRef.current) {
-        controlsRef.current.dispose();
       }
       if (rendererRef.current) {
         rendererRef.current.dispose();
       }
       dracoLoader.dispose();
-      
-      // Dispose scene
-      if (sceneRef.current) {
-        sceneRef.current.traverse((object) => {
-          if (object.geometry) object.geometry.dispose();
-          if (object.material) {
-            if (Array.isArray(object.material)) {
-              object.material.forEach(m => m.dispose());
-            } else {
-              object.material.dispose();
-            }
-          }
-        });
-      }
     };
-  }, [onKeyDown, onKeyUp, isExploring, isLoaded]);
+  }, [onKeyDown, onKeyUp, onMouseMove, onPointerLockChange, isExploring]);
 
-  // Ambient sound
-  useEffect(() => {
-    // Use a more reliable audio source
-    const audio = new Audio('/sounds/fireplace.mp3');
-    audio.loop = true;
-    audio.volume = 0.15;
-    audioRef.current = audio;
-
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
-    };
-  }, []);
-
-  const toggleMute = () => {
-    if (audioRef.current) {
-      if (isMuted) {
-        audioRef.current.play().catch(() => {});
-      } else {
-        audioRef.current.pause();
-      }
-      setIsMuted(!isMuted);
-    }
-  };
-
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      containerRef.current?.requestFullscreen?.();
-      setIsFullscreen(true);
-    } else {
-      document.exitFullscreen?.();
-      setIsFullscreen(false);
-    }
-  };
-
+  // Start exploring
   const handleStartExploring = () => {
     setIsExploring(true);
+    // Show controls for logged-in users who haven't seen them
+    if (user) {
+      const hasSeenControls = localStorage.getItem(`azories-3d-controls-seen-${user.id}`);
+      if (!hasSeenControls) {
+        setShowControls(true);
+      }
+    }
   };
 
-  // Mobile movement button handlers
-  const handleMoveButton = (dir, pressed) => {
-    switch(dir) {
-      case 'forward': moveForward.current = pressed; break;
-      case 'backward': moveBackward.current = pressed; break;
-      case 'left': moveLeft.current = pressed; break;
-      case 'right': moveRight.current = pressed; break;
-      default: break;
+  // Toggle fullscreen
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await containerRef.current?.requestFullscreen();
+        setIsFullscreen(true);
+      } else {
+        await document.exitFullscreen();
+        setIsFullscreen(false);
+      }
+    } catch (err) {
+      console.error('Fullscreen error:', err);
     }
   };
 
@@ -480,331 +482,271 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     <div 
       ref={containerRef}
       className="fixed inset-0 z-50 bg-black"
-      data-testid="immersive-library-3d"
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
+      data-testid="immersive-library-container"
     >
-      {/* Three.js Canvas */}
-      <canvas ref={canvasRef} className="w-full h-full touch-none" />
-
+      <canvas 
+        ref={canvasRef} 
+        className="w-full h-full cursor-crosshair"
+        onClick={requestPointerLock}
+      />
+      
       {/* Loading Screen */}
-      {!isLoaded && (
-        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-gradient-to-b from-[#1a0a2e] to-[#0d0015]">
-          <div className="text-center space-y-6 px-4">
-            <div className="relative w-24 h-24 sm:w-32 sm:h-32 mx-auto">
-              <div className="absolute inset-0 border-4 border-purple-500/30 rounded-full animate-ping" />
-              <div className="absolute inset-2 border-4 border-purple-500/50 rounded-full animate-spin" style={{ animationDuration: '3s' }} />
-              <div className="absolute inset-4 border-4 border-purple-400/70 rounded-full animate-spin" style={{ animationDuration: '2s', animationDirection: 'reverse' }} />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-2xl sm:text-3xl font-bold text-white">
-                  {loadProgress < 0 ? '!' : `${Math.round(loadProgress)}%`}
-                </span>
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <h2 className="text-xl sm:text-2xl font-bold text-white">
-                {loadProgress < 0 ? 'Error Loading Library' : 'Entering the Grand Library'}
-              </h2>
-              <p className="text-purple-300 text-sm max-w-md mx-auto">
-                {loadProgress < 0 
-                  ? (loadError || 'Please try refreshing the page') 
-                  : 'Loading 50MB 3D model... This may take a moment.'}
-              </p>
-            </div>
-            
-            {loadProgress >= 0 && (
-              <div className="w-48 sm:w-64 h-2 bg-purple-900/50 rounded-full overflow-hidden mx-auto">
-                <motion.div
-                  className="h-full bg-gradient-to-r from-purple-500 to-pink-500"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${loadProgress}%` }}
-                  transition={{ duration: 0.3 }}
+      <AnimatePresence>
+        {!isLoaded && !loadError && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-b from-[#1a1520] to-[#2d1f3d]"
+          >
+            <div className="relative w-24 h-24 mb-6">
+              <svg className="w-full h-full" viewBox="0 0 100 100">
+                <circle
+                  className="stroke-purple-900"
+                  cx="50" cy="50" r="45"
+                  fill="none" strokeWidth="8"
                 />
+                <circle
+                  className="stroke-purple-500"
+                  cx="50" cy="50" r="45"
+                  fill="none" strokeWidth="8"
+                  strokeDasharray={`${loadProgress * 2.83} 283`}
+                  strokeLinecap="round"
+                  transform="rotate(-90 50 50)"
+                />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-xl font-bold text-purple-300">{Math.round(loadProgress)}%</span>
               </div>
-            )}
-            
-            {loadProgress < 0 && (
-              <Button
-                onClick={() => window.location.reload()}
-                className="bg-purple-600 hover:bg-purple-700"
-              >
-                Retry Loading
-              </Button>
-            )}
-            
-            {/* Exit button during loading */}
+            </div>
+            <h2 className="text-2xl font-bold text-white mb-2">Entering the Grand Library</h2>
+            <p className="text-white/60 text-sm">Loading 3D model... This may take a moment.</p>
             <Button
               variant="ghost"
+              className="mt-6 text-white/60 hover:text-white"
               onClick={onClose}
-              className="text-purple-300 hover:text-white"
             >
               <FiX className="mr-2" /> Exit
             </Button>
-          </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
+      {/* Error State */}
+      {loadError && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#1a1520]">
+          <div className="text-red-400 text-6xl mb-4">⚠</div>
+          <h2 className="text-xl font-bold text-white mb-2">Failed to load library</h2>
+          <p className="text-white/60 mb-4">{loadError}</p>
+          <Button onClick={onClose}>Return to Library</Button>
         </div>
       )}
-
-      {/* Welcome Overlay */}
-      {isLoaded && !isExploring && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+      
+      {/* Welcome Screen - Only show when loaded but not exploring */}
+      <AnimatePresence>
+        {isLoaded && !isExploring && (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-gradient-to-br from-purple-900/95 to-indigo-900/95 rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-purple-500/30 text-center"
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm"
           >
-            <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-4 rounded-full bg-purple-500/20 flex items-center justify-center">
-              <FiMove className="w-7 h-7 sm:w-8 sm:h-8 text-purple-300" />
-            </div>
-            <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">Welcome to the Grand Library</h2>
-            <p className="text-purple-200 text-sm mb-6">
-              Explore this magical library. Drag to look around, pinch to zoom!
-            </p>
-            
-            <div className="bg-black/30 rounded-xl p-4 mb-6 text-left">
-              <h3 className="text-white font-semibold mb-3 text-sm sm:text-base">Controls:</h3>
-              {isMobileDevice ? (
-                <ul className="text-purple-200 text-xs sm:text-sm space-y-2">
-                  <li className="flex items-center gap-3">
-                    <span className="px-2 py-1 bg-purple-500/30 rounded text-xs">Touch</span>
-                    <span>Drag to look around</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <span className="px-2 py-1 bg-purple-500/30 rounded text-xs">Pinch</span>
-                    <span>Zoom in/out</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <span className="px-2 py-1 bg-purple-500/30 rounded text-xs">Arrows</span>
-                    <span>Use on-screen buttons to walk</span>
-                  </li>
-                </ul>
-              ) : (
-                <ul className="text-purple-200 text-xs sm:text-sm space-y-2">
-                  <li className="flex items-center gap-3">
-                    <span className="px-2 py-1 bg-purple-500/30 rounded text-xs font-mono">W A S D</span>
-                    <span>Walk around</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <span className="px-2 py-1 bg-purple-500/30 rounded text-xs font-mono">Mouse</span>
-                    <span>Drag to look around</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <span className="px-2 py-1 bg-purple-500/30 rounded text-xs font-mono">Scroll</span>
-                    <span>Zoom in/out</span>
-                  </li>
-                </ul>
-              )}
-            </div>
-            
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                className="flex-1 border-purple-500/30 text-white hover:bg-purple-500/20 text-sm"
-                onClick={onClose}
-              >
-                Exit
-              </Button>
-              <Button
-                className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-sm"
-                onClick={handleStartExploring}
-              >
-                Start Exploring
-              </Button>
+            <div className="bg-gradient-to-br from-[#2d1f3d] to-[#1a1520] rounded-2xl p-8 max-w-md mx-4 text-center border border-purple-500/30">
+              <div className="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FiMove className="w-8 h-8 text-purple-400" />
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-2">Welcome to the Grand Library</h2>
+              <p className="text-white/60 mb-6">
+                Explore this magical library. Click to look around, use keys to walk.
+              </p>
+              
+              <div className="bg-black/30 rounded-lg p-4 mb-6 text-left">
+                <p className="text-sm font-medium text-purple-300 mb-3">Controls:</p>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <kbd className="px-2 py-1 bg-purple-900/50 rounded text-purple-300 text-xs">W A S D</kbd>
+                    <span className="text-white/70">Walk around</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <kbd className="px-2 py-1 bg-purple-900/50 rounded text-purple-300 text-xs">Mouse</kbd>
+                    <span className="text-white/70">Look around</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <kbd className="px-2 py-1 bg-purple-900/50 rounded text-purple-300 text-xs">↑ ↓ ← →</kbd>
+                    <span className="text-white/70">Alternative movement</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <kbd className="px-2 py-1 bg-purple-900/50 rounded text-purple-300 text-xs">ESC</kbd>
+                    <span className="text-white/70">Release mouse</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex gap-3 justify-center">
+                <Button variant="outline" onClick={onClose} className="text-white border-white/30">
+                  Exit
+                </Button>
+                <Button 
+                  onClick={handleStartExploring}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  Start Exploring
+                </Button>
+              </div>
             </div>
           </motion.div>
-        </div>
-      )}
-
-      {/* Top Controls when exploring */}
-      {isLoaded && isExploring && (
-        <div className="absolute top-4 left-4 right-4 z-10 flex justify-between items-start">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="bg-black/50 hover:bg-black/70 text-white rounded-full backdrop-blur"
-          >
-            <FiX className="w-5 h-5" />
-          </Button>
-          
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleMute}
-              className="bg-black/50 hover:bg-black/70 text-white rounded-full backdrop-blur"
-            >
-              {isMuted ? <FiVolumeX className="w-5 h-5" /> : <FiVolume2 className="w-5 h-5" />}
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleFullscreen}
-              className="bg-black/50 hover:bg-black/70 text-white rounded-full backdrop-blur"
-            >
-              {isFullscreen ? <FiMinimize2 className="w-5 h-5" /> : <FiMaximize2 className="w-5 h-5" />}
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Mobile Movement Controls */}
-      {isLoaded && isExploring && isMobileDevice && (
-        <div className="absolute bottom-8 left-4 z-10">
-          <div className="grid grid-cols-3 gap-1">
-            <div />
-            <Button
-              variant="ghost"
-              size="icon"
-              className="bg-black/50 active:bg-purple-500/50 text-white rounded-full backdrop-blur w-12 h-12"
-              onTouchStart={() => handleMoveButton('forward', true)}
-              onTouchEnd={() => handleMoveButton('forward', false)}
-              onMouseDown={() => handleMoveButton('forward', true)}
-              onMouseUp={() => handleMoveButton('forward', false)}
-              onMouseLeave={() => handleMoveButton('forward', false)}
-            >
-              <FiArrowUp className="w-5 h-5" />
-            </Button>
-            <div />
-            
-            <Button
-              variant="ghost"
-              size="icon"
-              className="bg-black/50 active:bg-purple-500/50 text-white rounded-full backdrop-blur w-12 h-12"
-              onTouchStart={() => handleMoveButton('left', true)}
-              onTouchEnd={() => handleMoveButton('left', false)}
-              onMouseDown={() => handleMoveButton('left', true)}
-              onMouseUp={() => handleMoveButton('left', false)}
-              onMouseLeave={() => handleMoveButton('left', false)}
-            >
-              <FiArrowLeft className="w-5 h-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="bg-black/50 active:bg-purple-500/50 text-white rounded-full backdrop-blur w-12 h-12"
-              onTouchStart={() => handleMoveButton('backward', true)}
-              onTouchEnd={() => handleMoveButton('backward', false)}
-              onMouseDown={() => handleMoveButton('backward', true)}
-              onMouseUp={() => handleMoveButton('backward', false)}
-              onMouseLeave={() => handleMoveButton('backward', false)}
-            >
-              <FiArrowDown className="w-5 h-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="bg-black/50 active:bg-purple-500/50 text-white rounded-full backdrop-blur w-12 h-12"
-              onTouchStart={() => handleMoveButton('right', true)}
-              onTouchEnd={() => handleMoveButton('right', false)}
-              onMouseDown={() => handleMoveButton('right', true)}
-              onMouseUp={() => handleMoveButton('right', false)}
-              onMouseLeave={() => handleMoveButton('right', false)}
-            >
-              <FiArrowRight className="w-5 h-5" />
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Instructions hint */}
-      {isLoaded && isExploring && !isMobileDevice && (
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10">
-          <div className="bg-black/50 backdrop-blur px-4 py-2 rounded-full">
-            <p className="text-white/60 text-xs">
-              WASD to walk • Drag to look • Scroll to zoom
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Book Collection */}
-      {isLoaded && isExploring && books.length > 0 && (
-        <div className="absolute bottom-4 right-4 z-10 max-w-xs">
-          <div className="bg-black/70 backdrop-blur-lg rounded-xl p-3">
-            <h3 className="text-white font-bold text-sm mb-2">📚 Books</h3>
-            <div className="flex gap-2 overflow-x-auto pb-1">
-              {books.slice(0, 5).map((book) => (
-                <motion.div
-                  key={book.id}
-                  whileTap={{ scale: 0.95 }}
-                  className="flex-shrink-0 cursor-pointer"
-                  onClick={() => setSelectedBook(book)}
-                >
-                  <div className="w-12 h-16 rounded overflow-hidden border border-white/20">
-                    {book.cover_image ? (
-                      <img src={book.cover_image} alt={book.title} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full bg-purple-600 flex items-center justify-center">
-                        <FiBook className="w-4 h-4 text-white/70" />
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Book Modal */}
+        )}
+      </AnimatePresence>
+      
+      {/* Controls Tutorial Overlay (for logged-in users, first time) */}
       <AnimatePresence>
-        {selectedBook && (
+        {showControls && isExploring && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
-            onClick={() => setSelectedBook(null)}
+            className="absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm z-20"
           >
             <motion.div
-              initial={{ scale: 0.8, y: 50 }}
+              initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.8, y: 50 }}
-              className="bg-gradient-to-br from-purple-900/95 to-indigo-900/95 rounded-2xl p-5 max-w-sm w-full shadow-2xl border border-purple-500/20"
-              onClick={e => e.stopPropagation()}
+              className="bg-gradient-to-br from-[#2d1f3d] to-[#1a1520] rounded-2xl p-6 max-w-sm mx-4 border border-purple-500/30"
             >
-              <div className="flex gap-4">
-                {selectedBook.cover_image ? (
-                  <img 
-                    src={selectedBook.cover_image} 
-                    alt={selectedBook.title}
-                    className="w-20 h-28 object-cover rounded-lg shadow-lg"
-                  />
-                ) : (
-                  <div className="w-20 h-28 bg-purple-500/40 rounded-lg flex items-center justify-center">
-                    <FiBook className="w-8 h-8 text-white/50" />
-                  </div>
-                )}
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-bold text-white mb-1 truncate">{selectedBook.title}</h3>
-                  <p className="text-purple-300 text-sm mb-2">by {selectedBook.author_name}</p>
-                  <p className="text-white/60 text-xs line-clamp-2">
-                    {selectedBook.description || 'A magical story awaits...'}
-                  </p>
+              <h3 className="text-lg font-bold text-white mb-4 text-center">Quick Controls</h3>
+              <div className="space-y-3 mb-6">
+                <div className="flex items-center gap-3">
+                  <kbd className="px-3 py-1.5 bg-purple-900/50 rounded text-purple-300 text-sm font-mono">WASD</kbd>
+                  <span className="text-white/80">Move in direction you're facing</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <kbd className="px-3 py-1.5 bg-purple-900/50 rounded text-purple-300 text-sm font-mono">Mouse</kbd>
+                  <span className="text-white/80">Look around (click first)</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <kbd className="px-3 py-1.5 bg-purple-900/50 rounded text-purple-300 text-sm font-mono">ESC</kbd>
+                  <span className="text-white/80">Release mouse cursor</span>
                 </div>
               </div>
-              
-              <div className="flex gap-3 mt-4">
-                <Button
-                  variant="outline"
-                  className="flex-1 rounded-full border-purple-500/30 text-white hover:bg-purple-500/20 text-sm"
-                  onClick={() => setSelectedBook(null)}
-                >
-                  Back
-                </Button>
-                <Button
-                  className="flex-1 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-sm"
-                  onClick={() => navigate(`/read/${selectedBook.id}`)}
-                >
-                  <FiBook className="mr-1" />
-                  Read
-                </Button>
-              </div>
+              <Button 
+                onClick={dismissControls}
+                className="w-full bg-purple-600 hover:bg-purple-700"
+              >
+                Got it!
+              </Button>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
+      
+      {/* UI Controls when exploring */}
+      {isLoaded && isExploring && (
+        <>
+          {/* Top bar */}
+          <div className="absolute top-4 left-4 right-4 flex justify-between items-start pointer-events-none">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="pointer-events-auto bg-black/50 hover:bg-black/70 text-white rounded-full"
+              onClick={onClose}
+            >
+              <FiX className="w-5 h-5" />
+            </Button>
+            
+            <div className="flex gap-2 pointer-events-auto">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="bg-black/50 hover:bg-black/70 text-white rounded-full"
+                onClick={() => setIsMuted(!isMuted)}
+              >
+                {isMuted ? <FiVolumeX className="w-5 h-5" /> : <FiVolume2 className="w-5 h-5" />}
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="bg-black/50 hover:bg-black/70 text-white rounded-full"
+                onClick={toggleFullscreen}
+              >
+                {isFullscreen ? <FiMinimize2 className="w-5 h-5" /> : <FiMaximize2 className="w-5 h-5" />}
+              </Button>
+            </div>
+          </div>
+          
+          {/* Genre navigation menu */}
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 pointer-events-auto">
+            <Button
+              variant="ghost"
+              className="bg-black/50 hover:bg-black/70 text-white rounded-full px-4"
+              onClick={() => setShowGenreMenu(!showGenreMenu)}
+            >
+              <FiMapPin className="w-4 h-4 mr-2" />
+              Jump to Section
+            </Button>
+            
+            <AnimatePresence>
+              {showGenreMenu && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-black/90 rounded-xl p-2 min-w-[200px]"
+                >
+                  {GENRE_SECTIONS.map((section) => (
+                    <button
+                      key={section.name}
+                      onClick={() => teleportToGenre(section)}
+                      className="w-full px-4 py-2 text-left text-white hover:bg-white/10 rounded-lg flex items-center gap-3 transition-colors"
+                    >
+                      <div 
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: section.color }}
+                      />
+                      {section.name}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+          
+          {/* Bottom controls hint */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
+            <div className="bg-black/50 backdrop-blur-sm rounded-full px-4 py-2 text-white/70 text-sm">
+              WASD to walk • Click to look • ESC to release mouse
+            </div>
+          </div>
+          
+          {/* Books panel */}
+          <div className="absolute bottom-4 right-4 pointer-events-auto">
+            <div className="bg-black/80 backdrop-blur-sm rounded-xl p-3 max-w-xs">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-lg">📚</span>
+                <span className="text-white font-medium text-sm">Books</span>
+              </div>
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {books.slice(0, 5).map((book) => (
+                  <button
+                    key={book.id}
+                    onClick={() => navigate(`/read/${book.id}`)}
+                    className="flex-shrink-0 w-12 h-16 rounded-lg overflow-hidden hover:ring-2 hover:ring-purple-500 transition-all"
+                  >
+                    {book.cover_image ? (
+                      <img 
+                        src={book.cover_image} 
+                        alt={book.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-purple-900 flex items-center justify-center">
+                        <FiBook className="text-purple-400" />
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
