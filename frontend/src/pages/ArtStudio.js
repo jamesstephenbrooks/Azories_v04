@@ -336,6 +336,11 @@ export default function ArtStudio() {
     
     setIsAnimating(true);
     try {
+      // Show info that this takes a while
+      toast.info('Animation started - this may take 2-5 minutes. Please wait...', {
+        duration: 10000
+      });
+      
       const response = await fetch(`${API_URL}/api/art-studio/animate-image`, {
         method: 'POST',
         headers: {
@@ -350,16 +355,27 @@ export default function ArtStudio() {
         })
       });
       
+      // Check if response is valid JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Animation is taking longer than expected. Please try again in a few minutes.');
+      }
+      
       const data = await response.json();
       if (data.success) {
         setAnimatedVideo(`data:video/mp4;base64,${data.video_base64}`);
         toast.success('Image animated successfully!');
       } else {
-        throw new Error(data.detail || 'Animation failed');
+        // Check for specific error messages
+        const errorMsg = data.detail || 'Animation failed';
+        if (errorMsg.includes('budget') || errorMsg.includes('Budget')) {
+          throw new Error('API budget exceeded. Please add balance to your Universal Key in Profile settings.');
+        }
+        throw new Error(errorMsg);
       }
     } catch (error) {
       console.error('Animation error:', error);
-      toast.error('Failed to animate image: ' + error.message);
+      toast.error('Animation: ' + (error.message || 'An error occurred'));
     } finally {
       setIsAnimating(false);
     }
