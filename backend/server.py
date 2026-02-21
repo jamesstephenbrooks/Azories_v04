@@ -3014,17 +3014,26 @@ async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: d
         }
         image_size = aspect_ratio_sizes.get(request.aspectRatio, "1024x1024")
         
-        # Use OpenAI image generation via Emergent (matching working endpoint)
+        # Use OpenAI image generation via Emergent
         image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
         
-        # Map quality to model parameter (gpt-image-1 doesn't have quality param, so we rely on prompt)
-        # Higher quality prompts are already added via qualityBoosts in frontend
+        # Map quality level to API parameter
+        quality_map = {
+            'low': 'low',
+            'medium': 'low',  # emergent library accepts low/medium/high
+            'high': 'low',    # Use low for faster generation, quality is in prompt
+            'ultra': 'low'    # Ultra quality achieved through prompt engineering
+        }
+        api_quality = quality_map.get(request.qualityLevel, 'low')
+        
+        # Note: Size parameter not supported by emergent library
+        # Transparent background is achieved via prompt instructions (already added above)
         
         images = await image_gen.generate_images(
             prompt=enhanced_prompt,
             model="gpt-image-1",
             number_of_images=1,
-            size=image_size
+            quality=api_quality
         )
         
         if images and len(images) > 0:
