@@ -43,22 +43,22 @@ const ART_STYLE_CATEGORIES = [
   {
     category: 'Sci-Fi & Futuristic',
     styles: [
-      { id: 'scifi-portrait', name: 'Sci-Fi Portrait', description: 'Futuristic stylized portrait with chrome elements', image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=100&h=100&fit=crop' },
-      { id: 'stylized-digital', name: 'Stylized Digital', description: 'Highly stylized digital art, doll-like features', image: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=100&h=100&fit=crop' },
-      { id: 'concept-portrait', name: 'Concept Art Portrait', description: 'AAA game concept art quality', image: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=100&h=100&fit=crop' },
-      { id: 'chrome-aesthetic', name: 'Chrome Aesthetic', description: 'Liquid metal, chrome, reflective surfaces', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=100&h=100&fit=crop' },
-      { id: 'ethereal-scifi', name: 'Ethereal Sci-Fi', description: 'Dreamy sci-fi with soft atmospheric effects', image: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=100&h=100&fit=crop' },
-      { id: 'cyberpunk', name: 'Cyberpunk', description: 'Neon-lit futuristic dystopia', image: 'https://images.unsplash.com/photo-1515630278258-407f66498911?w=100&h=100&fit=crop' },
+      { id: 'scifi-portrait', name: 'Sci-Fi Portrait', description: 'Futuristic stylized portrait with chrome elements', image: 'https://static.prod-images.emergentagent.com/jobs/d83020fd-599b-40ee-9260-c2ebcb28493d/images/2aca1b80f7281f04f681e4b095ecc45747ca4144ced5a77a0727272b14942396.png' },
+      { id: 'stylized-digital', name: 'Stylized Digital', description: 'Highly stylized digital art, doll-like features', image: 'https://images.unsplash.com/photo-1707912079134-becf5a3598e2?w=100&h=100&fit=crop' },
+      { id: 'concept-portrait', name: 'Concept Art Portrait', description: 'AAA game concept art quality', image: 'https://images.pexels.com/photos/7650991/pexels-photo-7650991.jpeg?w=100&h=100&fit=crop' },
+      { id: 'chrome-aesthetic', name: 'Chrome Aesthetic', description: 'Liquid metal, chrome, reflective surfaces', image: 'https://images.unsplash.com/photo-1637317099769-ecf4d610d30c?w=100&h=100&fit=crop' },
+      { id: 'ethereal-scifi', name: 'Ethereal Sci-Fi', description: 'Dreamy sci-fi with soft atmospheric effects', image: 'https://images.pexels.com/photos/22608985/pexels-photo-22608985.jpeg?w=100&h=100&fit=crop' },
+      { id: 'cyberpunk', name: 'Cyberpunk', description: 'Neon-lit futuristic dystopia', image: 'https://images.pexels.com/photos/8107899/pexels-photo-8107899.jpeg?w=100&h=100&fit=crop' },
     ]
   },
   {
     category: 'Advanced Portrait',
     styles: [
-      { id: 'neon-portrait', name: 'Neon Portrait', description: 'Dramatic pink/blue neon lighting, hyper-detailed', image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&h=100&fit=crop' },
+      { id: 'neon-portrait', name: 'Neon Portrait', description: 'Dramatic pink/blue neon lighting, hyper-detailed', image: 'https://images.pexels.com/photos/8108554/pexels-photo-8108554.jpeg?w=100&h=100&fit=crop' },
       { id: 'surreal-portrait', name: 'Surreal Double Exposure', description: 'Double exposure with fantasy elements, flowing hair', image: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=100&h=100&fit=crop' },
       { id: 'hyper-digital', name: 'Hyper-Detailed Digital', description: 'Ultra polished digital art, extreme detail', image: 'https://images.unsplash.com/photo-1634986666676-ec8fd927c23d?w=100&h=100&fit=crop' },
       { id: 'aesthetic-portrait', name: 'Aesthetic Portrait', description: 'Trendy aesthetic with soft gradients and glow', image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop' },
-      { id: 'fantasy-portrait', name: 'Fantasy Portrait', description: 'Magical portrait with ethereal lighting', image: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=100&h=100&fit=crop' },
+      { id: 'fantasy-portrait', name: 'Fantasy Portrait', description: 'Magical portrait with ethereal lighting', image: 'https://images.pexels.com/photos/31882421/pexels-photo-31882421.jpeg?w=100&h=100&fit=crop' },
       { id: 'dramatic-glamour', name: 'Dramatic Glamour', description: 'High fashion with dramatic lighting and detail', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop' },
     ]
   },
@@ -88,7 +88,7 @@ const ART_STYLE_CATEGORIES = [
     category: 'Traditional Art',
     styles: [
       { id: 'oil-painting', name: 'Oil Painting', description: 'Classic oil on canvas', image: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=100&h=100&fit=crop' },
-      { id: 'watercolor', name: 'Watercolor', description: 'Soft flowing watercolors', image: 'https://images.unsplash.com/photo-1700212964225-d31af38e3e91?w=100&h=100&fit=crop' },
+      { id: 'watercolor', name: 'Watercolor', description: 'Soft flowing watercolors', image: 'https://images.pexels.com/photos/4860077/pexels-photo-4860077.jpeg?w=100&h=100&fit=crop' },
       { id: 'acrylic', name: 'Acrylic', description: 'Bold acrylic painting', image: 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=100&h=100&fit=crop' },
       { id: 'pastel', name: 'Pastel', description: 'Soft pastel drawing', image: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=100&h=100&fit=crop' },
       { id: 'charcoal', name: 'Charcoal', description: 'Dramatic charcoal sketch', image: 'https://images.unsplash.com/photo-1531913764164-f85c52e6e654?w=100&h=100&fit=crop' },
