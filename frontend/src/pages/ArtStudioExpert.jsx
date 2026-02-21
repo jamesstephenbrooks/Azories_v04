@@ -329,7 +329,7 @@ const StyleNode = ({ data, selected }) => {
   );
 };
 
-// Reference Image Node - Resizable with proper image scaling
+// Reference Image Node - Fixed small size (no resizing to avoid errors)
 const ReferenceNode = ({ data, selected }) => {
   const fileInputRef = useRef(null);
   
@@ -345,41 +345,29 @@ const ReferenceNode = ({ data, selected }) => {
   };
   
   return (
-    <div className={`bg-gradient-to-br from-cyan-900/90 to-cyan-800/90 rounded-xl border-2 ${selected ? 'border-cyan-400' : 'border-cyan-600/50'} shadow-xl backdrop-blur-sm flex flex-col`} style={{ width: '100%', height: '100%', minWidth: '150px', minHeight: '150px' }}>
-      <NodeResizer 
-        color="#06b6d4" 
-        isVisible={selected} 
-        minWidth={150} 
-        minHeight={150}
-        handleStyle={{ width: 8, height: 8 }}
-      />
+    <div className={`bg-gradient-to-br from-cyan-900/90 to-cyan-800/90 rounded-xl border-2 ${selected ? 'border-cyan-400' : 'border-cyan-600/50'} shadow-xl backdrop-blur-sm w-[160px] h-[180px]`}>
       <Handle type="target" position={Position.Left} className="!bg-cyan-400 !w-3 !h-3" />
       
-      <div className="p-2 border-b border-cyan-600/30 flex items-center gap-2 flex-shrink-0">
-        <div className="w-6 h-6 rounded-lg bg-cyan-500/30 flex items-center justify-center flex-shrink-0">
+      <div className="p-2 border-b border-cyan-600/30 flex items-center gap-2">
+        <div className="w-5 h-5 rounded-lg bg-cyan-500/30 flex items-center justify-center flex-shrink-0">
           <FiImage className="text-cyan-300 w-3 h-3" />
         </div>
-        <div className="flex-1 min-w-0">
-          <h4 className="text-xs font-semibold text-white truncate">Reference</h4>
-        </div>
-        {selected && (
-          <FiMove className="w-3 h-3 text-cyan-400 flex-shrink-0" />
-        )}
+        <h4 className="text-xs font-semibold text-white truncate flex-1">Reference</h4>
       </div>
       
-      <div className="p-2 flex-1 min-h-0 overflow-hidden">
+      <div className="p-2 h-[130px]">
         {data.image ? (
           <div className="relative w-full h-full">
             <img 
               src={data.image} 
               alt="Reference" 
-              className="absolute inset-0 w-full h-full object-contain rounded-lg"
+              className="w-full h-full object-cover rounded-lg"
             />
             <button
               onClick={() => data.onChange?.('image', null)}
               className="absolute top-1 right-1 p-1 bg-red-500 rounded-full hover:bg-red-600 z-10"
             >
-              <FiTrash2 className="w-3 h-3 text-white" />
+              <FiTrash2 className="w-2 h-2 text-white" />
             </button>
           </div>
         ) : (
@@ -387,8 +375,8 @@ const ReferenceNode = ({ data, selected }) => {
             onClick={() => fileInputRef.current?.click()}
             className="w-full h-full border-2 border-dashed border-cyan-500/30 rounded-lg flex flex-col items-center justify-center hover:border-cyan-400 transition-colors"
           >
-            <FiUpload className="w-6 h-6 text-cyan-400 mb-1" />
-            <span className="text-xs text-cyan-300">Upload</span>
+            <FiUpload className="w-5 h-5 text-cyan-400 mb-1" />
+            <span className="text-[10px] text-cyan-300">Upload</span>
           </button>
         )}
         <input
