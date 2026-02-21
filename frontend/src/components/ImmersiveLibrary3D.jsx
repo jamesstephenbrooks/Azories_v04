@@ -367,7 +367,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       
       touchStartRef.current = { x: touch.clientX, y: touch.clientY };
     }
-  }, [isExploring, isMobileDevice]);
+  }, [isMobileDevice]);
 
   const onTouchEnd = useCallback(() => {
     joystickRef.current = { active: false, angle: 0, distance: 0 };
@@ -377,7 +377,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
 
   // Click on book in 3D - show info card first
   const onCanvasClick = useCallback((e) => {
-    if (!isExploring || !cameraRef.current || isMobileDevice) return;
+    if (!isExploringRef.current || !cameraRef.current || isMobileDevice) return;
     if (isPointerLocked.current) return; // Don't process clicks when pointer is locked
     
     const rect = canvasRef.current?.getBoundingClientRect();
@@ -414,7 +414,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         }
       }
     }
-  }, [isExploring, isMobileDevice, books]);
+  }, [isMobileDevice, books]);
 
   // Initialize Three.js scene
   useEffect(() => {
