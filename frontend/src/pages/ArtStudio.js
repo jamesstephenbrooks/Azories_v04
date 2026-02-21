@@ -37,18 +37,28 @@ const CHARACTER_TRAITS = {
   expression: ['Happy', 'Sad', 'Angry', 'Surprised', 'Neutral', 'Thoughtful', 'Confident', 'Shy']
 };
 
-// Art styles
+// Art styles with example images
 const ART_STYLES = [
-  { id: 'realistic', name: 'Realistic', description: 'Photorealistic rendering' },
-  { id: 'anime', name: 'Anime', description: 'Japanese animation style' },
-  { id: 'cartoon', name: 'Cartoon', description: 'Colorful cartoon style' },
-  { id: 'watercolor', name: 'Watercolor', description: 'Soft watercolor painting' },
-  { id: 'oil-painting', name: 'Oil Painting', description: 'Classic oil painting style' },
-  { id: 'pixel-art', name: 'Pixel Art', description: 'Retro pixel graphics' },
-  { id: 'comic', name: 'Comic Book', description: 'Bold comic book style' },
-  { id: 'fantasy', name: 'Fantasy Art', description: 'Magical fantasy illustration' },
-  { id: '3d-render', name: '3D Render', description: 'Modern 3D rendered look' },
-  { id: 'sketch', name: 'Pencil Sketch', description: 'Hand-drawn pencil sketch' }
+  { id: 'realistic', name: 'Realistic', description: 'Photorealistic rendering', 
+    exampleImage: 'https://images.unsplash.com/photo-1767256483514-76135f5a0713?w=200&h=200&fit=crop' },
+  { id: 'anime', name: 'Anime', description: 'Japanese animation style',
+    exampleImage: 'https://images.unsplash.com/photo-1613376023733-0a73315d9b06?w=200&h=200&fit=crop' },
+  { id: 'cartoon', name: 'Cartoon', description: 'Colorful cartoon style',
+    exampleImage: 'https://images.unsplash.com/photo-1767557125491-b3483567d843?w=200&h=200&fit=crop' },
+  { id: 'watercolor', name: 'Watercolor', description: 'Soft watercolor painting',
+    exampleImage: 'https://images.unsplash.com/photo-1700212964225-d31af38e3e91?w=200&h=200&fit=crop' },
+  { id: 'oil-painting', name: 'Oil Painting', description: 'Classic oil painting style',
+    exampleImage: 'https://images.unsplash.com/photo-1767256483514-76135f5a0713?w=200&h=200&fit=crop' },
+  { id: 'pixel-art', name: 'Pixel Art', description: 'Retro pixel graphics',
+    exampleImage: 'https://images.unsplash.com/photo-1759171052927-83f3b3a72b2b?w=200&h=200&fit=crop' },
+  { id: 'comic', name: 'Comic Book', description: 'Bold comic book style',
+    exampleImage: 'https://images.pexels.com/photos/7809123/pexels-photo-7809123.jpeg?w=200&h=200&fit=crop' },
+  { id: 'fantasy', name: 'Fantasy Art', description: 'Magical fantasy illustration',
+    exampleImage: 'https://images.unsplash.com/photo-1770034285769-4a5a3f410346?w=200&h=200&fit=crop' },
+  { id: '3d-render', name: '3D Render', description: 'Modern 3D rendered look',
+    exampleImage: 'https://images.pexels.com/photos/11798029/pexels-photo-11798029.jpeg?w=200&h=200&fit=crop' },
+  { id: 'sketch', name: 'Pencil Sketch', description: 'Hand-drawn pencil sketch',
+    exampleImage: 'https://images.unsplash.com/photo-1758521232708-d738b0eaa94a?w=200&h=200&fit=crop' }
 ];
 
 // Scene presets
