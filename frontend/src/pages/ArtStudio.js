@@ -1019,6 +1019,51 @@ export default function ArtStudio() {
                               data-testid="negative-prompt-input"
                             />
                           </div>
+                          
+                          {/* Lighting Preset */}
+                          <div>
+                            <label className="text-xs text-white/60 mb-1.5 block">Lighting Preset</label>
+                            <div className="grid grid-cols-3 gap-1">
+                              {[
+                                { id: 'natural', name: 'Natural' },
+                                { id: 'neon-pink-blue', name: 'Neon Pink/Blue' },
+                                { id: 'golden-hour', name: 'Golden Hour' },
+                                { id: 'dramatic', name: 'Dramatic' },
+                                { id: 'soft-glow', name: 'Soft Glow' },
+                                { id: 'studio', name: 'Studio' },
+                              ].map(preset => (
+                                <button
+                                  key={preset.id}
+                                  onClick={() => setLightingPreset(preset.id)}
+                                  className={`py-1.5 px-1 text-[10px] rounded-md transition-all ${
+                                    lightingPreset === preset.id
+                                      ? 'bg-pink-500 text-white'
+                                      : 'bg-white/10 text-white/60 hover:bg-white/20'
+                                  }`}
+                                  data-testid={`lighting-${preset.id}`}
+                                >
+                                  {preset.name}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          
+                          {/* Custom Style Description */}
+                          <div>
+                            <label className="text-xs text-white/60 mb-1.5 block">
+                              Custom Style Description <span className="text-pink-400">(Pro)</span>
+                            </label>
+                            <Textarea
+                              value={customStyleDescription}
+                              onChange={(e) => setCustomStyleDescription(e.target.value)}
+                              placeholder="Describe your exact style: neon lighting, flowing detailed hair, hyper-detailed skin, dramatic atmosphere..."
+                              className="bg-black/30 border-white/20 text-white text-xs min-h-[80px]"
+                              data-testid="custom-style-input"
+                            />
+                            <p className="text-[10px] text-white/40 mt-1">
+                              Add specific style details that presets don't cover. Great for matching reference images.
+                            </p>
+                          </div>
                         </div>
                       </motion.div>
                     )}
