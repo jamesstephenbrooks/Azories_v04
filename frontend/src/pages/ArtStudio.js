@@ -911,7 +911,7 @@ export default function ArtStudio() {
                   {gallery.map((item) => (
                     <button
                       key={item._id}
-                      onClick={() => useGalleryAsReference(item.image_url)}
+                      onClick={() => selectGalleryAsReference(item.image_url)}
                       className="relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-purple-500 transition-colors group"
                     >
                       <img
