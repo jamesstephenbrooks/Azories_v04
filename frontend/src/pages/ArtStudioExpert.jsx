@@ -523,6 +523,29 @@ export default function ArtStudioExpert() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [savedWorkflows, setSavedWorkflows] = useState([]);
   const [workflowName, setWorkflowName] = useState('Untitled Workflow');
+  const [userBooks, setUserBooks] = useState([]);
+  const [selectedBookId, setSelectedBookId] = useState('general');
+  
+  // Load user's books
+  useEffect(() => {
+    if (token) {
+      loadUserBooks();
+    }
+  }, [token]);
+  
+  const loadUserBooks = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/books/my`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setUserBooks(data || []);
+      }
+    } catch (error) {
+      console.error('Failed to load books:', error);
+    }
+  };
   
   // Node data change handler
   const updateNodeData = useCallback((nodeId, key, value) => {
