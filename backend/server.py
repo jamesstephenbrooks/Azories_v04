@@ -3144,10 +3144,10 @@ class AnalyzeImageRequest(BaseModel):
 async def analyze_image(request: AnalyzeImageRequest, current_user: dict = Depends(get_current_user)):
     """Analyze an image and extract a prompt that could recreate it"""
     try:
-        from emergentintegrations.llm.openai import OpenAI as EmergentOpenAI
+        from emergentintegrations.llm.openai import LlmChat, ImageContent, UserMessage
         
         # Initialize OpenAI client for GPT-4 vision
-        client = EmergentOpenAI(api_key=EMERGENT_LLM_KEY)
+        chat = LlmChat(api_key=EMERGENT_LLM_KEY, model="gpt-4o")
         
         if request.analysis_type == "style":
             analysis_prompt = """Analyze this image and describe its artistic style in detail. 
@@ -3161,17 +3161,13 @@ async def analyze_image(request: AnalyzeImageRequest, current_user: dict = Depen
             Format: Just the character description, no explanations."""
         
         # Use GPT-4 vision to analyze the image
-        response = await client.chat(
+        response = await chat.chat(
             messages=[
-                {
-                    "role": "user",
-                    "content": [
-                        {"type": "text", "text": analysis_prompt},
-                        {"type": "image_url", "image_url": {"url": request.image_url}}
-                    ]
-                }
-            ],
-            model="gpt-4o"
+                UserMessage(content=[
+                    analysis_prompt,
+                    ImageContent(url=request.image_url)
+                ])
+            ]
         )
         
         extracted_prompt = response.strip() if response else ""
