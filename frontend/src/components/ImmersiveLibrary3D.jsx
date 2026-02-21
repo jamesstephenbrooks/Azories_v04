@@ -9,8 +9,8 @@ import { FiX, FiBook, FiMaximize2, FiMinimize2, FiVolume2, FiVolumeX, FiMessageC
 import { useAuth } from '@/context/AuthContext';
 import AILibrarian from './AILibrarian';
 
-// Gothic Library Model URL - Using proxy to bypass CORS (smaller compressed version)
-const ORIGINAL_GLB_URL = 'https://customer-assets.emergentagent.com/job_f7ce8ac7-f125-4781-b4a2-bc90bdbc8e87/artifacts/tlr5jivt_gothic_library_12_cycles-compressed%20%281%29.glb';
+// Gothic Library Model URL - Using proxy to bypass CORS (with collisions)
+const ORIGINAL_GLB_URL = 'https://customer-assets.emergentagent.com/job_f7ce8ac7-f125-4781-b4a2-bc90bdbc8e87/artifacts/0qza7e6c_gothic_library_13_cycles-compressed.glb';
 const LIBRARY_MODEL_URL = `${process.env.REACT_APP_BACKEND_URL}/api/proxy/glb?url=${encodeURIComponent(ORIGINAL_GLB_URL)}`;
 
 // Library boundaries (will be set after model loads)
