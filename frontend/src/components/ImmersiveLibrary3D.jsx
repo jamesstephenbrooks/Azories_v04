@@ -1690,13 +1690,14 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           )}
           
           {/* Book Info Card (when a book is selected in 3D view) */}
+          {/* Selected Book Info Card - RIGHT SIDE so we can see the 3D book in center */}
           <AnimatePresence>
             {selectedBook && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 50 }}
+                className="absolute top-1/2 right-4 -translate-y-1/2 pointer-events-auto z-30"
               >
                 <div className="bg-gradient-to-br from-[#2d1f3d] to-[#1a1520] rounded-2xl p-6 max-w-sm border border-purple-500/30 shadow-2xl shadow-purple-500/20">
                   {/* Book Cover */}
