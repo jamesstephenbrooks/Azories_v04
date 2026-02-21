@@ -232,8 +232,111 @@ export default function ArtStudio() {
       loadGallery();
       loadUserBooks();
       loadPromptHistory();
+      loadCharacterProfiles();
     }
   }, [token]);
+  
+  const loadCharacterProfiles = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/art-studio/character-profiles`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setCharacterProfiles(data.profiles || []);
+      }
+    } catch (error) {
+      console.error('Failed to load character profiles:', error);
+    }
+  };
+  
+  const saveCharacterProfile = async () => {
+    if (!character.name) {
+      alert('Please enter a character name');
+      return;
+    }
+    
+    try {
+      const response = await fetch(`${API_URL}/api/art-studio/character-profiles`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          name: character.name,
+          description: buildCharacterPrompt(),
+          reference_images: referenceImage ? [referenceImage] : [],
+          traits: {
+            gender: character.gender,
+            ageGroup: character.ageGroup,
+            bodyType: character.bodyType,
+            skinTone: character.skinTone,
+            hairColor: character.hairColor,
+            hairStyle: character.hairStyle,
+            eyeColor: character.eyeColor,
+            clothing: character.clothing,
+            expression: character.expression
+          },
+          style_preferences: [selectedStyle],
+          book_id: selectedBookId !== 'general' ? selectedBookId : null
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        alert(`Character profile "${character.name}" saved! Use this profile for consistent character generation.`);
+        loadCharacterProfiles();
+        setShowProfileModal(false);
+      }
+    } catch (error) {
+      console.error('Failed to save character profile:', error);
+      alert('Failed to save character profile');
+    }
+  };
+  
+  const generateWithProfile = async (profileId) => {
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+    
+    setIsGenerating(true);
+    setGeneratedImage(null);
+    
+    try {
+      const params = new URLSearchParams({
+        profile_id: profileId,
+        prompt: character.additionalDetails || 'standing pose, looking at viewer',
+        style: selectedStyle
+      });
+      
+      if (scene.customPrompt) {
+        params.append('scene', scene.customPrompt);
+      }
+      
+      const response = await fetch(`${API_URL}/api/art-studio/generate-consistent?${params}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setGeneratedImage(data.image_url);
+        loadGallery();
+      } else {
+        const error = await response.json();
+        alert(error.detail || 'Failed to generate image');
+      }
+    } catch (error) {
+      console.error('Generation error:', error);
+      alert('Failed to generate image. Please try again.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
   
   const loadPromptHistory = async () => {
     try {
