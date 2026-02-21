@@ -1141,17 +1141,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                 className="relative w-32 h-32 rounded-full bg-black/40 border-2 border-white/20 backdrop-blur-sm"
                 onTouchStart={(e) => {
                   e.preventDefault();
-                  const touch = e.touches[0];
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  const centerX = rect.left + rect.width / 2;
-                  const centerY = rect.top + rect.height / 2;
-                  joystickRef.current = {
-                    active: true,
-                    startX: centerX,
-                    startY: centerY,
-                    currentX: touch.clientX,
-                    currentY: touch.clientY
-                  };
+                  joystickRef.current.active = true;
+                  setJoystickPos({ x: 0, y: 0 });
                 }}
                 onTouchMove={(e) => {
                   e.preventDefault();
@@ -1163,41 +1154,44 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                   
                   const dx = touch.clientX - centerX;
                   const dy = touch.clientY - centerY;
-                  const distance = Math.min(Math.sqrt(dx * dx + dy * dy), 50);
+                  const maxDistance = 40;
+                  const distance = Math.min(Math.sqrt(dx * dx + dy * dy), maxDistance);
                   const angle = Math.atan2(dy, dx);
                   
+                  const clampedX = Math.cos(angle) * distance;
+                  const clampedY = Math.sin(angle) * distance;
+                  
+                  setJoystickPos({ x: clampedX, y: clampedY });
+                  
                   joystickRef.current = {
-                    ...joystickRef.current,
-                    currentX: centerX + Math.cos(angle) * distance,
-                    currentY: centerY + Math.sin(angle) * distance,
+                    active: true,
                     angle: angle,
-                    distance: distance / 50 // Normalize to 0-1
+                    distance: distance / maxDistance
                   };
                   
-                  // Update movement keys based on joystick
-                  const threshold = 0.3;
+                  // Update movement keys based on joystick direction
+                  const threshold = 15;
                   keysPressed.current = {
-                    forward: dy < -threshold * 50,
-                    backward: dy > threshold * 50,
-                    left: dx < -threshold * 50,
-                    right: dx > threshold * 50
+                    forward: dy < -threshold,
+                    backward: dy > threshold,
+                    left: dx < -threshold,
+                    right: dx > threshold
                   };
                 }}
                 onTouchEnd={(e) => {
                   e.preventDefault();
                   joystickRef.current = { active: false, angle: 0, distance: 0 };
+                  setJoystickPos({ x: 0, y: 0 });
                   keysPressed.current = { forward: false, backward: false, left: false, right: false };
                 }}
               >
                 {/* Joystick knob */}
                 <div 
-                  className="absolute w-14 h-14 rounded-full bg-purple-500/80 border-2 border-white/40 shadow-lg"
+                  className="absolute w-14 h-14 rounded-full bg-purple-500/80 border-2 border-white/40 shadow-lg transition-transform duration-75"
                   style={{
                     left: '50%',
                     top: '50%',
-                    transform: joystickRef.current.active 
-                      ? `translate(calc(-50% + ${(joystickRef.current.currentX - joystickRef.current.startX) || 0}px), calc(-50% + ${(joystickRef.current.currentY - joystickRef.current.startY) || 0}px))`
-                      : 'translate(-50%, -50%)'
+                    transform: `translate(calc(-50% + ${joystickPos.x}px), calc(-50% + ${joystickPos.y}px))`
                   }}
                 />
                 {/* Directional hints */}
