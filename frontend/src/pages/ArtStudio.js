@@ -1692,20 +1692,39 @@ export default function ArtStudio() {
                         </button>
                       </div>
                     ) : (
-                      <div className="border-2 border-dashed border-white/20 rounded-xl p-8 text-center">
-                        <FiImage className="w-12 h-12 text-white/30 mx-auto mb-3" />
-                        <p className="text-white/50 mb-4">Select an image from your gallery below</p>
+                      <div className="border-2 border-dashed border-white/20 rounded-xl p-6 text-center">
+                        <FiImage className="w-10 h-10 text-white/30 mx-auto mb-3" />
+                        <p className="text-white/50 mb-3 text-sm">Select from gallery or upload an image</p>
+                        <label className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg cursor-pointer text-white text-sm transition-colors">
+                          <FiUpload className="w-4 h-4" />
+                          Upload Image
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onload = (event) => {
+                                  setAnimatingImage(event.target.result);
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                          />
+                        </label>
                       </div>
                     )}
                     
                     {/* Gallery Preview for Selection */}
-                    <div className="bg-black/20 rounded-xl p-4 max-h-[300px] overflow-y-auto">
-                      <p className="text-xs text-white/50 mb-3">Your Gallery ({gallery.length} images)</p>
-                      {gallery.length === 0 ? (
-                        <p className="text-white/40 text-sm text-center py-4">No images yet. Create some in Character Builder or Scene Creator!</p>
+                    <div className="bg-black/20 rounded-xl p-4 max-h-[250px] overflow-y-auto">
+                      <p className="text-xs text-white/50 mb-3">Or select from Gallery ({gallery.filter(g => g.type !== 'animation').length} images)</p>
+                      {gallery.filter(g => g.type !== 'animation').length === 0 ? (
+                        <p className="text-white/40 text-sm text-center py-4">No images yet. Create some or upload above!</p>
                       ) : (
                         <div className="grid grid-cols-4 gap-2">
-                          {gallery.map((item) => (
+                          {gallery.filter(g => g.type !== 'animation').map((item) => (
                             <button
                               key={item._id}
                               onClick={() => setAnimatingImage(item.image_url)}
