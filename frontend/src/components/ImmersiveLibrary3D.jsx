@@ -514,6 +514,56 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         // Position camera inside the library at detected floor level
         camera.position.set(0, startY, 3);
         
+        // Create floating book sprites for interactive book selection
+        const bookSprites = [];
+        const textureLoader = new THREE.TextureLoader();
+        
+        books.slice(0, 12).forEach((book, index) => {
+          // Calculate position around the library
+          const angle = (index / 12) * Math.PI * 2;
+          const radius = 5;
+          const x = Math.cos(angle) * radius;
+          const z = Math.sin(angle) * radius;
+          const y = startY + Math.sin(index) * 0.3 + 0.5; // Float at varying heights
+          
+          // Create a plane geometry for the book cover
+          const geometry = new THREE.PlaneGeometry(0.6, 0.8);
+          
+          // Create material with book cover or placeholder
+          let material;
+          if (book.cover_image) {
+            const texture = textureLoader.load(book.cover_image, 
+              () => {}, 
+              () => {}, 
+              () => {
+                // Error loading texture - use fallback color
+                material.color = new THREE.Color(0x9333ea);
+              }
+            );
+            texture.colorSpace = THREE.SRGBColorSpace;
+            material = new THREE.MeshBasicMaterial({ 
+              map: texture, 
+              side: THREE.DoubleSide,
+              transparent: true
+            });
+          } else {
+            material = new THREE.MeshBasicMaterial({ 
+              color: 0x9333ea, 
+              side: THREE.DoubleSide 
+            });
+          }
+          
+          const bookMesh = new THREE.Mesh(geometry, material);
+          bookMesh.position.set(x, y, z);
+          bookMesh.lookAt(0, y, 0); // Face center
+          bookMesh.userData = { bookId: book.id, title: book.title };
+          
+          scene.add(bookMesh);
+          bookSprites.push(bookMesh);
+        });
+        
+        bookMeshesRef.current = bookSprites;
+        
         setIsLoaded(true);
         setLoadError(null);
       },
