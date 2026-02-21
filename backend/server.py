@@ -3095,6 +3095,53 @@ async def art_studio_save(request: ArtStudioSaveRequest, current_user: dict = De
         logging.error(f"Art Studio save error: {e}")
         raise HTTPException(status_code=500, detail="Failed to save image")
 
+class AnalyzeImageRequest(BaseModel):
+    image_url: str
+    analysis_type: str = "style"  # "style" or "character"
+
+@api_router.post("/art-studio/analyze-image")
+async def analyze_image(request: AnalyzeImageRequest, current_user: dict = Depends(get_current_user)):
+    """Analyze an image and extract a prompt that could recreate it"""
+    try:
+        from emergentintegrations.llm.openai import OpenAI as EmergentOpenAI
+        
+        # Initialize OpenAI client for GPT-4 vision
+        client = EmergentOpenAI(api_key=EMERGENT_LLM_KEY)
+        
+        if request.analysis_type == "style":
+            analysis_prompt = """Analyze this image and describe its artistic style in detail. 
+            Focus on: art style/medium, color palette, lighting style, mood/atmosphere, texture, composition style.
+            Output a concise prompt (under 100 words) that captures the visual style that could be used to generate similar images.
+            Format: Just the style description, no explanations."""
+        else:
+            analysis_prompt = """Analyze this character image in detail.
+            Focus on: physical appearance, facial features, hair style/color, clothing, pose, expression, distinctive features.
+            Output a concise prompt (under 100 words) describing the character that could be used to recreate them.
+            Format: Just the character description, no explanations."""
+        
+        # Use GPT-4 vision to analyze the image
+        response = await client.chat(
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": analysis_prompt},
+                        {"type": "image_url", "image_url": {"url": request.image_url}}
+                    ]
+                }
+            ],
+            model="gpt-4o"
+        )
+        
+        extracted_prompt = response.strip() if response else ""
+        
+        return {"extracted_prompt": extracted_prompt}
+        
+    except Exception as e:
+        logging.error(f"Image analysis error: {e}")
+        # Return a fallback description if analysis fails
+        return {"extracted_prompt": "", "error": str(e)}
+
 @api_router.get("/art-studio/gallery")
 async def art_studio_gallery(
     book_id: Optional[str] = None,
