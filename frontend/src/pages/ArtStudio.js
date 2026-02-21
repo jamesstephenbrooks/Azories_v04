@@ -107,6 +107,8 @@ const ART_STYLE_CATEGORIES = [
       { id: 'steampunk', name: 'Steampunk', description: 'Victorian machinery', image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=100&h=100&fit=crop' },
       { id: 'solarpunk', name: 'Solarpunk', description: 'Green utopian future', image: 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=100&h=100&fit=crop' },
       { id: 'surreal-dreamscape', name: 'Surreal Dreamscape', description: 'Surreal flowing landscapes with magical elements', image: 'https://images.unsplash.com/photo-1507400492013-162706c8c05e?w=100&h=100&fit=crop' },
+      { id: 'luminous-ethereal', name: 'Luminous Ethereal', description: 'Celestial dreamscape with glowing light, cosmic skies, polished digital art', image: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=100&h=100&fit=crop' },
+      { id: 'celestial-fantasy', name: 'Celestial Fantasy', description: 'Divine beings, nebula skies, luminous smooth rendering', image: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=100&h=100&fit=crop' },
     ]
   },
   {
