@@ -1658,6 +1658,184 @@ export default function ArtStudio() {
               </motion.div>
             )}
 
+            {/* Animate Tab - Dedicated animation workspace */}
+            {activeTab === 'animate' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-6"
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                      <FiVideo className="text-pink-400" />
+                      Animate Your Images
+                    </h2>
+                    <p className="text-white/50 text-sm mt-1">Bring your characters and scenes to life with AI animation</p>
+                  </div>
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-6">
+                  {/* Select Image Section */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-white">1. Select an Image</h3>
+                    
+                    {/* Current Selection */}
+                    {animatingImage ? (
+                      <div className="relative rounded-xl overflow-hidden border-2 border-pink-500/50">
+                        <img src={animatingImage} alt="Selected for animation" className="w-full aspect-square object-cover" />
+                        <button
+                          onClick={() => setAnimatingImage(null)}
+                          className="absolute top-2 right-2 p-2 bg-black/60 rounded-full text-white hover:bg-black/80"
+                        >
+                          <FiX className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="border-2 border-dashed border-white/20 rounded-xl p-8 text-center">
+                        <FiImage className="w-12 h-12 text-white/30 mx-auto mb-3" />
+                        <p className="text-white/50 mb-4">Select an image from your gallery below</p>
+                      </div>
+                    )}
+                    
+                    {/* Gallery Preview for Selection */}
+                    <div className="bg-black/20 rounded-xl p-4 max-h-[300px] overflow-y-auto">
+                      <p className="text-xs text-white/50 mb-3">Your Gallery ({gallery.length} images)</p>
+                      {gallery.length === 0 ? (
+                        <p className="text-white/40 text-sm text-center py-4">No images yet. Create some in Character Builder or Scene Creator!</p>
+                      ) : (
+                        <div className="grid grid-cols-4 gap-2">
+                          {gallery.map((item) => (
+                            <button
+                              key={item._id}
+                              onClick={() => setAnimatingImage(item.image_url)}
+                              className={`relative rounded-lg overflow-hidden border-2 transition-all ${
+                                animatingImage === item.image_url ? 'border-pink-500' : 'border-transparent hover:border-white/30'
+                              }`}
+                            >
+                              <img src={item.image_url} alt={item.name} className="w-full aspect-square object-cover" />
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Animation Settings Section */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-white">2. Animation Settings</h3>
+                    
+                    {/* Motion Description */}
+                    <div>
+                      <label className="text-sm text-white/70 mb-2 block">Motion Description</label>
+                      <textarea
+                        value={animationMotion}
+                        onChange={(e) => setAnimationMotion(e.target.value)}
+                        placeholder="gentle breathing, hair flowing in the wind, soft blinking, subtle head movement..."
+                        className="w-full bg-black/30 border border-white/20 rounded-lg px-4 py-3 text-white min-h-[100px]"
+                        data-testid="animate-motion-input"
+                      />
+                    </div>
+                    
+                    {/* Animation Style */}
+                    <div>
+                      <label className="text-sm text-white/70 mb-2 block">Animation Style</label>
+                      <div className="grid grid-cols-3 gap-3">
+                        {[
+                          { id: 'natural', name: 'Natural', desc: 'Subtle, realistic movement' },
+                          { id: 'dramatic', name: 'Dramatic', desc: 'Bold, cinematic motion' },
+                          { id: 'subtle', name: 'Subtle', desc: 'Barely noticeable, calm' }
+                        ].map(style => (
+                          <button
+                            key={style.id}
+                            onClick={() => setAnimationStyle(style.id)}
+                            className={`p-3 rounded-lg text-left transition-all ${
+                              animationStyle === style.id
+                                ? 'bg-pink-500/30 border-2 border-pink-500'
+                                : 'bg-white/5 border-2 border-transparent hover:border-white/20'
+                            }`}
+                          >
+                            <p className="text-white font-medium text-sm">{style.name}</p>
+                            <p className="text-white/50 text-xs">{style.desc}</p>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Info Box */}
+                    <div className="bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-500/20 rounded-xl p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 bg-pink-500/20 rounded-lg">
+                          <FiZap className="w-5 h-5 text-pink-400" />
+                        </div>
+                        <div>
+                          <p className="text-white font-medium text-sm">Powered by Sora 2 AI</p>
+                          <p className="text-white/50 text-xs mt-1">Creates a 4-second animated video. Generation takes 2-5 minutes.</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Generate Button */}
+                    <Button
+                      onClick={animateImage}
+                      disabled={isAnimating || !animatingImage}
+                      className="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 py-6 text-lg"
+                      data-testid="animate-generate-btn"
+                    >
+                      {isAnimating ? (
+                        <>
+                          <FiRefreshCw className="w-5 h-5 mr-2 animate-spin" />
+                          Animating... (2-5 min)
+                        </>
+                      ) : (
+                        <>
+                          <FiPlay className="w-5 h-5 mr-2" />
+                          Create Animation
+                        </>
+                      )}
+                    </Button>
+                    
+                    {/* Result */}
+                    {animatedVideo && (
+                      <div className="mt-4">
+                        <p className="text-sm text-white/70 mb-2">Your Animated Result:</p>
+                        <div className="rounded-xl overflow-hidden border border-pink-500/30">
+                          <video 
+                            src={animatedVideo} 
+                            controls 
+                            autoPlay 
+                            loop 
+                            className="w-full"
+                          />
+                        </div>
+                        <div className="flex gap-2 mt-3">
+                          <Button
+                            onClick={() => {
+                              const link = document.createElement('a');
+                              link.href = animatedVideo;
+                              link.download = `azories-animated-${Date.now()}.mp4`;
+                              link.click();
+                            }}
+                            className="flex-1 bg-purple-600 hover:bg-purple-700"
+                          >
+                            <FiDownload className="w-4 h-4 mr-2" />
+                            Download
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setAnimatedVideo(null)}
+                            className="border-white/20 text-white"
+                          >
+                            Create Another
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
             {activeTab === 'gallery' && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
