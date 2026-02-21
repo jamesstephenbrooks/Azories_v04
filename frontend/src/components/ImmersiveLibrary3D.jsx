@@ -753,7 +753,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         
         // Load Azora 3D model (GLB)
         const AZORA_GLB_URL = 'https://customer-assets.emergentagent.com/job_c72cb56a-2d89-4690-9629-ade6d46638c8/artifacts/t9l9jikb_f0066361-3481-4680-b638-accd998414b5.glb';
-        const AZORA_PROXY_URL = `${window.location.origin}/api/glb-proxy?url=${encodeURIComponent(AZORA_GLB_URL)}`;
+        const AZORA_PROXY_URL = `${process.env.REACT_APP_BACKEND_URL}/api/proxy/glb?url=${encodeURIComponent(AZORA_GLB_URL)}`;
         
         const azoraLoader = new GLTFLoader();
         azoraLoader.setDRACOLoader(dracoLoader);
