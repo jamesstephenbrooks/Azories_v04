@@ -11,26 +11,32 @@ Create a digital book creating and reading web application called "Azories" (azo
 
 ## What's Been Implemented (February 2026)
 
-### Latest Updates (Feb 21, 2026) - Session 8: Feature Integration & Bug Fixes
-- **Ambient Sounds Fixed (CORS Fix)**: Implemented backend proxy for audio files
-  - New endpoint: `/api/ambient-sounds/{sound_name}` proxies audio from Soundbible
-  - 8 ambient sounds: Rain, Fireplace, Forest, Ocean, Café, Night, Wind, Library
-  - Frontend updated to use backend proxy URLs instead of direct CDN links
-- **Reading Streaks & Badges on Dashboard**: Integrated StreakDisplay and BadgeCollection
-  - Shows "0 day streak" for new users with motivational message
-  - "Your Badges" section displays earned badges
-- **Book Recommendations in Library**: Added BookRecommendations component
-  - Shows personalized recommendations based on reading history
-  - "Recommended for You" section with refresh button
-- **Collaborative Writing in BookEditor**: Added CollaborativeWriting button
-  - Invite collaborators via email or link
-  - Role-based permissions (Owner, Editor, Viewer)
-- **Voice Narration Upload in BookEditor**: Added VoiceNarrationUpload button
-  - Record custom narration for pages
-  - Upload progress tracking
-- **Offline Indicator**: Added OfflineIndicator component to App.js
-  - Shows banner when user goes offline
-  - Graceful degradation messaging
+### Latest Updates (Feb 21, 2026) - Session 9: 3D Library Major Rewrite
+- **3D Library Complete Rewrite** (`ImmersiveLibrary3D.jsx`):
+  - **Camera-relative controls**: WASD/Arrow keys now move in the direction you're facing
+  - **Raycasting collision detection**: Uses collision meshes from GLB for wall detection
+  - **Floor collision/gravity**: Player stays grounded on the floor
+  - **Boundary collision**: Can't walk outside the library bounds
+  - **Genre teleport sections**: "Jump to Section" button with Fantasy, Adventure, Mystery, Sci-Fi zones
+  - **Controls tutorial**: Only shows for logged-in users, first time only (stored in localStorage per user)
+  - **New GLB model**: Using `gothic_library_13_cycles-compressed.glb` with built-in collision meshes
+- **AI Librarian "Luna"** (`AILibrarian.jsx`):
+  - Floating chat bubble in 3D library view
+  - Uses GPT-4o via `/api/ai/reading-buddy` endpoint
+  - Knows about all books in the library
+  - Can recommend books, answer questions, help find stories
+  - Quick suggestion buttons for first-time users
+- **Ambient Sounds Updated**:
+  - Forest sound changed to Rainforest Ambience (ID: 1818)
+  - Ocean sound changed to proper Ocean Waves (ID: 1935)
+
+### Session 8 (Feb 21, 2026): Feature Integration & Bug Fixes
+- **Ambient Sounds Fixed (CORS Fix)**: Backend proxy at `/api/ambient-sounds/{sound_name}`
+- **Reading Streaks & Badges on Dashboard**: StreakDisplay and BadgeCollection
+- **Book Recommendations in Library**: "Recommended for You" section with refresh
+- **Collaborative Writing in BookEditor**: Invite collaborators button
+- **Voice Narration Upload in BookEditor**: Record narration button
+- **Offline Indicator**: Shows banner when browser goes offline
 
 ### Previous: Session 7 (Feb 20, 2026) - User Experience Improvements
 - **Onboarding Tutorial**: 4-step guided tutorial for new users
