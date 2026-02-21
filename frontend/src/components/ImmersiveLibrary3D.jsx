@@ -72,13 +72,6 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
   const PLAYER_HEIGHT = 1.1; // Lower eye level for better immersion in scaled library
   const MOVE_SPEED = 3;
   
-  // Floor levels in the library (Y coordinates)
-  const FLOOR_LEVELS = {
-    ground: 4.72,  // Ground floor
-    upper: 8.5,    // Upper floor (approximate - may need adjustment)
-  };
-  const [currentFloor, setCurrentFloor] = useState('ground');
-  
   // Azora (AI assistant) state
   const [azoraPosition, setAzoraPosition] = useState({ x: 2, z: 0 }); // Center of room
   const [isAzoraComing, setIsAzoraComing] = useState(false);
