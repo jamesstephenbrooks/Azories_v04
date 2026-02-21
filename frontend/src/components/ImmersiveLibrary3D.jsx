@@ -636,9 +636,12 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         
         // Position camera inside the library at center, facing the bookcases
         camera.position.set(0, startY, 3); // Start further forward from center
+        console.log('Camera positioned at:', 0, startY, 3);
         
-        // Initialize euler for camera rotation
-        euler.current.setFromQuaternion(camera.quaternion);
+        // Initialize euler for camera rotation - look toward the bookcases (negative Z)
+        euler.current.set(0, Math.PI, 0); // Face toward negative Z
+        camera.quaternion.setFromEuler(euler.current);
+        console.log('Camera facing negative Z (toward bookcases)');
         
         // For now, DISABLE the interactive book markers as their positions need calibration
         // The user will use the Books panel at bottom-right to select books to read
