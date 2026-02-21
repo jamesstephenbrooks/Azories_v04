@@ -1461,8 +1461,69 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
             )}
           </AnimatePresence>
           
-          {/* AI Librarian - Azora (bottom corner chat) */}
-          <AILibrarian books={books} isVisible={true} onCallAzora={() => setShowAzoraChat(true)} />
+          {/* Azora Speech Bubble (when clicked in 3D) */}
+          <AnimatePresence>
+            {showAzoraChat && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                className="absolute bottom-24 left-1/2 -translate-x-1/2 pointer-events-auto max-w-md w-full mx-4"
+              >
+                <div className="bg-gradient-to-br from-purple-900/95 to-[#1a1520]/95 backdrop-blur-lg rounded-2xl p-4 border border-purple-500/30 shadow-2xl shadow-purple-500/20">
+                  {/* Header */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-10 h-10 rounded-full bg-purple-500/30 flex items-center justify-center">
+                        <FiMessageCircle className="w-5 h-5 text-purple-300" />
+                      </div>
+                      <div>
+                        <h3 className="text-white font-semibold">Azora</h3>
+                        <p className="text-xs text-purple-300">Magical Librarian</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setShowAzoraChat(false)}
+                      className="text-white/50 hover:text-white"
+                    >
+                      <FiX className="w-5 h-5" />
+                    </button>
+                  </div>
+                  
+                  {/* Message */}
+                  <div className="bg-black/30 rounded-lg p-3 mb-3">
+                    <p className="text-white/90 text-sm">
+                      Hello there, young reader! I'm Azora, the keeper of this magical library. 
+                      Looking for a story? I can help you find the perfect book for your adventure! 
+                      What kind of stories do you enjoy?
+                    </p>
+                  </div>
+                  
+                  {/* Quick Actions */}
+                  <div className="flex flex-wrap gap-2">
+                    <button className="px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 rounded-full text-xs text-purple-200 transition-colors">
+                      Fantasy Adventures
+                    </button>
+                    <button className="px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 rounded-full text-xs text-purple-200 transition-colors">
+                      Mystery Stories
+                    </button>
+                    <button className="px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 rounded-full text-xs text-purple-200 transition-colors">
+                      Science Fiction
+                    </button>
+                    <button className="px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 rounded-full text-xs text-purple-200 transition-colors">
+                      Recommend for me
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Speech bubble tail */}
+                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-gradient-to-br from-purple-900/95 to-[#1a1520]/95 rotate-45 border-r border-b border-purple-500/30"></div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          
+          {/* AI Librarian - Azora (bottom corner chat - full chat interface) */}
+          <AILibrarian books={books} isVisible={!showAzoraChat} onCallAzora={() => setShowAzoraChat(true)} />
         </>
       )}
     </div>
