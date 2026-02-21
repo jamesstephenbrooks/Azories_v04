@@ -94,6 +94,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
   const touchStartRef = useRef({ x: 0, y: 0 });
   const touchMoveRef = useRef({ active: false, x: 0, y: 0 });
   const joystickRef = useRef({ active: false, angle: 0, distance: 0 });
+  const [joystickPos, setJoystickPos] = useState({ x: 0, y: 0 }); // For rendering joystick knob
   
   // Mouse look state - support both pointer lock AND drag-to-look
   const isPointerLocked = useRef(false);
