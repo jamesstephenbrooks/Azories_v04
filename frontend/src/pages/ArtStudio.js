@@ -310,6 +310,15 @@ export default function ArtStudio() {
   // Style search and category collapse state
   const [styleSearchQuery, setStyleSearchQuery] = useState('');
   const [collapsedCategories, setCollapsedCategories] = useState({}); // All expanded by default
+  const [selectedTemplate, setSelectedTemplate] = useState(null); // Quick template selection
+  
+  // Apply a quick template (one-click setup)
+  const applyQuickTemplate = (template) => {
+    setSelectedTemplate(template.id);
+    setSelectedStyle(template.style);
+    setLightingPreset(template.lighting);
+    setCustomStyleDescription(template.customStyle);
+  };
   
   // PRO FEATURES STATE
   const [showStylePreview, setShowStylePreview] = useState(false);
