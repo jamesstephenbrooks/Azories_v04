@@ -807,6 +807,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       document.removeEventListener('keydown', onKeyDown);
       document.removeEventListener('keyup', onKeyUp);
       document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mousedown', onMouseDown);
+      document.removeEventListener('mouseup', onMouseUp);
       document.removeEventListener('pointerlockchange', onPointerLockChange);
       document.removeEventListener('pointerlockerror', onPointerLockError);
       
@@ -824,7 +826,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       }
       dracoLoader.dispose();
     };
-  }, [onKeyDown, onKeyUp, onMouseMove, onPointerLockChange, onTouchStart, onTouchMove, onTouchEnd, isExploring, books]);
+  }, [onKeyDown, onKeyUp, onMouseMove, onMouseDown, onMouseUp, onPointerLockChange, onTouchStart, onTouchMove, onTouchEnd, isExploring, books]);
 
   // Start exploring
   const handleStartExploring = () => {
