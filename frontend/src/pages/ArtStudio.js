@@ -34,7 +34,7 @@ const CHARACTER_TRAITS = {
   hairColor: ['Black', 'Brown', 'Blonde', 'Red', 'Gray', 'White', 'Blue', 'Pink', 'Purple', 'Green'],
   hairStyle: ['Short', 'Medium', 'Long', 'Curly', 'Straight', 'Wavy', 'Braided', 'Bald', 'Mohawk'],
   eyeColor: ['Brown', 'Blue', 'Green', 'Hazel', 'Gray', 'Amber', 'Red', 'Purple'],
-  clothing: ['Casual', 'Formal', 'Fantasy', 'Sci-Fi', 'Medieval', 'Victorian', 'Modern', 'Athletic'],
+  clothing: ['Casual', 'Formal', 'Fantasy', 'Sci-Fi', 'Futuristic', 'Cyberpunk', 'Medieval', 'Victorian', 'Modern', 'Athletic', 'Armor', 'Streetwear'],
   expression: ['Happy', 'Sad', 'Angry', 'Surprised', 'Neutral', 'Thoughtful', 'Confident', 'Shy']
 };
 
