@@ -319,7 +319,7 @@ export default function Dashboard() {
                 <span className={`px-3 py-1 rounded-full text-sm font-ui ${
                   isPro ? 'bg-secondary/20 text-secondary' : 'bg-muted text-muted-foreground'
                 }`}>
-                  {isPro ? 'Pro' : 'Free'}
+                  {isPro ? (user.pro_trial ? 'Pro Trial' : 'Pro') : 'Free'}
                 </span>
               </div>
               <p className="font-body text-lg text-muted-foreground">
