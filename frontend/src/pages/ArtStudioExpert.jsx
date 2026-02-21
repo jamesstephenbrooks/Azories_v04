@@ -22,7 +22,8 @@ import {
   FiUser, FiImage, FiLayers, FiType, FiZap, FiGrid, 
   FiSave, FiDownload, FiPlus, FiTrash2, FiPlay,
   FiArrowLeft, FiFolder, FiSettings, FiCopy, FiRefreshCw,
-  FiUpload, FiSliders, FiMaximize2, FiStar, FiMove, FiBook, FiX
+  FiUpload, FiSliders, FiMaximize2, FiStar, FiMove, FiBook, FiX,
+  FiList, FiClock, FiCheck
 } from 'react-icons/fi';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
