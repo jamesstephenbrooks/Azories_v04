@@ -864,13 +864,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
   // Start exploring
   const handleStartExploring = () => {
     setIsExploring(true);
-    // Show controls for logged-in users who haven't seen them
-    if (user) {
-      const hasSeenControls = localStorage.getItem(`azories-3d-controls-seen-${user.id}`);
-      if (!hasSeenControls) {
-        setShowControls(true);
-      }
-    }
+    // Controls are already shown in the welcome dialog, no need for extra popup
   };
 
   // Toggle fullscreen
