@@ -562,12 +562,13 @@ export default function ArtStudioExpert() {
   const navigate = useNavigate();
   
   const [nodes, setNodes, onNodesChange] = useNodesState(defaultNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(defaultEdges);
+  const [edges, setEdges, onEdgesState] = useEdgesState(defaultEdges);
   const [isGenerating, setIsGenerating] = useState(false);
   const [savedWorkflows, setSavedWorkflows] = useState([]);
   const [workflowName, setWorkflowName] = useState('Untitled Workflow');
   const [userBooks, setUserBooks] = useState([]);
   const [selectedBookId, setSelectedBookId] = useState('general');
+  const [expandedImage, setExpandedImage] = useState(null); // For full-size preview modal
   
   // Load user's books
   useEffect(() => {
