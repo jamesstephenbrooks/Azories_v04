@@ -1043,46 +1043,18 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         }
       }
       
-      // Animate floating genre banners and Azora walking
+      // Animate floating genre banners
       const time = Date.now() * 0.001;
       scene.traverse((child) => {
         if (child.userData?.isGenreBanner) {
           // Floating animation
-          child.position.y = child.userData.baseY + Math.sin(time + child.userData.phase) * 0.15;
+          child.position.y = child.userData.baseY + Math.sin(time + child.userData.phase) * 0.1;
         }
       });
       
-      // Azora walking animation
-      if (azoraRef.current && azoraRef.current.userData?.walkPath) {
-        const azora = azoraRef.current;
-        const data = azora.userData;
-        
-        // Update animation mixer
-        if (data.mixer) {
-          data.mixer.update(delta);
-        }
-        
-        // Move towards current waypoint
-        const targetWaypoint = data.walkPath[data.currentWaypoint];
-        const targetPos = new THREE.Vector3(targetWaypoint.x, azora.position.y, targetWaypoint.z);
-        const direction = targetPos.clone().sub(azora.position);
-        direction.y = 0;
-        
-        const distance = direction.length();
-        
-        if (distance > 0.2) {
-          // Move towards waypoint
-          direction.normalize();
-          azora.position.x += direction.x * data.walkSpeed * delta;
-          azora.position.z += direction.z * data.walkSpeed * delta;
-          
-          // Face direction of movement
-          const angle = Math.atan2(direction.x, direction.z);
-          azora.rotation.y = angle;
-        } else {
-          // Reached waypoint, move to next
-          data.currentWaypoint = (data.currentWaypoint + 1) % data.walkPath.length;
-        }
+      // Update Azora's animation mixer (for idle animation)
+      if (azoraRef.current && azoraRef.current.userData?.mixer) {
+        azoraRef.current.userData.mixer.update(delta);
       }
       
       renderer.render(scene, camera);
