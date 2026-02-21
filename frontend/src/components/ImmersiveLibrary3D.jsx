@@ -1007,46 +1007,6 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         )}
       </AnimatePresence>
       
-      {/* Controls Tutorial Overlay (for logged-in users, first time) */}
-      <AnimatePresence>
-        {showControls && isExploring && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm z-20"
-          >
-            <motion.div
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              className="bg-gradient-to-br from-[#2d1f3d] to-[#1a1520] rounded-2xl p-6 max-w-sm mx-4 border border-purple-500/30"
-            >
-              <h3 className="text-lg font-bold text-white mb-4 text-center">Quick Controls</h3>
-              <div className="space-y-3 mb-6">
-                <div className="flex items-center gap-3">
-                  <kbd className="px-3 py-1.5 bg-purple-900/50 rounded text-purple-300 text-sm font-mono">WASD</kbd>
-                  <span className="text-white/80">Move in direction you're facing</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <kbd className="px-3 py-1.5 bg-purple-900/50 rounded text-purple-300 text-sm font-mono">Mouse</kbd>
-                  <span className="text-white/80">Look around (click first)</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <kbd className="px-3 py-1.5 bg-purple-900/50 rounded text-purple-300 text-sm font-mono">ESC</kbd>
-                  <span className="text-white/80">Release mouse cursor</span>
-                </div>
-              </div>
-              <Button 
-                onClick={dismissControls}
-                className="w-full bg-purple-600 hover:bg-purple-700"
-              >
-                Got it!
-              </Button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      
       {/* UI Controls when exploring */}
       {isLoaded && isExploring && (
         <>
