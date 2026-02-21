@@ -322,6 +322,9 @@ export default function ArtStudio() {
   const [isAnimating, setIsAnimating] = useState(false);
   const [animatedVideo, setAnimatedVideo] = useState(null);
   
+  // Gallery type filter state
+  const [galleryTypeFilter, setGalleryTypeFilter] = useState('all'); // 'all', 'images', 'animations'
+  
   // Apply a quick template (one-click setup)
   const applyQuickTemplate = (template) => {
     setSelectedTemplate(template.id);
