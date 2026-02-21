@@ -2940,83 +2940,74 @@ async def generate_consistent_character(
 
 @api_router.post("/art-studio/generate")
 async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: dict = Depends(get_current_user)):
-    """Generate an image using AI based on character/scene settings"""
+    """Generate an image using AI based on character/scene settings - DeepAI quality approach"""
     user = current_user
     
     try:
         if not EMERGENT_LLM_KEY:
             raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
         
-        # Style enhancement mapping - HIGH QUALITY character-focused prompts
+        # DEEPAI-STYLE QUALITY ENHANCEMENT SYSTEM
+        # Key principles: Detailed descriptors, compositional cues, style-specific boosters
+        
+        # Style enhancement mapping - ENHANCED for variations and quality
         style_prompts = {
-            "realistic": "ultra-realistic digital portrait, hyperdetailed skin texture, studio lighting, 8K resolution, professional photography quality, sharp focus, photorealistic rendering",
-            "anime": "high quality anime style, detailed cel shading, vibrant colors, clean lineart, anime key visual quality, professional anime illustration, expressive eyes",
-            "cartoon": "high quality cartoon illustration, bold clean outlines, vibrant saturated colors, professional character design, Disney/Pixar quality",
-            "watercolor": "masterful watercolor painting, soft color blending, delicate brushstrokes, artistic watercolor texture, professional illustration quality",
-            "oil-painting": "museum quality oil painting, rich impasto textures, masterful brushwork, classical portrait lighting, fine art quality",
-            "pixel-art": "high quality pixel art, clean pixel work, retro game aesthetic, detailed sprite work, professional pixel artist quality",
-            "comic": "professional comic book art, dynamic linework, bold inking, Marvel/DC quality illustration, detailed comic style",
-            "fantasy": "epic fantasy digital art, magical atmosphere, dramatic lighting, highly detailed, professional fantasy illustration, concept art quality, masterwork",
-            "3d-render": "high quality 3D render, realistic materials, professional lighting setup, octane render quality, smooth subsurface scattering",
-            "sketch": "professional pencil sketch, detailed linework, artistic shading, master artist quality drawing",
-            "ethereal-fantasy": "ethereal dreamy digital painting, soft glowing light, mystical atmosphere, flowing ethereal elements, professional fantasy art, luminous quality, magical realism",
-            "surreal-dreamscape": "surreal dreamscape masterpiece, impossible beautiful landscapes, soft ethereal lighting, dreamlike quality, professional surrealist art",
-            "luminous-ethereal": "luminous ethereal fantasy, celestial divine quality, cosmic atmosphere, highly polished digital painting, volumetric god rays, subsurface skin scattering, masterpiece quality, 8K detail",
-            "celestial-fantasy": "celestial divine fantasy art, cosmic ethereal beauty, nebula starry atmosphere, luminous polished rendering, otherworldly masterpiece, professional concept art quality",
-            "dark-fantasy": "dark gothic fantasy masterpiece, dramatic chiaroscuro lighting, moody atmospheric, detailed dark art, professional dark fantasy illustration",
-            "cyberpunk": "cyberpunk neon-lit masterpiece, futuristic aesthetic, detailed tech elements, professional sci-fi art, blade runner quality",
-            "steampunk": "steampunk Victorian masterpiece, intricate brass machinery, detailed clockwork, professional steampunk illustration",
-            "concept-art": "professional concept art, industry standard quality, detailed character design, AAA game quality, artstation trending",
-            "storybook": "beautiful children's book illustration, whimsical charm, warm colors, professional storybook art, enchanting quality",
-            "portrait": "professional portrait photography, studio lighting, sharp focus, 8K detail, beautiful composition",
-            "cinematic": "cinematic movie still quality, dramatic lighting, film grain, professional cinematography, blockbuster quality",
-            "disney": "Disney animation quality, charming character design, expressive features, professional Disney style",
-            "pixar": "Pixar 3D animation quality, appealing character design, professional rendering, modern 3D animation",
-            "manga": "professional manga illustration, detailed linework, dynamic composition, Japanese manga quality",
-            "digital-art": "high quality digital art, professional illustration, detailed rendering, artstation quality",
-            "hyperrealistic": "hyperrealistic digital art, extreme detail, photorealistic quality, 8K resolution, professional quality"
+            "realistic": "ultra photorealistic, hyperdetailed, studio photography, 8K UHD, DSLR quality, sharp focus, depth of field, bokeh background, professional lighting, Ray tracing",
+            "anime": "premium anime art, detailed cel shading, Studio Ghibli quality, vibrant saturated colors, clean precise lineart, expressive detailed eyes, anime key visual, trending on Pixiv",
+            "cartoon": "premium cartoon illustration, bold clean vector outlines, vibrant saturated colors, Disney/Pixar quality character design, smooth gradients, appealing proportions",
+            "watercolor": "masterful traditional watercolor, wet-on-wet technique, soft color blending, visible brushstrokes, artistic texture, gallery quality painting, delicate washes",
+            "oil-painting": "museum quality oil painting, rich impasto texture, masterful brushwork, Rembrandt lighting, fine art canvas texture, classical composition",
+            "pixel-art": "premium pixel art, clean pixel work, 16-bit aesthetic, detailed sprite work, smooth color gradients, retro game masterpiece",
+            "comic": "professional comic book art, dynamic ink linework, bold colors, Marvel/DC quality illustration, action composition, graphic novel style",
+            "fantasy": "epic high fantasy digital art, magical atmosphere, cinematic dramatic lighting, extremely detailed, professional concept art, trending on ArtStation, masterwork quality",
+            "3d-render": "premium 3D render, photorealistic materials, subsurface scattering, ray traced lighting, Octane/Blender quality, volumetric effects",
+            "sketch": "professional pencil sketch, detailed crosshatching, artistic shading, master artist quality, fine art drawing, museum piece",
+            "ethereal-fantasy": "ethereal dreamy digital painting, soft luminous glow, mystical atmosphere, flowing ethereal elements, fantasy art masterpiece, magical realism",
+            "surreal-dreamscape": "surreal dreamscape masterpiece, impossible geometry, soft ethereal lighting, Salvador Dali inspired, dreamlike quality",
+            "luminous-ethereal": "luminous ethereal fantasy, celestial divine quality, cosmic atmosphere, highly polished digital art, volumetric god rays, angelic lighting",
+            "celestial-fantasy": "celestial divine fantasy art, cosmic ethereal beauty, nebula starry atmosphere, luminous polished rendering, otherworldly masterpiece",
+            "dark-fantasy": "dark gothic fantasy masterpiece, dramatic chiaroscuro lighting, moody atmospheric, detailed dark art, Berserk/Dark Souls quality",
+            "cyberpunk": "cyberpunk neon masterpiece, futuristic dystopian aesthetic, detailed tech elements, Blade Runner quality, neon-lit rain, holographic displays",
+            "steampunk": "steampunk Victorian masterpiece, intricate brass machinery, detailed clockwork mechanisms, premium steampunk illustration, antique quality",
+            "concept-art": "professional concept art, industry AAA quality, detailed character design, cinematic composition, trending on ArtStation",
+            "storybook": "beautiful children's book illustration, whimsical charming style, warm inviting colors, professional storybook art, enchanting quality",
+            "portrait": "professional portrait photography, Hasselblad quality, studio lighting, sharp focus, 8K detail, beautiful composition, bokeh",
+            "cinematic": "cinematic movie still, anamorphic lens, dramatic lighting, film grain, professional cinematography, blockbuster quality, 35mm film",
+            "disney": "Disney animation quality, charming character design, expressive features, appealing proportions, professional Disney studio style",
+            "pixar": "Pixar 3D animation quality, appealing stylized design, professional rendering, subsurface scattering skin, modern 3D animation",
+            "manga": "professional manga illustration, detailed dynamic linework, screentone shading, Japanese manga quality, Shonen Jump style",
+            "digital-art": "premium digital art, professional illustration, detailed rendering, trending on ArtStation, DeviantArt featured quality",
+            "hyperrealistic": "hyperrealistic CGI, extreme photorealistic detail, 8K UHD resolution, skin pore detail, professional quality"
         }
-        style_desc = style_prompts.get(request.style, "high quality professional illustration, detailed, masterwork quality")
+        style_desc = style_prompts.get(request.style, "premium professional illustration, highly detailed, masterwork quality")
         
-        # CRITICAL: User prompt comes FIRST and is emphasized
-        # Quality tags should enhance, not override user specifications
-        QUALITY_CORE = "masterpiece, best quality, ultra detailed, high resolution"
-        FACE_QUALITY = "beautiful detailed face, detailed eyes, realistic skin"
-        LIGHTING_QUALITY = "perfect lighting, professional studio lighting"
+        # DEEPAI-STYLE QUALITY BOOSTERS
+        # These create variation potential and consistent high quality
+        QUALITY_TAGS = "masterpiece, best quality, highly detailed, sharp focus, high resolution, professional"
+        CHARACTER_QUALITY = "beautiful detailed face, detailed expressive eyes, natural skin texture, perfect anatomy, well-proportioned"
+        COMPOSITION_TAGS = "dynamic composition, perfect framing, rule of thirds, visual hierarchy"
+        LIGHTING_TAGS = "perfect lighting, professional lighting setup, rim lighting, ambient occlusion"
         
-        # Negative prompt additions for cleaner output
-        DEFAULT_NEGATIVE = "blurry, low quality, lowres, bad anatomy, bad hands, deformed, disfigured, watermark, signature, text, jpeg artifacts"
+        # STRONG NEGATIVE PROMPTS - DeepAI uses these heavily for clean output
+        DEFAULT_NEGATIVE = "blurry, out of focus, low quality, lowres, bad anatomy, bad hands, extra fingers, missing fingers, deformed, disfigured, mutation, mutated, ugly, poorly drawn face, poorly drawn hands, watermark, signature, text, logo, jpeg artifacts, compression artifacts, cropped, worst quality, low quality, normal quality"
         
-        # Build prompt with USER INPUT as the PRIMARY FOCUS
-        enhanced_prompt = request.prompt
+        # BUILD THE ENHANCED PROMPT - User specifications FIRST, then style
+        user_prompt = request.prompt.strip()
+        
         if request.type == "character":
-            # USER'S CHARACTER DESCRIPTION IS PRIMARY - emphasize it
-            enhanced_prompt = f"""IMPORTANT - Follow these character specifications EXACTLY:
-            {request.prompt}
-            
-            Style: {style_desc}
-            Quality: {QUALITY_CORE}, {FACE_QUALITY}, {LIGHTING_QUALITY}
-            
-            CRITICAL: The character MUST have the EXACT features specified above. Do not change hair color, eye color, or any specified features.""".replace('\n', ' ').strip()
+            # Character generation: User features are MANDATORY, style enhances
+            enhanced_prompt = f"""{user_prompt}. {CHARACTER_QUALITY}. {style_desc}. {QUALITY_TAGS}. {LIGHTING_TAGS}. {COMPOSITION_TAGS}"""
             
         elif request.type == "scene":
-            enhanced_prompt = f"""IMPORTANT - Create this exact scene:
-            {request.prompt}
-            
-            Style: {style_desc}
-            Quality: {QUALITY_CORE}, {LIGHTING_QUALITY}, breathtaking environment""".replace('\n', ' ').strip()
+            # Scene generation: Environment details first
+            SCENE_QUALITY = "breathtaking environment, immersive atmosphere, depth and scale"
+            enhanced_prompt = f"""{user_prompt}. {SCENE_QUALITY}. {style_desc}. {QUALITY_TAGS}. {LIGHTING_TAGS}. cinematic wide shot"""
             
         elif request.type == "workflow":
-            # Expert Mode workflow - USER PROMPT IS KING
-            enhanced_prompt = f"""CRITICAL - Follow these specifications EXACTLY:
-            {request.prompt}
-            
-            Style: {style_desc}
-            Quality: {QUALITY_CORE}, {FACE_QUALITY}, {LIGHTING_QUALITY}
-            
-            IMPORTANT: Generate EXACTLY what is described. Do not deviate from the specified features like hair color, eye color, clothing, etc.""".replace('\n', ' ').strip()
+            # Expert Mode: User prompt is EXACT specification - highest priority
+            enhanced_prompt = f"""{user_prompt}. {style_desc}. {QUALITY_TAGS}. {CHARACTER_QUALITY}. {LIGHTING_TAGS}"""
         else:
-            enhanced_prompt = f"{request.prompt}, {style_desc}, {QUALITY_CORE}"
+            enhanced_prompt = f"{user_prompt}. {style_desc}. {QUALITY_TAGS}"
         
         # Handle dual reference images for consistency
         if hasattr(request, 'styleReferenceImage') and request.styleReferenceImage:
