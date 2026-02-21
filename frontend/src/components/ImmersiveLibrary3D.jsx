@@ -252,7 +252,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     }
   }, []);
 
-  // Teleport to genre section - use stored floor level
+  // Teleport to genre section - use stored floor level and face the bookcase
   const teleportToGenre = useCallback((section) => {
     if (!cameraRef.current || !boundsRef.current) return;
     
@@ -267,6 +267,11 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     const newZ = Math.max(boundsRef.current.minZ + 1, Math.min(boundsRef.current.maxZ - 1, section.position.z));
     
     cameraRef.current.position.set(newX, targetY, newZ);
+    
+    // Set camera rotation to face the bookcase
+    euler.current.set(0, section.rotation, 0);
+    cameraRef.current.quaternion.setFromEuler(euler.current);
+    
     playerVelocity.current.x = 0;
     playerVelocity.current.y = 0;
     playerVelocity.current.z = 0;
