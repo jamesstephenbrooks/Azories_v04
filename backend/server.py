@@ -2857,6 +2857,7 @@ class WorkflowSaveRequest(BaseModel):
     name: str
     nodes: list
     edges: list
+    bookId: Optional[str] = None
 
 @api_router.post("/art-studio/workflow/save")
 async def save_workflow(request: WorkflowSaveRequest, current_user: dict = Depends(get_current_user)):
@@ -2869,6 +2870,7 @@ async def save_workflow(request: WorkflowSaveRequest, current_user: dict = Depen
             "name": request.name,
             "nodes": request.nodes,
             "edges": request.edges,
+            "book_id": request.bookId,
             "created_at": datetime.now(timezone.utc),
             "updated_at": datetime.now(timezone.utc)
         }
