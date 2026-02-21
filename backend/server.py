@@ -3147,7 +3147,7 @@ async def analyze_image(request: AnalyzeImageRequest, current_user: dict = Depen
         from emergentintegrations.llm.openai import LlmChat, ImageContent, UserMessage
         
         # Initialize OpenAI client for GPT-4 vision
-        chat = LlmChat(api_key=EMERGENT_LLM_KEY, model="gpt-4o")
+        chat = LlmChat(api_key=EMERGENT_LLM_KEY)
         
         if request.analysis_type == "style":
             analysis_prompt = """Analyze this image and describe its artistic style in detail. 
@@ -3167,7 +3167,8 @@ async def analyze_image(request: AnalyzeImageRequest, current_user: dict = Depen
                     analysis_prompt,
                     ImageContent(url=request.image_url)
                 ])
-            ]
+            ],
+            model="gpt-4o"
         )
         
         extracted_prompt = response.strip() if response else ""
