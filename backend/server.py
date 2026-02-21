@@ -3025,12 +3025,34 @@ async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: d
         # STRONG NEGATIVE PROMPTS - DeepAI uses these heavily for clean output
         DEFAULT_NEGATIVE = "blurry, out of focus, low quality, lowres, bad anatomy, bad hands, extra fingers, missing fingers, deformed, disfigured, mutation, mutated, ugly, poorly drawn face, poorly drawn hands, watermark, signature, text, logo, jpeg artifacts, compression artifacts, cropped, worst quality, low quality, normal quality"
         
-        # BUILD THE ENHANCED PROMPT - User specifications FIRST, then style
+        # BUILD THE ENHANCED PROMPT - UI SETTINGS FIRST, then style, then written description
+        # The user_prompt already contains UI settings first (from buildCharacterPrompt)
         user_prompt = request.prompt.strip()
         
+        # Extract character data to emphasize UI settings
+        char_data = request.characterData or {}
+        clothing_desc = char_data.get('clothing', '')
+        
+        # Clothing enhancement mapping
+        clothing_prompts = {
+            'Futuristic': 'wearing sleek futuristic sci-fi attire, chrome metallic elements, high-tech fashion',
+            'Sci-Fi': 'wearing advanced sci-fi outfit, futuristic technology elements, space-age fashion',
+            'Cyberpunk': 'wearing cyberpunk streetwear, neon accents, tech-wear, futuristic urban fashion',
+            'Fantasy': 'wearing elegant fantasy attire, magical aesthetic, ethereal clothing',
+            'Medieval': 'wearing medieval period clothing, historical fantasy attire',
+            'Victorian': 'wearing Victorian era fashion, elegant period dress',
+            'Armor': 'wearing detailed armor, warrior aesthetic, battle-ready',
+            'Streetwear': 'wearing modern trendy streetwear, urban fashion, stylish casual'
+        }
+        clothing_enhancement = clothing_prompts.get(clothing_desc, '')
+        
         if request.type == "character":
-            # Character generation: User features are MANDATORY, style enhances
-            enhanced_prompt = f"""{user_prompt}. {CHARACTER_QUALITY}. {style_desc}. {QUALITY_TAGS}. {LIGHTING_TAGS}. {COMPOSITION_TAGS}"""
+            # CHARACTER GENERATION: UI settings FIRST, then style
+            # Structure: [UI Settings] -> [Clothing Enhancement] -> [Style] -> [Quality]
+            if clothing_enhancement:
+                enhanced_prompt = f"""{user_prompt}. {clothing_enhancement}. {style_desc}. {CHARACTER_QUALITY}. {QUALITY_TAGS}. {LIGHTING_TAGS}"""
+            else:
+                enhanced_prompt = f"""{user_prompt}. {style_desc}. {CHARACTER_QUALITY}. {QUALITY_TAGS}. {LIGHTING_TAGS}"""
             
         elif request.type == "scene":
             # Scene generation: Environment details first
