@@ -1031,7 +1031,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           scene.add(sprite);
           genreBanners.push(sprite);
           
-          // Add "Click to browse" hint below the banner
+          // Add "Click to browse" hint below the banner - closer and triangle pointing up
           const hintCanvas = document.createElement('canvas');
           hintCanvas.width = 256;
           hintCanvas.height = 64;
@@ -1040,8 +1040,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           hintCtx.font = '20px Arial';
           hintCtx.textAlign = 'center';
           hintCtx.textBaseline = 'middle';
-          hintCtx.fillStyle = 'rgba(255,255,255,0.5)';
-          hintCtx.fillText('▼ Click to browse', 128, 32);
+          hintCtx.fillStyle = 'rgba(255,255,255,0.6)';
+          hintCtx.fillText('▲ Click to browse', 128, 32);
           
           const hintTexture = new THREE.CanvasTexture(hintCanvas);
           const hintSprite = new THREE.Sprite(new THREE.SpriteMaterial({
@@ -1050,11 +1050,11 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
             depthWrite: false
           }));
           hintSprite.scale.set(0.8, 0.2, 1);
-          hintSprite.position.set(section.bannerPos.x, bannerY - 0.35, section.bannerPos.z);
+          hintSprite.position.set(section.bannerPos.x, bannerY - 0.25, section.bannerPos.z); // Closer to banner
           hintSprite.userData = { 
             isGenreBanner: true, 
             genreName: section.name,
-            baseY: bannerY - 0.35,
+            baseY: bannerY - 0.25,
             phase: sprite.userData.phase
           };
           scene.add(hintSprite);
