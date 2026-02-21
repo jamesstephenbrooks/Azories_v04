@@ -3207,53 +3207,69 @@ async def generate_with_reference(request: ConsistentCharacterRequest, current_u
     user = current_user
     
     try:
-        from emergentintegrations.llm.openai import LlmChat, ImageContent, UserMessage
+        from emergentintegrations.llm.chat import LlmChat, UserMessage, ImageContent
         from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
+        import httpx
+        import uuid
         
         if not EMERGENT_LLM_KEY:
             raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
         
-        chat = LlmChat(api_key=EMERGENT_LLM_KEY)
+        # Download character reference image
+        async with httpx.AsyncClient() as client:
+            char_response = await client.get(request.characterReferenceImage, timeout=30.0)
+            char_base64 = base64.b64encode(char_response.content).decode('utf-8')
+        
+        # Initialize chat for analysis
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=str(uuid.uuid4()),
+            system_message="You are an expert at analyzing images for AI recreation."
+        ).with_model("openai", "gpt-4o")
         
         # Step 1: Analyze character reference for detailed description
-        char_analysis = await chat.chat(
-            messages=[
-                UserMessage(content=[
-                    """Analyze this character image EXTREMELY thoroughly.
-                    Describe with EXACT precision:
-                    - Face shape, exact eye shape and color, nose shape, lip shape
-                    - Exact hair color (with highlights/lowlights), length, style, texture
-                    - Skin tone (be specific: pale porcelain, warm tan, deep brown, etc.)
-                    - Distinctive features (freckles, moles, scars, dimples, etc.)
-                    - Body type and proportions
-                    - Current clothing/outfit in detail
-                    - Expression and pose
-                    Output as a detailed prompt. Be extremely specific to enable recreation.""",
-                    ImageContent(url=request.characterReferenceImage)
-                ])
-            ],
-            model="gpt-4o"
+        char_image = ImageContent(image_base64=char_base64)
+        char_message = UserMessage(
+            text="""Analyze this character image EXTREMELY thoroughly.
+            Describe with EXACT precision:
+            - Face shape, exact eye shape and color, nose shape, lip shape
+            - Exact hair color (with highlights/lowlights), length, style, texture
+            - Skin tone (be specific: pale porcelain, warm tan, deep brown, etc.)
+            - Distinctive features (freckles, moles, scars, dimples, etc.)
+            - Body type and proportions
+            - Current clothing/outfit in detail
+            - Expression and pose
+            Output as a detailed prompt. Be extremely specific to enable recreation.""",
+            file_contents=[char_image]
         )
+        char_analysis = await chat.send_message(char_message)
         char_description = char_analysis.strip() if char_analysis else ""
         
         # Step 2: Analyze style reference if provided
         style_description = ""
         if request.styleReferenceImage:
-            style_analysis = await chat.chat(
-                messages=[
-                    UserMessage(content=[
-                        """Describe this image's artistic style:
-                        - Art medium/technique (digital painting, watercolor, anime, etc.)
-                        - Color palette and temperature
-                        - Lighting style and direction
-                        - Texture and brush strokes
-                        - Overall mood/atmosphere
-                        Output as style tags for image generation.""",
-                        ImageContent(url=request.styleReferenceImage)
-                    ])
-                ],
-                model="gpt-4o"
+            async with httpx.AsyncClient() as client:
+                style_response = await client.get(request.styleReferenceImage, timeout=30.0)
+                style_base64 = base64.b64encode(style_response.content).decode('utf-8')
+            
+            style_chat = LlmChat(
+                api_key=EMERGENT_LLM_KEY,
+                session_id=str(uuid.uuid4()),
+                system_message="You are an expert at analyzing artistic styles."
+            ).with_model("openai", "gpt-4o")
+            
+            style_image = ImageContent(image_base64=style_base64)
+            style_message = UserMessage(
+                text="""Describe this image's artistic style:
+                - Art medium/technique (digital painting, watercolor, anime, etc.)
+                - Color palette and temperature
+                - Lighting style and direction
+                - Texture and brush strokes
+                - Overall mood/atmosphere
+                Output as style tags for image generation.""",
+                file_contents=[style_image]
             )
+            style_analysis = await style_chat.send_message(style_message)
             style_description = style_analysis.strip() if style_analysis else ""
         
         # Step 3: Build the ultimate consistency prompt
