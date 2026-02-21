@@ -2735,6 +2735,10 @@ async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: d
         else:
             enhanced_prompt = f"{request.prompt}, {style_desc}"
         
+        # Add reference image note to prompt if provided
+        if request.referenceImage:
+            enhanced_prompt += ", maintaining visual consistency with the provided reference"
+        
         # Use OpenAI image generation via Emergent (matching working endpoint)
         image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
         images = await image_gen.generate_images(
@@ -2758,6 +2762,8 @@ async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: d
                 "type": request.type,
                 "character_data": request.characterData,
                 "scene_data": request.sceneData,
+                "book_id": request.bookId,
+                "has_reference": bool(request.referenceImage),
                 "created_at": datetime.now(timezone.utc)
             }
             await db.art_studio_generations.insert_one(generation_record)
