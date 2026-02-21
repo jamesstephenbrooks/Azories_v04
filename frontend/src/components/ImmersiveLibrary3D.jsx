@@ -524,18 +524,22 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           if (child.isMesh) {
             const name = child.name.toLowerCase();
             
-            // Check if this is EXPLICITLY a collision mesh (not regular walls/floors)
-            // Only hide meshes that are specifically named as collision geometry
+            // Log all mesh names to help debug collision setup
+            console.log('Mesh found:', child.name);
+            
+            // Check if this is EXPLICITLY a collision mesh
+            // Common naming patterns: collision, collider, col_, _col, bounds, blocker
             const isCollisionMesh = name.includes('collision') || name.includes('collider') || 
-                name.includes('_col_') || name.startsWith('col_') || name.endsWith('_col');
+                name.includes('_col_') || name.startsWith('col_') || name.endsWith('_col') ||
+                name.includes('bounds') || name.includes('blocker') || name.includes('barrier');
             
             if (isCollisionMesh) {
               // Make collision-only meshes invisible but keep for raycasting
               child.visible = false;
               collisionMeshes.push(child);
-              console.log('Found collision mesh:', child.name);
+              console.log('✓ Collision mesh:', child.name);
             } else {
-              // Regular visible meshes - can also be used for collision if needed
+              // Regular visible meshes
               child.castShadow = true;
               child.receiveShadow = true;
               if (child.material) {
@@ -544,9 +548,12 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
               }
               visibleMeshes.push(child);
               
-              // Also add to collision detection if it's a structural element
-              if (name.includes('wall') || name.includes('floor') || name.includes('ceiling')) {
+              // Also add structural elements to collision detection
+              if (name.includes('wall') || name.includes('floor') || name.includes('ceiling') ||
+                  name.includes('pillar') || name.includes('column') || name.includes('rail') ||
+                  name.includes('stair') || name.includes('shelf') || name.includes('bookshelf')) {
                 collisionMeshes.push(child);
+                console.log('✓ Structural collision:', child.name);
               }
             }
           }
@@ -554,8 +561,13 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         
         console.log(`Found ${collisionMeshes.length} collision meshes, ${visibleMeshes.length} visible meshes`);
         
-        // Store collision meshes for raycasting
-        collisionMeshesRef.current = collisionMeshes.length > 0 ? collisionMeshes : visibleMeshes;
+        // If no collision meshes found, use ALL visible meshes for collision
+        if (collisionMeshes.length === 0) {
+          console.log('No specific collision meshes - using all visible meshes for collision');
+          collisionMeshesRef.current = visibleMeshes;
+        } else {
+          collisionMeshesRef.current = collisionMeshes;
+        }
         
         scene.add(model);
         
