@@ -776,39 +776,51 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         camera.position.x = newX;
         camera.position.z = newZ;
         
-        // Floor detection with downward raycast - realistic walking with stair support
+        // Floor detection with downward raycast - realistic walking with spiral stair support
         const baseFloorY = bounds.floorY || 0;
         const currentFootY = camera.position.y - PLAYER_HEIGHT;
         let detectedFloorY = currentFootY; // Default to staying at current level
         
         if (collisionMeshes.length > 0) {
-          // Cast ray straight down from foot level (not head level)
-          // This helps detect stairs better
-          const rayOrigin = new THREE.Vector3(
-            camera.position.x,
-            camera.position.y - PLAYER_HEIGHT + 0.8, // Start from knee height
-            camera.position.z
-          );
+          // Cast multiple rays to better detect stairs:
+          // 1. One straight down from current position
+          // 2. One slightly forward (in movement direction) to detect upcoming stairs
           
-          raycaster.set(rayOrigin, new THREE.Vector3(0, -1, 0));
-          raycaster.far = 3; // Look further down to catch stairs
+          const rayPositions = [
+            new THREE.Vector3(camera.position.x, camera.position.y, camera.position.z),
+          ];
           
-          const floorHits = raycaster.intersectObjects(collisionMeshes, true);
+          // Add forward ray if moving
+          if (playerVelocity.current.x !== 0 || playerVelocity.current.z !== 0) {
+            const moveDir = new THREE.Vector3(playerVelocity.current.x, 0, playerVelocity.current.z).normalize();
+            rayPositions.push(new THREE.Vector3(
+              camera.position.x + moveDir.x * 0.3,
+              camera.position.y,
+              camera.position.z + moveDir.z * 0.3
+            ));
+          }
           
-          // Find the highest floor that we can step onto
           let bestFloorY = null;
-          for (const hit of floorHits) {
-            const hitY = hit.point.y;
+          
+          for (const rayPos of rayPositions) {
+            const rayOrigin = new THREE.Vector3(rayPos.x, rayPos.y, rayPos.z);
             
-            // Maximum step up: 0.5m (handles most stairs)
-            // Maximum step down: 2m (can fall/step down)
-            const maxStepUp = 0.5;
-            const maxStepDown = 2.0;
+            raycaster.set(rayOrigin, new THREE.Vector3(0, -1, 0));
+            raycaster.far = PLAYER_HEIGHT + 2;
             
-            if (hitY <= currentFootY + maxStepUp && hitY >= currentFootY - maxStepDown) {
-              // Take the highest valid floor (closest to current level when going up stairs)
-              if (bestFloorY === null || hitY > bestFloorY) {
-                bestFloorY = hitY;
+            const floorHits = raycaster.intersectObjects(collisionMeshes, true);
+            
+            for (const hit of floorHits) {
+              const hitY = hit.point.y;
+              
+              // Spiral stairs can have taller steps - allow up to 0.7m step up
+              const maxStepUp = 0.7;
+              const maxStepDown = 2.0;
+              
+              if (hitY <= currentFootY + maxStepUp && hitY >= currentFootY - maxStepDown) {
+                if (bestFloorY === null || hitY > bestFloorY) {
+                  bestFloorY = hitY;
+                }
               }
             }
           }
@@ -820,11 +832,10 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         
         const targetY = detectedFloorY + PLAYER_HEIGHT;
         
-        // Smoothly interpolate to target height for natural walking feel
+        // Smoothly interpolate to target height
         const yDiff = targetY - camera.position.y;
         if (Math.abs(yDiff) > 0.01) {
-          // Smooth movement - faster for falling, slower for climbing
-          const interpSpeed = yDiff < 0 ? 0.2 : 0.12;
+          const interpSpeed = yDiff < 0 ? 0.2 : 0.15;
           camera.position.y += yDiff * interpSpeed;
         }
         
