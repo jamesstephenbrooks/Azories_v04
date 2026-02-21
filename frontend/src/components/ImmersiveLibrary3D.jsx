@@ -1782,9 +1782,13 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                           onClick={() => {
                             setSelectedBook(book);
                             highlightBookAtGenre(selectedGenre, book);
-                            setSelectedGenre(null);
+                            // Keep genre panel open so user can pick another book
                           }}
-                          className="w-full flex items-center gap-3 p-2 rounded-xl bg-black/20 hover:bg-purple-500/20 transition-colors text-left group"
+                          className={`w-full flex items-center gap-3 p-2 rounded-xl transition-colors text-left group ${
+                            selectedBook?.id === book.id 
+                              ? 'bg-purple-500/40 ring-2 ring-purple-400' 
+                              : 'bg-black/20 hover:bg-purple-500/20'
+                          }`}
                         >
                           {/* Book Cover Thumbnail */}
                           <div className="w-12 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-purple-900/50">
