@@ -225,8 +225,44 @@ export default function ArtStudio() {
     if (token) {
       loadGallery();
       loadUserBooks();
+      loadPromptHistory();
     }
   }, [token]);
+  
+  const loadPromptHistory = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/art-studio/prompt-history`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setPromptHistory(data.history || []);
+      }
+    } catch (error) {
+      console.error('Failed to load prompt history:', error);
+    }
+  };
+  
+  const savePromptToHistory = async (prompt) => {
+    if (!prompt.trim()) return;
+    // Don't save duplicates
+    if (promptHistory.includes(prompt)) return;
+    
+    try {
+      await fetch(`${API_URL}/api/art-studio/prompt-history`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ prompt })
+      });
+      // Update local state
+      setPromptHistory(prev => [prompt, ...prev].slice(0, 20)); // Keep last 20
+    } catch (error) {
+      console.error('Failed to save prompt to history:', error);
+    }
+  };
   
   const loadUserBooks = async () => {
     try {
