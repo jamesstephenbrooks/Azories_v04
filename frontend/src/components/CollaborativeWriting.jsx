@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
   FiUsers, FiUserPlus, FiX, FiCheck, FiCopy, FiMail, 
-  FiEdit3, FiEye, FiCrown, FiTrash2 
+  FiEdit3, FiEye, FiStar, FiTrash2 
 } from 'react-icons/fi';
 import axios from 'axios';
 import { toast } from 'sonner';
@@ -13,7 +13,7 @@ const API = process.env.REACT_APP_BACKEND_URL;
 
 // Role definitions
 const ROLES = {
-  owner: { name: 'Owner', icon: FiCrown, color: 'text-yellow-500', permissions: ['read', 'write', 'manage', 'delete'] },
+  owner: { name: 'Owner', icon: FiStar, color: 'text-yellow-500', permissions: ['read', 'write', 'manage', 'delete'] },
   editor: { name: 'Editor', icon: FiEdit3, color: 'text-blue-500', permissions: ['read', 'write'] },
   viewer: { name: 'Viewer', icon: FiEye, color: 'text-gray-500', permissions: ['read'] }
 };
