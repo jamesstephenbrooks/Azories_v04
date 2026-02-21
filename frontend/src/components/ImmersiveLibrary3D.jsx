@@ -397,7 +397,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         );
         
         // Scale the book appropriately - smaller size
-        bookModel.scale.setScalar(0.15);
+        bookModel.scale.setScalar(0.08);
         
         // Rotate to face the viewer based on genre section rotation
         bookModel.rotation.y = section.rotation || 0;
