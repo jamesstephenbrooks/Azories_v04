@@ -570,10 +570,15 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         
         const bookPosition = new THREE.Vector3()
           .copy(camera.position)
-          .add(forward.multiplyScalar(1.2));
-        bookPosition.y -= 0.2;
+          .add(forward.multiplyScalar(0.8));
+        bookPosition.y = camera.position.y - 0.1;
         
-        const bookGeometry = new THREE.BoxGeometry(0.2, 0.28, 0.04);
+        // Get camera's Y rotation for facing
+        const cameraDirection = new THREE.Vector3(0, 0, -1);
+        cameraDirection.applyQuaternion(camera.quaternion);
+        const angle = Math.atan2(cameraDirection.x, cameraDirection.z);
+        
+        const bookGeometry = new THREE.BoxGeometry(0.25, 0.35, 0.04);
         
         let materials;
         if (book.cover_image) {
@@ -594,7 +599,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         
         const bookMesh = new THREE.Mesh(bookGeometry, materials);
         bookMesh.position.copy(bookPosition);
-        bookMesh.lookAt(camera.position);
+        bookMesh.rotation.set(0, angle + Math.PI, 0); // Upright, facing camera
         bookMesh.userData = { isHighlightedBook: true, bookId: book.id, bookData: book };
         
         sceneRef.current.add(bookMesh);
