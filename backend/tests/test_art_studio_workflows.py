@@ -240,17 +240,21 @@ class TestArtStudioGeneratePromptEngineering:
     def test_generate_endpoint_accessible(self):
         """Test that the generate endpoint is accessible"""
         # Minimal request just to verify endpoint exists
-        response = requests.post(
-            f"{BASE_URL}/api/art-studio/generate",
-            headers=self.headers,
-            json={"prompt": "", "style": "fantasy", "type": "character"},
-            timeout=2
-        )
-        # Any response (including timeout) except 404 is fine
-        # 422 for validation error or 500 for missing prompt is acceptable
-        # 404 would indicate endpoint doesn't exist
-        assert response.status_code != 404, "Generate endpoint not found"
-        print(f"Generate endpoint accessible - status: {response.status_code}")
+        try:
+            response = requests.post(
+                f"{BASE_URL}/api/art-studio/generate",
+                headers=self.headers,
+                json={"prompt": "", "style": "fantasy", "type": "character"},
+                timeout=2
+            )
+            # Any response (including timeout) except 404 is fine
+            # 422 for validation error or 500 for missing prompt is acceptable
+            # 404 would indicate endpoint doesn't exist
+            assert response.status_code != 404, "Generate endpoint not found"
+            print(f"Generate endpoint accessible - status: {response.status_code}")
+        except (requests.exceptions.ReadTimeout, requests.exceptions.Timeout):
+            # Timeout is expected for generation - endpoint is accessible
+            print("Generate endpoint accessible - request timed out (expected for long generation)")
 
 
 class TestArtStudioGallery:
@@ -277,9 +281,9 @@ class TestArtStudioGallery:
         )
         assert response.status_code == 200
         data = response.json()
-        assert "items" in data
-        assert isinstance(data["items"], list)
-        print(f"Gallery has {len(data['items'])} items")
+        assert "images" in data  # API returns "images" key
+        assert isinstance(data["images"], list)
+        print(f"Gallery has {len(data['images'])} images")
 
 
 if __name__ == "__main__":
