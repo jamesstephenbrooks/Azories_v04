@@ -827,6 +827,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         let newZ = camera.position.z + playerVelocity.current.z * delta;
         
         // SIMPLIFIED wall collision - cast ray in movement direction only
+        // BUT allow passage when there's a climbable floor ahead (stairs)
         const COLLISION_RADIUS = 0.4;
         
         if (collisionMeshes.length > 0 && (playerVelocity.current.x !== 0 || playerVelocity.current.z !== 0)) {
@@ -849,11 +850,17 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           const hits = raycaster.intersectObjects(collisionMeshes, true);
           
           if (hits.length > 0 && hits[0].distance < COLLISION_RADIUS) {
-            // Wall hit - STOP movement, don't slide
-            newX = camera.position.x;
-            newZ = camera.position.z;
-            playerVelocity.current.x = 0;
-            playerVelocity.current.z = 0;
+            const hitMesh = hits[0].object.name?.toLowerCase() || '';
+            // Don't block if we hit stairs - we can climb over them
+            const isStair = hitMesh.includes('stair') || hitMesh.includes('plane05') || hitMesh.includes('plane06');
+            
+            if (!isStair) {
+              // Wall hit - STOP movement, don't slide
+              newX = camera.position.x;
+              newZ = camera.position.z;
+              playerVelocity.current.x = 0;
+              playerVelocity.current.z = 0;
+            }
           }
         }
         
