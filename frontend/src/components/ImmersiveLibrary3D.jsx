@@ -92,6 +92,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
   
   // Mouse look state
   const isPointerLocked = useRef(false);
+  const [showClickHint, setShowClickHint] = useState(true);
   const euler = useRef(new THREE.Euler(0, 0, 0, 'YXZ'));
   
   // Load saved positions from localStorage
