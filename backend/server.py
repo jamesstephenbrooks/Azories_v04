@@ -3629,6 +3629,39 @@ async def art_studio_delete(image_id: str, current_user: dict = Depends(get_curr
         logging.error(f"Art Studio delete error: {e}")
         raise HTTPException(status_code=500, detail="Failed to delete image")
 
+class SaveAnimationRequest(BaseModel):
+    video_url: str
+    name: str
+    motion_prompt: Optional[str] = ""
+    style: Optional[str] = "natural"
+
+@api_router.post("/art-studio/save-animation")
+async def save_animation(request: SaveAnimationRequest, current_user: dict = Depends(get_current_user)):
+    """Save an animation to user's gallery"""
+    user = current_user
+    
+    try:
+        gallery_item = {
+            "user_id": user["id"],
+            "image_url": request.video_url,  # Store video URL in image_url field for compatibility
+            "name": request.name,
+            "type": "animation",  # New field to distinguish animations
+            "style": request.style,
+            "motion_prompt": request.motion_prompt,
+            "created_at": datetime.now(timezone.utc)
+        }
+        
+        result = await db.art_studio_gallery.insert_one(gallery_item)
+        
+        return {
+            "success": True,
+            "id": str(result.inserted_id)
+        }
+        
+    except Exception as e:
+        logging.error(f"Save animation error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to save animation")
+
 
 # Workflow Save/Load Endpoints
 class WorkflowSaveRequest(BaseModel):
