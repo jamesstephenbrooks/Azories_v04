@@ -2952,7 +2952,14 @@ async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: d
             "comic": "Comic book style, bold lines, dynamic",
             "fantasy": "Epic fantasy art style, magical lighting, detailed",
             "3d-render": "Modern 3D rendered look, smooth textures",
-            "sketch": "Hand-drawn pencil sketch style"
+            "sketch": "Hand-drawn pencil sketch style",
+            "ethereal-fantasy": "Ethereal dreamy art style, soft flowing digital painting, mystical atmosphere, surreal dreamscape with flowing elements, magical glow, soft diffused lighting",
+            "surreal-dreamscape": "Surreal dreamscape style, flowing impossible landscapes, magical atmosphere, soft ethereal lighting, dreamlike quality",
+            "dark-fantasy": "Dark gothic fantasy style, dramatic shadows, moody atmosphere",
+            "cyberpunk": "Cyberpunk neon-lit style, futuristic dystopian aesthetic",
+            "steampunk": "Steampunk Victorian machinery style, brass and gears",
+            "concept-art": "Professional concept art style, detailed environment design",
+            "storybook": "Classic children's storybook illustration style, whimsical and colorful"
         }
         style_desc = style_prompts.get(request.style, "Epic fantasy art style, magical lighting")
         
