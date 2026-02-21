@@ -50,15 +50,7 @@ export const Navbar = () => {
         
         {/* Right side */}
         <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleTheme}
-            className="rounded-full"
-            data-testid="theme-toggle"
-          >
-            {theme === 'dark' ? <FiSun className="w-5 h-5" /> : <FiMoon className="w-5 h-5" />}
-          </Button>
+          <ThemeToggleCompact />
           
           {user ? (
             <DropdownMenu>
