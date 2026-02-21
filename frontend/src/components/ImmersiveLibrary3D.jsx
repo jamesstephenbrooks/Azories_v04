@@ -1410,6 +1410,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       document.removeEventListener('mouseup', onMouseUp);
       document.removeEventListener('pointerlockchange', onPointerLockChange);
       document.removeEventListener('pointerlockerror', onPointerLockError);
+      document.removeEventListener('mousemove', handleBookRotationMove);
+      document.removeEventListener('mouseup', handleBookRotationEnd);
       
       if (canvas) {
         canvas.removeEventListener('touchstart', onTouchStart);
