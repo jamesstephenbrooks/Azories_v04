@@ -244,6 +244,10 @@ export default function ArtStudio() {
   const [generationHistory, setGenerationHistory] = useState([]); // Recent generations
   const [galleryFilter, setGalleryFilter] = useState('all'); // 'all' or book_id
   
+  // Custom style description for advanced users
+  const [customStyleDescription, setCustomStyleDescription] = useState('');
+  const [lightingPreset, setLightingPreset] = useState('natural'); // natural, neon-pink-blue, golden-hour, dramatic, soft-glow, studio
+  
   // Character builder state
   const [character, setCharacter] = useState({
     name: '',
