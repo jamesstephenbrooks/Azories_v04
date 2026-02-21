@@ -35,8 +35,8 @@ const GENRE_SECTIONS = [
   // CALIBRATED - Fantasy at X:-1.01, Y:5.80, Z:-8.12 (back wall)
   { name: 'Fantasy', position: { x: -1.01, z: -8.12 }, bannerPos: { x: -1.01, y: 5.65, z: -7.5 }, rotation: 0, color: '#ec4899', calibrated: true },
   
-  // CALIBRATED - Science Fiction at X:-3.21, Y:5.90, Z:-5.76 - pulled forward from wall
-  { name: 'Science Fiction', position: { x: -3.21, z: -5.76 }, bannerPos: { x: -3.21, y: 5.65, z: -5.0 }, rotation: 0, color: '#06b6d4', calibrated: true },
+  // CALIBRATED - Science Fiction at X:-6.25, Y:5.93, Z:-1.29
+  { name: 'Science Fiction', position: { x: -6.25, z: -1.29 }, bannerPos: { x: -5.5, y: 6.5, z: -1.29 }, rotation: Math.PI / 2, color: '#06b6d4', calibrated: true },
   { name: 'Humour', position: { x: 4, z: -1 }, bannerPos: { x: 4.79, y: 6.5, z: -1 }, rotation: -Math.PI / 2, color: '#f59e0b' },
 ];
 
