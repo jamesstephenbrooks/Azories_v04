@@ -84,6 +84,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [isExploring, setIsExploring] = useState(false);
+  const isExploringRef = useRef(false); // Ref to access in animation loop without triggering re-render
   const [showGenreMenu, setShowGenreMenu] = useState(false);
   const [isMobileDevice] = useState(isMobile());
   const [hoveredBook, setHoveredBook] = useState(null);
