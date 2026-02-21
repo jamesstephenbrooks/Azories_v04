@@ -22,12 +22,12 @@ const DEFAULT_BOUNDS = {
 };
 
 // Genre sections - player position in front of each bookcase, facing toward it
-// The library has bookcases along the walls
+// Bookcases are along the back wall (negative Z)
 const GENRE_SECTIONS = [
-  { name: 'Fantasy', position: { x: -3, z: -2 }, rotation: Math.PI, color: '#9333ea' },      // Left bookcase, face back wall
-  { name: 'Adventure', position: { x: 3, z: -2 }, rotation: Math.PI, color: '#f59e0b' },     // Right bookcase, face back wall
-  { name: 'Mystery', position: { x: -2, z: 2 }, rotation: 0, color: '#3b82f6' },             // Face forward
-  { name: 'Science Fiction', position: { x: 2, z: 2 }, rotation: 0, color: '#10b981' },      // Face forward
+  { name: 'Fantasy', position: { x: -4, z: 0 }, bannerPos: { x: -5, z: -4 }, rotation: Math.PI, color: '#9333ea' },
+  { name: 'Adventure', position: { x: 4, z: 0 }, bannerPos: { x: 5, z: -4 }, rotation: Math.PI, color: '#f59e0b' },
+  { name: 'Mystery', position: { x: -2, z: 0 }, bannerPos: { x: -2, z: -4 }, rotation: Math.PI, color: '#3b82f6' },
+  { name: 'Science Fiction', position: { x: 2, z: 0 }, bannerPos: { x: 2, z: -4 }, rotation: Math.PI, color: '#10b981' },
 ];
 
 // Detect mobile device
