@@ -2973,14 +2973,21 @@ async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: d
         }
         style_desc = style_prompts.get(request.style, "high quality professional illustration, detailed, masterwork quality")
         
-        # ENHANCED prompt building for character quality
+        # ENHANCED prompt building for character quality - DeepAI level
         enhanced_prompt = request.prompt
         if request.type == "character":
-            enhanced_prompt = f"Character portrait: {request.prompt}, detailed, high quality, {style_desc}"
+            # Build a comprehensive character prompt for high quality output
+            quality_boosters = "beautiful detailed face, expressive eyes, sharp focus, professional lighting, highly detailed, masterpiece quality, best quality, ultra detailed"
+            enhanced_prompt = f"Character portrait of {request.prompt}, {style_desc}, {quality_boosters}"
         elif request.type == "scene":
-            enhanced_prompt = f"Scenic illustration: {request.prompt}, detailed, high quality, {style_desc}"
+            quality_boosters = "breathtaking scenery, atmospheric lighting, highly detailed environment, masterpiece quality, best quality"
+            enhanced_prompt = f"Scenic illustration: {request.prompt}, {style_desc}, {quality_boosters}"
+        elif request.type == "workflow":
+            # Workflow type from Expert Mode - use full quality enhancement
+            quality_boosters = "beautiful detailed, expressive, sharp focus, professional quality, highly detailed, masterpiece, best quality, ultra detailed"
+            enhanced_prompt = f"{request.prompt}, {style_desc}, {quality_boosters}"
         else:
-            enhanced_prompt = f"{request.prompt}, {style_desc}"
+            enhanced_prompt = f"{request.prompt}, {style_desc}, highly detailed, professional quality"
         
         # Add reference image note to prompt if provided
         if request.referenceImage:
