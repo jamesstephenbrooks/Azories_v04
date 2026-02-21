@@ -304,22 +304,12 @@ export default function Library() {
                     <FiGrid className="w-4 h-4" />
                   </Button>
                   <Button
-                    variant={viewMode === '3d' ? 'default' : 'ghost'}
-                    size="icon"
-                    onClick={() => setViewMode('3d')}
-                    className="rounded-full w-10 h-10"
-                    data-testid="view-3d-btn"
-                    title="3D Library"
-                  >
-                    <FiBox className="w-4 h-4" />
-                  </Button>
-                  <Button
                     variant={viewMode === 'immersive' ? 'default' : 'ghost'}
                     size="icon"
                     onClick={() => setViewMode('immersive')}
                     className="rounded-full w-10 h-10"
                     data-testid="view-immersive-btn"
-                    title="Immersive Library (Sketchfab)"
+                    title="Explore 3D Library"
                   >
                     <FiGlobe className="w-4 h-4" />
                   </Button>
