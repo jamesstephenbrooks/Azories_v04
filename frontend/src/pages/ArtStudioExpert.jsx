@@ -179,7 +179,7 @@ const SceneNode = ({ data, selected }) => {
   );
 };
 
-// Style Node - Art style selection - Expanded with all styles
+// Style Node - Art style selection with dropdown - Expanded with all styles
 const ALL_STYLE_CATEGORIES = [
   { category: 'Realistic', styles: ['realistic', 'portrait', 'cinematic', 'hyperrealistic'] },
   { category: 'Illustration', styles: ['cartoon', 'anime', 'manga', 'disney', 'pixar', 'chibi', 'comic', 'graphic-novel'] },
@@ -214,18 +214,31 @@ const STYLE_LABELS = {
   'expressionist': 'Express.', 'cubist': 'Cubist'
 };
 
+// Flatten all styles for dropdown
+const ALL_STYLES_FLAT = ALL_STYLE_CATEGORIES.flatMap(cat => 
+  cat.styles.map(s => ({ id: s, label: STYLE_LABELS[s], category: cat.category }))
+);
+
 const StyleNode = ({ data, selected }) => {
-  const [activeCategory, setActiveCategory] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  const filteredStyles = searchTerm 
+    ? ALL_STYLES_FLAT.filter(s => 
+        s.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        s.category.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : ALL_STYLES_FLAT;
+  
+  // Group by category for display
+  const groupedStyles = filteredStyles.reduce((acc, style) => {
+    if (!acc[style.category]) acc[style.category] = [];
+    acc[style.category].push(style);
+    return acc;
+  }, {});
   
   return (
-    <div className={`bg-gradient-to-br from-amber-900/90 to-amber-800/90 rounded-xl border-2 ${selected ? 'border-amber-400' : 'border-amber-600/50'} shadow-xl backdrop-blur-sm h-full w-full min-w-[280px] min-h-[200px]`}>
-      <NodeResizer 
-        color="#f59e0b" 
-        isVisible={selected} 
-        minWidth={280} 
-        minHeight={200}
-        handleStyle={{ width: 8, height: 8 }}
-      />
+    <div className={`bg-gradient-to-br from-amber-900/90 to-amber-800/90 rounded-xl border-2 ${selected ? 'border-amber-400' : 'border-amber-600/50'} shadow-xl backdrop-blur-sm min-w-[200px]`}>
       <Handle type="target" position={Position.Left} className="!bg-amber-400 !w-3 !h-3" />
       
       <div className="p-2 border-b border-amber-600/30 flex items-center gap-2">
@@ -233,46 +246,66 @@ const StyleNode = ({ data, selected }) => {
           <FiSliders className="text-amber-300 w-3 h-3" />
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="text-xs font-semibold text-white truncate">Style: {STYLE_LABELS[data.style] || 'Fantasy'}</h4>
+          <h4 className="text-xs font-semibold text-white truncate">Art Style</h4>
         </div>
-        {selected && <FiMove className="w-3 h-3 text-amber-400" />}
       </div>
       
-      <div className="p-2 h-[calc(100%-40px)] overflow-auto">
-        {/* Category tabs */}
-        <div className="flex flex-wrap gap-1 mb-2">
-          {ALL_STYLE_CATEGORIES.map((cat, idx) => (
-            <button
-              key={cat.category}
-              onClick={() => setActiveCategory(idx)}
-              className={`px-2 py-0.5 rounded text-[10px] transition-colors ${
-                activeCategory === idx 
-                  ? 'bg-amber-500 text-white' 
-                  : 'bg-black/30 text-amber-200 hover:bg-amber-500/30'
-              }`}
-            >
-              {cat.category}
-            </button>
-          ))}
-        </div>
+      <div className="p-2">
+        {/* Custom dropdown trigger */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="w-full px-3 py-2 rounded-lg bg-black/40 border border-amber-500/30 text-white text-xs text-left flex items-center justify-between hover:border-amber-400 transition-colors"
+        >
+          <span>{STYLE_LABELS[data.style] || 'Select style...'}</span>
+          <svg className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
         
-        {/* Styles grid */}
-        <div className="grid grid-cols-4 gap-1">
-          {ALL_STYLE_CATEGORIES[activeCategory]?.styles.map(styleId => (
-            <button
-              key={styleId}
-              onClick={() => data.onChange?.('style', styleId)}
-              className={`px-1 py-1 rounded text-[10px] transition-colors truncate ${
-                data.style === styleId 
-                  ? 'bg-amber-500 text-white' 
-                  : 'bg-black/30 text-amber-200 hover:bg-amber-500/30'
-              }`}
-              title={STYLE_LABELS[styleId]}
-            >
-              {STYLE_LABELS[styleId]}
-            </button>
-          ))}
-        </div>
+        {/* Dropdown menu */}
+        {isOpen && (
+          <div className="absolute z-50 mt-1 w-56 bg-[#1a1520] border border-amber-500/30 rounded-lg shadow-xl max-h-64 overflow-hidden">
+            {/* Search input */}
+            <div className="p-2 border-b border-amber-500/20">
+              <input
+                type="text"
+                placeholder="Search styles..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-2 py-1.5 rounded bg-black/30 border border-amber-500/20 text-white text-xs focus:outline-none focus:border-amber-400"
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+            
+            {/* Styles list grouped by category */}
+            <div className="max-h-48 overflow-y-auto">
+              {Object.entries(groupedStyles).map(([category, styles]) => (
+                <div key={category}>
+                  <div className="px-2 py-1 text-[10px] font-semibold text-amber-400 uppercase tracking-wider bg-black/20 sticky top-0">
+                    {category}
+                  </div>
+                  {styles.map(style => (
+                    <button
+                      key={style.id}
+                      onClick={() => {
+                        data.onChange?.('style', style.id);
+                        setIsOpen(false);
+                        setSearchTerm('');
+                      }}
+                      className={`w-full px-3 py-1.5 text-left text-xs transition-colors ${
+                        data.style === style.id 
+                          ? 'bg-amber-500/30 text-white' 
+                          : 'text-white/70 hover:bg-amber-500/20 hover:text-white'
+                      }`}
+                    >
+                      {style.label}
+                    </button>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
       
       <Handle type="source" position={Position.Right} className="!bg-amber-400 !w-3 !h-3" />
@@ -280,7 +313,7 @@ const StyleNode = ({ data, selected }) => {
   );
 };
 
-// Reference Image Node - Resizable
+// Reference Image Node - Resizable with proper image scaling
 const ReferenceNode = ({ data, selected }) => {
   const fileInputRef = useRef(null);
   
@@ -296,7 +329,7 @@ const ReferenceNode = ({ data, selected }) => {
   };
   
   return (
-    <div className={`bg-gradient-to-br from-cyan-900/90 to-cyan-800/90 rounded-xl border-2 ${selected ? 'border-cyan-400' : 'border-cyan-600/50'} shadow-xl backdrop-blur-sm h-full w-full min-w-[150px] min-h-[150px]`}>
+    <div className={`bg-gradient-to-br from-cyan-900/90 to-cyan-800/90 rounded-xl border-2 ${selected ? 'border-cyan-400' : 'border-cyan-600/50'} shadow-xl backdrop-blur-sm flex flex-col`} style={{ width: '100%', height: '100%', minWidth: '150px', minHeight: '150px' }}>
       <NodeResizer 
         color="#06b6d4" 
         isVisible={selected} 
@@ -306,7 +339,7 @@ const ReferenceNode = ({ data, selected }) => {
       />
       <Handle type="target" position={Position.Left} className="!bg-cyan-400 !w-3 !h-3" />
       
-      <div className="p-2 border-b border-cyan-600/30 flex items-center gap-2">
+      <div className="p-2 border-b border-cyan-600/30 flex items-center gap-2 flex-shrink-0">
         <div className="w-6 h-6 rounded-lg bg-cyan-500/30 flex items-center justify-center flex-shrink-0">
           <FiImage className="text-cyan-300 w-3 h-3" />
         </div>
@@ -318,17 +351,17 @@ const ReferenceNode = ({ data, selected }) => {
         )}
       </div>
       
-      <div className="p-2 h-[calc(100%-40px)]">
+      <div className="p-2 flex-1 min-h-0 overflow-hidden">
         {data.image ? (
-          <div className="relative h-full">
+          <div className="relative w-full h-full">
             <img 
               src={data.image} 
               alt="Reference" 
-              className="w-full h-full object-cover rounded-lg"
+              className="absolute inset-0 w-full h-full object-contain rounded-lg"
             />
             <button
               onClick={() => data.onChange?.('image', null)}
-              className="absolute top-1 right-1 p-1 bg-red-500 rounded-full hover:bg-red-600"
+              className="absolute top-1 right-1 p-1 bg-red-500 rounded-full hover:bg-red-600 z-10"
             >
               <FiTrash2 className="w-3 h-3 text-white" />
             </button>
@@ -409,10 +442,10 @@ const CombineNode = ({ data, selected }) => {
   );
 };
 
-// Output Node - Final generation - Resizable
+// Output Node - Final generation - Resizable with proper image scaling
 const OutputNode = ({ data, selected }) => {
   return (
-    <div className={`bg-gradient-to-br from-pink-900/90 to-pink-800/90 rounded-xl border-2 ${selected ? 'border-pink-400' : 'border-pink-600/50'} shadow-xl backdrop-blur-sm h-full w-full min-w-[200px] min-h-[180px]`}>
+    <div className={`bg-gradient-to-br from-pink-900/90 to-pink-800/90 rounded-xl border-2 ${selected ? 'border-pink-400' : 'border-pink-600/50'} shadow-xl backdrop-blur-sm flex flex-col`} style={{ width: '100%', height: '100%', minWidth: '200px', minHeight: '180px' }}>
       <NodeResizer 
         color="#ec4899" 
         isVisible={selected} 
@@ -422,7 +455,7 @@ const OutputNode = ({ data, selected }) => {
       />
       <Handle type="target" position={Position.Left} className="!bg-pink-400 !w-3 !h-3" />
       
-      <div className="p-2 border-b border-pink-600/30 flex items-center gap-2">
+      <div className="p-2 border-b border-pink-600/30 flex items-center gap-2 flex-shrink-0">
         <div className="w-6 h-6 rounded-lg bg-pink-500/30 flex items-center justify-center flex-shrink-0">
           <FiZap className="text-pink-300 w-3 h-3" />
         </div>
@@ -434,7 +467,7 @@ const OutputNode = ({ data, selected }) => {
         )}
       </div>
       
-      <div className="p-2 h-[calc(100%-40px)]">
+      <div className="p-2 flex-1 min-h-0 overflow-hidden">
         {data.generating ? (
           <div className="w-full h-full bg-black/30 rounded-lg flex items-center justify-center">
             <motion.div
@@ -444,13 +477,13 @@ const OutputNode = ({ data, selected }) => {
             />
           </div>
         ) : data.image ? (
-          <div className="relative h-full">
+          <div className="relative w-full h-full">
             <img 
               src={data.image} 
               alt="Generated" 
-              className="w-full h-full object-cover rounded-lg"
+              className="absolute inset-0 w-full h-full object-contain rounded-lg"
             />
-            <div className="absolute bottom-2 right-2 flex gap-1">
+            <div className="absolute bottom-2 right-2 flex gap-1 z-10">
               <button
                 onClick={() => data.onDownload?.(data.image)}
                 className="p-1.5 bg-black/50 rounded-lg hover:bg-black/70"
