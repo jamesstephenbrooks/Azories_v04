@@ -72,6 +72,10 @@ export default function BookEditor() {
   const [videoUploadProgress, setVideoUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   
+  // Art Studio Gallery picker
+  const [showGalleryPicker, setShowGalleryPicker] = useState(false);
+  const [galleryImages, setGalleryImages] = useState([]);
+  
   // New chapter/page dialogs
   const [newChapterOpen, setNewChapterOpen] = useState(false);
   const [newChapterTitle, setNewChapterTitle] = useState('');
