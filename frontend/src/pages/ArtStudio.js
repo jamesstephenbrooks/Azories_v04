@@ -213,6 +213,17 @@ export default function ArtStudio() {
   const [promptHistory, setPromptHistory] = useState([]);
   const [showHistoryDropdown, setShowHistoryDropdown] = useState(false);
   
+  // PRO FEATURES STATE
+  const [showStylePreview, setShowStylePreview] = useState(false);
+  const [negativePrompt, setNegativePrompt] = useState('');
+  const [aspectRatio, setAspectRatio] = useState('1:1'); // 1:1, 16:9, 9:16, 4:3, 3:4
+  const [qualityLevel, setQualityLevel] = useState('high'); // low, medium, high, ultra
+  const [variationCount, setVariationCount] = useState(1); // 1-4 variations
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
+  const [compareStyles, setCompareStyles] = useState([]); // For compare mode
+  const [showCompareMode, setShowCompareMode] = useState(false);
+  const [generationHistory, setGenerationHistory] = useState([]); // Recent generations
+  
   // Character builder state
   const [character, setCharacter] = useState({
     name: '',
