@@ -2182,16 +2182,16 @@ async def proxy_audio(url: str):
         logger.error(f"Error proxying audio: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-# Predefined ambient sounds - hosted as base64 or URLs
+# Predefined ambient sounds - using working URLs from Soundbible and other free sources
 AMBIENT_SOUND_URLS = {
-    "rain": "https://freesound.org/data/previews/462/462065_9386630-lq.mp3",
-    "fireplace": "https://freesound.org/data/previews/145/145098_2607098-lq.mp3",
-    "forest": "https://freesound.org/data/previews/527/527576_4397472-lq.mp3",
-    "ocean": "https://freesound.org/data/previews/531/531015_3575374-lq.mp3",
-    "cafe": "https://freesound.org/data/previews/346/346234_4502859-lq.mp3",
-    "night": "https://freesound.org/data/previews/531/531019_3575374-lq.mp3",
-    "wind": "https://freesound.org/data/previews/438/438702_9082381-lq.mp3",
-    "library": "https://freesound.org/data/previews/432/432749_4397472-lq.mp3"
+    "rain": "https://soundbible.com/grab.php?id=2065&type=mp3",  # Rain Inside House
+    "fireplace": "https://soundbible.com/grab.php?id=2178&type=mp3",  # Fireplace
+    "forest": "https://soundbible.com/grab.php?id=2212&type=mp3",  # Forest Birds
+    "ocean": "https://soundbible.com/grab.php?id=2179&type=mp3",  # Ocean Waves
+    "cafe": "https://soundbible.com/grab.php?id=1664&type=mp3",  # Restaurant Ambience
+    "night": "https://soundbible.com/grab.php?id=2083&type=mp3",  # Night Crickets
+    "wind": "https://soundbible.com/grab.php?id=2033&type=mp3",  # Wind Sound
+    "library": "https://soundbible.com/grab.php?id=1996&type=mp3"  # Soft Background
 }
 
 @api_router.get("/ambient-sounds/{sound_name}")
