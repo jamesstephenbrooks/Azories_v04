@@ -3538,8 +3538,7 @@ async def generate_with_reference(request: ConsistentCharacterRequest, current_u
         )
         
         if images and len(images) > 0:
-            import base64
-            image_base64 = base64.b64encode(images[0]).decode('utf-8')
+            image_base64 = base64_module.b64encode(images[0]).decode('utf-8')
             image_url = f"data:image/png;base64,{image_base64}"
             
             # Save to history
