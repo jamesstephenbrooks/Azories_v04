@@ -803,14 +803,49 @@ export default function ArtStudio() {
                   </div>
                 </div>
                 
-                {/* Custom Prompt */}
-                <div>
-                  <label className="text-sm text-white/70 mb-1 block">Custom Scene Description</label>
+                {/* Custom Prompt with History */}
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-sm text-white/70">Custom Scene Description</label>
+                    {promptHistory.length > 0 && (
+                      <button
+                        onClick={() => setShowHistoryDropdown(!showHistoryDropdown)}
+                        className="text-xs text-purple-400 hover:text-purple-300 flex items-center gap-1"
+                        data-testid="scene-history-toggle-btn"
+                      >
+                        <FiRefreshCw className="w-3 h-3" />
+                        History ({promptHistory.length})
+                      </button>
+                    )}
+                  </div>
+                  
+                  {/* History Dropdown */}
+                  {showHistoryDropdown && promptHistory.length > 0 && (
+                    <div className="absolute right-0 top-6 z-20 w-72 bg-[#1a1520] border border-purple-500/30 rounded-lg shadow-xl max-h-48 overflow-y-auto">
+                      <div className="p-2 border-b border-white/10">
+                        <span className="text-xs text-white/50">Recent prompts</span>
+                      </div>
+                      {promptHistory.map((prompt, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => {
+                            setScene({ ...scene, customPrompt: prompt });
+                            setShowHistoryDropdown(false);
+                          }}
+                          className="w-full px-3 py-2 text-left text-xs text-white/70 hover:bg-purple-500/20 hover:text-white border-b border-white/5 last:border-0"
+                        >
+                          <p className="truncate">{prompt}</p>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  
                   <Textarea
                     value={scene.customPrompt}
                     onChange={(e) => setScene({ ...scene, customPrompt: e.target.value })}
                     placeholder="Describe your scene in detail..."
                     className="bg-black/30 border-white/20 text-white min-h-[100px]"
+                    data-testid="scene-custom-prompt-textarea"
                   />
                 </div>
               </motion.div>
