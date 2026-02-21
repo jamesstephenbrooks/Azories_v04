@@ -46,6 +46,17 @@ export const Navbar = () => {
               My Books
             </Link>
           )}
+          
+          {user && (
+            <Link 
+              to="/art-studio" 
+              className="font-ui text-foreground/80 hover:text-foreground transition-colors flex items-center gap-1.5"
+              data-testid="nav-art-studio"
+            >
+              <FiDroplet className="w-4 h-4 text-purple-500" />
+              Art Studio
+            </Link>
+          )}
         </div>
         
         {/* Right side */}
