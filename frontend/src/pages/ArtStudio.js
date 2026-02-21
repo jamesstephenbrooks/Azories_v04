@@ -286,8 +286,8 @@ export default function ArtStudio() {
     }
   };
   
-  // Use gallery image as reference
-  const useGalleryAsReference = (imageUrl) => {
+  // Select gallery image as reference
+  const selectGalleryAsReference = (imageUrl) => {
     setReferenceImage(imageUrl);
     setShowGalleryPicker(false);
   };
