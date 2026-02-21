@@ -2691,7 +2691,9 @@ class ArtStudioGenerateRequest(BaseModel):
     type: str = "character"  # character, scene, or workflow
     characterData: Optional[dict] = None
     sceneData: Optional[dict] = None
-    referenceImage: Optional[str] = None  # Base64 or URL of reference image
+    referenceImage: Optional[str] = None  # Legacy: single reference image
+    styleReferenceImage: Optional[str] = None  # For art style/look and feel
+    characterReferenceImage: Optional[str] = None  # For character appearance consistency
     bookId: Optional[str] = None  # Book to assign the image to
     workflowName: Optional[str] = None  # Name of workflow if from Expert Mode
     transparentBackground: Optional[bool] = False  # Generate with transparent background
