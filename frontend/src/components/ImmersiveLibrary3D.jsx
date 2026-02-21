@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { Button } from '@/components/ui/button';
-import { FiX, FiBook, FiMaximize2, FiMinimize2, FiVolume2, FiVolumeX, FiMessageCircle, FiMapPin } from 'react-icons/fi';
+import { FiX, FiBook, FiMaximize2, FiMinimize2, FiVolume2, FiVolumeX, FiMessageCircle, FiMapPin, FiMove } from 'react-icons/fi';
 import { useAuth } from '@/context/AuthContext';
 
 // Gothic Library Model URL - Using proxy to bypass CORS (smaller compressed version)
