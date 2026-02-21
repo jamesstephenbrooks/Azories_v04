@@ -1065,12 +1065,61 @@ export default function ArtStudioExpert() {
             
             <Panel position="bottom-left" className="!bg-black/50 !border-white/10 rounded-lg p-2">
               <p className="text-xs text-white/50">
-                Drag nodes • Connect handles • Select to resize • Run workflow
+                Drag nodes • Connect handles • Run workflow
               </p>
             </Panel>
           </ReactFlow>
         </div>
       </div>
+      
+      {/* Expanded Image Preview Modal */}
+      <AnimatePresence>
+        {expandedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-8"
+            onClick={() => setExpandedImage(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.8 }}
+              className="relative max-w-4xl max-h-[90vh]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img 
+                src={expandedImage} 
+                alt="Full size preview" 
+                className="max-w-full max-h-[90vh] rounded-lg shadow-2xl"
+              />
+              <button
+                onClick={() => setExpandedImage(null)}
+                className="absolute top-2 right-2 p-2 bg-black/70 hover:bg-black rounded-full text-white"
+              >
+                <FiX className="w-5 h-5" />
+              </button>
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-3">
+                <Button
+                  onClick={() => saveToGallery(expandedImage)}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  <FiSave className="w-4 h-4 mr-2" />
+                  Save to Gallery
+                </Button>
+                <Button
+                  onClick={() => downloadImage(expandedImage)}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  <FiDownload className="w-4 h-4 mr-2" />
+                  Download
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
