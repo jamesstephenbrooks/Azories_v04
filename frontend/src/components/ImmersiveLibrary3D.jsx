@@ -642,13 +642,13 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         // Store the floor level in bounds for teleportation
         boundsRef.current.floorY = floorLevel;
         
-        // Position camera to see the grand hall with bookcases and vaulted ceiling
-        // Start near the entrance looking into the main hall
-        camera.position.set(0, startY, 6); // Further back in the room
-        console.log('Camera positioned at:', 0, startY, 6);
+        // Position camera inside the library to see the grand hall
+        // Start in the center area looking toward the bookcases and vaulted ceiling
+        camera.position.set(0, startY, 3); // Inside the room
+        console.log('Camera positioned at:', 0, startY, 3);
         
-        // Look toward the center of the hall (toward the bookcases and ceiling)
-        camera.lookAt(0, startY + 1, -3); // Look slightly up to see vaulted ceiling
+        // Look toward the main hall (center, slightly up for ceiling)
+        camera.lookAt(0, startY + 0.5, 0); // Look at center of room
         
         // Store the euler for drag controls
         euler.current.setFromQuaternion(camera.quaternion);
