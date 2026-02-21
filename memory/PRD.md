@@ -11,7 +11,25 @@ Create a digital book creating and reading web application called "Azories" for 
 
 ## What's Been Implemented
 
-### Latest Session (Feb 21, 2026) - Art Studio Enhancements & Fixes
+### Latest Session (Feb 21, 2026) - Expert Mode Fixes & 3D Library UI
+
+**Expert Mode ResizeObserver Fix:**
+- Removed NodeResizer from CharacterNode and SceneNode (was causing ResizeObserver errors)
+- CharacterNode now has fixed size: 250x220px
+- SceneNode now has fixed size: 250x240px
+- ReferenceNode and OutputNode already had fixed sizes
+
+**Expert Mode Output Preview:**
+- Added full-size image preview modal with FiMaximize2 icon button
+- Users can now expand generated images to full screen before saving/downloading
+- Modal includes Save to Gallery and Download buttons
+
+**3D Library Book Popup Position:**
+- Changed book info card from center of screen to middle-right position
+- Uses `top-1/2 right-8 -translate-y-1/2` positioning
+- Slides in from right with animation
+
+### Previous Session (Feb 21, 2026) - Art Studio Enhancements & Fixes
 
 **Part 1: Art Studio Fixes**
 - **Expert Mode Style Node Dropdown** - Changed from tabs to searchable dropdown
