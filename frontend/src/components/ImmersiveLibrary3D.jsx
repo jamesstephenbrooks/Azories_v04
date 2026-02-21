@@ -94,6 +94,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
   const raycasterRef = useRef(new THREE.Raycaster());
   const bookMeshesRef = useRef([]);
   const azoraRef = useRef(null);
+  const genreBannersRef = useRef([]); // Store banner sprites for click detection
   
   // Physics constants - realistic eye level for library scale
   const PLAYER_HEIGHT = 1.1; // Lower eye level for better immersion in scaled library
@@ -104,6 +105,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
   const [isAzoraComing, setIsAzoraComing] = useState(false);
   const [showAzoraChat, setShowAzoraChat] = useState(false);
   const [selectedBook, setSelectedBook] = useState(null); // For book info card
+  const [selectedGenre, setSelectedGenre] = useState(null); // For genre book list panel
   
   const [isLoaded, setIsLoaded] = useState(false);
   const [loadProgress, setLoadProgress] = useState(0);
