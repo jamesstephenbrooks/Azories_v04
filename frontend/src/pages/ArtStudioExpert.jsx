@@ -944,10 +944,18 @@ export default function ArtStudioExpert() {
   
   // Save workflow
   const saveWorkflow = async () => {
+    if (!workflowName.trim()) {
+      alert('Please enter a workflow name');
+      return;
+    }
+    
+    setIsSavingWorkflow(true);
+    setWorkflowSaveMessage('');
+    
     try {
       const workflow = {
         name: workflowName,
-        nodes: nodes.map(n => ({ ...n, data: { ...n.data, onChange: undefined, onDownload: undefined } })),
+        nodes: nodes.map(n => ({ ...n, data: { ...n.data, onChange: undefined, onDownload: undefined, onSaveToGallery: undefined, onExpand: undefined } })),
         edges,
         bookId: selectedBookId !== 'general' ? selectedBookId : null
       };
@@ -962,11 +970,55 @@ export default function ArtStudioExpert() {
       });
       
       if (response.ok) {
-        alert('Workflow saved!');
+        const result = await response.json();
+        setWorkflowSaveMessage(result.updated ? 'Workflow updated!' : 'Workflow saved!');
         loadWorkflows();
+        setTimeout(() => setWorkflowSaveMessage(''), 3000);
+      } else {
+        throw new Error('Failed to save');
       }
     } catch (error) {
       console.error('Save error:', error);
+      setWorkflowSaveMessage('Failed to save workflow');
+    } finally {
+      setIsSavingWorkflow(false);
+    }
+  };
+  
+  // Load a specific workflow
+  const loadWorkflow = (workflow) => {
+    if (!workflow.nodes || !workflow.edges) {
+      alert('Invalid workflow data');
+      return;
+    }
+    
+    // Restore nodes with onChange handlers
+    const restoredNodes = workflow.nodes.map(node => ({
+      ...node,
+      data: {
+        ...node.data,
+        onChange: (k, v) => updateNodeData(node.id, k, v)
+      }
+    }));
+    
+    setNodes(restoredNodes);
+    setEdges(workflow.edges);
+    setWorkflowName(workflow.name);
+    setShowWorkflowPanel(false);
+  };
+  
+  // Delete a saved workflow
+  const deleteWorkflow = async (workflowId) => {
+    if (!confirm('Delete this workflow?')) return;
+    
+    try {
+      await fetch(`${API_URL}/api/art-studio/workflow/${workflowId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      loadWorkflows();
+    } catch (error) {
+      console.error('Delete error:', error);
     }
   };
   
