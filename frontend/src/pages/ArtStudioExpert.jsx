@@ -134,12 +134,28 @@ const SceneNode = ({ data, selected }) => {
           <option value="">Custom scene...</option>
           <option value="forest">Enchanted Forest</option>
           <option value="castle">Castle Interior</option>
-          <option value="village">Medieval Village</option>
-          <option value="ocean">Ocean/Beach</option>
+          <option value="beach">Tropical Beach</option>
+          <option value="city">Modern City</option>
+          <option value="space">Outer Space</option>
+          <option value="underwater">Underwater</option>
           <option value="mountain">Mountain Peak</option>
-          <option value="city">Fantasy City</option>
           <option value="library">Ancient Library</option>
-          <option value="garden">Magical Garden</option>
+          <option value="dreamscape">Dreamscape</option>
+          <option value="sunset-cliffs">Sunset Cliffs</option>
+          <option value="aurora">Northern Lights</option>
+          <option value="cherry-blossom">Cherry Blossom</option>
+          <option value="ruins">Ancient Ruins</option>
+          <option value="throne-room">Throne Room</option>
+          <option value="tavern">Medieval Tavern</option>
+          <option value="garden">Secret Garden</option>
+          <option value="desert">Desert Oasis</option>
+          <option value="crystal-cave">Crystal Cave</option>
+          <option value="floating-islands">Floating Islands</option>
+          <option value="moonlit-lake">Moonlit Lake</option>
+          <option value="battlefield">Battlefield</option>
+          <option value="village">Village Square</option>
+          <option value="ship-deck">Ship Deck</option>
+          <option value="academy">Magic Academy</option>
         </select>
         
         <textarea
