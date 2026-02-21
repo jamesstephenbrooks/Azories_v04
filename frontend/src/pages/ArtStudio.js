@@ -412,6 +412,39 @@ export default function ArtStudio() {
     }
   };
   
+  // Extract prompt from reference image using AI
+  const extractPromptFromImage = async (imageUrl, target) => {
+    if (!token) return;
+    
+    setIsExtractingPrompt(true);
+    try {
+      const response = await fetch(`${API_URL}/api/art-studio/analyze-image`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ 
+          image_url: imageUrl,
+          analysis_type: target === 'style' ? 'style' : 'character'
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (target === 'style') {
+          setExtractedStylePrompt(data.extracted_prompt || '');
+        } else {
+          setExtractedCharPrompt(data.extracted_prompt || '');
+        }
+      }
+    } catch (error) {
+      console.error('Failed to extract prompt:', error);
+    } finally {
+      setIsExtractingPrompt(false);
+    }
+  };
+  
   const loadUserBooks = async () => {
     try {
       const response = await fetch(`${API_URL}/api/books/my`, {
