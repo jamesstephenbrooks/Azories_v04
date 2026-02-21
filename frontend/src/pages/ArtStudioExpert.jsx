@@ -585,7 +585,23 @@ export default function ArtStudioExpert() {
       if (exportData) {
         try {
           const data = JSON.parse(exportData);
+          console.log('Importing character data from Easy Mode:', data);
+          
           if (data.character) {
+            // Build appearance string from Easy Mode character traits
+            const appearanceParts = [];
+            if (data.character.skinTone) appearanceParts.push(`${data.character.skinTone} skin`);
+            if (data.character.hairColor && data.character.hairStyle) {
+              appearanceParts.push(`${data.character.hairColor} ${data.character.hairStyle} hair`);
+            }
+            if (data.character.eyeColor) appearanceParts.push(`${data.character.eyeColor} eyes`);
+            if (data.character.bodyType) appearanceParts.push(`${data.character.bodyType} build`);
+            if (data.character.clothing) appearanceParts.push(`${data.character.clothing} clothing`);
+            if (data.character.expression) appearanceParts.push(`${data.character.expression} expression`);
+            if (data.character.additionalDetails) appearanceParts.push(data.character.additionalDetails);
+            
+            const appearanceString = appearanceParts.join(', ');
+            
             // Update the character node with imported data
             setNodes(nds => nds.map(node => {
               if (node.type === 'character') {
@@ -596,8 +612,8 @@ export default function ArtStudioExpert() {
                     name: data.character.name || '',
                     gender: data.character.gender || 'Female',
                     age: data.character.ageGroup || 'Adult',
-                    description: data.character.additionalDetails || '',
-                    onChange: (k, v) => updateNodeData(node.id, k, v)
+                    appearance: appearanceString,
+                    transparentBg: data.character.transparentBackground || false
                   }
                 };
               }
@@ -606,8 +622,7 @@ export default function ArtStudioExpert() {
                   ...node,
                   data: {
                     ...node.data,
-                    style: data.style,
-                    onChange: (k, v) => updateNodeData(node.id, k, v)
+                    style: data.style
                   }
                 };
               }
@@ -616,8 +631,7 @@ export default function ArtStudioExpert() {
                   ...node,
                   data: {
                     ...node.data,
-                    image: data.referenceImage,
-                    onChange: (k, v) => updateNodeData(node.id, k, v)
+                    image: data.referenceImage
                   }
                 };
               }
@@ -629,13 +643,15 @@ export default function ArtStudioExpert() {
             
             // Remove the URL param
             window.history.replaceState({}, '', '/art-studio/expert');
+            
+            console.log('Character imported successfully!');
           }
         } catch (e) {
           console.error('Failed to import character data:', e);
         }
       }
     }
-  }, []);
+  }, [setNodes]);
   
   const loadUserBooks = async () => {
     try {
