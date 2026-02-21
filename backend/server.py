@@ -2849,6 +2849,98 @@ async def art_studio_delete(image_id: str, current_user: dict = Depends(get_curr
         logging.error(f"Art Studio delete error: {e}")
         raise HTTPException(status_code=500, detail="Failed to delete image")
 
+
+# Workflow Save/Load Endpoints
+class WorkflowSaveRequest(BaseModel):
+    name: str
+    nodes: list
+    edges: list
+
+@api_router.post("/art-studio/workflow/save")
+async def save_workflow(request: WorkflowSaveRequest, current_user: dict = Depends(get_current_user)):
+    """Save a node-based workflow"""
+    user = current_user
+    
+    try:
+        workflow = {
+            "user_id": user["id"],
+            "name": request.name,
+            "nodes": request.nodes,
+            "edges": request.edges,
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc)
+        }
+        
+        # Check if workflow with same name exists, update it
+        existing = await db.art_studio_workflows.find_one({
+            "user_id": user["id"],
+            "name": request.name
+        })
+        
+        if existing:
+            await db.art_studio_workflows.update_one(
+                {"_id": existing["_id"]},
+                {"$set": {
+                    "nodes": request.nodes,
+                    "edges": request.edges,
+                    "updated_at": datetime.now(timezone.utc)
+                }}
+            )
+            return {"success": True, "id": str(existing["_id"]), "updated": True}
+        else:
+            result = await db.art_studio_workflows.insert_one(workflow)
+            return {"success": True, "id": str(result.inserted_id), "updated": False}
+        
+    except Exception as e:
+        logging.error(f"Workflow save error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to save workflow")
+
+@api_router.get("/art-studio/workflows")
+async def get_workflows(current_user: dict = Depends(get_current_user)):
+    """Get user's saved workflows"""
+    user = current_user
+    
+    try:
+        workflows = []
+        cursor = db.art_studio_workflows.find({"user_id": user["id"]}).sort("updated_at", -1)
+        
+        async for item in cursor:
+            workflows.append({
+                "id": str(item["_id"]),
+                "name": item["name"],
+                "nodes": item.get("nodes", []),
+                "edges": item.get("edges", []),
+                "created_at": item.get("created_at", "").isoformat() if item.get("created_at") else None,
+                "updated_at": item.get("updated_at", "").isoformat() if item.get("updated_at") else None
+            })
+        
+        return {"workflows": workflows}
+        
+    except Exception as e:
+        logging.error(f"Workflow load error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to load workflows")
+
+@api_router.delete("/art-studio/workflow/{workflow_id}")
+async def delete_workflow(workflow_id: str, current_user: dict = Depends(get_current_user)):
+    """Delete a workflow"""
+    user = current_user
+    
+    try:
+        from bson import ObjectId
+        result = await db.art_studio_workflows.delete_one({
+            "_id": ObjectId(workflow_id),
+            "user_id": user["id"]
+        })
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Workflow not found")
+        
+        return {"success": True}
+        
+    except Exception as e:
+        logging.error(f"Workflow delete error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to delete workflow")
+
 # Include the router
 app.include_router(api_router)
 
