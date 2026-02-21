@@ -232,15 +232,11 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
   // Mouse down - start drag look
   const onMouseDown = useCallback((event) => {
     if (!isExploringRef.current || isMobileDevice) return;
-    
-    // If a book is selected, don't start camera drag - might be rotating book
-    if (selectedBook) return;
-    
     // Right click or left click to drag
     isDragging.current = true;
     lastMousePos.current = { x: event.clientX, y: event.clientY };
     setShowClickHint(false);
-  }, [isMobileDevice, selectedBook]);
+  }, [isMobileDevice]);
 
   // Mouse up - stop drag look
   const onMouseUp = useCallback(() => {
