@@ -1253,11 +1253,12 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         
         const targetY = detectedFloorY + PLAYER_HEIGHT;
         
-        // Smoothly interpolate to target height - faster for stairs
+        // Smoothly interpolate to target height - faster for climbing stairs
         const yDiff = targetY - camera.position.y;
         if (Math.abs(yDiff) > 0.01) {
-          // Use faster interpolation when climbing stairs
-          const interpSpeed = yDiff > 0 ? 0.25 : 0.2;
+          // Use faster interpolation when climbing (positive diff) vs descending
+          const isClimbing = yDiff > 0;
+          const interpSpeed = isClimbing ? 0.35 : 0.2; // 35% per frame when climbing
           camera.position.y += yDiff * interpSpeed;
         }
         
