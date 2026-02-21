@@ -424,18 +424,28 @@ export default function ArtStudio() {
   
   const buildCharacterPrompt = () => {
     const traits = [];
+    
+    // Build a rich character description for high quality output
+    if (character.name) {
+      traits.push(`${character.name}`);
+    }
     traits.push(`${character.gender} character`);
     traits.push(`${character.ageGroup.toLowerCase()} age`);
     traits.push(`${character.bodyType.toLowerCase()} body type`);
-    traits.push(`${character.skinTone.toLowerCase()} skin tone`);
+    traits.push(`beautiful ${character.skinTone.toLowerCase()} skin`);
     traits.push(`${character.hairColor.toLowerCase()} ${character.hairStyle.toLowerCase()} hair`);
-    traits.push(`${character.eyeColor.toLowerCase()} eyes`);
-    traits.push(`${character.clothing.toLowerCase()} clothing style`);
+    traits.push(`stunning ${character.eyeColor.toLowerCase()} eyes`);
+    traits.push(`wearing ${character.clothing.toLowerCase()} attire`);
     traits.push(`${character.expression.toLowerCase()} expression`);
     
     if (character.additionalDetails) {
       traits.push(character.additionalDetails);
     }
+    
+    // Add quality boosters for better generation
+    traits.push('beautiful detailed face');
+    traits.push('expressive eyes');
+    traits.push('professional portrait');
     
     return traits.join(', ');
   };
