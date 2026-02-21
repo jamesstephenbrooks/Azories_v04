@@ -2979,12 +2979,21 @@ async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: d
         if request.referenceImage:
             enhanced_prompt += ", maintaining visual consistency with the provided reference"
         
+        # Add transparent background instruction if requested
+        if request.transparentBackground:
+            enhanced_prompt += ", isolated subject on pure transparent background, PNG cutout style, no background elements, clean edges"
+        
         # Use OpenAI image generation via Emergent (matching working endpoint)
         image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
+        
+        # Set background type based on request
+        background_type = "transparent" if request.transparentBackground else "auto"
+        
         images = await image_gen.generate_images(
             prompt=enhanced_prompt,
             model="gpt-image-1",
-            number_of_images=1
+            number_of_images=1,
+            background=background_type
         )
         
         if images and len(images) > 0:
@@ -3005,6 +3014,7 @@ async def art_studio_generate(request: ArtStudioGenerateRequest, current_user: d
                 "book_id": request.bookId,
                 "workflow_name": request.workflowName,
                 "has_reference": bool(request.referenceImage),
+                "transparent_background": request.transparentBackground,
                 "created_at": datetime.now(timezone.utc)
             }
             await db.art_studio_generations.insert_one(generation_record)
