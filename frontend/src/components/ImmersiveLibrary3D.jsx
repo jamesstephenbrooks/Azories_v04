@@ -252,29 +252,15 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     }
   }, []);
 
-  // Teleport to genre section - with proper floor detection
+  // Teleport to genre section - use stored floor level
   const teleportToGenre = useCallback((section) => {
-    if (!cameraRef.current || !collisionMeshesRef.current) return;
+    if (!cameraRef.current || !boundsRef.current) return;
     
-    // Find floor level at the target position
-    const raycaster = new THREE.Raycaster();
-    raycaster.set(
-      new THREE.Vector3(section.position.x, 20, section.position.z),
-      new THREE.Vector3(0, -1, 0)
-    );
-    raycaster.far = 30;
+    // Use the known floor level from when the library loaded
+    const floorY = boundsRef.current.floorY || 4.7; // Default to detected floor level
+    const targetY = floorY + PLAYER_HEIGHT;
     
-    const floorHits = raycaster.intersectObjects(collisionMeshesRef.current, true);
-    let targetY = PLAYER_HEIGHT + 5; // Default to a safe height
-    
-    // Find the actual floor at this position
-    for (const hit of floorHits) {
-      if (hit.point.y < 10 && hit.point.y >= 0) {
-        targetY = hit.point.y + PLAYER_HEIGHT;
-        console.log('Teleporting to floor at Y:', hit.point.y);
-        break;
-      }
-    }
+    console.log('Teleporting to:', section.name, 'Floor Y:', floorY, 'Target Y:', targetY);
     
     cameraRef.current.position.set(
       section.position.x,
