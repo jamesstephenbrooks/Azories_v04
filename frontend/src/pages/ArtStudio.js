@@ -694,21 +694,38 @@ export default function ArtStudio() {
     }
   };
   
-  // Handle reference image upload
-  const handleReferenceUpload = (e) => {
+  // Handle reference image upload - supports both style and character targets
+  const handleReferenceUpload = (e, target = null) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        setReferenceImage(reader.result);
+        if (target === 'style') {
+          setStyleReferenceImage(reader.result);
+        } else if (target === 'character') {
+          setCharacterReferenceImage(reader.result);
+        } else {
+          // Legacy fallback - use gallery picker target
+          if (galleryPickerTarget === 'style') {
+            setStyleReferenceImage(reader.result);
+          } else {
+            setCharacterReferenceImage(reader.result);
+          }
+        }
       };
       reader.readAsDataURL(file);
     }
+    // Reset file input
+    e.target.value = '';
   };
   
   // Select gallery image as reference
   const selectGalleryAsReference = (imageUrl) => {
-    setReferenceImage(imageUrl);
+    if (galleryPickerTarget === 'style') {
+      setStyleReferenceImage(imageUrl);
+    } else {
+      setCharacterReferenceImage(imageUrl);
+    }
     setShowGalleryPicker(false);
   };
   
