@@ -260,16 +260,46 @@ export default function ArtStudio() {
           type: activeTab,
           style: selectedStyle,
           characterData: character,
-          sceneData: scene
+          sceneData: scene,
+          bookId: selectedBookId !== 'general' ? selectedBookId : null
         })
       });
       
       if (response.ok) {
         loadGallery();
+        alert('Image saved to gallery!');
       }
     } catch (error) {
       console.error('Failed to save:', error);
     }
+  };
+  
+  // Handle reference image upload
+  const handleReferenceUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setReferenceImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  
+  // Use gallery image as reference
+  const useGalleryAsReference = (imageUrl) => {
+    setReferenceImage(imageUrl);
+    setShowGalleryPicker(false);
+  };
+  
+  // Download generated image
+  const downloadImage = (imageUrl, filename) => {
+    const link = document.createElement('a');
+    link.href = imageUrl;
+    link.download = filename || `azories-art-${Date.now()}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
   
   const deleteFromGallery = async (imageId) => {
