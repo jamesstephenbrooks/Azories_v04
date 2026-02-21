@@ -224,6 +224,7 @@ export default function ArtStudio() {
   const [compareStyles, setCompareStyles] = useState([]); // For compare mode
   const [showCompareMode, setShowCompareMode] = useState(false);
   const [generationHistory, setGenerationHistory] = useState([]); // Recent generations
+  const [galleryFilter, setGalleryFilter] = useState('all'); // 'all' or book_id
   
   // Character builder state
   const [character, setCharacter] = useState({
