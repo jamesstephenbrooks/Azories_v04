@@ -1107,6 +1107,22 @@ export default function BookEditor() {
                               </p>
                             </div>
                           )}
+                          
+                          {/* Use from Art Studio Gallery */}
+                          <div className="pt-2 border-t border-border">
+                            <Button
+                              variant="outline"
+                              onClick={() => {
+                                fetchGalleryImages();
+                                setShowGalleryPicker(true);
+                              }}
+                              className="w-full rounded-full border-purple-500/50 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-500/10"
+                              data-testid="use-from-gallery-btn"
+                            >
+                              <FiImage className="mr-2 w-4 h-4" />
+                              Use from Art Studio Gallery
+                            </Button>
+                          </div>
                         </div>
                       </TabsContent>
                       
