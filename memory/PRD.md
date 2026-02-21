@@ -11,42 +11,31 @@ Create a digital book creating and reading web application called "Azories" for 
 
 ## What's Been Implemented
 
-### Latest Session (Feb 21, 2026) - Art Studio Phase 2 Fixes & Character Consistency
-- **Expert Mode Style Node Dropdown**
-  - Changed from tabbed interface to searchable dropdown
-  - Categories: Realistic, Illustration, Traditional, Digital, 3D, Fantasy, Children, Retro, Cultural, Stylized
-  - 62 art styles with search functionality
-  - Grouped display by category
-  
-- **Expert Mode Image Node Resizing Fix**
-  - Fixed Reference and Output nodes - images now properly scale with node resize
-  - Changed from `object-cover` to `object-contain` for proper image display
-  - Added `absolute inset-0` positioning for full container coverage
-  - NodeResizer component properly integrated with flex layout
+### Latest Session (Feb 21, 2026) - Art Studio Enhancements & Fixes
 
-- **Easy Mode Prompt History**
-  - New backend endpoints: GET/POST /api/art-studio/prompt-history
-  - History stored per user with deduplication (max 20 prompts)
-  - "History" button appears in Additional Details for Character Builder
-  - "History" button appears in Custom Scene Description for Scene Creator
-  - Clicking history shows dropdown of recent prompts for quick reuse
-  - Prompts auto-save on successful generation
+**Part 1: Art Studio Fixes**
+- **Expert Mode Style Node Dropdown** - Changed from tabs to searchable dropdown
+- **Expert Mode Image Node Resizing** - Fixed CSS for proper image scaling
+- **Easy Mode Prompt History** - Added history endpoints and UI
+- **ResizeObserver Error Fix** - Comprehensive error suppression in index.js
+- **Art Studio Navigation** - Added to navbar (desktop, mobile, dropdown)
 
-- **ResizeObserver Error Fix**
-  - Added global error handler in index.js to suppress benign ResizeObserver loop warnings
+**Part 2: Character Consistency System**
+- Character Profile endpoints: POST/GET `/api/art-studio/character-profiles`
+- Save characters with traits, reference images, and auto-generated seed
+- "Use Profile" and "Save Profile" buttons in Character Builder
 
-- **Art Studio Navigation**
-  - Added "Art Studio" link to navbar (desktop + mobile + user dropdown)
-  - Purple droplet icon for visual distinction
+**Part 3: 3D Library Improvements**
+- Removed "Books" panel from bottom-right corner
+- Moved book popup to **center of screen** with backdrop
+- Enhanced spiral staircase climbing physics
 
-- **Character Consistency System (NEW)**
-  - Character Profile endpoints: POST/GET /api/art-studio/character-profiles
-  - Save character with name, description, traits, reference images
-  - Auto-generated seed for consistency
-  - "Use Profile" button to generate with saved character
-  - "Save Profile" button to create new profile from current settings
-  - Enhanced prompts with consistency anchors
-  - Generation counter per profile
+**Part 4: Additional Enhancements**
+- **More Scene Presets** (24 total): Added Dreamscape, Sunset Cliffs, Aurora, Cherry Blossom, Ruins, Throne Room, Tavern, Garden, Desert, Crystal Cave, Floating Islands, Moonlit Lake, Battlefield, Village, Ship Deck, Magic Academy
+- **New Art Styles**: Added "Ethereal Fantasy" and "Surreal Dreamscape" styles (matching user's reference image)
+- **Prompt History Scroll** - Moved under Reference Image section with custom scrollbar
+- **Copy to Expert Mode** - Button to transfer character data from Easy Mode to Node Editor
+- **Expert Mode Fixes** - Added better error handling and logging
 
 ### Previous Session (Feb 21, 2026) - Art Studio Enhancement
 - **Phase 1: Easy Mode Art Studio Enhancements**
