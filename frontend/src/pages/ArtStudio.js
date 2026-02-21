@@ -496,8 +496,16 @@ export default function ArtStudio() {
       const styleData = ART_STYLES.find(s => s.id === selectedStyle);
       let useTransparentBg = false;
       
+      // Quality level mapping
+      const qualityBoosts = {
+        low: '',
+        medium: ', detailed',
+        high: ', highly detailed, professional quality, sharp focus',
+        ultra: ', ultra detailed, 8K resolution, masterpiece quality, best quality, sharp focus, professional lighting'
+      };
+      
       if (activeTab === 'character') {
-        fullPrompt = `${buildCharacterPrompt()}, ${styleData?.name || 'fantasy'} art style, highly detailed, professional illustration`;
+        fullPrompt = `${buildCharacterPrompt()}, ${styleData?.name || 'fantasy'} art style${qualityBoosts[qualityLevel] || qualityBoosts.high}`;
         useTransparentBg = character.transparentBackground;
         // Add transparent background instruction to prompt if enabled
         if (useTransparentBg) {
@@ -508,12 +516,15 @@ export default function ArtStudio() {
           savePromptToHistory(character.additionalDetails.trim());
         }
       } else if (activeTab === 'scene') {
-        fullPrompt = `${buildScenePrompt()}, ${styleData?.name || 'fantasy'} art style, highly detailed, professional illustration`;
+        fullPrompt = `${buildScenePrompt()}, ${styleData?.name || 'fantasy'} art style${qualityBoosts[qualityLevel] || qualityBoosts.high}`;
         // Save custom prompt to history
         if (scene.customPrompt?.trim()) {
           savePromptToHistory(scene.customPrompt.trim());
         }
       }
+      
+      // Add negative prompt if specified
+      const finalNegativePrompt = negativePrompt.trim() || 'blurry, low quality, distorted, deformed, bad anatomy, watermark, signature';
       
       const response = await fetch(`${API_URL}/api/art-studio/generate`, {
         method: 'POST',
@@ -523,19 +534,29 @@ export default function ArtStudio() {
         },
         body: JSON.stringify({
           prompt: fullPrompt,
+          negativePrompt: finalNegativePrompt,
           style: selectedStyle,
           type: activeTab,
           characterData: activeTab === 'character' ? character : null,
           sceneData: activeTab === 'scene' ? scene : null,
           referenceImage: referenceImage,
           bookId: selectedBookId !== 'general' ? selectedBookId : null,
-          transparentBackground: useTransparentBg
+          transparentBackground: useTransparentBg,
+          aspectRatio: aspectRatio,
+          qualityLevel: qualityLevel
         })
       });
       
       if (response.ok) {
         const data = await response.json();
         setGeneratedImage(data.image_url);
+        // Add to generation history
+        setGenerationHistory(prev => [{
+          image: data.image_url,
+          prompt: fullPrompt,
+          style: selectedStyle,
+          timestamp: new Date()
+        }, ...prev].slice(0, 20)); // Keep last 20
         // Refresh gallery
         loadGallery();
       } else {
