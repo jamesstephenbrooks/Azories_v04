@@ -22,14 +22,15 @@ const DEFAULT_BOUNDS = {
 };
 
 // Genre sections - specific locations in the library
-// Bookcases on back wall: Mystery (left), Fiction (center), Humour (right)
-// Spiral staircases: Adventure (left staircase), Fantasy (right staircase)
+// Bookcases appear to be at negative Z in this model
+// Mystery (left), Fiction (center), Humour (right) - on bookcases
+// Adventure (left staircase), Fantasy (right staircase)
 const GENRE_SECTIONS = [
-  { name: 'Mystery', position: { x: -4, z: 1 }, bannerPos: { x: -4, z: -3.5 }, rotation: Math.PI, color: '#3b82f6' },
-  { name: 'Fiction', position: { x: 0, z: 1 }, bannerPos: { x: 0, z: -3.5 }, rotation: Math.PI, color: '#9333ea' },
-  { name: 'Humour', position: { x: 4, z: 1 }, bannerPos: { x: 4, z: -3.5 }, rotation: Math.PI, color: '#f59e0b' },
-  { name: 'Adventure', position: { x: -7, z: 3 }, bannerPos: { x: -7, z: 3 }, rotation: Math.PI / 2, color: '#10b981' },
-  { name: 'Fantasy', position: { x: 7, z: 3 }, bannerPos: { x: 7, z: 3 }, rotation: -Math.PI / 2, color: '#ec4899' },
+  { name: 'Mystery', position: { x: -4, z: -4 }, bannerPos: { x: -4, z: -6 }, rotation: Math.PI, color: '#3b82f6' },
+  { name: 'Fiction', position: { x: 0, z: -4 }, bannerPos: { x: 0, z: -6 }, rotation: Math.PI, color: '#9333ea' },
+  { name: 'Humour', position: { x: 4, z: -4 }, bannerPos: { x: 4, z: -6 }, rotation: Math.PI, color: '#f59e0b' },
+  { name: 'Adventure', position: { x: -6, z: 0 }, bannerPos: { x: -6, z: 0 }, rotation: Math.PI / 2, color: '#10b981' },
+  { name: 'Fantasy', position: { x: 6, z: 0 }, bannerPos: { x: 6, z: 0 }, rotation: -Math.PI / 2, color: '#ec4899' },
 ];
 
 // Detect mobile device
