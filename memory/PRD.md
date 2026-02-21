@@ -4,14 +4,34 @@
 Create a digital book creating and reading web application called "Azories" for children, by children.
 
 ## Architecture
-- **Frontend**: React with Tailwind CSS, Framer Motion, Three.js for 3D
+- **Frontend**: React with Tailwind CSS, Framer Motion, Three.js for 3D, React Flow
 - **Backend**: FastAPI with MongoDB
 - **AI Integrations**: Emergent Universal Key (OpenAI GPT Image 1, Sora 2 Video, GPT-4o)
 - **Auth**: JWT-based + Separate Admin Auth
 
 ## What's Been Implemented
 
-### Latest Session (Feb 21, 2026) - 3D Grand Library
+### Latest Session (Feb 21, 2026) - Art Studio Enhancement
+- **Phase 1: Easy Mode Art Studio Enhancements**
+  - Art style example images with preview thumbnails (10 styles)
+  - Book assignment dropdown (assign images to specific books or General Library)
+  - Reference image upload option
+  - "Use from Gallery" to reuse previously generated images as references
+  - Download button for generated images
+  - "Use as Reference" button after generation
+  - Gallery picker modal
+
+- **Phase 2: Expert Node-Based Studio**
+  - New route: `/art-studio/expert`
+  - React Flow-based visual workflow editor
+  - Node types: Character, Scene, Style, Reference, Prompt, Combine, Output
+  - Visual node connections with animated edges
+  - Save/Load workflow functionality
+  - Run workflow to generate images
+  - Minimap and zoom controls
+  - PRO feature badge
+
+### Previous Session - 3D Grand Library
 - **Coordinate Debug Mode**: Click in 3D to get exact (x, y, z) positions
 - **Genre Banners**: Fiction, Adventure, Fantasy, Comic, Science Fiction with calibrated positions
 - **"Click to browse" hints**: Below each banner pointing up
@@ -43,6 +63,7 @@ Create a digital book creating and reading web application called "Azories" for 
 - **Admin**: azories_admin / AzoriesAdmin2024!
 - **Test Author**: testauthor@azories.com / TestAuthor123! (Pro)
 - **Test User**: testuser@example.com / password123 (Pro)
+- **Art Studio Test**: artstudio3@test.com / password123 (Pro)
 
 ## Prioritized Backlog
 
