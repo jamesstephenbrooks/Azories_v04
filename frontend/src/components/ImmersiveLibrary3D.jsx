@@ -180,11 +180,11 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     };
     controlsRef.current = controls;
 
-    // Add lighting - BRIGHT library atmosphere for interior visibility
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.0); // Bright white ambient
+    // Add lighting - VERY BRIGHT for interior visibility
+    const ambientLight = new THREE.AmbientLight(0xffffff, 2.0); // Very bright white ambient
     scene.add(ambientLight);
 
-    const mainLight = new THREE.DirectionalLight(0xffffff, 1.0);
+    const mainLight = new THREE.DirectionalLight(0xffffff, 1.5);
     mainLight.position.set(0, 20, 0);
     mainLight.castShadow = true;
     mainLight.shadow.mapSize.width = 1024;
@@ -192,30 +192,47 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     scene.add(mainLight);
 
     // Add hemisphere light for natural indoor lighting
-    const hemiLight = new THREE.HemisphereLight(0xffeeb1, 0x080820, 1.0);
+    const hemiLight = new THREE.HemisphereLight(0xffeeb1, 0x080820, 1.5);
     scene.add(hemiLight);
 
-    // Multiple point lights throughout the space
-    const warmLight1 = new THREE.PointLight(0xffaa55, 1.5, 30);
-    warmLight1.position.set(-5, 5, -5);
+    // Multiple warm point lights throughout the space (like candles/lamps)
+    const warmLight1 = new THREE.PointLight(0xffaa55, 2.0, 50);
+    warmLight1.position.set(-5, 3, -5);
     scene.add(warmLight1);
 
-    const warmLight2 = new THREE.PointLight(0xffaa55, 1.5, 30);
-    warmLight2.position.set(5, 5, 5);
+    const warmLight2 = new THREE.PointLight(0xffaa55, 2.0, 50);
+    warmLight2.position.set(5, 3, 5);
     scene.add(warmLight2);
 
-    const warmLight3 = new THREE.PointLight(0xffffff, 1.0, 40);
+    const warmLight3 = new THREE.PointLight(0xffffff, 2.0, 60);
     warmLight3.position.set(0, 10, 0);
     scene.add(warmLight3);
     
-    // Additional fill lights
-    const fillLight1 = new THREE.PointLight(0xffd9a0, 0.8, 25);
+    // Additional fill lights at various positions
+    const fillLight1 = new THREE.PointLight(0xffd9a0, 1.5, 35);
     fillLight1.position.set(-3, 2, 3);
     scene.add(fillLight1);
     
-    const fillLight2 = new THREE.PointLight(0xffd9a0, 0.8, 25);
+    const fillLight2 = new THREE.PointLight(0xffd9a0, 1.5, 35);
     fillLight2.position.set(3, 2, -3);
     scene.add(fillLight2);
+    
+    // Lights at corners for full coverage
+    const cornerLight1 = new THREE.PointLight(0xfff0d0, 1.2, 40);
+    cornerLight1.position.set(-8, 4, -8);
+    scene.add(cornerLight1);
+    
+    const cornerLight2 = new THREE.PointLight(0xfff0d0, 1.2, 40);
+    cornerLight2.position.set(8, 4, 8);
+    scene.add(cornerLight2);
+    
+    const cornerLight3 = new THREE.PointLight(0xfff0d0, 1.2, 40);
+    cornerLight3.position.set(-8, 4, 8);
+    scene.add(cornerLight3);
+    
+    const cornerLight4 = new THREE.PointLight(0xfff0d0, 1.2, 40);
+    cornerLight4.position.set(8, 4, -8);
+    scene.add(cornerLight4);
 
     // Load the GLB model
     const dracoLoader = new DRACOLoader();
