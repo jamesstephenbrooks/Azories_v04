@@ -177,21 +177,56 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     }
   }, []);
 
-  // Mouse movement for looking around
+  // Mouse movement for looking around - supports both pointer lock and drag
   const onMouseMove = useCallback((event) => {
-    if (!isPointerLocked.current || !cameraRef.current) return;
+    if (!cameraRef.current) return;
     
-    const movementX = event.movementX || 0;
-    const movementY = event.movementY || 0;
+    // Method 1: Pointer lock (if active)
+    if (isPointerLocked.current) {
+      const movementX = event.movementX || 0;
+      const movementY = event.movementY || 0;
+      
+      euler.current.setFromQuaternion(cameraRef.current.quaternion);
+      euler.current.y -= movementX * 0.002;
+      euler.current.x -= movementY * 0.002;
+      
+      // Clamp vertical look
+      euler.current.x = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, euler.current.x));
+      
+      cameraRef.current.quaternion.setFromEuler(euler.current);
+      return;
+    }
     
-    euler.current.setFromQuaternion(cameraRef.current.quaternion);
-    euler.current.y -= movementX * 0.002;
-    euler.current.x -= movementY * 0.002;
-    
-    // Clamp vertical look
-    euler.current.x = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, euler.current.x));
-    
-    cameraRef.current.quaternion.setFromEuler(euler.current);
+    // Method 2: Drag to look (if dragging)
+    if (isDragging.current && isExploring) {
+      const movementX = event.clientX - lastMousePos.current.x;
+      const movementY = event.clientY - lastMousePos.current.y;
+      
+      lastMousePos.current = { x: event.clientX, y: event.clientY };
+      
+      euler.current.setFromQuaternion(cameraRef.current.quaternion);
+      euler.current.y -= movementX * 0.003;
+      euler.current.x -= movementY * 0.003;
+      
+      // Clamp vertical look
+      euler.current.x = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, euler.current.x));
+      
+      cameraRef.current.quaternion.setFromEuler(euler.current);
+    }
+  }, [isExploring]);
+
+  // Mouse down - start drag look
+  const onMouseDown = useCallback((event) => {
+    if (!isExploring || isMobileDevice) return;
+    // Right click or left click to drag
+    isDragging.current = true;
+    lastMousePos.current = { x: event.clientX, y: event.clientY };
+    setShowClickHint(false);
+  }, [isExploring, isMobileDevice]);
+
+  // Mouse up - stop drag look
+  const onMouseUp = useCallback(() => {
+    isDragging.current = false;
   }, []);
 
   // Pointer lock handlers
