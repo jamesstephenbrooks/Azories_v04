@@ -661,9 +661,61 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         bookMeshesRef.current = bookMeshes;
         console.log('Interactive book markers disabled - use Books panel to select books');
         
-        // DISABLE banners for now until we can determine correct bookcase positions
-        // Will need to iterate on the GLB model to find the right coordinates
-        console.log('Genre banners disabled - need position calibration');
+        // Add floating genre text banners above bookcase sections
+        const bannerHeight = floorLevel + 2.8; // Above eye level, visible when looking at bookcases
+        
+        GENRE_SECTIONS.forEach((section) => {
+          // Create text sprite for the banner
+          const canvas = document.createElement('canvas');
+          canvas.width = 512;
+          canvas.height = 128;
+          const ctx = canvas.getContext('2d');
+          
+          // Clear canvas with transparency
+          ctx.clearRect(0, 0, 512, 128);
+          
+          // Glowing text effect
+          ctx.font = 'bold 48px Georgia, serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          
+          // Outer glow
+          ctx.shadowColor = section.color;
+          ctx.shadowBlur = 30;
+          ctx.fillStyle = section.color;
+          ctx.fillText(section.name, 256, 64);
+          
+          // Inner text (white with colored tint)
+          ctx.shadowBlur = 15;
+          ctx.fillStyle = '#ffffff';
+          ctx.fillText(section.name, 256, 64);
+          
+          const texture = new THREE.CanvasTexture(canvas);
+          texture.colorSpace = THREE.SRGBColorSpace;
+          
+          // Use sprite for always-facing-camera text
+          const spriteMaterial = new THREE.SpriteMaterial({
+            map: texture,
+            transparent: true,
+            depthWrite: false
+          });
+          
+          const sprite = new THREE.Sprite(spriteMaterial);
+          sprite.scale.set(3, 0.75, 1);
+          
+          // Position banner at the section location, above the bookcases
+          sprite.position.set(section.position.x, bannerHeight, section.position.z - 2);
+          
+          scene.add(sprite);
+          console.log('Added genre banner:', section.name, 'at', section.position.x, bannerHeight, section.position.z - 2);
+          
+          // Add floating animation data
+          sprite.userData = { 
+            isGenreBanner: true, 
+            baseY: bannerHeight,
+            phase: Math.random() * Math.PI * 2 
+          };
+        });
         
         // Azora is disabled for now - will be re-enabled once positioning is calibrated
         console.log('Azora disabled - needs positioning calibration');
