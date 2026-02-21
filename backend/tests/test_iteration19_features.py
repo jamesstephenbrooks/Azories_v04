@@ -85,12 +85,13 @@ class TestPublishedBooks:
 class TestBookFullEndpoint:
     """Test /books/{id}/full endpoint used by reader"""
     
-    def test_book_full_returns_chapters_and_pages(self):
-        """Verify /books/{id}/full returns chapters with pages inline"""
+    def test_book_full_returns_chapters_and_pages(self, auth_headers):
+        """Verify /books/{id}/full returns chapters with pages inline (requires auth)"""
         response = requests.get(f"{BASE_URL}/api/books?status=published&limit=1")
         book_id = response.json()[0]["id"]
         
-        full_response = requests.get(f"{BASE_URL}/api/books/{book_id}/full")
+        # Must be authenticated to get chapters/pages
+        full_response = requests.get(f"{BASE_URL}/api/books/{book_id}/full", headers=auth_headers)
         assert full_response.status_code == 200
         
         data = full_response.json()
@@ -106,6 +107,19 @@ class TestBookFullEndpoint:
         page = chapter["pages"][0]
         assert "text_content" in page
         assert "order" in page
+    
+    def test_book_full_requires_auth(self):
+        """Verify /books/{id}/full without auth returns requires_auth=True"""
+        response = requests.get(f"{BASE_URL}/api/books?status=published&limit=1")
+        book_id = response.json()[0]["id"]
+        
+        # Without auth, should return requires_auth=True and empty chapters
+        full_response = requests.get(f"{BASE_URL}/api/books/{book_id}/full")
+        assert full_response.status_code == 200
+        
+        data = full_response.json()
+        assert data.get("requires_auth") == True, "Without auth, should require auth"
+        assert len(data.get("chapters", [])) == 0, "Without auth, chapters should be empty"
 
 
 class TestAnimationFeatures:
