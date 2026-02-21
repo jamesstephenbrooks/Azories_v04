@@ -100,11 +100,13 @@ const ART_STYLE_CATEGORIES = [
     category: 'Fantasy & Sci-Fi',
     styles: [
       { id: 'fantasy', name: 'Fantasy Art', description: 'Epic fantasy illustration', image: 'https://images.unsplash.com/photo-1767709879762-c7a6ce819aeb?w=100&h=100&fit=crop' },
+      { id: 'ethereal-fantasy', name: 'Ethereal Fantasy', description: 'Dreamy, soft flowing digital art with mystical atmosphere', image: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=100&h=100&fit=crop' },
       { id: 'dark-fantasy', name: 'Dark Fantasy', description: 'Gothic dark fantasy', image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=100&h=100&fit=crop' },
       { id: 'sci-fi', name: 'Sci-Fi', description: 'Futuristic science fiction', image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=100&h=100&fit=crop' },
       { id: 'cyberpunk', name: 'Cyberpunk', description: 'Neon-lit dystopian', image: 'https://images.pexels.com/photos/20278554/pexels-photo-20278554.jpeg?w=100&h=100&fit=crop' },
       { id: 'steampunk', name: 'Steampunk', description: 'Victorian machinery', image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=100&h=100&fit=crop' },
       { id: 'solarpunk', name: 'Solarpunk', description: 'Green utopian future', image: 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=100&h=100&fit=crop' },
+      { id: 'surreal-dreamscape', name: 'Surreal Dreamscape', description: 'Surreal flowing landscapes with magical elements', image: 'https://images.unsplash.com/photo-1507400492013-162706c8c05e?w=100&h=100&fit=crop' },
     ]
   },
   {
