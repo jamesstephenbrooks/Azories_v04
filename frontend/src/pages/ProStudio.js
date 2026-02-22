@@ -53,6 +53,10 @@ export default function ProStudio() {
   const [trainingProgress, setTrainingProgress] = useState(null);
   const [falAvailable, setFalAvailable] = useState(false);
   
+  // Credits state
+  const [credits, setCredits] = useState(0);
+  const [creditCosts, setCreditCosts] = useState({});
+  
   // Consistency Generation state
   const [consistencyMethod, setConsistencyMethod] = useState('auto'); // 'auto', 'lora', 'pulid', 'openai'
   const [selectedImageModel, setSelectedImageModel] = useState('flux-dev');
