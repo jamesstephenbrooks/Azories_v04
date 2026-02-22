@@ -34,12 +34,24 @@ class TestIteration26BugFixes:
     
     def test_tts_generate_with_elevenlabs(self):
         """TTS endpoint should work with ElevenLabs"""
-        response = requests.post(f"{BASE_URL}/api/tts/generate", json={
-            "text": "Hello, this is a test of the text-to-speech system.",
-            "voice_id": "21m00Tcm4TlvDq8ikWAM"  # Rachel voice
-        })
+        import time
         
-        assert response.status_code == 200, f"TTS failed: {response.text}"
+        # Retry up to 3 times due to transient Cloudflare errors
+        for attempt in range(3):
+            response = requests.post(f"{BASE_URL}/api/tts/generate", json={
+                "text": "Hello, this is a test of the text-to-speech system.",
+                "voice_id": "21m00Tcm4TlvDq8ikWAM"  # Rachel voice
+            })
+            
+            if response.status_code == 200:
+                break
+            elif response.status_code == 520:
+                print(f"Attempt {attempt+1}: Got 520 error, retrying...")
+                time.sleep(2)
+            else:
+                break
+        
+        assert response.status_code == 200, f"TTS failed after retries: {response.status_code}"
         data = response.json()
         
         # Verify response structure
