@@ -370,7 +370,12 @@ export default function BookReader() {
       }
     } catch (error) {
       console.error('TTS Error:', error.response?.data || error.message);
-      toast.error(error.response?.data?.detail || 'Failed to generate audio');
+      const errorDetail = error.response?.data?.detail;
+      if (errorDetail?.includes?.('quota_exceeded') || errorDetail?.status === 'quota_exceeded') {
+        toast.error('Audio quota exceeded. Please add credits at Profile → Universal Key → Add Balance');
+      } else {
+        toast.error(errorDetail || 'Failed to generate audio');
+      }
       // Don't auto-advance when audio fails - just stop
       setIsPlaying(false);
     } finally {
