@@ -577,8 +577,19 @@ export default function BookReader() {
         </div>
       </div>
       
+      {/* Hide/Show Controls Toggle - visible on touch devices */}
+      {hideControls && (
+        <button
+          onClick={() => setHideControls(false)}
+          className="fixed bottom-4 right-4 z-50 p-3 rounded-full bg-primary/80 text-white shadow-lg"
+          data-testid="show-controls-btn"
+        >
+          <FiChevronUp className="w-5 h-5" />
+        </button>
+      )}
+      
       {/* Bottom Controls */}
-      <div className="fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-xl border-t border-border z-40">
+      <div className={`fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-xl border-t border-border z-40 transition-transform duration-300 ${hideControls ? 'translate-y-full' : ''}`}>
         <div className="max-w-4xl mx-auto px-4 py-4">
           {/* Navigation */}
           <div className="flex items-center justify-center gap-4 mb-4">
