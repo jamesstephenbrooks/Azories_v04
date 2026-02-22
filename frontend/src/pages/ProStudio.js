@@ -1911,16 +1911,23 @@ export default function ProStudio() {
                               {selectedCharacter?.id === char.id ? 'Selected' : 'Select'}
                             </Button>
                             
-                            {/* Train LoRA button */}
-                            {falAvailable && char.lora_status !== 'completed' && char.lora_status !== 'training' && (
+                            {/* Train LoRA button - only show when 3+ reference images */}
+                            {falAvailable && char.lora_status !== 'completed' && char.lora_status !== 'training' && (char.reference_images?.length || 0) >= 3 && (
                               <Button
                                 size="sm"
                                 onClick={() => trainCharacterLora(char.id)}
                                 disabled={isTrainingLora}
                                 className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+                                title="Train LoRA model for 100% consistent character"
                               >
                                 <FiZap className="mr-1" /> Train
                               </Button>
+                            )}
+                            {/* Show hint when not enough refs */}
+                            {falAvailable && char.lora_status !== 'completed' && char.lora_status !== 'training' && (char.reference_images?.length || 0) < 3 && (
+                              <span className="text-xs text-gray-500 ml-1" title="Add more reference images to enable LoRA training">
+                                +{3 - (char.reference_images?.length || 0)} refs
+                              </span>
                             )}
                           </div>
                         </div>
