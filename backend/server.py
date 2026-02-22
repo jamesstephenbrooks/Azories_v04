@@ -2424,6 +2424,73 @@ async def delete_from_character_gallery(character_id: str, image_id: str, curren
         raise HTTPException(status_code=404, detail="Image not found")
     return {"success": True}
 
+@api_router.post("/pro-studio/characters/{character_id}/regenerate-thumbnail")
+async def regenerate_character_thumbnail(character_id: str, current_user: dict = Depends(get_current_user)):
+    """Regenerate the thumbnail for a character using fal.ai
+    
+    This creates a new thumbnail that may better match subsequent generations.
+    """
+    if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Pro subscription required")
+    
+    character = await db.pro_studio_characters.find_one({
+        "id": character_id,
+        "user_id": current_user["id"]
+    })
+    
+    if not character:
+        raise HTTPException(status_code=404, detail="Character not found")
+    
+    try:
+        thumbnail = None
+        style_info = next((s for s in CHARACTER_STYLES if s["id"] == character.get("style")), {"name": "illustration"})
+        
+        # Build a detailed prompt from character info
+        prompt_parts = [character.get("description_prompt", f"Portrait of {character['name']}")]
+        prompt_parts.append(f"{style_info.get('name', '')} style")
+        prompt_parts.append("character portrait, detailed face, high quality")
+        
+        if character.get("special_features"):
+            prompt_parts.append(character["special_features"])
+        
+        gen_prompt = ", ".join(prompt_parts)
+        
+        # Try fal.ai first for consistency
+        if FAL_AVAILABLE:
+            result = await generate_image_flux(
+                prompt=gen_prompt,
+                model="flux-dev",
+                image_size="square_hd",
+                num_images=1
+            )
+            if result.get("images"):
+                thumbnail = result["images"][0].get("url")
+        
+        # Fallback to OpenAI
+        if not thumbnail and EMERGENT_LLM_KEY:
+            image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
+            images = await image_gen.generate_images(
+                prompt=gen_prompt,
+                model="gpt-image-1",
+                number_of_images=1
+            )
+            if images and len(images) > 0:
+                image_base64 = base64.b64encode(images[0]).decode('utf-8')
+                thumbnail = f"data:image/png;base64,{image_base64}"
+        
+        if thumbnail:
+            await db.pro_studio_characters.update_one(
+                {"id": character_id},
+                {"$set": {"thumbnail": thumbnail, "updated_at": datetime.now(timezone.utc).isoformat()}}
+            )
+            return {"success": True, "thumbnail": thumbnail}
+        else:
+            raise HTTPException(status_code=500, detail="Could not generate thumbnail")
+            
+    except Exception as e:
+        logger.error(f"Thumbnail regeneration error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.post("/pro-studio/generate-image")
 async def pro_studio_generate_image(request: ProStudioImageRequest, current_user: dict = Depends(get_current_user)):
     """Generate a hero frame with Cinema Studio settings"""
