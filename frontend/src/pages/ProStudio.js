@@ -273,30 +273,33 @@ export default function ProStudio() {
     }
   };
 
-  // Create character - either from description OR reference images
+  // Create character - from description AND/OR reference images
   const createCharacter = async () => {
     if (!characterName.trim()) {
       toast.error('Please enter a character name');
       return;
     }
     
-    // Check based on creation mode
-    if (creationMode === 'images' && characterImages.length < 1) {
-      toast.error('Please upload at least 1 reference image');
-      return;
-    }
-    if (creationMode === 'description' && !characterDescription.trim()) {
-      toast.error('Please enter a character description');
+    // Now we allow BOTH images AND description together
+    const hasImages = characterImages.length > 0;
+    const hasDescription = characterDescription.trim().length > 0;
+    
+    if (!hasImages && !hasDescription) {
+      toast.error('Please provide a description or upload reference images (or both!)');
       return;
     }
 
     setIsCreatingCharacter(true);
-    setLoadingMessage(creationMode === 'images' ? 'Analyzing reference images...' : 'Creating character from description...');
+    setLoadingMessage(hasImages && hasDescription 
+      ? 'Creating character from images and description...' 
+      : hasImages 
+        ? 'Analyzing reference images...' 
+        : 'Creating character from description...');
 
     try {
       const token = localStorage.getItem('azories-token');
       
-      // Build request body based on creation mode
+      // Build request body - can have BOTH images AND description
       const requestBody = {
         name: characterName,
         style: characterStyle,
@@ -305,17 +308,22 @@ export default function ProStudio() {
         special_features: specialFeatures || undefined,
       };
       
-      if (creationMode === 'description') {
+      // Add description if provided
+      if (hasDescription) {
         requestBody.description_prompt = characterDescription;
-        // Include physical traits if any are filled
-        const filledTraits = Object.fromEntries(
-          Object.entries(physicalTraits).filter(([_, v]) => v)
-        );
-        if (Object.keys(filledTraits).length > 0) {
-          requestBody.physical_traits = filledTraits;
-        }
-      } else {
+      }
+      
+      // Add images if provided
+      if (hasImages) {
         requestBody.reference_images = characterImages.map(img => img.url);
+      }
+      
+      // Include physical traits if any are filled
+      const filledTraits = Object.fromEntries(
+        Object.entries(physicalTraits).filter(([_, v]) => v)
+      );
+      if (Object.keys(filledTraits).length > 0) {
+        requestBody.physical_traits = filledTraits;
       }
       
       const response = await fetch(`${API_URL}/api/pro-studio/characters`, {
