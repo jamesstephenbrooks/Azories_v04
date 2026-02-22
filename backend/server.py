@@ -2050,77 +2050,155 @@ async def get_characters(current_user: dict = Depends(get_current_user)):
     ).to_list(100)
     return {"characters": characters}
 
+@api_router.get("/pro-studio/character-styles")
+async def get_character_styles():
+    """Get available character styles"""
+    return {"styles": CHARACTER_STYLES}
+
+@api_router.get("/pro-studio/character-genres")
+async def get_character_genres():
+    """Get available character genres"""
+    return {"genres": CHARACTER_GENRES}
+
+@api_router.get("/pro-studio/characters/{character_id}")
+async def get_character(character_id: str, current_user: dict = Depends(get_current_user)):
+    """Get a specific character"""
+    character = await db.pro_studio_characters.find_one(
+        {"id": character_id, "user_id": current_user["id"]},
+        {"_id": 0}
+    )
+    if not character:
+        raise HTTPException(status_code=404, detail="Character not found")
+    return {"character": character}
+
 @api_router.post("/pro-studio/characters")
 async def create_character(request: CharacterCreate, current_user: dict = Depends(get_current_user)):
-    """Create a new character from reference images"""
+    """Create a new character - from reference images OR description prompt
+    
+    Characters can be created in two ways:
+    1. Upload reference images - AI will analyze and create consistent description
+    2. Provide description prompt - AI will generate character from your description
+    """
     if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Pro subscription required")
     
-    if len(request.reference_images) < 3:
-        raise HTTPException(status_code=400, detail="At least 3 reference images required")
+    # Either need reference images OR a description prompt
+    if len(request.reference_images) < 1 and not request.description_prompt:
+        raise HTTPException(status_code=400, detail="Provide either reference images or a description prompt")
     
     try:
-        # Analyze the character using AI to create a description
-        if EMERGENT_LLM_KEY:
-            from emergentintegrations.llm.openai import LlmChat, UserMessage, ImageContent
+        description = ""
+        thumbnail = None
+        
+        # If we have a description prompt, use it to build the character description
+        if request.description_prompt:
+            # Build a comprehensive character prompt
+            style_info = next((s for s in CHARACTER_STYLES if s["id"] == request.style), {"name": request.style})
+            genre_info = next((g for g in CHARACTER_GENRES if g["id"] == request.genre), {"name": request.genre})
             
-            chat = LlmChat(
-                api_key=EMERGENT_LLM_KEY,
-                session_id=f"char-{current_user['id']}-{str(uuid.uuid4())[:8]}",
-                system_message="You are an expert at analyzing images and describing people in detail for AI image generation."
-            ).with_model("openai", "gpt-4o")
+            description_parts = [
+                f"Character: {request.name}",
+                f"Style: {style_info.get('name', request.style)} - {style_info.get('description', '')}",
+                f"Genre: {genre_info.get('name', request.genre)}",
+                f"\nAppearance: {request.description_prompt}",
+            ]
             
-            # Analyze first reference image
-            analysis_prompt = """Analyze this person and provide a detailed description for consistent AI image generation.
+            if request.physical_traits:
+                traits = request.physical_traits
+                trait_str = ", ".join([f"{k}: {v}" for k, v in traits.items() if v])
+                description_parts.append(f"Physical traits: {trait_str}")
             
-            Include:
-            - Gender and apparent age
-            - Hair color, style, and length
-            - Eye color and shape
-            - Skin tone
-            - Face shape and distinctive features
-            - Body type (if visible)
+            if request.special_features:
+                description_parts.append(f"Special features: {request.special_features}")
             
-            Respond in a single paragraph that can be used as a prompt prefix for generating consistent images of this person."""
+            if request.personality:
+                description_parts.append(f"Personality: {request.personality}")
             
-            # Extract base64 from the first image
-            first_image = request.reference_images[0]
+            description = "\n".join(description_parts)
             
-            # Check if the image is base64 or URL
-            if first_image.startswith('data:'):
-                if ',' in first_image:
-                    image_base64 = first_image.split(',')[1]
-                else:
-                    image_base64 = first_image
+            # Generate a thumbnail image for the character using fal.ai
+            if FAL_AVAILABLE:
+                try:
+                    gen_prompt = f"{request.description_prompt}, {style_info.get('name', '')} style, character portrait, detailed face"
+                    result = await generate_image_flux(
+                        prompt=gen_prompt,
+                        model="flux-dev",
+                        image_size="square_hd",
+                        num_images=1
+                    )
+                    if result.get("images"):
+                        thumbnail = result["images"][0].get("url")
+                except Exception as e:
+                    logger.warning(f"Could not generate thumbnail: {e}")
+        
+        # If we have reference images, analyze them
+        elif request.reference_images:
+            if EMERGENT_LLM_KEY:
+                from emergentintegrations.llm.openai import LlmChat, UserMessage, ImageContent
                 
-                user_msg = UserMessage(
-                    text=analysis_prompt,
-                    file_contents=[ImageContent(image_base64=image_base64)]
-                )
-                description = await chat.send_message(user_msg)
-            elif first_image.startswith('http'):
-                # For URLs, download and convert to base64
-                async with aiohttp.ClientSession() as session:
-                    async with session.get(first_image) as resp:
-                        if resp.status == 200:
-                            image_data = await resp.read()
-                            image_base64 = base64.b64encode(image_data).decode('utf-8')
-                            user_msg = UserMessage(
-                                text=analysis_prompt,
-                                file_contents=[ImageContent(image_base64=image_base64)]
-                            )
-                            description = await chat.send_message(user_msg)
-                        else:
-                            description = f"Portrait of {request.name}"
+                chat = LlmChat(
+                    api_key=EMERGENT_LLM_KEY,
+                    session_id=f"char-{current_user['id']}-{str(uuid.uuid4())[:8]}",
+                    system_message="You are an expert at analyzing images and describing characters in detail for AI image generation."
+                ).with_model("openai", "gpt-4o")
+                
+                style_info = next((s for s in CHARACTER_STYLES if s["id"] == request.style), {"name": request.style})
+                genre_info = next((g for g in CHARACTER_GENRES if g["id"] == request.genre), {"name": request.genre})
+                
+                analysis_prompt = f"""Analyze this character and provide a detailed description for consistent AI image generation.
+                
+                Character Style: {style_info.get('name', request.style)} ({style_info.get('description', '')})
+                Genre: {genre_info.get('name', request.genre)}
+                
+                Include:
+                - Gender and apparent age
+                - Hair color, style, and length
+                - Eye color and shape
+                - Skin tone and complexion
+                - Face shape and distinctive features
+                - Body type (if visible)
+                - Clothing style
+                - Any unique features (scars, tattoos, accessories, etc.)
+                
+                Respond in a detailed paragraph that can be used as a prompt prefix for generating consistent images of this character in the {style_info.get('name', 'specified')} style."""
+                
+                first_image = request.reference_images[0]
+                
+                if first_image.startswith('data:'):
+                    if ',' in first_image:
+                        image_base64 = first_image.split(',')[1]
+                    else:
+                        image_base64 = first_image
+                    
+                    user_msg = UserMessage(
+                        text=analysis_prompt,
+                        file_contents=[ImageContent(image_base64=image_base64)]
+                    )
+                    description = await chat.send_message(user_msg)
+                elif first_image.startswith('http'):
+                    async with aiohttp.ClientSession() as session:
+                        async with session.get(first_image) as resp:
+                            if resp.status == 200:
+                                image_data = await resp.read()
+                                image_base64 = base64.b64encode(image_data).decode('utf-8')
+                                user_msg = UserMessage(
+                                    text=analysis_prompt,
+                                    file_contents=[ImageContent(image_base64=image_base64)]
+                                )
+                                description = await chat.send_message(user_msg)
+                            else:
+                                description = f"Character: {request.name}"
+                else:
+                    user_msg = UserMessage(
+                        text=analysis_prompt,
+                        file_contents=[ImageContent(image_base64=first_image)]
+                    )
+                    description = await chat.send_message(user_msg)
+                
+                thumbnail = first_image
             else:
-                # Assume raw base64
-                user_msg = UserMessage(
-                    text=analysis_prompt,
-                    file_contents=[ImageContent(image_base64=first_image)]
-                )
-                description = await chat.send_message(user_msg)
-        else:
-            description = f"Portrait of {request.name}"
+                description = f"Character: {request.name}"
+                thumbnail = request.reference_images[0] if request.reference_images else None
         
         # Create character record
         char_id = str(uuid.uuid4())
@@ -2131,20 +2209,128 @@ async def create_character(request: CharacterCreate, current_user: dict = Depend
             "user_id": current_user["id"],
             "name": request.name,
             "description": description.strip() if isinstance(description, str) else str(description),
-            "reference_images": request.reference_images[:20],  # Store up to 20 references
-            "thumbnail": request.reference_images[0] if request.reference_images else None,
-            "created_at": now
+            "description_prompt": request.description_prompt,
+            "style": request.style,
+            "genre": request.genre,
+            "physical_traits": request.physical_traits,
+            "personality": request.personality,
+            "backstory": request.backstory,
+            "special_features": request.special_features,
+            "reference_images": request.reference_images[:20] if request.reference_images else [],
+            "thumbnail": thumbnail,
+            "created_at": now,
+            "updated_at": now
         }
         
         await db.pro_studio_characters.insert_one(character)
         
-        # Return without _id
         character.pop("_id", None)
         return {"character": character, "success": True}
         
     except Exception as e:
         logger.error(f"Error creating character: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error creating character: {str(e)}")
+
+@api_router.put("/pro-studio/characters/{character_id}")
+async def update_character(character_id: str, request: CharacterUpdate, current_user: dict = Depends(get_current_user)):
+    """Update an existing character - add more images, update description, etc."""
+    character = await db.pro_studio_characters.find_one({
+        "id": character_id,
+        "user_id": current_user["id"]
+    })
+    
+    if not character:
+        raise HTTPException(status_code=404, detail="Character not found")
+    
+    update_data = {}
+    
+    if request.name:
+        update_data["name"] = request.name
+    if request.description_prompt:
+        update_data["description_prompt"] = request.description_prompt
+    if request.style:
+        update_data["style"] = request.style
+    if request.genre:
+        update_data["genre"] = request.genre
+    if request.physical_traits:
+        update_data["physical_traits"] = request.physical_traits
+    if request.personality:
+        update_data["personality"] = request.personality
+    if request.backstory:
+        update_data["backstory"] = request.backstory
+    if request.special_features:
+        update_data["special_features"] = request.special_features
+    
+    # Add new reference images to existing ones
+    if request.add_reference_images:
+        existing_images = character.get("reference_images", [])
+        new_images = existing_images + request.add_reference_images
+        update_data["reference_images"] = new_images[:20]  # Cap at 20
+        
+        # Update thumbnail if we didn't have one
+        if not character.get("thumbnail") and new_images:
+            update_data["thumbnail"] = new_images[0]
+    
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.pro_studio_characters.update_one(
+        {"id": character_id},
+        {"$set": update_data}
+    )
+    
+    # Get updated character
+    updated = await db.pro_studio_characters.find_one({"id": character_id}, {"_id": 0})
+    return {"character": updated, "success": True}
+
+@api_router.post("/pro-studio/characters/{character_id}/generate-thumbnail")
+async def generate_character_thumbnail(character_id: str, current_user: dict = Depends(get_current_user)):
+    """Generate or regenerate a thumbnail for a character"""
+    character = await db.pro_studio_characters.find_one({
+        "id": character_id,
+        "user_id": current_user["id"]
+    })
+    
+    if not character:
+        raise HTTPException(status_code=404, detail="Character not found")
+    
+    if not FAL_AVAILABLE:
+        raise HTTPException(status_code=503, detail="Image generation not available")
+    
+    try:
+        style_info = next((s for s in CHARACTER_STYLES if s["id"] == character.get("style")), {"name": "illustration"})
+        
+        # Build generation prompt from character data
+        prompt_parts = []
+        if character.get("description"):
+            prompt_parts.append(character["description"][:500])
+        elif character.get("description_prompt"):
+            prompt_parts.append(character["description_prompt"])
+        
+        prompt_parts.append(f"{style_info.get('name', '')} style")
+        prompt_parts.append("character portrait, detailed face, high quality")
+        
+        gen_prompt = ", ".join(prompt_parts)
+        
+        result = await generate_image_flux(
+            prompt=gen_prompt,
+            model="flux-dev",
+            image_size="square_hd",
+            num_images=1
+        )
+        
+        if result.get("images"):
+            thumbnail_url = result["images"][0].get("url")
+            await db.pro_studio_characters.update_one(
+                {"id": character_id},
+                {"$set": {"thumbnail": thumbnail_url, "updated_at": datetime.now(timezone.utc).isoformat()}}
+            )
+            return {"thumbnail": thumbnail_url, "success": True}
+        
+        raise HTTPException(status_code=500, detail="Failed to generate thumbnail")
+        
+    except Exception as e:
+        logger.error(f"Error generating thumbnail: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.delete("/pro-studio/characters/{character_id}")
 async def delete_character(character_id: str, current_user: dict = Depends(get_current_user)):
