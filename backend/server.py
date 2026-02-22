@@ -324,10 +324,57 @@ class AIStoryRequest(BaseModel):
 class SummaryGenerateRequest(BaseModel):
     book_id: str
 
-# Pro Studio Models
+# Pro Studio Models - Character Styles and Genres
+CHARACTER_STYLES = [
+    {"id": "photorealistic", "name": "Photorealistic", "description": "Lifelike, realistic human appearance"},
+    {"id": "illustration", "name": "Illustration", "description": "Hand-drawn, artistic book illustration style"},
+    {"id": "anime", "name": "Anime/Manga", "description": "Japanese animation style"},
+    {"id": "cartoon", "name": "Cartoon", "description": "Stylized, exaggerated cartoon style"},
+    {"id": "3d-render", "name": "3D Render", "description": "Modern 3D animated movie style (Pixar/Disney)"},
+    {"id": "watercolor", "name": "Watercolor", "description": "Soft, painterly watercolor style"},
+    {"id": "comic", "name": "Comic Book", "description": "Bold lines, superhero comic style"},
+    {"id": "fantasy", "name": "Fantasy Art", "description": "Epic fantasy painting style"},
+    {"id": "chibi", "name": "Chibi/Cute", "description": "Super-deformed cute style"},
+    {"id": "noir", "name": "Noir/Dramatic", "description": "High contrast, dramatic lighting"},
+    {"id": "storybook", "name": "Children's Storybook", "description": "Warm, friendly children's book style"},
+    {"id": "vintage", "name": "Vintage/Retro", "description": "Classic, nostalgic illustration style"},
+]
+
+CHARACTER_GENRES = [
+    {"id": "fantasy", "name": "Fantasy", "examples": "elves, wizards, dragons, magical creatures"},
+    {"id": "scifi", "name": "Sci-Fi", "examples": "aliens, cyborgs, space explorers, futuristic"},
+    {"id": "contemporary", "name": "Contemporary", "examples": "modern day people, everyday settings"},
+    {"id": "historical", "name": "Historical", "examples": "period characters, historical figures"},
+    {"id": "horror", "name": "Horror/Dark", "examples": "monsters, vampires, gothic characters"},
+    {"id": "adventure", "name": "Adventure", "examples": "explorers, pirates, treasure hunters"},
+    {"id": "romance", "name": "Romance", "examples": "romantic leads, emotional characters"},
+    {"id": "mystery", "name": "Mystery/Thriller", "examples": "detectives, spies, mysterious figures"},
+    {"id": "superhero", "name": "Superhero", "examples": "heroes, villains, powered beings"},
+    {"id": "animal", "name": "Animals/Creatures", "examples": "anthropomorphic, talking animals, mythical beasts"},
+    {"id": "childrens", "name": "Children's", "examples": "friendly characters, educational, whimsical"},
+]
+
 class CharacterCreate(BaseModel):
     name: str
-    reference_images: List[str]  # Base64 encoded images
+    reference_images: List[str] = []  # Base64 or URL images (optional now)
+    description_prompt: Optional[str] = None  # User's description of the character
+    style: Optional[str] = "illustration"  # Character visual style
+    genre: Optional[str] = "fantasy"  # Story genre
+    physical_traits: Optional[dict] = None  # Age, gender, hair, eyes, etc.
+    personality: Optional[str] = None  # Character personality for consistency
+    backstory: Optional[str] = None  # Character background
+    special_features: Optional[str] = None  # Unique features (scars, tattoos, wings, etc.)
+
+class CharacterUpdate(BaseModel):
+    name: Optional[str] = None
+    description_prompt: Optional[str] = None
+    style: Optional[str] = None
+    genre: Optional[str] = None
+    physical_traits: Optional[dict] = None
+    personality: Optional[str] = None
+    backstory: Optional[str] = None
+    special_features: Optional[str] = None
+    add_reference_images: Optional[List[str]] = None  # Add more reference images
 
 # fal.ai Character Consistency Models
 class FalTrainLoraRequest(BaseModel):
