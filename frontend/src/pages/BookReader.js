@@ -56,6 +56,9 @@ export default function BookReader() {
   // AI Reading Buddy
   const [showAIBuddy, setShowAIBuddy] = useState(false);
   
+  // Hide controls (for iPad immersive mode)
+  const [hideControls, setHideControls] = useState(false);
+  
   // Realistic page flip mode - always enabled
   const realisticFlipRef = useRef(null);
   
