@@ -10,12 +10,13 @@ import { useAuth } from '@/context/AuthContext';
 import { 
   FiArrowLeft, FiChevronLeft, FiChevronRight, FiMaximize2, FiMinimize2,
   FiPlay, FiPause, FiVolume2, FiVolumeX, FiSun, FiMoon, FiLock, FiBook,
-  FiAward, FiTrendingUp, FiMic
+  FiAward, FiTrendingUp, FiMic, FiLayers
 } from 'react-icons/fi';
 import { useTheme } from '@/context/ThemeContext';
 import AmbientSound from '@/components/AmbientSound';
 import AIReadingBuddy from '@/components/AIReadingBuddy';
 import { useSwipeGestures } from '@/hooks/useSwipeGestures';
+import RealisticPageFlip from '@/components/RealisticPageFlip';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
