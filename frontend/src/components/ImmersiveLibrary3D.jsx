@@ -1202,15 +1202,15 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
               
               if (isClimbable) {
                 stairDetected = true;
-              } else if (rayY > camera.position.y - PLAYER_HEIGHT + 0.5) {
-                // Only consider it a wall block at waist level or higher (more permissive)
+              } else {
+                // Only consider it a wall block at chest level
                 blocked = true;
               }
             }
           }
           
           // If we detected climbable surface, allow passage (floor detection handles climbing)
-          // Only block if we hit a real wall at waist/chest level without any stairs nearby
+          // Only block if we hit a real wall without any stairs nearby
           if (blocked && !stairDetected) {
             newX = camera.position.x;
             newZ = camera.position.z;
