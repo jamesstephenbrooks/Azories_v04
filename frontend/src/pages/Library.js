@@ -213,7 +213,7 @@ export default function Library() {
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
     );
   };
 
