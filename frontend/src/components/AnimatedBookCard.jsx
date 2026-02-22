@@ -77,7 +77,7 @@ export default function AnimatedBookCard({ book, onClick, size = 'md' }) {
               <span>{book.pages.length} pages</span>
             )}
           </div>
-        </motion.div>
+        </div>
 
         {/* 3D book spine effect */}
         <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-r from-black/30 to-transparent" />
@@ -90,33 +90,7 @@ export default function AnimatedBookCard({ book, onClick, size = 'md' }) {
           by {book.author_name || 'Anonymous'}
         </p>
       </div>
-
-      {/* Floating particles on hover */}
-      {isHovered && (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-xl">
-          {[...Array(5)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-1 h-1 bg-primary rounded-full"
-              initial={{ 
-                x: Math.random() * 100 + '%', 
-                y: '100%',
-                opacity: 0 
-              }}
-              animate={{ 
-                y: '-20%',
-                opacity: [0, 1, 0]
-              }}
-              transition={{ 
-                duration: 1.5,
-                delay: i * 0.2,
-                repeat: Infinity
-              }}
-            />
-          ))}
-        </div>
-      )}
-    </motion.div>
+    </div>
   );
 }
 
