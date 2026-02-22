@@ -218,7 +218,8 @@ export default function Library() {
         </div>
       </div>
     </motion.div>
-  );
+    );
+  };
 
   const FeaturedSection = ({ title, icon, books: sectionBooks, emptyMessage }) => (
     <div className="mb-16">
