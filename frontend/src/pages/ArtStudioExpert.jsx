@@ -359,8 +359,9 @@ const ReferenceNode = ({ data, selected }) => {
   };
   
   return (
-    <div className={`bg-gradient-to-br from-cyan-900/90 to-cyan-800/90 rounded-xl border-2 ${selected ? 'border-cyan-400' : 'border-cyan-600/50'} shadow-xl backdrop-blur-sm w-[160px] h-[180px]`}>
+    <div className={`relative bg-gradient-to-br from-cyan-900/90 to-cyan-800/90 rounded-xl border-2 ${selected ? 'border-cyan-400' : 'border-cyan-600/50'} shadow-xl backdrop-blur-sm w-[160px] h-[180px]`}>
       <Handle type="target" position={Position.Left} className="!bg-cyan-400 !w-3 !h-3" />
+      <NodeDeleteButton onDelete={data.onDelete} />
       
       <div className="p-2 border-b border-cyan-600/30 flex items-center gap-2">
         <div className="w-5 h-5 rounded-lg bg-cyan-500/30 flex items-center justify-center flex-shrink-0">
