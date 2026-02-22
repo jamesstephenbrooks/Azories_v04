@@ -961,33 +961,51 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     const hemiLight = new THREE.HemisphereLight(0xffeedd, 0x222211, 0.5);
     scene.add(hemiLight);
     
-    // Create teleport portal visuals - glowing blue oval portals (no text)
+    // Create teleport portal visuals - glowing blue oval portals with strong glow
     const portalMeshes = [];
     const portalTextureUrl = 'https://customer-assets.emergentagent.com/job_5fcf9a60-2eef-4bf3-9095-3ed240f84fb7/artifacts/nlouqrje_360_F_318019685_EV3M47BKGuK3iFG5cOQmVjPy15bc7CkC.jpg';
     const textureLoader = new THREE.TextureLoader();
     
     TELEPORT_PORTALS.forEach(portal => {
       // Create a vertical oval plane for the portal using the image
-      const portalGeometry = new THREE.PlaneGeometry(1.2, 1.8);
+      const portalGeometry = new THREE.PlaneGeometry(1.4, 2.0);
       
       textureLoader.load(portalTextureUrl, (texture) => {
         const portalMaterial = new THREE.MeshBasicMaterial({
           map: texture,
           transparent: true,
           side: THREE.DoubleSide,
-          opacity: 0.95
+          opacity: 0.9
         });
         const portalMesh = new THREE.Mesh(portalGeometry, portalMaterial);
-        portalMesh.position.set(portal.triggerPos.x, portal.triggerPos.y + 0.9, portal.triggerPos.z);
+        portalMesh.position.set(portal.triggerPos.x, portal.triggerPos.y + 1.0, portal.triggerPos.z);
         portalMesh.userData = { isPortal: true, portalData: portal };
         scene.add(portalMesh);
         portalMeshes.push(portalMesh);
       });
       
-      // Add a point light to create glow effect
-      const portalLight = new THREE.PointLight(0x00ffff, 1.5, 4);
-      portalLight.position.set(portal.triggerPos.x, portal.triggerPos.y + 0.9, portal.triggerPos.z);
-      scene.add(portalLight);
+      // Add multiple lights for stronger glow effect
+      const portalLight1 = new THREE.PointLight(0x00ffff, 2.5, 6);
+      portalLight1.position.set(portal.triggerPos.x, portal.triggerPos.y + 1.0, portal.triggerPos.z);
+      scene.add(portalLight1);
+      
+      const portalLight2 = new THREE.PointLight(0x00aaff, 1.5, 4);
+      portalLight2.position.set(portal.triggerPos.x, portal.triggerPos.y + 0.3, portal.triggerPos.z);
+      scene.add(portalLight2);
+      
+      // Add a glowing ring on the floor around the portal
+      const ringGeometry = new THREE.RingGeometry(0.8, 1.2, 32);
+      const ringMaterial = new THREE.MeshBasicMaterial({
+        color: 0x00ffff,
+        transparent: true,
+        opacity: 0.5,
+        side: THREE.DoubleSide
+      });
+      const ringMesh = new THREE.Mesh(ringGeometry, ringMaterial);
+      ringMesh.rotation.x = -Math.PI / 2;
+      ringMesh.position.set(portal.triggerPos.x, portal.triggerPos.y + 0.05, portal.triggerPos.z);
+      ringMesh.userData = { isPortalRing: true };
+      scene.add(ringMesh);
     });
     teleportPortalsRef.current = portalMeshes;
 
