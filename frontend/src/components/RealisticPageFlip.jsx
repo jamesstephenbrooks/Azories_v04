@@ -134,10 +134,8 @@ const CoverPage = forwardRef(({ book, onClick, onListen }, ref) => {
               </button>
               <button 
                 data-testid="cover-listen-btn"
-                onMouseDown={(e) => {
-                  // Prevent react-pageflip from capturing this click
-                  e.stopPropagation();
-                }}
+                onMouseDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
                 onClick={(e) => { 
                   e.stopPropagation(); 
                   e.preventDefault();
