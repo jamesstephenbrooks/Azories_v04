@@ -49,11 +49,11 @@ const TELEPORT_PORTALS = [
   {
     id: 'stairs-up',
     name: 'Go Upstairs',
-    // Position at the bottom of the spiral staircase
-    triggerPos: { x: 4.5, y: 0, z: 4.5 },
-    triggerRadius: 1.5,
+    // Position at the base of the spiral staircase (center of library)
+    triggerPos: { x: 0, y: 0, z: -1 },
+    triggerRadius: 1.2,
     // Destination at the top of the spiral staircase (1st floor)
-    destPos: { x: 4.5, y: 5.5, z: 4.5 },
+    destPos: { x: 0, y: 6, z: -1 },
     destRotation: 0,
     color: '#22c55e', // Green for up
     icon: '↑'
@@ -62,10 +62,10 @@ const TELEPORT_PORTALS = [
     id: 'stairs-down',
     name: 'Go Downstairs',
     // Position at the top of the spiral staircase (1st floor)
-    triggerPos: { x: 4.5, y: 5.5, z: 4.5 },
-    triggerRadius: 1.5,
+    triggerPos: { x: 0, y: 6, z: -1 },
+    triggerRadius: 1.2,
     // Destination at the bottom
-    destPos: { x: 4.5, y: 0, z: 4.5 },
+    destPos: { x: 0, y: 0, z: -1 },
     destRotation: Math.PI,
     color: '#ef4444', // Red for down
     icon: '↓'
