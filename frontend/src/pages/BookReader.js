@@ -542,8 +542,8 @@ export default function BookReader() {
                 onStartReading={startReading}
                 onStartListening={startListening}
                 initialPage={currentPage >= 0 ? currentPage + 1 : 0}
-                width={isFullscreen ? Math.min(window.innerWidth * 0.48, 1300) : 950}
-                height={isFullscreen ? Math.min(window.innerHeight * 0.88, 1600) : 1250}
+                width={isFullscreen ? Math.min(window.innerWidth * 0.45, 800) : 600}
+                height={isFullscreen ? Math.min(window.innerHeight * 0.85, 1000) : 800}
                 showControls={false}
                 className={isFullscreen ? 'scale-100' : ''}
               />
