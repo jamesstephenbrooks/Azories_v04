@@ -838,6 +838,48 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     // Hemisphere light for natural feel
     const hemiLight = new THREE.HemisphereLight(0xffeedd, 0x222211, 0.5);
     scene.add(hemiLight);
+    
+    // Create teleport portal visuals
+    const portalMeshes = [];
+    TELEPORT_PORTALS.forEach(portal => {
+      // Create a glowing ring/cylinder for the portal
+      const portalGeometry = new THREE.CylinderGeometry(portal.triggerRadius, portal.triggerRadius, 0.1, 32, 1, true);
+      const portalMaterial = new THREE.MeshBasicMaterial({
+        color: portal.color,
+        transparent: true,
+        opacity: 0.4,
+        side: THREE.DoubleSide
+      });
+      const portalMesh = new THREE.Mesh(portalGeometry, portalMaterial);
+      portalMesh.position.set(portal.triggerPos.x, portal.triggerPos.y + 0.05, portal.triggerPos.z);
+      portalMesh.userData = { isPortal: true, portalData: portal };
+      scene.add(portalMesh);
+      portalMeshes.push(portalMesh);
+      
+      // Add a floating arrow indicator above the portal
+      const arrowCanvas = document.createElement('canvas');
+      arrowCanvas.width = 128;
+      arrowCanvas.height = 128;
+      const arrowCtx = arrowCanvas.getContext('2d');
+      arrowCtx.fillStyle = portal.color;
+      arrowCtx.font = 'bold 80px Arial';
+      arrowCtx.textAlign = 'center';
+      arrowCtx.textBaseline = 'middle';
+      arrowCtx.fillText(portal.icon, 64, 64);
+      
+      const arrowTexture = new THREE.CanvasTexture(arrowCanvas);
+      const arrowMaterial = new THREE.SpriteMaterial({ 
+        map: arrowTexture, 
+        transparent: true,
+        opacity: 0.9
+      });
+      const arrowSprite = new THREE.Sprite(arrowMaterial);
+      arrowSprite.position.set(portal.triggerPos.x, portal.triggerPos.y + 2, portal.triggerPos.z);
+      arrowSprite.scale.set(1.5, 1.5, 1);
+      arrowSprite.userData = { isPortalArrow: true, baseY: portal.triggerPos.y + 2 };
+      scene.add(arrowSprite);
+    });
+    teleportPortalsRef.current = portalMeshes;
 
     // Load the GLB model
     const dracoLoader = new DRACOLoader();
