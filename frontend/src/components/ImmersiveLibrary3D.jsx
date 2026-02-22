@@ -44,6 +44,34 @@ const GENRE_SECTIONS = [
   { name: 'Humour', position: { x: 4, z: -1 }, bannerPos: { x: 4.79, y: 6.5, z: -1 }, shelfPos: { x: 4.5, y: 5.4, z: -1 }, rotation: -Math.PI / 2, color: '#f59e0b' },
 ];
 
+// Teleport portals for moving between floors (spiral staircase alternative)
+const TELEPORT_PORTALS = [
+  {
+    id: 'stairs-up',
+    name: 'Go Upstairs',
+    // Position at the bottom of the spiral staircase
+    triggerPos: { x: 4.5, y: 0, z: 4.5 },
+    triggerRadius: 1.5,
+    // Destination at the top of the spiral staircase (1st floor)
+    destPos: { x: 4.5, y: 5.5, z: 4.5 },
+    destRotation: 0,
+    color: '#22c55e', // Green for up
+    icon: '↑'
+  },
+  {
+    id: 'stairs-down',
+    name: 'Go Downstairs',
+    // Position at the top of the spiral staircase (1st floor)
+    triggerPos: { x: 4.5, y: 5.5, z: 4.5 },
+    triggerRadius: 1.5,
+    // Destination at the bottom
+    destPos: { x: 4.5, y: 0, z: 4.5 },
+    destRotation: Math.PI,
+    color: '#ef4444', // Red for down
+    icon: '↓'
+  }
+];
+
 // Age range filter options for library search
 const AGE_FILTER_OPTIONS = [
   { value: 'all', label: 'All Ages' },
