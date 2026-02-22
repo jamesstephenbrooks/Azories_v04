@@ -372,16 +372,6 @@ export default function Dashboard() {
               
               {isPro && (
                 <>
-                  <Button 
-                    variant="outline"
-                    className="rounded-full px-6 py-6 font-ui"
-                    onClick={() => navigate('/series')}
-                    data-testid="manage-series-btn"
-                  >
-                    <FiLayers className="mr-2" />
-                    My Series
-                  </Button>
-                  
                   <Dialog open={isAIStoryOpen} onOpenChange={setIsAIStoryOpen}>
                     <DialogTrigger asChild>
                       <Button 
