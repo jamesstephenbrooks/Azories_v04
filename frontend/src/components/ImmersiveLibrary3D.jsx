@@ -1300,22 +1300,26 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
               const maxStepDown = 4.0; // Allow dropping down further
               
               if (hitY <= currentFootY + maxStepUp && hitY >= currentFootY - maxStepDown) {
-                // For stairs, prefer the highest valid point (to climb up)
-                // For regular floor, use closest to current level - but limit how far we can sink
-                const distFromCurrent = Math.abs(hitY - currentFootY);
+                // Prioritization logic to prevent sinking:
+                // 1. Prefer surfaces close to and slightly ABOVE current foot (within 0.5m)
+                // 2. For stairs, allow higher step-up
+                // 3. Only go down if no higher surface found
+                
+                const isAboveAndClose = hitY >= currentFootY - 0.1 && hitY <= currentFootY + 0.5;
+                const isStairClimb = isStair && hitY > currentFootY && hitY <= currentFootY + maxStepUp;
                 
                 if (bestFloorY === null) {
                   bestFloorY = hitY;
                   if (isStair) detectedStairMesh = meshName;
-                } else if (isStair && hitY > bestFloorY) {
-                  // For stairs, always prefer higher (climbing)
+                } else if (isStairClimb && hitY > bestFloorY) {
+                  // Climbing stairs - take higher step
                   bestFloorY = hitY;
                   detectedStairMesh = meshName;
-                } else if (!isStair && hitY > bestFloorY && hitY <= currentFootY + 0.3) {
-                  // For regular floor, prefer higher surfaces that are close to current level
-                  // This prevents sinking while still allowing normal floor detection
+                } else if (isAboveAndClose && hitY > bestFloorY) {
+                  // Surface close to current level and above - prefer this (prevents sinking)
                   bestFloorY = hitY;
-                } else if (!isStair && bestFloorY === null) {
+                } else if (bestFloorY < currentFootY - 1.0 && hitY > bestFloorY) {
+                  // Current best is way below us, prefer anything higher
                   bestFloorY = hitY;
                 }
               }
@@ -1323,8 +1327,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           }
           
           if (bestFloorY !== null) {
-            // Add tiny offset to prevent z-fighting/sinking into surfaces
-            detectedFloorY = bestFloorY + 0.01;
+            detectedFloorY = bestFloorY;
           }
         }
         
