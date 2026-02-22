@@ -128,7 +128,7 @@ const CoverPage = forwardRef(({ book, onClick, onListen }, ref) => {
               </button>
               <button 
                 data-testid="cover-listen-btn"
-                onPointerDown={(e) => {
+                onMouseDown={(e) => {
                   // Prevent react-pageflip from capturing this click
                   e.stopPropagation();
                 }}
@@ -138,7 +138,7 @@ const CoverPage = forwardRef(({ book, onClick, onListen }, ref) => {
                   console.log('Listen button clicked!');
                   onListen?.(); 
                 }}
-                className="flex items-center gap-2 px-6 py-3 rounded-full bg-purple-600 hover:bg-purple-500 transition-colors"
+                className="flex items-center gap-2 px-6 py-3 rounded-full bg-purple-600 hover:bg-purple-500 transition-colors relative z-50"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
