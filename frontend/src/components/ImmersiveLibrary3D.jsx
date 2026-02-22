@@ -883,67 +883,63 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     const hemiLight = new THREE.HemisphereLight(0xffeedd, 0x222211, 0.5);
     scene.add(hemiLight);
     
-    // Create teleport portal visuals
+    // Create teleport portal visuals - glowing blue oval portals
     const portalMeshes = [];
+    const portalTextureUrl = 'https://customer-assets.emergentagent.com/job_5fcf9a60-2eef-4bf3-9095-3ed240f84fb7/artifacts/nlouqrje_360_F_318019685_EV3M47BKGuK3iFG5cOQmVjPy15bc7CkC.jpg';
+    const textureLoader = new THREE.TextureLoader();
+    
     TELEPORT_PORTALS.forEach(portal => {
-      // Create a small glowing disc for the portal
-      const portalGeometry = new THREE.CircleGeometry(portal.triggerRadius, 32);
-      const portalMaterial = new THREE.MeshBasicMaterial({
-        color: portal.color,
-        transparent: true,
-        opacity: 0.5,
-        side: THREE.DoubleSide
+      // Create a vertical oval plane for the portal using the image
+      const portalGeometry = new THREE.PlaneGeometry(1.2, 1.8); // Oval proportions
+      
+      textureLoader.load(portalTextureUrl, (texture) => {
+        const portalMaterial = new THREE.MeshBasicMaterial({
+          map: texture,
+          transparent: true,
+          side: THREE.DoubleSide,
+          opacity: 0.95
+        });
+        const portalMesh = new THREE.Mesh(portalGeometry, portalMaterial);
+        portalMesh.position.set(portal.triggerPos.x, portal.triggerPos.y + 0.9, portal.triggerPos.z);
+        portalMesh.userData = { isPortal: true, portalData: portal };
+        scene.add(portalMesh);
+        portalMeshes.push(portalMesh);
       });
-      const portalMesh = new THREE.Mesh(portalGeometry, portalMaterial);
-      portalMesh.rotation.x = -Math.PI / 2; // Lay flat on the ground
-      portalMesh.position.set(portal.triggerPos.x, portal.triggerPos.y + 0.05, portal.triggerPos.z);
-      portalMesh.userData = { isPortal: true, portalData: portal };
-      scene.add(portalMesh);
-      portalMeshes.push(portalMesh);
       
-      // Add a thin gold ring around the portal
-      const ringGeometry = new THREE.RingGeometry(portal.triggerRadius - 0.05, portal.triggerRadius, 32);
-      const ringMaterial = new THREE.MeshBasicMaterial({
-        color: '#ffffff',
-        transparent: true,
-        opacity: 0.7,
-        side: THREE.DoubleSide
+      // Add a point light to create glow effect
+      const portalLight = new THREE.PointLight(0x00ffff, 1, 3);
+      portalLight.position.set(portal.triggerPos.x, portal.triggerPos.y + 0.9, portal.triggerPos.z);
+      scene.add(portalLight);
+      
+      // Add text label very close to the portal
+      const labelCanvas = document.createElement('canvas');
+      labelCanvas.width = 256;
+      labelCanvas.height = 64;
+      const labelCtx = labelCanvas.getContext('2d');
+      
+      // Draw background
+      labelCtx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+      labelCtx.roundRect(0, 0, 256, 64, 10);
+      labelCtx.fill();
+      
+      // Draw text
+      labelCtx.fillStyle = '#00ffff';
+      labelCtx.font = 'bold 28px Arial';
+      labelCtx.textAlign = 'center';
+      labelCtx.textBaseline = 'middle';
+      labelCtx.fillText(portal.name, 128, 32);
+      
+      const labelTexture = new THREE.CanvasTexture(labelCanvas);
+      const labelMaterial = new THREE.SpriteMaterial({ 
+        map: labelTexture, 
+        transparent: true
       });
-      const ringMesh = new THREE.Mesh(ringGeometry, ringMaterial);
-      ringMesh.rotation.x = -Math.PI / 2;
-      ringMesh.position.set(portal.triggerPos.x, portal.triggerPos.y + 0.06, portal.triggerPos.z);
-      scene.add(ringMesh);
-      
-      // Add a small floating arrow indicator above the portal
-      const arrowCanvas = document.createElement('canvas');
-      arrowCanvas.width = 128;
-      arrowCanvas.height = 128;
-      const arrowCtx = arrowCanvas.getContext('2d');
-      
-      // Draw gold circle background
-      arrowCtx.fillStyle = portal.color;
-      arrowCtx.beginPath();
-      arrowCtx.arc(64, 64, 50, 0, Math.PI * 2);
-      arrowCtx.fill();
-      
-      // Draw arrow
-      arrowCtx.fillStyle = '#000000';
-      arrowCtx.font = 'bold 60px Arial';
-      arrowCtx.textAlign = 'center';
-      arrowCtx.textBaseline = 'middle';
-      arrowCtx.fillText(portal.icon, 64, 64);
-      
-      const arrowTexture = new THREE.CanvasTexture(arrowCanvas);
-      const arrowMaterial = new THREE.SpriteMaterial({ 
-        map: arrowTexture, 
-        transparent: true,
-        opacity: 0.9
-      });
-      const arrowSprite = new THREE.Sprite(arrowMaterial);
-      arrowSprite.position.set(portal.triggerPos.x, portal.triggerPos.y + 0.8, portal.triggerPos.z);
-      arrowSprite.scale.set(0.35, 0.35, 1);
-      arrowSprite.userData = { isPortalArrow: true, baseY: portal.triggerPos.y + 0.8 };
-      scene.add(arrowSprite);
+      const labelSprite = new THREE.Sprite(labelMaterial);
+      // Position label just above the portal
+      labelSprite.position.set(portal.triggerPos.x, portal.triggerPos.y + 2.0, portal.triggerPos.z);
+      labelSprite.scale.set(1.5, 0.4, 1);
+      labelSprite.userData = { isPortalLabel: true };
+      scene.add(labelSprite);
     });
     teleportPortalsRef.current = portalMeshes;
 
