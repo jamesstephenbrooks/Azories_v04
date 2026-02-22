@@ -51,6 +51,7 @@ export default function Library() {
       const params = new URLSearchParams();
       if (search) params.append('search', search);
       if (genre && genre !== 'All') params.append('genre', genre);
+      if (ageRange && ageRange !== 'All') params.append('age_rating', ageRange);
       params.append('published_only', 'true');
       
       const res = await axios.get(`${API}/books?${params.toString()}`);
