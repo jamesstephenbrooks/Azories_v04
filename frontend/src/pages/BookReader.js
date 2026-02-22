@@ -10,7 +10,7 @@ import { useAuth } from '@/context/AuthContext';
 import { 
   FiArrowLeft, FiChevronLeft, FiChevronRight, FiMaximize2, FiMinimize2,
   FiPlay, FiPause, FiVolume2, FiVolumeX, FiSun, FiMoon, FiLock, FiBook,
-  FiAward, FiTrendingUp, FiMic, FiLayers
+  FiAward, FiTrendingUp, FiMic
 } from 'react-icons/fi';
 import { useTheme } from '@/context/ThemeContext';
 import AmbientSound from '@/components/AmbientSound';
