@@ -723,10 +723,21 @@ export default function ProStudio() {
           id: Date.now(),
           url: data.image_url,
           expression: selectedExpression,
-          character: selectedCharacter.name
+          character: selectedCharacter.name,
+          prompt: `${selectedCharacter.name} - ${expressionData.name} expression`
         };
         setGeneratedImages(prev => [newImage, ...prev]);
         toast.success(`${expressionData.name} expression generated!`);
+        
+        // Auto-save to character folder
+        if (data.image_url) {
+          await saveToCharacterFolder(
+            selectedCharacter.id, 
+            data.image_url, 
+            `${expressionData.name} expression - ${prompt || 'portrait'}`,
+            'expression'
+          );
+        }
       } else {
         const error = await response.json();
         toast.error(error.detail || 'Failed to generate expression');
