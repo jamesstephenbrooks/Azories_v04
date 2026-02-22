@@ -267,8 +267,9 @@ const StyleNode = ({ data, selected }) => {
   }, {});
   
   return (
-    <div className={`bg-gradient-to-br from-amber-900/90 to-amber-800/90 rounded-xl border-2 ${selected ? 'border-amber-400' : 'border-amber-600/50'} shadow-xl backdrop-blur-sm min-w-[200px]`}>
+    <div className={`relative bg-gradient-to-br from-amber-900/90 to-amber-800/90 rounded-xl border-2 ${selected ? 'border-amber-400' : 'border-amber-600/50'} shadow-xl backdrop-blur-sm min-w-[200px]`}>
       <Handle type="target" position={Position.Left} className="!bg-amber-400 !w-3 !h-3" />
+      <NodeDeleteButton onDelete={data.onDelete} />
       
       <div className="p-2 border-b border-amber-600/30 flex items-center gap-2">
         <div className="w-6 h-6 rounded-lg bg-amber-500/30 flex items-center justify-center flex-shrink-0">
