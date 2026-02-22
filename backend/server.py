@@ -2264,7 +2264,7 @@ async def update_character(character_id: str, request: CharacterUpdate, current_
     
     if request.name:
         update_data["name"] = request.name
-    if request.description_prompt:
+    if request.description_prompt is not None:
         update_data["description_prompt"] = request.description_prompt
     if request.style:
         update_data["style"] = request.style
@@ -2272,11 +2272,11 @@ async def update_character(character_id: str, request: CharacterUpdate, current_
         update_data["genre"] = request.genre
     if request.physical_traits:
         update_data["physical_traits"] = request.physical_traits
-    if request.personality:
+    if request.personality is not None:
         update_data["personality"] = request.personality
     if request.backstory:
         update_data["backstory"] = request.backstory
-    if request.special_features:
+    if request.special_features is not None:
         update_data["special_features"] = request.special_features
     
     # Add new reference images to existing ones
@@ -2288,6 +2288,28 @@ async def update_character(character_id: str, request: CharacterUpdate, current_
         # Update thumbnail if we didn't have one
         if not character.get("thumbnail") and new_images:
             update_data["thumbnail"] = new_images[0]
+    
+    # Rebuild description if key fields changed
+    if any(k in update_data for k in ['description_prompt', 'style', 'genre', 'special_features', 'name']):
+        style_info = next((s for s in CHARACTER_STYLES if s["id"] == update_data.get("style", character.get("style"))), {"name": "illustration"})
+        genre_info = next((g for g in CHARACTER_GENRES if g["id"] == update_data.get("genre", character.get("genre"))), {"name": "fantasy"})
+        
+        desc_parts = [
+            f"Character: {update_data.get('name', character.get('name'))}",
+            f"Style: {style_info.get('name', '')} - {style_info.get('description', '')}",
+            f"Genre: {genre_info.get('name', '')}",
+        ]
+        desc_prompt = update_data.get('description_prompt') or character.get('description_prompt')
+        if desc_prompt:
+            desc_parts.append(f"\nAppearance: {desc_prompt}")
+        special = update_data.get('special_features') or character.get('special_features')
+        if special:
+            desc_parts.append(f"Special features: {special}")
+        pers = update_data.get('personality') or character.get('personality')
+        if pers:
+            desc_parts.append(f"Personality: {pers}")
+        
+        update_data["description"] = "\n".join(desc_parts)
     
     update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
     
