@@ -1118,10 +1118,12 @@ export default function BookEditor() {
                             })}
                           </div>
                         ) : (
-                          /* Portrait aspect ratio to match book pages */
+                          /* Portrait aspect ratio - compact when empty, larger when has image */
                           <div className="space-y-3">
                             <div 
-                              className="aspect-[3/4] rounded-2xl border-2 border-dashed border-border bg-muted/30 overflow-hidden flex items-center justify-center relative"
+                              className={`rounded-2xl border-2 border-dashed border-border bg-muted/30 overflow-hidden flex items-center justify-center relative transition-all ${
+                                selectedPage.image_url ? 'aspect-[3/4]' : 'h-32'
+                              }`}
                               data-testid="page-image-preview"
                             >
                               {selectedPage.image_url ? (
@@ -1136,12 +1138,43 @@ export default function BookEditor() {
                                 />
                               ) : (
                                 <div className="text-center p-4">
-                                  <FiImage className="w-12 h-12 mx-auto text-muted-foreground/50 mb-2" />
-                                  <p className="font-body text-sm text-muted-foreground">
-                                    No image yet
+                                  <FiImage className="w-8 h-8 mx-auto text-muted-foreground/50 mb-1" />
+                                  <p className="font-body text-xs text-muted-foreground">
+                                    No image - use options below
                                   </p>
                                 </div>
                               )}
+                            </div>
+                            
+                            {/* Book Gallery Quick Access - Show assigned images for this book */}
+                            {bookGallery.length > 0 && !selectedPage.image_url && (
+                              <div className="bg-muted/30 rounded-xl p-3">
+                                <div className="flex items-center justify-between mb-2">
+                                  <h4 className="text-xs font-semibold text-foreground/70">
+                                    Book Gallery ({bookGallery.length} images)
+                                  </h4>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="h-6 text-xs"
+                                    onClick={() => setShowBookGallery(!showBookGallery)}
+                                  >
+                                    {showBookGallery ? 'Hide' : 'Show All'}
+                                  </Button>
+                                </div>
+                                <div className={`grid grid-cols-4 gap-2 ${showBookGallery ? '' : 'max-h-16 overflow-hidden'}`}>
+                                  {bookGallery.slice(0, showBookGallery ? undefined : 4).map((img) => (
+                                    <div 
+                                      key={img.id}
+                                      className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-primary transition-colors"
+                                      onClick={() => addGalleryImageToPage(img.image_url, activeImageSlot)}
+                                    >
+                                      <img src={img.image_url} alt="" className="w-full h-full object-cover" />
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
                             </div>
                             
                             {/* Image Position Controls */}
