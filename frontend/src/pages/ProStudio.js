@@ -1229,6 +1229,89 @@ export default function ProStudio() {
           </TabsContent>
         </Tabs>
       </main>
+      
+      {/* Gallery Picker Modal */}
+      <AnimatePresence>
+        {showGalleryPicker && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowGalleryPicker(false)}
+          >
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-gray-900 rounded-xl border border-purple-500/20 w-full max-w-4xl max-h-[80vh] overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-4 border-b border-gray-800 flex items-center justify-between">
+                <h3 className="text-lg font-bold text-white">
+                  {galleryPickerMode === 'character' ? 'Select Images for Character' : 'Select Source Image'}
+                </h3>
+                <button onClick={() => setShowGalleryPicker(false)} className="text-gray-400 hover:text-white">
+                  <FiX size={20} />
+                </button>
+              </div>
+              
+              <div className="p-4 overflow-y-auto max-h-[60vh]">
+                {gallery.length === 0 ? (
+                  <div className="text-center py-12 text-gray-500">
+                    <FiFolder className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <p>Your gallery is empty</p>
+                    <p className="text-sm mt-2">Generate some images in Art Studio first</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-4 md:grid-cols-5 gap-3">
+                    {gallery.filter(item => !item.is_animation).map((item) => (
+                      <div 
+                        key={item.id} 
+                        className="relative cursor-pointer rounded-lg overflow-hidden border-2 border-transparent hover:border-purple-500 transition-colors"
+                        onClick={() => {
+                          if (galleryPickerMode === 'character') {
+                            // Add to character images
+                            const newImage = {
+                              id: Date.now() + Math.random(),
+                              url: item.image_url,
+                              name: item.prompt?.substring(0, 20) || 'Gallery Image'
+                            };
+                            setCharacterImages(prev => [...prev, newImage]);
+                            toast.success('Image added to character references');
+                          } else {
+                            // Set as shots source
+                            setShotsSourceImage(item.image_url);
+                            setShowGalleryPicker(false);
+                            toast.success('Source image selected');
+                          }
+                        }}
+                      >
+                        <img 
+                          src={item.image_url} 
+                          alt="" 
+                          className="w-full aspect-square object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              
+              <div className="p-4 border-t border-gray-800 flex justify-end gap-3">
+                <Button variant="ghost" onClick={() => setShowGalleryPicker(false)}>
+                  Cancel
+                </Button>
+                {galleryPickerMode === 'character' && (
+                  <Button onClick={() => setShowGalleryPicker(false)} className="bg-purple-600 hover:bg-purple-700">
+                    Done ({characterImages.length} selected)
+                  </Button>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
