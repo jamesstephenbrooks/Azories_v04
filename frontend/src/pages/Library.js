@@ -186,6 +186,20 @@ export default function Library() {
                 {book.genre}
               </span>
             </div>
+            
+            {/* Start Reading Button - Always visible */}
+            <Button 
+              className="w-full mt-3 rounded-full"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/read/${book.id}`);
+              }}
+              data-testid={`start-reading-btn-${book.id}`}
+            >
+              <FiBook className="mr-2 w-4 h-4" />
+              Start Reading
+            </Button>
           </div>
         </div>
       </div>
