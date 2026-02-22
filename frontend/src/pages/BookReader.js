@@ -918,7 +918,7 @@ export default function BookReader() {
             <Button
               variant={autoRead ? "default" : "ghost"}
               size="sm"
-              onClick={() => setAutoRead(!autoRead)}
+              onClick={handleAutoReadToggle}
               className="rounded-full text-xs"
             >
               Auto-Read: {autoRead ? 'ON' : 'OFF'}
