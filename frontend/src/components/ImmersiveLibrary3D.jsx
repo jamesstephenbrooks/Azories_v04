@@ -119,36 +119,36 @@ const GENRE_SECTIONS = [
     color: '#78716c' 
   },
   
-  // NEW LOCATIONS - Upper Floor (moved banners OUT from bookcases, into the open walkway area)
+  // NEW LOCATIONS - Upper Floor (moved banners 20% out from bookcases + raised slightly)
   { 
     name: 'Horror', 
     position: { x: 0.0, z: 4.5 }, 
-    bannerPos: { x: -0.87, y: 6.8, z: 3.5 }, // Moved out toward center walkway
-    shelfPos: { x: -0.87, y: 6.4, z: 3.5 }, 
+    bannerPos: { x: -0.87, y: 8.0, z: 4.9 }, // 20% move from z:5.26 toward 3.5, raised from 7.68 to 8.0
+    shelfPos: { x: -0.87, y: 7.5, z: 4.9 }, 
     rotation: Math.PI, 
     color: '#dc2626' 
   },
   { 
     name: 'Non-Fiction', 
     position: { x: -2.5, z: 2.0 }, 
-    bannerPos: { x: -2.0, y: 6.8, z: 1.5 }, // Moved out toward center walkway
-    shelfPos: { x: -2.0, y: 6.4, z: 1.5 }, 
+    bannerPos: { x: -3.1, y: 8.8, z: 2.7 }, // 20% move, raised from 8.57 to 8.8
+    shelfPos: { x: -3.1, y: 8.3, z: 2.7 }, 
     rotation: Math.PI, 
     color: '#0891b2' 
   },
   { 
     name: 'Poetry', 
     position: { x: -0.5, z: -7.5 }, 
-    bannerPos: { x: -0.5, y: 6.8, z: -6.5 }, // Moved out toward center walkway
-    shelfPos: { x: -0.5, y: 6.4, z: -6.5 }, 
+    bannerPos: { x: -1.05, y: 8.2, z: -7.8 }, // 20% move from z:-8.12 toward -6.5, raised from 7.89 to 8.2
+    shelfPos: { x: -1.05, y: 7.7, z: -7.8 }, 
     rotation: 0, 
     color: '#d946ef' 
   },
   { 
     name: 'Drama', 
     position: { x: -2.5, z: -5.0 }, 
-    bannerPos: { x: -1.5, y: 6.8, z: -4.5 }, // Moved out toward center walkway
-    shelfPos: { x: -1.5, y: 6.4, z: -4.5 }, 
+    bannerPos: { x: -2.85, y: 8.0, z: -5.5 }, // 20% move from z:-5.77 toward -4.5, raised from 7.71 to 8.0
+    shelfPos: { x: -2.85, y: 7.5, z: -5.5 }, 
     rotation: 0, 
     color: '#0d9488' 
   },
