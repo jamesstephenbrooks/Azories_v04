@@ -144,25 +144,48 @@ const GENRE_SECTIONS = [
   },
 ];
 
-// Teleport portals for moving between floors - near spiral staircase
+// Teleport portals for moving between floors - near spiral staircases
 const TELEPORT_PORTALS = [
+  // Back spiral staircase
   {
-    id: 'stairs-up',
+    id: 'stairs-up-back',
     name: 'Go Upstairs',
-    triggerPos: { x: -1.60, y: 4.18, z: -6.01 }, // Bottom of spiral staircase
-    triggerRadius: 0.1, // Very small - must be right at the portal
-    destPos: { x: -2.22, y: 6.21, z: -6.94 }, // Top of stairs
+    triggerPos: { x: -1.60, y: 4.18, z: -6.01 }, // Bottom of back spiral staircase
+    triggerRadius: 0.1,
+    destPos: { x: -2.22, y: 6.21, z: -6.94 }, // Top of back stairs (update when you give me the position)
     destRotation: 0,
     color: '#00ffff',
     icon: '↑'
   },
+  // Front spiral staircase
   {
-    id: 'stairs-down',
-    name: 'Go Downstairs',
-    triggerPos: { x: -2.22, y: 6.21, z: -6.94 }, // Top of spiral staircase
-    triggerRadius: 0.1, // Very small - must be right at the portal
-    destPos: { x: -1.60, y: 4.18, z: -6.01 }, // Bottom of stairs
+    id: 'stairs-up-front',
+    name: 'Go Upstairs',
+    triggerPos: { x: -1.55, y: 4.29, z: 2.90 }, // Bottom of front spiral staircase
+    triggerRadius: 0.1,
+    destPos: { x: -2.23, y: 6.21, z: 4.03 }, // Top of front stairs (update when you give me the position)
     destRotation: Math.PI,
+    color: '#00ffff',
+    icon: '↑'
+  },
+  // Go down portals - need positions from top of stairs
+  {
+    id: 'stairs-down-back',
+    name: 'Go Downstairs',
+    triggerPos: { x: -2.22, y: 6.21, z: -6.94 }, // Top of back spiral staircase (update this)
+    triggerRadius: 0.1,
+    destPos: { x: -1.60, y: 4.18, z: -6.01 }, // Bottom of back stairs
+    destRotation: Math.PI,
+    color: '#00ffff',
+    icon: '↓'
+  },
+  {
+    id: 'stairs-down-front',
+    name: 'Go Downstairs',
+    triggerPos: { x: -2.23, y: 6.21, z: 4.03 }, // Top of front spiral staircase (update this)
+    triggerRadius: 0.1,
+    destPos: { x: -1.55, y: 4.29, z: 2.90 }, // Bottom of front stairs
+    destRotation: 0,
     color: '#00ffff',
     icon: '↓'
   }
