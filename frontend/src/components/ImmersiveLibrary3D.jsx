@@ -174,10 +174,10 @@ const TELEPORT_PORTALS = [
   {
     id: 'stairs-up-front',
     name: 'Go Upstairs',
-    triggerPos: { x: -2.0, y: 0, z: 3.5 }, // Needs user coordinates
+    triggerPos: { x: -1.50, y: 0, z: 2.41 }, // User-provided location
     visualY: 0.05,
     triggerRadius: 1.5,
-    destPos: { x: -2.0, y: 5.1, z: 3.5 },
+    destPos: { x: -1.50, y: 5.1, z: 2.41 }, // Teleport to upper floor same spot
     destRotation: Math.PI,
     color: '#00ffff',
     icon: '↑',
@@ -200,7 +200,7 @@ const TELEPORT_PORTALS = [
   {
     id: 'stairs-down-front',
     name: 'Go Downstairs',
-    triggerPos: { x: -2.0, y: 5.1, z: 3.5 }, // Needs user coordinates
+    triggerPos: { x: -1.50, y: 5.1, z: 2.41 }, // User-provided location
     visualY: 5.15,
     triggerRadius: 1.5,
     destPos: { x: 0, y: 0, z: 5 }, // Starting location
