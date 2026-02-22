@@ -80,6 +80,13 @@ export default function ProStudio() {
   const [consistencyMethod, setConsistencyMethod] = useState('auto'); // 'auto', 'lora', 'pulid', 'openai'
   const [selectedImageModel, setSelectedImageModel] = useState('flux-dev');
   
+  // Character folder/gallery state
+  const [characterGallery, setCharacterGallery] = useState([]);
+  const [viewingCharacter, setViewingCharacter] = useState(null);
+  
+  // Image preview modal state
+  const [previewImage, setPreviewImage] = useState(null);
+  
   // Book linking state
   const [userBooks, setUserBooks] = useState([]);
   const [selectedBookId, setSelectedBookId] = useState('general');
