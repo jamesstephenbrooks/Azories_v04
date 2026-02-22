@@ -183,10 +183,20 @@ Professional-grade character creation and video generation studio, inspired by H
 - [x] Listen button enables auto-read - DONE (Feb 22, 2026)
 - [x] Auto-read OFF stops immediately - DONE (Feb 22, 2026)
 - [x] Narrator voice lock feature - DONE (Feb 22, 2026)
+- [x] **Batch 2: Book Editor Improvements** - DONE (Feb 22, 2026)
+  - [x] Remove Narration button from editor toolbar
+  - [x] Move Edit Cover controls to left sidebar
+  - [x] Fix PDF download with proper auth header
+  - [x] Clean up top toolbar buttons
+  - [x] Add cover thumbnails preview in sidebar
 - [ ] iPad chapter creation dialog fix (recurring)
 - **TTS Quota Exceeded** - The "Listen" audio feature requires Universal Key credit top-up (Profile → Universal Key → Add Balance)
 
-### P1 - High Priority
+### P1 - High Priority (Batch 2 Remaining)
+- [ ] Create "My Series" dedicated page (currently in Dashboard dialog)
+- [ ] Add font and layout editing to text editor
+- [ ] Display chapter titles on first page of new chapters
+- [ ] Fix collaboration popup UI issues
 - [ ] Integrate Veo 3.1 video model (requires API key)
 - [ ] Integrate Kling 3.0 video model (requires API key)
 - [ ] Generate page images for 50+ books (covers done)
@@ -199,6 +209,7 @@ Professional-grade character creation and video generation studio, inspired by H
 - [ ] Replace ambient "wind" sound
 - [ ] Pro feature gating after trial expires
 - [ ] Payment/subscription management (Stripe)
+- [ ] Fix fullscreen mode on iPad
 
 ### P3 - Backlog
 - [ ] Re-integrate "Azora" AI Librarian
