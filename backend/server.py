@@ -1532,6 +1532,9 @@ async def update_page(page_id: str, page_data: PageUpdate, current_user: dict = 
     updated.setdefault("image_position_x", 50)
     updated.setdefault("image_position_y", 50)
     updated.setdefault("image_fit", "cover")
+    updated.setdefault("font_family", "default")
+    updated.setdefault("font_size", "medium")
+    updated.setdefault("text_align", "left")
     return PageResponse(**updated)
 
 @api_router.delete("/pages/{page_id}")
