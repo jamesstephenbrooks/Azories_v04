@@ -501,8 +501,6 @@ export default function BookReader() {
                   book={book}
                   pages={allPages}
                   onPageChange={(flipPage, contentPageIndex) => {
-                    // Debug logging
-                    console.log('Page change:', { flipPage, contentPageIndex, totalPages: allPages.length });
                     // contentPageIndex is the actual index in allPages array
                     // -1 = front cover, -2 = back cover, 0+ = content page
                     setCurrentPage(contentPageIndex);
