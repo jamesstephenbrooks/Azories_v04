@@ -1526,10 +1526,10 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         if (child.userData?.isPortalArrow) {
           child.position.y = child.userData.baseY + Math.sin(time * 2) * 0.2;
         }
-        // Pulse portal rings
+        // Pulse and rotate portal meshes
         if (child.userData?.isPortal && child.material) {
-          child.material.opacity = 0.3 + Math.sin(time * 3) * 0.2;
-          child.rotation.y += 0.01;
+          child.material.opacity = 0.8 + Math.sin(time * 3) * 0.15;
+          child.rotation.y += 0.005; // Slow rotation
         }
       });
       
