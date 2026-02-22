@@ -30,11 +30,27 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 // Custom Node Types
 
+// Delete button component for nodes
+const NodeDeleteButton = ({ onDelete }) => (
+  <button
+    onClick={(e) => {
+      e.stopPropagation();
+      onDelete?.();
+    }}
+    className="absolute top-1 right-1 w-5 h-5 rounded-full bg-red-500/80 hover:bg-red-500 flex items-center justify-center transition-colors z-10"
+    title="Delete node"
+    data-testid="node-delete-btn"
+  >
+    <FiX className="w-3 h-3 text-white" />
+  </button>
+);
+
 // Character Node - Define character traits - Resizable
 const CharacterNode = ({ data, selected }) => {
   return (
-    <div className={`bg-gradient-to-br from-purple-900/90 to-purple-800/90 rounded-xl border-2 ${selected ? 'border-purple-400' : 'border-purple-600/50'} shadow-xl backdrop-blur-sm w-[250px] h-[260px]`}>
+    <div className={`relative bg-gradient-to-br from-purple-900/90 to-purple-800/90 rounded-xl border-2 ${selected ? 'border-purple-400' : 'border-purple-600/50'} shadow-xl backdrop-blur-sm w-[250px] h-[260px]`}>
       <Handle type="target" position={Position.Left} className="!bg-purple-400 !w-3 !h-3" />
+      <NodeDeleteButton onDelete={data.onDelete} />
       
       <div className="p-2 border-b border-purple-600/30 flex items-center gap-2">
         <div className="w-6 h-6 rounded-lg bg-purple-500/30 flex items-center justify-center flex-shrink-0">
@@ -43,9 +59,6 @@ const CharacterNode = ({ data, selected }) => {
         <div className="flex-1 min-w-0">
           <h4 className="text-xs font-semibold text-white truncate">Character</h4>
         </div>
-        {selected && (
-          <span className="text-[9px] text-purple-300 bg-purple-500/20 px-1.5 py-0.5 rounded">DEL to remove</span>
-        )}
       </div>
       
       <div className="p-2 space-y-2 overflow-auto h-[calc(100%-40px)]">
@@ -61,21 +74,23 @@ const CharacterNode = ({ data, selected }) => {
           <select 
             value={data.gender || 'Female'}
             onChange={(e) => data.onChange?.('gender', e.target.value)}
-            className="px-2 py-1.5 rounded-lg bg-black/30 border border-purple-500/30 text-white text-xs"
+            className="px-2 py-1.5 rounded-lg bg-black/30 border border-purple-500/30 text-white text-xs appearance-none"
+            style={{ colorScheme: 'dark' }}
           >
-            <option value="Female">Female</option>
-            <option value="Male">Male</option>
-            <option value="Non-binary">Non-binary</option>
+            <option value="Female" className="bg-[#1a1520] text-white">Female</option>
+            <option value="Male" className="bg-[#1a1520] text-white">Male</option>
+            <option value="Non-binary" className="bg-[#1a1520] text-white">Non-binary</option>
           </select>
           <select 
             value={data.age || 'Adult'}
             onChange={(e) => data.onChange?.('age', e.target.value)}
-            className="px-2 py-1.5 rounded-lg bg-black/30 border border-purple-500/30 text-white text-xs"
+            className="px-2 py-1.5 rounded-lg bg-black/30 border border-purple-500/30 text-white text-xs appearance-none"
+            style={{ colorScheme: 'dark' }}
           >
-            <option value="Child">Child</option>
-            <option value="Teen">Teen</option>
-            <option value="Adult">Adult</option>
-            <option value="Elder">Elder</option>
+            <option value="Child" className="bg-[#1a1520] text-white">Child</option>
+            <option value="Teen" className="bg-[#1a1520] text-white">Teen</option>
+            <option value="Adult" className="bg-[#1a1520] text-white">Adult</option>
+            <option value="Elder" className="bg-[#1a1520] text-white">Elder</option>
           </select>
         </div>
         
