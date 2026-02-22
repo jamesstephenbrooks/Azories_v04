@@ -1878,7 +1878,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                     <div>
                       <h3 className="text-lg font-bold text-white">{selectedGenre}</h3>
                       <p className="text-xs text-purple-300">
-                        {books.filter(b => b.genre?.toLowerCase() === selectedGenre.toLowerCase()).length} books
+                        {books.filter(b => b.genre?.toLowerCase() === selectedGenre.toLowerCase() && matchesAgeFilter(b.age_rating, ageFilter)).length} books
                       </p>
                     </div>
                     <button
