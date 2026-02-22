@@ -414,24 +414,22 @@ export default function BookReader() {
   // Start listening - flip to first page and enable auto-read with audio
   const startListening = useCallback(() => {
     console.log('startListening called, currentPage:', currentPage);
-    // Enable auto-read first
+    // Enable auto-read - update BOTH state AND ref synchronously
     setAutoRead(true);
+    autoReadRef.current = true; // Sync update for immediate checks
     
     if (currentPage === -1) {
-      // Flip to first page - audio will start via effect when page changes
-      console.log('On cover, flipping to first page');
+      // On cover - flip to first page, audio will start via effect when page changes
+      console.log('On cover, flipping to first page with auto-read enabled');
       if (realisticFlipRef.current) {
         realisticFlipRef.current.nextPage();
       }
     } else {
       // Already on a content page - start playing immediately
       console.log('On content page, starting audio immediately');
-      // Small delay to allow autoRead state to propagate
-      setTimeout(() => {
-        playAudio();
-      }, 200);
+      playAudio();
     }
-  }, [currentPage]);
+  }, [currentPage, playAudio]);
 
   useEffect(() => {
     if (audioElement) {
