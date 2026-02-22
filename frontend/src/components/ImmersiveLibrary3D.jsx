@@ -1341,9 +1341,11 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     );
 
     // Animation loop with SIMPLIFIED physics - focus on stable movement
+    let frameCount = 0;
     const animate = () => {
       if (!mounted) return;
       animationIdRef.current = requestAnimationFrame(animate);
+      frameCount++;
       
       const delta = Math.min(clockRef.current.getDelta(), 0.05); // Cap delta more aggressively
       
