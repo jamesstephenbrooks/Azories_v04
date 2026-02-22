@@ -2263,6 +2263,326 @@ async def animate_hero_frame(request: AnimateHeroRequest, background_tasks: Back
         "message": "Video generation started. Poll /api/art-studio/animation-status/{job_id} for progress."
     }
 
+# ==================== FAL.AI CHARACTER CONSISTENCY ENDPOINTS ====================
+
+@api_router.get("/fal/models")
+async def get_fal_available_models():
+    """Get list of available fal.ai models"""
+    if not FAL_AVAILABLE:
+        return {"models": [], "available": False, "message": "fal.ai not configured"}
+    return {"models": get_fal_models(), "available": True}
+
+@api_router.post("/fal/generate")
+async def fal_generate_image(request: FalGenerateImageRequest, current_user: dict = Depends(get_current_user)):
+    """Generate image using fal.ai FLUX models"""
+    if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Pro subscription required")
+    
+    if not FAL_AVAILABLE:
+        raise HTTPException(status_code=503, detail="fal.ai service not available")
+    
+    try:
+        result = await generate_image_flux(
+            prompt=request.prompt,
+            model=request.model,
+            image_size=request.image_size,
+            num_images=request.num_images,
+            seed=request.seed
+        )
+        return result
+    except Exception as e:
+        logger.error(f"fal.ai generation error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/fal/generate-with-face")
+async def fal_generate_with_face(request: FalGenerateWithFaceRequest, current_user: dict = Depends(get_current_user)):
+    """Generate image while preserving face identity using PuLID
+    
+    This is the key endpoint for consistent character generation.
+    It takes a reference face image and generates new images
+    that maintain the same facial identity.
+    """
+    if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Pro subscription required")
+    
+    if not FAL_AVAILABLE:
+        raise HTTPException(status_code=503, detail="fal.ai service not available")
+    
+    try:
+        result = await generate_with_face_id(
+            prompt=request.prompt,
+            reference_image_url=request.reference_image,
+            id_weight=request.id_weight,
+            image_size=request.image_size,
+            seed=request.seed
+        )
+        return result
+    except Exception as e:
+        logger.error(f"fal.ai face ID generation error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/fal/train-lora")
+async def fal_train_character_lora(request: FalTrainLoraRequest, current_user: dict = Depends(get_current_user)):
+    """Train a custom LoRA model for consistent character generation
+    
+    This creates a persistent model that can generate the same
+    character consistently across unlimited images.
+    Training takes 5-15 minutes.
+    """
+    if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Pro subscription required")
+    
+    if not FAL_AVAILABLE:
+        raise HTTPException(status_code=503, detail="fal.ai service not available")
+    
+    if len(request.reference_images) < 3:
+        raise HTTPException(status_code=400, detail="At least 3 reference images required")
+    
+    try:
+        result = await train_character_lora(
+            character_name=request.character_name,
+            reference_images=request.reference_images,
+            trigger_word=request.trigger_word,
+            steps=request.steps
+        )
+        
+        # Store the training job in the character record
+        char_id = str(uuid.uuid4())
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # Create or update character with training info
+        await db.pro_studio_characters.update_one(
+            {"user_id": current_user["id"], "name": request.character_name},
+            {
+                "$set": {
+                    "lora_training_job_id": result.get("job_id"),
+                    "lora_trigger_word": result.get("trigger_word"),
+                    "lora_status": "training",
+                    "lora_started_at": now
+                }
+            },
+            upsert=False
+        )
+        
+        return result
+    except Exception as e:
+        logger.error(f"fal.ai LoRA training error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/fal/training-status/{job_id}")
+async def fal_check_training_status(job_id: str, current_user: dict = Depends(get_current_user)):
+    """Check the status of a LoRA training job"""
+    if not FAL_AVAILABLE:
+        raise HTTPException(status_code=503, detail="fal.ai service not available")
+    
+    try:
+        result = await check_training_status(job_id)
+        
+        # If training completed, update the character record
+        if result.get("status") == "completed" and result.get("lora_url"):
+            await db.pro_studio_characters.update_one(
+                {"user_id": current_user["id"], "lora_training_job_id": job_id},
+                {
+                    "$set": {
+                        "lora_url": result.get("lora_url"),
+                        "lora_config_url": result.get("config_url"),
+                        "lora_status": "completed",
+                        "lora_completed_at": datetime.now(timezone.utc).isoformat()
+                    }
+                }
+            )
+        elif result.get("status") == "failed":
+            await db.pro_studio_characters.update_one(
+                {"user_id": current_user["id"], "lora_training_job_id": job_id},
+                {"$set": {"lora_status": "failed"}}
+            )
+        
+        return result
+    except Exception as e:
+        logger.error(f"fal.ai training status error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/fal/generate-with-lora")
+async def fal_generate_with_lora(request: FalGenerateWithLoraRequest, current_user: dict = Depends(get_current_user)):
+    """Generate image using a trained character LoRA
+    
+    This produces highly consistent character images once
+    the LoRA has been trained.
+    """
+    if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Pro subscription required")
+    
+    if not FAL_AVAILABLE:
+        raise HTTPException(status_code=503, detail="fal.ai service not available")
+    
+    try:
+        result = await generate_with_lora(
+            prompt=request.prompt,
+            lora_url=request.lora_url,
+            trigger_word=request.trigger_word,
+            lora_scale=request.lora_scale,
+            image_size=request.image_size,
+            seed=request.seed
+        )
+        return result
+    except Exception as e:
+        logger.error(f"fal.ai LoRA generation error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/pro-studio/characters/train-consistency")
+async def train_character_consistency(character_id: str, current_user: dict = Depends(get_current_user)):
+    """Start LoRA training for an existing character
+    
+    This takes a character's reference images and trains
+    a custom LoRA model for highly consistent generation.
+    """
+    if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Pro subscription required")
+    
+    if not FAL_AVAILABLE:
+        raise HTTPException(status_code=503, detail="fal.ai service not available")
+    
+    # Get the character
+    character = await db.pro_studio_characters.find_one({
+        "id": character_id,
+        "user_id": current_user["id"]
+    })
+    
+    if not character:
+        raise HTTPException(status_code=404, detail="Character not found")
+    
+    if not character.get("reference_images") or len(character.get("reference_images", [])) < 3:
+        raise HTTPException(status_code=400, detail="Character needs at least 3 reference images")
+    
+    # Check if already training or has LoRA
+    if character.get("lora_status") == "training":
+        return {
+            "status": "already_training",
+            "job_id": character.get("lora_training_job_id"),
+            "message": "LoRA training already in progress"
+        }
+    
+    try:
+        result = await train_character_lora(
+            character_name=character["name"],
+            reference_images=character["reference_images"],
+            trigger_word=character["name"].lower().replace(" ", "_"),
+            steps=1000
+        )
+        
+        # Update character with training info
+        await db.pro_studio_characters.update_one(
+            {"id": character_id},
+            {
+                "$set": {
+                    "lora_training_job_id": result.get("job_id"),
+                    "lora_trigger_word": result.get("trigger_word"),
+                    "lora_status": "training",
+                    "lora_started_at": datetime.now(timezone.utc).isoformat()
+                }
+            }
+        )
+        
+        return {
+            **result,
+            "character_id": character_id,
+            "character_name": character["name"]
+        }
+    except Exception as e:
+        logger.error(f"Character LoRA training error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/pro-studio/characters/{character_id}/generate-consistent")
+async def generate_consistent_character_image(
+    character_id: str,
+    prompt: str = Form(...),
+    image_size: str = Form("landscape_16_9"),
+    seed: Optional[int] = Form(None),
+    current_user: dict = Depends(get_current_user)
+):
+    """Generate a consistent image of a character
+    
+    Uses the best available method:
+    1. Trained LoRA (most consistent) - if available
+    2. PuLID face ID - if LoRA not trained
+    3. Prompt-based - fallback
+    """
+    if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Pro subscription required")
+    
+    # Get the character
+    character = await db.pro_studio_characters.find_one({
+        "id": character_id,
+        "user_id": current_user["id"]
+    })
+    
+    if not character:
+        raise HTTPException(status_code=404, detail="Character not found")
+    
+    try:
+        # Method 1: Use trained LoRA (best consistency)
+        if FAL_AVAILABLE and character.get("lora_status") == "completed" and character.get("lora_url"):
+            logger.info(f"Generating with LoRA for character {character['name']}")
+            result = await generate_with_lora(
+                prompt=prompt,
+                lora_url=character["lora_url"],
+                trigger_word=character.get("lora_trigger_word", character["name"].lower()),
+                lora_scale=1.0,
+                image_size=image_size,
+                seed=seed
+            )
+            return {
+                **result,
+                "method": "lora",
+                "character_id": character_id
+            }
+        
+        # Method 2: Use PuLID face ID
+        if FAL_AVAILABLE and character.get("reference_images"):
+            logger.info(f"Generating with PuLID for character {character['name']}")
+            # Get first reference image
+            ref_image = character["reference_images"][0]
+            result = await generate_with_face_id(
+                prompt=f"{character.get('description', '')} {prompt}",
+                reference_image_url=ref_image,
+                id_weight=1.0,
+                image_size=image_size,
+                seed=seed
+            )
+            return {
+                **result,
+                "method": "pulid",
+                "character_id": character_id
+            }
+        
+        # Method 3: Fallback to OpenAI with character description
+        if EMERGENT_LLM_KEY:
+            logger.info(f"Generating with OpenAI for character {character['name']}")
+            full_prompt = f"{character.get('description', f'Portrait of {character[\"name\"]}')} {prompt}"
+            image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
+            images = await image_gen.generate_images(
+                prompt=full_prompt,
+                model="gpt-image-1",
+                number_of_images=1
+            )
+            
+            if images and len(images) > 0:
+                image_base64 = base64.b64encode(images[0]).decode('utf-8')
+                return {
+                    "success": True,
+                    "images": [{"url": f"data:image/png;base64,{image_base64}"}],
+                    "method": "openai",
+                    "character_id": character_id
+                }
+        
+        raise HTTPException(status_code=500, detail="No generation method available")
+        
+    except Exception as e:
+        logger.error(f"Consistent character generation error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ==================== END FAL.AI ENDPOINTS ====================
+
 
 async def generate_story(request: AIStoryRequest, current_user: dict = Depends(get_current_user)):
     """Generate a complete story from an idea using AI"""
