@@ -1161,13 +1161,13 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         const railingColliders = [
           // Left side of bridge (full length wall)
           { pos: [-2.5, 7.0, -1.0], size: [0.5, 2.5, 16] },
-          // Right side of bridge (based on Bridge_rail position at X: -0.77)
-          { pos: [-0.6, 7.0, -1.0], size: [0.5, 2.5, 16] },
+          // Right side of bridge - adjusted to X: -0.85
+          { pos: [-0.85, 7.0, -1.0], size: [0.5, 2.5, 16] },
           // Front balcony railing (near front stairs)
           { pos: [-1.6, 7.0, 5.0], size: [3.0, 2.5, 0.5] },
           // Back balcony railing (near back stairs)
           { pos: [-1.6, 7.0, -7.0], size: [3.0, 2.5, 0.5] },
-          // Middle bridge railing section (Bridge_rail at Z: -1.95)
+          // Middle bridge railing section
           { pos: [-1.74, 7.0, -1.95], size: [0.5, 2.5, 0.5] }
         ];
         
