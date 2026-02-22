@@ -393,7 +393,14 @@ const RealisticPageFlip = forwardRef(({
   const newPageMapping = [];
   
   // Front cover - single page (hard cover)
-  allBookPages.push(<CoverPage key="cover" book={book} onClick={goToNextPage} />);
+  allBookPages.push(
+    <CoverPage 
+      key="cover" 
+      book={book} 
+      onClick={onStartReading || goToNextPage}
+      onListen={onStartListening}
+    />
+  );
   newPageMapping.push(-1); // Cover = no content page
   
   // Process content pages as spreads (image left, text right)
