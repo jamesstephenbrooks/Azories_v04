@@ -52,7 +52,7 @@ export default function BookReader() {
   const [readingStats, setReadingStats] = useState(null);
   
   // AI Reading Buddy
-55|  const [showAIBuddy, setShowAIBuddy] = useState(false);
+  const [showAIBuddy, setShowAIBuddy] = useState(false);
   
   // Swipe state for visual feedback
   const [swipeHint, setSwipeHint] = useState(null);
