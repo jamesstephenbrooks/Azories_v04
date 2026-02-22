@@ -719,6 +719,40 @@ async def invite_collaborator(book_id: str, invite: CollaboratorInvite, current_
     return {"success": True, "message": f"Invited {invitee['email']} as {invite.role}"}
 
 
+class InviteLinkRequest(BaseModel):
+    role: str = "editor"
+
+
+@api_router.post("/books/{book_id}/invite-link")
+async def generate_invite_link(book_id: str, request: InviteLinkRequest, current_user: dict = Depends(get_current_user)):
+    """Generate a shareable invite link for a book"""
+    book = await db.books.find_one({"id": book_id}, {"_id": 0})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    if book["author_id"] != current_user["id"]:
+        raise HTTPException(status_code=403, detail="Only the owner can generate invite links")
+    
+    # Generate a unique invite token
+    invite_token = str(uuid.uuid4())
+    
+    # Store the invite in database
+    invite_data = {
+        "id": invite_token,
+        "book_id": book_id,
+        "role": request.role,
+        "created_by": current_user["id"],
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "used": False
+    }
+    await db.invites.insert_one(invite_data)
+    
+    # Generate the link (frontend will handle this route)
+    base_url = os.environ.get('FRONTEND_URL', 'https://reader-audio-test.preview.emergentagent.com')
+    invite_link = f"{base_url}/invite/{invite_token}"
+    
+    return {"invite_link": invite_link, "token": invite_token}
+
+
 @api_router.get("/books/{book_id}/collaborators")
 async def get_collaborators(book_id: str, current_user: dict = Depends(get_current_user)):
     """Get all collaborators for a book"""
