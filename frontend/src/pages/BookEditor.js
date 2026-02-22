@@ -1499,14 +1499,78 @@ export default function BookEditor() {
               
               {/* Right - Text Panel */}
               <div className="w-1/2 p-6 flex flex-col">
-                <h3 className="font-heading font-semibold mb-4">Story Text</h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-heading font-semibold">Story Text</h3>
+                  
+                  {/* Text Formatting Controls */}
+                  <div className="flex items-center gap-2">
+                    <Select 
+                      value={selectedPage.font_family || 'default'} 
+                      onValueChange={(value) => setSelectedPage({ ...selectedPage, font_family: value })}
+                    >
+                      <SelectTrigger className="w-32 h-8 text-xs rounded-full">
+                        <SelectValue placeholder="Font" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="default">Default</SelectItem>
+                        <SelectItem value="serif">Serif</SelectItem>
+                        <SelectItem value="sans">Sans Serif</SelectItem>
+                        <SelectItem value="mono">Monospace</SelectItem>
+                        <SelectItem value="cursive">Cursive</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    
+                    <Select 
+                      value={selectedPage.font_size || 'medium'} 
+                      onValueChange={(value) => setSelectedPage({ ...selectedPage, font_size: value })}
+                    >
+                      <SelectTrigger className="w-24 h-8 text-xs rounded-full">
+                        <SelectValue placeholder="Size" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="small">Small</SelectItem>
+                        <SelectItem value="medium">Medium</SelectItem>
+                        <SelectItem value="large">Large</SelectItem>
+                        <SelectItem value="xlarge">X-Large</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    
+                    <Select 
+                      value={selectedPage.text_align || 'left'} 
+                      onValueChange={(value) => setSelectedPage({ ...selectedPage, text_align: value })}
+                    >
+                      <SelectTrigger className="w-24 h-8 text-xs rounded-full">
+                        <SelectValue placeholder="Align" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="left">Left</SelectItem>
+                        <SelectItem value="center">Center</SelectItem>
+                        <SelectItem value="right">Right</SelectItem>
+                        <SelectItem value="justify">Justify</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
                 
                 <div className="flex-1 flex flex-col">
                   <Textarea
                     placeholder="Write your story here..."
                     value={selectedPage.text_content}
                     onChange={(e) => setSelectedPage({ ...selectedPage, text_content: e.target.value })}
-                    className="flex-1 min-h-[400px] font-reader text-lg rounded-2xl border-2 resize-none"
+                    className={`flex-1 min-h-[400px] rounded-2xl border-2 resize-none ${
+                      selectedPage.font_family === 'serif' ? 'font-serif' :
+                      selectedPage.font_family === 'sans' ? 'font-sans' :
+                      selectedPage.font_family === 'mono' ? 'font-mono' :
+                      selectedPage.font_family === 'cursive' ? 'font-cursive' : 'font-reader'
+                    } ${
+                      selectedPage.font_size === 'small' ? 'text-sm' :
+                      selectedPage.font_size === 'large' ? 'text-xl' :
+                      selectedPage.font_size === 'xlarge' ? 'text-2xl' : 'text-lg'
+                    } ${
+                      selectedPage.text_align === 'center' ? 'text-center' :
+                      selectedPage.text_align === 'right' ? 'text-right' :
+                      selectedPage.text_align === 'justify' ? 'text-justify' : 'text-left'
+                    }`}
                     data-testid="page-text-content"
                   />
                   
