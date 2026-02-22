@@ -15,6 +15,7 @@ import {
 import { useTheme } from '@/context/ThemeContext';
 import AmbientSound from '@/components/AmbientSound';
 import AIReadingBuddy from '@/components/AIReadingBuddy';
+import { useSwipeGestures } from '@/hooks/useSwipeGestures';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
