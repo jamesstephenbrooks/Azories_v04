@@ -305,15 +305,19 @@ export default function BookReader() {
   const playAudio = async () => {
     // Skip chapter title pages - handled by useEffect
     if (allPages[currentPageRef.current]?.isChapterTitle) {
+      console.log('Skipping chapter title page');
       return;
     }
     
     const pageIndex = currentPageRef.current;
     const pageData = allPages[pageIndex];
     
+    console.log('playAudio called:', { pageIndex, hasVoice: !!narratorVoice, hasText: !!pageData?.text_content });
+    
     if (!narratorVoice || pageIndex < 0 || !pageData?.text_content) {
+      console.log('Early return - missing data:', { narratorVoice, pageIndex, textContent: pageData?.text_content?.substring(0, 50) });
       // If page has no text content, move to next page in auto-read mode
-      if (autoReadRef.current && pageIndex < allPages.length - 1) {
+      if (autoReadRef.current && pageIndex >= 0 && pageIndex < allPages.length - 1) {
         setTimeout(() => {
           if (autoReadRef.current) {
             goToPage(currentPageRef.current + 1, 'next');
