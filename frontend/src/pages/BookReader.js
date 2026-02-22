@@ -264,17 +264,44 @@ export default function BookReader() {
 
   const startReading = useCallback(() => {
     if (currentPage === -1) {
-      setFlipDirection('next');
-      setIsFlipping(true);
-      setTimeout(() => {
-        setCurrentPage(0);
-        setIsFlipping(false);
-        setAutoRead(true);
-      }, 600);
-    } else {
-      setAutoRead(true);
+      // Just flip to first page - no auto-read
+      if (useRealisticFlip && realisticFlipRef.current) {
+        realisticFlipRef.current.nextPage();
+      } else {
+        setFlipDirection('next');
+        setIsFlipping(true);
+        setTimeout(() => {
+          setCurrentPage(0);
+          setIsFlipping(false);
+        }, 600);
+      }
     }
-  }, [currentPage]);
+  }, [currentPage, useRealisticFlip]);
+
+  const startListening = useCallback(() => {
+    if (currentPage === -1) {
+      // Flip to first page AND enable auto-read
+      if (useRealisticFlip && realisticFlipRef.current) {
+        realisticFlipRef.current.nextPage();
+        // Enable auto-read after flip animation
+        setTimeout(() => {
+          setAutoRead(true);
+        }, 700);
+      } else {
+        setFlipDirection('next');
+        setIsFlipping(true);
+        setTimeout(() => {
+          setCurrentPage(0);
+          setIsFlipping(false);
+          setAutoRead(true);
+        }, 600);
+      }
+    } else {
+      // Already on a content page - just enable auto-read and play
+      setAutoRead(true);
+      playAudio();
+    }
+  }, [currentPage, useRealisticFlip]);
 
   const playAudio = async () => {
     // Skip chapter title pages - handled by useEffect
