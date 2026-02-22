@@ -1175,7 +1175,6 @@ export default function BookEditor() {
                                 </div>
                               </div>
                             )}
-                            </div>
                             
                             {/* Image Position Controls */}
                             {selectedPage.image_url && (
