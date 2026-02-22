@@ -735,9 +735,9 @@ export default function BookReader() {
             </Button>
           </div>
           
-          {/* Audio Controls */}
+          {/* Audio Controls - Enhanced */}
           <div className="flex items-center justify-center gap-4 flex-wrap text-sm">
-            {/* Narrator Voice Selector */}
+            {/* Narrator Voice Selector with Categories */}
             <div className="flex items-center gap-2">
               <FiMic className="w-4 h-4 text-muted-foreground" />
               <Select 
@@ -750,28 +750,56 @@ export default function BookReader() {
                   }
                 }}
               >
-                <SelectTrigger className="w-36 h-8 rounded-full text-xs">
-                  <SelectValue placeholder="Voice" />
+                <SelectTrigger className="w-40 h-8 rounded-full text-xs">
+                  <SelectValue placeholder="Select Voice" />
                 </SelectTrigger>
-                <SelectContent className="max-h-48">
-                  {voices.map((voice) => (
-                    <SelectItem key={voice.voice_id} value={voice.voice_id} className="text-xs">
-                      {voice.name}
-                    </SelectItem>
-                  ))}
+                <SelectContent className="max-h-64">
+                  {/* Group voices by category */}
+                  {['Female', 'Male', 'Young Female', 'Young Male'].map(category => {
+                    const categoryVoices = voices.filter(v => v.category === category);
+                    if (categoryVoices.length === 0) return null;
+                    return (
+                      <div key={category}>
+                        <div className="px-2 py-1 text-xs text-muted-foreground font-semibold bg-muted/50">{category}</div>
+                        {categoryVoices.map((voice) => (
+                          <SelectItem key={voice.voice_id} value={voice.voice_id} className="text-xs">
+                            {voice.name} <span className="text-muted-foreground">({voice.accent})</span>
+                          </SelectItem>
+                        ))}
+                      </div>
+                    );
+                  })}
                 </SelectContent>
               </Select>
             </div>
             
+            {/* Volume Control */}
             <div className="flex items-center gap-2 w-28">
-              <FiVolume2 className="w-4 h-4 text-muted-foreground" />
+              <button 
+                onClick={() => setVolume(volume[0] > 0 ? [0] : [50])}
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {volume[0] === 0 ? <FiVolumeX className="w-4 h-4" /> : <FiVolume2 className="w-4 h-4" />}
+              </button>
               <Slider value={volume} onValueChange={setVolume} max={100} step={1} className="flex-1" />
             </div>
             
-            <div className="flex items-center gap-2">
-              <span className="text-muted-foreground text-xs">Speed:</span>
-              <Slider value={playbackSpeed} onValueChange={setPlaybackSpeed} min={0.5} max={2} step={0.25} className="w-20" />
-              <span className="text-xs font-mono w-8">{playbackSpeed[0]}x</span>
+            {/* Playback Speed - Quick buttons */}
+            <div className="flex items-center gap-1">
+              <span className="text-muted-foreground text-xs mr-1">Speed:</span>
+              {[0.75, 1, 1.25, 1.5, 2].map(speed => (
+                <button
+                  key={speed}
+                  onClick={() => setPlaybackSpeed([speed])}
+                  className={`px-2 py-1 rounded-full text-xs transition-colors ${
+                    playbackSpeed[0] === speed 
+                      ? 'bg-primary text-primary-foreground' 
+                      : 'bg-muted/50 hover:bg-muted text-muted-foreground'
+                  }`}
+                >
+                  {speed}x
+                </button>
+              ))}
             </div>
             
             <Button
