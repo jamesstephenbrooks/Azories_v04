@@ -305,6 +305,10 @@ const RealisticPageFlip = forwardRef(({
   const flipBookRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [isFlipping, setIsFlipping] = useState(false);
+  
+  // Build the page mapping once so we can track which flipbook page = which content page
+  // This map tracks: flipbookPageIndex -> contentPageIndex (from pages array)
+  const pageMapping = useRef([]);
 
   // Expose methods via ref
   useImperativeHandle(ref, () => ({
@@ -313,12 +317,18 @@ const RealisticPageFlip = forwardRef(({
     goToPage: (pageNum) => flipBookRef.current?.pageFlip()?.flip(pageNum),
     getCurrentPage: () => currentPage,
     getTotalPages: () => pages.length + 2, // +2 for cover and back cover
+    // Get the content page index for audio sync
+    getContentPageIndex: (flipPageNum) => pageMapping.current[flipPageNum] ?? -1,
   }));
 
   const handleFlip = useCallback((e) => {
-    const newPage = e.data;
-    setCurrentPage(newPage);
-    onPageChange?.(newPage);
+    const newFlipPage = e.data;
+    setCurrentPage(newFlipPage);
+    
+    // Map flipbook page to content page index for voiceover sync
+    // The mapping tells us which content page this flipbook page corresponds to
+    const contentPageIndex = pageMapping.current[newFlipPage] ?? -1;
+    onPageChange?.(newFlipPage, contentPageIndex);
   }, [onPageChange]);
 
   const handleFlipStart = useCallback(() => {
@@ -340,10 +350,14 @@ const RealisticPageFlip = forwardRef(({
   };
 
   // Build all pages array - create spreads with image on left, text on right
-  const allBookPages = [
-    // Front cover
-    <CoverPage key="cover" book={book} onClick={goToNextPage} />,
-  ];
+  // IMPORTANT: Front cover and back cover should be SINGLE pages (hard covers)
+  // Content pages are in spreads (image left, text right) 
+  const allBookPages = [];
+  const newPageMapping = [];
+  
+  // Front cover - single page (hard cover, will display alone on right side when book is closed)
+  allBookPages.push(<CoverPage key="cover" book={book} onClick={goToNextPage} />);
+  newPageMapping.push(-1); // Cover = no content page
   
   // Process content pages as spreads (image left, text right)
   pages.forEach((page, index) => {
@@ -358,33 +372,44 @@ const RealisticPageFlip = forwardRef(({
           isLeft={true}
         />
       );
+      newPageMapping.push(index); // Map to content index
+      
       // Add blank right page after chapter title
       allBookPages.push(
         <Page key={`chapter-blank-${index}`} isLeft={false}>
           <div className="h-full" />
         </Page>
       );
+      newPageMapping.push(index); // Still same content page
     } else {
       // Regular content: Image on left page, Text on right page
+      // Both the image and text page correspond to the SAME content page
       allBookPages.push(
         <ImagePage 
           key={`img-${index}`}
           page={page}
-          pageNumber={index * 2 + 1}
+          pageNumber={index + 1}
         />
       );
+      newPageMapping.push(index); // Image page maps to content[index]
+      
       allBookPages.push(
         <TextPage 
           key={`txt-${index}`}
           page={page}
-          pageNumber={index * 2 + 2}
+          pageNumber={index + 1}
         />
       );
+      newPageMapping.push(index); // Text page also maps to content[index]
     }
   });
   
-  // Back cover
+  // Back cover - single page (hard cover)
   allBookPages.push(<BackCoverPage key="back-cover" book={book} />);
+  newPageMapping.push(-2); // Back cover = special marker
+  
+  // Store the mapping
+  pageMapping.current = newPageMapping;
 
   return (
     <div className={`realistic-page-flip relative ${className}`}>
