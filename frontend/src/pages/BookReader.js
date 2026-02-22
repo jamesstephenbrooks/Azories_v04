@@ -573,15 +573,16 @@ export default function BookReader() {
             </Button>
             
             <Button
-              variant={isPlaying ? "default" : "outline"}
+              variant={(isPlaying || autoRead) ? "default" : "outline"}
               size="lg"
-              onClick={toggleAudio}
+              onClick={isPlaying || autoRead ? handleAutoReadToggle : toggleAudio}
               disabled={audioLoading || isCover}
               className="rounded-full px-8"
+              data-testid="read-aloud-btn"
             >
               {audioLoading ? (
-                <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-              ) : isPlaying ? (
+                <><div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" /> Loading...</>
+              ) : (isPlaying || autoRead) ? (
                 <><FiPause className="w-5 h-5 mr-2" /> Pause</>
               ) : (
                 <><FiPlay className="w-5 h-5 mr-2" /> Read Aloud</>
