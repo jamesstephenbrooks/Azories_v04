@@ -1312,7 +1312,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           }
           
           if (bestFloorY !== null) {
-            detectedFloorY = bestFloorY;
+            // Add small offset (2cm) to prevent sinking into surfaces
+            detectedFloorY = bestFloorY + 0.02;
           }
         }
         
