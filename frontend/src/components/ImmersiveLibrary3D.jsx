@@ -1120,7 +1120,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                 name.includes('post') || name.includes('balcony') || name.includes('bridge') ||
                 name.includes('metal') || name.includes('bar') || name.includes('iron') ||
                 name.includes('rod') || name.includes('gate') || name.includes('grate') ||
-                name.includes('metal rail bars');
+                name.includes('metal rail bars') || name.includes('bridge_rail');
             
             // Check if this mesh should be EXCLUDED from collision
             const excludeFromCollision = !forceCollision && (name.includes('book') || name.includes('table') || 
