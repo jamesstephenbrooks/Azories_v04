@@ -88,17 +88,12 @@ export default function BookRecommendations({ userId }) {
       {/* Book Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {recommendations.slice(0, 6).map((book, index) => (
-          <motion.div
-            key={book.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-          >
+          <div key={book.id}>
             <AnimatedBookCard 
               book={book}
               onClick={() => navigate(`/read/${book.id}`)}
             />
-          </motion.div>
+          </div>
         ))}
       </div>
 
