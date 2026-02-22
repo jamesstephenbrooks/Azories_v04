@@ -124,7 +124,7 @@ export default function ProStudio() {
   // Load user's credits
   const loadCredits = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('azories-token');
       const response = await fetch(`${API_URL}/api/credits/balance`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -141,7 +141,7 @@ export default function ProStudio() {
   // Add credits (for testing/purchasing)
   const addCredits = async (amount = 100) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('azories-token');
       const response = await fetch(`${API_URL}/api/credits/add?amount=${amount}`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
@@ -158,7 +158,7 @@ export default function ProStudio() {
 
   const loadUserBooks = async () => {
     try {
-      const tkn = localStorage.getItem('token');
+      const tkn = localStorage.getItem('azories-token');
       const response = await fetch(`${API_URL}/api/my-books`, {
         headers: { Authorization: `Bearer ${tkn}` }
       });
@@ -173,7 +173,7 @@ export default function ProStudio() {
 
   const loadCharacters = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('azories-token');
       const response = await fetch(`${API_URL}/api/pro-studio/characters`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -188,7 +188,7 @@ export default function ProStudio() {
 
   const loadGallery = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('azories-token');
       const response = await fetch(`${API_URL}/api/art-studio/gallery?type_filter=image`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -240,7 +240,7 @@ export default function ProStudio() {
     setLoadingMessage('Analyzing reference images...');
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('azories-token');
       const response = await fetch(`${API_URL}/api/pro-studio/characters`, {
         method: 'POST',
         headers: {
@@ -284,7 +284,7 @@ export default function ProStudio() {
     setLoadingMessage('Starting LoRA training (this takes 5-15 minutes)...');
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('azories-token');
       const response = await fetch(`${API_URL}/api/pro-studio/characters/train-consistency?character_id=${characterId}`, {
         method: 'POST',
         headers: {
@@ -312,7 +312,7 @@ export default function ProStudio() {
 
   // Poll training status
   const pollTrainingStatus = async (jobId, characterId) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('azories-token');
     const pollInterval = setInterval(async () => {
       try {
         const response = await fetch(`${API_URL}/api/fal/training-status/${jobId}`, {
@@ -371,7 +371,7 @@ export default function ProStudio() {
     setLoadingMessage(`Generating consistent image using ${method}...`);
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('azories-token');
       const formData = new FormData();
       formData.append('prompt', prompt);
       formData.append('image_size', aspectRatio === '16:9' ? 'landscape_16_9' : aspectRatio === '9:16' ? 'portrait_16_9' : 'square_hd');
@@ -428,7 +428,7 @@ export default function ProStudio() {
     setLoadingMessage('Generating with FLUX...');
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('azories-token');
       const response = await fetch(`${API_URL}/api/fal/generate`, {
         method: 'POST',
         headers: {
@@ -491,7 +491,7 @@ export default function ProStudio() {
         lightingPreset?.prompt || ''
       ].filter(Boolean).join(', ');
 
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('azories-token');
       const response = await fetch(`${API_URL}/api/pro-studio/generate-image`, {
         method: 'POST',
         headers: {
@@ -545,7 +545,7 @@ export default function ProStudio() {
     setShotsResults([]);
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('azories-token');
       const response = await fetch(`${API_URL}/api/pro-studio/generate-shots`, {
         method: 'POST',
         headers: {
@@ -587,7 +587,7 @@ export default function ProStudio() {
     setLoadingMessage(`Generating ${expressionData.name} expression...`);
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('azories-token');
       const response = await fetch(`${API_URL}/api/pro-studio/generate-expression`, {
         method: 'POST',
         headers: {
@@ -636,7 +636,7 @@ export default function ProStudio() {
     setLoadingMessage(`Animating with ${model.name} (this may take a few minutes)...`);
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('azories-token');
       const response = await fetch(`${API_URL}/api/pro-studio/animate-hero`, {
         method: 'POST',
         headers: {
@@ -681,7 +681,7 @@ export default function ProStudio() {
 
   // Poll video generation status
   const pollVideoStatus = async (jobId) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('azories-token');
     const pollInterval = setInterval(async () => {
       try {
         const response = await fetch(`${API_URL}/api/art-studio/animation-status/${jobId}`, {
@@ -729,7 +729,7 @@ export default function ProStudio() {
   // Save to gallery
   const saveToGallery = async (item, type = 'image') => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('azories-token');
       const response = await fetch(`${API_URL}/api/art-studio/gallery/save`, {
         method: 'POST',
         headers: {
