@@ -129,6 +129,7 @@ class BookCreate(BaseModel):
     back_cover_text: Optional[str] = ""
     layout_mode: Optional[str] = "standard"
     narrator_voice_id: Optional[str] = ""
+    narrator_voice_locked: Optional[bool] = False
     age_rating: Optional[str] = "All Ages"
 
 class BookUpdate(BaseModel):
