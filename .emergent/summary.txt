@@ -1,107 +1,89 @@
 <analysis>**original_problem_statement:**
-The user wants to build a digital book creation and reading application named Azories. The project involves a rich feature set, including a book reader, a book editor, a series manager, an AI librarian (Azora), a 3D library environment (The Grand Library), and an Art Studio for asset generation.
+The user wants to build a digital book creation and reading application named Azories. Initially, the project focused on fixing bugs in the 3D library and book editor. The priority has now shifted dramatically to a major new feature: creating a Pro Studio for generating AI characters with consistent visual identity, inspired by platforms like Higgsfield.ai.
 
-The user has provided a comprehensive list of bugs and feature requests. After a lengthy session fixing complex navigation and collision issues in the 3D Grand Library, the current focus has shifted to resolving remaining issues in the Book Editor, as per the user's updated priorities.
+**PRODUCT REQUIREMENTS (from user messages):**
 
-**PRODUCT REQUIREMENTS (from user message #294 & #296):**
-
-**Partially Done - Book Editor:**
-- **Font/layout editing:** The font size control exists in the editor but does not apply the selected size in the final book reader view. (NEEDS FIX)
-- **Collaborators:** The UI popup is fixed, but the backend infrastructure is missing. The user wants a shared space for collaborators and a working email invitation system. (NEEDS IMPLEMENTATION)
-
-**Remaining Tasks:**
-- **Art Studio (10 items):** Improve image generation, fix scene creator thumbnails, allow longer animations, fix gallery previews, implement assigning assets to book pages, etc.
-- **Pro Studio (1 item):** Implement consistent character generation for use across multiple pages and books.
-- **iPad/iPhone (2 items):** Fix UI layout issues. Consider making the iPhone a read-only device.
-
-**Completed (User Verified):**
-- **PC Book Reader:** Login redirect, auto-read behavior, book view size, Read button display, author-lockable voice, and auto-read turn-off are all considered done.
-- **Book Editor:** Layout improvements, chapter display, sidebar navigation, and PDF download are considered done. The narration button has been removed.
-- **Azora:** The AI librarian is now functional.
-- **The Grand Library:** Teleportals, banner positioning, and staircase physics are all considered done.
+**Current Focus - Pro Studio (Higgsfield-style character generation):**
+-   Integrate a powerful image generation service () to achieve character consistency.
+-   The system must allow users to create a replicable character that can be used across multiple book series.
+-   The UI should provide detailed options for character creation, including:
+    -   Creation from text description or uploaded reference images.
+    -   Prompts to guide the AI.
+    -   Options for visual style (e.g., Photorealistic, Anime) and genre (e.g., Fantasy, Sci-Fi).
+    -   Ability to add detailed physical attributes and personality traits.
+-   Implement a portfolio system to store and reuse characters.
+-   Implement a credits-based system for using these advanced Pro features (for paying subscribers).
 
 **User's preferred language**: English
 
 **what currently exists?**
-A full-stack React/FastAPI/MongoDB application. The agent has just completed an extensive and iterative process of fixing the 3D  component. This involved implementing a complex teleportation system for staircases, correcting the position of genre banners, and adding invisible colliders to bridge railings to prevent the player from falling. The agent is now investigating a bug in the Book Editor where font size changes are not being reflected in the reader view.
+A full-stack React/FastAPI/MongoDB application. The agent has successfully fixed a long-standing font-size bug in the book editor. Following that, the agent implemented a significant new feature: the Pro Studio. This studio integrates with  for advanced AI image generation to create consistent characters. The backend has new endpoints for this, and the frontend () has a new UI for creating characters from text descriptions or reference images, with options for style and genre. A backend credits system was also implemented but is currently disabled for testing at the user's request.
 
 **Last working item**:
--   **Last item agent was working:** Debugging why the  selected in  is not being applied in the . The agent has investigated the entire data flow from the frontend editor, through the backend save endpoint, and back to the frontend reader component. The code at each step appears correct, but the feature is non-functional. The last actions involved trying to inspect API responses to verify if the  data is correctly retrieved from the database.
+-   **Last item agent was working:** The user requested adding futuristic and sci fi options to the character generation genres. The agent was in the process of adding these new genres to the  list in .
 -   **Status:** IN PROGRESS
 -   **Agent Testing Done:** N
--   **Which testing method agent to use?** backend testing agent to inspect API responses for specific pages, and then frontend testing agent to verify the UI fix.
+-   **Which testing method agent to use?** manual testing by curl to verify the new genres are available via the  endpoint, then use the screenshot tool to verify they appear in the frontend dropdown.
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Font size in Book Editor not applying in the reader (P0)**
--   **Issue 2: Collaborator system backend infrastructure is missing (P0)**
--   **Issue 3: Numerous feature requests for Art Studio (P1)**
--   **Issue 4: Consistent character generation in Pro Studio (P1)**
--   **Issue 5: UI/UX fixes for iPad and iPhone (P2)**
+-   **Issue 1: Character creation errored and image uploads created duplicates. (P0)**
+    -   The agent fixed the duplicate image upload bug in .
+    -   The character creation error was traced to several backend issues (syntax errors, handling image URLs, auth checks) which were fixed iteratively. The user's last error report was addressed.
+-   **Issue 2: Art Studio gallery integration. (P0)**
+    -   The user wants the My Characters section to also pull images from the Art Studio gallery.
+    -   The agent fixed the  function in  to correctly parse the response from the  endpoint. This needs user verification.
 
 **Issues Detail:**
--   **Issue 1: Font size in Book Editor not applying in the reader**
-    -   **Attempted fixes:** The agent has thoroughly reviewed the code path. It has been confirmed that:
-        1.   correctly updates its state and sends  in the payload to the backend.
-        2.  The FastAPI backend in  has an endpoint  that correctly receives and updates the  in the MongoDB document.
-        3.   fetches the page data.
-        4.  The  component, which renders the content, has logic () to apply a CSS class based on the  property.
-        The failure point is unknown, but the visual outcome is that the font size does not change in the reader.
-    -   **Next debug checklist:**
-        1.  Use  to fetch a single, specific page from a book that has had its font size changed via the API (). Verify if the returned JSON includes the  field with the correct value.
-        2.  If the API returns the correct data, add a  inside the  component to confirm the  prop contains the  when rendered.
-        3.  If the prop is present, inspect the  function and the associated CSS in the browser's developer tools to see why the style isn't being applied.
-    -   **Status:** IN PROGRESS
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Both
+-   **Issue 1: Character creation & image upload bugs**
+    -   **Attempted fixes:**
+        -   **Duplicates:** Corrected the logic in the  function in  to prevent re-adding images on each file load.
+        -   **Creation Error:** Multiple fixes were applied to , including handling image URLs (by downloading them with ), fixing authentication token keys, and correcting syntax errors.
+    -   **Next debug checklist:** The core creation flow now works, but should be monitored for any new errors after the genre list is updated.
+    -   **Status:** RESOLVED (pending user confirmation on overall stability).
+    -   **Is recurring issue?** Y (The backend has been fragile during this implementation).
+    -   **Should Test frontend/backend/both after fix?** Both.
 
--   **Issue 2: Collaborator system backend infrastructure is missing**
-    -   **Attempted fixes:** None. This is a newly defined task based on user clarification.
-    -   **Next debug checklist:** This is a feature implementation, not a bug fix.
-        1.  **Plan Backend:** Design and implement new API endpoints in  and new MongoDB collections to handle invitations (e.g., ) and shared access to books (e.g., a  field in the  collection).
-        2.  **Plan Frontend:** Modify  to call the new endpoints for sending invites and managing collaborators.
-        3.  **Plan Email Service:** Integrate an email service (e.g., Resend, SendGrid) to send out invitation emails.
-    -   **Status:** NOT STARTED
+-   **Issue 2: Art Studio gallery integration**
+    -   **Attempted fixes:** The agent updated  to change  to  to match the actual API response structure.
+    -   **Next debug checklist:** Verify in the UI that images from the Art Studio now appear correctly as a source for character creation.
+    -   **Status:** USER VERIFICATION PENDING
     -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Both
+    -   **Should Test frontend/backend/both after fix?** Frontend.
 
 **In progress Task List**:
--   **Task 1: Resolve Partially Done Book Editor items**
-    -   **Where to resume:** Continue debugging the font size issue, starting by inspecting the API response for a single page in  or .
-    -   **What will be achieved with this?** The font size feature will work as intended, and a plan for the collaborator backend will be established.
+-   **Task 1: Complete Pro Studio Feature Enhancements (P0)**
+    -   **Where to resume:** Finish adding Futuristic and expanding Sci-Fi options in the  list within .
+    -   **What will be achieved with this?** The character creation UI will offer more relevant genre choices as requested by the user.
     -   **Status:** IN PROGRESS
     -   **Blocked on something:** No.
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks (P1):**
--   **Art Studio:** Implement the 10 pending feature requests, including improving image generation, fixing scene/gallery previews, and allowing assets to be assigned to book pages.
--   **Pro Studio:** Implement the consistent character generation feature.
+-   **Character Portfolio:** Implement a system to save, view, and manage the collection of created characters over time, allowing users to bring them back to add more to the character portfolio. This is a direct user request.
+-   **Re-enable Credits System:** The credit check logic in  for  endpoints is currently commented out. This needs to be re-enabled once testing is complete.
 
 **Future Tasks (P2):**
--   **Mobile:** Address all UI layout bugs on iPad and iPhone. Decide on and implement the read-only mode for iPhone if approved.
+-   **Book Editor - Collaborators:** Implement the backend infrastructure for the collaborator system.
+-   **Art Studio:** Address the original 10 pending feature requests.
+-   **Mobile:** Fix UI layout bugs on iPad and iPhone.
+-   **Regressions:** Address the Read Aloud error on iPad and the missing back cover in the book reader.
 
 **Completed work in this session**
--   **Grand Library - Teleportation System:**
-    -   Successfully implemented a fully functional teleportation system for the spiral staircases in  after numerous iterations based on user feedback.
-    -   The system uses glowing rings on the floor. Go Upstairs portals at the base of each staircase auto-teleport the player. A single Go Downstairs portal on the central bridge requires a button press.
-    -   Discovered and adapted to the 3D model's true floor heights (Y≈4 for ground, Y≈9 for upper).
--   **Grand Library - Railing Collisions:**
-    -   Resolved an issue where players could fall off the upper floor by adding several invisible box colliders along the bridge and balcony railings. This was a workaround for unreliable raycasting against thin railing meshes.
--   **Grand Library - Banner & Portal Positioning:**
-    -   Iteratively adjusted the X, Y, and Z coordinates of multiple genre banners and all teleportation portals based on highly specific user-provided coordinates and visual feedback.
-    -   Fixed a syntax error in the  array in .
+-   **Bug Fix: Book Editor Font Size**
+    -   Successfully debugged and fixed a persistent bug where font size selected in the editor was not applied in the reader. The root cause was missing default values for , , and  in the backend endpoints (, , ) in .
+-   **Feature: Pro Studio - Consistent Character Generation**
+    -   ** Integration:** Researched and integrated the  service for advanced image generation. Installed the , created a  module, and added the user's API key to .
+    -   **Backend:** Created new API endpoints in  for LoRA training (), face consistency (), and character creation/management.
+    -   **Frontend:** Built a new UI in  for character creation, allowing users to describe a character or upload reference images, and select styles/genres.
+    -   **Bug Fixes:** Resolved numerous bugs during implementation, including image upload duplication, backend crashes, and auth token mismatches.
+-   **Feature: Credits System**
+    -   **Backend:** Implemented a credits system by adding a  field to the  model and creating endpoints to manage them.
+    -   **Frontend:** Added a UI component in  to display the user's credit balance.
 
 **Earlier issues found/mentioned but not fixed**
--   **Issue 1: Read Aloud button causes an error on iPad.**
-    -   **Debug checklist:** This was mentioned in a previous handoff and falls under the iPad/iPhone task list, which is still pending. It requires debugging in a simulated iPad environment.
-    -   **Why to solve this issue and what will be achieved with this?** Ensures core app functionality works across all specified devices.
-    -   **Should Test frontend/backend/both after fix:** Frontend
-    -   **Is recurring issue?** Y
--   **Issue 2: Back cover is no longer visible at the end of the book.**
-    -   **Debug checklist:** This regression from a previous session has not been addressed. It would involve inspecting the  and  components to understand why the last page (back cover) is not being rendered.
-    -   **Why to solve this issue and what will be achieved with this?** Restores expected book reading behavior.
-    -   **Should Test frontend/backend/both after fix:** Frontend
-    -   **Is recurring issue?** Y
+-   **Issue 1: Read Aloud button causes an error on iPad.** (Recurring from previous handoff, low priority).
+-   **Issue 2: Back cover is no longer visible at the end of the book.** (Recurring from previous handoff, low priority).
 
 **Known issue recurrence from previous fork**
 -   **Issue recurrence in previous fork:** Read Aloud button error on iPad.
@@ -112,46 +94,69 @@ A full-stack React/FastAPI/MongoDB application. The agent has just completed an 
 
 
 **Key Technical Concepts**
--   **React Three Fiber / three.js:** The session involved deep, iterative work within the 3D environment. Key activities included creating and managing invisible mesh colliders, handling complex state within the  loop for portal detection, and dynamically adjusting object positions and visibility based on player location and user feedback.
--   **Iterative Debugging with User Feedback:** The agent heavily relied on a tight feedback loop with the user to resolve the 3D space issues. The user provided precise coordinates via a debug mode, which the agent used to correct the positions of portals, banners, and colliders.
--   **Full-Stack Data Flow Tracing:** For the font-size bug, the agent systematically examined the code from the frontend UI control (), to the API call, the backend endpoint (), the database model, and back to the final rendering component ( -> ).
+-   **Third-Party API Integration:** Integrated  for complex image generation tasks (LoRA training, face consistency with PuLID), handling API keys and asynchronous requests.
+-   **Full-Stack Feature Development:** Built the Pro Studio feature end-to-end, including new backend models and endpoints in FastAPI, a new service module (), and a complex React frontend with state management for a multi-step creation process.
+-   **Systematic Debugging:** Traced the font-size bug through the entire stack (frontend state -> API call -> backend logic -> DB -> API response -> frontend render) to find the root cause (missing default values).
+-   **Credits/Usage-Based System:** Implemented a basic currency system on the backend to track and debit user credits for specific API calls, and displayed this on the frontend.
 
 **key DB schema**
--   **books**: The  array within a  document contains page objects. Each  object is expected to have  (string, e.g., 'sm', 'md', 'lg') and  (string) properties.
+-   **users**:
+    -    (new field to store Pro Studio credits).
+-   **characters**: (likely in its own collection)
+    -   , , , , , , , , , .
 
 **All files of reference**
--    (For all Grand Library work)
--    (For the font-size issue)
--    (For the font-size issue)
--    (Where font-size class is applied)
--    (For the page update API endpoint)
+-    (For Pro Studio endpoints, credit system, and character models)
+-    (For the main Pro Studio UI and logic)
+-    (For fal.ai integration logic)
+-    (Configuration for fal.ai models)
+-    (Contains the )
+
+**Areas that need refactoring**:
+-   The  file is now extremely large (over 3000 lines). The Pro Studio, Art Studio, and core book-related endpoints should be broken out into separate router files for better organization and maintainability.
+
+**key api endpoints**
+-   : Creates a new character.
+-   : Fetches user's characters.
+-   : (Stubbed) Endpoint to train a LoRA model.
+-   : Generates an image with consistent face using PuLID.
+-   : Fetches available visual styles.
+-   : Fetches available genres.
+-   : Adds credits to a user's account.
 
 **Critical Info for New Agent**
--   The user has clarified priorities. Focus first on the two remaining Partially Done items for the **Book Editor**: fixing the font size bug and then scoping the work for the collaborator system backend.
--   Do not move on to the Art Studio or other items until the Book Editor tasks are addressed.
--   The font-size bug is subtle. The code *appears* correct at first glance. Methodical debugging is required, starting with verifying the data returned by the API for a specific page.
--   The agent's attempts to use the screenshot tool were blocked by a welcome modal and login flow. This issue should be resolved or worked around to enable independent visual verification in the future.
+-   **Priority is Pro Studio:** The user's entire focus is on building out the Higgsfield-style character generation feature. All other tasks are secondary.
+-   **Credits System is Disabled:** The credit check logic in  is commented out for testing. Do not forget to re-enable it before finishing the feature. The user requested to test without credits.
+-   **Backend is Fragile:**  is very large and has had several syntax and logic errors during recent development. Lint and test carefully after every change. Consider refactoring into smaller modules as a future task.
+-   **Start with Genres:** The immediate next step is to add Futuristic and enhance Sci-Fi options to the genre list in  as per the user's last message.
+
+**documents and test reports created in this job**
+-    (Updated with Pro Studio feature details)
 
 **Last 10 User Messages and any pending HUMAN messages**
--   **User:** Asks for an update on the overall task list. - **Status:** PENDING
--   **Agent:** Provides a detailed breakdown of completed, remaining, and suggested next tasks. - **Status:** DONE
--   **User:** Clarifies the status of the list, confirming most Book Reader/Azora/Library tasks are done, but Book Editor has pending items, and Art/Pro/Mobile studios still need work. - **Status:** DONE
--   **Agent:** Acknowledges the updated status and asks which priority to tackle next. - **Status:** DONE
--   **User:** lets start with partially done items. - **Status:** DONE
--   **Agent:** Begins investigating the font-size issue in the Book Editor. - **Status:** IN PROGRESS
--   **... (several agent thinking steps inspecting code)**
--   **Agent:** Determines the next step is to test the API response for a specific page. - **Status:** PENDING IMPLEMENTATION
+-   **User:** Asks for  and  genre options. (PENDING)
+-   **Agent:** Provides a summary of the working Pro Studio with screenshots showing the new UI and created characters. (DONE)
+-   **User:** Provides feedback: we should have a prompt feature..., a way to store characters for later use, create any type or style, and for testing i do not need any credits. (DONE)
+-   **Agent:** Implements detailed character creation UI with prompts/styles/genres, disables credit checks for testing. (DONE)
+-   **User:** Reports character creation error, duplicate image uploads, and requests Art Studio gallery integration and a credits system. (DONE)
+-   **Agent:** Implements credits system, fixes duplicate image bug, fixes creation error. (DONE)
+-   **User:** Provides  API key. (DONE)
+-   **Agent:** Asks for  API key after outlining an implementation plan. (DONE)
+-   **User:** Decides on integration plan:  (store reference images + prompts) and integrate . (DONE)
+-   **Agent:** Outlines what is and isn't possible and asks for user direction. (DONE)
+-   **User:** Confirms this feature should replace Pro Studio, wants it for subscribers only, and asks what is needed. (DONE)
 
 **Project Health Check:**
--   **Broken:**
-    -   Font-size selection in the book editor does not visually affect the book reader.
+-   **Broken:** None currently known, but backend stability is a concern.
 -   **Incomplete/Mocked:**
-    -   The collaborator feature lacks a backend for shared spaces and invitations.
-    -   All Art Studio and Pro Studio advanced features.
-    -   Mobile UI for iPad and iPhone needs layout fixes.
+    -   The Pro Studio is a large, in-progress feature. Key missing pieces include the character portfolio/storage system and LoRA model training functionality (endpoints are stubs).
+    -   Credits system is implemented but disabled.
+    -   Collaborator feature lacks a backend.
+    -   All Art Studio and mobile UI tasks are pending.
 
 **3rd Party Integrations**
--   **OpenAI GPT-4o & Sora 2 (via )** — Uses Emergent LLM Key. Actively used for TTS and image-to-video animation.
+-   **OpenAI GPT-4o & Sora 2 (via )** — Uses Emergent LLM Key.
+-   **fal.ai ()** — Uses a User-provided API Key. For advanced image generation (IP-Adapter/PuLID).
 -   **react-pageflip** — Book animation library.
 -   **React Three Fiber / Drei** — Renders the 3D Grand Library.
 -   **reactflow** — Used for the node-based UI in the Art Studio.
@@ -161,10 +166,12 @@ A full-stack React/FastAPI/MongoDB application. The agent has just completed an 
 -   **Troubleshoot agent used after agent stuck in loop:** NO
 -   **Test files created:** []
 -   **Known regressions:**
-    -   Back cover not being visible at the end of a book (from a previous session).
-    -   Read Aloud button error on iPad (from a previous session).
+    -   Back cover not being visible at the end of a book.
+    -   Read Aloud button error on iPad.
+
+**Credentials to test flow:**
+-   The user 'test' with password 'test' exists. The agent has been using this user for testing.
+-   The  is stored in .
 
 **What agent forgot to execute**
--   The agent did not address the two known regressions from the previous handoff (Read Aloud error on iPad, back cover missing).
--   The agent was unable to perform self-testing with the screenshot tool due to being blocked by a welcome modal and login issues, making it entirely reliant on the user for visual verification of the 3D library changes.
--   The agent did not ask for the user's updated priorities until prompted, instead continuing with the Grand Library fixes from the previous session's context.</analysis>
+-   The agent correctly prioritized the user's new, major feature request over older, lower-priority bugs and tasks. Nothing critical from the user's recent stream of requests was forgotten.</analysis>
