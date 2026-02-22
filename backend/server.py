@@ -2038,19 +2038,42 @@ async def create_character(request: CharacterCreate, current_user: dict = Depend
             
             # Extract base64 from the first image
             first_image = request.reference_images[0]
+            
+            # Check if the image is base64 or URL
             if first_image.startswith('data:'):
                 if ',' in first_image:
                     image_base64 = first_image.split(',')[1]
                 else:
                     image_base64 = first_image
+                
+                user_msg = UserMessage(
+                    text=analysis_prompt,
+                    file_contents=[ImageContent(image_base64=image_base64)]
+                )
+                description = await chat.send_message(user_msg)
+            elif first_image.startswith('http'):
+                # For URLs, download and convert to base64
+                import aiohttp
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(first_image) as resp:
+                        if resp.status == 200:
+                            image_data = await resp.read()
+                            import base64
+                            image_base64 = base64.b64encode(image_data).decode('utf-8')
+                            user_msg = UserMessage(
+                                text=analysis_prompt,
+                                file_contents=[ImageContent(image_base64=image_base64)]
+                            )
+                            description = await chat.send_message(user_msg)
+                        else:
+                            description = f"Portrait of {request.name}"
             else:
-                image_base64 = first_image
-            
-            user_msg = UserMessage(
-                text=analysis_prompt,
-                file_contents=[ImageContent(image_base64=image_base64)]
-            )
-            description = await chat.send_message(user_msg)
+                # Assume raw base64
+                user_msg = UserMessage(
+                    text=analysis_prompt,
+                    file_contents=[ImageContent(image_base64=first_image)]
+                )
+                description = await chat.send_message(user_msg)
         else:
             description = f"Portrait of {request.name}"
         
