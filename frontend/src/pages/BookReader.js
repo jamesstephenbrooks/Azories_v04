@@ -649,41 +649,34 @@ export default function BookReader() {
         }`} style={{ perspective: '2000px' }}>
           <div className={`relative h-full ${isFullscreen ? 'flex items-center justify-center' : ''}`}>
             
-            {/* Overlay Listen Button - positioned over the cover's Listen button area */}
-            {/* This works because it's outside the react-pageflip component */}
+            {/* Overlay buttons positioned over the cover - these work because they're outside react-pageflip */}
             {isCover && (
-              <button
-                onClick={startListening}
-                className="absolute z-[70] px-6 py-3 rounded-full bg-purple-600 hover:bg-purple-500 text-white font-medium flex items-center gap-2 transition-colors shadow-lg opacity-0 hover:opacity-100"
+              <div 
+                className="absolute z-[70] flex gap-4"
                 style={{
                   top: '50%',
-                  left: '74%',
-                  transform: 'translate(-50%, 25%)',
+                  left: '67%',
+                  transform: 'translate(-50%, 40%)',
                   pointerEvents: 'auto'
                 }}
-                data-testid="cover-listen-overlay-btn"
               >
-                <FiPlay className="w-5 h-5" />
-                Listen
-              </button>
-            )}
-            
-            {/* Overlay Read Button - positioned over the cover's Read button area */}
-            {isCover && (
-              <button
-                onClick={startReading}
-                className="absolute z-[70] px-6 py-3 rounded-full bg-white/20 hover:bg-white/30 text-white font-medium flex items-center gap-2 transition-colors backdrop-blur opacity-0 hover:opacity-100"
-                style={{
-                  top: '50%',
-                  left: '60%',
-                  transform: 'translate(-50%, 25%)',
-                  pointerEvents: 'auto'
-                }}
-                data-testid="cover-read-overlay-btn"
-              >
-                <FiBook className="w-5 h-5" />
-                Read
-              </button>
+                <button
+                  onClick={startReading}
+                  className="px-6 py-3 rounded-full bg-white/20 hover:bg-white/30 text-white font-medium flex items-center gap-2 transition-colors backdrop-blur shadow-lg"
+                  data-testid="cover-read-overlay-btn"
+                >
+                  <FiBook className="w-5 h-5" />
+                  Read
+                </button>
+                <button
+                  onClick={startListening}
+                  className="px-6 py-3 rounded-full bg-purple-600 hover:bg-purple-500 text-white font-medium flex items-center gap-2 transition-colors shadow-lg"
+                  data-testid="cover-listen-overlay-btn"
+                >
+                  <FiPlay className="w-5 h-5" />
+                  Listen
+                </button>
+              </div>
             )}
             
             {/* Realistic Page Flip Mode */}
