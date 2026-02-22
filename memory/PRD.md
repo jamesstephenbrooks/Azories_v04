@@ -80,6 +80,7 @@ Build a digital book creation and reading application named "Azories" with featu
    - Download button
    - Save to gallery option
    - Character/prompt info display
+   - z-index fixed so modal appears on top
 
 5. **Genre Options Added** - Added "Futuristic" and "Sci-Fi" genres as requested
 
@@ -88,6 +89,22 @@ Build a digital book creation and reading application named "Azories" with featu
    - Reference images gallery
    - Generated images folder
    - "Use for Generation" quick action
+   - "Back to Studio" button added
+
+7. **Character Management** - Edit/Delete functionality:
+   - Edit modal to change name, style, genre, description
+   - Delete with confirmation
+   - Regenerate thumbnail button
+
+8. **Pro Studio Explanation Banner** - Credits-based premium feature explanation
+
+9. **Reference Images Workflow for LoRA**:
+   - Shows reference count (X/3 refs) on each character
+   - "Add to References" button in image preview
+   - Train button only appears when 3+ references
+   - Generated thumbnails now auto-save as first reference image
+
+10. **Video Generation Fix** - Fixed invalid duration (5 -> 4 seconds default)
 
 ## Architecture
 
