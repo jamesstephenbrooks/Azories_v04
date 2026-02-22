@@ -52,11 +52,34 @@ export default function BookReader() {
   const [readingStats, setReadingStats] = useState(null);
   
   // AI Reading Buddy
-  const [showAIBuddy, setShowAIBuddy] = useState(false);
+55|  const [showAIBuddy, setShowAIBuddy] = useState(false);
+  
+  // Swipe state for visual feedback
+  const [swipeHint, setSwipeHint] = useState(null);
   
   const isCover = currentPage === -1;
   const totalPages = allPages.length;
   const currentPageData = currentPage >= 0 ? allPages[currentPage] : null;
+  
+  // Swipe gestures for page navigation
+  const swipeHandlers = useSwipeGestures({
+    onSwipeLeft: () => {
+      if (currentPage < totalPages - 1 && !isFlipping) {
+        setSwipeHint('next');
+        setTimeout(() => setSwipeHint(null), 300);
+        goToPage(currentPage + 1, 'next');
+      }
+    },
+    onSwipeRight: () => {
+      if (currentPage > -1 && !isFlipping) {
+        setSwipeHint('prev');
+        setTimeout(() => setSwipeHint(null), 300);
+        goToPage(currentPage - 1, 'prev');
+      }
+    },
+    threshold: 50,
+    enabled: !isFlipping
+  });
 
   useEffect(() => {
     if (!authLoading) {
