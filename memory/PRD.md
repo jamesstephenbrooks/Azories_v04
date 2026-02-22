@@ -67,7 +67,12 @@ Professional-grade character creation and video generation studio, inspired by H
 2. **Backend APIs:** New endpoints for /api/pro-studio/* (characters, generate-image, generate-shots, generate-expression, animate-hero)
 3. **Cinema Studio Config:** Camera bodies, lenses, lighting presets configurations
 4. **Pro Studio Button:** Added to Art Studio header with gradient styling and "NEW" tag
-5. **Authentication Fix:** Fixed isAuthenticated bug in ProStudio.js
+5. **Bug Fixes:**
+   - Fixed character creation API - now correctly uses ImageContent for vision analysis
+   - Fixed shots generation API - proper image handling
+   - Fixed iPad chapter creation dialog - better keyboard handling
+   - Improved animation preview video playback with additional event handlers
+   - Updated ambient wind sound to a more pleasant "gentle breeze" variant
 
 ### Previous Updates (Feb 22, 2026 - Earlier)
 - Removed "Made with Emergent" branding
