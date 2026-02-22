@@ -117,7 +117,8 @@ const CoverPage = forwardRef(({ book, onClick, onListen }, ref) => {
           <div className="text-center text-white space-y-4">
             <div className="flex gap-4 justify-center">
               <button 
-                onClick={(e) => { e.stopPropagation(); onClick?.(); }}
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => { e.stopPropagation(); e.preventDefault(); onClick?.(); }}
                 className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/20 backdrop-blur hover:bg-white/30 transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
