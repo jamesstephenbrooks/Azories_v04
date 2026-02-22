@@ -297,10 +297,8 @@ export default function BookReader() {
       
       if (res.data.audio_base64) {
         audioCache.current.set(pageIndex, res.data.audio_base64);
-        console.log(`Pre-loaded audio for page ${pageIndex}`);
       }
     } catch (error) {
-      console.log(`Failed to preload audio for page ${pageIndex}:`, error.message);
     } finally {
       preloadingPages.current.delete(pageIndex);
     }
@@ -319,17 +317,14 @@ export default function BookReader() {
   const playAudio = useCallback(async () => {
     // Skip chapter title pages - handled by useEffect
     if (allPages[currentPageRef.current]?.isChapterTitle) {
-      console.log('Skipping chapter title page');
       return;
     }
     
     const pageIndex = currentPageRef.current;
     const pageData = allPages[pageIndex];
     
-    console.log('playAudio called:', { pageIndex, hasVoice: !!narratorVoice, hasText: !!pageData?.text_content });
     
     if (!narratorVoice || pageIndex < 0 || !pageData?.text_content) {
-      console.log('Early return - missing data:', { narratorVoice, pageIndex, textContent: pageData?.text_content?.substring(0, 50) });
       // If page has no text content, move to next page in auto-read mode
       if (autoReadRef.current && pageIndex >= 0 && pageIndex < allPages.length - 1) {
         setTimeout(() => {
@@ -443,7 +438,6 @@ export default function BookReader() {
 
   // Start listening - flip to first page and enable auto-read with audio
   const startListening = useCallback(() => {
-    console.log('startListening called, currentPage:', currentPage, 'allPages:', allPages.length, 'narratorVoice:', narratorVoice);
     
     // Enable auto-read - update BOTH state AND ref synchronously
     setAutoRead(true);
@@ -451,32 +445,27 @@ export default function BookReader() {
     
     if (currentPage === -1) {
       // On cover - flip to first page, then play audio
-      console.log('On cover, flipping to first page with auto-read enabled');
       if (realisticFlipRef.current) {
         realisticFlipRef.current.nextPage();
       }
       // Directly trigger playAudio after page flip completes
       // Don't rely on the auto-read useEffect - call playAudio directly
       setTimeout(() => {
-        console.log('Delayed playAudio call, autoReadRef:', autoReadRef.current, 'currentPageRef:', currentPageRef.current);
         if (autoReadRef.current && currentPageRef.current >= 0 && allPages.length > 0) {
           const page = allPages[currentPageRef.current];
           if (page?.text_content) {
-            console.log('Calling playAudio directly from startListening');
             playAudio();
           }
         }
       }, 1000); // Wait for page flip animation to complete
     } else {
       // Already on a content page - start playing immediately
-      console.log('On content page, starting audio immediately');
       playAudio();
     }
   }, [currentPage, playAudio, allPages, narratorVoice]);
 
   // Auto-read effect: play audio when page changes with auto-read enabled
   useEffect(() => {
-    console.log('Auto-read effect triggered:', { 
       currentPage, 
       autoReadRef: autoReadRef.current, 
       autoReadState: autoRead,
@@ -486,7 +475,6 @@ export default function BookReader() {
     
     // Don't do anything if already playing - prevents loop
     if (isPlaying || audioLoading) {
-      console.log('Skipping - already playing or loading');
       return;
     }
     
@@ -494,7 +482,6 @@ export default function BookReader() {
     // Use autoReadRef.current to catch synchronous updates from startListening
     if (autoReadRef.current && currentPage >= 0 && allPages.length > 0) {
       const page = allPages[currentPage];
-      console.log('Auto-read check passed, page data:', { 
         pageIndex: currentPage,
         hasTextContent: !!page?.text_content,
         isChapterTitle: page?.isChapterTitle,
@@ -503,7 +490,6 @@ export default function BookReader() {
       
       if (page?.isChapterTitle) {
         // Chapter title page - show briefly then advance
-        console.log('Chapter title page, advancing in 1500ms');
         const timer = setTimeout(() => {
           if (autoReadRef.current && currentPageRef.current < allPages.length - 1) {
             goToPage(currentPageRef.current + 1, 'next');
@@ -512,17 +498,14 @@ export default function BookReader() {
         return () => clearTimeout(timer);
       } else if (page?.text_content) {
         // Has text content - play audio after short delay
-        console.log('Text content found, playing audio in 100ms');
         const timer = setTimeout(() => {
           if (autoReadRef.current && !isPlaying && !audioLoading) {
-            console.log('Calling playAudio from auto-read effect');
             playAudio();
           }
         }, 100);
         return () => clearTimeout(timer);
       } else if (currentPage < allPages.length - 1) {
         // No content, advance to next page quickly
-        console.log('No content, advancing in 500ms');
         const timer = setTimeout(() => {
           if (autoReadRef.current && currentPageRef.current < allPages.length - 1) {
             goToPage(currentPageRef.current + 1, 'next');
@@ -531,7 +514,6 @@ export default function BookReader() {
         return () => clearTimeout(timer);
       }
     } else {
-      console.log('Auto-read check failed:', {
         autoReadRef: autoReadRef.current,
         currentPage,
         allPagesLength: allPages.length
