@@ -525,8 +525,9 @@ const RealisticPageFlip = forwardRef(({
         {/* Wrapper that gets clipped and positioned */}
         <div 
           style={{
-            // Shift to center the visible portion after clipping
-            marginLeft: shouldClipLeft ? `${width/2}px` : shouldClipRight ? `-${width/2}px` : '0',
+            // Shift LEFT to center when showing front cover (clip left, visible part moves to center)
+            // Shift RIGHT to center when showing back cover (clip right, visible part moves to center)
+            marginLeft: shouldClipLeft ? `-${width/2}px` : shouldClipRight ? `${width/2}px` : '0',
             transition: 'margin 0.4s ease-out',
           }}
         >
