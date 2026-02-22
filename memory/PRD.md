@@ -1,4 +1,5 @@
 # Azories - Digital Book Creation Platform
+## Domain: azories.com
 
 ## Original Problem Statement
 Create a digital book creation and reading web application named "Azories" with:
