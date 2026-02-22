@@ -778,7 +778,20 @@ export default function ArtStudio() {
       };
       
       if (activeTab === 'character') {
-        fullPrompt = `${buildCharacterPrompt()}, ${styleData?.name || 'fantasy'} art style${qualityBoosts[qualityLevel] || qualityBoosts.high}`;
+        // If a saved character profile is selected, use their stored description for consistency
+        if (selectedCharacterProfile && selectedCharacterProfile.description) {
+          fullPrompt = `${selectedCharacterProfile.description}, ${styleData?.name || 'fantasy'} art style${qualityBoosts[qualityLevel] || qualityBoosts.high}`;
+          // Add any additional scene/pose context from current settings
+          if (character.expression && character.expression !== 'neutral') {
+            fullPrompt += `, ${character.expression.toLowerCase()} expression`;
+          }
+          if (character.additionalDetails) {
+            fullPrompt += `, ${character.additionalDetails}`;
+          }
+        } else {
+          // No profile selected, build from form fields (less consistent)
+          fullPrompt = `${buildCharacterPrompt()}, ${styleData?.name || 'fantasy'} art style${qualityBoosts[qualityLevel] || qualityBoosts.high}`;
+        }
         useTransparentBg = character.transparentBackground;
         // Add transparent background instruction to prompt if enabled
         if (useTransparentBg) {
