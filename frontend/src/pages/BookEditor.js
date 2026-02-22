@@ -103,6 +103,7 @@ export default function BookEditor() {
       fetchChapters();
       fetchVoices();
       fetchBookGallery();
+      fetchGalleryImages();
     }
   }, [user, bookId]);
 
