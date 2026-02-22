@@ -252,6 +252,34 @@ ImagePage.displayName = 'ImagePage';
 const TextPage = forwardRef(({ page, pageNumber, isFirstOfChapter }, ref) => {
   const hasText = page?.text_content && page.text_content.trim() !== '';
   
+  // Get font classes based on page settings
+  const getFontClass = () => {
+    switch (page?.font_family) {
+      case 'serif': return 'font-serif';
+      case 'sans': return 'font-sans';
+      case 'mono': return 'font-mono';
+      default: return 'font-reader';
+    }
+  };
+  
+  const getSizeClass = () => {
+    switch (page?.font_size) {
+      case 'small': return 'text-xs md:text-sm';
+      case 'large': return 'text-base md:text-lg';
+      case 'xlarge': return 'text-lg md:text-xl';
+      default: return 'text-sm md:text-base';
+    }
+  };
+  
+  const getAlignClass = () => {
+    switch (page?.text_align) {
+      case 'center': return 'text-center';
+      case 'right': return 'text-right';
+      case 'justify': return 'text-justify';
+      default: return 'text-left';
+    }
+  };
+  
   return (
     <Page ref={ref} pageNumber={pageNumber} isLeft={false}>
       <div className="h-full flex flex-col">
@@ -268,7 +296,7 @@ const TextPage = forwardRef(({ page, pageNumber, isFirstOfChapter }, ref) => {
         )}
         
         {hasText ? (
-          <p className="font-reader text-sm md:text-base leading-relaxed whitespace-pre-wrap text-foreground/90">
+          <p className={`${getFontClass()} ${getSizeClass()} ${getAlignClass()} leading-relaxed whitespace-pre-wrap text-foreground/90`}>
             {page.text_content}
           </p>
         ) : (
