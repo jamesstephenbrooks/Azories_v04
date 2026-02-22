@@ -164,7 +164,7 @@ const TELEPORT_PORTALS = [
     name: 'Go Upstairs',
     triggerPos: { x: -1.60, y: 0, z: -6.01 }, // Detection at ground floor
     visualY: 4.18, // Visual position on stairs (original position)
-    triggerRadius: 0.5,
+    triggerRadius: 1.5, // Larger radius for easier detection
     destPos: { x: -2.22, y: 5.1, z: -6.94 },
     destRotation: 0,
     color: '#00ffff',
@@ -176,7 +176,7 @@ const TELEPORT_PORTALS = [
     name: 'Go Upstairs',
     triggerPos: { x: -1.55, y: 0, z: 2.90 }, // Detection at ground floor
     visualY: 4.29, // Visual position on stairs (original position)
-    triggerRadius: 0.5,
+    triggerRadius: 1.5, // Larger radius for easier detection
     destPos: { x: -2.23, y: 5.1, z: 4.03 },
     destRotation: Math.PI,
     color: '#00ffff',
@@ -188,7 +188,7 @@ const TELEPORT_PORTALS = [
     name: 'Go Downstairs',
     triggerPos: { x: -2.22, y: 5.1, z: -6.94 }, // Detection at upper floor
     visualY: 6.21, // Visual position at top of stairs (original position)
-    triggerRadius: 0.5,
+    triggerRadius: 1.5, // Larger radius for easier detection
     destPos: { x: -1.60, y: 0, z: -6.01 },
     destRotation: Math.PI,
     color: '#00ffff',
@@ -200,7 +200,7 @@ const TELEPORT_PORTALS = [
     name: 'Go Downstairs',
     triggerPos: { x: -2.23, y: 5.1, z: 4.03 }, // Detection at upper floor
     visualY: 6.21, // Visual position at top of stairs (original position)
-    triggerRadius: 0.5,
+    triggerRadius: 1.5, // Larger radius for easier detection
     destPos: { x: -1.55, y: 0, z: 2.90 },
     destRotation: 0,
     color: '#00ffff',
