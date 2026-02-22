@@ -1612,7 +1612,384 @@ async def get_animation_status(job_id: str, current_user: dict = Depends(get_cur
         "video_id": job.get("video_id")
     }
 
-@api_router.post("/ai/generate-story")
+# ============ PRO STUDIO ROUTES ============
+
+# Camera and lens configurations for Cinema Studio
+CAMERA_CONFIGS = {
+    "arri-alexa-35": "shot on ARRI Alexa 35, rich colors, natural skin tones, filmic look",
+    "arri-alexa-mini": "shot on ARRI Alexa Mini, cinematic quality, portable feel",
+    "red-v-raptor": "shot on RED V-Raptor 8K, ultra sharp, vibrant colors, documentary style",
+    "red-komodo": "shot on RED Komodo 6K, clean modern look, great dynamic range",
+    "sony-venice-2": "shot on Sony Venice 2, excellent low light, natural colors",
+    "blackmagic-ursa": "shot on Blackmagic URSA Mini Pro 12K, high resolution, film-like grain",
+    "canon-c500": "shot on Canon C500 Mark II, warm tones, pleasing skin, classic look"
+}
+
+LENS_CONFIGS = {
+    "panavision-series": "Panavision C Series lens, dreamy bokeh, classic Hollywood look, soft edges",
+    "panavision-primo": "Panavision Primo 70 lens, ultra sharp center, smooth falloff, modern cinema",
+    "cooke-s4": "Cooke S4/i lens, warm creamy Cooke Look, beautiful skin rendering",
+    "cooke-anamorphic": "Cooke Anamorphic/i lens, oval bokeh, lens flares, epic widescreen",
+    "zeiss-supreme": "Zeiss Supreme Prime lens, clean neutral high contrast modern look",
+    "hawk-v-lite": "Hawk V-Lite lens, anamorphic flares, warm highlights, vintage feel",
+    "helios-44": "Helios 44-2 lens, swirly bokeh, character, dreamy distortion",
+    "petzval-lens": "Petzval 85mm lens, extreme swirly bokeh, artistic blur, vintage portrait",
+    "leica-summilux": "Leica Summilux-C lens, precise crisp subtle warmth documentary style"
+}
+
+LIGHTING_CONFIGS = {
+    "natural": "natural daylight, soft shadows, realistic",
+    "golden-hour": "golden hour lighting, warm sunset glow, soft",
+    "blue-hour": "blue hour twilight, cool tones, atmospheric",
+    "studio": "professional studio lighting, clean, even",
+    "dramatic": "dramatic lighting, high contrast, shadows",
+    "neon": "neon lights, colorful glow, cyberpunk lighting",
+    "candlelight": "warm candlelight, intimate, flickering",
+    "moonlight": "soft moonlight, nighttime, ethereal glow",
+    "overcast": "overcast sky, soft diffused light, no harsh shadows",
+    "backlit": "backlit rim lighting, silhouette edge, dramatic"
+}
+
+EXPRESSION_PROMPTS = {
+    "neutral": "neutral expression, calm face",
+    "happy": "happy expression, warm smile, joyful",
+    "smiling": "gentle smile, friendly expression",
+    "laughing": "laughing, genuine joy, bright expression",
+    "serious": "serious expression, focused, determined",
+    "thoughtful": "thoughtful expression, contemplative, pondering",
+    "surprised": "surprised expression, wide eyes, amazed",
+    "sad": "sad expression, melancholy, emotional",
+    "angry": "angry expression, intense, fierce",
+    "confident": "confident expression, self-assured, powerful",
+    "shy": "shy expression, bashful, looking away slightly",
+    "mysterious": "mysterious expression, enigmatic, intriguing"
+}
+
+SHOT_TYPE_PROMPTS = [
+    "front facing, looking at camera, eye contact",
+    "three quarter view from left, slight turn",
+    "three quarter view from right, slight turn",
+    "side profile view from left, looking left",
+    "side profile view from right, looking right",
+    "looking upward, low angle perspective",
+    "looking downward, high angle perspective",
+    "over the shoulder view, back partially visible",
+    "back view, showing from behind"
+]
+
+@api_router.get("/pro-studio/characters")
+async def get_characters(current_user: dict = Depends(get_current_user)):
+    """Get all characters for the current user"""
+    characters = await db.pro_studio_characters.find(
+        {"user_id": current_user["id"]}, 
+        {"_id": 0}
+    ).to_list(100)
+    return {"characters": characters}
+
+@api_router.post("/pro-studio/characters")
+async def create_character(request: CharacterCreate, current_user: dict = Depends(get_current_user)):
+    """Create a new character from reference images"""
+    if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Pro subscription required")
+    
+    if len(request.reference_images) < 3:
+        raise HTTPException(status_code=400, detail="At least 3 reference images required")
+    
+    try:
+        # Analyze the character using AI to create a description
+        if EMERGENT_LLM_KEY:
+            chat = LlmChat(
+                api_key=EMERGENT_LLM_KEY,
+                session_id=f"char-{current_user['id']}-{str(uuid.uuid4())[:8]}",
+                system_message="You are an expert at analyzing images and describing people in detail for AI image generation."
+            ).with_model("openai", "gpt-4o")
+            
+            # Analyze first reference image
+            analysis_prompt = """Analyze this person and provide a detailed description for consistent AI image generation.
+            
+            Include:
+            - Gender and apparent age
+            - Hair color, style, and length
+            - Eye color and shape
+            - Skin tone
+            - Face shape and distinctive features
+            - Body type (if visible)
+            
+            Respond in a single paragraph that can be used as a prompt prefix for generating consistent images of this person."""
+            
+            # Use the first image for analysis
+            first_image = request.reference_images[0]
+            if first_image.startswith('data:'):
+                # Extract base64 part
+                first_image = first_image.split(',')[1] if ',' in first_image else first_image
+            
+            description = await chat.send_message(UserMessage(
+                text=analysis_prompt,
+                image_url=request.reference_images[0]
+            ))
+        else:
+            description = f"Portrait of {request.name}"
+        
+        # Create character record
+        char_id = str(uuid.uuid4())
+        now = datetime.now(timezone.utc).isoformat()
+        
+        character = {
+            "id": char_id,
+            "user_id": current_user["id"],
+            "name": request.name,
+            "description": description.strip() if isinstance(description, str) else str(description),
+            "reference_images": request.reference_images[:20],  # Store up to 20 references
+            "thumbnail": request.reference_images[0] if request.reference_images else None,
+            "created_at": now
+        }
+        
+        await db.pro_studio_characters.insert_one(character)
+        
+        # Return without _id
+        character.pop("_id", None)
+        return {"character": character, "success": True}
+        
+    except Exception as e:
+        logger.error(f"Error creating character: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error creating character: {str(e)}")
+
+@api_router.delete("/pro-studio/characters/{character_id}")
+async def delete_character(character_id: str, current_user: dict = Depends(get_current_user)):
+    """Delete a character"""
+    result = await db.pro_studio_characters.delete_one({
+        "id": character_id, 
+        "user_id": current_user["id"]
+    })
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Character not found")
+    return {"success": True}
+
+@api_router.post("/pro-studio/generate-image")
+async def pro_studio_generate_image(request: ProStudioImageRequest, current_user: dict = Depends(get_current_user)):
+    """Generate a hero frame with Cinema Studio settings"""
+    if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Pro subscription required")
+    
+    if not EMERGENT_LLM_KEY:
+        raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
+    
+    try:
+        # Build full prompt with cinema settings
+        prompt_parts = [request.prompt]
+        
+        # Add character description if provided
+        if request.character_id:
+            character = await db.pro_studio_characters.find_one(
+                {"id": request.character_id, "user_id": current_user["id"]},
+                {"_id": 0}
+            )
+            if character and character.get("description"):
+                prompt_parts.insert(0, character["description"])
+        
+        # Add camera settings
+        camera_desc = CAMERA_CONFIGS.get(request.camera, "")
+        if camera_desc:
+            prompt_parts.append(camera_desc)
+        
+        # Add lens settings
+        lens_desc = LENS_CONFIGS.get(request.lens, "")
+        if lens_desc:
+            prompt_parts.append(f"{lens_desc}, {request.focal_length}")
+        
+        # Add lighting
+        lighting_desc = LIGHTING_CONFIGS.get(request.lighting, "")
+        if lighting_desc:
+            prompt_parts.append(lighting_desc)
+        
+        # Add quality enhancers
+        prompt_parts.append("professional photography, 8K resolution, masterfully composed")
+        
+        full_prompt = ", ".join(prompt_parts)
+        
+        # Determine size based on aspect ratio
+        aspect_sizes = {
+            "1:1": "1024x1024",
+            "16:9": "1536x1024",
+            "9:16": "1024x1536",
+            "4:3": "1024x768",
+            "3:4": "768x1024",
+            "21:9": "1536x640",
+            "2:3": "683x1024"
+        }
+        size = aspect_sizes.get(request.aspect_ratio, "1024x1024")
+        
+        # Generate image
+        image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
+        images = await image_gen.generate_images(
+            prompt=full_prompt,
+            model="gpt-image-1",
+            number_of_images=1,
+            size=size
+        )
+        
+        if images and len(images) > 0:
+            image_base64 = base64.b64encode(images[0]).decode('utf-8')
+            image_url = f"data:image/png;base64,{image_base64}"
+            return {"image_url": image_url, "success": True}
+        else:
+            raise HTTPException(status_code=500, detail="No image was generated")
+            
+    except Exception as e:
+        logger.error(f"Error generating pro studio image: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error generating image: {str(e)}")
+
+@api_router.post("/pro-studio/generate-shots")
+async def generate_shots(request: GenerateShotsRequest, current_user: dict = Depends(get_current_user)):
+    """Generate 9 different angle shots from one source image"""
+    if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Pro subscription required")
+    
+    if not EMERGENT_LLM_KEY:
+        raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
+    
+    try:
+        # First, analyze the source image to understand the subject
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"shots-{current_user['id']}-{str(uuid.uuid4())[:8]}",
+            system_message="You are an expert at analyzing images. Describe subjects precisely for regeneration."
+        ).with_model("openai", "gpt-4o")
+        
+        analysis = await chat.send_message(UserMessage(
+            text="Describe this person/subject in detail for image generation. Include: gender, age, hair, eyes, skin, clothing, setting. Be very specific. Respond in one paragraph.",
+            image_url=request.source_image
+        ))
+        
+        base_description = analysis.strip() if isinstance(analysis, str) else str(analysis)
+        
+        # Generate 9 shots with different angles
+        shots = []
+        image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
+        
+        for i, shot_prompt in enumerate(SHOT_TYPE_PROMPTS):
+            full_prompt = f"{base_description}, {shot_prompt}, professional portrait photography, consistent lighting, high quality"
+            
+            try:
+                images = await image_gen.generate_images(
+                    prompt=full_prompt,
+                    model="gpt-image-1",
+                    number_of_images=1,
+                    size="1024x1024"
+                )
+                
+                if images and len(images) > 0:
+                    image_base64 = base64.b64encode(images[0]).decode('utf-8')
+                    shots.append({
+                        "url": f"data:image/png;base64,{image_base64}",
+                        "type": f"shot_{i+1}"
+                    })
+            except Exception as shot_error:
+                logger.error(f"Error generating shot {i+1}: {str(shot_error)}")
+                continue
+        
+        return {"shots": shots, "success": True, "total": len(shots)}
+        
+    except Exception as e:
+        logger.error(f"Error generating shots: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error generating shots: {str(e)}")
+
+@api_router.post("/pro-studio/generate-expression")
+async def generate_expression(request: GenerateExpressionRequest, current_user: dict = Depends(get_current_user)):
+    """Generate character with a specific expression"""
+    if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Pro subscription required")
+    
+    if not EMERGENT_LLM_KEY:
+        raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
+    
+    try:
+        # Get character
+        character = await db.pro_studio_characters.find_one(
+            {"id": request.character_id, "user_id": current_user["id"]},
+            {"_id": 0}
+        )
+        
+        if not character:
+            raise HTTPException(status_code=404, detail="Character not found")
+        
+        # Build prompt with expression
+        expression_desc = EXPRESSION_PROMPTS.get(request.expression, "neutral expression")
+        
+        prompt_parts = [
+            character.get("description", f"Portrait of {character['name']}"),
+            expression_desc,
+            request.base_prompt if request.base_prompt else "",
+            "professional portrait photography, high quality, consistent appearance"
+        ]
+        
+        full_prompt = ", ".join(filter(None, prompt_parts))
+        
+        # Generate image
+        image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
+        images = await image_gen.generate_images(
+            prompt=full_prompt,
+            model="gpt-image-1",
+            number_of_images=1,
+            size="1024x1024"
+        )
+        
+        if images and len(images) > 0:
+            image_base64 = base64.b64encode(images[0]).decode('utf-8')
+            image_url = f"data:image/png;base64,{image_base64}"
+            return {"image_url": image_url, "success": True, "expression": request.expression}
+        else:
+            raise HTTPException(status_code=500, detail="No image was generated")
+            
+    except Exception as e:
+        logger.error(f"Error generating expression: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error generating expression: {str(e)}")
+
+@api_router.post("/pro-studio/animate-hero")
+async def animate_hero_frame(request: AnimateHeroRequest, background_tasks: BackgroundTasks, current_user: dict = Depends(get_current_user)):
+    """Animate a hero frame to video using the selected model"""
+    if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Pro subscription required")
+    
+    if not EMERGENT_LLM_KEY:
+        raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
+    
+    # Currently only Sora 2 is supported via Emergent
+    # Other models would need their own API keys
+    if request.model not in ["sora-2"]:
+        # Fall back to Sora 2 for unsupported models
+        logger.warning(f"Model {request.model} not available, using Sora 2")
+    
+    # Create job ID
+    job_id = str(uuid.uuid4())
+    
+    # Initialize job status
+    animation_jobs[job_id] = {
+        "status": "starting",
+        "progress": 0,
+        "message": "Initializing video generation...",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "user_id": current_user["id"]
+    }
+    
+    # Start background task - reuse the existing animation process
+    background_tasks.add_task(
+        process_animation_job,
+        job_id,
+        request.image_url,
+        request.motion_prompt,
+        min(request.duration, 10),  # Cap at 10 seconds
+        "cinematic",
+        current_user["id"]
+    )
+    
+    return {
+        "job_id": job_id,
+        "status": "started",
+        "message": "Video generation started. Poll /api/art-studio/animation-status/{job_id} for progress."
+    }
+
+
 async def generate_story(request: AIStoryRequest, current_user: dict = Depends(get_current_user)):
     """Generate a complete story from an idea using AI"""
     if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
