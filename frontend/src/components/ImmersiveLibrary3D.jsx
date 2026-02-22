@@ -25,77 +25,91 @@ const DEFAULT_BOUNDS = {
 // bannerPos is where the banner appears, shelfPos is where highlighted book appears
 // position is where player spawns when teleporting to this section
 const GENRE_SECTIONS = [
-  // RIGHT SIDE BOOKCASES (X positive) - Ground Floor
+  // ORIGINAL LOCATIONS - Left side bookcases
+  { 
+    name: 'Fiction', 
+    position: { x: -4.79, z: -1.35 }, 
+    bannerPos: { x: -4.79, y: 6.5, z: -1.35 }, 
+    shelfPos: { x: -4.5, y: 5.4, z: -1.35 }, 
+    rotation: Math.PI / 2, 
+    color: '#9333ea'
+  },
+  { 
+    name: 'Adventure', 
+    position: { x: -5.0, z: 0.42 }, 
+    bannerPos: { x: -5.0, y: 6.5, z: 0.42 }, 
+    shelfPos: { x: -4.7, y: 5.4, z: 0.42 }, 
+    rotation: 0, 
+    color: '#10b981'
+  },
+  { 
+    name: 'Mystery', 
+    position: { x: -4, z: -3 }, 
+    bannerPos: { x: -4.79, y: 6.5, z: -3 }, 
+    shelfPos: { x: -4.5, y: 5.4, z: -3 }, 
+    rotation: Math.PI / 2, 
+    color: '#3b82f6' 
+  },
+  { 
+    name: 'Fantasy', 
+    position: { x: -1.01, z: -8.12 }, 
+    bannerPos: { x: -1.01, y: 5.7, z: -7.5 }, 
+    shelfPos: { x: -1.01, y: 5.2, z: -7.2 }, 
+    rotation: 0, 
+    color: '#ec4899'
+  },
+  { 
+    name: 'Comic', 
+    position: { x: -3.41, z: -6.38 }, 
+    bannerPos: { x: -2.5, y: 5.7, z: -6.5 }, 
+    shelfPos: { x: -2.5, y: 5.2, z: -6.2 }, 
+    rotation: 0, 
+    color: '#f97316'
+  },
+  { 
+    name: 'Science Fiction', 
+    position: { x: -6.25, z: -1.29 }, 
+    bannerPos: { x: -5.5, y: 6.5, z: -1.29 }, 
+    shelfPos: { x: -5.2, y: 5.4, z: -1.29 }, 
+    rotation: Math.PI / 2, 
+    color: '#06b6d4'
+  },
   { 
     name: 'Humour', 
+    position: { x: 4, z: -1 }, 
+    bannerPos: { x: 4.79, y: 6.5, z: -1 }, 
+    shelfPos: { x: 4.5, y: 5.4, z: -1 }, 
+    rotation: -Math.PI / 2, 
+    color: '#f59e0b' 
+  },
+  
+  // NEW LOCATIONS - Right side bookcases (Ground Floor)
+  { 
+    name: 'Romance', 
     position: { x: 2.5, z: 4.0 }, 
     bannerPos: { x: 3.31, y: 4.57, z: 4.96 }, 
     shelfPos: { x: 3.0, y: 4.2, z: 4.96 }, 
     rotation: -Math.PI / 2, 
-    color: '#f59e0b' 
+    color: '#f472b6' 
   },
   { 
-    name: 'Adventure', 
+    name: 'Biography', 
     position: { x: 2.0, z: 0.5 }, 
     bannerPos: { x: 2.57, y: 4.56, z: 1.16 }, 
     shelfPos: { x: 2.3, y: 4.2, z: 1.16 }, 
     rotation: -Math.PI / 2, 
-    color: '#10b981' 
+    color: '#a78bfa' 
   },
   { 
-    name: 'Mystery', 
+    name: 'History', 
     position: { x: 2.0, z: -4.5 }, 
     bannerPos: { x: 2.61, y: 4.56, z: -4.01 }, 
     shelfPos: { x: 2.3, y: 4.2, z: -4.01 }, 
     rotation: -Math.PI / 2, 
-    color: '#3b82f6' 
+    color: '#78716c' 
   },
   
-  // LEFT SIDE BOOKCASES (X negative) - Ground Floor
-  { 
-    name: 'Science Fiction', 
-    position: { x: -6.5, z: -1.0 }, 
-    bannerPos: { x: -7.65, y: 5.89, z: -1.49 }, 
-    shelfPos: { x: -7.3, y: 5.4, z: -1.49 }, 
-    rotation: Math.PI / 2, 
-    color: '#06b6d4' 
-  },
-  { 
-    name: 'Fiction', 
-    position: { x: -2.5, z: 2.5 }, 
-    bannerPos: { x: -3.41, y: 5.47, z: 3.17 }, 
-    shelfPos: { x: -3.1, y: 5.0, z: 3.17 }, 
-    rotation: Math.PI / 2, 
-    color: '#9333ea' 
-  },
-  { 
-    name: 'Romance', 
-    position: { x: -0.5, z: 4.5 }, 
-    bannerPos: { x: -1.57, y: 5.48, z: 5.26 }, 
-    shelfPos: { x: -1.3, y: 5.0, z: 5.0 }, 
-    rotation: 0, 
-    color: '#ec4899' 
-  },
-  
-  // UPPER FLOOR - Back Wall
-  { 
-    name: 'Fantasy', 
-    position: { x: -0.5, z: -7.5 }, 
-    bannerPos: { x: -1.19, y: 7.89, z: -8.12 }, 
-    shelfPos: { x: -1.19, y: 7.4, z: -7.8 }, 
-    rotation: 0, 
-    color: '#a855f7' 
-  },
-  { 
-    name: 'Comic', 
-    position: { x: -2.5, z: -5.0 }, 
-    bannerPos: { x: -3.19, y: 7.71, z: -5.77 }, 
-    shelfPos: { x: -3.19, y: 7.2, z: -5.5 }, 
-    rotation: 0, 
-    color: '#f97316' 
-  },
-  
-  // UPPER FLOOR - Front/Side
+  // NEW LOCATIONS - Upper Floor
   { 
     name: 'Horror', 
     position: { x: 0.0, z: 4.5 }, 
@@ -111,6 +125,22 @@ const GENRE_SECTIONS = [
     shelfPos: { x: -3.41, y: 8.0, z: 2.7 }, 
     rotation: Math.PI, 
     color: '#0891b2' 
+  },
+  { 
+    name: 'Poetry', 
+    position: { x: -0.5, z: -7.5 }, 
+    bannerPos: { x: -1.19, y: 7.89, z: -8.12 }, 
+    shelfPos: { x: -1.19, y: 7.4, z: -7.8 }, 
+    rotation: 0, 
+    color: '#d946ef' 
+  },
+  { 
+    name: 'Drama', 
+    position: { x: -2.5, z: -5.0 }, 
+    bannerPos: { x: -3.19, y: 7.71, z: -5.77 }, 
+    shelfPos: { x: -3.19, y: 7.2, z: -5.5 }, 
+    rotation: 0, 
+    color: '#0d9488' 
   },
 ];
 
