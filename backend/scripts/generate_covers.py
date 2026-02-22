@@ -35,11 +35,10 @@ async def generate_cover_image(prompt, api_key):
         
         image_gen = OpenAIImageGeneration(api_key=api_key)
         images = await image_gen.generate_images(
-            prompt=prompt,
+            prompt=prompt + " Portrait orientation, vertical book cover format.",
             model="gpt-image-1",
             number_of_images=1,
-            quality="medium",
-            size="1024x1536"  # Portrait for book covers
+            quality="medium"
         )
         
         if images and len(images) > 0:
