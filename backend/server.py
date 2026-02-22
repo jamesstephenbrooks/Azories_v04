@@ -553,11 +553,58 @@ async def get_me(current_user: dict = Depends(get_current_user)):
         name=current_user["name"],
         role=current_user["role"],
         subscription=subscription,
+        credits=current_user.get("credits", 0),
         created_at=current_user["created_at"],
         pro_trial=pro_trial,
         pro_trial_expires_at=trial_expires,
         trial_days_remaining=trial_days_remaining
     )
+
+@api_router.get("/credits/balance")
+async def get_credit_balance(current_user: dict = Depends(get_current_user)):
+    """Get user's credit balance and costs"""
+    return {
+        "credits": current_user.get("credits", 0),
+        "costs": CREDIT_COSTS
+    }
+
+@api_router.post("/credits/add")
+async def add_credits(amount: int = 100, current_user: dict = Depends(get_current_user)):
+    """Add credits to user account (for testing/purchasing)"""
+    current_credits = current_user.get("credits", 0)
+    new_balance = current_credits + amount
+    
+    await db.users.update_one(
+        {"id": current_user["id"]},
+        {"$set": {"credits": new_balance}}
+    )
+    
+    return {
+        "success": True,
+        "previous_balance": current_credits,
+        "added": amount,
+        "new_balance": new_balance
+    }
+
+async def deduct_credits(user_id: str, operation: str) -> bool:
+    """Deduct credits for an operation. Returns True if successful."""
+    cost = CREDIT_COSTS.get(operation, 0)
+    if cost == 0:
+        return True
+    
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        return False
+    
+    current_credits = user.get("credits", 0)
+    if current_credits < cost:
+        return False
+    
+    await db.users.update_one(
+        {"id": user_id},
+        {"$set": {"credits": current_credits - cost}}
+    )
+    return True
 
 @api_router.post("/auth/upgrade")
 async def upgrade_subscription(request: UpgradeRequest, current_user: dict = Depends(get_current_user)):
