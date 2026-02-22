@@ -619,37 +619,44 @@ export default function BookReader() {
             {/* Narrator Voice Selector with Categories */}
             <div className="flex items-center gap-2">
               <FiMic className="w-4 h-4 text-muted-foreground" />
-              <Select 
-                value={narratorVoice} 
-                onValueChange={(v) => {
-                  setNarratorVoice(v);
-                  // Update the book's narrator voice
-                  if (book?.id) {
-                    axios.put(`${API}/books/${book.id}`, { narrator_voice_id: v }).catch(() => {});
-                  }
-                }}
-              >
-                <SelectTrigger className="w-40 h-8 rounded-full text-xs">
-                  <SelectValue placeholder="Select Voice" />
-                </SelectTrigger>
-                <SelectContent className="max-h-64">
-                  {/* Group voices by category */}
-                  {['Female', 'Male', 'Young Female', 'Young Male'].map(category => {
-                    const categoryVoices = voices.filter(v => v.category === category);
-                    if (categoryVoices.length === 0) return null;
-                    return (
-                      <div key={category}>
-                        <div className="px-2 py-1 text-xs text-muted-foreground font-semibold bg-muted/50">{category}</div>
-                        {categoryVoices.map((voice) => (
-                          <SelectItem key={voice.voice_id} value={voice.voice_id} className="text-xs">
-                            {voice.name} <span className="text-muted-foreground">({voice.accent})</span>
-                          </SelectItem>
-                        ))}
-                      </div>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
+              {narratorVoiceLocked ? (
+                <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-muted/50 text-xs text-muted-foreground">
+                  <FiLock className="w-3 h-3" />
+                  <span>{voices.find(v => v.voice_id === narratorVoice)?.name || 'Locked Voice'}</span>
+                </div>
+              ) : (
+                <Select 
+                  value={narratorVoice} 
+                  onValueChange={(v) => {
+                    setNarratorVoice(v);
+                    // Update the book's narrator voice
+                    if (book?.id) {
+                      axios.put(`${API}/books/${book.id}`, { narrator_voice_id: v }).catch(() => {});
+                    }
+                  }}
+                >
+                  <SelectTrigger className="w-40 h-8 rounded-full text-xs">
+                    <SelectValue placeholder="Select Voice" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-64">
+                    {/* Group voices by category */}
+                    {['Female', 'Male', 'Young Female', 'Young Male'].map(category => {
+                      const categoryVoices = voices.filter(v => v.category === category);
+                      if (categoryVoices.length === 0) return null;
+                      return (
+                        <div key={category}>
+                          <div className="px-2 py-1 text-xs text-muted-foreground font-semibold bg-muted/50">{category}</div>
+                          {categoryVoices.map((voice) => (
+                            <SelectItem key={voice.voice_id} value={voice.voice_id} className="text-xs">
+                              {voice.name} <span className="text-muted-foreground">({voice.accent})</span>
+                            </SelectItem>
+                          ))}
+                        </div>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
             
             {/* Volume Control */}
