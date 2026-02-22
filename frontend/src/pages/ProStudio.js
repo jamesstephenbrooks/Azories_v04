@@ -1161,14 +1161,14 @@ export default function ProStudio() {
       </header>
 
       {/* Loading Overlay */}
-      {/* Image Preview Modal */}
+      {/* Image Preview Modal - HIGHEST z-index */}
       <AnimatePresence>
         {previewImage && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/95 backdrop-blur-sm z-[100] flex items-center justify-center p-4"
             onClick={() => setPreviewImage(null)}
           >
             <motion.div 
@@ -1183,20 +1183,84 @@ export default function ProStudio() {
                 alt={previewImage.prompt || 'Preview'} 
                 className="max-w-full max-h-[85vh] object-contain rounded-lg"
               />
-              <div className="absolute bottom-0 left-0 right-0 bg-black/70 p-4 rounded-b-lg">
-                <p className="text-white text-sm">{previewImage.prompt || previewImage.character || 'Generated image'}</p>
-                <div className="flex gap-2 mt-2">
-                  <Button size="sm" onClick={() => downloadMedia(previewImage.url, `image-${Date.now()}.png`)}>
+              <div className="absolute bottom-0 left-0 right-0 bg-black/80 p-4 rounded-b-lg">
+                <p className="text-white text-sm mb-2">{previewImage.prompt || previewImage.character || 'Generated image'}</p>
+                <div className="flex gap-2">
+                  <Button 
+                    size="sm" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // Create download link
+                      const link = document.createElement('a');
+                      link.href = previewImage.url;
+                      link.download = `character-image-${Date.now()}.png`;
+                      link.target = '_blank';
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                      toast.success('Download started');
+                    }}
+                    className="bg-purple-600 hover:bg-purple-700"
+                  >
                     <FiDownload className="mr-1" /> Download
                   </Button>
-                  <Button size="sm" variant="outline" onClick={() => saveToGallery(previewImage)}>
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      // Save to main art studio gallery
+                      try {
+                        const token = localStorage.getItem('azories-token');
+                        const response = await fetch(`${API_URL}/api/art-studio/gallery`, {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${token}`
+                          },
+                          body: JSON.stringify({
+                            image_url: previewImage.url,
+                            prompt: previewImage.prompt || 'Character image',
+                            model: 'pro-studio',
+                            type: 'character'
+                          })
+                        });
+                        if (response.ok) {
+                          toast.success('Saved to Art Studio Gallery!');
+                        } else {
+                          toast.error('Failed to save to gallery');
+                        }
+                      } catch (error) {
+                        toast.error('Error saving to gallery');
+                      }
+                    }}
+                    className="border-gray-600"
+                  >
                     <FiSave className="mr-1" /> Save to Gallery
                   </Button>
+                  {selectedCharacter && (
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        await saveToCharacterFolder(
+                          selectedCharacter.id,
+                          previewImage.url,
+                          previewImage.prompt || 'Saved image',
+                          'saved'
+                        );
+                      }}
+                      className="border-purple-500/50 text-purple-300"
+                    >
+                      <FiFolder className="mr-1" /> Add to Character
+                    </Button>
+                  )}
                 </div>
               </div>
               <button 
                 onClick={() => setPreviewImage(null)}
-                className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full"
+                className="absolute top-4 right-4 bg-black/70 hover:bg-black/90 text-white p-2 rounded-full"
               >
                 <FiX size={24} />
               </button>
