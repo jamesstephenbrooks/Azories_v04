@@ -542,6 +542,122 @@ export default function ProStudio() {
     }
   };
 
+  // Delete a character
+  const deleteCharacter = async (characterId) => {
+    if (!window.confirm('Are you sure you want to delete this character? This will also delete all generated images in the character folder.')) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('azories-token');
+      const response = await fetch(`${API_URL}/api/pro-studio/characters/${characterId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (response.ok) {
+        toast.success('Character deleted');
+        setCharacters(prev => prev.filter(c => c.id !== characterId));
+        if (selectedCharacter?.id === characterId) {
+          setSelectedCharacter(null);
+        }
+        if (viewingCharacter?.id === characterId) {
+          closeCharacterView();
+        }
+      } else {
+        const error = await response.json();
+        toast.error(error.detail || 'Failed to delete character');
+      }
+    } catch (error) {
+      toast.error('Error deleting character');
+      console.error(error);
+    }
+  };
+
+  // Edit character details
+  const [editingCharacter, setEditingCharacter] = useState(null);
+  const [editForm, setEditForm] = useState({});
+
+  const openEditModal = (character) => {
+    setEditingCharacter(character);
+    setEditForm({
+      name: character.name || '',
+      description_prompt: character.description_prompt || '',
+      style: character.style || 'illustration',
+      genre: character.genre || 'fantasy',
+      personality: character.personality || '',
+      special_features: character.special_features || ''
+    });
+  };
+
+  const saveCharacterEdits = async () => {
+    if (!editingCharacter) return;
+
+    try {
+      const token = localStorage.getItem('azories-token');
+      const response = await fetch(`${API_URL}/api/pro-studio/characters/${editingCharacter.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(editForm)
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        toast.success('Character updated');
+        setCharacters(prev => prev.map(c => c.id === editingCharacter.id ? data.character : c));
+        setEditingCharacter(null);
+        // Update viewing character if open
+        if (viewingCharacter?.id === editingCharacter.id) {
+          setViewingCharacter(data.character);
+        }
+      } else {
+        const error = await response.json();
+        toast.error(error.detail || 'Failed to update character');
+      }
+    } catch (error) {
+      toast.error('Error updating character');
+      console.error(error);
+    }
+  };
+
+  // Regenerate thumbnail for better consistency
+  const regenerateThumbnail = async (characterId) => {
+    setIsLoading(true);
+    setLoadingMessage('Regenerating character thumbnail...');
+
+    try {
+      const token = localStorage.getItem('azories-token');
+      const response = await fetch(`${API_URL}/api/pro-studio/characters/${characterId}/regenerate-thumbnail`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        toast.success('Thumbnail regenerated!');
+        // Update character in list
+        setCharacters(prev => prev.map(c => 
+          c.id === characterId ? { ...c, thumbnail: data.thumbnail } : c
+        ));
+        if (viewingCharacter?.id === characterId) {
+          setViewingCharacter(prev => ({ ...prev, thumbnail: data.thumbnail }));
+        }
+      } else {
+        const error = await response.json();
+        toast.error(error.detail || 'Failed to regenerate thumbnail');
+      }
+    } catch (error) {
+      toast.error('Error regenerating thumbnail');
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+      setLoadingMessage('');
+    }
+  };
+
   // Generate with fal.ai FLUX
   const generateWithFal = async () => {
     if (!prompt.trim()) {
