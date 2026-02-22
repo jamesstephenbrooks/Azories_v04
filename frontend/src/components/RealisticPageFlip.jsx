@@ -461,7 +461,7 @@ const RealisticPageFlip = forwardRef(({
   const totalContentPages = pages.length;
 
   return (
-    <div className={`realistic-page-flip relative ${className}`} style={{ transform: 'scale(1.4)', transformOrigin: 'center center' }}>
+    <div className={`realistic-page-flip relative ${className}`} style={{ transform: isFullscreen ? 'scale(1.6)' : 'scale(1.35)', transformOrigin: 'center center' }}>
       {/* Book container with 3D perspective */}
       <div 
         className="book-container relative"
