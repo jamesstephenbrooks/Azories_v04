@@ -131,8 +131,8 @@ const GENRE_SECTIONS = [
   { 
     name: 'Non-Fiction', 
     position: { x: -2.5, z: 2.0 }, 
-    bannerPos: { x: -3.1, y: 8.8, z: 2.7 }, // 20% move, raised from 8.57 to 8.8
-    shelfPos: { x: -3.1, y: 8.3, z: 2.7 }, 
+    bannerPos: { x: -3.1, y: 8.0, z: 2.7 }, // Lowered to match Horror level
+    shelfPos: { x: -3.1, y: 7.5, z: 2.7 }, 
     rotation: Math.PI, 
     color: '#0891b2' 
   },
