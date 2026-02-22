@@ -19,7 +19,6 @@ import {
   FiUsers
 } from 'react-icons/fi';
 import CollaborativeWriting from '@/components/CollaborativeWriting';
-import VoiceNarrationUpload from '@/components/VoiceNarrationUpload';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
