@@ -24,28 +24,24 @@ const DEFAULT_BOUNDS = {
 // Genre sections - positions calibrated using debug mode clicks
 // bannerPos.y is set explicitly, other banners use relative positioning until calibrated
 // shelfPos is where the highlighted book will appear when selected - moved closer to bookcases
-// position is where the PLAYER spawns (should be in front of bookcase, not inside it)
 const GENRE_SECTIONS = [
-  // CALIBRATED using debug mode - Fiction - player spawns 2 units away from bookcase
-  { name: 'Fiction', position: { x: -2.5, z: -1.35 }, bannerPos: { x: -4.79, y: 6.5, z: -1.35 }, shelfPos: { x: -4.5, y: 5.4, z: -1.35 }, rotation: Math.PI / 2, color: '#9333ea', calibrated: true },
+  // CALIBRATED using debug mode - Fiction at X:-4.79, Y:5.93, Z:-1.35
+  { name: 'Fiction', position: { x: -4.79, z: -1.35 }, bannerPos: { x: -4.79, y: 6.5, z: -1.35 }, shelfPos: { x: -4.5, y: 5.4, z: -1.35 }, rotation: Math.PI / 2, color: '#9333ea', calibrated: true },
   
-  // CALIBRATED - Adventure - player spawns facing the bookcase
-  { name: 'Adventure', position: { x: -5.0, z: 2.5 }, bannerPos: { x: -5.0, y: 6.5, z: 0.42 }, shelfPos: { x: -4.7, y: 5.4, z: 0.42 }, rotation: 0, color: '#10b981', calibrated: true },
+  // CALIBRATED - Adventure at X:-5.79, Y:5.94, Z:0.42 - perpendicular to Fiction, pulled away from wall
+  { name: 'Adventure', position: { x: -5.0, z: 0.42 }, bannerPos: { x: -5.0, y: 6.5, z: 0.42 }, shelfPos: { x: -4.7, y: 5.4, z: 0.42 }, rotation: 0, color: '#10b981', calibrated: true },
   
-  // Mystery - player spawns in front of bookcase
-  { name: 'Mystery', position: { x: -2.0, z: -3 }, bannerPos: { x: -4.79, y: 6.5, z: -3 }, shelfPos: { x: -4.5, y: 5.4, z: -3 }, rotation: Math.PI / 2, color: '#3b82f6' },
+  // Uncalibrated - need debug clicks to position correctly
+  { name: 'Mystery', position: { x: -4, z: -3 }, bannerPos: { x: -4.79, y: 6.5, z: -3 }, shelfPos: { x: -4.5, y: 5.4, z: -3 }, rotation: Math.PI / 2, color: '#3b82f6' },
+  // CALIBRATED - Fantasy at X:-1.01, Y:5.80, Z:-8.12 (back wall)
+  { name: 'Fantasy', position: { x: -1.01, z: -8.12 }, bannerPos: { x: -1.01, y: 5.7, z: -7.5 }, shelfPos: { x: -1.01, y: 5.2, z: -7.2 }, rotation: 0, color: '#ec4899', calibrated: true },
   
-  // CALIBRATED - Fantasy (back wall) - player spawns facing the wall
-  { name: 'Fantasy', position: { x: -1.01, z: -5.5 }, bannerPos: { x: -1.01, y: 5.7, z: -7.5 }, shelfPos: { x: -1.01, y: 5.2, z: -7.2 }, rotation: 0, color: '#ec4899', calibrated: true },
+  // CALIBRATED - Comic at X:-3.41, Y:5.70, Z:-6.38 - moved toward Fantasy
+  { name: 'Comic', position: { x: -3.41, z: -6.38 }, bannerPos: { x: -2.5, y: 5.7, z: -6.5 }, shelfPos: { x: -2.5, y: 5.2, z: -6.2 }, rotation: 0, color: '#f97316', calibrated: true },
   
-  // CALIBRATED - Comic - player spawns facing the bookcase
-  { name: 'Comic', position: { x: -3.41, z: -4.0 }, bannerPos: { x: -2.5, y: 5.7, z: -6.5 }, shelfPos: { x: -2.5, y: 5.2, z: -6.2 }, rotation: 0, color: '#f97316', calibrated: true },
-  
-  // CALIBRATED - Science Fiction - player spawns in front
-  { name: 'Science Fiction', position: { x: -4.0, z: -1.29 }, bannerPos: { x: -5.5, y: 6.5, z: -1.29 }, shelfPos: { x: -5.2, y: 5.4, z: -1.29 }, rotation: Math.PI / 2, color: '#06b6d4', calibrated: true },
-  
-  // Humour - player spawns in front of bookcase on the right
-  { name: 'Humour', position: { x: 2.0, z: -1 }, bannerPos: { x: 4.79, y: 6.5, z: -1 }, shelfPos: { x: 4.5, y: 5.4, z: -1 }, rotation: -Math.PI / 2, color: '#f59e0b' },
+  // CALIBRATED - Science Fiction at X:-6.25, Y:5.93, Z:-1.29
+  { name: 'Science Fiction', position: { x: -6.25, z: -1.29 }, bannerPos: { x: -5.5, y: 6.5, z: -1.29 }, shelfPos: { x: -5.2, y: 5.4, z: -1.29 }, rotation: Math.PI / 2, color: '#06b6d4', calibrated: true },
+  { name: 'Humour', position: { x: 4, z: -1 }, bannerPos: { x: 4.79, y: 6.5, z: -1 }, shelfPos: { x: 4.5, y: 5.4, z: -1 }, rotation: -Math.PI / 2, color: '#f59e0b' },
 ];
 
 // Age range filter options for library search
@@ -1164,7 +1160,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         
         // ENHANCED wall collision with better stair detection
         // Cast rays at multiple heights to detect stairs vs walls
-        const COLLISION_RADIUS = 0.3; // Reduced radius to allow closer approach to stairs
+        const COLLISION_RADIUS = 0.4;
         
         if (collisionMeshes.length > 0 && (playerVelocity.current.x !== 0 || playerVelocity.current.z !== 0)) {
           const moveDir = new THREE.Vector3(
@@ -1173,11 +1169,12 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
             playerVelocity.current.z
           ).normalize();
           
-          // Cast rays at multiple heights - focus on chest level for walls
-          // Lower rays are ignored to allow stepping onto stairs
+          // Cast rays at multiple heights - knee, waist, and chest level
+          // This helps detect stairs at different points
           const rayHeights = [
-            camera.position.y - 0.5,  // Mid-body (above knee)
-            camera.position.y - 0.2   // Chest level
+            camera.position.y - PLAYER_HEIGHT + 0.2,  // Near floor (20cm up)
+            camera.position.y - PLAYER_HEIGHT + 0.5,  // Knee level
+            camera.position.y - 0.3                    // Chest level
           ];
           
           let blocked = false;
@@ -1202,15 +1199,15 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
               
               if (isClimbable) {
                 stairDetected = true;
-              } else {
-                // Only consider it a wall block at chest level
+              } else if (rayY > camera.position.y - PLAYER_HEIGHT + 0.5) {
+                // Only consider it a wall block at waist level or higher (more permissive)
                 blocked = true;
               }
             }
           }
           
           // If we detected climbable surface, allow passage (floor detection handles climbing)
-          // Only block if we hit a real wall without any stairs nearby
+          // Only block if we hit a real wall at waist/chest level without any stairs nearby
           if (blocked && !stairDetected) {
             newX = camera.position.x;
             newZ = camera.position.z;
@@ -1243,7 +1240,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           const sideDir = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), moveDir).normalize();
           
           // Multiple ray start heights - cast from higher up to better detect stairs in front
-          const rayHeights = [camera.position.y + 0.5, camera.position.y + 1.5, camera.position.y + 2.5];
+          const rayHeights = [camera.position.y + 0.3, camera.position.y + 1.0];
           
           const rayPositions = [];
           
@@ -1253,24 +1250,27 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
             
             // Add forward rays when moving (for stair climbing detection)
             if (isMoving) {
-              // Forward rays at different distances - extended for better stair detection
-              for (let dist = 0.2; dist <= 1.0; dist += 0.2) {
-                rayPositions.push(new THREE.Vector3(
-                  camera.position.x + moveDir.x * dist,
-                  rayY,
-                  camera.position.z + moveDir.z * dist
-                ));
-              }
-              // Forward-side rays for spiral stairs
+              // Forward rays at different distances
               rayPositions.push(new THREE.Vector3(
-                camera.position.x + moveDir.x * 0.4 + sideDir.x * 0.3,
+                camera.position.x + moveDir.x * 0.3,
                 rayY,
-                camera.position.z + moveDir.z * 0.4 + sideDir.z * 0.3
+                camera.position.z + moveDir.z * 0.3
               ));
               rayPositions.push(new THREE.Vector3(
-                camera.position.x + moveDir.x * 0.4 - sideDir.x * 0.3,
+                camera.position.x + moveDir.x * 0.6,
                 rayY,
-                camera.position.z + moveDir.z * 0.4 - sideDir.z * 0.3
+                camera.position.z + moveDir.z * 0.6
+              ));
+              // Forward-side rays for spiral stairs
+              rayPositions.push(new THREE.Vector3(
+                camera.position.x + moveDir.x * 0.3 + sideDir.x * 0.2,
+                rayY,
+                camera.position.z + moveDir.z * 0.3 + sideDir.z * 0.2
+              ));
+              rayPositions.push(new THREE.Vector3(
+                camera.position.x + moveDir.x * 0.3 - sideDir.x * 0.2,
+                rayY,
+                camera.position.z + moveDir.z * 0.3 - sideDir.z * 0.2
               ));
             }
           }
@@ -1280,7 +1280,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           
           for (const rayPos of rayPositions) {
             raycaster.set(rayPos, new THREE.Vector3(0, -1, 0));
-            raycaster.far = PLAYER_HEIGHT + 5; // Extended range for tall stairs and spiral staircases
+            raycaster.far = PLAYER_HEIGHT + 3; // Extended range for tall stairs
             
             const floorHits = raycaster.intersectObjects(collisionMeshes, true);
             
@@ -1295,15 +1295,14 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                               meshName.includes('stone') || meshName.includes('climb');
               const isFloor = meshName.includes('floor');
               
-              // Very generous step-up for stairs to handle spiral staircases
-              const maxStepUp = isStair ? 3.0 : (isFloor ? 1.5 : 1.0);
-              const maxStepDown = 5.0; // Allow dropping down further
+              // More generous step-up for stairs and when moving
+              const maxStepUp = isStair ? 2.0 : (isFloor ? 1.0 : 0.8);
+              const maxStepDown = 4.0; // Allow dropping down further
               
-              // Check if this floor is within valid range
               if (hitY <= currentFootY + maxStepUp && hitY >= currentFootY - maxStepDown) {
-                // ALWAYS prefer the HIGHEST valid floor to prevent sinking
-                // This ensures we stand ON surfaces, not inside them
-                if (bestFloorY === null || hitY > bestFloorY) {
+                // For stairs, prefer the highest valid point (to climb up)
+                // For regular floor, use closest to current level
+                if (bestFloorY === null || (isStair && hitY > bestFloorY) || (!isStair && Math.abs(hitY - currentFootY) < Math.abs(bestFloorY - currentFootY))) {
                   bestFloorY = hitY;
                   if (isStair) detectedStairMesh = meshName;
                 }
@@ -1318,13 +1317,13 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         
         const targetY = detectedFloorY + PLAYER_HEIGHT;
         
-        // Smoothly interpolate to target height - FAST for climbing stairs
+        // Smoothly interpolate to target height - faster for climbing stairs
         const yDiff = targetY - camera.position.y;
         if (Math.abs(yDiff) > 0.01) {
-          // Use very fast interpolation when climbing to make stairs feel responsive
+          // Use faster interpolation when climbing (positive diff) vs descending
           const isClimbing = yDiff > 0;
-          // 70% per frame when climbing, 40% when descending - feels snappy
-          const interpSpeed = isClimbing ? 0.7 : 0.4;
+          // Much faster interpolation for stair climbing to feel responsive
+          const interpSpeed = isClimbing ? 0.5 : 0.25; // 50% per frame when climbing
           camera.position.y += yDiff * interpSpeed;
         }
         
