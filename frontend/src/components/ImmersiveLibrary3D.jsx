@@ -1164,7 +1164,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         
         // ENHANCED wall collision with better stair detection
         // Cast rays at multiple heights to detect stairs vs walls
-        const COLLISION_RADIUS = 0.4;
+        const COLLISION_RADIUS = 0.3; // Reduced radius to allow closer approach to stairs
         
         if (collisionMeshes.length > 0 && (playerVelocity.current.x !== 0 || playerVelocity.current.z !== 0)) {
           const moveDir = new THREE.Vector3(
@@ -1173,12 +1173,11 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
             playerVelocity.current.z
           ).normalize();
           
-          // Cast rays at multiple heights - knee, waist, and chest level
-          // This helps detect stairs at different points
+          // Cast rays at multiple heights - focus on chest level for walls
+          // Lower rays are ignored to allow stepping onto stairs
           const rayHeights = [
-            camera.position.y - PLAYER_HEIGHT + 0.2,  // Near floor (20cm up)
-            camera.position.y - PLAYER_HEIGHT + 0.5,  // Knee level
-            camera.position.y - 0.3                    // Chest level
+            camera.position.y - 0.5,  // Mid-body (above knee)
+            camera.position.y - 0.2   // Chest level
           ];
           
           let blocked = false;
