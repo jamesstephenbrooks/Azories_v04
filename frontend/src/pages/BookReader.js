@@ -718,18 +718,18 @@ export default function BookReader() {
         </button>
       )}
 
-      {/* Start Listening button when on cover - outside the book for better click handling */}
+      {/* Start Listening button when on cover - positioned below the book */}
       {isCover && !hideControls && (
-        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[100] pointer-events-none">
+        <div className="fixed bottom-32 left-1/2 transform -translate-x-1/2 z-[100]">
           <Button
             variant="default"
             size="lg"
             onClick={startListening}
-            className="rounded-full px-8 py-4 bg-purple-600 hover:bg-purple-500 shadow-2xl pointer-events-auto"
+            className="rounded-full px-8 py-4 bg-purple-600 hover:bg-purple-500 shadow-2xl animate-pulse"
             data-testid="cover-start-listening-btn"
           >
             <FiPlay className="w-6 h-6 mr-3" />
-            <span className="text-lg">Start Listening</span>
+            <span className="text-lg font-semibold">Start Listening</span>
           </Button>
         </div>
       )}
