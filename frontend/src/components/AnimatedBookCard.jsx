@@ -38,14 +38,6 @@ export default function AnimatedBookCard({ book, onClick, size = 'md' }) {
           className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
         />
 
-        {/* Shimmer effect on hover */}
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-          initial={{ x: '-100%' }}
-          animate={{ x: isHovered ? '100%' : '-100%' }}
-          transition={{ duration: 0.6, ease: 'easeInOut' }}
-        />
-
         {/* Genre tag */}
         {book.genre && (
           <div className="absolute top-2 left-2">
