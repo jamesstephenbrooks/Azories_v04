@@ -47,6 +47,14 @@ export default function ProStudio() {
   const [characterImages, setCharacterImages] = useState([]);
   const [isCreatingCharacter, setIsCreatingCharacter] = useState(false);
   
+  // Book linking state
+  const [userBooks, setUserBooks] = useState([]);
+  const [selectedBookId, setSelectedBookId] = useState('general');
+  
+  // Gallery picker state
+  const [showGalleryPicker, setShowGalleryPicker] = useState(false);
+  const [galleryPickerMode, setGalleryPickerMode] = useState('character'); // 'character' or 'shots'
+  
   // Generation state
   const [prompt, setPrompt] = useState('');
   const [generatedImages, setGeneratedImages] = useState([]);
