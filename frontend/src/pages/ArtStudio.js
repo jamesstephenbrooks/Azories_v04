@@ -2633,6 +2633,43 @@ export default function ArtStudio() {
               {/* Gallery Item Actions */}
               {activeTab === 'gallery' && selectedGalleryItem && (
                 <div className="mt-4 space-y-2">
+                  {/* Assign to Book */}
+                  <div className="p-3 bg-purple-500/10 border border-purple-500/30 rounded-lg space-y-2">
+                    <label className="text-xs text-purple-300 font-medium">Assign to Book</label>
+                    <select
+                      value={selectedGalleryItem.book_id || ''}
+                      onChange={async (e) => {
+                        const bookId = e.target.value || null;
+                        try {
+                          await fetch(`${API_URL}/api/art-studio/gallery/${selectedGalleryItem._id}`, {
+                            method: 'PUT',
+                            headers: {
+                              'Authorization': `Bearer ${token}`,
+                              'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ book_id: bookId })
+                          });
+                          setGallery(gallery.map(g => 
+                            g._id === selectedGalleryItem._id ? { ...g, book_id: bookId } : g
+                          ));
+                          setSelectedGalleryItem({ ...selectedGalleryItem, book_id: bookId });
+                          alert(bookId ? 'Assigned to book!' : 'Removed from book');
+                        } catch (error) {
+                          console.error('Failed to assign:', error);
+                          alert('Failed to update');
+                        }
+                      }}
+                      className="w-full bg-black/30 border border-white/20 rounded-lg px-3 py-2 text-white text-sm"
+                    >
+                      <option value="">No book (General Library)</option>
+                      {userBooks.map(book => (
+                        <option key={book.id || book._id} value={book.id || book._id}>
+                          {book.title}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  
                   <Button
                     onClick={() => {
                       navigator.clipboard.writeText(selectedGalleryItem.image_url);
@@ -2645,7 +2682,7 @@ export default function ArtStudio() {
                     Copy URL for Book
                   </Button>
                   <Button
-                    onClick={() => downloadImage(selectedGalleryItem.image_url, `${selectedGalleryItem.name}.png`)}
+                    onClick={() => downloadImage(selectedGalleryItem.image_url, `${selectedGalleryItem.name}.${selectedGalleryItem.type === 'animation' ? 'mp4' : 'png'}`)}
                     variant="outline"
                     className="w-full border-green-500/50 text-green-400 hover:bg-green-500/20"
                     data-testid="download-gallery-image-btn"
@@ -2653,14 +2690,26 @@ export default function ArtStudio() {
                     <FiDownload className="w-4 h-4 mr-2" />
                     Download
                   </Button>
-                  <Button
-                    onClick={() => selectGalleryAsReference(selectedGalleryItem.image_url)}
-                    variant="outline"
-                    className="w-full border-blue-500/50 text-blue-400 hover:bg-blue-500/20"
-                  >
-                    <FiImage className="w-4 h-4 mr-2" />
-                    Use as Reference
-                  </Button>
+                  {selectedGalleryItem.type !== 'animation' && (
+                    <Button
+                      onClick={() => selectGalleryAsReference(selectedGalleryItem.image_url)}
+                      variant="outline"
+                      className="w-full border-blue-500/50 text-blue-400 hover:bg-blue-500/20"
+                    >
+                      <FiImage className="w-4 h-4 mr-2" />
+                      Use as Reference
+                    </Button>
+                  )}
+                  {selectedGalleryItem.type !== 'animation' && (
+                    <Button
+                      onClick={() => openAnimateModal(selectedGalleryItem.image_url)}
+                      variant="outline"
+                      className="w-full border-pink-500/50 text-pink-400 hover:bg-pink-500/20"
+                    >
+                      <FiPlay className="w-4 h-4 mr-2" />
+                      Animate This Image
+                    </Button>
+                  )}
                 </div>
               )}
             </div>
