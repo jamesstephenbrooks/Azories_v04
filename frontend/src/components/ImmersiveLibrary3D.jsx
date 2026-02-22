@@ -88,47 +88,25 @@ const GENRE_SECTIONS = [
   },
 ];
 
-// Teleport portals for moving between floors
+// Teleport portals for moving between floors - near spiral staircase
 const TELEPORT_PORTALS = [
-  // Bottom floor portals - Go Upstairs (cross to opposite side at top)
   {
-    id: 'stairs-up-back',
+    id: 'stairs-up',
     name: 'Go Upstairs',
-    triggerPos: { x: -1.77, y: 4.27, z: -6.05 }, // Bottom back (near comic)
-    triggerRadius: 1.0,
-    destPos: { x: -2.23, y: 6.21, z: 4.03 }, // Top front (opposite side)
-    destRotation: Math.PI,
-    color: '#00ffff',
-    icon: '↑'
-  },
-  {
-    id: 'stairs-up-front',
-    name: 'Go Upstairs',
-    triggerPos: { x: -1.70, y: 4.27, z: 3.10 }, // Bottom front
-    triggerRadius: 1.0,
-    destPos: { x: -2.22, y: 6.21, z: -6.94 }, // Top back (opposite side)
+    triggerPos: { x: -1.41, y: 3.62, z: -1.43 }, // Near spiral staircase (ground)
+    triggerRadius: 1.5,
+    destPos: { x: -2.22, y: 6.21, z: -6.94 }, // Top of stairs
     destRotation: 0,
     color: '#00ffff',
     icon: '↑'
   },
-  // Top floor portals - Go Downstairs (cross to opposite side at bottom)
   {
-    id: 'stairs-down-back',
+    id: 'stairs-down',
     name: 'Go Downstairs',
-    triggerPos: { x: -2.22, y: 6.21, z: -6.94 }, // Top back
-    triggerRadius: 1.0,
-    destPos: { x: -1.70, y: 4.27, z: 3.10 }, // Bottom front (opposite side)
+    triggerPos: { x: -2.22, y: 6.21, z: -6.94 }, // Top of spiral staircase
+    triggerRadius: 1.5,
+    destPos: { x: -1.41, y: 3.62, z: -1.43 }, // Bottom of stairs
     destRotation: Math.PI,
-    color: '#00ffff',
-    icon: '↓'
-  },
-  {
-    id: 'stairs-down-front',
-    name: 'Go Downstairs',
-    triggerPos: { x: -2.23, y: 6.21, z: 4.03 }, // Top front
-    triggerRadius: 1.0,
-    destPos: { x: -1.77, y: 4.27, z: -6.05 }, // Bottom back (opposite side)
-    destRotation: 0,
     color: '#00ffff',
     icon: '↓'
   }
