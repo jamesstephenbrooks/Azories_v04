@@ -1953,7 +1953,14 @@ export default function ArtStudio() {
                             muted
                             playsInline
                             className="w-full"
-                            onLoadedData={(e) => e.target.play().catch(() => {})}
+                            onLoadedData={(e) => {
+                              e.target.play().catch((err) => {
+                                console.log('Autoplay blocked, user needs to click play:', err);
+                              });
+                            }}
+                            onCanPlayThrough={(e) => {
+                              e.target.play().catch(() => {});
+                            }}
                           />
                         </div>
                         <div className="grid grid-cols-3 gap-2 mt-3">
