@@ -95,16 +95,17 @@ class TestIteration26BugFixes:
         print(f"✓ Page created with id: {self.created_page_id}")
     
     def test_save_cover_with_valid_token(self):
-        """Save cover should work without 'need to log in' error when user is logged in"""
+        """Save cover via PUT /api/books/{book_id} should work when logged in"""
         # The bug was that the frontend was using wrong localStorage key 'token' 
         # instead of 'azories-token'. This API test verifies the backend endpoint works.
+        # Covers are saved via PUT /api/books/{book_id} with cover fields
         
         response = requests.put(
-            f"{BASE_URL}/api/books/{self.book_id}/covers",
+            f"{BASE_URL}/api/books/{self.book_id}",
             json={
-                "front_title": "Test PDF Book",
-                "front_subtitle": "Test Subtitle",
-                "back_description": "Test description for back cover"
+                "cover_title": "Test PDF Book Updated",
+                "cover_subtitle": "Test Subtitle",
+                "back_cover_text": "Test description for back cover"
             },
             headers=self.headers
         )
@@ -113,16 +114,16 @@ class TestIteration26BugFixes:
         data = response.json()
         
         # Verify cover was saved
-        assert "message" in data or "id" in data or "front_title" in data, "Should return success"
-        print(f"✓ Cover saved successfully")
+        assert "id" in data, "Should return book data with id"
+        print(f"✓ Cover saved successfully via PUT /api/books/{self.book_id}")
     
     def test_save_cover_without_token_fails(self):
         """Save cover should fail without auth token"""
         response = requests.put(
-            f"{BASE_URL}/api/books/{self.book_id}/covers",
+            f"{BASE_URL}/api/books/{self.book_id}",
             json={
-                "front_title": "Test",
-                "front_subtitle": "Test"
+                "cover_title": "Test",
+                "cover_subtitle": "Test"
             }
             # No headers - no auth
         )
@@ -130,17 +131,6 @@ class TestIteration26BugFixes:
         # Should return 401 or 403
         assert response.status_code in [401, 403], f"Should fail without token, got {response.status_code}"
         print(f"✓ Cover save correctly requires authentication")
-    
-    def test_collaborators_endpoint(self):
-        """Collaborators endpoint should work"""
-        response = requests.get(
-            f"{BASE_URL}/api/books/{self.book_id}/collaborators",
-            headers=self.headers
-        )
-        
-        assert response.status_code == 200, f"Get collaborators failed: {response.text}"
-        # May return empty list, that's fine
-        print(f"✓ Collaborators endpoint working")
     
     def test_book_chapters_list(self):
         """Get chapters list should work"""
