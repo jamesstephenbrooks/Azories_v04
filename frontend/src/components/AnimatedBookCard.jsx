@@ -50,23 +50,18 @@ export default function AnimatedBookCard({ book, onClick, size = 'md' }) {
         {/* Featured badge */}
         {book.is_featured && (
           <div className="absolute top-2 right-2">
-            <motion.div
-              animate={{ rotate: [0, 10, -10, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
+            <div
               className="px-2 py-0.5 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs rounded-full flex items-center gap-1"
             >
               <FiStar className="w-3 h-3" />
               Featured
-            </motion.div>
+            </div>
           </div>
         )}
 
         {/* Hover info */}
-        <motion.div
-          className="absolute bottom-0 left-0 right-0 p-3"
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: isHovered ? 0 : 20, opacity: isHovered ? 1 : 0 }}
-          transition={{ duration: 0.2 }}
+        <div
+          className={`absolute bottom-0 left-0 right-0 p-3 transition-all duration-200 ${isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
         >
           <p className="text-white text-xs line-clamp-2 mb-2">
             {book.description || book.back_cover_text || 'A magical story awaits...'}
