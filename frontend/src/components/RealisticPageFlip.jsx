@@ -8,7 +8,7 @@ const Page = forwardRef(({ pageNumber, children, isLeft, isCover, isBackCover },
   return (
     <div 
       ref={ref}
-      className="page-wrapper relative w-full h-full"
+      className="demoPage page-wrapper relative w-full h-full"
       data-density={isCover || isBackCover ? "hard" : "soft"}
     >
       <div 
