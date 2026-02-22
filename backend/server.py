@@ -2867,7 +2867,7 @@ AMBIENT_SOUND_URLS = {
     "ocean": "https://soundbible.com/grab.php?id=1935&type=mp3",  # Ocean Waves
     "cafe": "https://soundbible.com/grab.php?id=1664&type=mp3",  # Restaurant Ambience
     "night": "https://soundbible.com/grab.php?id=2083&type=mp3",  # Night Crickets
-    "wind": "https://soundbible.com/grab.php?id=2033&type=mp3",  # Wind Sound
+    "wind": "https://soundbible.com/grab.php?id=1810&type=mp3",  # Gentle Wind Blowing
     "library": "https://soundbible.com/grab.php?id=1996&type=mp3"  # Soft Background
 }
 
