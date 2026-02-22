@@ -1698,6 +1698,8 @@ async def create_character(request: CharacterCreate, current_user: dict = Depend
     try:
         # Analyze the character using AI to create a description
         if EMERGENT_LLM_KEY:
+            from emergentintegrations.llm.openai import LlmChat, UserMessage, ImageContent
+            
             chat = LlmChat(
                 api_key=EMERGENT_LLM_KEY,
                 session_id=f"char-{current_user['id']}-{str(uuid.uuid4())[:8]}",
@@ -1717,16 +1719,21 @@ async def create_character(request: CharacterCreate, current_user: dict = Depend
             
             Respond in a single paragraph that can be used as a prompt prefix for generating consistent images of this person."""
             
-            # Use the first image for analysis
+            # Extract base64 from the first image
             first_image = request.reference_images[0]
             if first_image.startswith('data:'):
-                # Extract base64 part
-                first_image = first_image.split(',')[1] if ',' in first_image else first_image
+                if ',' in first_image:
+                    image_base64 = first_image.split(',')[1]
+                else:
+                    image_base64 = first_image
+            else:
+                image_base64 = first_image
             
-            description = await chat.send_message(UserMessage(
+            user_msg = UserMessage(
                 text=analysis_prompt,
-                image_url=request.reference_images[0]
-            ))
+                file_contents=[ImageContent(image_base64=image_base64)]
+            )
+            description = await chat.send_message(user_msg)
         else:
             description = f"Portrait of {request.name}"
         
