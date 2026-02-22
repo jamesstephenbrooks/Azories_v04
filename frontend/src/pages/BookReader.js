@@ -481,13 +481,13 @@ export default function BookReader() {
       autoReadRef: autoReadRef.current, 
       autoReadState: autoRead,
       allPagesLength: allPages.length,
-      hasAudioElement: !!audioElement 
+      isPlaying
     });
     
-    // Stop currently playing audio when page changes
-    if (audioElement) {
-      audioElement.pause();
-      setIsPlaying(false);
+    // Don't do anything if already playing - prevents loop
+    if (isPlaying || audioLoading) {
+      console.log('Skipping - already playing or loading');
+      return;
     }
     
     // Auto-read: play audio for current page content, or auto-advance for chapter titles
@@ -511,10 +511,10 @@ export default function BookReader() {
         }, 1500);
         return () => clearTimeout(timer);
       } else if (page?.text_content) {
-        // Has text content - play audio immediately
+        // Has text content - play audio after short delay
         console.log('Text content found, playing audio in 100ms');
         const timer = setTimeout(() => {
-          if (autoReadRef.current) {
+          if (autoReadRef.current && !isPlaying && !audioLoading) {
             console.log('Calling playAudio from auto-read effect');
             playAudio();
           }
@@ -537,7 +537,9 @@ export default function BookReader() {
         allPagesLength: allPages.length
       });
     }
-  }, [currentPage, autoRead, allPages, playAudio, goToPage, audioElement]);
+    // Intentionally not including audioElement to prevent re-trigger loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, autoRead, allPages.length, isPlaying, audioLoading]);
 
   useEffect(() => {
     if (audioElement) {
