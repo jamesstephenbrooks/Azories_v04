@@ -679,18 +679,6 @@ export default function BookReader() {
             >
               Auto-Read: {autoRead ? 'ON' : 'OFF'}
             </Button>
-            
-            {/* Page Flip Mode Toggle */}
-            <Button
-              variant={useRealisticFlip ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setUseRealisticFlip(!useRealisticFlip)}
-              className="rounded-full text-xs"
-              title="Toggle realistic page flip animation"
-            >
-              <FiLayers className="w-3 h-3 mr-1" />
-              {useRealisticFlip ? 'Realistic' : 'Classic'}
-            </Button>
           </div>
         </div>
       </div>
