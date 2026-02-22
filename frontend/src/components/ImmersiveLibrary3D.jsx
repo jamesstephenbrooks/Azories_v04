@@ -1658,8 +1658,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         // Pulse portal floor ring - show on same floor with pulsing animation
         if (child.userData?.isPortalRing && child.material) {
           const portalFloor = child.userData.portalFloor;
-          // Ground floor Y ≈ 4.2, upper floor Y ≈ 9.2
-          const playerOnGround = (camera.position.y - PLAYER_HEIGHT) < 7;
+          // Ground floor Y ≈ 4.2, bridge Y ≈ 6.5
+          const playerOnGround = (camera.position.y - PLAYER_HEIGHT) < 5.5;
           const showRing = (portalFloor === 'ground' && playerOnGround) || (portalFloor === 'upper' && !playerOnGround);
           child.visible = showRing;
           if (showRing) {
@@ -1671,7 +1671,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         // Portal lights - show on same floor
         if (child.userData?.isPortalLight) {
           const portalFloor = child.userData.portalFloor;
-          const playerOnGround = (camera.position.y - PLAYER_HEIGHT) < 7;
+          const playerOnGround = (camera.position.y - PLAYER_HEIGHT) < 5.5;
           const showLight = (portalFloor === 'ground' && playerOnGround) || (portalFloor === 'upper' && !playerOnGround);
           child.visible = showLight;
           if (showLight && child.intensity !== undefined) {
