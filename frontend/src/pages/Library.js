@@ -86,8 +86,6 @@ export default function Library() {
   };
 
   const BookCard = ({ book, index, isFeatured = false }) => {
-    const [imageLoaded, setImageLoaded] = useState(false);
-    
     return (
       <div
         className="book-card group cursor-pointer"
