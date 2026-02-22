@@ -338,25 +338,58 @@ export default function Library() {
                   >
                     <FiGrid className="w-4 h-4" />
                   </Button>
-                  
-                  {/* 3D Grand Library Button - TODO: Make Pro feature in future */}
-                  <Button
-                    variant={viewMode === 'immersive' ? 'default' : 'ghost'}
-                    onClick={() => setViewMode('immersive')}
-                    className={`rounded-full px-4 h-10 font-serif italic ${
-                      viewMode === 'immersive' 
-                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30' 
-                        : 'hover:bg-purple-100 dark:hover:bg-purple-900/30'
-                    }`}
-                    data-testid="view-immersive-btn"
-                    title="Explore the Grand Library in 3D"
-                  >
-                    <span className="text-sm font-medium bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                      ✨ 3D Grand Library
-                    </span>
-                  </Button>
                 </div>
               </div>
+              
+              {/* 3D Grand Library Promotional Card - Only show in grid view */}
+              {viewMode === 'grid' && (
+                <div 
+                  className="mb-8 relative overflow-hidden rounded-3xl cursor-pointer group"
+                  onClick={() => setViewMode('immersive')}
+                  data-testid="grand-library-promo"
+                >
+                  <div className="relative h-48 md:h-64 overflow-hidden">
+                    {/* Background Image */}
+                    <img 
+                      src="https://customer-assets.emergentagent.com/job_99cdf25d-3424-4245-a1d4-fa1604524917/artifacts/63nngm8v_art-fantasy.png"
+                      alt="Grand Library"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
+                    
+                    {/* Content */}
+                    <div className="absolute inset-0 flex items-center p-8 md:p-12">
+                      <div className="max-w-lg">
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="px-3 py-1 bg-purple-500/30 backdrop-blur-sm rounded-full text-purple-300 text-xs font-medium">
+                            IMMERSIVE EXPERIENCE
+                          </span>
+                        </div>
+                        <h3 className="text-2xl md:text-4xl font-serif font-bold text-white mb-3">
+                          Enter the Grand Library
+                        </h3>
+                        <p className="text-white/70 text-sm md:text-base mb-4 max-w-md">
+                          Walk through towering bookshelves in our magical 3D library. Explore genres, discover new stories, and experience reading like never before.
+                        </p>
+                        <Button 
+                          className="rounded-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-lg shadow-purple-500/30 group-hover:scale-105 transition-transform"
+                        >
+                          <FiBook className="mr-2 w-4 h-4" />
+                          Explore Now
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    {/* Floating particles effect */}
+                    <div className="absolute inset-0 pointer-events-none">
+                      <div className="absolute top-1/4 right-1/4 w-2 h-2 bg-yellow-400/60 rounded-full animate-pulse" />
+                      <div className="absolute top-1/2 right-1/3 w-1 h-1 bg-purple-400/60 rounded-full animate-ping" style={{ animationDelay: '0.5s' }} />
+                      <div className="absolute bottom-1/3 right-1/2 w-1.5 h-1.5 bg-pink-400/60 rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
+                    </div>
+                  </div>
+                </div>
+              )}
               
               {/* Immersive 3D Gothic Library View */}
               {viewMode === 'immersive' ? (
