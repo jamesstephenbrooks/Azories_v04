@@ -411,8 +411,9 @@ const ReferenceNode = ({ data, selected }) => {
 // Prompt Node - Custom text prompt
 const PromptNode = ({ data, selected }) => {
   return (
-    <div className={`bg-gradient-to-br from-rose-900/90 to-rose-800/90 rounded-xl border-2 ${selected ? 'border-rose-400' : 'border-rose-600/50'} shadow-xl min-w-[280px] backdrop-blur-sm`}>
+    <div className={`relative bg-gradient-to-br from-rose-900/90 to-rose-800/90 rounded-xl border-2 ${selected ? 'border-rose-400' : 'border-rose-600/50'} shadow-xl min-w-[280px] backdrop-blur-sm`}>
       <Handle type="target" position={Position.Left} className="!bg-rose-400 !w-3 !h-3" />
+      <NodeDeleteButton onDelete={data.onDelete} />
       
       <div className="p-3 border-b border-rose-600/30 flex items-center gap-2">
         <div className="w-8 h-8 rounded-lg bg-rose-500/30 flex items-center justify-center">
@@ -442,10 +443,11 @@ const PromptNode = ({ data, selected }) => {
 // Combine Node - Merge multiple inputs
 const CombineNode = ({ data, selected }) => {
   return (
-    <div className={`bg-gradient-to-br from-violet-900/90 to-violet-800/90 rounded-xl border-2 ${selected ? 'border-violet-400' : 'border-violet-600/50'} shadow-xl min-w-[120px] backdrop-blur-sm`}>
+    <div className={`relative bg-gradient-to-br from-violet-900/90 to-violet-800/90 rounded-xl border-2 ${selected ? 'border-violet-400' : 'border-violet-600/50'} shadow-xl min-w-[120px] backdrop-blur-sm`}>
       <Handle type="target" position={Position.Left} id="a" className="!bg-violet-400 !w-3 !h-3" style={{ top: '30%' }} />
       <Handle type="target" position={Position.Left} id="b" className="!bg-violet-400 !w-3 !h-3" style={{ top: '50%' }} />
       <Handle type="target" position={Position.Left} id="c" className="!bg-violet-400 !w-3 !h-3" style={{ top: '70%' }} />
+      <NodeDeleteButton onDelete={data.onDelete} />
       
       <div className="p-3 flex items-center justify-center">
         <div className="w-10 h-10 rounded-lg bg-violet-500/30 flex items-center justify-center">
@@ -464,8 +466,9 @@ const CombineNode = ({ data, selected }) => {
 // Output Node - Fixed size with expand preview option
 const OutputNode = ({ data, selected }) => {
   return (
-    <div className={`bg-gradient-to-br from-pink-900/90 to-pink-800/90 rounded-xl border-2 ${selected ? 'border-pink-400' : 'border-pink-600/50'} shadow-xl backdrop-blur-sm w-[220px] h-[240px]`}>
+    <div className={`relative bg-gradient-to-br from-pink-900/90 to-pink-800/90 rounded-xl border-2 ${selected ? 'border-pink-400' : 'border-pink-600/50'} shadow-xl backdrop-blur-sm w-[220px] h-[240px]`}>
       <Handle type="target" position={Position.Left} className="!bg-pink-400 !w-3 !h-3" />
+      <NodeDeleteButton onDelete={data.onDelete} />
       
       <div className="p-2 border-b border-pink-600/30 flex items-center gap-2">
         <div className="w-5 h-5 rounded-lg bg-pink-500/30 flex items-center justify-center flex-shrink-0">
