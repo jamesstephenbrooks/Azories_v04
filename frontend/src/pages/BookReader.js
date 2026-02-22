@@ -224,14 +224,25 @@ export default function BookReader() {
       setIsPlaying(false);
     }
     
-    setFlipDirection(direction);
-    setIsFlipping(true);
-    
-    setTimeout(() => {
-      setCurrentPage(newPage);
-      setIsFlipping(false);
-    }, 600);
-  }, [allPages.length, isFlipping, audioElement]);
+    // In realistic flip mode, use the ref to control the page flip component
+    if (useRealisticFlip && realisticFlipRef.current) {
+      if (direction === 'next') {
+        realisticFlipRef.current.nextPage();
+      } else {
+        realisticFlipRef.current.prevPage();
+      }
+      // The onPageChange callback will update currentPage
+    } else {
+      // Classic mode - use local animation
+      setFlipDirection(direction);
+      setIsFlipping(true);
+      
+      setTimeout(() => {
+        setCurrentPage(newPage);
+        setIsFlipping(false);
+      }, 600);
+    }
+  }, [allPages.length, isFlipping, audioElement, useRealisticFlip]);
 
   const nextPage = useCallback(() => goToPage(currentPage + 1, 'next'), [currentPage, goToPage]);
   const prevPage = useCallback(() => goToPage(currentPage - 1, 'prev'), [currentPage, goToPage]);
