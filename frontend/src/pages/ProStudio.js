@@ -630,7 +630,7 @@ export default function ProStudio() {
 
     try {
       const token = localStorage.getItem('azories-token');
-      const response = await fetch(`${API_URL}/api/pro-studio/characters/${characterId}/regenerate-thumbnail`, {
+      const response = await fetch(`${API_URL}/api/pro-studio/characters/${characterId}/generate-thumbnail`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -644,6 +644,9 @@ export default function ProStudio() {
         ));
         if (viewingCharacter?.id === characterId) {
           setViewingCharacter(prev => ({ ...prev, thumbnail: data.thumbnail }));
+        }
+        if (editingCharacter?.id === characterId) {
+          setEditingCharacter(prev => ({ ...prev, thumbnail: data.thumbnail }));
         }
       } else {
         const error = await response.json();
