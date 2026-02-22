@@ -1244,7 +1244,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           const sideDir = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), moveDir).normalize();
           
           // Multiple ray start heights - cast from higher up to better detect stairs in front
-          const rayHeights = [camera.position.y + 0.3, camera.position.y + 1.0];
+          const rayHeights = [camera.position.y + 0.5, camera.position.y + 1.5, camera.position.y + 2.5];
           
           const rayPositions = [];
           
@@ -1254,27 +1254,24 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
             
             // Add forward rays when moving (for stair climbing detection)
             if (isMoving) {
-              // Forward rays at different distances
-              rayPositions.push(new THREE.Vector3(
-                camera.position.x + moveDir.x * 0.3,
-                rayY,
-                camera.position.z + moveDir.z * 0.3
-              ));
-              rayPositions.push(new THREE.Vector3(
-                camera.position.x + moveDir.x * 0.6,
-                rayY,
-                camera.position.z + moveDir.z * 0.6
-              ));
+              // Forward rays at different distances - extended for better stair detection
+              for (let dist = 0.2; dist <= 1.0; dist += 0.2) {
+                rayPositions.push(new THREE.Vector3(
+                  camera.position.x + moveDir.x * dist,
+                  rayY,
+                  camera.position.z + moveDir.z * dist
+                ));
+              }
               // Forward-side rays for spiral stairs
               rayPositions.push(new THREE.Vector3(
-                camera.position.x + moveDir.x * 0.3 + sideDir.x * 0.2,
+                camera.position.x + moveDir.x * 0.4 + sideDir.x * 0.3,
                 rayY,
-                camera.position.z + moveDir.z * 0.3 + sideDir.z * 0.2
+                camera.position.z + moveDir.z * 0.4 + sideDir.z * 0.3
               ));
               rayPositions.push(new THREE.Vector3(
-                camera.position.x + moveDir.x * 0.3 - sideDir.x * 0.2,
+                camera.position.x + moveDir.x * 0.4 - sideDir.x * 0.3,
                 rayY,
-                camera.position.z + moveDir.z * 0.3 - sideDir.z * 0.2
+                camera.position.z + moveDir.z * 0.4 - sideDir.z * 0.3
               ));
             }
           }
@@ -1284,7 +1281,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           
           for (const rayPos of rayPositions) {
             raycaster.set(rayPos, new THREE.Vector3(0, -1, 0));
-            raycaster.far = PLAYER_HEIGHT + 3; // Extended range for tall stairs
+            raycaster.far = PLAYER_HEIGHT + 5; // Extended range for tall stairs and spiral staircases
             
             const floorHits = raycaster.intersectObjects(collisionMeshes, true);
             
@@ -1299,9 +1296,9 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                               meshName.includes('stone') || meshName.includes('climb');
               const isFloor = meshName.includes('floor');
               
-              // More generous step-up for stairs and when moving
-              const maxStepUp = isStair ? 2.0 : (isFloor ? 1.0 : 0.8);
-              const maxStepDown = 4.0; // Allow dropping down further
+              // Very generous step-up for stairs to handle spiral staircases
+              const maxStepUp = isStair ? 3.0 : (isFloor ? 1.5 : 1.0);
+              const maxStepDown = 5.0; // Allow dropping down further
               
               if (hitY <= currentFootY + maxStepUp && hitY >= currentFootY - maxStepDown) {
                 // For stairs, prefer the highest valid point (to climb up)
