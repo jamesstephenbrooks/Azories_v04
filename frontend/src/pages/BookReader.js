@@ -687,7 +687,7 @@ export default function BookReader() {
               <div 
                 className="absolute z-[70] flex flex-col items-center gap-2"
                 style={{
-                  top: '65%',
+                  top: '58%',
                   left: '50%',
                   transform: 'translate(-50%, -50%)',
                   pointerEvents: 'auto'
