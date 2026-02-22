@@ -429,7 +429,7 @@ const RealisticPageFlip = forwardRef(({
   // - Front cover is page 0 (single page, shown alone on right)
   // - After flipping cover, first spread is pages 1-2
   // - Back cover should be the last page (single page, shown alone on left)
-  // We add decorative "inside cover" pages instead of blank pages
+  // Note: showCover=true creates a blank adjacent page which is unavoidable
   const allBookPages = [];
   const newPageMapping = [];
   
@@ -443,33 +443,6 @@ const RealisticPageFlip = forwardRef(({
     />
   );
   newPageMapping.push(-1); // Cover = no content page
-  
-  // Inside front cover - decorative page (shown when cover is flipped)
-  allBookPages.push(
-    <Page key="inside-front" isLeft={true}>
-      <div className="h-full flex flex-col items-center justify-center text-center p-8"
-        style={{
-          background: `linear-gradient(180deg, 
-            ${book?.cover_gradient_start || '#667eea'}15 0%, 
-            transparent 50%,
-            ${book?.cover_gradient_end || '#764ba2'}10 100%)`
-        }}
-      >
-        <div className="space-y-4">
-          <h2 className="font-heading text-2xl font-bold text-foreground/80">{book?.title}</h2>
-          {book?.author_name && (
-            <p className="text-sm text-muted-foreground">by {book.author_name}</p>
-          )}
-          {book?.description && (
-            <p className="text-sm text-muted-foreground/70 max-w-xs italic mt-4">
-              {book.description.slice(0, 150)}...
-            </p>
-          )}
-        </div>
-      </div>
-    </Page>
-  );
-  newPageMapping.push(-1); // Still intro page
   
   // Process content pages as spreads (image left, text right)
   let lastChapterNumber = null;
