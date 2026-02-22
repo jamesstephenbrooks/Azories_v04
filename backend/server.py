@@ -128,6 +128,17 @@ class UserResponse(BaseModel):
     name: str
     role: str
     subscription: str
+    credits: Optional[int] = 0
+    
+# Credit costs for Pro Studio features
+CREDIT_COSTS = {
+    "flux_generate": 1,        # Basic FLUX generation
+    "flux_pro_generate": 2,    # FLUX Pro generation
+    "pulid_generate": 3,       # Face ID preservation
+    "lora_training": 50,       # Train LoRA model
+    "lora_generate": 2,        # Generate with trained LoRA
+    "video_generate": 10,      # Video generation
+}
     created_at: str
     pro_trial: Optional[bool] = False
     pro_trial_expires_at: Optional[str] = None
