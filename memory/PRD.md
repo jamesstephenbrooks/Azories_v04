@@ -73,6 +73,19 @@ Professional-grade character creation and video generation studio, inspired by H
    - Fixed iPad chapter creation dialog - better keyboard handling
    - Improved animation preview video playback with additional event handlers
    - Updated ambient wind sound to a more pleasant "gentle breeze" variant
+6. **Page Turn Animation:**
+   - Implemented realistic page flip using react-pageflip library
+   - Added Realistic/Classic toggle button in Book Reader
+   - Fixed empty page display (shows outline even with no content)
+   - Improved fullscreen mode scaling
+7. **Series Management:**
+   - Added reorder books feature with up/down arrows
+   - Added "Publish All Books in Series" button
+   - Backend endpoint for reordering books in series
+8. **Pro Studio Gallery Integration:**
+   - Added "Add from Gallery" button for character creation
+   - Added "Select from Gallery" for Shots source image
+   - Book selector in header to link creations to specific books
 
 ### Previous Updates (Feb 22, 2026 - Earlier)
 - Removed "Made with Emergent" branding
