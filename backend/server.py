@@ -1520,7 +1520,7 @@ Keep the character and scene exactly the same, only add subtle natural movement.
         video_bytes = video_gen.text_to_video(
             prompt=animation_prompt,
             model="sora-2",
-            size="1280x720",
+            size="1920x1080",
             duration=duration,
             max_wait_time=900
         )
