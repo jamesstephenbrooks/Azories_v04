@@ -647,6 +647,15 @@ export default function ProStudio() {
                     <p className="text-xs text-gray-500 mt-1">Recommended: 10-20 images from different angles</p>
                   </label>
                 </div>
+                
+                {/* Add from Gallery Button */}
+                <Button
+                  variant="outline"
+                  onClick={() => { setGalleryPickerMode('character'); setShowGalleryPicker(true); }}
+                  className="w-full mb-4 border-purple-500/30 text-purple-300 hover:bg-purple-500/20"
+                >
+                  <FiFolder className="mr-2" /> Add from Gallery
+                </Button>
 
                 {/* Uploaded images preview */}
                 {characterImages.length > 0 && (
