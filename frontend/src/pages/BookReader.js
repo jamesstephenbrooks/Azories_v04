@@ -55,8 +55,7 @@ export default function BookReader() {
   // AI Reading Buddy
   const [showAIBuddy, setShowAIBuddy] = useState(false);
   
-  // Realistic page flip mode
-  const [useRealisticFlip, setUseRealisticFlip] = useState(true);
+  // Realistic page flip mode - always enabled
   const realisticFlipRef = useRef(null);
   
   // Swipe state for visual feedback
@@ -232,25 +231,16 @@ export default function BookReader() {
       setIsPlaying(false);
     }
     
-    // In realistic flip mode, use the ref to control the page flip component
-    if (useRealisticFlip && realisticFlipRef.current) {
+    // Use the ref to control the page flip component
+    if (realisticFlipRef.current) {
       if (direction === 'next') {
         realisticFlipRef.current.nextPage();
       } else {
         realisticFlipRef.current.prevPage();
       }
       // The onPageChange callback will update currentPage
-    } else {
-      // Classic mode - use local animation
-      setFlipDirection(direction);
-      setIsFlipping(true);
-      
-      setTimeout(() => {
-        setCurrentPage(newPage);
-        setIsFlipping(false);
-      }, 600);
     }
-  }, [allPages.length, isFlipping, audioElement, useRealisticFlip]);
+  }, [allPages.length, isFlipping, audioElement]);
 
   const nextPage = useCallback(() => goToPage(currentPage + 1, 'next'), [currentPage, goToPage]);
   const prevPage = useCallback(() => goToPage(currentPage - 1, 'prev'), [currentPage, goToPage]);
