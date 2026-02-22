@@ -777,8 +777,14 @@ export default function BookReader() {
             <Button
               variant="outline"
               size="lg"
-              onClick={prevPage}
-              disabled={currentPage <= -1 || isFlipping}
+              onClick={() => {
+                if (useRealisticFlip && realisticFlipRef.current) {
+                  realisticFlipRef.current.prevPage();
+                } else {
+                  prevPage();
+                }
+              }}
+              disabled={(useRealisticFlip ? currentPage <= -1 : currentPage <= -1) || isFlipping}
               className="rounded-full px-6"
             >
               <FiChevronLeft className="w-5 h-5 mr-1" />
