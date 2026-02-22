@@ -65,16 +65,18 @@ Professional-grade character creation and video generation studio, inspired by H
 ### Recent Updates (Feb 22, 2026)
 1. **Book Reader Improvements:**
    - **Removed "Classic" book mode** - Only realistic page flip mode now
-   - **Increased book size** - Larger dimensions (650x870 normal, 900x1050 fullscreen)
+   - **Increased book size by 40%** - CSS scale transform (1.4x)
    - **Read Aloud → Pause toggle** - Button correctly shows "Pause" when audio is playing
    - **Separate Read/Listen buttons on cover** - Hover over cover to see options
+   - **"Read" button disables auto-read** - Just flips to first page, no narration
+   - **"Listen" button enables auto-read** - Starts narration automatically
+   - **Auto-read OFF stops immediately** - No waiting for page to finish
+   - **Narrator voice lock feature** - Creators can lock voice choice per book
    - Fixed front cover showing as two pages instead of one
    - Fixed content pages display as spread (image left, text right)
    - Fixed Next/Previous button navigation through all pages
    - Fixed page numbers update correctly as user navigates
    - Fixed progress bar updates as user reads through the book
-   - Fixed voiceover/auto-read page sync (react-pageflip onChangeState events)
-   - Fixed isFlipping state management using 'flipping' and 'read' states
 
 2. **Pro Studio Feature:** Complete implementation of professional-grade character studio
 2. **Backend APIs:** New endpoints for /api/pro-studio/* (characters, generate-image, generate-shots, generate-expression, animate-hero)
