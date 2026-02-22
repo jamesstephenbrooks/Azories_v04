@@ -464,41 +464,7 @@ const RealisticPageFlip = forwardRef(({
           clickEventForward={true}
           disableFlipByClick={false}
         >
-          {/* Front Cover */}
-          <CoverPage key="cover" book={book} onClick={goToNextPage} />
-          
-          {/* Content Pages - Image on left, Text on right for each page */}
-          {pages.flatMap((page, index) => {
-            if (page.isChapterTitle) {
-              return [
-                <ChapterTitlePage 
-                  key={`chapter-${index}`}
-                  chapter={page}
-                  chapterNumber={page.chapterNumber}
-                  totalChapters={page.totalChapters}
-                  isLeft={true}
-                />,
-                <Page key={`chapter-blank-${index}`} isLeft={false}>
-                  <div className="h-full" />
-                </Page>
-              ];
-            }
-            return [
-              <ImagePage 
-                key={`img-${index}`}
-                page={page}
-                pageNumber={index + 1}
-              />,
-              <TextPage 
-                key={`txt-${index}`}
-                page={page}
-                pageNumber={index + 1}
-              />
-            ];
-          })}
-          
-          {/* Back Cover */}
-          <BackCoverPage key="back-cover" book={book} />
+          {allBookPages}
         </HTMLFlipBook>
       </div>
 
