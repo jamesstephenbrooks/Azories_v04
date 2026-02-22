@@ -161,10 +161,10 @@ const TELEPORT_PORTALS = [
   {
     id: 'stairs-up-back',
     name: 'Go Upstairs',
-    triggerPos: { x: -2.0, y: 0, z: -6.5 }, // Adjusted position
+    triggerPos: { x: -1.33, y: 0, z: -5.17 }, // User-provided location
     visualY: 0.05,
-    triggerRadius: 3.0, // Very large for testing
-    destPos: { x: -2.22, y: 5.1, z: -6.94 },
+    triggerRadius: 1.5,
+    destPos: { x: -1.33, y: 5.1, z: -5.17 }, // Teleport to upper floor same spot
     destRotation: 0,
     color: '#00ffff',
     icon: '↑',
@@ -174,10 +174,10 @@ const TELEPORT_PORTALS = [
   {
     id: 'stairs-up-front',
     name: 'Go Upstairs',
-    triggerPos: { x: -2.0, y: 0, z: 3.5 }, // Adjusted position
+    triggerPos: { x: -2.0, y: 0, z: 3.5 }, // Needs user coordinates
     visualY: 0.05,
-    triggerRadius: 3.0, // Very large for testing
-    destPos: { x: -2.23, y: 5.1, z: 4.03 },
+    triggerRadius: 1.5,
+    destPos: { x: -2.0, y: 5.1, z: 3.5 },
     destRotation: Math.PI,
     color: '#00ffff',
     icon: '↑',
@@ -187,7 +187,7 @@ const TELEPORT_PORTALS = [
   {
     id: 'stairs-down-back',
     name: 'Go Downstairs',
-    triggerPos: { x: -2.22, y: 5.1, z: -6.94 },
+    triggerPos: { x: -1.33, y: 5.1, z: -5.17 }, // User-provided location
     visualY: 5.15,
     triggerRadius: 1.5,
     destPos: { x: 0, y: 0, z: 5 }, // Starting location
@@ -200,7 +200,7 @@ const TELEPORT_PORTALS = [
   {
     id: 'stairs-down-front',
     name: 'Go Downstairs',
-    triggerPos: { x: -2.23, y: 5.1, z: 4.03 },
+    triggerPos: { x: -2.0, y: 5.1, z: 3.5 }, // Needs user coordinates
     visualY: 5.15,
     triggerRadius: 1.5,
     destPos: { x: 0, y: 0, z: 5 }, // Starting location
