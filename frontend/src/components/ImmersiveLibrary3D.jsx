@@ -113,8 +113,8 @@ const GENRE_SECTIONS = [
   { 
     name: 'History', 
     position: { x: 2.0, z: -4.5 }, 
-    bannerPos: { x: 2.61, y: 4.56, z: -4.01 }, 
-    shelfPos: { x: 2.3, y: 4.2, z: -4.01 }, 
+    bannerPos: { x: 2.61, y: 5.2, z: -4.01 }, // Raised to match Biography height
+    shelfPos: { x: 2.3, y: 4.8, z: -4.01 }, 
     rotation: -Math.PI / 2, 
     color: '#78716c' 
   },
