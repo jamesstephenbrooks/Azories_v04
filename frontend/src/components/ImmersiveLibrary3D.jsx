@@ -163,11 +163,11 @@ const TELEPORT_PORTALS = [
   {
     id: 'stairs-back-bottom',
     name: 'Go Upstairs',
-    triggerPos: { x: -1.33, y: 0, z: -5.17 },
-    visualY: 0.02, // Just above floor
-    triggerRadius: 1.2, // Button appears at this distance
-    autoTeleportRadius: 0.5, // Auto-teleport when this close
-    destPos: { x: -1.33, y: 5.1, z: -5.17 }, // Top of back stairs
+    triggerPos: { x: -1.02, y: 0, z: -6.47 }, // User-provided ground floor location
+    visualY: 0.02, // On the floor
+    triggerRadius: 1.2,
+    autoTeleportRadius: 0.5,
+    destPos: { x: -1.02, y: 5.1, z: -6.47 }, // Top of back stairs
     destRotation: 0,
     color: '#00ffff',
     icon: '↑',
@@ -178,11 +178,11 @@ const TELEPORT_PORTALS = [
   {
     id: 'stairs-back-top',
     name: 'Go Downstairs',
-    triggerPos: { x: -1.33, y: 5.1, z: -5.17 },
-    visualY: 5.12, // Just above upper floor
+    triggerPos: { x: -1.02, y: 5.1, z: -6.47 },
+    visualY: 5.12, // On the upper floor
     triggerRadius: 1.2,
     autoTeleportRadius: 0.5,
-    destPos: { x: -1.33, y: 0, z: -5.17 }, // Bottom of back stairs
+    destPos: { x: -1.02, y: 0, z: -6.47 }, // Bottom of back stairs
     destRotation: Math.PI,
     color: '#00ffff',
     icon: '↓',
@@ -194,11 +194,11 @@ const TELEPORT_PORTALS = [
   {
     id: 'stairs-front-bottom',
     name: 'Go Upstairs',
-    triggerPos: { x: -1.50, y: 0, z: 2.41 },
-    visualY: 0.02, // Just above floor
+    triggerPos: { x: -1.02, y: 0, z: 3.5 }, // Estimated - needs user coordinates
+    visualY: 0.02, // On the floor
     triggerRadius: 1.2,
     autoTeleportRadius: 0.5,
-    destPos: { x: -1.50, y: 5.1, z: 2.41 }, // Top of front stairs
+    destPos: { x: -1.02, y: 5.1, z: 3.5 }, // Top of front stairs
     destRotation: Math.PI,
     color: '#00ffff',
     icon: '↑',
@@ -209,15 +209,18 @@ const TELEPORT_PORTALS = [
   {
     id: 'stairs-front-top',
     name: 'Go Downstairs',
-    triggerPos: { x: -1.50, y: 5.1, z: 2.41 },
-    visualY: 5.12, // Just above upper floor
+    triggerPos: { x: -1.02, y: 5.1, z: 3.5 },
+    visualY: 5.12, // On the upper floor
     triggerRadius: 1.2,
     autoTeleportRadius: 0.5,
-    destPos: { x: -1.50, y: 0, z: 2.41 }, // Bottom of front stairs
+    destPos: { x: -1.02, y: 0, z: 3.5 }, // Bottom of front stairs
     destRotation: 0,
     color: '#00ffff',
     icon: '↓',
     floor: 'upper',
+    pairId: 'front'
+  }
+];
     pairId: 'front'
   }
 ];
