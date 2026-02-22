@@ -333,18 +333,25 @@ export default function ArtStudio() {
     setCustomStyleDescription(template.customStyle);
   };
   
-  // Animate an image using Sora 2
+  // Animation progress state
+  const [animationProgress, setAnimationProgress] = useState(0);
+  const [animationMessage, setAnimationMessage] = useState('');
+  
+  // Animate an image using Sora 2 with polling
   const animateImage = async () => {
     if (!animatingImage) return;
     
     setIsAnimating(true);
+    setAnimationProgress(0);
+    setAnimationMessage('Starting animation...');
+    
     try {
-      // Show info that this takes a while
-      toast.info('Animation started - this may take 2-5 minutes. Please wait...', {
-        duration: 10000
+      toast.info('Animation started - this takes 2-5 minutes. You can watch the progress below.', {
+        duration: 5000
       });
       
-      const response = await fetch(`${API_URL}/api/art-studio/animate-image`, {
+      // Start the animation job
+      const startResponse = await fetch(`${API_URL}/api/art-studio/animate-image`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -358,28 +365,54 @@ export default function ArtStudio() {
         })
       });
       
-      // Check if response is valid JSON
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        throw new Error('Animation is taking longer than expected. Please try again in a few minutes.');
+      const startData = await startResponse.json();
+      
+      if (!startData.success || !startData.job_id) {
+        throw new Error(startData.detail || 'Failed to start animation');
       }
       
-      const data = await response.json();
-      if (data.success) {
-        setAnimatedVideo(`data:video/mp4;base64,${data.video_base64}`);
-        toast.success('Image animated successfully!');
-      } else {
-        // Check for specific error messages
-        const errorMsg = data.detail || 'Animation failed';
-        if (errorMsg.includes('budget') || errorMsg.includes('Budget')) {
-          throw new Error('API budget exceeded. Please add balance to your Universal Key in Profile settings.');
+      const jobId = startData.job_id;
+      
+      // Poll for status
+      const pollInterval = setInterval(async () => {
+        try {
+          const statusResponse = await fetch(`${API_URL}/api/art-studio/animation-status/${jobId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          
+          const statusData = await statusResponse.json();
+          
+          setAnimationProgress(statusData.progress || 0);
+          setAnimationMessage(statusData.message || 'Processing...');
+          
+          if (statusData.status === 'completed') {
+            clearInterval(pollInterval);
+            setAnimatedVideo(`data:video/mp4;base64,${statusData.video_base64}`);
+            toast.success('Animation complete!');
+            setIsAnimating(false);
+          } else if (statusData.status === 'failed') {
+            clearInterval(pollInterval);
+            toast.error(statusData.message || 'Animation failed');
+            setIsAnimating(false);
+          }
+        } catch (pollError) {
+          console.error('Polling error:', pollError);
+          // Continue polling on transient errors
         }
-        throw new Error(errorMsg);
-      }
+      }, 3000); // Poll every 3 seconds
+      
+      // Timeout after 10 minutes
+      setTimeout(() => {
+        clearInterval(pollInterval);
+        if (isAnimating) {
+          setIsAnimating(false);
+          toast.error('Animation timed out. Please try again.');
+        }
+      }, 600000);
+      
     } catch (error) {
       console.error('Animation error:', error);
       toast.error('Animation: ' + (error.message || 'An error occurred'));
-    } finally {
       setIsAnimating(false);
     }
   };
