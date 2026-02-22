@@ -104,6 +104,7 @@ export default function ProStudio() {
       loadGallery();
       loadUserBooks();
       checkFalAvailability();
+      loadCredits();
     }
   }, [isAuthenticated]);
 
@@ -117,6 +118,41 @@ export default function ProStudio() {
       }
     } catch (error) {
       console.error('Error checking fal.ai availability:', error);
+    }
+  };
+
+  // Load user's credits
+  const loadCredits = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/credits/balance`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setCredits(data.credits || 0);
+        setCreditCosts(data.costs || {});
+      }
+    } catch (error) {
+      console.error('Error loading credits:', error);
+    }
+  };
+
+  // Add credits (for testing/purchasing)
+  const addCredits = async (amount = 100) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/credits/add?amount=${amount}`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setCredits(data.new_balance);
+        toast.success(`Added ${amount} credits!`);
+      }
+    } catch (error) {
+      toast.error('Error adding credits');
     }
   };
 
