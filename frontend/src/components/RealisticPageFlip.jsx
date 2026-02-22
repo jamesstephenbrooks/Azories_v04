@@ -522,6 +522,32 @@ const RealisticPageFlip = forwardRef(({
     }
   });
   
+  // Inside back cover - decorative page (shown before back cover)
+  allBookPages.push(
+    <Page key="inside-back" isLeft={false}>
+      <div className="h-full flex flex-col items-center justify-center text-center p-8"
+        style={{
+          background: `linear-gradient(0deg, 
+            ${book?.cover_gradient_end || '#764ba2'}15 0%, 
+            transparent 50%,
+            ${book?.cover_gradient_start || '#667eea'}10 100%)`
+        }}
+      >
+        <div className="space-y-4">
+          <p className="text-xl font-heading text-foreground/60">The End</p>
+          <div className="w-16 h-0.5 bg-muted-foreground/30 mx-auto" />
+          {book?.author_name && (
+            <p className="text-sm text-muted-foreground mt-8">
+              Thank you for reading<br />
+              <span className="font-medium">{book.title}</span>
+            </p>
+          )}
+        </div>
+      </div>
+    </Page>
+  );
+  newPageMapping.push(-2); // End page
+  
   // Back cover - single page (hard cover)
   // The library handles this automatically with showCover=true
   allBookPages.push(<BackCoverPage key="back-cover" book={book} />);
