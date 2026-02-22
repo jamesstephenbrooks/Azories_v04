@@ -146,6 +146,7 @@ class BookUpdate(BaseModel):
     is_best_of_week: Optional[bool] = None
     layout_mode: Optional[str] = None
     narrator_voice_id: Optional[str] = None
+    narrator_voice_locked: Optional[bool] = None
     age_rating: Optional[str] = None
     series_id: Optional[str] = None
     series_order: Optional[int] = None
