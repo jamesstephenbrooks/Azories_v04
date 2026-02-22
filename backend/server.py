@@ -2508,28 +2508,40 @@ async def get_voices():
 
 @api_router.post("/tts/generate")
 async def generate_tts(request: TTSRequest):
+    """Generate TTS audio using OpenAI TTS (via Emergent LLM Key)"""
     try:
-        if not eleven_client:
-            raise HTTPException(status_code=500, detail="TTS service not available")
+        emergent_key = os.environ.get("EMERGENT_LLM_KEY")
+        if not emergent_key:
+            raise HTTPException(status_code=500, detail="TTS service not configured")
         
-        voice_settings = VoiceSettings(
-            stability=request.stability,
-            similarity_boost=request.similarity_boost
-        )
+        # Map ElevenLabs voice IDs to OpenAI voices
+        voice_mapping = {
+            "21m00Tcm4TlvDq8ikWAM": "nova",      # Rachel -> nova (warm, friendly)
+            "AZnzlk1XvdvUeBnXmlld": "shimmer",   # Domi -> shimmer (bright)
+            "EXAVITQu4vr4xnSDxMaL": "alloy",     # Bella -> alloy (neutral)
+            "ErXwobaYiN019PkySvjV": "onyx",      # Antoni -> onyx (deep)
+            "MF3mGyEYCl7XYWbV9V6O": "coral",     # Elli -> coral (warm)
+            "TxGEqnHWrfWFTfGW9XjX": "echo",      # Josh -> echo (smooth)
+            "VR6AewLTigWG4xSOukaG": "fable",     # Arnold -> fable (expressive)
+            "pNInz6obpgDQGcFmaJgB": "sage",      # Adam -> sage (wise)
+            "yoZ06aMxZJJ28mfd3POQ": "ash",       # Sam -> ash (clear)
+        }
         
-        audio_generator = eleven_client.text_to_speech.convert(
+        # Get OpenAI voice name (default to nova for storytelling)
+        openai_voice = voice_mapping.get(request.voice_id, "nova")
+        
+        # Initialize OpenAI TTS
+        tts = OpenAITextToSpeech(api_key=emergent_key)
+        
+        # Generate speech as base64
+        audio_base64 = await tts.generate_speech_base64(
             text=request.text,
-            voice_id=request.voice_id,
-            model_id="eleven_multilingual_v2",
-            voice_settings=voice_settings
+            model="tts-1",  # Use standard for faster response
+            voice=openai_voice,
+            response_format="mp3"
         )
         
-        audio_data = b""
-        for chunk in audio_generator:
-            audio_data += chunk
-        
-        audio_b64 = base64.b64encode(audio_data).decode()
-        return {"audio_base64": audio_b64, "success": True}
+        return {"audio_base64": audio_base64, "success": True}
     except Exception as e:
         logger.error(f"Error generating TTS: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error generating TTS: {str(e)}")
