@@ -1824,8 +1824,7 @@ async def pro_studio_generate_image(request: ProStudioImageRequest, current_user
         images = await image_gen.generate_images(
             prompt=full_prompt,
             model="gpt-image-1",
-            number_of_images=1,
-            size=size
+            number_of_images=1
         )
         
         if images and len(images) > 0:
