@@ -676,6 +676,9 @@ class CollaboratorInvite(BaseModel):
     email: str
     role: str = "editor"  # editor, viewer
 
+class CollaboratorRoleUpdate(BaseModel):
+    role: str = "editor"  # editor, viewer
+
 
 @api_router.post("/books/{book_id}/collaborators/invite")
 async def invite_collaborator(book_id: str, invite: CollaboratorInvite, current_user: dict = Depends(get_current_user)):
