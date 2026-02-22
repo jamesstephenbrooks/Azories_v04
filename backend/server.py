@@ -2353,6 +2353,69 @@ async def delete_character(character_id: str, current_user: dict = Depends(get_c
         raise HTTPException(status_code=404, detail="Character not found")
     return {"success": True}
 
+# Character Gallery/Folder endpoints
+@api_router.get("/pro-studio/characters/{character_id}/gallery")
+async def get_character_gallery(character_id: str, current_user: dict = Depends(get_current_user)):
+    """Get all generated images for a character (character folder)"""
+    # Verify character belongs to user
+    character = await db.pro_studio_characters.find_one({
+        "id": character_id,
+        "user_id": current_user["id"]
+    })
+    if not character:
+        raise HTTPException(status_code=404, detail="Character not found")
+    
+    # Get all images in this character's gallery
+    images = await db.character_gallery.find(
+        {"character_id": character_id, "user_id": current_user["id"]},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    return {"images": images, "character_id": character_id, "count": len(images)}
+
+@api_router.post("/pro-studio/characters/{character_id}/gallery")
+async def add_to_character_gallery(character_id: str, request: dict, current_user: dict = Depends(get_current_user)):
+    """Save a generated image to a character's folder/gallery"""
+    # Verify character belongs to user
+    character = await db.pro_studio_characters.find_one({
+        "id": character_id,
+        "user_id": current_user["id"]
+    })
+    if not character:
+        raise HTTPException(status_code=404, detail="Character not found")
+    
+    image_url = request.get("image_url")
+    if not image_url:
+        raise HTTPException(status_code=400, detail="image_url is required")
+    
+    now = datetime.now(timezone.utc).isoformat()
+    gallery_item = {
+        "id": str(uuid.uuid4()),
+        "character_id": character_id,
+        "user_id": current_user["id"],
+        "image_url": image_url,
+        "prompt": request.get("prompt", ""),
+        "type": request.get("type", "generated"),  # 'generated', 'expression', 'consistent', etc.
+        "created_at": now
+    }
+    
+    await db.character_gallery.insert_one(gallery_item)
+    gallery_item.pop("_id", None)
+    
+    return {"success": True, "item": gallery_item}
+
+@api_router.delete("/pro-studio/characters/{character_id}/gallery/{image_id}")
+async def delete_from_character_gallery(character_id: str, image_id: str, current_user: dict = Depends(get_current_user)):
+    """Delete an image from a character's gallery"""
+    result = await db.character_gallery.delete_one({
+        "id": image_id,
+        "character_id": character_id,
+        "user_id": current_user["id"]
+    })
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Image not found")
+    return {"success": True}
+
 @api_router.post("/pro-studio/generate-image")
 async def pro_studio_generate_image(request: ProStudioImageRequest, current_user: dict = Depends(get_current_user)):
     """Generate a hero frame with Cinema Studio settings"""
