@@ -123,7 +123,7 @@ const BackCoverPage = forwardRef(({ book }, ref) => {
   return (
     <div 
       ref={ref}
-      className="page-wrapper relative w-full h-full"
+      className="demoPage page-wrapper relative w-full h-full"
       data-density="hard"
     >
       <div 
