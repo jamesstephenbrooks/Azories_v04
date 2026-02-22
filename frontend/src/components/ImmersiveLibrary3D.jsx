@@ -25,7 +25,7 @@ const DEFAULT_BOUNDS = {
 // bannerPos is where the banner appears, shelfPos is where highlighted book appears
 // position is where player spawns when teleporting to this section
 const GENRE_SECTIONS = [
-  // RIGHT SIDE BOOKCASES (X positive)
+  // RIGHT SIDE BOOKCASES (X positive) - Ground Floor
   { 
     name: 'Humour', 
     position: { x: 2.5, z: 4.0 }, 
@@ -51,7 +51,7 @@ const GENRE_SECTIONS = [
     color: '#3b82f6' 
   },
   
-  // LEFT SIDE BOOKCASES (X negative)
+  // LEFT SIDE BOOKCASES (X negative) - Ground Floor
   { 
     name: 'Science Fiction', 
     position: { x: -6.5, z: -1.0 }, 
@@ -68,15 +68,23 @@ const GENRE_SECTIONS = [
     rotation: Math.PI / 2, 
     color: '#9333ea' 
   },
+  { 
+    name: 'Romance', 
+    position: { x: -0.5, z: 4.5 }, 
+    bannerPos: { x: -1.57, y: 5.48, z: 5.26 }, 
+    shelfPos: { x: -1.3, y: 5.0, z: 5.0 }, 
+    rotation: 0, 
+    color: '#ec4899' 
+  },
   
-  // UPPER FLOOR - BACK WALL
+  // UPPER FLOOR - Back Wall
   { 
     name: 'Fantasy', 
     position: { x: -0.5, z: -7.5 }, 
     bannerPos: { x: -1.19, y: 7.89, z: -8.12 }, 
     shelfPos: { x: -1.19, y: 7.4, z: -7.8 }, 
     rotation: 0, 
-    color: '#ec4899' 
+    color: '#a855f7' 
   },
   { 
     name: 'Comic', 
@@ -85,6 +93,24 @@ const GENRE_SECTIONS = [
     shelfPos: { x: -3.19, y: 7.2, z: -5.5 }, 
     rotation: 0, 
     color: '#f97316' 
+  },
+  
+  // UPPER FLOOR - Front/Side
+  { 
+    name: 'Horror', 
+    position: { x: 0.0, z: 4.5 }, 
+    bannerPos: { x: -0.87, y: 7.68, z: 5.26 }, 
+    shelfPos: { x: -0.87, y: 7.2, z: 5.0 }, 
+    rotation: Math.PI, 
+    color: '#dc2626' 
+  },
+  { 
+    name: 'Non-Fiction', 
+    position: { x: -2.5, z: 2.0 }, 
+    bannerPos: { x: -3.41, y: 8.57, z: 2.97 }, 
+    shelfPos: { x: -3.41, y: 8.0, z: 2.7 }, 
+    rotation: Math.PI, 
+    color: '#0891b2' 
   },
 ];
 
