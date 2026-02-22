@@ -151,8 +151,8 @@ const TELEPORT_PORTALS = [
     id: 'stairs-up-back',
     name: 'Go Upstairs',
     triggerPos: { x: -1.60, y: 4.18, z: -6.01 }, // Bottom of back spiral staircase
-    triggerRadius: 0.1,
-    destPos: { x: -2.22, y: 6.21, z: -6.94 }, // Top of back stairs (update when you give me the position)
+    triggerRadius: 0.5,
+    destPos: { x: -2.22, y: 6.21, z: -6.94 }, // Top of back stairs
     destRotation: 0,
     color: '#00ffff',
     icon: '↑'
@@ -162,18 +162,18 @@ const TELEPORT_PORTALS = [
     id: 'stairs-up-front',
     name: 'Go Upstairs',
     triggerPos: { x: -1.55, y: 4.29, z: 2.90 }, // Bottom of front spiral staircase
-    triggerRadius: 0.1,
-    destPos: { x: -2.23, y: 6.21, z: 4.03 }, // Top of front stairs (update when you give me the position)
+    triggerRadius: 0.5,
+    destPos: { x: -2.23, y: 6.21, z: 4.03 }, // Top of front stairs
     destRotation: Math.PI,
     color: '#00ffff',
     icon: '↑'
   },
-  // Go down portals - need positions from top of stairs
+  // Go down portals
   {
     id: 'stairs-down-back',
     name: 'Go Downstairs',
-    triggerPos: { x: -2.22, y: 6.21, z: -6.94 }, // Top of back spiral staircase (update this)
-    triggerRadius: 0.1,
+    triggerPos: { x: -2.22, y: 6.21, z: -6.94 }, // Top of back spiral staircase
+    triggerRadius: 0.5,
     destPos: { x: -1.60, y: 4.18, z: -6.01 }, // Bottom of back stairs
     destRotation: Math.PI,
     color: '#00ffff',
@@ -182,8 +182,8 @@ const TELEPORT_PORTALS = [
   {
     id: 'stairs-down-front',
     name: 'Go Downstairs',
-    triggerPos: { x: -2.23, y: 6.21, z: 4.03 }, // Top of front spiral staircase (update this)
-    triggerRadius: 0.1,
+    triggerPos: { x: -2.23, y: 6.21, z: 4.03 }, // Top of front spiral staircase
+    triggerRadius: 0.5,
     destPos: { x: -1.55, y: 4.29, z: 2.90 }, // Bottom of front stairs
     destRotation: 0,
     color: '#00ffff',
