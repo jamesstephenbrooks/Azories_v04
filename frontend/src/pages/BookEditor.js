@@ -374,6 +374,12 @@ export default function BookEditor() {
   const savePage = async () => {
     if (!selectedPage) return;
     
+    const token = localStorage.getItem('token');
+    if (!token) {
+      toast.error('Please log in to save');
+      return;
+    }
+    
     setSaving(true);
     try {
       await axios.put(`${API}/pages/${selectedPage.id}`, {
@@ -384,10 +390,13 @@ export default function BookEditor() {
         image_url_4: selectedPage.image_url_4,
         video_url: selectedPage.video_url,
         layout_type: selectedPage.layout_type
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
       });
       toast.success('Page saved!');
     } catch (error) {
       toast.error('Failed to save page');
+      console.error('Save error:', error);
     } finally {
       setSaving(false);
     }
