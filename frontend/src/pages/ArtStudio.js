@@ -1939,7 +1939,10 @@ export default function ArtStudio() {
                             controls 
                             autoPlay 
                             loop 
+                            muted
+                            playsInline
                             className="w-full"
+                            onLoadedData={(e) => e.target.play().catch(() => {})}
                           />
                         </div>
                         <div className="grid grid-cols-3 gap-2 mt-3">
