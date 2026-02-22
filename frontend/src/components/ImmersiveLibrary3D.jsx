@@ -1159,9 +1159,9 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         // Create invisible collision walls for the bridge railings (thin bars don't raycast well)
         const railingColliders = [
           // Left side of bridge (wall running along Z axis)
-          { pos: [-2.3, 7.0, -1.0], size: [0.3, 2.0, 12] },
+          { pos: [-2.5, 7.0, -1.0], size: [0.4, 2.0, 14] },
           // Right side of bridge  
-          { pos: [0.2, 7.0, -1.0], size: [0.3, 2.0, 12] }
+          { pos: [-0.1, 7.0, -1.0], size: [0.4, 2.0, 14] }
         ];
         
         railingColliders.forEach((collider, index) => {
