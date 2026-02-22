@@ -1024,12 +1024,12 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       // Use visualY for rendering position (just above floor)
       const renderY = portal.visualY !== undefined ? portal.visualY : 0.02;
       
-      // Add a bright glowing ring on the floor - LARGER and more visible
-      const ringGeometry = new THREE.RingGeometry(0.6, 0.8, 32);
+      // Single thin glowing ring on the floor
+      const ringGeometry = new THREE.RingGeometry(0.45, 0.55, 32); // Thinner ring
       const ringMaterial = new THREE.MeshBasicMaterial({
         color: 0x00ffff,
         transparent: true,
-        opacity: 0.8,
+        opacity: 0.7,
         side: THREE.DoubleSide
       });
       const ringMesh = new THREE.Mesh(ringGeometry, ringMaterial);
@@ -1038,20 +1038,6 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       ringMesh.userData = { isPortalRing: true, portalFloor: portal.floor, portalId: portal.id };
       scene.add(ringMesh);
       portalRings.push(ringMesh);
-      
-      // Add inner glow ring
-      const innerRingGeometry = new THREE.RingGeometry(0.3, 0.5, 32);
-      const innerRingMaterial = new THREE.MeshBasicMaterial({
-        color: 0x00ffff,
-        transparent: true,
-        opacity: 0.5,
-        side: THREE.DoubleSide
-      });
-      const innerRingMesh = new THREE.Mesh(innerRingGeometry, innerRingMaterial);
-      innerRingMesh.rotation.x = -Math.PI / 2;
-      innerRingMesh.position.set(portal.triggerPos.x, renderY + 0.01, portal.triggerPos.z);
-      innerRingMesh.userData = { isPortalRing: true, portalFloor: portal.floor };
-      scene.add(innerRingMesh);
       
       // Add point light for glow effect
       const portalLight = new THREE.PointLight(0x00ffff, 2.0, 4);
