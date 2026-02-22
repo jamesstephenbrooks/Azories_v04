@@ -221,9 +221,6 @@ const TELEPORT_PORTALS = [
     pairId: 'front'
   }
 ];
-    pairId: 'front'
-  }
-];
 
 // Age range filter options for library search
 const AGE_FILTER_OPTIONS = [
