@@ -2817,6 +2817,12 @@ async def get_full_book(book_id: str, current_user: dict = Depends(get_optional_
             page.setdefault("image_url_3", "")
             page.setdefault("image_url_4", "")
             page.setdefault("layout_type", "single")
+            page.setdefault("image_position_x", 50)
+            page.setdefault("image_position_y", 50)
+            page.setdefault("image_fit", "cover")
+            page.setdefault("font_family", "default")
+            page.setdefault("font_size", "medium")
+            page.setdefault("text_align", "left")
         full_chapters.append({
             **chapter,
             "pages": pages
