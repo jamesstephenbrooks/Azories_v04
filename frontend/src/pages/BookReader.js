@@ -127,8 +127,13 @@ export default function BookReader() {
         }, 2500);
         return () => clearTimeout(timer);
       } else if (page?.text_content) {
-        // Has text content - play audio
-        playAudio();
+        // Has text content - play audio (small delay to ensure page is ready)
+        const timer = setTimeout(() => {
+          if (autoReadRef.current) {
+            playAudio();
+          }
+        }, 200);
+        return () => clearTimeout(timer);
       } else if (currentPage < allPages.length - 1) {
         // No content, advance to next page
         const timer = setTimeout(() => {
