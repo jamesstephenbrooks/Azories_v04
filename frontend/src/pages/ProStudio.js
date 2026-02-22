@@ -1042,6 +1042,154 @@ export default function ProStudio() {
       </header>
 
       {/* Loading Overlay */}
+      {/* Image Preview Modal */}
+      <AnimatePresence>
+        {previewImage && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setPreviewImage(null)}
+          >
+            <motion.div 
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
+              className="relative max-w-5xl max-h-[90vh]"
+              onClick={e => e.stopPropagation()}
+            >
+              <img 
+                src={previewImage.url} 
+                alt={previewImage.prompt || 'Preview'} 
+                className="max-w-full max-h-[85vh] object-contain rounded-lg"
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-black/70 p-4 rounded-b-lg">
+                <p className="text-white text-sm">{previewImage.prompt || previewImage.character || 'Generated image'}</p>
+                <div className="flex gap-2 mt-2">
+                  <Button size="sm" onClick={() => downloadMedia(previewImage.url, `image-${Date.now()}.png`)}>
+                    <FiDownload className="mr-1" /> Download
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => saveToGallery(previewImage)}>
+                    <FiSave className="mr-1" /> Save to Gallery
+                  </Button>
+                </div>
+              </div>
+              <button 
+                onClick={() => setPreviewImage(null)}
+                className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full"
+              >
+                <FiX size={24} />
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Character View Modal */}
+      <AnimatePresence>
+        {viewingCharacter && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 overflow-auto"
+          >
+            <div className="max-w-6xl mx-auto p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-4">
+                  <img 
+                    src={viewingCharacter.thumbnail || viewingCharacter.reference_images?.[0]} 
+                    alt={viewingCharacter.name}
+                    className="w-16 h-16 rounded-full object-cover border-2 border-purple-500 cursor-pointer"
+                    onClick={() => setPreviewImage({ url: viewingCharacter.thumbnail || viewingCharacter.reference_images?.[0], prompt: viewingCharacter.name })}
+                  />
+                  <div>
+                    <h2 className="text-2xl font-bold text-white">{viewingCharacter.name}</h2>
+                    <p className="text-gray-400">{viewingCharacter.style} • {viewingCharacter.genre}</p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={() => { setSelectedCharacter(viewingCharacter); closeCharacterView(); }}
+                    className="bg-purple-600 hover:bg-purple-700"
+                  >
+                    <FiZap className="mr-2" /> Use for Generation
+                  </Button>
+                  <Button variant="ghost" onClick={closeCharacterView}>
+                    <FiX size={20} />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Character Description */}
+              {viewingCharacter.description && (
+                <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4 mb-6">
+                  <h3 className="text-white font-medium mb-2">Character Description</h3>
+                  <p className="text-gray-300 text-sm whitespace-pre-wrap">{viewingCharacter.description}</p>
+                </div>
+              )}
+
+              {/* Reference Images */}
+              {viewingCharacter.reference_images?.length > 0 && (
+                <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4 mb-6">
+                  <h3 className="text-white font-medium mb-3">Reference Images ({viewingCharacter.reference_images.length})</h3>
+                  <div className="grid grid-cols-4 md:grid-cols-6 gap-3">
+                    {viewingCharacter.reference_images.map((img, idx) => (
+                      <img 
+                        key={idx}
+                        src={img} 
+                        alt={`Reference ${idx + 1}`}
+                        className="w-full aspect-square object-cover rounded-lg cursor-pointer hover:ring-2 hover:ring-purple-500 transition-all"
+                        onClick={() => setPreviewImage({ url: img, prompt: `${viewingCharacter.name} reference ${idx + 1}` })}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Generated Images (Character Folder) */}
+              <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4">
+                <h3 className="text-white font-medium mb-3 flex items-center gap-2">
+                  <FiFolder className="text-purple-400" /> Character Folder ({characterGallery.length} images)
+                </h3>
+                {characterGallery.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <FiImage className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <p>No generated images yet</p>
+                    <p className="text-sm">Select this character and generate images to build your collection</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                    {characterGallery.map((img) => (
+                      <div 
+                        key={img.id}
+                        className="relative group cursor-pointer"
+                        onClick={() => setPreviewImage({ url: img.image_url, prompt: img.prompt })}
+                      >
+                        <img 
+                          src={img.image_url} 
+                          alt={img.prompt || 'Generated'}
+                          className="w-full aspect-square object-cover rounded-lg hover:ring-2 hover:ring-purple-500 transition-all"
+                        />
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                          <FiMaximize2 className="text-white" size={24} />
+                        </div>
+                        {img.type && (
+                          <span className="absolute bottom-1 left-1 text-xs bg-purple-500/80 text-white px-1.5 py-0.5 rounded">
+                            {img.type}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <AnimatePresence>
         {isLoading && (
           <motion.div 
@@ -1082,32 +1230,186 @@ export default function ProStudio() {
           {/* Characters Tab */}
           <TabsContent value="characters" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Create Character Panel */}
+              {/* Create Character Panel - UNIFIED FORM */}
               <div className="bg-black/40 rounded-xl border border-purple-500/20 p-6">
                 <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
                   <FiPlus className="text-purple-400" /> Create Character
                 </h2>
                 <p className="text-gray-400 text-sm mb-4">
-                  Create any character for your stories - describe them or upload reference images.
+                  Describe your character AND/OR upload reference images to create a consistent character.
                 </p>
                 
-                {/* Creation Mode Tabs */}
-                <div className="flex gap-2 mb-4">
-                  <button
-                    onClick={() => setCreationMode('description')}
-                    className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
-                      creationMode === 'description' 
-                        ? 'bg-purple-600 text-white' 
-                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-                    }`}
+                {/* Character Name */}
+                <Input
+                  placeholder="Character name (e.g., Luna, Captain Rex)"
+                  value={characterName}
+                  onChange={(e) => setCharacterName(e.target.value)}
+                  className="bg-gray-800/50 border-gray-700 text-white mb-4"
+                  data-testid="character-name-input"
+                />
+
+                {/* Style & Genre Selection */}
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div>
+                    <label className="text-gray-400 text-xs mb-1 block">Visual Style</label>
+                    <Select value={characterStyle} onValueChange={setCharacterStyle}>
+                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-700 max-h-60">
+                        {characterStyles.map((style) => (
+                          <SelectItem key={style.id} value={style.id} className="text-white">
+                            <span className="font-medium">{style.name}</span>
+                            <span className="text-gray-400 text-xs ml-2">{style.description}</span>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-gray-400 text-xs mb-1 block">Genre</label>
+                    <Select value={characterGenre} onValueChange={setCharacterGenre}>
+                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-700 max-h-60">
+                        {characterGenres.map((genre) => (
+                          <SelectItem key={genre.id} value={genre.id} className="text-white">
+                            <span className="font-medium">{genre.name}</span>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Description - always shown */}
+                <div className="space-y-3 mb-4">
+                  <label className="text-gray-300 text-sm font-medium">Character Description</label>
+                  <Textarea
+                    placeholder="Describe your character in detail... (e.g., 'A young elven princess with silver hair that flows like moonlight, bright violet eyes, pointed ears adorned with crystal earrings')"
+                    value={characterDescription}
+                    onChange={(e) => setCharacterDescription(e.target.value)}
+                    className="bg-gray-800/50 border-gray-700 text-white"
+                    rows={3}
+                  />
+                </div>
+
+                {/* Reference Images - always shown */}
+                <div className="space-y-3 mb-4">
+                  <label className="text-gray-300 text-sm font-medium">Reference Images (optional)</label>
+                  <div className="border-2 border-dashed border-purple-500/30 rounded-lg p-4 text-center">
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={(e) => handleFileUpload(e, 'character')}
+                      className="hidden"
+                      id="character-upload"
+                      data-testid="character-image-upload"
+                    />
+                    <label htmlFor="character-upload" className="cursor-pointer">
+                      <FiUpload className="w-6 h-6 text-purple-400 mx-auto mb-1" />
+                      <p className="text-gray-400 text-sm">Click to upload reference images</p>
+                    </label>
+                  </div>
+                  
+                  {/* Uploaded images preview */}
+                  {characterImages.length > 0 && (
+                    <div className="grid grid-cols-5 gap-2">
+                      {characterImages.map((img, i) => (
+                        <div key={img.id} className="relative group">
+                          <img 
+                            src={img.url} 
+                            alt={`Ref ${i+1}`} 
+                            className="w-full aspect-square object-cover rounded-lg cursor-pointer"
+                            onClick={() => setPreviewImage({ url: img.url, prompt: `Reference ${i+1}` })}
+                          />
+                          <button
+                            onClick={() => setCharacterImages(prev => prev.filter(x => x.id !== img.id))}
+                            className="absolute top-1 right-1 bg-red-500 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <FiX size={12} className="text-white" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {/* Add from Gallery Button */}
+                  <Button
+                    variant="outline"
+                    onClick={() => { setGalleryPickerMode('character'); setShowGalleryPicker(true); }}
+                    className="w-full border-purple-500/30 text-purple-300 hover:bg-purple-500/20"
+                    size="sm"
                   >
-                    <FiEdit3 className="inline mr-2" /> Describe Character
-                  </button>
-                  <button
-                    onClick={() => setCreationMode('images')}
-                    className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
-                      creationMode === 'images' 
-                        ? 'bg-purple-600 text-white' 
+                    <FiFolder className="mr-2" /> Add from Gallery
+                  </Button>
+                </div>
+                
+                {/* Physical Traits (Collapsible) */}
+                <details className="group mb-3">
+                  <summary className="text-purple-400 text-sm cursor-pointer hover:text-purple-300">
+                    + Add Physical Details (optional)
+                  </summary>
+                  <div className="grid grid-cols-2 gap-2 mt-3">
+                    <Input
+                      placeholder="Age (e.g., young adult)"
+                      value={physicalTraits.age}
+                      onChange={(e) => setPhysicalTraits(p => ({...p, age: e.target.value}))}
+                      className="bg-gray-800/50 border-gray-700 text-white text-sm"
+                    />
+                    <Input
+                      placeholder="Gender"
+                      value={physicalTraits.gender}
+                      onChange={(e) => setPhysicalTraits(p => ({...p, gender: e.target.value}))}
+                      className="bg-gray-800/50 border-gray-700 text-white text-sm"
+                    />
+                    <Input
+                      placeholder="Hair Color"
+                      value={physicalTraits.hairColor}
+                      onChange={(e) => setPhysicalTraits(p => ({...p, hairColor: e.target.value}))}
+                      className="bg-gray-800/50 border-gray-700 text-white text-sm"
+                    />
+                    <Input
+                      placeholder="Eye Color"
+                      value={physicalTraits.eyeColor}
+                      onChange={(e) => setPhysicalTraits(p => ({...p, eyeColor: e.target.value}))}
+                      className="bg-gray-800/50 border-gray-700 text-white text-sm"
+                    />
+                  </div>
+                </details>
+
+                {/* Special Features & Personality */}
+                <details className="group mb-4">
+                  <summary className="text-purple-400 text-sm cursor-pointer hover:text-purple-300">
+                    + Add Special Features & Personality (optional)
+                  </summary>
+                  <div className="space-y-2 mt-3">
+                    <Input
+                      placeholder="Special features (e.g., scar on cheek, glowing tattoos)"
+                      value={specialFeatures}
+                      onChange={(e) => setSpecialFeatures(e.target.value)}
+                      className="bg-gray-800/50 border-gray-700 text-white text-sm"
+                    />
+                    <Input
+                      placeholder="Personality (e.g., brave and curious)"
+                      value={personality}
+                      onChange={(e) => setPersonality(e.target.value)}
+                      className="bg-gray-800/50 border-gray-700 text-white text-sm"
+                    />
+                  </div>
+                </details>
+
+                <Button 
+                  onClick={createCharacter}
+                  disabled={isCreatingCharacter || !characterName.trim() || (!characterDescription.trim() && characterImages.length < 1)}
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                  data-testid="create-character-btn"
+                >
+                  {isCreatingCharacter ? 'Creating...' : 'Create Character'}
+                </Button>
+              </div> 
                         : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
                     }`}
                   >
