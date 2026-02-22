@@ -1597,6 +1597,11 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           child.material.opacity = 0.8 + Math.sin(time * 3) * 0.15;
           child.rotation.y += 0.005; // Slow rotation
         }
+        // Pulse portal floor ring
+        if (child.userData?.isPortalRing && child.material) {
+          child.material.opacity = 0.3 + Math.sin(time * 2) * 0.2;
+          child.rotation.z += 0.02;
+        }
       });
       
       renderer.render(scene, camera);
