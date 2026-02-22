@@ -532,7 +532,7 @@ const RealisticPageFlip = forwardRef(({
           maxWidth={1200}
           minHeight={400}
           maxHeight={1400}
-          showCover={true}
+          showCover={false}
           mobileScrollSupport={true}
           onFlip={handleFlip}
           onChangeState={handleFlipStart}
@@ -552,6 +552,7 @@ const RealisticPageFlip = forwardRef(({
           clickEventForward={true}
         >
           {allBookPages}
+        </HTMLFlipBook>
         </HTMLFlipBook>
       </div>
 
