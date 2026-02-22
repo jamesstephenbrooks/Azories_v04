@@ -192,8 +192,10 @@ Professional-grade character creation and video generation studio, inspired by H
   - [x] Fix localStorage token key mismatch ('token' → 'azories-token')
   - [x] Fix Collaborators popup positioning (z-index and centering)
   - [x] Create dedicated "My Series" page at /series
+  - [x] Add font/size/alignment editing to text editor
+  - [x] Display chapter titles on first page of new chapters
 - [ ] iPad chapter creation dialog fix (recurring)
-- **TTS Quota Exceeded** - The "Listen" audio feature requires Universal Key credit top-up (Profile → Universal Key → Add Balance)
+- **TTS/ElevenLabs** - User has new ElevenLabs account, needs correct API key (should start with `sk_`)
 
 ### P1 - High Priority (Batch 2 Remaining)
 - [x] Create "My Series" dedicated page - DONE (Feb 22, 2026)
