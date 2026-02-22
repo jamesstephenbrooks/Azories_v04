@@ -115,11 +115,14 @@ Create a digital book creation and reading web application named "Azories" with:
 - [x] Character Builder dropdown text - FIXED (colorScheme styling)
 - [x] Book Reader swipe gestures - IMPLEMENTED
 - [x] Responsive book info card - FIXED (mobile/tablet layout)
+- [x] iPad keyboard covers chapter popup - FIXED (dialog positioned at top 20% with scroll-into-view)
+- [x] Age range filter in library - IMPLEMENTED (dropdown in genre panel)
+- [x] Audiobook improvements - ENHANCED (categorized voices, quick speed buttons)
+- [x] Book content - 57 books created, 21+ with covers (more generating in background)
 
 ### P1 - High Priority
-- [ ] Verify animation progress bar and save-to-gallery (user verification pending)
-- [ ] Generate cover images for all 50 launch books
-- [ ] Add page images throughout books
+- [ ] Complete cover generation for remaining books (script running)
+- [ ] Verify animation progress bar and save-to-gallery
 - [ ] Fix 3D library spiral staircase navigation
 - [ ] Integrate fal.ai for true image-to-image style transfer
 
