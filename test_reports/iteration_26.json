@@ -1,0 +1,64 @@
+{
+  "summary": "Iteration 26 Bug Fixes Testing - All reported bugs fixed and verified",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/tts/generate", "issue": "ElevenLabs API quota exhausted - not a code bug, quota limit reached", "priority": "LOW"}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iteration26_bugfixes.py",
+    "/app/test_reports/pytest/pytest_results_iter26.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [
+    "/app/backend/tests/test_iteration26_bugfixes.py"
+  ],
+  "success_rate": {
+    "backend": "100% (7/7 tests passed)",
+    "frontend": "100% (all features working)"
+  },
+  "test_credentials": {
+    "email": "testpdf@test.com",
+    "password": "password123",
+    "book_id": "341ebcad-2712-43e8-a956-b0edf6958149"
+  },
+  "seed_data_creation": "None - used existing test data",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All iteration 26 bug fixes verified working: 1) Save Cover works without 'need to log in' error (token key fixed from 'token' to 'azories-token'), 2) Create Chapter button works, 3) Create Page button works, 4) Collaborators popup position is correct (centered on screen), 5) TTS endpoint works with ElevenLabs (quota may be exhausted)",
+  "bugs_verified_fixed": [
+    {
+      "bug": "Save Cover showing 'need to log in' error when logged in",
+      "status": "FIXED",
+      "verification": "UI test showed 'Cover saved!' success toast with no error",
+      "root_cause": "Frontend was using wrong localStorage key 'token' instead of 'azories-token'"
+    },
+    {
+      "bug": "Create Chapter button not working",
+      "status": "FIXED", 
+      "verification": "UI test created 'Test Chapter from Playwright' and saw 'Chapter created!' toast"
+    },
+    {
+      "bug": "Create Page button not working",
+      "status": "FIXED",
+      "verification": "UI test created Page 3 and saw 'Page added!' toast"
+    },
+    {
+      "bug": "Collaborators popup going upwards (wrong position)",
+      "status": "FIXED",
+      "verification": "UI test confirmed popup opens centered on screen, not going upwards"
+    },
+    {
+      "bug": "TTS endpoint with ElevenLabs",
+      "status": "WORKING (quota limited)",
+      "verification": "Backend logs show TTS was generating audio successfully until ElevenLabs quota was exhausted"
+    }
+  ]
+}
