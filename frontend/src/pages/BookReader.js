@@ -519,7 +519,7 @@ export default function BookReader() {
         )}
         
         <div className={`w-full transition-all duration-500 ${
-          isFullscreen ? 'max-w-[95vw] h-[85vh]' : 'max-w-5xl'
+          isFullscreen ? 'max-w-[98vw] h-[90vh]' : 'max-w-7xl'
         }`} style={{ perspective: '2000px' }}>
           <div className={`relative h-full ${isFullscreen ? 'flex items-center justify-center' : ''}`}>
             
