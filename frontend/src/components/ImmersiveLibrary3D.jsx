@@ -1821,7 +1821,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                 className="fixed bottom-32 left-1/2 -translate-x-1/2 pointer-events-auto z-50"
               >
                 <Button
-                  onClick={() => usePortal(nearPortal)}
+                  onClick={() => activatePortal(nearPortal)}
                   className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6 py-3 rounded-full shadow-lg shadow-purple-500/50 flex items-center gap-2"
                   data-testid="teleport-portal-btn"
                 >
