@@ -1301,17 +1301,30 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
               
               if (hitY <= currentFootY + maxStepUp && hitY >= currentFootY - maxStepDown) {
                 // For stairs, prefer the highest valid point (to climb up)
-                // For regular floor, use closest to current level
-                if (bestFloorY === null || (isStair && hitY > bestFloorY) || (!isStair && Math.abs(hitY - currentFootY) < Math.abs(bestFloorY - currentFootY))) {
+                // For regular floor, use closest to current level - but limit how far we can sink
+                const distFromCurrent = Math.abs(hitY - currentFootY);
+                
+                if (bestFloorY === null) {
                   bestFloorY = hitY;
                   if (isStair) detectedStairMesh = meshName;
+                } else if (isStair && hitY > bestFloorY) {
+                  // For stairs, always prefer higher (climbing)
+                  bestFloorY = hitY;
+                  detectedStairMesh = meshName;
+                } else if (!isStair && hitY > bestFloorY && hitY <= currentFootY + 0.3) {
+                  // For regular floor, prefer higher surfaces that are close to current level
+                  // This prevents sinking while still allowing normal floor detection
+                  bestFloorY = hitY;
+                } else if (!isStair && bestFloorY === null) {
+                  bestFloorY = hitY;
                 }
               }
             }
           }
           
           if (bestFloorY !== null) {
-            detectedFloorY = bestFloorY;
+            // Add tiny offset to prevent z-fighting/sinking into surfaces
+            detectedFloorY = bestFloorY + 0.01;
           }
         }
         
