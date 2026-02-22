@@ -466,13 +466,6 @@ export default function BookReader() {
 
   // Auto-read effect: play audio when page changes with auto-read enabled
   useEffect(() => {
-      currentPage, 
-      autoReadRef: autoReadRef.current, 
-      autoReadState: autoRead,
-      allPagesLength: allPages.length,
-      isPlaying
-    });
-    
     // Don't do anything if already playing - prevents loop
     if (isPlaying || audioLoading) {
       return;
