@@ -113,7 +113,7 @@ export default function BookEditor() {
   }, [selectedChapter]);
 
   const fetchBookGallery = async () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('azories-token');
     if (!token || !bookId) return;
     
     try {
@@ -138,7 +138,7 @@ export default function BookEditor() {
   
   // Fetch Art Studio gallery images for this book
   const fetchGalleryImages = async () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('azories-token');
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
     
     try {
@@ -169,7 +169,7 @@ export default function BookEditor() {
     
     const isComicMode = selectedPage.layout === 'comic_4panel' || selectedPage.layout === 'comic_2panel';
     const imageKey = isComicMode ? `image${slot}_url` : 'image_url';
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('azories-token');
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
     
     try {
@@ -207,7 +207,7 @@ export default function BookEditor() {
   const updateImagePosition = async (key, value) => {
     if (!selectedPage) return;
     
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('azories-token');
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
     
     try {
@@ -281,7 +281,7 @@ export default function BookEditor() {
     }
     
     setCreatingChapter(true);
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('azories-token');
     try {
       const res = await axios.post(`${API}/books/${bookId}/chapters`, {
         title: newChapterTitle
@@ -303,7 +303,7 @@ export default function BookEditor() {
   const deleteChapter = async (chapterId) => {
     if (!window.confirm('Delete this chapter and all its pages?')) return;
     
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('azories-token');
     try {
       await axios.delete(`${API}/chapters/${chapterId}`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -324,7 +324,7 @@ export default function BookEditor() {
       return;
     }
     
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('azories-token');
     try {
       const res = await axios.post(`${API}/chapters/${selectedChapter.id}/pages`, {
         text_content: '',
@@ -350,7 +350,7 @@ export default function BookEditor() {
     
     autoSaveTimeoutRef.current = setTimeout(async () => {
       if (selectedPage) {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('azories-token');
         if (!token) return;
         
         try {
@@ -388,7 +388,7 @@ export default function BookEditor() {
   const savePage = async () => {
     if (!selectedPage) return;
     
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('azories-token');
     if (!token) {
       toast.error('Please log in to save');
       return;
@@ -417,7 +417,7 @@ export default function BookEditor() {
   };
 
   const saveCover = async () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('azories-token');
     if (!token) {
       toast.error('Please log in to save');
       return;
@@ -440,7 +440,7 @@ export default function BookEditor() {
   const generateAllImages = async () => {
     if (!window.confirm('Generate AI images for all pages without images? This may take several minutes.')) return;
     
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('azories-token');
     setGeneratingAllImages(true);
     toast.info('Generating images for all pages... This may take a few minutes.');
     
@@ -466,7 +466,7 @@ export default function BookEditor() {
   const generateImagesFromText = async () => {
     if (!window.confirm('Generate AI images for all pages based on their text content? This may take several minutes.')) return;
     
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('azories-token');
     setGeneratingAllImages(true);
     toast.info('Analyzing text and generating images... This may take a few minutes.');
     
@@ -492,7 +492,7 @@ export default function BookEditor() {
   const deletePage = async (pageId) => {
     if (!window.confirm('Delete this page?')) return;
     
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('azories-token');
     try {
       await axios.delete(`${API}/pages/${pageId}`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -674,7 +674,7 @@ export default function BookEditor() {
   const isComicMode = book?.layout_mode === 'comic';
 
   const downloadBook = async () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('azories-token');
     if (!token) {
       toast.error('Please log in to download');
       return;
