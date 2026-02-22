@@ -578,45 +578,63 @@ export default function BookReader() {
                 </div>
                 
                 {/* Right Page (Text) with Realistic Page Turn Animation */}
-                <div className={`relative ${isFullscreen ? 'h-full aspect-[3/4]' : 'w-full max-w-md aspect-[3/4]'}`} style={{ transformStyle: 'preserve-3d', perspective: '1500px' }}>
+                <div className={`relative ${isFullscreen ? 'h-full aspect-[3/4]' : 'w-full max-w-md aspect-[3/4]'}`} style={{ transformStyle: 'preserve-3d', perspective: '2000px' }}>
+                  
+                  {/* Background/Next Page - Always visible underneath */}
+                  <div 
+                    className="absolute inset-0 reader-page rounded-r-lg p-8 md:p-10 flex flex-col overflow-hidden"
+                    style={{ 
+                      boxShadow: 'inset 2px 0 8px rgba(0,0,0,0.1)',
+                      zIndex: 1
+                    }}
+                  >
+                    {currentPage < totalPages - 1 && (
+                      <div className="flex-1 overflow-hidden opacity-30">
+                        <p className="font-reader text-lg leading-relaxed text-muted-foreground/50">
+                          {allPages[currentPage + 1]?.text_content?.substring(0, 200) || 'Next page...'}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Current Page with flip animation */}
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={`right-${currentPage}`}
                       initial={{ 
-                        rotateY: flipDirection === 'next' ? -120 : 0,
-                        scale: flipDirection === 'next' ? 0.9 : 1,
-                        x: flipDirection === 'next' ? 50 : 0,
+                        rotateY: flipDirection === 'next' ? -180 : 0,
+                        x: flipDirection === 'next' ? 100 : 0,
                         opacity: 0,
-                        filter: 'brightness(0.8)'
+                        scale: 0.95
                       }}
                       animate={{ 
                         rotateY: 0,
-                        scale: 1,
                         x: 0,
                         opacity: 1,
-                        filter: 'brightness(1)'
+                        scale: 1
                       }}
                       exit={{ 
-                        rotateY: flipDirection === 'prev' ? -120 : 0,
-                        scale: flipDirection === 'prev' ? 0.9 : 1,
-                        x: flipDirection === 'prev' ? 50 : 0,
+                        rotateY: flipDirection === 'prev' ? -180 : 0,
+                        x: flipDirection === 'prev' ? 100 : 0,
                         opacity: 0,
-                        filter: 'brightness(0.8)'
+                        scale: 0.95
                       }}
                       transition={{ 
-                        duration: 0.5,
-                        ease: [0.25, 0.1, 0.25, 1.0]
+                        duration: 0.6,
+                        ease: [0.4, 0, 0.2, 1],
+                        rotateY: { duration: 0.6, ease: [0.4, 0, 0.2, 1] }
                       }}
                       className="absolute inset-0 reader-page rounded-r-lg p-8 md:p-10 flex flex-col overflow-hidden"
                       style={{ 
                         boxShadow: '8px 0 30px rgba(0,0,0,0.25), inset 2px 0 5px rgba(0,0,0,0.05)',
                         transformStyle: 'preserve-3d',
                         transformOrigin: 'left center',
-                        backfaceVisibility: 'hidden'
+                        backfaceVisibility: 'hidden',
+                        zIndex: 10
                       }}
                     >
                       {/* Book spine shadow on left edge */}
-                      <div className="absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-black/10 to-transparent" />
+                      <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-black/15 to-transparent" />
                       
                       {currentPageData?.isChapterTitle ? (
                         <div className="flex-1 flex flex-col items-center justify-center">
@@ -643,12 +661,39 @@ export default function BookReader() {
                         </>
                       )}
                       
-                      {/* Page curl effect */}
+                      {/* Realistic page curl effect - bottom right corner */}
                       <div 
-                        className="absolute bottom-0 right-0 w-16 h-16 pointer-events-none"
+                        className="absolute bottom-0 right-0 w-20 h-20 pointer-events-none overflow-hidden"
+                        style={{ zIndex: 20 }}
+                      >
+                        <div 
+                          className="absolute bottom-0 right-0 w-24 h-24"
+                          style={{
+                            background: `
+                              linear-gradient(
+                                -45deg,
+                                transparent 0%,
+                                transparent 45%,
+                                rgba(0,0,0,0.03) 46%,
+                                rgba(255,255,255,0.9) 47%,
+                                rgba(245,245,245,1) 48%,
+                                rgba(240,240,240,1) 100%
+                              )
+                            `,
+                            borderTopLeftRadius: '100%',
+                            boxShadow: '-4px -4px 10px rgba(0,0,0,0.15)',
+                            transform: 'rotate(0deg)'
+                          }}
+                        />
+                      </div>
+                      
+                      {/* Page shadow during turn */}
+                      <motion.div
+                        className="absolute inset-0 pointer-events-none"
                         style={{
-                          background: 'linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.1) 50%)',
-                          borderTopLeftRadius: '100%'
+                          background: 'linear-gradient(to left, transparent 0%, rgba(0,0,0,0.05) 100%)',
+                          opacity: isFlipping ? 1 : 0,
+                          transition: 'opacity 0.3s'
                         }}
                       />
                     </motion.div>
