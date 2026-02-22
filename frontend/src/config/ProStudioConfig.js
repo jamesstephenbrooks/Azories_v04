@@ -199,13 +199,34 @@ export const VIDEO_MODELS = [
 // AI Image Models
 export const IMAGE_MODELS = [
   {
+    id: 'flux-dev',
+    name: 'FLUX.1 Dev',
+    provider: 'fal.ai',
+    description: 'Fast, high-quality text-to-image with excellent consistency',
+    strengths: ['Speed', 'Quality', 'Consistency'],
+    resolutions: ['1024x1024', '1536x1024', '1024x1536'],
+    available: true,
+    tag: 'NEW'
+  },
+  {
+    id: 'flux-pro',
+    name: 'FLUX Pro 1.1',
+    provider: 'fal.ai',
+    description: 'Premium quality generation with enhanced details',
+    strengths: ['Premium Quality', 'Fine Details', 'Photorealism'],
+    resolutions: ['1024x1024', '1536x1024', '1024x1536'],
+    available: true,
+    tag: 'BEST'
+  },
+  {
     id: 'nano-banana-pro',
     name: 'Nano Banana Pro',
     provider: 'Google',
     description: 'Most realistic image generation',
     strengths: ['Photorealism', 'Accurate details', 'Natural lighting'],
     resolutions: ['1024x1024', '1536x1024', '1024x1536', '2048x2048', '4096x4096'],
-    available: true
+    available: true,
+    tag: 'TOP'
   },
   {
     id: 'gpt-image-1',
@@ -217,15 +238,6 @@ export const IMAGE_MODELS = [
     available: true
   },
   {
-    id: 'flux-pro',
-    name: 'Flux Pro',
-    provider: 'Black Forest Labs',
-    description: 'Fast with artistic flair',
-    strengths: ['Speed', 'Artistic styles', 'Composition'],
-    resolutions: ['1024x1024', '1536x1024', '1024x1536'],
-    available: true
-  },
-  {
     id: 'ideogram-2',
     name: 'Ideogram 2.0',
     provider: 'Ideogram',
@@ -233,6 +245,43 @@ export const IMAGE_MODELS = [
     strengths: ['Text in images', 'Logos', 'Typography'],
     resolutions: ['1024x1024', '1536x1024', '1024x1536'],
     available: true
+  }
+];
+
+// Character Consistency Models (fal.ai)
+export const CHARACTER_CONSISTENCY_MODELS = [
+  {
+    id: 'flux-pulid',
+    name: 'FLUX PuLID',
+    provider: 'fal.ai',
+    description: 'Face/identity preservation - generate consistent faces from a single reference',
+    type: 'face-id',
+    strengths: ['Instant consistency', 'No training needed', 'Single reference image'],
+    available: true,
+    tag: 'NEW'
+  },
+  {
+    id: 'flux-lora',
+    name: 'FLUX LoRA',
+    provider: 'fal.ai',
+    description: 'Generate with trained character models - highest consistency',
+    type: 'lora',
+    strengths: ['Highest consistency', 'Trained identity', 'Unlimited generations'],
+    available: true,
+    tag: 'BEST'
+  },
+  {
+    id: 'lora-trainer',
+    name: 'Portrait LoRA Trainer',
+    provider: 'fal.ai',
+    description: 'Train custom character LoRA for true identity preservation',
+    type: 'training',
+    strengths: ['Creates permanent model', '100% consistent', 'Use across all scenes'],
+    trainingTime: '5-15 minutes',
+    minImages: 3,
+    maxImages: 20,
+    available: true,
+    tag: 'PRO'
   }
 ];
 
