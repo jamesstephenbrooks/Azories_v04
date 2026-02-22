@@ -166,18 +166,17 @@ export default function ProStudio() {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
 
-    const newImages = [];
     for (const file of files) {
       const reader = new FileReader();
       reader.onload = (event) => {
-        newImages.push({
+        const newImage = {
           id: Date.now() + Math.random(),
           url: event.target.result,
           name: file.name
-        });
+        };
         
         if (purpose === 'character') {
-          setCharacterImages(prev => [...prev, ...newImages]);
+          setCharacterImages(prev => [...prev, newImage]);
         } else if (purpose === 'shots') {
           setShotsSourceImage(event.target.result);
         }
