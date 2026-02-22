@@ -1928,8 +1928,7 @@ async def generate_expression(request: GenerateExpressionRequest, current_user: 
         images = await image_gen.generate_images(
             prompt=full_prompt,
             model="gpt-image-1",
-            number_of_images=1,
-            size="1024x1024"
+            number_of_images=1
         )
         
         if images and len(images) > 0:
