@@ -46,45 +46,45 @@ const GENRE_SECTIONS = [
 
 // Teleport portals for moving between floors
 const TELEPORT_PORTALS = [
-  // Bottom floor portals - Go Upstairs
+  // Bottom floor portals - Go Upstairs (cross to opposite side at top)
   {
-    id: 'stairs-up-1',
+    id: 'stairs-up-back',
     name: 'Go Upstairs',
-    triggerPos: { x: -1.77, y: 4.27, z: -6.05 },
-    triggerRadius: 1.0, // Larger trigger area
-    destPos: { x: -2.22, y: 6.21, z: -6.94 },
+    triggerPos: { x: -1.77, y: 4.27, z: -6.05 }, // Bottom back (near comic)
+    triggerRadius: 1.0,
+    destPos: { x: -2.23, y: 6.21, z: 4.03 }, // Top front (opposite side)
     destRotation: Math.PI,
     color: '#00ffff',
     icon: '↑'
   },
   {
-    id: 'stairs-up-2',
+    id: 'stairs-up-front',
     name: 'Go Upstairs',
-    triggerPos: { x: -1.70, y: 4.27, z: 3.10 },
+    triggerPos: { x: -1.70, y: 4.27, z: 3.10 }, // Bottom front
     triggerRadius: 1.0,
-    destPos: { x: -2.23, y: 6.21, z: 4.03 },
+    destPos: { x: -2.22, y: 6.21, z: -6.94 }, // Top back (opposite side)
     destRotation: 0,
     color: '#00ffff',
     icon: '↑'
   },
-  // Top floor portals - Go Downstairs
+  // Top floor portals - Go Downstairs (cross to opposite side at bottom)
   {
-    id: 'stairs-down-1',
+    id: 'stairs-down-back',
     name: 'Go Downstairs',
-    triggerPos: { x: -2.22, y: 6.21, z: -6.94 },
+    triggerPos: { x: -2.22, y: 6.21, z: -6.94 }, // Top back
     triggerRadius: 1.0,
-    destPos: { x: -1.77, y: 4.27, z: -6.05 },
-    destRotation: 0,
+    destPos: { x: -1.70, y: 4.27, z: 3.10 }, // Bottom front (opposite side)
+    destRotation: Math.PI,
     color: '#00ffff',
     icon: '↓'
   },
   {
-    id: 'stairs-down-2',
+    id: 'stairs-down-front',
     name: 'Go Downstairs',
-    triggerPos: { x: -2.23, y: 6.21, z: 4.03 },
+    triggerPos: { x: -2.23, y: 6.21, z: 4.03 }, // Top front
     triggerRadius: 1.0,
-    destPos: { x: -1.70, y: 4.27, z: 3.10 },
-    destRotation: Math.PI,
+    destPos: { x: -1.77, y: 4.27, z: -6.05 }, // Bottom back (opposite side)
+    destRotation: 0,
     color: '#00ffff',
     icon: '↓'
   }
