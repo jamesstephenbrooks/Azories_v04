@@ -1506,6 +1506,9 @@ async def get_pages(chapter_id: str):
         page.setdefault("image_position_x", 50)
         page.setdefault("image_position_y", 50)
         page.setdefault("image_fit", "cover")
+        page.setdefault("font_family", "default")
+        page.setdefault("font_size", "medium")
+        page.setdefault("text_align", "left")
     return [PageResponse(**p) for p in pages]
 
 @api_router.put("/pages/{page_id}", response_model=PageResponse)
