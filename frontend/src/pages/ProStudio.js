@@ -234,6 +234,196 @@ export default function ProStudio() {
     }
   };
 
+  // Train LoRA for character consistency
+  const trainCharacterLora = async (characterId) => {
+    if (!falAvailable) {
+      toast.error('fal.ai is not available for LoRA training');
+      return;
+    }
+
+    setIsTrainingLora(true);
+    setLoadingMessage('Starting LoRA training (this takes 5-15 minutes)...');
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/pro-studio/characters/train-consistency?character_id=${characterId}`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        toast.success('LoRA training started! This will take 5-15 minutes.');
+        
+        // Start polling for training status
+        pollTrainingStatus(data.job_id, characterId);
+      } else {
+        const error = await response.json();
+        toast.error(error.detail || 'Failed to start LoRA training');
+        setIsTrainingLora(false);
+      }
+    } catch (error) {
+      toast.error('Error starting LoRA training');
+      console.error(error);
+      setIsTrainingLora(false);
+    }
+  };
+
+  // Poll training status
+  const pollTrainingStatus = async (jobId, characterId) => {
+    const token = localStorage.getItem('token');
+    const pollInterval = setInterval(async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/fal/training-status/${jobId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setTrainingProgress(data);
+
+          if (data.status === 'completed') {
+            clearInterval(pollInterval);
+            toast.success('LoRA training complete! Your character is now ready for consistent generation.');
+            setIsTrainingLora(false);
+            setLoadingMessage('');
+            // Reload characters to get updated data
+            loadCharacters();
+          } else if (data.status === 'failed') {
+            clearInterval(pollInterval);
+            toast.error('LoRA training failed. Please try again.');
+            setIsTrainingLora(false);
+            setLoadingMessage('');
+          } else {
+            setLoadingMessage(`Training in progress... ${data.logs?.[0] || ''}`);
+          }
+        }
+      } catch (error) {
+        console.error('Polling error:', error);
+      }
+    }, 10000); // Poll every 10 seconds
+
+    // Timeout after 20 minutes
+    setTimeout(() => {
+      clearInterval(pollInterval);
+      if (isTrainingLora) {
+        setIsTrainingLora(false);
+        setLoadingMessage('');
+        toast.error('Training timed out. Please check later.');
+      }
+    }, 1200000);
+  };
+
+  // Generate consistent character image
+  const generateConsistentCharacterImage = async () => {
+    if (!selectedCharacter) {
+      toast.error('Please select a character first');
+      return;
+    }
+    if (!prompt.trim()) {
+      toast.error('Please enter a prompt');
+      return;
+    }
+
+    setIsLoading(true);
+    const method = selectedCharacter.lora_status === 'completed' ? 'LoRA' : 'PuLID';
+    setLoadingMessage(`Generating consistent image using ${method}...`);
+
+    try {
+      const token = localStorage.getItem('token');
+      const formData = new FormData();
+      formData.append('prompt', prompt);
+      formData.append('image_size', aspectRatio === '16:9' ? 'landscape_16_9' : aspectRatio === '9:16' ? 'portrait_16_9' : 'square_hd');
+
+      const response = await fetch(`${API_URL}/api/pro-studio/characters/${selectedCharacter.id}/generate-consistent`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.images && data.images.length > 0) {
+          const newImage = {
+            id: Date.now(),
+            url: data.images[0].url,
+            prompt: prompt,
+            method: data.method,
+            character: selectedCharacter.name
+          };
+          setGeneratedImages(prev => [newImage, ...prev]);
+          setSelectedHeroFrame(newImage);
+          toast.success(`Generated using ${data.method}!`);
+        }
+      } else {
+        const error = await response.json();
+        toast.error(error.detail || 'Generation failed');
+      }
+    } catch (error) {
+      toast.error('Error generating image');
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+      setLoadingMessage('');
+    }
+  };
+
+  // Generate with fal.ai FLUX
+  const generateWithFal = async () => {
+    if (!prompt.trim()) {
+      toast.error('Please enter a prompt');
+      return;
+    }
+
+    setIsLoading(true);
+    setLoadingMessage('Generating with FLUX...');
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/fal/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          prompt: prompt,
+          model: selectedImageModel,
+          image_size: aspectRatio === '16:9' ? 'landscape_16_9' : aspectRatio === '9:16' ? 'portrait_16_9' : 'square_hd',
+          num_images: 1
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.images && data.images.length > 0) {
+          const newImage = {
+            id: Date.now(),
+            url: data.images[0].url,
+            prompt: prompt,
+            model: selectedImageModel
+          };
+          setGeneratedImages(prev => [newImage, ...prev]);
+          setSelectedHeroFrame(newImage);
+          toast.success('Image generated with FLUX!');
+        }
+      } else {
+        const error = await response.json();
+        toast.error(error.detail || 'Generation failed');
+      }
+    } catch (error) {
+      toast.error('Error generating image');
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+      setLoadingMessage('');
+    }
+  };
+
   // Generate hero frame with Cinema Studio settings
   const generateHeroFrame = async () => {
     if (!prompt.trim()) {
