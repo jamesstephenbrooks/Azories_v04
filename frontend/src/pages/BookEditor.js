@@ -887,7 +887,7 @@ export default function BookEditor() {
                     <FiPlus className="w-4 h-4" />
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-sm">
+                <DialogContent className="sm:max-w-sm fixed top-[20%] sm:top-[50%] sm:-translate-y-1/2 max-h-[50vh] overflow-visible">
                   <DialogHeader>
                     <DialogTitle className="font-heading">New Chapter</DialogTitle>
                   </DialogHeader>
@@ -898,6 +898,13 @@ export default function BookEditor() {
                       onChange={(e) => setNewChapterTitle(e.target.value)}
                       className="rounded-full border-2"
                       data-testid="new-chapter-title"
+                      autoComplete="off"
+                      onFocus={(e) => {
+                        // Scroll into view on mobile when keyboard appears
+                        setTimeout(() => {
+                          e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }, 300);
+                      }}
                     />
                     <Button 
                       onClick={createChapter}
