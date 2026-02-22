@@ -331,15 +331,16 @@ const RealisticPageFlip = forwardRef(({
     onPageChange?.(newFlipPage, contentPageIndex);
   }, [onPageChange]);
 
-  const handleFlipStart = useCallback(() => {
-    setIsFlipping(true);
-    onFlipStart?.();
-  }, [onFlipStart]);
-
-  const handleFlipEnd = useCallback(() => {
-    setIsFlipping(false);
-    onFlipEnd?.();
-  }, [onFlipEnd]);
+  const handleFlipStart = useCallback((e) => {
+    // e.data is the state: "user_fold", "fold_corner", "flipping", "read"
+    if (e.data === 'flipping') {
+      setIsFlipping(true);
+      onFlipStart?.();
+    } else if (e.data === 'read') {
+      setIsFlipping(false);
+      onFlipEnd?.();
+    }
+  }, [onFlipStart, onFlipEnd]);
 
   const goToNextPage = () => {
     flipBookRef.current?.pageFlip()?.flipNext();
