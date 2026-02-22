@@ -85,17 +85,21 @@ export default function Library() {
     }
   };
 
-  const BookCard = ({ book, index, isFeatured = false }) => (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: Math.min(index * 0.03, 0.3) }}
-      className="book-card group cursor-pointer"
-      onClick={() => navigate(`/read/${book.id}`)}
-      data-testid={`book-card-${book.id}`}
-    >
-      <div className="book-perspective">
-        <div className={`relative bg-card rounded-3xl overflow-hidden border border-border book-3d ${isFeatured ? 'ring-2 ring-primary/50' : ''}`}>
+  const BookCard = ({ book, index, isFeatured = false }) => {
+    const [imageLoaded, setImageLoaded] = useState(false);
+    
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.4 }}
+        className="book-card group cursor-pointer"
+        onClick={() => navigate(`/read/${book.id}`)}
+        data-testid={`book-card-${book.id}`}
+      >
+        <div className="book-perspective">
+          <div className={`relative bg-card rounded-3xl overflow-hidden border border-border book-3d ${isFeatured ? 'ring-2 ring-primary/50' : ''}`}>
           {/* Summary/Back cover button - Top Right */}
           <button
             onClick={(e) => {
