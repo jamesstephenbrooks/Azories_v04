@@ -210,10 +210,16 @@ export default function BookReader() {
     
     if (newPage < minPage || newPage > maxPage || isFlipping) return;
     
+    // CRITICAL: Stop any playing audio IMMEDIATELY before page turn
     if (audioElement) {
       audioElement.pause();
+      audioElement.currentTime = 0; // Reset position
+      setAudioElement(null);
       setIsPlaying(false);
     }
+    
+    // Reset the last played page so new page can play fresh
+    lastPlayedPageRef.current = -999;
     
     // Use the ref to control the page flip component
     if (realisticFlipRef.current) {

@@ -71,30 +71,13 @@ const Page = forwardRef(({ pageNumber, children, isLeft, isCover, isBackCover },
 
 Page.displayName = 'Page';
 
-// Cover page component
-const CoverPage = forwardRef(({ book, onClick, onListen }, ref) => {
-  const [isHovered, setIsHovered] = useState(false);
-  
-  // Use capture phase to intercept clicks before react-pageflip can capture them
-  const handleReadClick = useCallback((e) => {
-    e.stopPropagation();
-    e.preventDefault();
-    onClick?.();
-  }, [onClick]);
-  
-  const handleListenClick = useCallback((e) => {
-    e.stopPropagation();
-    e.preventDefault();
-    onListen?.();
-  }, [onListen]);
-  
+// Cover page component - simple cover without hover overlay (buttons are external)
+const CoverPage = forwardRef(({ book }, ref) => {
   return (
     <div 
       ref={ref}
       className="demoPage page-wrapper relative w-full h-full cursor-pointer group"
       data-density="hard"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       <div 
         className="absolute inset-0 rounded-r-lg overflow-hidden"
@@ -123,40 +106,6 @@ const CoverPage = forwardRef(({ book, onClick, onListen }, ref) => {
             {book?.title}
           </h1>
           <p className="text-lg opacity-80 drop-shadow">{book?.author_name}</p>
-        </div>
-        
-        {/* Hover overlay with Read/Listen buttons */}
-        <div className={`absolute inset-0 bg-black/60 flex items-center justify-center transition-opacity duration-300 z-50 ${isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-          <div className="text-center text-white space-y-4">
-            <div className="flex gap-4 justify-center">
-              <button 
-                data-testid="cover-read-btn"
-                onPointerDownCapture={handleReadClick}
-                onTouchStartCapture={handleReadClick}
-                className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/20 backdrop-blur hover:bg-white/30 transition-colors relative z-[100]"
-                style={{ touchAction: 'manipulation' }}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-                <span className="font-heading text-lg">Read</span>
-              </button>
-              <button 
-                data-testid="cover-listen-btn"
-                onPointerDownCapture={handleListenClick}
-                onTouchStartCapture={handleListenClick}
-                className="flex items-center gap-2 px-6 py-3 rounded-full bg-purple-600 hover:bg-purple-500 transition-colors relative z-[100]"
-                style={{ touchAction: 'manipulation' }}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="font-heading text-lg">Listen</span>
-              </button>
-            </div>
-            <p className="text-sm opacity-70">Choose how you want to experience this story</p>
-          </div>
         </div>
         
         {/* Spine effect */}
