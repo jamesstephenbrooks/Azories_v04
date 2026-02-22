@@ -558,6 +558,8 @@ export default function BookReader() {
                   }}
                   onFlipStart={() => setIsFlipping(true)}
                   onFlipEnd={() => setIsFlipping(false)}
+                  onStartReading={startReading}
+                  onStartListening={startListening}
                   initialPage={currentPage >= 0 ? currentPage + 1 : 0}
                   width={isFullscreen ? Math.min(window.innerWidth * 0.45, 850) : 550}
                   height={isFullscreen ? Math.min(window.innerHeight * 0.88, 1000) : 770}
