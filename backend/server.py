@@ -2463,6 +2463,49 @@ async def delete_from_character_gallery(character_id: str, image_id: str, curren
         raise HTTPException(status_code=404, detail="Image not found")
     return {"success": True}
 
+@api_router.post("/pro-studio/characters/{character_id}/add-reference")
+async def add_reference_image(character_id: str, request: dict, current_user: dict = Depends(get_current_user)):
+    """Add an image to a character's reference images (for LoRA training)
+    
+    This allows users to build up their reference image collection
+    from generated images to eventually train a LoRA model.
+    """
+    character = await db.pro_studio_characters.find_one({
+        "id": character_id,
+        "user_id": current_user["id"]
+    })
+    if not character:
+        raise HTTPException(status_code=404, detail="Character not found")
+    
+    image_url = request.get("image_url")
+    if not image_url:
+        raise HTTPException(status_code=400, detail="image_url is required")
+    
+    # Add to reference images (max 20)
+    ref_images = character.get("reference_images", [])
+    if image_url not in ref_images:  # Avoid duplicates
+        ref_images.append(image_url)
+        if len(ref_images) > 20:
+            ref_images = ref_images[:20]
+        
+        await db.pro_studio_characters.update_one(
+            {"id": character_id},
+            {"$set": {
+                "reference_images": ref_images,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+    
+    # Check if now eligible for LoRA training
+    can_train_lora = len(ref_images) >= 3
+    
+    return {
+        "success": True,
+        "reference_images_count": len(ref_images),
+        "can_train_lora": can_train_lora,
+        "message": f"Reference image added. {len(ref_images)}/3 images for LoRA training." if len(ref_images) < 3 else "You can now train a LoRA model for this character!"
+    }
+
 @api_router.post("/pro-studio/characters/{character_id}/regenerate-thumbnail")
 async def regenerate_character_thumbnail(character_id: str, current_user: dict = Depends(get_current_user)):
     """Regenerate the thumbnail for a character using fal.ai
