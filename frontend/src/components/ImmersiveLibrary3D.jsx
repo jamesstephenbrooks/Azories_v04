@@ -24,24 +24,28 @@ const DEFAULT_BOUNDS = {
 // Genre sections - positions calibrated using debug mode clicks
 // bannerPos.y is set explicitly, other banners use relative positioning until calibrated
 // shelfPos is where the highlighted book will appear when selected - moved closer to bookcases
+// position is where the PLAYER spawns (should be in front of bookcase, not inside it)
 const GENRE_SECTIONS = [
-  // CALIBRATED using debug mode - Fiction at X:-4.79, Y:5.93, Z:-1.35
-  { name: 'Fiction', position: { x: -4.79, z: -1.35 }, bannerPos: { x: -4.79, y: 6.5, z: -1.35 }, shelfPos: { x: -4.5, y: 5.4, z: -1.35 }, rotation: Math.PI / 2, color: '#9333ea', calibrated: true },
+  // CALIBRATED using debug mode - Fiction - player spawns 2 units away from bookcase
+  { name: 'Fiction', position: { x: -2.5, z: -1.35 }, bannerPos: { x: -4.79, y: 6.5, z: -1.35 }, shelfPos: { x: -4.5, y: 5.4, z: -1.35 }, rotation: Math.PI / 2, color: '#9333ea', calibrated: true },
   
-  // CALIBRATED - Adventure at X:-5.79, Y:5.94, Z:0.42 - perpendicular to Fiction, pulled away from wall
-  { name: 'Adventure', position: { x: -5.0, z: 0.42 }, bannerPos: { x: -5.0, y: 6.5, z: 0.42 }, shelfPos: { x: -4.7, y: 5.4, z: 0.42 }, rotation: 0, color: '#10b981', calibrated: true },
+  // CALIBRATED - Adventure - player spawns facing the bookcase
+  { name: 'Adventure', position: { x: -5.0, z: 2.5 }, bannerPos: { x: -5.0, y: 6.5, z: 0.42 }, shelfPos: { x: -4.7, y: 5.4, z: 0.42 }, rotation: 0, color: '#10b981', calibrated: true },
   
-  // Uncalibrated - need debug clicks to position correctly
-  { name: 'Mystery', position: { x: -4, z: -3 }, bannerPos: { x: -4.79, y: 6.5, z: -3 }, shelfPos: { x: -4.5, y: 5.4, z: -3 }, rotation: Math.PI / 2, color: '#3b82f6' },
-  // CALIBRATED - Fantasy at X:-1.01, Y:5.80, Z:-8.12 (back wall)
-  { name: 'Fantasy', position: { x: -1.01, z: -8.12 }, bannerPos: { x: -1.01, y: 5.7, z: -7.5 }, shelfPos: { x: -1.01, y: 5.2, z: -7.2 }, rotation: 0, color: '#ec4899', calibrated: true },
+  // Mystery - player spawns in front of bookcase
+  { name: 'Mystery', position: { x: -2.0, z: -3 }, bannerPos: { x: -4.79, y: 6.5, z: -3 }, shelfPos: { x: -4.5, y: 5.4, z: -3 }, rotation: Math.PI / 2, color: '#3b82f6' },
   
-  // CALIBRATED - Comic at X:-3.41, Y:5.70, Z:-6.38 - moved toward Fantasy
-  { name: 'Comic', position: { x: -3.41, z: -6.38 }, bannerPos: { x: -2.5, y: 5.7, z: -6.5 }, shelfPos: { x: -2.5, y: 5.2, z: -6.2 }, rotation: 0, color: '#f97316', calibrated: true },
+  // CALIBRATED - Fantasy (back wall) - player spawns facing the wall
+  { name: 'Fantasy', position: { x: -1.01, z: -5.5 }, bannerPos: { x: -1.01, y: 5.7, z: -7.5 }, shelfPos: { x: -1.01, y: 5.2, z: -7.2 }, rotation: 0, color: '#ec4899', calibrated: true },
   
-  // CALIBRATED - Science Fiction at X:-6.25, Y:5.93, Z:-1.29
-  { name: 'Science Fiction', position: { x: -6.25, z: -1.29 }, bannerPos: { x: -5.5, y: 6.5, z: -1.29 }, shelfPos: { x: -5.2, y: 5.4, z: -1.29 }, rotation: Math.PI / 2, color: '#06b6d4', calibrated: true },
-  { name: 'Humour', position: { x: 4, z: -1 }, bannerPos: { x: 4.79, y: 6.5, z: -1 }, shelfPos: { x: 4.5, y: 5.4, z: -1 }, rotation: -Math.PI / 2, color: '#f59e0b' },
+  // CALIBRATED - Comic - player spawns facing the bookcase
+  { name: 'Comic', position: { x: -3.41, z: -4.0 }, bannerPos: { x: -2.5, y: 5.7, z: -6.5 }, shelfPos: { x: -2.5, y: 5.2, z: -6.2 }, rotation: 0, color: '#f97316', calibrated: true },
+  
+  // CALIBRATED - Science Fiction - player spawns in front
+  { name: 'Science Fiction', position: { x: -4.0, z: -1.29 }, bannerPos: { x: -5.5, y: 6.5, z: -1.29 }, shelfPos: { x: -5.2, y: 5.4, z: -1.29 }, rotation: Math.PI / 2, color: '#06b6d4', calibrated: true },
+  
+  // Humour - player spawns in front of bookcase on the right
+  { name: 'Humour', position: { x: 2.0, z: -1 }, bannerPos: { x: 4.79, y: 6.5, z: -1 }, shelfPos: { x: 4.5, y: 5.4, z: -1 }, rotation: -Math.PI / 2, color: '#f59e0b' },
 ];
 
 // Age range filter options for library search
