@@ -113,6 +113,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
   const [selectedBook, setSelectedBook] = useState(null); // For book info card
   const [selectedGenre, setSelectedGenre] = useState(null); // For genre book list panel
   const [highlightedBookGenre, setHighlightedBookGenre] = useState(null); // Track which genre has highlighted book
+  const [ageFilter, setAgeFilter] = useState('all'); // Age filter for library: 'all', '0-3', '4-6', '7-9', '10-12', '13+'
   
   const [isLoaded, setIsLoaded] = useState(false);
   const [loadProgress, setLoadProgress] = useState(0);
