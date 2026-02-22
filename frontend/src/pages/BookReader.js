@@ -635,6 +635,24 @@ export default function BookReader() {
         }`} style={{ perspective: '2000px' }}>
           <div className={`relative h-full ${isFullscreen ? 'flex items-center justify-center' : ''}`}>
             
+            {/* Overlay Listen Button - positioned over the cover's Listen button area */}
+            {/* This works because it's outside the react-pageflip component */}
+            {isCover && (
+              <button
+                onClick={startListening}
+                className="absolute z-[70] px-6 py-3 rounded-full bg-purple-600 hover:bg-purple-500 text-white font-medium flex items-center gap-2 transition-colors shadow-lg"
+                style={{
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(10%, -50%)'
+                }}
+                data-testid="cover-listen-overlay-btn"
+              >
+                <FiPlay className="w-5 h-5" />
+                Listen
+              </button>
+            )}
+            
             {/* Realistic Page Flip Mode */}
             <div className={`flex justify-center items-center ${isFullscreen ? 'h-full w-full' : ''}`}>
               <RealisticPageFlip
