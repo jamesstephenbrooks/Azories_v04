@@ -312,7 +312,35 @@ export default function BookReader() {
 
   // startListening is defined after playAudio below
 
-  const playAudio = async () => {
+  // Pre-load audio for upcoming pages in the background
+  const preloadAudio = useCallback(async (pageIndex) => {
+    if (pageIndex < 0 || pageIndex >= allPages.length) return;
+    if (audioCache.current.has(pageIndex)) return; // Already cached
+    if (preloadingPages.current.has(pageIndex)) return; // Already loading
+    
+    const pageData = allPages[pageIndex];
+    if (!pageData?.text_content || !narratorVoice) return;
+    
+    preloadingPages.current.add(pageIndex);
+    
+    try {
+      const res = await axios.post(`${API}/tts/generate`, {
+        text: pageData.text_content,
+        voice_id: narratorVoice
+      });
+      
+      if (res.data.audio_base64) {
+        audioCache.current.set(pageIndex, res.data.audio_base64);
+        console.log(`Pre-loaded audio for page ${pageIndex}`);
+      }
+    } catch (error) {
+      console.log(`Failed to preload audio for page ${pageIndex}:`, error.message);
+    } finally {
+      preloadingPages.current.delete(pageIndex);
+    }
+  }, [allPages, narratorVoice]);
+
+  const playAudio = useCallback(async () => {
     // Skip chapter title pages - handled by useEffect
     if (allPages[currentPageRef.current]?.isChapterTitle) {
       console.log('Skipping chapter title page');
@@ -332,66 +360,86 @@ export default function BookReader() {
           if (autoReadRef.current) {
             goToPage(currentPageRef.current + 1, 'next');
           }
-        }, 500);
+        }, 300); // Reduced from 500ms
       }
       return;
     }
 
-    setAudioLoading(true);
-    try {
-      const res = await axios.post(`${API}/tts/generate`, {
-        text: pageData.text_content,
-        voice_id: narratorVoice
-      });
+    // Check if audio is already cached
+    let audioBase64 = audioCache.current.get(pageIndex);
+    
+    if (!audioBase64) {
+      // Not cached - need to generate
+      setAudioLoading(true);
+      try {
+        const res = await axios.post(`${API}/tts/generate`, {
+          text: pageData.text_content,
+          voice_id: narratorVoice
+        });
 
-      // Check if user is still on the same page before playing
-      if (currentPageRef.current !== pageIndex) {
-        // User navigated away, don't play this audio
+        // Check if user is still on the same page before playing
+        if (currentPageRef.current !== pageIndex) {
+          return;
+        }
+
+        audioBase64 = res.data.audio_base64;
+        if (audioBase64) {
+          audioCache.current.set(pageIndex, audioBase64); // Cache it
+        }
+      } catch (error) {
+        console.error('TTS Error:', error.response?.data || error.message);
+        const errorDetail = error.response?.data?.detail;
+        if (errorDetail?.includes?.('quota_exceeded') || errorDetail?.status === 'quota_exceeded') {
+          toast.error('Audio quota exceeded. Please add credits at Profile → Universal Key → Add Balance');
+        } else {
+          toast.error(errorDetail || 'Failed to generate audio');
+        }
+        setIsPlaying(false);
+        setAudioLoading(false);
         return;
+      } finally {
+        setAudioLoading(false);
       }
-
-      if (res.data.audio_base64) {
-        if (audioElement) {
-          audioElement.pause();
-        }
-
-        const audio = new Audio(`data:audio/mpeg;base64,${res.data.audio_base64}`);
-        audio.volume = volume[0] / 100;
-        audio.playbackRate = playbackSpeed[0];
-        
-        audio.onended = () => {
-          setIsPlaying(false);
-          // Continue to next page when audio finishes in auto-read mode
-          if (autoReadRef.current && currentPageRef.current < allPages.length - 1) {
-            setTimeout(() => {
-              if (autoReadRef.current) {
-                goToPage(currentPageRef.current + 1, 'next');
-              }
-            }, 500);
-          }
-        };
-        
-        // Double-check we're still on the correct page before playing
-        if (currentPageRef.current === pageIndex) {
-          audio.play();
-          setAudioElement(audio);
-          setIsPlaying(true);
-        }
-      }
-    } catch (error) {
-      console.error('TTS Error:', error.response?.data || error.message);
-      const errorDetail = error.response?.data?.detail;
-      if (errorDetail?.includes?.('quota_exceeded') || errorDetail?.status === 'quota_exceeded') {
-        toast.error('Audio quota exceeded. Please add credits at Profile → Universal Key → Add Balance');
-      } else {
-        toast.error(errorDetail || 'Failed to generate audio');
-      }
-      // Don't auto-advance when audio fails - just stop
-      setIsPlaying(false);
-    } finally {
-      setAudioLoading(false);
     }
-  };
+
+    if (audioBase64) {
+      if (audioElement) {
+        audioElement.pause();
+      }
+
+      const audio = new Audio(`data:audio/mpeg;base64,${audioBase64}`);
+      audio.volume = volume[0] / 100;
+      audio.playbackRate = playbackSpeed[0];
+      
+      // Pre-load next 2 pages while this one plays
+      preloadAudio(pageIndex + 1);
+      preloadAudio(pageIndex + 2);
+      
+      audio.onended = () => {
+        setIsPlaying(false);
+        // Continue to next page when audio finishes in auto-read mode - faster transition
+        if (autoReadRef.current && currentPageRef.current < allPages.length - 1) {
+          // Immediate transition since next audio is pre-loaded
+          setTimeout(() => {
+            if (autoReadRef.current) {
+              goToPage(currentPageRef.current + 1, 'next');
+            }
+          }, 200); // Reduced from 500ms for faster flow
+        }
+      };
+      
+      // Double-check we're still on the correct page before playing
+      if (currentPageRef.current === pageIndex) {
+        audio.play().catch(e => {
+          console.error('Audio play failed:', e);
+          // On iOS, audio might fail without user interaction - try again
+          setIsPlaying(false);
+        });
+        setAudioElement(audio);
+        setIsPlaying(true);
+      }
+    }
+  }, [allPages, narratorVoice, volume, playbackSpeed, audioElement, preloadAudio, goToPage]);
 
   const toggleAudio = () => {
     if (isPlaying && audioElement) {
