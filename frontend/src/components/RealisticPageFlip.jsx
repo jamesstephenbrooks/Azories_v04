@@ -435,6 +435,7 @@ const RealisticPageFlip = forwardRef(({
         />
         
         <HTMLFlipBook
+          key={`flipbook-${pages.length}`}
           ref={flipBookRef}
           width={width}
           height={height}
