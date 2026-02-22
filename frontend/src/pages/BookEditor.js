@@ -887,23 +887,37 @@ export default function BookEditor() {
                     <FiPlus className="w-4 h-4" />
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-sm fixed top-[20%] sm:top-[50%] sm:-translate-y-1/2 max-h-[50vh] overflow-visible">
+                <DialogContent className="sm:max-w-sm w-[90%] mx-auto my-auto max-h-[40vh] overflow-visible dialog-keyboard-safe">
                   <DialogHeader>
                     <DialogTitle className="font-heading">New Chapter</DialogTitle>
                   </DialogHeader>
-                  <div className="space-y-4 pt-4">
+                  <div className="space-y-4 pt-4 pb-safe">
                     <Input
                       placeholder="Chapter title"
                       value={newChapterTitle}
                       onChange={(e) => setNewChapterTitle(e.target.value)}
-                      className="rounded-full border-2"
+                      className="rounded-full border-2 text-base"
                       data-testid="new-chapter-title"
                       autoComplete="off"
+                      inputMode="text"
                       onFocus={(e) => {
-                        // Scroll into view on mobile when keyboard appears
+                        // Better mobile keyboard handling
+                        const element = e.target;
                         setTimeout(() => {
-                          e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                          // Also scroll the dialog itself
+                          const dialog = element.closest('[role="dialog"]');
+                          if (dialog) {
+                            dialog.style.transform = 'translateY(-20vh)';
+                          }
                         }, 300);
+                      }}
+                      onBlur={(e) => {
+                        // Reset transform when keyboard closes
+                        const dialog = e.target.closest('[role="dialog"]');
+                        if (dialog) {
+                          dialog.style.transform = '';
+                        }
                       }}
                     />
                     <Button 
