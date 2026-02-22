@@ -389,11 +389,8 @@ export default function BookReader() {
 
   // Start listening - flip to first page and enable auto-read with audio
   const startListening = useCallback(() => {
-    alert('startListening called!');
-    console.log('startListening called, currentPage:', currentPage);
     // Enable auto-read first
     setAutoRead(true);
-    console.log('setAutoRead(true) called');
     
     if (currentPage === -1) {
       // Flip to first page
