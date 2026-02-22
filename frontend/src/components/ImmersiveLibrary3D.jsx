@@ -155,16 +155,15 @@ const GENRE_SECTIONS = [
 ];
 
 // Teleport portals for moving between floors - near spiral staircases
-// triggerPos.y = floor level for detection (0 for ground, 5.1 for upper)
-// visualY = where to render the portal visually (on the stairs)
+// triggerPos = center of detection zone, visualY = where ring appears
 const TELEPORT_PORTALS = [
   // Back spiral staircase - "Go Upstairs" at bottom (ground floor)
   {
     id: 'stairs-up-back',
     name: 'Go Upstairs',
-    triggerPos: { x: -1.60, y: 0, z: -6.01 }, // Detection at ground floor
-    visualY: 0.05, // Ring on ground floor
-    triggerRadius: 2.5, // Larger radius for testing
+    triggerPos: { x: -2.0, y: 0, z: -6.5 }, // Adjusted position
+    visualY: 0.05,
+    triggerRadius: 3.0, // Very large for testing
     destPos: { x: -2.22, y: 5.1, z: -6.94 },
     destRotation: 0,
     color: '#00ffff',
@@ -175,9 +174,9 @@ const TELEPORT_PORTALS = [
   {
     id: 'stairs-up-front',
     name: 'Go Upstairs',
-    triggerPos: { x: -1.55, y: 0, z: 2.90 }, // Detection at ground floor
-    visualY: 0.05, // Ring on ground floor
-    triggerRadius: 2.5, // Larger radius for testing
+    triggerPos: { x: -2.0, y: 0, z: 3.5 }, // Adjusted position
+    visualY: 0.05,
+    triggerRadius: 3.0, // Very large for testing
     destPos: { x: -2.23, y: 5.1, z: 4.03 },
     destRotation: Math.PI,
     color: '#00ffff',
@@ -188,10 +187,10 @@ const TELEPORT_PORTALS = [
   {
     id: 'stairs-down-back',
     name: 'Go Downstairs',
-    triggerPos: { x: -2.22, y: 5.1, z: -6.94 }, // Detection at upper floor
-    visualY: 5.15, // Ring on upper floor
+    triggerPos: { x: -2.22, y: 5.1, z: -6.94 },
+    visualY: 5.15,
     triggerRadius: 1.5,
-    destPos: { x: 0, y: 0, z: 5 }, // Teleport to starting location
+    destPos: { x: 0, y: 0, z: 5 }, // Starting location
     destRotation: Math.PI,
     color: '#00ffff',
     icon: '↓',
@@ -201,10 +200,10 @@ const TELEPORT_PORTALS = [
   {
     id: 'stairs-down-front',
     name: 'Go Downstairs',
-    triggerPos: { x: -2.23, y: 5.1, z: 4.03 }, // Detection at upper floor
-    visualY: 5.15, // Ring on upper floor
+    triggerPos: { x: -2.23, y: 5.1, z: 4.03 },
+    visualY: 5.15,
     triggerRadius: 1.5,
-    destPos: { x: 0, y: 0, z: 5 }, // Teleport to starting location
+    destPos: { x: 0, y: 0, z: 5 }, // Starting location
     destRotation: 0,
     color: '#00ffff',
     icon: '↓',
