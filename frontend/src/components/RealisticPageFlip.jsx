@@ -514,8 +514,20 @@ const RealisticPageFlip = forwardRef(({
         style={{ 
           perspective: '2000px',
           transformStyle: 'preserve-3d',
+          // When on cover, shift container right to hide blank left page
+          transform: currentPage === 0 ? 'translateX(25%)' : 'translateX(0)',
+          transition: 'transform 0.3s ease-out',
         }}
       >
+        {/* Clip the left side when showing cover */}
+        <div 
+          style={{
+            overflow: currentPage === 0 ? 'hidden' : 'visible',
+            // Clip the left half when on cover page
+            clipPath: currentPage === 0 ? 'inset(0 0 0 50%)' : 'none',
+            transition: 'clip-path 0.3s ease-out',
+          }}
+        >
         {/* Book shadow underneath */}
         <div 
           className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[90%] h-8 bg-black/20 rounded-full blur-xl"
@@ -553,6 +565,7 @@ const RealisticPageFlip = forwardRef(({
         >
           {allBookPages}
         </HTMLFlipBook>
+        </div>
       </div>
 
       {/* Navigation controls */}
