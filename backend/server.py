@@ -1105,6 +1105,43 @@ async def remove_book_from_series(series_id: str, book_id: str, current_user: di
     
     return {"message": "Book removed from series"}
 
+class ReorderBookRequest(BaseModel):
+    new_order: int
+
+@api_router.put("/series/{series_id}/books/{book_id}/order")
+async def reorder_book_in_series(series_id: str, book_id: str, request: ReorderBookRequest, current_user: dict = Depends(get_current_user)):
+    """Reorder a book within a series"""
+    book = await db.books.find_one({"id": book_id, "series_id": series_id})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found in this series")
+    
+    if book["author_id"] != current_user["id"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    old_order = book.get("series_order", 1)
+    new_order = request.new_order
+    
+    # Get all books in the series
+    series_books = await db.books.find({"series_id": series_id}).sort("series_order", 1).to_list(100)
+    
+    # Update orders for all affected books
+    for i, b in enumerate(series_books):
+        current_order = b.get("series_order", i + 1)
+        
+        if b["id"] == book_id:
+            # This is the book being moved
+            await db.books.update_one({"id": book_id}, {"$set": {"series_order": new_order}})
+        elif old_order < new_order:
+            # Moving down - shift books up
+            if current_order > old_order and current_order <= new_order:
+                await db.books.update_one({"id": b["id"]}, {"$set": {"series_order": current_order - 1}})
+        else:
+            # Moving up - shift books down
+            if current_order >= new_order and current_order < old_order:
+                await db.books.update_one({"id": b["id"]}, {"$set": {"series_order": current_order + 1}})
+    
+    return {"message": "Book order updated", "new_order": new_order}
+
 # ============ ADMIN CMS ROUTES (Separate Admin Auth) ============
 
 # Admin-specific authentication
