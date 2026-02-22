@@ -1856,16 +1856,29 @@ async def generate_shots(request: GenerateShotsRequest, current_user: dict = Dep
     
     try:
         # First, analyze the source image to understand the subject
+        from emergentintegrations.llm.openai import LlmChat, UserMessage, ImageContent
+        
         chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"shots-{current_user['id']}-{str(uuid.uuid4())[:8]}",
             system_message="You are an expert at analyzing images. Describe subjects precisely for regeneration."
         ).with_model("openai", "gpt-4o")
         
-        analysis = await chat.send_message(UserMessage(
+        # Extract base64 from source image
+        source_image = request.source_image
+        if source_image.startswith('data:'):
+            if ',' in source_image:
+                image_base64 = source_image.split(',')[1]
+            else:
+                image_base64 = source_image
+        else:
+            image_base64 = source_image
+        
+        user_msg = UserMessage(
             text="Describe this person/subject in detail for image generation. Include: gender, age, hair, eyes, skin, clothing, setting. Be very specific. Respond in one paragraph.",
-            image_url=request.source_image
-        ))
+            file_contents=[ImageContent(image_base64=image_base64)]
+        )
+        analysis = await chat.send_message(user_msg)
         
         base_description = analysis.strip() if isinstance(analysis, str) else str(analysis)
         
