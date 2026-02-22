@@ -1581,22 +1581,47 @@ export default function ArtStudio() {
                   Scene Creator
                 </h2>
                 
-                {/* Scene Presets - Dropdown */}
-                <div className="mb-4">
-                  <label className="text-sm text-white/70 mb-2 block">Scene Preset</label>
-                  <select
-                    value={scene.preset}
-                    onChange={(e) => setScene({ ...scene, preset: e.target.value })}
-                    className="w-full bg-black/30 border border-white/20 rounded-lg px-3 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50"
-                    data-testid="scene-preset-dropdown"
-                  >
-                    <option value="">Select a preset...</option>
+                {/* Scene Presets - Visual Grid with Landscape Thumbnails */}
+                <div className="mb-6">
+                  <label className="text-sm text-white/70 mb-3 block">Scene Preset</label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-h-[320px] overflow-y-auto pr-2">
                     {SCENE_PRESETS.map(preset => (
-                      <option key={preset.id} value={preset.id}>
-                        {preset.name}
-                      </option>
+                      <button
+                        key={preset.id}
+                        onClick={() => setScene({ ...scene, preset: preset.id })}
+                        className={`relative rounded-lg overflow-hidden border-2 transition-all group ${
+                          scene.preset === preset.id 
+                            ? 'border-purple-500 ring-2 ring-purple-500/30' 
+                            : 'border-transparent hover:border-white/30'
+                        }`}
+                        data-testid={`scene-preset-${preset.id}`}
+                      >
+                        <div className="aspect-video bg-black/40">
+                          {preset.thumbnail ? (
+                            <img 
+                              src={preset.thumbnail} 
+                              alt={preset.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <FiLayers className="w-6 h-6 text-white/30" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent">
+                          <div className="absolute bottom-0 left-0 right-0 p-2">
+                            <p className="text-white text-xs font-medium truncate">{preset.name}</p>
+                          </div>
+                        </div>
+                        {scene.preset === preset.id && (
+                          <div className="absolute top-2 right-2 w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center">
+                            <FiCheck className="w-3 h-3 text-white" />
+                          </div>
+                        )}
+                      </button>
                     ))}
-                  </select>
+                  </div>
                 </div>
                 
                 {/* Scene Options */}
