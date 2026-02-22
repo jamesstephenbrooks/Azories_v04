@@ -503,9 +503,10 @@ export default function ProStudio() {
       if (response.ok) {
         const data = await response.json();
         if (data.images && data.images.length > 0) {
+          const imageUrl = data.images[0].url;
           const newImage = {
             id: Date.now(),
-            url: data.images[0].url,
+            url: imageUrl,
             prompt: prompt,
             method: data.method,
             character: selectedCharacter.name
@@ -514,6 +515,14 @@ export default function ProStudio() {
           setSelectedHeroFrame(newImage);
           toast.success(`Generated using ${data.method}!`);
           loadCredits(); // Refresh credits
+          
+          // Auto-save to character folder
+          await saveToCharacterFolder(
+            selectedCharacter.id,
+            imageUrl,
+            prompt,
+            'consistent'
+          );
         }
       } else {
         const error = await response.json();
