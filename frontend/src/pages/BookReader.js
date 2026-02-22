@@ -721,22 +721,36 @@ export default function BookReader() {
               Previous
             </Button>
             
-            <Button
-              variant={(isPlaying || autoRead) ? "default" : "outline"}
-              size="lg"
-              onClick={isPlaying || autoRead ? handleAutoReadToggle : toggleAudio}
-              disabled={audioLoading || isCover}
-              className="rounded-full px-8"
-              data-testid="read-aloud-btn"
-            >
-              {audioLoading ? (
-                <><div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" /> Loading...</>
-              ) : (isPlaying || autoRead) ? (
-                <><FiPause className="w-5 h-5 mr-2" /> Pause</>
-              ) : (
-                <><FiPlay className="w-5 h-5 mr-2" /> Read Aloud</>
-              )}
-            </Button>
+            {/* Show Start Listening on cover, Read Aloud on other pages */}
+            {isCover ? (
+              <Button
+                variant="default"
+                size="lg"
+                onClick={startListening}
+                className="rounded-full px-8 bg-purple-600 hover:bg-purple-500"
+                data-testid="cover-start-listening-btn"
+              >
+                <FiPlay className="w-5 h-5 mr-2" />
+                Start Listening
+              </Button>
+            ) : (
+              <Button
+                variant={(isPlaying || autoRead) ? "default" : "outline"}
+                size="lg"
+                onClick={isPlaying || autoRead ? handleAutoReadToggle : toggleAudio}
+                disabled={audioLoading}
+                className="rounded-full px-8"
+                data-testid="read-aloud-btn"
+              >
+                {audioLoading ? (
+                  <><div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" /> Loading...</>
+                ) : (isPlaying || autoRead) ? (
+                  <><FiPause className="w-5 h-5 mr-2" /> Pause</>
+                ) : (
+                  <><FiPlay className="w-5 h-5 mr-2" /> Read Aloud</>
+                )}
+              </Button>
+            )}
             
             <Button
               variant="outline"
