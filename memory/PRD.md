@@ -63,7 +63,16 @@ Professional-grade character creation and video generation studio, inspired by H
    - Save/download functionality
 
 ### Recent Updates (Feb 22, 2026)
-1. **Pro Studio Feature:** Complete implementation of professional-grade character studio
+1. **Book Reader Bug Fixes (CRITICAL):**
+   - Fixed front cover showing as two pages instead of one
+   - Fixed content pages now display as spread (image left, text right)
+   - Fixed Next/Previous button navigation through all pages
+   - Fixed page numbers update correctly as user navigates
+   - Fixed progress bar updates as user reads through the book
+   - Fixed voiceover/auto-read page sync (react-pageflip onChangeState events)
+   - Fixed isFlipping state management using 'flipping' and 'read' states
+
+2. **Pro Studio Feature:** Complete implementation of professional-grade character studio
 2. **Backend APIs:** New endpoints for /api/pro-studio/* (characters, generate-image, generate-shots, generate-expression, animate-hero)
 3. **Cinema Studio Config:** Camera bodies, lenses, lighting presets configurations
 4. **Pro Studio Button:** Added to Art Studio header with gradient styling and "NEW" tag
