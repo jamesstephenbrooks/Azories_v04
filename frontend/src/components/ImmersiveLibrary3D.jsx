@@ -1242,13 +1242,22 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           // Get perpendicular direction for side rays
           const sideDir = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), moveDir).normalize();
           
-          // Multiple ray start heights - cast from higher up to better detect stairs in front
-          const rayHeights = [camera.position.y + 0.5, camera.position.y + 1.5, camera.position.y + 2.5];
+          // Cast rays from multiple heights to detect floors at different levels
+          // Start from well above to catch steps we're approaching
+          const rayHeights = [
+            camera.position.y + 0.3,   // Just above current position
+            camera.position.y + 1.0,   // Mid height
+            camera.position.y + 2.0,   // High up
+            camera.position.y + 3.0    // Very high for tall stairs
+          ];
           
           const rayPositions = [];
           
+          // Always cast a ray directly below current position (most important)
+          rayPositions.push(new THREE.Vector3(camera.position.x, camera.position.y + 3.0, camera.position.z));
+          
           for (const rayY of rayHeights) {
-            // Center ray
+            // Center ray at this height
             rayPositions.push(new THREE.Vector3(camera.position.x, rayY, camera.position.z));
             
             // Add forward rays when moving (for stair climbing detection)
