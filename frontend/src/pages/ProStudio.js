@@ -31,7 +31,8 @@ import {
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 export default function ProStudio() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, token } = useAuth();
+  const isAuthenticated = !!user;
   const navigate = useNavigate();
   
   // Main state
