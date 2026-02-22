@@ -340,6 +340,16 @@ export default function BookReader() {
     }
   }, [allPages, narratorVoice]);
 
+  // Pre-load audio for first few pages when book is ready
+  useEffect(() => {
+    if (allPages.length > 0 && narratorVoice) {
+      // Pre-load first 3 pages in background for instant start
+      for (let i = 0; i < Math.min(3, allPages.length); i++) {
+        preloadAudio(i);
+      }
+    }
+  }, [allPages.length, narratorVoice, preloadAudio]);
+
   const playAudio = useCallback(async () => {
     // Skip chapter title pages - handled by useEffect
     if (allPages[currentPageRef.current]?.isChapterTitle) {
