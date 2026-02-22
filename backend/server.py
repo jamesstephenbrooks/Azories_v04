@@ -1730,15 +1730,34 @@ Keep the character and scene exactly the same, only add subtle natural movement.
         video_gen = OpenAIVideoGeneration(api_key=EMERGENT_LLM_KEY)
         
         animation_jobs[job_id]["progress"] = 40
-        animation_jobs[job_id]["message"] = "Sora 2 is generating your animation..."
+        animation_jobs[job_id]["message"] = "Sora 2 is generating your animation using the original image..."
         
-        video_bytes = video_gen.text_to_video(
-            prompt=animation_prompt,
-            model="sora-2",
-            size="1280x720",  # Valid Sora 2 sizes: 1280x720, 1792x1024, 1024x1792, 1024x1024
-            duration=duration,
-            max_wait_time=900
-        )
+        # Save the image temporarily for reference
+        import tempfile
+        import os
+        temp_image_path = None
+        
+        try:
+            # Create temp file with the image
+            with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as temp_file:
+                temp_image_path = temp_file.name
+                image_data = base64.b64decode(image_base64)
+                temp_file.write(image_data)
+            
+            # Generate video using the actual image as reference
+            video_bytes = video_gen.text_to_video(
+                prompt=animation_prompt,
+                model="sora-2",
+                size="1280x720",
+                duration=duration,
+                max_wait_time=900,
+                image_path=temp_image_path,  # Use the actual image as reference
+                mime_type="image/jpeg"
+            )
+        finally:
+            # Clean up temp file
+            if temp_image_path and os.path.exists(temp_image_path):
+                os.remove(temp_image_path)
         
         if video_bytes:
             animation_jobs[job_id]["progress"] = 90
