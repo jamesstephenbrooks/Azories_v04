@@ -1511,23 +1511,35 @@ export default function ArtStudio() {
                       />
                 </div>
                 
-                {/* Trait Selectors */}
+                {/* Trait Selectors - Using shadcn Select for iPad compatibility */}
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {Object.entries(CHARACTER_TRAITS).map(([trait, options]) => (
                     <div key={trait}>
                       <label className="text-xs text-white/50 mb-1 block capitalize">
                         {trait.replace(/([A-Z])/g, ' $1').trim()}
                       </label>
-                      <select
+                      <Select
                         value={character[trait]}
-                        onChange={(e) => setCharacter({ ...character, [trait]: e.target.value })}
-                        className="w-full bg-black/30 border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:border-purple-500 focus:outline-none appearance-none cursor-pointer"
-                        style={{ colorScheme: 'dark' }}
+                        onValueChange={(value) => setCharacter({ ...character, [trait]: value })}
                       >
-                        {options.map(opt => (
-                          <option key={opt} value={opt} className="bg-[#1a1520] text-white py-2">{opt}</option>
-                        ))}
-                      </select>
+                        <SelectTrigger 
+                          className="w-full bg-black/30 border-white/20 text-white text-sm rounded-lg h-10"
+                          data-testid={`character-trait-${trait}`}
+                        >
+                          <SelectValue placeholder={`Select ${trait}`} />
+                        </SelectTrigger>
+                        <SelectContent className="bg-[#1a1520] border-purple-500/30 max-h-60">
+                          {options.map(opt => (
+                            <SelectItem 
+                              key={opt} 
+                              value={opt} 
+                              className="text-white hover:bg-purple-500/20 cursor-pointer"
+                            >
+                              {opt}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   ))}
                 </div>
