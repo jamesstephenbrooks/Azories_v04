@@ -155,59 +155,70 @@ const GENRE_SECTIONS = [
 ];
 
 // Teleport portals for moving between floors - near spiral staircases
-// triggerPos = center of detection zone, visualY = where ring appears
+// Each staircase has a pair: bottom (ground) ↔ top (upper)
+// Rings are visible on the floor, auto-teleport when stepping in, button when nearby
 const TELEPORT_PORTALS = [
-  // Back spiral staircase - "Go Upstairs" at bottom (ground floor)
+  // === BACK STAIRCASE PAIR ===
+  // Bottom of back stairs (ground floor) - teleports to top of back stairs
   {
-    id: 'stairs-up-back',
+    id: 'stairs-back-bottom',
     name: 'Go Upstairs',
-    triggerPos: { x: -1.33, y: 0, z: -5.17 }, // User-provided location
-    visualY: 0.05,
-    triggerRadius: 1.5,
-    destPos: { x: -1.33, y: 5.1, z: -5.17 }, // Teleport to upper floor same spot
+    triggerPos: { x: -1.33, y: 0, z: -5.17 },
+    visualY: 0.02, // Just above floor
+    triggerRadius: 1.2, // Button appears at this distance
+    autoTeleportRadius: 0.5, // Auto-teleport when this close
+    destPos: { x: -1.33, y: 5.1, z: -5.17 }, // Top of back stairs
     destRotation: 0,
     color: '#00ffff',
     icon: '↑',
-    floor: 'ground'
+    floor: 'ground',
+    pairId: 'back'
   },
-  // Front spiral staircase - "Go Upstairs" at bottom (ground floor)
+  // Top of back stairs (upper floor) - teleports to bottom of back stairs
   {
-    id: 'stairs-up-front',
+    id: 'stairs-back-top',
+    name: 'Go Downstairs',
+    triggerPos: { x: -1.33, y: 5.1, z: -5.17 },
+    visualY: 5.12, // Just above upper floor
+    triggerRadius: 1.2,
+    autoTeleportRadius: 0.5,
+    destPos: { x: -1.33, y: 0, z: -5.17 }, // Bottom of back stairs
+    destRotation: Math.PI,
+    color: '#00ffff',
+    icon: '↓',
+    floor: 'upper',
+    pairId: 'back'
+  },
+  // === FRONT STAIRCASE PAIR ===
+  // Bottom of front stairs (ground floor) - teleports to top of front stairs
+  {
+    id: 'stairs-front-bottom',
     name: 'Go Upstairs',
-    triggerPos: { x: -1.50, y: 0, z: 2.41 }, // User-provided location
-    visualY: 0.05,
-    triggerRadius: 1.5,
-    destPos: { x: -1.50, y: 5.1, z: 2.41 }, // Teleport to upper floor same spot
+    triggerPos: { x: -1.50, y: 0, z: 2.41 },
+    visualY: 0.02, // Just above floor
+    triggerRadius: 1.2,
+    autoTeleportRadius: 0.5,
+    destPos: { x: -1.50, y: 5.1, z: 2.41 }, // Top of front stairs
     destRotation: Math.PI,
     color: '#00ffff',
     icon: '↑',
-    floor: 'ground'
+    floor: 'ground',
+    pairId: 'front'
   },
-  // Back spiral staircase - "Go Downstairs" at top (upper floor)
+  // Top of front stairs (upper floor) - teleports to bottom of front stairs
   {
-    id: 'stairs-down-back',
+    id: 'stairs-front-top',
     name: 'Go Downstairs',
-    triggerPos: { x: -1.33, y: 5.1, z: -5.17 }, // User-provided location
-    visualY: 5.15,
-    triggerRadius: 1.5,
-    destPos: { x: 0, y: 0, z: 5 }, // Starting location
-    destRotation: Math.PI,
-    color: '#00ffff',
-    icon: '↓',
-    floor: 'upper'
-  },
-  // Front spiral staircase - "Go Downstairs" at top (upper floor)
-  {
-    id: 'stairs-down-front',
-    name: 'Go Downstairs',
-    triggerPos: { x: -1.50, y: 5.1, z: 2.41 }, // User-provided location
-    visualY: 5.15,
-    triggerRadius: 1.5,
-    destPos: { x: 0, y: 0, z: 5 }, // Starting location
+    triggerPos: { x: -1.50, y: 5.1, z: 2.41 },
+    visualY: 5.12, // Just above upper floor
+    triggerRadius: 1.2,
+    autoTeleportRadius: 0.5,
+    destPos: { x: -1.50, y: 0, z: 2.41 }, // Bottom of front stairs
     destRotation: 0,
     color: '#00ffff',
     icon: '↓',
-    floor: 'upper'
+    floor: 'upper',
+    pairId: 'front'
   }
 ];
 
