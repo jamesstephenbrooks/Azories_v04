@@ -791,6 +791,23 @@ export default function ProStudio() {
             </div>
           </div>
           
+          {/* Credits Display */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500/20 to-orange-500/20 px-4 py-2 rounded-full border border-amber-500/30">
+              <FiZap className="text-amber-400" />
+              <span className="text-amber-300 font-medium">{credits}</span>
+              <span className="text-amber-400/70 text-sm">credits</span>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => addCredits(100)}
+                className="ml-2 text-amber-300 hover:text-amber-100 hover:bg-amber-500/20 h-6 px-2"
+              >
+                <FiPlus size={14} />
+              </Button>
+            </div>
+          </div>
+          
           {/* Book selector and Character in header */}
           <div className="flex items-center gap-3">
             {/* Book selector */}
