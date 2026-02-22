@@ -24,7 +24,17 @@ Create a digital book creation and reading web application named "Azories" with:
   - Quick Templates for one-click generation
 - **30-Day Free Pro Trial:** All new users get automatic Pro access for 30 days
 
-### Recent Updates (Feb 22, 2026)
+### Recent Updates (Feb 22, 2026 - Batch 2)
+1. **Removed "Made with Emergent" branding** - Badge removed from all pages
+2. **Coming Soon Page** - Created at `/coming-soon` with email waitlist signup
+3. **Faster Library Loading** - Optimized covers from 3.6MB to ~90KB each (195MB total saved)
+4. **Animation Preview Fix** - Added `muted` and `playsInline` for autoplay on iOS
+5. **Smaller Node Delete Buttons** - Reduced X buttons by 50% (from 5x5 to 3x3)
+6. **Grand Library Redesign** - Beautiful promotional banner with fantasy image
+7. **Improved Page Turn Animation** - Added realistic page curl effect with next page visible underneath
+8. **Page Title Updated** - Now shows "Azories - Where Stories Come Alive"
+
+### Recent Updates (Feb 22, 2026 - Batch 1)
 1. **iPad/Mobile Experience Fixes:**
    - Enhanced isMobile() detection for iPad/iPadOS 13+ (checks navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
    - Improved joystick with larger touch targets, responsive sizing, and safe-area-inset support
