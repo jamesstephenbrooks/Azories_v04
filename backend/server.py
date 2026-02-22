@@ -211,6 +211,10 @@ class PageCreate(BaseModel):
     image_position_x: Optional[int] = 50
     image_position_y: Optional[int] = 50
     image_fit: Optional[str] = "cover"  # cover, contain, fill
+    # Text formatting
+    font_family: Optional[str] = "default"
+    font_size: Optional[str] = "medium"
+    text_align: Optional[str] = "left"
 
 class PageUpdate(BaseModel):
     text_content: Optional[str] = None
@@ -225,6 +229,10 @@ class PageUpdate(BaseModel):
     image_position_x: Optional[int] = None
     image_position_y: Optional[int] = None
     image_fit: Optional[str] = None
+    # Text formatting
+    font_family: Optional[str] = None
+    font_size: Optional[str] = None
+    text_align: Optional[str] = None
 
 class PageResponse(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -242,6 +250,9 @@ class PageResponse(BaseModel):
     image_position_x: int = 50
     image_position_y: int = 50
     image_fit: str = "cover"
+    font_family: str = "default"
+    font_size: str = "medium"
+    text_align: str = "left"
     created_at: str
 
 class ImageGenerateRequest(BaseModel):
