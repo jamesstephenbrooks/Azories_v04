@@ -930,6 +930,174 @@ export default function BookEditor() {
               )}
             </ScrollArea>
           </div>
+          
+          {/* Cover Section in Sidebar */}
+          <div className="p-4 border-t border-border">
+            <Dialog open={coverDialogOpen} onOpenChange={setCoverDialogOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full rounded-lg justify-start gap-2"
+                  data-testid="edit-cover-btn"
+                >
+                  <FiBookOpen className="w-4 h-4" />
+                  Edit Covers
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="font-heading text-2xl">Book Cover Editor</DialogTitle>
+                </DialogHeader>
+                <div className="grid md:grid-cols-2 gap-6 pt-4">
+                  {/* Front Cover */}
+                  <div className="space-y-4">
+                    <h3 className="font-ui font-semibold">Front Cover</h3>
+                    <div 
+                      className="aspect-[3/4] rounded-2xl border-2 border-dashed border-border bg-muted/30 overflow-hidden relative"
+                    >
+                      {coverData.cover_image ? (
+                        <img src={coverData.cover_image} alt="Cover" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <FiUpload className="w-8 h-8 text-muted-foreground" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white p-4">
+                        <Input
+                          value={coverData.cover_title}
+                          onChange={(e) => setCoverData({ ...coverData, cover_title: e.target.value })}
+                          placeholder="Book Title"
+                          className="bg-transparent border-0 text-center text-2xl font-heading font-bold text-white placeholder:text-white/50"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        <Input
+                          value={coverData.cover_subtitle}
+                          onChange={(e) => setCoverData({ ...coverData, cover_subtitle: e.target.value })}
+                          placeholder="Subtitle"
+                          className="bg-transparent border-0 text-center text-lg font-body text-white placeholder:text-white/50 mt-2"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => coverInputRef.current?.click()}
+                        className="flex-1"
+                      >
+                        <FiUpload className="w-3 h-3 mr-1" />
+                        Upload
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setCoverGalleryTarget('front');
+                          setShowCoverGalleryPicker(true);
+                        }}
+                        className="flex-1"
+                        data-testid="add-cover-from-gallery"
+                      >
+                        <FiImage className="w-3 h-3 mr-1" />
+                        Art Studio
+                      </Button>
+                    </div>
+                    <input
+                      type="file"
+                      ref={coverInputRef}
+                      onChange={(e) => handleCoverUpload(e, false)}
+                      accept="image/*"
+                      className="hidden"
+                    />
+                  </div>
+                  
+                  {/* Back Cover */}
+                  <div className="space-y-4">
+                    <h3 className="font-ui font-semibold">Back Cover</h3>
+                    <div 
+                      className="aspect-[3/4] rounded-2xl border-2 border-dashed border-border bg-muted/30 overflow-hidden relative"
+                    >
+                      {coverData.back_cover_image ? (
+                        <img src={coverData.back_cover_image} alt="Back Cover" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <FiUpload className="w-8 h-8 text-muted-foreground" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => backCoverInputRef.current?.click()}
+                        className="flex-1"
+                      >
+                        <FiUpload className="w-3 h-3 mr-1" />
+                        Upload
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setCoverGalleryTarget('back');
+                          setShowCoverGalleryPicker(true);
+                        }}
+                        className="flex-1"
+                        data-testid="add-back-cover-from-gallery"
+                      >
+                        <FiImage className="w-3 h-3 mr-1" />
+                        Art Studio
+                      </Button>
+                    </div>
+                    <input
+                      type="file"
+                      ref={backCoverInputRef}
+                      onChange={(e) => handleCoverUpload(e, true)}
+                      accept="image/*"
+                      className="hidden"
+                    />
+                    <Textarea
+                      value={coverData.back_cover_text}
+                      onChange={(e) => setCoverData({ ...coverData, back_cover_text: e.target.value })}
+                      placeholder="Back cover description/synopsis..."
+                      className="min-h-24 rounded-2xl"
+                    />
+                  </div>
+                </div>
+                
+                <Button onClick={saveCover} className="w-full rounded-full mt-4">
+                  <FiSave className="mr-2" />
+                  Save Cover
+                </Button>
+              </DialogContent>
+            </Dialog>
+            
+            {/* Cover Thumbnails Preview */}
+            <div className="flex gap-2 mt-3">
+              {coverData.cover_image && (
+                <div className="flex-1">
+                  <p className="text-xs text-muted-foreground mb-1">Front</p>
+                  <div className="aspect-[3/4] rounded-lg overflow-hidden border border-border bg-muted/30">
+                    <img src={coverData.cover_image} alt="Front" className="w-full h-full object-cover" />
+                  </div>
+                </div>
+              )}
+              {coverData.back_cover_image && (
+                <div className="flex-1">
+                  <p className="text-xs text-muted-foreground mb-1">Back</p>
+                  <div className="aspect-[3/4] rounded-lg overflow-hidden border border-border bg-muted/30">
+                    <img src={coverData.back_cover_image} alt="Back" className="w-full h-full object-cover" />
+                  </div>
+                </div>
+              )}
+              {!coverData.cover_image && !coverData.back_cover_image && (
+                <p className="text-xs text-muted-foreground text-center w-full py-2">
+                  No covers set
+                </p>
+              )}
+            </div>
+          </div>
         </div>
         
         {/* Main Editor Area */}
