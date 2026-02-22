@@ -365,7 +365,8 @@ export default function BookReader() {
         }
       }
     } catch (error) {
-      toast.error('Failed to generate audio');
+      console.error('TTS Error:', error.response?.data || error.message);
+      toast.error(error.response?.data?.detail || 'Failed to generate audio');
       // Don't auto-advance when audio fails - just stop
       setIsPlaying(false);
     } finally {
