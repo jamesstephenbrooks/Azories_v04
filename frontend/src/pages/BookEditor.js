@@ -674,10 +674,17 @@ export default function BookEditor() {
   const isComicMode = book?.layout_mode === 'comic';
 
   const downloadBook = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      toast.error('Please log in to download');
+      return;
+    }
+    
     try {
       toast.info('Preparing PDF download...');
       const response = await axios.get(`${API}/books/${bookId}/download`, {
-        responseType: 'blob'
+        responseType: 'blob',
+        headers: { Authorization: `Bearer ${token}` }
       });
       
       // Create download link for PDF
@@ -692,7 +699,8 @@ export default function BookEditor() {
       
       toast.success('PDF downloaded!');
     } catch (error) {
-      toast.error('Failed to download PDF');
+      console.error('PDF download error:', error);
+      toast.error(error.response?.data?.detail || 'Failed to download PDF');
     }
   };
 
