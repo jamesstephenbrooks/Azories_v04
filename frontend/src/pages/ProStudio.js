@@ -1409,193 +1409,6 @@ export default function ProStudio() {
                 >
                   {isCreatingCharacter ? 'Creating...' : 'Create Character'}
                 </Button>
-              </div> 
-                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-                    }`}
-                  >
-                    <FiImage className="inline mr-2" /> Upload Images
-                  </button>
-                </div>
-                
-                {/* Character Name */}
-                <Input
-                  placeholder="Character name (e.g., Luna, Captain Rex)"
-                  value={characterName}
-                  onChange={(e) => setCharacterName(e.target.value)}
-                  className="bg-gray-800/50 border-gray-700 text-white mb-4"
-                  data-testid="character-name-input"
-                />
-
-                {/* Style & Genre Selection */}
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  <div>
-                    <label className="text-gray-400 text-xs mb-1 block">Visual Style</label>
-                    <Select value={characterStyle} onValueChange={setCharacterStyle}>
-                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-800 border-gray-700 max-h-60">
-                        {characterStyles.map((style) => (
-                          <SelectItem key={style.id} value={style.id} className="text-white">
-                            <span className="font-medium">{style.name}</span>
-                            <span className="text-gray-400 text-xs ml-2">{style.description}</span>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <label className="text-gray-400 text-xs mb-1 block">Genre</label>
-                    <Select value={characterGenre} onValueChange={setCharacterGenre}>
-                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-800 border-gray-700 max-h-60">
-                        {characterGenres.map((genre) => (
-                          <SelectItem key={genre.id} value={genre.id} className="text-white">
-                            <span className="font-medium">{genre.name}</span>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                {/* Description Mode Content */}
-                {creationMode === 'description' && (
-                  <div className="space-y-4">
-                    <Textarea
-                      placeholder="Describe your character in detail... (e.g., 'A young elven princess with silver hair that flows like moonlight, bright violet eyes, pointed ears adorned with crystal earrings, wearing an ethereal blue gown')"
-                      value={characterDescription}
-                      onChange={(e) => setCharacterDescription(e.target.value)}
-                      className="bg-gray-800/50 border-gray-700 text-white"
-                      rows={4}
-                    />
-                    
-                    {/* Physical Traits (Collapsible) */}
-                    <details className="group">
-                      <summary className="text-purple-400 text-sm cursor-pointer hover:text-purple-300">
-                        + Add Physical Details (optional)
-                      </summary>
-                      <div className="grid grid-cols-2 gap-2 mt-3">
-                        <Input
-                          placeholder="Age (e.g., young adult, elderly)"
-                          value={physicalTraits.age}
-                          onChange={(e) => setPhysicalTraits(p => ({...p, age: e.target.value}))}
-                          className="bg-gray-800/50 border-gray-700 text-white text-sm"
-                        />
-                        <Input
-                          placeholder="Gender"
-                          value={physicalTraits.gender}
-                          onChange={(e) => setPhysicalTraits(p => ({...p, gender: e.target.value}))}
-                          className="bg-gray-800/50 border-gray-700 text-white text-sm"
-                        />
-                        <Input
-                          placeholder="Hair Color"
-                          value={physicalTraits.hairColor}
-                          onChange={(e) => setPhysicalTraits(p => ({...p, hairColor: e.target.value}))}
-                          className="bg-gray-800/50 border-gray-700 text-white text-sm"
-                        />
-                        <Input
-                          placeholder="Hair Style"
-                          value={physicalTraits.hairStyle}
-                          onChange={(e) => setPhysicalTraits(p => ({...p, hairStyle: e.target.value}))}
-                          className="bg-gray-800/50 border-gray-700 text-white text-sm"
-                        />
-                        <Input
-                          placeholder="Eye Color"
-                          value={physicalTraits.eyeColor}
-                          onChange={(e) => setPhysicalTraits(p => ({...p, eyeColor: e.target.value}))}
-                          className="bg-gray-800/50 border-gray-700 text-white text-sm"
-                        />
-                        <Input
-                          placeholder="Skin Tone"
-                          value={physicalTraits.skinTone}
-                          onChange={(e) => setPhysicalTraits(p => ({...p, skinTone: e.target.value}))}
-                          className="bg-gray-800/50 border-gray-700 text-white text-sm"
-                        />
-                      </div>
-                    </details>
-
-                    {/* Special Features & Personality */}
-                    <details className="group">
-                      <summary className="text-purple-400 text-sm cursor-pointer hover:text-purple-300">
-                        + Add Special Features & Personality (optional)
-                      </summary>
-                      <div className="space-y-2 mt-3">
-                        <Input
-                          placeholder="Special features (e.g., scar on cheek, glowing tattoos, mechanical arm)"
-                          value={specialFeatures}
-                          onChange={(e) => setSpecialFeatures(e.target.value)}
-                          className="bg-gray-800/50 border-gray-700 text-white text-sm"
-                        />
-                        <Input
-                          placeholder="Personality (e.g., brave and curious, mysterious and brooding)"
-                          value={personality}
-                          onChange={(e) => setPersonality(e.target.value)}
-                          className="bg-gray-800/50 border-gray-700 text-white text-sm"
-                        />
-                      </div>
-                    </details>
-                  </div>
-                )}
-
-                {/* Image Upload Mode Content */}
-                {creationMode === 'images' && (
-                  <div className="space-y-4">
-                    <div className="border-2 border-dashed border-purple-500/30 rounded-lg p-6 text-center">
-                      <input
-                        type="file"
-                        multiple
-                        accept="image/*"
-                        onChange={(e) => handleFileUpload(e, 'character')}
-                        className="hidden"
-                        id="character-upload"
-                        data-testid="character-image-upload"
-                      />
-                      <label htmlFor="character-upload" className="cursor-pointer">
-                        <FiUpload className="w-8 h-8 text-purple-400 mx-auto mb-2" />
-                        <p className="text-gray-400">Click to upload reference images</p>
-                        <p className="text-xs text-gray-500 mt-1">Upload images of the character you want to recreate</p>
-                      </label>
-                    </div>
-                    
-                    {/* Add from Gallery Button */}
-                    <Button
-                      variant="outline"
-                      onClick={() => { setGalleryPickerMode('character'); setShowGalleryPicker(true); }}
-                      className="w-full border-purple-500/30 text-purple-300 hover:bg-purple-500/20"
-                    >
-                      <FiFolder className="mr-2" /> Add from Gallery
-                    </Button>
-
-                    {/* Uploaded images preview */}
-                    {characterImages.length > 0 && (
-                      <div className="grid grid-cols-5 gap-2">
-                        {characterImages.map((img, i) => (
-                          <div key={img.id} className="relative group">
-                            <img src={img.url} alt={`Ref ${i+1}`} className="w-full aspect-square object-cover rounded-lg" />
-                            <button
-                              onClick={() => setCharacterImages(prev => prev.filter(x => x.id !== img.id))}
-                              className="absolute top-1 right-1 bg-red-500 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                            >
-                              <FiX size={12} className="text-white" />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                <Button 
-                  onClick={createCharacter}
-                  disabled={isCreatingCharacter || (!characterName.trim()) || (creationMode === 'description' && !characterDescription.trim()) || (creationMode === 'images' && characterImages.length < 1)}
-                  className="w-full mt-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                  data-testid="create-character-btn"
-                >
-                  {isCreatingCharacter ? 'Creating...' : 'Create Character'}
-                </Button>
               </div>
 
               {/* My Characters Panel */}
@@ -1616,7 +1429,7 @@ export default function ProStudio() {
                     <p className="text-gray-500 text-sm">Create your first character to get started</p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 gap-4">
+                  <div className="grid grid-cols-1 gap-4 max-h-96 overflow-y-auto">
                     {characters.map((char) => (
                       <div
                         key={char.id}
@@ -1628,30 +1441,47 @@ export default function ProStudio() {
                         data-testid={`character-card-${char.id}`}
                       >
                         <div className="flex items-center gap-4">
-                          <img 
-                            src={char.thumbnail || char.reference_images?.[0]} 
-                            alt={char.name}
-                            className="w-16 h-16 rounded-full object-cover cursor-pointer"
-                            onClick={() => setSelectedCharacter(char)}
-                          />
-                          <div className="flex-1">
+                          {/* Clickable thumbnail to view character */}
+                          <div className="relative group">
+                            <img 
+                              src={char.thumbnail || char.reference_images?.[0] || '/placeholder-character.png'} 
+                              alt={char.name}
+                              className="w-16 h-16 rounded-full object-cover cursor-pointer hover:ring-2 hover:ring-purple-500 transition-all"
+                              onClick={() => openCharacterView(char)}
+                            />
+                            <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <FiEye className="text-white" size={16} />
+                            </div>
+                          </div>
+                          <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
-                              <p className="text-white font-medium">{char.name}</p>
+                              <p className="text-white font-medium truncate">{char.name}</p>
                               {char.lora_status === 'completed' && (
-                                <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full flex items-center gap-1">
-                                  <FiCheck size={10} /> LoRA Ready
+                                <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full flex items-center gap-1 flex-shrink-0">
+                                  <FiCheck size={10} /> LoRA
                                 </span>
                               )}
                               {char.lora_status === 'training' && (
-                                <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full animate-pulse">
+                                <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full animate-pulse flex-shrink-0">
                                   Training...
                                 </span>
                               )}
                             </div>
-                            <p className="text-gray-500 text-xs">{char.reference_images?.length || 0} reference images</p>
+                            <p className="text-gray-500 text-xs">{char.style} • {char.genre}</p>
                           </div>
                           
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            {/* View Folder button */}
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => openCharacterView(char)}
+                              className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/20"
+                              title="View character folder"
+                            >
+                              <FiFolder size={16} />
+                            </Button>
+                            
                             {/* Select button */}
                             <Button
                               size="sm"
@@ -1660,7 +1490,7 @@ export default function ProStudio() {
                               className={selectedCharacter?.id === char.id ? "bg-purple-600" : "border-gray-600"}
                             >
                               {selectedCharacter?.id === char.id ? <FiCheck className="mr-1" /> : null}
-                              Select
+                              {selectedCharacter?.id === char.id ? 'Selected' : 'Select'}
                             </Button>
                             
                             {/* Train LoRA button */}
@@ -1671,23 +1501,11 @@ export default function ProStudio() {
                                 disabled={isTrainingLora}
                                 className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
                               >
-                                <FiZap className="mr-1" /> Train LoRA
+                                <FiZap className="mr-1" /> Train
                               </Button>
                             )}
                           </div>
                         </div>
-                        
-                        {/* LoRA Info */}
-                        {char.lora_status === 'completed' && (
-                          <div className="mt-3 p-2 bg-green-500/10 rounded-lg text-xs text-green-300">
-                            This character has a trained LoRA model for 100% consistent generation across all images.
-                          </div>
-                        )}
-                        {!char.lora_status && falAvailable && (
-                          <div className="mt-3 p-2 bg-gray-800/50 rounded-lg text-xs text-gray-400">
-                            Train a LoRA model for this character to ensure 100% consistent face across all generations.
-                          </div>
-                        )}
                       </div>
                     ))}
                   </div>
