@@ -760,7 +760,7 @@ export default function BookReader() {
             <FiLock className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
             <h2 className="font-heading text-2xl font-bold mb-2">Sign In Required</h2>
             <p className="text-muted-foreground mb-6">Create a free account to read this book</p>
-            <Button onClick={() => navigate('/auth')} className="rounded-full">
+            <Button onClick={() => navigate('/auth', { state: { from: `/read/${bookId}` } })} className="rounded-full">
               Sign In to Continue
             </Button>
           </div>
