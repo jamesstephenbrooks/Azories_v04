@@ -667,30 +667,33 @@ export default function BookReader() {
             {/* Overlay buttons positioned over the cover - these work because they're outside react-pageflip */}
             {isCover && (
               <div 
-                className="absolute z-[70] flex gap-4"
+                className="absolute z-[70] flex flex-col items-center gap-3"
                 style={{
-                  top: '50%',
-                  left: '67%',
-                  transform: 'translate(-50%, 40%)',
+                  top: '55%',
+                  left: '50%',
+                  transform: 'translate(15%, -50%)',
                   pointerEvents: 'auto'
                 }}
               >
-                <button
-                  onClick={startReading}
-                  className="px-6 py-3 rounded-full bg-white/20 hover:bg-white/30 text-white font-medium flex items-center gap-2 transition-colors backdrop-blur shadow-lg"
-                  data-testid="cover-read-overlay-btn"
-                >
-                  <FiBook className="w-5 h-5" />
-                  Read
-                </button>
-                <button
-                  onClick={startListening}
-                  className="px-6 py-3 rounded-full bg-purple-600 hover:bg-purple-500 text-white font-medium flex items-center gap-2 transition-colors shadow-lg"
-                  data-testid="cover-listen-overlay-btn"
-                >
-                  <FiPlay className="w-5 h-5" />
-                  Listen
-                </button>
+                <div className="flex gap-3">
+                  <button
+                    onClick={startReading}
+                    className="px-5 py-2.5 rounded-full bg-white/20 hover:bg-white/30 text-white font-medium flex items-center gap-2 transition-colors backdrop-blur shadow-lg text-sm"
+                    data-testid="cover-read-overlay-btn"
+                  >
+                    <FiBook className="w-4 h-4" />
+                    Read
+                  </button>
+                  <button
+                    onClick={startListening}
+                    className="px-5 py-2.5 rounded-full bg-purple-600 hover:bg-purple-500 text-white font-medium flex items-center gap-2 transition-colors shadow-lg text-sm"
+                    data-testid="cover-listen-overlay-btn"
+                  >
+                    <FiPlay className="w-4 h-4" />
+                    Listen
+                  </button>
+                </div>
+                <p className="text-white/70 text-xs">Choose your experience</p>
               </div>
             )}
             
