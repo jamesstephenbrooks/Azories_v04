@@ -51,20 +51,20 @@ const TELEPORT_PORTALS = [
     id: 'stairs-up-1',
     name: 'Go Upstairs',
     triggerPos: { x: -1.77, y: 4.27, z: -6.05 },
-    triggerRadius: 0.25,
+    triggerRadius: 1.0, // Larger trigger area
     destPos: { x: -2.22, y: 6.21, z: -6.94 },
     destRotation: Math.PI,
-    color: '#ffd700',
+    color: '#00ffff',
     icon: '↑'
   },
   {
     id: 'stairs-up-2',
     name: 'Go Upstairs',
     triggerPos: { x: -1.70, y: 4.27, z: 3.10 },
-    triggerRadius: 0.25,
+    triggerRadius: 1.0,
     destPos: { x: -2.23, y: 6.21, z: 4.03 },
     destRotation: 0,
-    color: '#ffd700',
+    color: '#00ffff',
     icon: '↑'
   },
   // Top floor portals - Go Downstairs
@@ -72,20 +72,20 @@ const TELEPORT_PORTALS = [
     id: 'stairs-down-1',
     name: 'Go Downstairs',
     triggerPos: { x: -2.22, y: 6.21, z: -6.94 },
-    triggerRadius: 0.25,
+    triggerRadius: 1.0,
     destPos: { x: -1.77, y: 4.27, z: -6.05 },
     destRotation: 0,
-    color: '#ffd700',
+    color: '#00ffff',
     icon: '↓'
   },
   {
     id: 'stairs-down-2',
     name: 'Go Downstairs',
     triggerPos: { x: -2.23, y: 6.21, z: 4.03 },
-    triggerRadius: 0.25,
+    triggerRadius: 1.0,
     destPos: { x: -1.70, y: 4.27, z: 3.10 },
     destRotation: Math.PI,
-    color: '#ffd700',
+    color: '#00ffff',
     icon: '↓'
   }
 ];
