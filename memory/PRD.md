@@ -51,6 +51,17 @@ Build a digital book creation and reading application named "Azories" with featu
    - `POST /api/pro-studio/characters/train-consistency` - Train LoRA for existing character
    - `POST /api/pro-studio/characters/{id}/generate-consistent` - Smart generation using best available method
 
+3. **Credits System** - Added credits for Pro Studio features:
+   - Credit costs: FLUX generate (1), FLUX Pro (2), PuLID (3), LoRA training (50), LoRA generate (2), Video (10)
+   - Endpoints: `GET /api/credits/balance`, `POST /api/credits/add`
+   - UI: Credits display in Pro Studio header with add button
+
+4. **Bug Fixes:**
+   - Fixed duplicate images when uploading to character creator
+   - Fixed character creation with URL images (now downloads and analyzes)
+   - Fixed token key mismatch in Pro Studio (`token` -> `azories-token`)
+   - Fixed gallery integration (now loads from Art Studio gallery)
+
 ## Architecture
 
 ### Frontend (/app/frontend)
