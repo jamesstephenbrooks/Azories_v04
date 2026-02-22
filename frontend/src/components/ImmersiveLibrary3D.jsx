@@ -51,7 +51,7 @@ const TELEPORT_PORTALS = [
     name: 'Go Upstairs',
     // Position near back wall to go up
     triggerPos: { x: -1.77, y: 4.27, z: -6.05 },
-    triggerRadius: 0.6,
+    triggerRadius: 0.25,
     // Destination at the upper floor
     destPos: { x: -1.70, y: 4.27, z: 3.10 },
     destRotation: Math.PI,
@@ -63,7 +63,7 @@ const TELEPORT_PORTALS = [
     name: 'Go Downstairs',
     // Position at upper area to go down
     triggerPos: { x: -1.70, y: 4.27, z: 3.10 },
-    triggerRadius: 0.6,
+    triggerRadius: 0.25,
     // Destination at the lower area
     destPos: { x: -1.77, y: 4.27, z: -6.05 },
     destRotation: 0,
