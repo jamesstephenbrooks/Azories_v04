@@ -327,6 +327,8 @@ const RealisticPageFlip = forwardRef(({
   onPageChange, 
   onFlipStart,
   onFlipEnd,
+  onStartReading,
+  onStartListening,
   initialPage = 0,
   width = 400,
   height = 600,
