@@ -1630,15 +1630,34 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         if (child.userData?.isPortalArrow) {
           child.position.y = child.userData.baseY + Math.sin(time * 2) * 0.2;
         }
-        // Pulse and rotate portal meshes
+        // Pulse and rotate portal meshes - only show on same floor
         if (child.userData?.isPortal && child.material) {
-          child.material.opacity = 0.8 + Math.sin(time * 3) * 0.15;
-          child.rotation.y += 0.005; // Slow rotation
+          const portalFloor = child.userData.portalData?.floor;
+          const playerOnGround = (camera.position.y - PLAYER_HEIGHT) < 3;
+          const showPortal = (portalFloor === 'ground' && playerOnGround) || (portalFloor === 'upper' && !playerOnGround);
+          child.visible = showPortal;
+          if (showPortal) {
+            child.material.opacity = 0.8 + Math.sin(time * 3) * 0.15;
+            child.rotation.y += 0.005;
+          }
         }
-        // Pulse portal floor ring
+        // Pulse portal floor ring - only show on same floor
         if (child.userData?.isPortalRing && child.material) {
-          child.material.opacity = 0.3 + Math.sin(time * 2) * 0.2;
-          child.rotation.z += 0.02;
+          const portalFloor = child.userData.portalFloor;
+          const playerOnGround = (camera.position.y - PLAYER_HEIGHT) < 3;
+          const showRing = (portalFloor === 'ground' && playerOnGround) || (portalFloor === 'upper' && !playerOnGround);
+          child.visible = showRing;
+          if (showRing) {
+            child.material.opacity = 0.4 + Math.sin(time * 2) * 0.3;
+            child.rotation.z += 0.02;
+          }
+        }
+        // Portal lights - only show on same floor
+        if (child.userData?.isPortalLight) {
+          const portalFloor = child.userData.portalFloor;
+          const playerOnGround = (camera.position.y - PLAYER_HEIGHT) < 3;
+          const showLight = (portalFloor === 'ground' && playerOnGround) || (portalFloor === 'upper' && !playerOnGround);
+          child.visible = showLight;
         }
       });
       
