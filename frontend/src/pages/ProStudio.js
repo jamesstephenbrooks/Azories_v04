@@ -994,6 +994,15 @@ export default function ProStudio() {
                     )}
                   </label>
                 </div>
+                
+                {/* Or Select from Gallery */}
+                <Button
+                  variant="outline"
+                  onClick={() => { setGalleryPickerMode('shots'); setShowGalleryPicker(true); }}
+                  className="w-full mb-4 border-purple-500/30 text-purple-300 hover:bg-purple-500/20"
+                >
+                  <FiFolder className="mr-2" /> Select from Gallery
+                </Button>
 
                 <Button 
                   onClick={generateShots}
