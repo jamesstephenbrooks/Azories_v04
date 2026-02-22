@@ -484,7 +484,7 @@ export default function BookReader() {
             
             {/* Realistic Page Flip Mode */}
             {useRealisticFlip ? (
-              <div className="flex justify-center items-center">
+              <div className={`flex justify-center items-center ${isFullscreen ? 'h-full w-full' : ''}`}>
                 <RealisticPageFlip
                   ref={realisticFlipRef}
                   book={book}
@@ -500,10 +500,10 @@ export default function BookReader() {
                   onFlipStart={() => setIsFlipping(true)}
                   onFlipEnd={() => setIsFlipping(false)}
                   initialPage={currentPage >= 0 ? currentPage + 1 : 0}
-                  width={isFullscreen ? Math.min(window.innerWidth * 0.4, 500) : 380}
-                  height={isFullscreen ? Math.min(window.innerHeight * 0.8, 650) : 520}
+                  width={isFullscreen ? Math.min(window.innerWidth * 0.35, 550) : 400}
+                  height={isFullscreen ? Math.min(window.innerHeight * 0.75, 750) : 560}
                   showControls={false}
-                  className={isFullscreen ? 'scale-100' : ''}
+                  className={isFullscreen ? 'scale-110' : ''}
                 />
               </div>
             ) : (
