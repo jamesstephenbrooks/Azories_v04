@@ -195,7 +195,7 @@ Professional-grade character creation and video generation studio, inspired by H
   - [x] Add font/size/alignment editing to text editor
   - [x] Display chapter titles on first page of new chapters
 - [ ] iPad chapter creation dialog fix (recurring)
-- **TTS/ElevenLabs** - User has new ElevenLabs account, needs correct API key (should start with `sk_`)
+- **TTS Switched to OpenAI** - ElevenLabs free tier blocked, now using OpenAI TTS via Emergent LLM Key (working)
 
 ### P1 - High Priority (Batch 2 Remaining)
 - [x] Create "My Series" dedicated page - DONE (Feb 22, 2026)
