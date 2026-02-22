@@ -449,7 +449,6 @@ const RealisticPageFlip = forwardRef(({
           mobileScrollSupport={true}
           onFlip={handleFlip}
           onChangeState={handleFlipStart}
-          onChangeOrientation={handleFlipEnd}
           className="book-flipbook"
           style={{}}
           startPage={initialPage}
