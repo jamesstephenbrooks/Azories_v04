@@ -109,8 +109,14 @@ export default function BookReader() {
   }, [bookId, user, authLoading, token]);
 
   // Ref to track if we should continue auto-reading
+  // NOTE: Only update this ref explicitly, NOT on every render
   const autoReadRef = useRef(autoRead);
-  autoReadRef.current = autoRead;
+  // Sync ref with state ONLY when state intentionally changes (via useEffect)
+  useEffect(() => {
+    // Only update if this is a genuine state change (not initial render)
+    // This prevents overwriting manually set ref values
+    autoReadRef.current = autoRead;
+  }, [autoRead]);
   
   // Ref to track current page for async operations
   const currentPageRef = useRef(currentPage);
