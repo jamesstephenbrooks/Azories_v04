@@ -804,7 +804,13 @@ export default function BookReader() {
             <Button
               variant="outline"
               size="lg"
-              onClick={nextPage}
+              onClick={() => {
+                if (useRealisticFlip && realisticFlipRef.current) {
+                  realisticFlipRef.current.nextPage();
+                } else {
+                  nextPage();
+                }
+              }}
               disabled={currentPage >= totalPages - 1 || isFlipping}
               className="rounded-full px-6"
             >
