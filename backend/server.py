@@ -293,7 +293,7 @@ class ImageGenerateRequest(BaseModel):
 
 class VideoGenerateRequest(BaseModel):
     prompt: str
-    duration: int = 5
+    duration: int = 4  # Valid durations: 4, 8, 12 seconds
     size: str = "1280x720"  # Valid sizes: 1280x720, 1792x1024, 1024x1792, 1024x1024
     style: Optional[str] = "animation"
 
