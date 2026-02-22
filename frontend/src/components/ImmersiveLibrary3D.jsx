@@ -87,16 +87,16 @@ const GENRE_SECTIONS = [
   { 
     name: 'Romance', 
     position: { x: 2.5, z: 4.0 }, 
-    bannerPos: { x: 3.31, y: 4.57, z: 4.96 }, 
-    shelfPos: { x: 3.0, y: 4.2, z: 4.96 }, 
+    bannerPos: { x: 3.31, y: 5.2, z: 4.96 }, 
+    shelfPos: { x: 3.0, y: 4.8, z: 4.96 }, 
     rotation: -Math.PI / 2, 
     color: '#f472b6' 
   },
   { 
     name: 'Biography', 
     position: { x: 2.0, z: 0.5 }, 
-    bannerPos: { x: 2.57, y: 4.56, z: 1.16 }, 
-    shelfPos: { x: 2.3, y: 4.2, z: 1.16 }, 
+    bannerPos: { x: 2.57, y: 5.2, z: 1.16 }, 
+    shelfPos: { x: 2.3, y: 4.8, z: 1.16 }, 
     rotation: -Math.PI / 2, 
     color: '#a78bfa' 
   },
