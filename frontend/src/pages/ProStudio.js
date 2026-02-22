@@ -1586,16 +1586,38 @@ export default function ProStudio() {
                             <p className="text-gray-500 text-xs">{char.style} • {char.genre}</p>
                           </div>
                           
-                          <div className="flex items-center gap-2 flex-shrink-0">
+                          <div className="flex items-center gap-1 flex-shrink-0">
+                            {/* Edit button */}
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => openEditModal(char)}
+                              className="text-gray-400 hover:text-white hover:bg-gray-700/50 p-1.5"
+                              title="Edit character"
+                            >
+                              <FiEdit3 size={14} />
+                            </Button>
+                            
                             {/* View Folder button */}
                             <Button
                               size="sm"
                               variant="ghost"
                               onClick={() => openCharacterView(char)}
-                              className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/20"
+                              className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/20 p-1.5"
                               title="View character folder"
                             >
-                              <FiFolder size={16} />
+                              <FiFolder size={14} />
+                            </Button>
+                            
+                            {/* Delete button */}
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => deleteCharacter(char.id)}
+                              className="text-red-400 hover:text-red-300 hover:bg-red-500/20 p-1.5"
+                              title="Delete character"
+                            >
+                              <FiTrash2 size={14} />
                             </Button>
                             
                             {/* Select button */}
