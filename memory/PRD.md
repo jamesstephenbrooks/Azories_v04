@@ -62,6 +62,33 @@ Build a digital book creation and reading application named "Azories" with featu
    - Fixed token key mismatch in Pro Studio (`token` -> `azories-token`)
    - Fixed gallery integration (now loads from Art Studio gallery)
 
+### Latest Updates (Feb 22, 2026)
+
+1. **fal.ai API Key Updated** - Fixed invalid API key that was blocking image generation
+
+2. **Unified Character Creation Form** - Replaced tabbed interface with unified form:
+   - Description AND reference images can be provided together (not either/or)
+   - More intuitive workflow for creating characters
+
+3. **Character Folder/Portfolio System** - Each character now has a dedicated folder:
+   - New endpoints: `GET/POST /api/pro-studio/characters/{id}/gallery`
+   - Generated images auto-save to character's folder
+   - View all images for a character in one place
+   - Click to preview images in full-size modal
+
+4. **Larger Image Preview Modal** - Click any image for full-size view with:
+   - Download button
+   - Save to gallery option
+   - Character/prompt info display
+
+5. **Genre Options Added** - Added "Futuristic" and "Sci-Fi" genres as requested
+
+6. **Character View Modal** - Click character thumbnail or folder icon to see:
+   - Full character description
+   - Reference images gallery
+   - Generated images folder
+   - "Use for Generation" quick action
+
 ## Architecture
 
 ### Frontend (/app/frontend)
