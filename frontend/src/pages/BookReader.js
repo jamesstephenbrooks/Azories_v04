@@ -593,13 +593,26 @@ export default function BookReader() {
                   </div>
                 )}
                 
-                {/* Play overlay */}
+                {/* Play overlay with Read and Listen buttons */}
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <div className="text-center text-white">
-                    <div className="w-24 h-24 rounded-full bg-white/20 backdrop-blur flex items-center justify-center mb-4 mx-auto animate-pulse">
-                      <FiPlay className="w-12 h-12 ml-1" />
+                  <div className="text-center text-white space-y-4">
+                    <div className="flex gap-4 justify-center">
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); startReading(); }}
+                        className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/20 backdrop-blur hover:bg-white/30 transition-colors"
+                      >
+                        <FiBook className="w-6 h-6" />
+                        <span className="font-heading text-lg">Read</span>
+                      </button>
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); startListening(); }}
+                        className="flex items-center gap-2 px-6 py-3 rounded-full bg-primary hover:bg-primary/80 transition-colors"
+                      >
+                        <FiPlay className="w-6 h-6" />
+                        <span className="font-heading text-lg">Listen</span>
+                      </button>
                     </div>
-                    <p className="font-heading text-2xl">Click to Start Reading</p>
+                    <p className="text-sm opacity-70">Choose how you want to experience this story</p>
                   </div>
                 </div>
                 
