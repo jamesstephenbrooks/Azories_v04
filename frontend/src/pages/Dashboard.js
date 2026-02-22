@@ -159,6 +159,36 @@ export default function Dashboard() {
     }
   };
   
+  const reorderBookInSeries = async (seriesId, bookId, currentIndex, newIndex) => {
+    try {
+      await axios.put(`${API}/series/${seriesId}/books/${bookId}/order`, {
+        new_order: newIndex + 1  // API expects 1-based order
+      });
+      fetchSeries();
+    } catch (error) {
+      toast.error('Failed to reorder book');
+    }
+  };
+  
+  const publishAllInSeries = async (seriesId) => {
+    if (!window.confirm('Publish all books in this series?')) return;
+    try {
+      const seriesData = series.find(s => s.id === seriesId);
+      if (!seriesData?.books) return;
+      
+      for (const book of seriesData.books) {
+        if (!book.is_published) {
+          await axios.put(`${API}/books/${book.id}`, { is_published: true });
+        }
+      }
+      toast.success('All books in series published!');
+      fetchMyBooks();
+      fetchSeries();
+    } catch (error) {
+      toast.error('Failed to publish some books');
+    }
+  };
+  
   // Filter books based on search query
   const filteredBooks = books.filter(book => {
     if (!searchQuery.trim()) return true;
