@@ -196,10 +196,10 @@ Professional-grade character creation and video generation studio, inspired by H
 - **TTS Quota Exceeded** - The "Listen" audio feature requires Universal Key credit top-up (Profile → Universal Key → Add Balance)
 
 ### P1 - High Priority (Batch 2 Remaining)
-- [ ] Create "My Series" dedicated page (currently in Dashboard dialog)
+- [x] Create "My Series" dedicated page - DONE (Feb 22, 2026)
 - [ ] Add font and layout editing to text editor
 - [ ] Display chapter titles on first page of new chapters
-- [ ] Fix collaboration popup UI issues
+- [ ] Fix collaboration popup UI issues - DONE (Feb 22, 2026)
 - [ ] Integrate Veo 3.1 video model (requires API key)
 - [ ] Integrate Kling 3.0 video model (requires API key)
 - [ ] Generate page images for 50+ books (covers done)
