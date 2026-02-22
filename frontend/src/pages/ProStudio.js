@@ -538,20 +538,38 @@ export default function ProStudio() {
             </div>
           </div>
           
-          {/* Character selector in header */}
-          {selectedCharacter && (
-            <div className="flex items-center gap-2 bg-purple-900/30 px-3 py-1.5 rounded-full">
-              <img 
-                src={selectedCharacter.thumbnail || selectedCharacter.reference_images?.[0]} 
-                alt={selectedCharacter.name}
-                className="w-6 h-6 rounded-full object-cover"
-              />
-              <span className="text-white text-sm">{selectedCharacter.name}</span>
-              <button onClick={() => setSelectedCharacter(null)} className="text-gray-400 hover:text-white">
-                <FiX size={14} />
-              </button>
-            </div>
-          )}
+          {/* Book selector and Character in header */}
+          <div className="flex items-center gap-3">
+            {/* Book selector */}
+            <Select value={selectedBookId} onValueChange={setSelectedBookId}>
+              <SelectTrigger className="w-40 bg-gray-800/50 border-gray-700 text-white rounded-full text-sm">
+                <SelectValue placeholder="Select book" />
+              </SelectTrigger>
+              <SelectContent className="bg-gray-800 border-gray-700">
+                <SelectItem value="general" className="text-white">General (All Books)</SelectItem>
+                {userBooks.map((book) => (
+                  <SelectItem key={book.id} value={book.id} className="text-white">
+                    {book.title?.substring(0, 25)}{book.title?.length > 25 ? '...' : ''}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            {/* Selected Character */}
+            {selectedCharacter && (
+              <div className="flex items-center gap-2 bg-purple-900/30 px-3 py-1.5 rounded-full">
+                <img 
+                  src={selectedCharacter.thumbnail || selectedCharacter.reference_images?.[0]} 
+                  alt={selectedCharacter.name}
+                  className="w-6 h-6 rounded-full object-cover"
+                />
+                <span className="text-white text-sm">{selectedCharacter.name}</span>
+                <button onClick={() => setSelectedCharacter(null)} className="text-gray-400 hover:text-white">
+                  <FiX size={14} />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
