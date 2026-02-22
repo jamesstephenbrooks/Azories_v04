@@ -2341,6 +2341,12 @@ async def fal_generate_image(request: FalGenerateImageRequest, current_user: dic
     if not FAL_AVAILABLE:
         raise HTTPException(status_code=503, detail="fal.ai service not available")
     
+    # Check and deduct credits
+    operation = "flux_pro_generate" if request.model == "flux-pro" else "flux_generate"
+    if not await deduct_credits(current_user["id"], operation):
+        credits_needed = CREDIT_COSTS.get(operation, 1)
+        raise HTTPException(status_code=402, detail=f"Insufficient credits. This operation requires {credits_needed} credits.")
+    
     try:
         result = await generate_image_flux(
             prompt=request.prompt,
@@ -2367,6 +2373,11 @@ async def fal_generate_with_face(request: FalGenerateWithFaceRequest, current_us
     
     if not FAL_AVAILABLE:
         raise HTTPException(status_code=503, detail="fal.ai service not available")
+    
+    # Check and deduct credits
+    if not await deduct_credits(current_user["id"], "pulid_generate"):
+        credits_needed = CREDIT_COSTS.get("pulid_generate", 3)
+        raise HTTPException(status_code=402, detail=f"Insufficient credits. This operation requires {credits_needed} credits.")
     
     try:
         result = await generate_with_face_id(
