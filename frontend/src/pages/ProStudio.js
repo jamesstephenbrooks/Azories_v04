@@ -1239,22 +1239,56 @@ export default function ProStudio() {
                     <FiSave className="mr-1" /> Save to Gallery
                   </Button>
                   {selectedCharacter && (
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={async (e) => {
-                        e.stopPropagation();
-                        await saveToCharacterFolder(
-                          selectedCharacter.id,
-                          previewImage.url,
-                          previewImage.prompt || 'Saved image',
-                          'saved'
-                        );
-                      }}
-                      className="border-purple-500/50 text-purple-300"
-                    >
-                      <FiFolder className="mr-1" /> Add to Character
-                    </Button>
+                    <>
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          await saveToCharacterFolder(
+                            selectedCharacter.id,
+                            previewImage.url,
+                            previewImage.prompt || 'Saved image',
+                            'saved'
+                          );
+                        }}
+                        className="border-purple-500/50 text-purple-300"
+                      >
+                        <FiFolder className="mr-1" /> Add to Folder
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          try {
+                            const token = localStorage.getItem('azories-token');
+                            const response = await fetch(`${API_URL}/api/pro-studio/characters/${selectedCharacter.id}/add-reference`, {
+                              method: 'POST',
+                              headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${token}`
+                              },
+                              body: JSON.stringify({ image_url: previewImage.url })
+                            });
+                            if (response.ok) {
+                              const data = await response.json();
+                              toast.success(data.message);
+                              // Refresh character list to show updated reference count
+                              loadCharacters();
+                            } else {
+                              toast.error('Failed to add reference image');
+                            }
+                          } catch (error) {
+                            toast.error('Error adding reference image');
+                          }
+                        }}
+                        className="border-amber-500/50 text-amber-300"
+                        title="Add to reference images for LoRA training"
+                      >
+                        <FiStar className="mr-1" /> Add to References
+                      </Button>
+                    </>
                   )}
                 </div>
               </div>
