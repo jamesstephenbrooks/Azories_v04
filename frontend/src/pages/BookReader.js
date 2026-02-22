@@ -685,10 +685,10 @@ export default function BookReader() {
             {/* Cover is displayed on RIGHT side only (single page), so position buttons there */}
             {isCover && (
               <div 
-                className="absolute z-[70] flex flex-col items-center gap-3"
+                className="absolute z-[70] flex flex-col items-center gap-2"
                 style={{
-                  top: '55%',
-                  left: '75%',
+                  top: '65%',
+                  left: '50%',
                   transform: 'translate(-50%, -50%)',
                   pointerEvents: 'auto'
                 }}
