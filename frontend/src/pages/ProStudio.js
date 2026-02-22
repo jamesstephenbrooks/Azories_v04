@@ -48,6 +48,25 @@ export default function ProStudio() {
   const [characterImages, setCharacterImages] = useState([]);
   const [isCreatingCharacter, setIsCreatingCharacter] = useState(false);
   
+  // New character creation options
+  const [characterDescription, setCharacterDescription] = useState('');
+  const [characterStyle, setCharacterStyle] = useState('illustration');
+  const [characterGenre, setCharacterGenre] = useState('fantasy');
+  const [characterStyles, setCharacterStyles] = useState([]);
+  const [characterGenres, setCharacterGenres] = useState([]);
+  const [physicalTraits, setPhysicalTraits] = useState({
+    age: '',
+    gender: '',
+    hairColor: '',
+    hairStyle: '',
+    eyeColor: '',
+    skinTone: '',
+    bodyType: ''
+  });
+  const [specialFeatures, setSpecialFeatures] = useState('');
+  const [personality, setPersonality] = useState('');
+  const [creationMode, setCreationMode] = useState('description'); // 'description' or 'images'
+  
   // LoRA Training state
   const [isTrainingLora, setIsTrainingLora] = useState(false);
   const [trainingProgress, setTrainingProgress] = useState(null);
