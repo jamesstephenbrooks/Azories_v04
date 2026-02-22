@@ -1299,10 +1299,11 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
               const maxStepUp = isStair ? 3.0 : (isFloor ? 1.5 : 1.0);
               const maxStepDown = 5.0; // Allow dropping down further
               
+              // Check if this floor is within valid range
               if (hitY <= currentFootY + maxStepUp && hitY >= currentFootY - maxStepDown) {
-                // For stairs, prefer the highest valid point (to climb up)
-                // For regular floor, use closest to current level
-                if (bestFloorY === null || (isStair && hitY > bestFloorY) || (!isStair && Math.abs(hitY - currentFootY) < Math.abs(bestFloorY - currentFootY))) {
+                // ALWAYS prefer the HIGHEST valid floor to prevent sinking
+                // This ensures we stand ON surfaces, not inside them
+                if (bestFloorY === null || hitY > bestFloorY) {
                   bestFloorY = hitY;
                   if (isStair) detectedStairMesh = meshName;
                 }
