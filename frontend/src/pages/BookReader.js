@@ -344,14 +344,8 @@ export default function BookReader() {
       }
     } catch (error) {
       toast.error('Failed to generate audio');
-      // Still continue to next page even if audio fails in auto-read mode
-      if (autoReadRef.current && currentPageRef.current < allPages.length - 1) {
-        setTimeout(() => {
-          if (autoReadRef.current) {
-            goToPage(currentPageRef.current + 1, 'next');
-          }
-        }, 1000);
-      }
+      // Don't auto-advance when audio fails - just stop
+      setIsPlaying(false);
     } finally {
       setAudioLoading(false);
     }
