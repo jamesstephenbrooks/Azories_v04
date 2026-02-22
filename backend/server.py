@@ -4250,6 +4250,44 @@ async def art_studio_delete(image_id: str, current_user: dict = Depends(get_curr
         logging.error(f"Art Studio delete error: {e}")
         raise HTTPException(status_code=500, detail="Failed to delete image")
 
+
+class GalleryItemUpdate(BaseModel):
+    book_id: Optional[str] = None
+    name: Optional[str] = None
+
+
+@api_router.put("/art-studio/gallery/{image_id}")
+async def art_studio_update(image_id: str, update: GalleryItemUpdate, current_user: dict = Depends(get_current_user)):
+    """Update a gallery item (assign to book, rename, etc.)"""
+    user = current_user
+    
+    try:
+        from bson import ObjectId
+        
+        update_data = {}
+        if update.book_id is not None:
+            update_data["book_id"] = update.book_id if update.book_id else None
+        if update.name is not None:
+            update_data["name"] = update.name
+        
+        if not update_data:
+            raise HTTPException(status_code=400, detail="No update data provided")
+        
+        result = await db.art_studio_gallery.update_one(
+            {"_id": ObjectId(image_id), "user_id": user["id"]},
+            {"$set": update_data}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Image not found")
+        
+        return {"success": True}
+        
+    except Exception as e:
+        logging.error(f"Art Studio update error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update gallery item")
+
+
 @api_router.get("/art-studio/gallery/book/{book_id}")
 async def get_book_gallery(book_id: str, current_user: dict = Depends(get_current_user)):
     """Get all gallery images assigned to a specific book"""
