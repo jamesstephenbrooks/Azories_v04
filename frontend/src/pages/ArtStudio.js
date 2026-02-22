@@ -1037,6 +1037,17 @@ export default function ArtStudio() {
           </div>
           
           <div className="flex items-center gap-3">
+            {/* Pro Studio Link */}
+            <Button 
+              onClick={() => navigate('/pro-studio')}
+              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+              data-testid="pro-studio-btn"
+            >
+              <FiVideo className="w-4 h-4 mr-2" />
+              Pro Studio
+              <span className="ml-2 text-[10px] px-1.5 py-0.5 bg-white/20 rounded">NEW</span>
+            </Button>
+            
             {/* Expert Mode Link */}
             <Button 
               variant="outline" 
