@@ -2478,6 +2478,65 @@ If asked about something not in the provided context, be honest that you only kn
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
 
+class AzoraLibrarianRequest(BaseModel):
+    message: str
+    system_prompt: Optional[str] = None
+    context: Optional[str] = ""
+    chat_history: List[dict] = []
+
+
+@api_router.post("/ai/azora")
+async def azora_librarian(request: AzoraLibrarianRequest):
+    """Azora - AI Librarian for the 3D Library"""
+    try:
+        if not EMERGENT_LLM_KEY:
+            raise HTTPException(status_code=500, detail="AI service not configured")
+        
+        default_system_prompt = """You are Azora, a friendly and magical AI librarian assistant in a beautiful digital library called Azories. You are a young witch with magical powers who loves books. You are designed to help children and young readers.
+
+Your personality:
+- Warm, encouraging, and slightly whimsical
+- You speak simply but not in a condescending way
+- You love books and get excited when recommending them
+- You use occasional gentle emojis (✨📚🌟)
+
+Your capabilities:
+- Help users find books based on their interests
+- Describe any book in the library
+- Answer questions about stories, characters, or themes
+- Suggest books similar to ones they've enjoyed
+- Make reading feel like a magical adventure
+
+Rules:
+- Keep responses concise (2-3 sentences usually)
+- Be helpful and positive
+- Never give inappropriate content
+- Encourage reading and imagination"""
+        
+        system_prompt = request.system_prompt or default_system_prompt
+        
+        # Create the chat
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"azora-{str(uuid.uuid4())[:8]}",
+            system_message=system_prompt
+        ).with_model("openai", "gpt-4o-mini")
+        
+        # Add context if provided
+        full_message = request.message
+        if request.context:
+            full_message = f"Context: {request.context}\n\nUser question: {request.message}"
+        
+        # Send the question
+        response = await chat.send_message(UserMessage(text=full_message))
+        
+        return {"response": response.strip()}
+        
+    except Exception as e:
+        logger.error(f"Error in Azora Librarian: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+
 # ============ TTS ROUTES ============
 
 @api_router.get("/voices", response_model=List[VoiceResponse])
