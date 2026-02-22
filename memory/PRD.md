@@ -196,12 +196,19 @@ Professional-grade character creation and video generation studio, inspired by H
   - [x] Display chapter titles on first page of new chapters
 - [ ] iPad chapter creation dialog fix (recurring)
 - **TTS Switched to OpenAI** - ElevenLabs free tier blocked, now using OpenAI TTS via Emergent LLM Key (working)
+- [x] Azora AI Librarian - DONE (Feb 22, 2026) - New /api/ai/azora endpoint
+- [x] Page sync with voiceover - DONE (Feb 22, 2026) - Stops audio on page change
+- [x] Voice selector removed from reader - DONE (Feb 22, 2026) - Only shown in editor
+- [x] Font/size save fix - DONE (Feb 22, 2026) - savePage() now includes font fields
+- [x] Grand Library stair climbing improved - DONE (Feb 22, 2026) - More permissive detection
 
 ### P1 - High Priority (Batch 2 Remaining)
 - [x] Create "My Series" dedicated page - DONE (Feb 22, 2026)
 - [x] Add font and layout editing to text editor - DONE (Feb 22, 2026)
 - [x] Display chapter titles on first page of new chapters - DONE (Feb 22, 2026)
 - [x] Fix collaboration popup UI issues - DONE (Feb 22, 2026)
+- [x] Azora AI - DONE (Feb 22, 2026)
+- [x] 3D Library stair climbing - IMPROVED (Feb 22, 2026)
 - [ ] Integrate Veo 3.1 video model (requires API key)
 - [ ] Integrate Kling 3.0 video model (requires API key)
 - [ ] Generate page images for 50+ books (covers done)
@@ -209,15 +216,13 @@ Professional-grade character creation and video generation studio, inspired by H
 - [ ] Integrate fal.ai for true style transfer
 
 ### P2 - Medium Priority
-- [ ] More realistic page-turn animation (react-pageflip)
-- [ ] Fix 3D library spiral staircase navigation
+- [ ] Cover blank pages issue (react-pageflip library limitation)
 - [ ] Replace ambient "wind" sound
 - [ ] Pro feature gating after trial expires
 - [ ] Payment/subscription management (Stripe)
 - [ ] Fix fullscreen mode on iPad
 
 ### P3 - Backlog
-- [ ] Re-integrate "Azora" AI Librarian
 - [ ] Multiplayer library exploration
 - [ ] Vector Logo Creation
 - [ ] Comic book layouts in editor
