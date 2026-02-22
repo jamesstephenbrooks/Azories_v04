@@ -266,38 +266,113 @@ export default function ProStudio() {
     }
   };
 
-  // Create character from reference images
+  // Create character - either from description OR reference images
   const createCharacter = async () => {
     if (!characterName.trim()) {
       toast.error('Please enter a character name');
       return;
     }
-    if (characterImages.length < 3) {
-      toast.error('Please upload at least 3 reference images');
+    
+    // Check based on creation mode
+    if (creationMode === 'images' && characterImages.length < 1) {
+      toast.error('Please upload at least 1 reference image');
+      return;
+    }
+    if (creationMode === 'description' && !characterDescription.trim()) {
+      toast.error('Please enter a character description');
       return;
     }
 
     setIsCreatingCharacter(true);
-    setLoadingMessage('Analyzing reference images...');
+    setLoadingMessage(creationMode === 'images' ? 'Analyzing reference images...' : 'Creating character from description...');
 
     try {
       const token = localStorage.getItem('azories-token');
+      
+      // Build request body based on creation mode
+      const requestBody = {
+        name: characterName,
+        style: characterStyle,
+        genre: characterGenre,
+        personality: personality || undefined,
+        special_features: specialFeatures || undefined,
+      };
+      
+      if (creationMode === 'description') {
+        requestBody.description_prompt = characterDescription;
+        // Include physical traits if any are filled
+        const filledTraits = Object.fromEntries(
+          Object.entries(physicalTraits).filter(([_, v]) => v)
+        );
+        if (Object.keys(filledTraits).length > 0) {
+          requestBody.physical_traits = filledTraits;
+        }
+      } else {
+        requestBody.reference_images = characterImages.map(img => img.url);
+      }
+      
       const response = await fetch(`${API_URL}/api/pro-studio/characters`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({
-          name: characterName,
-          reference_images: characterImages.map(img => img.url)
-        })
+        body: JSON.stringify(requestBody)
       });
 
       if (response.ok) {
         const data = await response.json();
         toast.success(`Character "${characterName}" created!`);
         setCharacters(prev => [...prev, data.character]);
+        // Reset form
+        setCharacterName('');
+        setCharacterDescription('');
+        setCharacterImages([]);
+        setPhysicalTraits({ age: '', gender: '', hairColor: '', hairStyle: '', eyeColor: '', skinTone: '', bodyType: '' });
+        setSpecialFeatures('');
+        setPersonality('');
+      } else {
+        const error = await response.json();
+        toast.error(error.detail || 'Error creating character');
+      }
+    } catch (error) {
+      toast.error('Error creating character');
+      console.error(error);
+    } finally {
+      setIsCreatingCharacter(false);
+      setLoadingMessage('');
+    }
+  };
+
+  // Add more images to existing character
+  const addImagesToCharacter = async (characterId, newImages) => {
+    try {
+      const token = localStorage.getItem('azories-token');
+      const response = await fetch(`${API_URL}/api/pro-studio/characters/${characterId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          add_reference_images: newImages
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        toast.success('Images added to character!');
+        loadCharacters();
+        return data.character;
+      } else {
+        const error = await response.json();
+        toast.error(error.detail || 'Error adding images');
+      }
+    } catch (error) {
+      toast.error('Error adding images');
+      console.error(error);
+    }
+  };
         setSelectedCharacter(data.character);
         setCharacterName('');
         setCharacterImages([]);
