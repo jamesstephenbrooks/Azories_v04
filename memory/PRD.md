@@ -130,18 +130,19 @@ Build a digital book creation and reading application named "Azories" with featu
 - "Read Aloud" button error on iPad
 
 ## Upcoming Tasks
-1. Grand Library - Fix camera/stair collision
-2. Collaborators popup positioning
-3. Full collaboration workflow implementation
-4. Azora AI testing
+1. Re-enable credits system for Pro Studio
+2. Full LoRA training implementation
+3. Character portfolio management (edit/delete characters)
+4. Collaborators popup positioning
 5. Art Studio features
 6. iPad/iPhone UI fixes
 
 ## Backlog
 - Art Studio "dramatic" mode
 - Scene thumbnails
-- Character consistency system (Pro Studio)
+- Grand Library camera fixes
 - iPad read-only mode
+- Video generation from characters
 
 ## 3rd Party Integrations
 - OpenAI TTS (via Emergent LLM Key)
