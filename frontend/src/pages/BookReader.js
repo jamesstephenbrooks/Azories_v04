@@ -431,13 +431,34 @@ export default function BookReader() {
         )}
       </div>
       
-      {/* Book Display */}
+      {/* Book Display - with swipe support */}
       <div 
         id="book-container"
         className={`pt-20 pb-48 px-4 flex items-center justify-center min-h-screen transition-all duration-300 ${
           isFullscreen ? 'bg-black/95 fixed inset-0 z-50 pt-8 pb-8' : ''
         }`}
+        {...swipeHandlers}
+        style={{ touchAction: 'pan-y pinch-zoom' }}
+        data-testid="book-container"
       >
+        {/* Swipe hint indicators */}
+        <AnimatePresence>
+          {swipeHint && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className={`fixed top-1/2 -translate-y-1/2 z-50 ${
+                swipeHint === 'next' ? 'right-4' : 'left-4'
+              }`}
+            >
+              <div className="bg-primary/80 text-white px-4 py-2 rounded-full text-sm">
+                {swipeHint === 'next' ? '→ Next' : '← Previous'}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
         {/* Exit Fullscreen Button - Always visible in fullscreen */}
         {isFullscreen && (
           <Button
