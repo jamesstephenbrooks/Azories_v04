@@ -375,11 +375,11 @@ export default function Dashboard() {
                   <Button 
                     variant="outline"
                     className="rounded-full px-6 py-6 font-ui"
-                    onClick={() => setIsSeriesOpen(true)}
+                    onClick={() => navigate('/series')}
                     data-testid="manage-series-btn"
                   >
                     <FiLayers className="mr-2" />
-                    Manage Series
+                    My Series
                   </Button>
                   
                   <Dialog open={isAIStoryOpen} onOpenChange={setIsAIStoryOpen}>
