@@ -440,6 +440,7 @@ export default function BookEditor() {
   const generateAllImages = async () => {
     if (!window.confirm('Generate AI images for all pages without images? This may take several minutes.')) return;
     
+    const token = localStorage.getItem('token');
     setGeneratingAllImages(true);
     toast.info('Generating images for all pages... This may take a few minutes.');
     
@@ -447,6 +448,8 @@ export default function BookEditor() {
       const res = await axios.post(`${API}/ai/generate-all-images`, {
         book_id: bookId,
         style: imageStyle
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
       });
       toast.success(res.data.message);
       // Refresh pages
@@ -463,6 +466,7 @@ export default function BookEditor() {
   const generateImagesFromText = async () => {
     if (!window.confirm('Generate AI images for all pages based on their text content? This may take several minutes.')) return;
     
+    const token = localStorage.getItem('token');
     setGeneratingAllImages(true);
     toast.info('Analyzing text and generating images... This may take a few minutes.');
     
@@ -470,6 +474,8 @@ export default function BookEditor() {
       const res = await axios.post(`${API}/ai/generate-images-from-text`, {
         book_id: bookId,
         style: imageStyle
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
       });
       toast.success(res.data.message);
       // Refresh pages
