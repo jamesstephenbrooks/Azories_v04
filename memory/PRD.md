@@ -224,7 +224,6 @@ Professional-grade character creation and video generation studio, inspired by H
 - [ ] Improve audiobook feature
 
 ## Known Limitations
-- **TTS/ElevenLabs Audio Quota Exceeded** - The "Listen" feature returns a quota error because ElevenLabs credits have run out. Go to **Profile → Universal Key → Add Balance** to add more credits
 - Animation timeout: Sora 2 takes 2-5 minutes, may timeout via Cloudflare
 - Only Sora 2 video model currently active (others need API keys)
 - Books need AI-generated page illustrations
