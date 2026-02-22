@@ -249,12 +249,24 @@ const ImagePage = forwardRef(({ page, pageNumber }, ref) => {
 ImagePage.displayName = 'ImagePage';
 
 // Text-only page (for right side of spread)
-const TextPage = forwardRef(({ page, pageNumber }, ref) => {
+const TextPage = forwardRef(({ page, pageNumber, isFirstOfChapter }, ref) => {
   const hasText = page?.text_content && page.text_content.trim() !== '';
   
   return (
     <Page ref={ref} pageNumber={pageNumber} isLeft={false}>
       <div className="h-full flex flex-col">
+        {/* Chapter title header for first page of chapter */}
+        {isFirstOfChapter && page?.chapterTitle && (
+          <div className="mb-4 pb-3 border-b border-muted-foreground/20">
+            <span className="text-xs font-ui text-muted-foreground tracking-widest uppercase">
+              Chapter {page.chapterNumber}
+            </span>
+            <h3 className="font-heading text-lg font-bold text-foreground mt-1">
+              {page.chapterTitle}
+            </h3>
+          </div>
+        )}
+        
         {hasText ? (
           <p className="font-reader text-sm md:text-base leading-relaxed whitespace-pre-wrap text-foreground/90">
             {page.text_content}
