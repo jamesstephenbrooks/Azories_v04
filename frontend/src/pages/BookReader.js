@@ -482,48 +482,62 @@ export default function BookReader() {
     }
   }, [currentPage, playAudio]);
 
-  // Auto-read effect: play audio when page changes with auto-read enabled
+  // Track when flip ends to trigger audio playback
+  const prevIsFlippingRef = useRef(isFlipping);
+  
+  // Auto-read effect: play audio when page flip ENDS with auto-read enabled
   useEffect(() => {
-    // CRITICAL: Don't trigger during page flip animation
+    const wasFlipping = prevIsFlippingRef.current;
+    prevIsFlippingRef.current = isFlipping;
+    
+    // Only trigger when flip animation completes (was flipping, now not)
+    // OR when auto-read is first enabled on a static page
+    const flipJustEnded = wasFlipping && !isFlipping;
+    const onStaticPage = !isFlipping && !wasFlipping;
+    
+    // Don't trigger if we're still flipping
     if (isFlipping) {
       return;
     }
     
-    // Don't trigger if we're already playing or loading audio for this page
+    // Don't trigger if we already played this page
     if (lastPlayedPageRef.current === currentPage) {
       return;
     }
     
-    // Auto-read: play audio for current page content, or auto-advance for chapter titles
-    // Use autoReadRef.current to catch synchronous updates from startListening
-    if (autoReadRef.current && currentPage >= 0 && allPages.length > 0) {
-      const page = allPages[currentPage];
-      
-      if (page?.isChapterTitle) {
-        // Chapter title page - show briefly then advance
-        const timer = setTimeout(() => {
-          if (autoReadRef.current && currentPageRef.current < allPages.length - 1 && !isFlipping) {
-            goToPage(currentPageRef.current + 1, 'next');
-          }
-        }, 1500);
-        return () => clearTimeout(timer);
-      } else if (page?.text_content) {
-        // Has text content - play audio after flip animation settles
-        const timer = setTimeout(() => {
-          if (autoReadRef.current && lastPlayedPageRef.current !== currentPage && !isFlipping) {
-            playAudio();
-          }
-        }, 300); // Wait for flip to fully settle
-        return () => clearTimeout(timer);
-      } else if (currentPage < allPages.length - 1) {
-        // No content, advance to next page quickly
-        const timer = setTimeout(() => {
-          if (autoReadRef.current && currentPageRef.current < allPages.length - 1 && !isFlipping) {
-            goToPage(currentPageRef.current + 1, 'next');
-          }
-        }, 500);
-        return () => clearTimeout(timer);
-      }
+    // Only proceed if auto-read is enabled and we're on a content page
+    if (!autoReadRef.current || currentPage < 0 || allPages.length === 0) {
+      return;
+    }
+    
+    const page = allPages[currentPage];
+    
+    if (page?.isChapterTitle) {
+      // Chapter title page - show briefly then advance
+      const timer = setTimeout(() => {
+        if (autoReadRef.current && currentPageRef.current < allPages.length - 1 && !isFlipping) {
+          goToPage(currentPageRef.current + 1, 'next');
+        }
+      }, 1500);
+      return () => clearTimeout(timer);
+    } else if (page?.text_content) {
+      // Has text content - play audio
+      // Use longer delay after flip to ensure everything is settled
+      const delay = flipJustEnded ? 400 : 150;
+      const timer = setTimeout(() => {
+        if (autoReadRef.current && lastPlayedPageRef.current !== currentPage && !isFlipping) {
+          playAudio();
+        }
+      }, delay);
+      return () => clearTimeout(timer);
+    } else if (currentPage < allPages.length - 1) {
+      // No content, advance to next page quickly
+      const timer = setTimeout(() => {
+        if (autoReadRef.current && currentPageRef.current < allPages.length - 1 && !isFlipping) {
+          goToPage(currentPageRef.current + 1, 'next');
+        }
+      }, 500);
+      return () => clearTimeout(timer);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, autoRead, allPages.length, isFlipping]);
