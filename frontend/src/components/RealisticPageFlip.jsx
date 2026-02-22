@@ -350,12 +350,15 @@ const RealisticPageFlip = forwardRef(({
   };
 
   // Build all pages array - create spreads with image on left, text on right
-  // IMPORTANT: Front cover and back cover should be SINGLE pages (hard covers)
-  // Content pages are in spreads (image left, text right) 
+  // IMPORTANT: For react-pageflip with showCover=true:
+  // - Front cover is page 0 (single page, shown alone on right)
+  // - After flipping cover, first spread is pages 1-2
+  // - Back cover should be the last page (single page, shown alone on left)
+  // Total pages should work naturally with the library
   const allBookPages = [];
   const newPageMapping = [];
   
-  // Front cover - single page (hard cover, will display alone on right side when book is closed)
+  // Front cover - single page (hard cover)
   allBookPages.push(<CoverPage key="cover" book={book} onClick={goToNextPage} />);
   newPageMapping.push(-1); // Cover = no content page
   
@@ -405,11 +408,15 @@ const RealisticPageFlip = forwardRef(({
   });
   
   // Back cover - single page (hard cover)
+  // The library handles this automatically with showCover=true
   allBookPages.push(<BackCoverPage key="back-cover" book={book} />);
   newPageMapping.push(-2); // Back cover = special marker
   
   // Store the mapping
   pageMapping.current = newPageMapping;
+  
+  // Calculate total content spreads for page indicator
+  const totalContentPages = pages.length;
 
   return (
     <div className={`realistic-page-flip relative ${className}`}>
