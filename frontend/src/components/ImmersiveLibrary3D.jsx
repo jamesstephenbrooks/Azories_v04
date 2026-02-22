@@ -68,10 +68,10 @@ const GENRE_SECTIONS = [
   },
   { 
     name: 'Science Fiction', 
-    position: { x: -6.25, z: -1.29 }, 
-    bannerPos: { x: -5.5, y: 6.5, z: -1.29 }, 
-    shelfPos: { x: -5.2, y: 5.4, z: -1.29 }, 
-    rotation: Math.PI / 2, 
+    position: { x: -0.84, z: 5.03 }, 
+    bannerPos: { x: -0.84, y: 5.87, z: 5.03 }, // Moved to new user-specified location
+    shelfPos: { x: -0.84, y: 5.4, z: 5.03 }, 
+    rotation: Math.PI, 
     color: '#06b6d4'
   },
   { 
@@ -81,6 +81,16 @@ const GENRE_SECTIONS = [
     shelfPos: { x: 4.5, y: 5.4, z: -1 }, 
     rotation: -Math.PI / 2, 
     color: '#f59e0b' 
+  },
+  // My Books section - shows user's created books
+  { 
+    name: 'My Books', 
+    position: { x: -1.41, z: -1.43 }, 
+    bannerPos: { x: -1.41, y: 3.54, z: -1.43 }, // User-specified location
+    shelfPos: { x: -1.41, y: 3.1, z: -1.43 }, 
+    rotation: 0, 
+    color: '#8b5cf6',
+    isPersonal: true // Flag to indicate this shows user's books
   },
   
   // NEW LOCATIONS - Right side bookcases (Ground Floor)
@@ -145,14 +155,15 @@ const GENRE_SECTIONS = [
 ];
 
 // Teleport portals for moving between floors - near spiral staircases
-// Ground floor Y ≈ 0 (camera at ~1.1), Upper floor Y ≈ 5.1 (camera at ~6.2)
+// Ground floor Y ≈ 0, Upper floor Y ≈ 5.1
+// Visual portal appears at triggerPos.y + 0.4, detection uses triggerPos.y
 const TELEPORT_PORTALS = [
   // Back spiral staircase - "Go Upstairs" at bottom (ground floor)
   {
     id: 'stairs-up-back',
     name: 'Go Upstairs',
     triggerPos: { x: -1.60, y: 0, z: -6.01 }, // Ground floor near back spiral staircase
-    triggerRadius: 1.0,
+    triggerRadius: 0.3, // Very close proximity required
     destPos: { x: -2.22, y: 5.1, z: -6.94 }, // Top of back stairs (upper floor)
     destRotation: 0,
     color: '#00ffff',
@@ -163,7 +174,7 @@ const TELEPORT_PORTALS = [
     id: 'stairs-up-front',
     name: 'Go Upstairs',
     triggerPos: { x: -1.55, y: 0, z: 2.90 }, // Ground floor near front spiral staircase
-    triggerRadius: 1.0,
+    triggerRadius: 0.3, // Very close proximity required
     destPos: { x: -2.23, y: 5.1, z: 4.03 }, // Top of front stairs (upper floor)
     destRotation: Math.PI,
     color: '#00ffff',
@@ -174,7 +185,7 @@ const TELEPORT_PORTALS = [
     id: 'stairs-down-back',
     name: 'Go Downstairs',
     triggerPos: { x: -2.22, y: 5.1, z: -6.94 }, // Upper floor near back spiral staircase
-    triggerRadius: 1.0,
+    triggerRadius: 0.3, // Very close proximity required
     destPos: { x: -1.60, y: 0, z: -6.01 }, // Bottom of back stairs (ground floor)
     destRotation: Math.PI,
     color: '#00ffff',
@@ -185,7 +196,7 @@ const TELEPORT_PORTALS = [
     id: 'stairs-down-front',
     name: 'Go Downstairs',
     triggerPos: { x: -2.23, y: 5.1, z: 4.03 }, // Upper floor near front spiral staircase
-    triggerRadius: 1.0,
+    triggerRadius: 0.3, // Very close proximity required
     destPos: { x: -1.55, y: 0, z: 2.90 }, // Bottom of front stairs (ground floor)
     destRotation: 0,
     color: '#00ffff',
