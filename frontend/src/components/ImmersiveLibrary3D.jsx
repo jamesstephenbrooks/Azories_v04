@@ -1452,14 +1452,22 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
             
             if (hits.length > 0 && hits[0].distance < COLLISION_RADIUS + 0.1) {
               const hitMesh = hits[0].object.name?.toLowerCase() || '';
+              // Check if it's a railing - always block
+              const isRailing = hitMesh.includes('railing') || hitMesh.includes('rail') || 
+                               hitMesh.includes('metal') || hitMesh.includes('bar') ||
+                               hitMesh.includes('railing_collider');
+              
               // Check if it's a stair, ramp, or floor segment
-              const isClimbable = hitMesh.includes('stair') || hitMesh.includes('plane05') || 
+              const isClimbable = !isRailing && (hitMesh.includes('stair') || hitMesh.includes('plane05') || 
                                   hitMesh.includes('plane06') || hitMesh.includes('ramp') ||
                                   hitMesh.includes('step') || hitMesh.includes('floor') ||
                                   hitMesh.includes('spiral') || hitMesh.includes('stone') ||
-                                  hitMesh.includes('climb');
+                                  hitMesh.includes('climb'));
               
-              if (isClimbable) {
+              if (isRailing) {
+                // Always block railings at any height
+                blocked = true;
+              } else if (isClimbable) {
                 stairDetected = true;
               } else if (rayY > camera.position.y - PLAYER_HEIGHT + 0.5) {
                 // Only consider it a wall block at waist level or higher (more permissive)
