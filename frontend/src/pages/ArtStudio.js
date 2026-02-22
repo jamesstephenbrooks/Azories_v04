@@ -2867,7 +2867,10 @@ export default function ArtStudio() {
                           controls 
                           autoPlay 
                           loop 
+                          muted
+                          playsInline
                           className="w-full h-full object-cover"
+                          onLoadedData={(e) => e.target.play().catch(() => {})}
                         />
                       </div>
                     </>
