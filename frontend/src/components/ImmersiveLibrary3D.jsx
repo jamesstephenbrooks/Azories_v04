@@ -1160,8 +1160,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         const railingColliders = [
           // Left side of bridge (wall running along Z axis)
           { pos: [-2.5, 7.0, -1.0], size: [0.4, 2.0, 14] },
-          // Right side of bridge  
-          { pos: [-0.1, 7.0, -1.0], size: [0.4, 2.0, 14] }
+          // Right side of bridge - based on Bridge_rail001 position
+          { pos: [-0.77, 7.0, -1.0], size: [0.4, 2.0, 14] }
         ];
         
         railingColliders.forEach((collider, index) => {
