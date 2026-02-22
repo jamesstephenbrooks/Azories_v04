@@ -339,35 +339,52 @@ const RealisticPageFlip = forwardRef(({
     flipBookRef.current?.pageFlip()?.flipPrev();
   };
 
-  // Build all pages array
+  // Build all pages array - create spreads with image on left, text on right
   const allBookPages = [
     // Front cover
     <CoverPage key="cover" book={book} onClick={goToNextPage} />,
-    // Content pages
-    ...pages.map((page, index) => {
-      if (page.isChapterTitle) {
-        return (
-          <ChapterTitlePage 
-            key={`chapter-${index}`}
-            chapter={page}
-            chapterNumber={page.chapterNumber}
-            totalChapters={page.totalChapters}
-            isLeft={index % 2 === 0}
-          />
-        );
-      }
-      return (
-        <ContentPage 
-          key={`page-${index}`}
-          page={page}
-          pageNumber={index + 1}
-          isLeft={index % 2 === 0}
+  ];
+  
+  // Process content pages as spreads (image left, text right)
+  pages.forEach((page, index) => {
+    if (page.isChapterTitle) {
+      // Chapter titles get their own spread
+      allBookPages.push(
+        <ChapterTitlePage 
+          key={`chapter-${index}`}
+          chapter={page}
+          chapterNumber={page.chapterNumber}
+          totalChapters={page.totalChapters}
+          isLeft={true}
         />
       );
-    }),
-    // Back cover
-    <BackCoverPage key="back-cover" book={book} />,
-  ];
+      // Add blank right page after chapter title
+      allBookPages.push(
+        <Page key={`chapter-blank-${index}`} isLeft={false}>
+          <div className="h-full" />
+        </Page>
+      );
+    } else {
+      // Regular content: Image on left page, Text on right page
+      allBookPages.push(
+        <ImagePage 
+          key={`img-${index}`}
+          page={page}
+          pageNumber={index * 2 + 1}
+        />
+      );
+      allBookPages.push(
+        <TextPage 
+          key={`txt-${index}`}
+          page={page}
+          pageNumber={index * 2 + 2}
+        />
+      );
+    }
+  });
+  
+  // Back cover
+  allBookPages.push(<BackCoverPage key="back-cover" book={book} />);
 
   return (
     <div className={`realistic-page-flip relative ${className}`}>
