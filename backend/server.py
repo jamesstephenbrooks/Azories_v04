@@ -2083,71 +2083,140 @@ async def get_character(character_id: str, current_user: dict = Depends(get_curr
 
 @api_router.post("/pro-studio/characters")
 async def create_character(request: CharacterCreate, current_user: dict = Depends(get_current_user)):
-    """Create a new character - from reference images OR description prompt
+    """Create a new character - from reference images AND/OR description prompt
     
-    Characters can be created in two ways:
+    Characters can be created with:
     1. Upload reference images - AI will analyze and create consistent description
     2. Provide description prompt - AI will generate character from your description
+    3. BOTH images AND description together for maximum control
     """
     if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Pro subscription required")
     
-    # Either need reference images OR a description prompt
-    if len(request.reference_images) < 1 and not request.description_prompt:
-        raise HTTPException(status_code=400, detail="Provide either reference images or a description prompt")
+    # Need at least one of: reference images OR description prompt
+    has_images = len(request.reference_images) > 0
+    has_description = bool(request.description_prompt)
+    
+    if not has_images and not has_description:
+        raise HTTPException(status_code=400, detail="Provide reference images and/or a description prompt")
     
     try:
         description = ""
         thumbnail = None
+        style_info = next((s for s in CHARACTER_STYLES if s["id"] == request.style), {"name": request.style})
+        genre_info = next((g for g in CHARACTER_GENRES if g["id"] == request.genre), {"name": request.genre})
         
-        # If we have a description prompt, use it to build the character description
-        if request.description_prompt:
-            # Build a comprehensive character prompt
-            style_info = next((s for s in CHARACTER_STYLES if s["id"] == request.style), {"name": request.style})
-            genre_info = next((g for g in CHARACTER_GENRES if g["id"] == request.genre), {"name": request.genre})
-            
-            description_parts = [
-                f"Character: {request.name}",
-                f"Style: {style_info.get('name', request.style)} - {style_info.get('description', '')}",
-                f"Genre: {genre_info.get('name', request.genre)}",
-                f"\nAppearance: {request.description_prompt}",
-            ]
+        description_parts = [
+            f"Character: {request.name}",
+            f"Style: {style_info.get('name', request.style)} - {style_info.get('description', '')}",
+            f"Genre: {genre_info.get('name', request.genre)}",
+        ]
+        
+        # If we have a description prompt, add it
+        if has_description:
+            description_parts.append(f"\nAppearance: {request.description_prompt}")
             
             if request.physical_traits:
                 traits = request.physical_traits
                 trait_str = ", ".join([f"{k}: {v}" for k, v in traits.items() if v])
-                description_parts.append(f"Physical traits: {trait_str}")
+                if trait_str:
+                    description_parts.append(f"Physical traits: {trait_str}")
             
             if request.special_features:
                 description_parts.append(f"Special features: {request.special_features}")
             
             if request.personality:
                 description_parts.append(f"Personality: {request.personality}")
-            
-            description = "\n".join(description_parts)
-            
-            # Generate a thumbnail image for the character using fal.ai
-            if FAL_AVAILABLE:
-                try:
-                    gen_prompt = f"{request.description_prompt}, {style_info.get('name', '')} style, character portrait, detailed face"
-                    result = await generate_image_flux(
-                        prompt=gen_prompt,
-                        model="flux-dev",
-                        image_size="square_hd",
-                        num_images=1
-                    )
-                    if result.get("images"):
-                        thumbnail = result["images"][0].get("url")
-                except Exception as e:
-                    logger.warning(f"Could not generate thumbnail: {e}")
         
-        # If we have reference images, analyze them
-        elif request.reference_images:
-            if EMERGENT_LLM_KEY:
+        # If we have reference images, analyze them and enhance description
+        if has_images and EMERGENT_LLM_KEY:
+            try:
                 from emergentintegrations.llm.openai import LlmChat, UserMessage, ImageContent
                 
                 chat = LlmChat(
                     api_key=EMERGENT_LLM_KEY,
+                    session_id=f"char-{current_user['id']}-{str(uuid.uuid4())[:8]}",
+                    system_message="You are an expert at analyzing images and describing characters in detail for AI image generation."
+                ).with_model("openai", "gpt-4o")
+                
+                analysis_prompt = f"""Analyze this character image and provide a detailed description for consistent AI image generation.
+                
+                Character Style: {style_info.get('name', request.style)} ({style_info.get('description', '')})
+                Genre: {genre_info.get('name', request.genre)}
+                {"User's description: " + request.description_prompt if has_description else ""}
+                
+                Include:
+                - Gender and apparent age
+                - Hair color, style, and length
+                - Eye color and shape
+                - Skin tone and complexion
+                - Face shape and distinctive features
+                - Body type (if visible)
+                - Clothing style
+                - Any unique features (scars, tattoos, accessories, etc.)
+                
+                Respond in a detailed paragraph that can be used as a prompt prefix for generating consistent images of this character."""
+                
+                first_image = request.reference_images[0]
+                
+                if first_image.startswith('data:'):
+                    if ',' in first_image:
+                        image_base64 = first_image.split(',')[1]
+                    else:
+                        image_base64 = first_image
+                    
+                    user_msg = UserMessage(
+                        text=analysis_prompt,
+                        file_contents=[ImageContent(image_base64=image_base64)]
+                    )
+                    image_analysis = await chat.send_message(user_msg)
+                    description_parts.append(f"\nImage Analysis: {image_analysis}")
+                elif first_image.startswith('http'):
+                    async with aiohttp.ClientSession() as session:
+                        async with session.get(first_image) as resp:
+                            if resp.status == 200:
+                                image_data = await resp.read()
+                                image_base64 = base64.b64encode(image_data).decode('utf-8')
+                                user_msg = UserMessage(
+                                    text=analysis_prompt,
+                                    file_contents=[ImageContent(image_base64=image_base64)]
+                                )
+                                image_analysis = await chat.send_message(user_msg)
+                                description_parts.append(f"\nImage Analysis: {image_analysis}")
+                else:
+                    user_msg = UserMessage(
+                        text=analysis_prompt,
+                        file_contents=[ImageContent(image_base64=first_image)]
+                    )
+                    image_analysis = await chat.send_message(user_msg)
+                    description_parts.append(f"\nImage Analysis: {image_analysis}")
+                
+                # Use first reference image as thumbnail if no generated one
+                thumbnail = first_image
+            except Exception as e:
+                logger.warning(f"Could not analyze reference image: {e}")
+                if has_images:
+                    thumbnail = request.reference_images[0]
+        elif has_images:
+            # No LLM key, just use reference image as thumbnail
+            thumbnail = request.reference_images[0]
+        
+        description = "\n".join(description_parts)
+        
+        # Generate a thumbnail image if we have description but no images
+        if not thumbnail and has_description and FAL_AVAILABLE:
+            try:
+                gen_prompt = f"{request.description_prompt}, {style_info.get('name', '')} style, character portrait, detailed face"
+                result = await generate_image_flux(
+                    prompt=gen_prompt,
+                    model="flux-dev",
+                    image_size="square_hd",
+                    num_images=1
+                )
+                if result.get("images"):
+                    thumbnail = result["images"][0].get("url")
+            except Exception as e:
+                logger.warning(f"Could not generate thumbnail: {e}")
                     session_id=f"char-{current_user['id']}-{str(uuid.uuid4())[:8]}",
                     system_message="You are an expert at analyzing images and describing characters in detail for AI image generation."
                 ).with_model("openai", "gpt-4o")
