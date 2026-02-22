@@ -403,8 +403,16 @@ export default function BookEditor() {
   };
 
   const saveCover = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      toast.error('Please log in to save');
+      return;
+    }
+    
     try {
-      await axios.put(`${API}/books/${bookId}`, coverData);
+      await axios.put(`${API}/books/${bookId}`, coverData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       toast.success('Cover saved!');
       setCoverDialogOpen(false);
       fetchBook();
