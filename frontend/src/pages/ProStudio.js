@@ -149,12 +149,12 @@ export default function ProStudio() {
   const loadGallery = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/api/art-studio/gallery`, {
+      const response = await fetch(`${API_URL}/api/art-studio/gallery?type_filter=image`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (response.ok) {
         const data = await response.json();
-        setGallery(data.gallery || []);
+        setGallery(data.images || []);
       }
     } catch (error) {
       console.error('Error loading gallery:', error);
