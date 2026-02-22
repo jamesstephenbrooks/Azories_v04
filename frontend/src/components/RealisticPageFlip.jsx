@@ -482,7 +482,7 @@ const RealisticPageFlip = forwardRef(({
           </motion.button>
           
           <div className="text-sm text-muted-foreground">
-            {currentPage === 0 ? 'Cover' : currentPage === allBookPages.length - 1 ? 'Back' : `Page ${currentPage} of ${allBookPages.length - 2}`}
+            {currentPage === 0 ? 'Cover' : currentPage >= allBookPages.length - 1 ? 'Back Cover' : `Page ${Math.ceil(currentPage / 2)} of ${totalContentPages}`}
           </div>
           
           <motion.button
