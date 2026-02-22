@@ -116,6 +116,12 @@ export default function BookReader() {
   const shouldStartPlayingRef = useRef(false);
 
   useEffect(() => {
+    // Stop currently playing audio when page changes
+    if (audioElement) {
+      audioElement.pause();
+      setIsPlaying(false);
+    }
+    
     // Auto-read: play audio for current page content, or auto-advance for chapter titles
     if (autoRead && currentPage >= 0 && allPages.length > 0) {
       const page = allPages[currentPage];
@@ -135,7 +141,7 @@ export default function BookReader() {
           if (autoReadRef.current) {
             playAudio();
           }
-        }, 200);
+        }, 300);
         return () => clearTimeout(timer);
       } else if (currentPage < allPages.length - 1) {
         // No content, advance to next page
