@@ -1585,17 +1585,21 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         const currentTime = Date.now();
         let foundPortal = null;
         const playerFootY = camera.position.y - PLAYER_HEIGHT;
+        const playerIsGroundFloor = playerFootY < 3;
         
         for (const portal of TELEPORT_PORTALS) {
           const dx = camera.position.x - portal.triggerPos.x;
           const dz = camera.position.z - portal.triggerPos.z;
           const horizontalDist = Math.sqrt(dx * dx + dz * dz);
           
-          // Strict floor check: player must be on the same floor as the portal
-          // Ground floor: y < 3, Upper floor: y >= 3
-          const portalIsGroundFloor = portal.triggerPos.y < 3;
-          const playerIsGroundFloor = playerFootY < 3;
+          // Floor check using portal.floor property
+          const portalIsGroundFloor = portal.floor === 'ground';
           const sameFloor = portalIsGroundFloor === playerIsGroundFloor;
+          
+          // Debug logging (only every 60 frames to avoid spam)
+          if (frameCount % 60 === 0 && portal.id === 'stairs-up-back') {
+            console.log(`Portal check: dist=${horizontalDist.toFixed(2)}, radius=${portal.triggerRadius}, playerY=${playerFootY.toFixed(2)}, sameFloor=${sameFloor}`);
+          }
           
           // Only show portal if on same floor AND within horizontal range
           if (sameFloor && horizontalDist < portal.triggerRadius) {
@@ -1604,8 +1608,11 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           }
         }
         
-        // Update portal state (throttled to prevent rapid updates)
+        // Update portal state
         if (foundPortal !== nearPortal) {
+          if (foundPortal) {
+            console.log('Near portal:', foundPortal.name, foundPortal.id);
+          }
           setNearPortal(foundPortal);
         }
       }
