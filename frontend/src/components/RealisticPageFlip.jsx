@@ -135,7 +135,6 @@ const CoverPage = forwardRef(({ book, onClick, onListen }, ref) => {
                 onClick={(e) => { 
                   e.stopPropagation(); 
                   e.preventDefault();
-                  console.log('Listen button clicked!');
                   onListen?.(); 
                 }}
                 className="flex items-center gap-2 px-6 py-3 rounded-full bg-purple-600 hover:bg-purple-500 transition-colors relative z-50"
