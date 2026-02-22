@@ -1841,7 +1841,7 @@ export default function ProStudio() {
                             </div>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 flex-wrap">
                               <p className="text-white font-medium truncate">{char.name}</p>
                               {char.lora_status === 'completed' && (
                                 <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full flex items-center gap-1 flex-shrink-0">
@@ -1855,6 +1855,15 @@ export default function ProStudio() {
                               )}
                             </div>
                             <p className="text-gray-500 text-xs">{char.style} • {char.genre}</p>
+                            {/* Reference images count */}
+                            <p className="text-xs mt-1">
+                              <span className={`${(char.reference_images?.length || 0) >= 3 ? 'text-green-400' : 'text-amber-400'}`}>
+                                {char.reference_images?.length || 0}/3 refs
+                              </span>
+                              {(char.reference_images?.length || 0) < 3 && (
+                                <span className="text-gray-600 ml-1">(need 3 for LoRA)</span>
+                              )}
+                            </p>
                           </div>
                           
                           <div className="flex items-center gap-1 flex-shrink-0">
