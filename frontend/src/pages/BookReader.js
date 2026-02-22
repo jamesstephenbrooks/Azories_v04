@@ -44,6 +44,10 @@ export default function BookReader() {
   const [playbackSpeed, setPlaybackSpeed] = useState([1]);
   const [autoRead, setAutoRead] = useState(false);  // OFF by default - user clicks Read/Listen to enable
   
+  // Audio cache for pre-loading upcoming pages
+  const audioCache = useRef(new Map()); // pageIndex -> audio base64
+  const preloadingPages = useRef(new Set()); // pages currently being preloaded
+  
   const [allPages, setAllPages] = useState([]);
   const [narratorVoice, setNarratorVoice] = useState('');
   const [narratorVoiceLocked, setNarratorVoiceLocked] = useState(false);
