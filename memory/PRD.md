@@ -60,6 +60,8 @@ Build a digital book creation and reading application named "Azories" with featu
 
 ### P0 (Critical)
 - Internal Listen button on book cover doesn't work (react-pageflip captures events) - WORKAROUND: Added external "Start Listening" button
+- ~~Font size selection in Book Editor doesn't apply in reader~~ - **FIXED Feb 24, 2025**
+- Collaborator system backend infrastructure - **ON HOLD per user request**
 
 ### P1 (High)
 - Blank page next to front/back cover (react-pageflip showCover behavior)
