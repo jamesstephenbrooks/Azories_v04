@@ -669,6 +669,104 @@ async def update_book(book_id: str, book_data: BookUpdate, current_user: dict = 
     updated = await get_book_with_counts(updated)
     return BookResponse(**updated)
 
+
+# ============ COLLABORATION ROUTES ============
+
+class CollaboratorInvite(BaseModel):
+    email: str
+    role: str = "editor"  # editor, viewer
+
+
+@api_router.post("/books/{book_id}/collaborators/invite")
+async def invite_collaborator(book_id: str, invite: CollaboratorInvite, current_user: dict = Depends(get_current_user)):
+    """Invite a collaborator to a book"""
+    book = await db.books.find_one({"id": book_id}, {"_id": 0})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    if book["author_id"] != current_user["id"]:
+        raise HTTPException(status_code=403, detail="Only the owner can invite collaborators")
+    
+    # Find the user by email
+    invitee = await db.users.find_one({"email": invite.email}, {"_id": 0})
+    if not invitee:
+        raise HTTPException(status_code=404, detail="User not found. They need to create an account first.")
+    
+    if invitee["id"] == current_user["id"]:
+        raise HTTPException(status_code=400, detail="You can't invite yourself")
+    
+    # Check if already a collaborator
+    collaborators = book.get("collaborators", [])
+    if any(c["user_id"] == invitee["id"] for c in collaborators):
+        raise HTTPException(status_code=400, detail="User is already a collaborator")
+    
+    # Add collaborator
+    new_collaborator = {
+        "user_id": invitee["id"],
+        "email": invitee["email"],
+        "name": invitee.get("name", invitee["email"]),
+        "role": invite.role,
+        "added_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.books.update_one(
+        {"id": book_id},
+        {"$push": {"collaborators": new_collaborator}}
+    )
+    
+    return {"success": True, "message": f"Invited {invitee['email']} as {invite.role}"}
+
+
+@api_router.get("/books/{book_id}/collaborators")
+async def get_collaborators(book_id: str, current_user: dict = Depends(get_current_user)):
+    """Get all collaborators for a book"""
+    book = await db.books.find_one({"id": book_id}, {"_id": 0})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    # Check if user has access
+    is_owner = book["author_id"] == current_user["id"]
+    is_collaborator = any(c["user_id"] == current_user["id"] for c in book.get("collaborators", []))
+    
+    if not is_owner and not is_collaborator:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    return {"collaborators": book.get("collaborators", [])}
+
+
+@api_router.put("/books/{book_id}/collaborators/{user_id}")
+async def update_collaborator_role(book_id: str, user_id: str, update: CollaboratorInvite, current_user: dict = Depends(get_current_user)):
+    """Update a collaborator's role"""
+    book = await db.books.find_one({"id": book_id}, {"_id": 0})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    if book["author_id"] != current_user["id"]:
+        raise HTTPException(status_code=403, detail="Only the owner can update roles")
+    
+    await db.books.update_one(
+        {"id": book_id, "collaborators.user_id": user_id},
+        {"$set": {"collaborators.$.role": update.role}}
+    )
+    
+    return {"success": True}
+
+
+@api_router.delete("/books/{book_id}/collaborators/{user_id}")
+async def remove_collaborator(book_id: str, user_id: str, current_user: dict = Depends(get_current_user)):
+    """Remove a collaborator from a book"""
+    book = await db.books.find_one({"id": book_id}, {"_id": 0})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    if book["author_id"] != current_user["id"]:
+        raise HTTPException(status_code=403, detail="Only the owner can remove collaborators")
+    
+    await db.books.update_one(
+        {"id": book_id},
+        {"$pull": {"collaborators": {"user_id": user_id}}}
+    )
+    
+    return {"success": True}
+
+
 @api_router.delete("/books/{book_id}")
 async def delete_book(book_id: str, current_user: dict = Depends(get_current_user)):
     book = await db.books.find_one({"id": book_id}, {"_id": 0})
