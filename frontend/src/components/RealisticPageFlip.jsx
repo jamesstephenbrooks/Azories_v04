@@ -601,14 +601,14 @@ const RealisticPageFlip = forwardRef(({
           </motion.button>
           
           <div className="text-sm text-muted-foreground">
-            {currentPage === 0 ? 'Cover' : currentPage >= allBookPages.length - 1 ? 'Back Cover' : `Page ${Math.ceil(currentPage / 2)} of ${totalContentPages}`}
+            {currentPage === 0 ? 'Cover' : currentPage >= totalFlipbookPages - 2 ? 'Back Cover' : `Page ${Math.ceil(currentPage / 2)} of ${totalContentPages}`}
           </div>
           
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={goToNextPage}
-            disabled={currentPage === allBookPages.length - 1 || isFlipping}
+            disabled={currentPage >= totalFlipbookPages - 1 || isFlipping}
             className="w-12 h-12 rounded-full bg-primary/10 hover:bg-primary/20 flex items-center justify-center text-primary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             aria-label="Next page"
           >
