@@ -993,71 +993,215 @@ export default function ProStudio() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Create Character Panel */}
               <div className="bg-black/40 rounded-xl border border-purple-500/20 p-6">
-                <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
                   <FiPlus className="text-purple-400" /> Create Character
                 </h2>
                 <p className="text-gray-400 text-sm mb-4">
-                  Upload 10-20 photos of your character from different angles. The AI will learn their appearance for consistent generation.
+                  Create any character for your stories - describe them or upload reference images.
                 </p>
                 
+                {/* Creation Mode Tabs */}
+                <div className="flex gap-2 mb-4">
+                  <button
+                    onClick={() => setCreationMode('description')}
+                    className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
+                      creationMode === 'description' 
+                        ? 'bg-purple-600 text-white' 
+                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                    }`}
+                  >
+                    <FiEdit3 className="inline mr-2" /> Describe Character
+                  </button>
+                  <button
+                    onClick={() => setCreationMode('images')}
+                    className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
+                      creationMode === 'images' 
+                        ? 'bg-purple-600 text-white' 
+                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                    }`}
+                  >
+                    <FiImage className="inline mr-2" /> Upload Images
+                  </button>
+                </div>
+                
+                {/* Character Name */}
                 <Input
-                  placeholder="Character name (e.g., Emma)"
+                  placeholder="Character name (e.g., Luna, Captain Rex)"
                   value={characterName}
                   onChange={(e) => setCharacterName(e.target.value)}
                   className="bg-gray-800/50 border-gray-700 text-white mb-4"
                   data-testid="character-name-input"
                 />
 
-                <div className="border-2 border-dashed border-purple-500/30 rounded-lg p-6 text-center mb-4">
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={(e) => handleFileUpload(e, 'character')}
-                    className="hidden"
-                    id="character-upload"
-                    data-testid="character-image-upload"
-                  />
-                  <label htmlFor="character-upload" className="cursor-pointer">
-                    <FiUpload className="w-8 h-8 text-purple-400 mx-auto mb-2" />
-                    <p className="text-gray-400">Click to upload reference images</p>
-                    <p className="text-xs text-gray-500 mt-1">Recommended: 10-20 images from different angles</p>
-                  </label>
+                {/* Style & Genre Selection */}
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div>
+                    <label className="text-gray-400 text-xs mb-1 block">Visual Style</label>
+                    <Select value={characterStyle} onValueChange={setCharacterStyle}>
+                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-700 max-h-60">
+                        {characterStyles.map((style) => (
+                          <SelectItem key={style.id} value={style.id} className="text-white">
+                            <span className="font-medium">{style.name}</span>
+                            <span className="text-gray-400 text-xs ml-2">{style.description}</span>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-gray-400 text-xs mb-1 block">Genre</label>
+                    <Select value={characterGenre} onValueChange={setCharacterGenre}>
+                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-700 max-h-60">
+                        {characterGenres.map((genre) => (
+                          <SelectItem key={genre.id} value={genre.id} className="text-white">
+                            <span className="font-medium">{genre.name}</span>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                
-                {/* Add from Gallery Button */}
-                <Button
-                  variant="outline"
-                  onClick={() => { setGalleryPickerMode('character'); setShowGalleryPicker(true); }}
-                  className="w-full mb-4 border-purple-500/30 text-purple-300 hover:bg-purple-500/20"
-                >
-                  <FiFolder className="mr-2" /> Add from Gallery
-                </Button>
 
-                {/* Uploaded images preview */}
-                {characterImages.length > 0 && (
-                  <div className="grid grid-cols-5 gap-2 mb-4">
-                    {characterImages.map((img, i) => (
-                      <div key={img.id} className="relative group">
-                        <img src={img.url} alt={`Ref ${i+1}`} className="w-full aspect-square object-cover rounded-lg" />
-                        <button
-                          onClick={() => setCharacterImages(prev => prev.filter(x => x.id !== img.id))}
-                          className="absolute top-1 right-1 bg-red-500 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <FiX size={12} className="text-white" />
-                        </button>
+                {/* Description Mode Content */}
+                {creationMode === 'description' && (
+                  <div className="space-y-4">
+                    <Textarea
+                      placeholder="Describe your character in detail... (e.g., 'A young elven princess with silver hair that flows like moonlight, bright violet eyes, pointed ears adorned with crystal earrings, wearing an ethereal blue gown')"
+                      value={characterDescription}
+                      onChange={(e) => setCharacterDescription(e.target.value)}
+                      className="bg-gray-800/50 border-gray-700 text-white"
+                      rows={4}
+                    />
+                    
+                    {/* Physical Traits (Collapsible) */}
+                    <details className="group">
+                      <summary className="text-purple-400 text-sm cursor-pointer hover:text-purple-300">
+                        + Add Physical Details (optional)
+                      </summary>
+                      <div className="grid grid-cols-2 gap-2 mt-3">
+                        <Input
+                          placeholder="Age (e.g., young adult, elderly)"
+                          value={physicalTraits.age}
+                          onChange={(e) => setPhysicalTraits(p => ({...p, age: e.target.value}))}
+                          className="bg-gray-800/50 border-gray-700 text-white text-sm"
+                        />
+                        <Input
+                          placeholder="Gender"
+                          value={physicalTraits.gender}
+                          onChange={(e) => setPhysicalTraits(p => ({...p, gender: e.target.value}))}
+                          className="bg-gray-800/50 border-gray-700 text-white text-sm"
+                        />
+                        <Input
+                          placeholder="Hair Color"
+                          value={physicalTraits.hairColor}
+                          onChange={(e) => setPhysicalTraits(p => ({...p, hairColor: e.target.value}))}
+                          className="bg-gray-800/50 border-gray-700 text-white text-sm"
+                        />
+                        <Input
+                          placeholder="Hair Style"
+                          value={physicalTraits.hairStyle}
+                          onChange={(e) => setPhysicalTraits(p => ({...p, hairStyle: e.target.value}))}
+                          className="bg-gray-800/50 border-gray-700 text-white text-sm"
+                        />
+                        <Input
+                          placeholder="Eye Color"
+                          value={physicalTraits.eyeColor}
+                          onChange={(e) => setPhysicalTraits(p => ({...p, eyeColor: e.target.value}))}
+                          className="bg-gray-800/50 border-gray-700 text-white text-sm"
+                        />
+                        <Input
+                          placeholder="Skin Tone"
+                          value={physicalTraits.skinTone}
+                          onChange={(e) => setPhysicalTraits(p => ({...p, skinTone: e.target.value}))}
+                          className="bg-gray-800/50 border-gray-700 text-white text-sm"
+                        />
                       </div>
-                    ))}
+                    </details>
+
+                    {/* Special Features & Personality */}
+                    <details className="group">
+                      <summary className="text-purple-400 text-sm cursor-pointer hover:text-purple-300">
+                        + Add Special Features & Personality (optional)
+                      </summary>
+                      <div className="space-y-2 mt-3">
+                        <Input
+                          placeholder="Special features (e.g., scar on cheek, glowing tattoos, mechanical arm)"
+                          value={specialFeatures}
+                          onChange={(e) => setSpecialFeatures(e.target.value)}
+                          className="bg-gray-800/50 border-gray-700 text-white text-sm"
+                        />
+                        <Input
+                          placeholder="Personality (e.g., brave and curious, mysterious and brooding)"
+                          value={personality}
+                          onChange={(e) => setPersonality(e.target.value)}
+                          className="bg-gray-800/50 border-gray-700 text-white text-sm"
+                        />
+                      </div>
+                    </details>
+                  </div>
+                )}
+
+                {/* Image Upload Mode Content */}
+                {creationMode === 'images' && (
+                  <div className="space-y-4">
+                    <div className="border-2 border-dashed border-purple-500/30 rounded-lg p-6 text-center">
+                      <input
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={(e) => handleFileUpload(e, 'character')}
+                        className="hidden"
+                        id="character-upload"
+                        data-testid="character-image-upload"
+                      />
+                      <label htmlFor="character-upload" className="cursor-pointer">
+                        <FiUpload className="w-8 h-8 text-purple-400 mx-auto mb-2" />
+                        <p className="text-gray-400">Click to upload reference images</p>
+                        <p className="text-xs text-gray-500 mt-1">Upload images of the character you want to recreate</p>
+                      </label>
+                    </div>
+                    
+                    {/* Add from Gallery Button */}
+                    <Button
+                      variant="outline"
+                      onClick={() => { setGalleryPickerMode('character'); setShowGalleryPicker(true); }}
+                      className="w-full border-purple-500/30 text-purple-300 hover:bg-purple-500/20"
+                    >
+                      <FiFolder className="mr-2" /> Add from Gallery
+                    </Button>
+
+                    {/* Uploaded images preview */}
+                    {characterImages.length > 0 && (
+                      <div className="grid grid-cols-5 gap-2">
+                        {characterImages.map((img, i) => (
+                          <div key={img.id} className="relative group">
+                            <img src={img.url} alt={`Ref ${i+1}`} className="w-full aspect-square object-cover rounded-lg" />
+                            <button
+                              onClick={() => setCharacterImages(prev => prev.filter(x => x.id !== img.id))}
+                              className="absolute top-1 right-1 bg-red-500 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <FiX size={12} className="text-white" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
 
                 <Button 
                   onClick={createCharacter}
-                  disabled={isCreatingCharacter || characterImages.length < 3}
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                  disabled={isCreatingCharacter || (!characterName.trim()) || (creationMode === 'description' && !characterDescription.trim()) || (creationMode === 'images' && characterImages.length < 1)}
+                  className="w-full mt-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                   data-testid="create-character-btn"
                 >
-                  {isCreatingCharacter ? 'Creating...' : `Create Character (${characterImages.length}/3+ images)`}
+                  {isCreatingCharacter ? 'Creating...' : 'Create Character'}
                 </Button>
               </div>
 
