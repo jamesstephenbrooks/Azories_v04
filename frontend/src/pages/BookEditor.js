@@ -341,6 +341,9 @@ export default function BookEditor() {
     
     autoSaveTimeoutRef.current = setTimeout(async () => {
       if (selectedPage) {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+        
         try {
           await axios.put(`${API}/pages/${selectedPage.id}`, {
             text_content: selectedPage.text_content,
@@ -350,6 +353,8 @@ export default function BookEditor() {
             image_url_4: selectedPage.image_url_4,
             video_url: selectedPage.video_url,
             layout_type: selectedPage.layout_type
+          }, {
+            headers: { Authorization: `Bearer ${token}` }
           });
           // Silent save - no toast for auto-save
         } catch (error) {
