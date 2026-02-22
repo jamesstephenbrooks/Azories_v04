@@ -1322,7 +1322,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         if (Math.abs(yDiff) > 0.01) {
           // Use faster interpolation when climbing (positive diff) vs descending
           const isClimbing = yDiff > 0;
-          const interpSpeed = isClimbing ? 0.35 : 0.2; // 35% per frame when climbing
+          // Much faster interpolation for stair climbing to feel responsive
+          const interpSpeed = isClimbing ? 0.5 : 0.25; // 50% per frame when climbing
           camera.position.y += yDiff * interpSpeed;
         }
         
