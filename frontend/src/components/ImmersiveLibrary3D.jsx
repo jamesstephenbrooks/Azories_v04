@@ -1455,7 +1455,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
               // Check if it's a railing - always block
               const isRailing = hitMesh.includes('railing') || hitMesh.includes('rail') || 
                                hitMesh.includes('metal') || hitMesh.includes('bar') ||
-                               hitMesh.includes('railing_collider');
+                               hitMesh.includes('railing_collider') || hitMesh.includes('bridge_rail');
               
               // Check if it's a stair, ramp, or floor segment
               const isClimbable = !isRailing && (hitMesh.includes('stair') || hitMesh.includes('plane05') || 
