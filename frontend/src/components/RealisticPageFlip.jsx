@@ -505,12 +505,14 @@ const RealisticPageFlip = forwardRef(({
   
   // Calculate total content spreads for page indicator
   const totalContentPages = pages.length;
+  const totalFlipbookPages = allBookPages.length;
 
   // Check if we're on cover (first page) or back cover (last page)
+  // react-pageflip uses 0-indexed pages, back cover is the last page
   const isOnFrontCover = currentPage === 0;
-  const isOnBackCover = currentPage >= allBookPages.length - 1;
+  const isOnBackCover = currentPage >= totalFlipbookPages - 2; // Back cover is last or second-to-last due to spread display
   const shouldClipLeft = isOnFrontCover;
-  const shouldClipRight = isOnBackCover;
+  const shouldClipRight = isOnBackCover && !isOnFrontCover;
   
   // Calculate shift amount - need extra shift to center with controls below
   const coverShift = (width / 2) + 80; // Extra 80px to align with center of controls
@@ -531,7 +533,7 @@ const RealisticPageFlip = forwardRef(({
             // Shift LEFT to center when showing front cover (clip left, visible part moves to center)
             // Shift RIGHT to center when showing back cover (clip right, visible part moves to center)
             marginLeft: shouldClipLeft ? `-${coverShift}px` : shouldClipRight ? `${coverShift}px` : '0',
-            transition: 'margin 0.4s ease-out',
+            transition: 'margin 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
           }}
         >
           {/* Clip the appropriate side when showing covers */}
@@ -540,7 +542,7 @@ const RealisticPageFlip = forwardRef(({
               overflow: (shouldClipLeft || shouldClipRight) ? 'hidden' : 'visible',
               // Clip left half for front cover, right half for back cover
               clipPath: shouldClipLeft ? 'inset(0 0 0 50%)' : shouldClipRight ? 'inset(0 50% 0 0)' : 'none',
-              transition: 'clip-path 0.4s ease-out',
+              transition: 'clip-path 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
             }}
           >
           {/* Book shadow underneath */}
