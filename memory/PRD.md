@@ -189,6 +189,9 @@ Professional-grade character creation and video generation studio, inspired by H
   - [x] Fix PDF download with proper auth header
   - [x] Clean up top toolbar buttons
   - [x] Add cover thumbnails preview in sidebar
+  - [x] Fix localStorage token key mismatch ('token' → 'azories-token')
+  - [x] Fix Collaborators popup positioning (z-index and centering)
+  - [x] Create dedicated "My Series" page at /series
 - [ ] iPad chapter creation dialog fix (recurring)
 - **TTS Quota Exceeded** - The "Listen" audio feature requires Universal Key credit top-up (Profile → Universal Key → Add Balance)
 
