@@ -779,8 +779,8 @@ export default function ArtStudio() {
       
       if (activeTab === 'character') {
         // If a saved character profile is selected, use their stored description for consistency
-        if (selectedCharacterProfile && selectedCharacterProfile.description) {
-          fullPrompt = `${selectedCharacterProfile.description}, ${styleData?.name || 'fantasy'} art style${qualityBoosts[qualityLevel] || qualityBoosts.high}`;
+        if (selectedProfile && selectedProfile.description) {
+          fullPrompt = `${selectedProfile.description}, ${styleData?.name || 'fantasy'} art style${qualityBoosts[qualityLevel] || qualityBoosts.high}`;
           // Add any additional scene/pose context from current settings
           if (character.expression && character.expression !== 'neutral') {
             fullPrompt += `, ${character.expression.toLowerCase()} expression`;
