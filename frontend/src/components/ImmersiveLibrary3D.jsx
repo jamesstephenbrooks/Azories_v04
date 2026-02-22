@@ -1420,6 +1420,28 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         
         playerOnGround.current = true;
         playerVelocity.current.y = 0;
+        
+        // Check for teleport portal proximity
+        const currentTime = Date.now();
+        let foundPortal = null;
+        
+        for (const portal of TELEPORT_PORTALS) {
+          const dx = camera.position.x - portal.triggerPos.x;
+          const dz = camera.position.z - portal.triggerPos.z;
+          const dy = Math.abs((camera.position.y - PLAYER_HEIGHT) - portal.triggerPos.y);
+          const horizontalDist = Math.sqrt(dx * dx + dz * dz);
+          
+          // Check if player is within portal trigger zone (horizontal and vertical)
+          if (horizontalDist < portal.triggerRadius && dy < 2.0) {
+            foundPortal = portal;
+            break;
+          }
+        }
+        
+        // Update portal state (throttled to prevent rapid updates)
+        if (foundPortal !== nearPortal) {
+          setNearPortal(foundPortal);
+        }
       }
       
       // Update highlighted book animation mixer
