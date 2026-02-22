@@ -501,6 +501,10 @@ const RealisticPageFlip = forwardRef(({
 
       {/* CSS for realistic effects */}
       <style>{`
+        .demoPage {
+          background-color: #fdfbf7;
+        }
+        
         .book-flipbook {
           box-shadow: 
             0 0 20px rgba(0,0,0,0.2),
