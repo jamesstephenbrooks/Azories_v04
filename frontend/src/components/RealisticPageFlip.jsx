@@ -417,7 +417,12 @@ const RealisticPageFlip = forwardRef(({
   newPageMapping.push(-1); // Cover = no content page
   
   // Process content pages as spreads (image left, text right)
+  let lastChapterNumber = null;
   pages.forEach((page, index) => {
+    // Check if this is the first page of a new chapter
+    const isFirstOfChapter = page.chapterNumber !== lastChapterNumber;
+    lastChapterNumber = page.chapterNumber;
+    
     if (page.isChapterTitle) {
       // Chapter titles get their own spread
       allBookPages.push(
@@ -455,6 +460,7 @@ const RealisticPageFlip = forwardRef(({
           key={`txt-${index}`}
           page={page}
           pageNumber={index + 1}
+          isFirstOfChapter={isFirstOfChapter}
         />
       );
       newPageMapping.push(index); // Text page also maps to content[index]
