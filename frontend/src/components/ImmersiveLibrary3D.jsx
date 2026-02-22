@@ -1157,11 +1157,16 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         console.log(`Found ${collisionMeshes.length} collision meshes, ${visibleMeshes.length} visible meshes`);
         
         // Create invisible collision walls for the bridge railings (thin bars don't raycast well)
+        // These solid boxes ensure player can't walk through the railings
         const railingColliders = [
-          // Left side of bridge (wall running along Z axis)
-          { pos: [-2.5, 7.0, -1.0], size: [0.4, 2.0, 14] },
-          // Right side of bridge - based on Bridge_rail001 position
-          { pos: [-0.77, 7.0, -1.0], size: [0.4, 2.0, 14] }
+          // Left side of bridge (full length wall)
+          { pos: [-2.5, 7.0, -1.0], size: [0.5, 2.5, 16] },
+          // Right side of bridge (based on Bridge_rail position at X: -0.77)
+          { pos: [-0.6, 7.0, -1.0], size: [0.5, 2.5, 16] },
+          // Front balcony railing (near front stairs)
+          { pos: [-1.6, 7.0, 5.0], size: [3.0, 2.5, 0.5] },
+          // Back balcony railing (near back stairs)
+          { pos: [-1.6, 7.0, -7.0], size: [3.0, 2.5, 0.5] }
         ];
         
         railingColliders.forEach((collider, index) => {
