@@ -174,7 +174,11 @@ Professional-grade character creation and video generation studio, inspired by H
   - Navigation buttons - FIXED
   - Page numbers/progress - FIXED
   - Voiceover sync - FIXED
+- [x] Remove "Classic" book mode - DONE (Feb 22, 2026)
+- [x] Increase book size - DONE (Feb 22, 2026)
+- [x] Read Aloud → Pause toggle - DONE (Feb 22, 2026)
 - [ ] iPad chapter creation dialog fix (recurring)
+- **TTS Quota Exceeded** - The "Listen" audio feature requires Universal Key credit top-up (Profile → Universal Key → Add Balance)
 
 ### P1 - High Priority
 - [ ] Integrate Veo 3.1 video model (requires API key)
