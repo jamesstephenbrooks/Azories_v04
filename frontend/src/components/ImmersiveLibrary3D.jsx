@@ -868,63 +868,63 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     // Create teleport portal visuals
     const portalMeshes = [];
     TELEPORT_PORTALS.forEach(portal => {
-      // Create a glowing disc for the portal (more visible than a ring)
+      // Create a small glowing disc for the portal
       const portalGeometry = new THREE.CircleGeometry(portal.triggerRadius, 32);
       const portalMaterial = new THREE.MeshBasicMaterial({
         color: portal.color,
         transparent: true,
-        opacity: 0.6,
+        opacity: 0.5,
         side: THREE.DoubleSide
       });
       const portalMesh = new THREE.Mesh(portalGeometry, portalMaterial);
       portalMesh.rotation.x = -Math.PI / 2; // Lay flat on the ground
-      portalMesh.position.set(portal.triggerPos.x, portal.triggerPos.y + 0.1, portal.triggerPos.z);
+      portalMesh.position.set(portal.triggerPos.x, portal.triggerPos.y + 0.05, portal.triggerPos.z);
       portalMesh.userData = { isPortal: true, portalData: portal };
       scene.add(portalMesh);
       portalMeshes.push(portalMesh);
       
-      // Add a glowing ring around the portal
-      const ringGeometry = new THREE.RingGeometry(portal.triggerRadius - 0.1, portal.triggerRadius + 0.1, 32);
+      // Add a thin gold ring around the portal
+      const ringGeometry = new THREE.RingGeometry(portal.triggerRadius - 0.05, portal.triggerRadius, 32);
       const ringMaterial = new THREE.MeshBasicMaterial({
         color: '#ffffff',
         transparent: true,
-        opacity: 0.8,
+        opacity: 0.7,
         side: THREE.DoubleSide
       });
       const ringMesh = new THREE.Mesh(ringGeometry, ringMaterial);
       ringMesh.rotation.x = -Math.PI / 2;
-      ringMesh.position.set(portal.triggerPos.x, portal.triggerPos.y + 0.12, portal.triggerPos.z);
+      ringMesh.position.set(portal.triggerPos.x, portal.triggerPos.y + 0.06, portal.triggerPos.z);
       scene.add(ringMesh);
       
-      // Add a floating arrow indicator above the portal
+      // Add a small floating arrow indicator above the portal
       const arrowCanvas = document.createElement('canvas');
-      arrowCanvas.width = 256;
-      arrowCanvas.height = 256;
+      arrowCanvas.width = 128;
+      arrowCanvas.height = 128;
       const arrowCtx = arrowCanvas.getContext('2d');
       
-      // Draw glowing background
+      // Draw gold circle background
       arrowCtx.fillStyle = portal.color;
       arrowCtx.beginPath();
-      arrowCtx.arc(128, 128, 100, 0, Math.PI * 2);
+      arrowCtx.arc(64, 64, 50, 0, Math.PI * 2);
       arrowCtx.fill();
       
       // Draw arrow
-      arrowCtx.fillStyle = '#ffffff';
-      arrowCtx.font = 'bold 120px Arial';
+      arrowCtx.fillStyle = '#000000';
+      arrowCtx.font = 'bold 60px Arial';
       arrowCtx.textAlign = 'center';
       arrowCtx.textBaseline = 'middle';
-      arrowCtx.fillText(portal.icon, 128, 128);
+      arrowCtx.fillText(portal.icon, 64, 64);
       
       const arrowTexture = new THREE.CanvasTexture(arrowCanvas);
       const arrowMaterial = new THREE.SpriteMaterial({ 
         map: arrowTexture, 
         transparent: true,
-        opacity: 1.0
+        opacity: 0.9
       });
       const arrowSprite = new THREE.Sprite(arrowMaterial);
-      arrowSprite.position.set(portal.triggerPos.x, portal.triggerPos.y + 2.5, portal.triggerPos.z);
-      arrowSprite.scale.set(2, 2, 1);
-      arrowSprite.userData = { isPortalArrow: true, baseY: portal.triggerPos.y + 2.5 };
+      arrowSprite.position.set(portal.triggerPos.x, portal.triggerPos.y + 1.2, portal.triggerPos.z);
+      arrowSprite.scale.set(0.8, 0.8, 1);
+      arrowSprite.userData = { isPortalArrow: true, baseY: portal.triggerPos.y + 1.2 };
       scene.add(arrowSprite);
     });
     teleportPortalsRef.current = portalMeshes;
