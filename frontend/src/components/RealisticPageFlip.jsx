@@ -179,14 +179,20 @@ const ChapterTitlePage = forwardRef(({ chapter, chapterNumber, totalChapters, is
 
 ChapterTitlePage.displayName = 'ChapterTitlePage';
 
-// Content page component
+// Content page component - shows even if no image
 const ContentPage = forwardRef(({ page, pageNumber, isLeft }, ref) => {
+  const hasImage = page?.image_url && page.image_url.trim() !== '';
+  const hasText = page?.text_content && page.text_content.trim() !== '';
+  
   return (
     <Page ref={ref} pageNumber={pageNumber} isLeft={isLeft}>
       <div className="h-full flex flex-col">
-        {/* Image section */}
-        {page?.image_url && (
-          <div className="mb-4 rounded-lg overflow-hidden flex-shrink-0" style={{ maxHeight: '40%' }}>
+        {/* Image section - always show container for layout consistency */}
+        <div 
+          className={`mb-4 rounded-lg overflow-hidden flex-shrink-0 ${!hasImage ? 'bg-muted/20 border border-dashed border-muted-foreground/20' : ''}`} 
+          style={{ height: hasImage || !hasText ? '45%' : '0%', minHeight: hasImage ? '120px' : hasText ? '0' : '120px' }}
+        >
+          {hasImage ? (
             <img 
               src={page.image_url} 
               alt=""
@@ -196,14 +202,24 @@ const ContentPage = forwardRef(({ page, pageNumber, isLeft }, ref) => {
                 objectPosition: `${page.image_position_x || 50}% ${page.image_position_y || 50}%`
               }}
             />
-          </div>
-        )}
+          ) : !hasText ? (
+            <div className="w-full h-full flex items-center justify-center text-muted-foreground/40">
+              <span className="text-sm">No illustration</span>
+            </div>
+          ) : null}
+        </div>
         
         {/* Text content */}
         <div className="flex-1 overflow-hidden">
-          <p className="font-reader text-base md:text-lg leading-relaxed whitespace-pre-wrap text-foreground/90">
-            {page?.text_content || ''}
-          </p>
+          {hasText ? (
+            <p className="font-reader text-base md:text-lg leading-relaxed whitespace-pre-wrap text-foreground/90">
+              {page.text_content}
+            </p>
+          ) : (
+            <div className="h-full flex items-center justify-center text-muted-foreground/40">
+              <span className="text-sm italic">This page has no content</span>
+            </div>
+          )}
         </div>
       </div>
     </Page>
