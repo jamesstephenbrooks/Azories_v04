@@ -47,10 +47,24 @@ const GENRE_SECTIONS = [
 // Interactive 3D Book Model URL - served from public folder to avoid CORS issues
 const ANIMATED_BOOK_GLB_URL = '/animated_book.glb';
 
-// Detect mobile device
+// Detect mobile/tablet device - includes iPad detection
 const isMobile = () => {
   if (typeof window === 'undefined') return false;
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+  
+  // Check for touch capability first (covers most tablets)
+  const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  
+  // User agent check for mobile devices
+  const mobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  
+  // iPad-specific detection (iPadOS 13+ reports as desktop Safari)
+  const isIPad = (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) || 
+                 /iPad/i.test(navigator.userAgent);
+  
+  // Screen size check for tablets
+  const isTabletSize = window.innerWidth >= 768 && window.innerWidth <= 1366 && hasTouch;
+  
+  return mobileUA || isIPad || isTabletSize || (hasTouch && window.innerWidth < 1024);
 };
 
 // First-person Library Viewer with touch controls and interactive books
@@ -1600,21 +1614,24 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
             </div>
           )}
           
-          {/* Mobile Joystick */}
+          {/* Mobile/Tablet Joystick - Enhanced for iPad */}
           {isMobileDevice && (
             <div 
-              className="absolute bottom-8 left-8 pointer-events-auto"
+              className="fixed bottom-[env(safe-area-inset-bottom,20px)] left-4 sm:left-6 md:left-8 pointer-events-auto z-50"
               style={{ touchAction: 'none' }}
+              data-testid="mobile-joystick"
             >
               <div 
-                className="relative w-32 h-32 rounded-full bg-black/40 border-2 border-white/20 backdrop-blur-sm"
+                className="relative w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full bg-black/50 border-2 border-white/30 backdrop-blur-md shadow-xl"
                 onTouchStart={(e) => {
                   e.preventDefault();
+                  e.stopPropagation();
                   joystickRef.current.active = true;
                   setJoystickPos({ x: 0, y: 0 });
                 }}
                 onTouchMove={(e) => {
                   e.preventDefault();
+                  e.stopPropagation();
                   if (!joystickRef.current.active) return;
                   const touch = e.touches[0];
                   const rect = e.currentTarget.getBoundingClientRect();
@@ -1623,7 +1640,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                   
                   const dx = touch.clientX - centerX;
                   const dy = touch.clientY - centerY;
-                  const maxDistance = 40;
+                  const maxDistance = rect.width / 3; // Dynamic based on joystick size
                   const distance = Math.min(Math.sqrt(dx * dx + dy * dy), maxDistance);
                   const angle = Math.atan2(dy, dx);
                   
@@ -1639,7 +1656,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                   };
                   
                   // Update movement keys based on joystick direction
-                  const threshold = 15;
+                  const threshold = maxDistance * 0.3;
                   keysPressed.current = {
                     forward: dy < -threshold,
                     backward: dy > threshold,
@@ -1649,6 +1666,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                 }}
                 onTouchEnd={(e) => {
                   e.preventDefault();
+                  e.stopPropagation();
                   joystickRef.current = { active: false, angle: 0, distance: 0 };
                   setJoystickPos({ x: 0, y: 0 });
                   keysPressed.current = { forward: false, backward: false, left: false, right: false };
@@ -1656,7 +1674,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
               >
                 {/* Joystick knob */}
                 <div 
-                  className="absolute w-14 h-14 rounded-full bg-purple-500/80 border-2 border-white/40 shadow-lg transition-transform duration-75"
+                  className="absolute w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full bg-purple-500/90 border-2 border-white/50 shadow-lg transition-transform duration-75"
                   style={{
                     left: '50%',
                     top: '50%',
@@ -1664,11 +1682,13 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                   }}
                 />
                 {/* Directional hints */}
-                <div className="absolute top-2 left-1/2 -translate-x-1/2 text-white/40 text-xs">▲</div>
-                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-white/40 text-xs">▼</div>
-                <div className="absolute left-2 top-1/2 -translate-y-1/2 text-white/40 text-xs">◀</div>
-                <div className="absolute right-2 top-1/2 -translate-y-1/2 text-white/40 text-xs">▶</div>
+                <div className="absolute top-2 left-1/2 -translate-x-1/2 text-white/50 text-sm font-bold">▲</div>
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-white/50 text-sm font-bold">▼</div>
+                <div className="absolute left-2 top-1/2 -translate-y-1/2 text-white/50 text-sm font-bold">◀</div>
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 text-white/50 text-sm font-bold">▶</div>
               </div>
+              {/* Joystick label */}
+              <div className="text-center mt-2 text-white/60 text-xs">Move</div>
             </div>
           )}
           
