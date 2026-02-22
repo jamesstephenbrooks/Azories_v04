@@ -408,6 +408,32 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     cameraRef.current.quaternion.setFromEuler(euler.current);
   }, []);
 
+  // Teleport using a portal
+  const usePortal = useCallback((portal) => {
+    if (!cameraRef.current || !portal) return;
+    
+    // Prevent rapid re-teleporting (1 second cooldown)
+    const now = Date.now();
+    if (now - lastTeleportTime.current < 1000) return;
+    lastTeleportTime.current = now;
+    
+    // Teleport to destination
+    const destY = portal.destPos.y + PLAYER_HEIGHT;
+    cameraRef.current.position.set(portal.destPos.x, destY, portal.destPos.z);
+    
+    // Set rotation if specified
+    if (portal.destRotation !== undefined) {
+      euler.current.set(0, portal.destRotation, 0);
+      cameraRef.current.quaternion.setFromEuler(euler.current);
+    }
+    
+    // Reset velocity
+    playerVelocity.current.set(0, 0, 0);
+    
+    // Clear the near portal state
+    setNearPortal(null);
+  }, [PLAYER_HEIGHT]);
+
   // Remove the highlighted book from the scene
   const removeHighlightedBook = useCallback(() => {
     if (highlightedBookModelRef.current && sceneRef.current) {
