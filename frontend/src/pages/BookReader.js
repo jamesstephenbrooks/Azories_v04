@@ -263,18 +263,11 @@ export default function BookReader() {
   const startReading = useCallback(() => {
     if (currentPage === -1) {
       // Just flip to first page - no auto-read
-      if (useRealisticFlip && realisticFlipRef.current) {
+      if (realisticFlipRef.current) {
         realisticFlipRef.current.nextPage();
-      } else {
-        setFlipDirection('next');
-        setIsFlipping(true);
-        setTimeout(() => {
-          setCurrentPage(0);
-          setIsFlipping(false);
-        }, 600);
       }
     }
-  }, [currentPage, useRealisticFlip]);
+  }, [currentPage]);
 
   // startListening is defined after playAudio below
 
@@ -384,19 +377,12 @@ export default function BookReader() {
     
     if (currentPage === -1) {
       // Flip to first page
-      if (useRealisticFlip && realisticFlipRef.current) {
+      if (realisticFlipRef.current) {
         realisticFlipRef.current.nextPage();
-      } else {
-        setFlipDirection('next');
-        setIsFlipping(true);
-        setTimeout(() => {
-          setCurrentPage(0);
-          setIsFlipping(false);
-        }, 600);
       }
     }
     // The effect will handle playAudio when currentPage changes and autoRead is true
-  }, [currentPage, useRealisticFlip]);
+  }, [currentPage]);
 
   useEffect(() => {
     if (audioElement) {
