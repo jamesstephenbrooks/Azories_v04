@@ -435,8 +435,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     if (now - lastTeleportTime.current < 1000) return;
     lastTeleportTime.current = now;
     
-    // Teleport to destination
-    const destY = portal.destPos.y + PLAYER_HEIGHT;
+    // Teleport to destination (PLAYER_HEIGHT = 1.1)
+    const destY = portal.destPos.y + 1.1;
     cameraRef.current.position.set(portal.destPos.x, destY, portal.destPos.z);
     
     // Set rotation if specified
@@ -450,7 +450,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     
     // Clear the near portal state
     setNearPortal(null);
-  }, [PLAYER_HEIGHT]);
+  }, []);
 
   // Remove the highlighted book from the scene
   const removeHighlightedBook = useCallback(() => {
