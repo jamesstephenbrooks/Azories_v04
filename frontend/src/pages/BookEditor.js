@@ -403,7 +403,13 @@ export default function BookEditor() {
         image_url_3: selectedPage.image_url_3,
         image_url_4: selectedPage.image_url_4,
         video_url: selectedPage.video_url,
-        layout_type: selectedPage.layout_type
+        layout_type: selectedPage.layout_type,
+        image_position_x: selectedPage.image_position_x,
+        image_position_y: selectedPage.image_position_y,
+        image_fit: selectedPage.image_fit,
+        font_family: selectedPage.font_family,
+        font_size: selectedPage.font_size,
+        text_align: selectedPage.text_align
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
