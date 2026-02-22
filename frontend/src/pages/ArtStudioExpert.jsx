@@ -122,8 +122,9 @@ const CharacterNode = ({ data, selected }) => {
 // Scene Node - Define environment/setting - Fixed size
 const SceneNode = ({ data, selected }) => {
   return (
-    <div className={`bg-gradient-to-br from-emerald-900/90 to-emerald-800/90 rounded-xl border-2 ${selected ? 'border-emerald-400' : 'border-emerald-600/50'} shadow-xl backdrop-blur-sm w-[250px] h-[240px]`}>
+    <div className={`relative bg-gradient-to-br from-emerald-900/90 to-emerald-800/90 rounded-xl border-2 ${selected ? 'border-emerald-400' : 'border-emerald-600/50'} shadow-xl backdrop-blur-sm w-[250px] h-[240px]`}>
       <Handle type="target" position={Position.Left} className="!bg-emerald-400 !w-3 !h-3" />
+      <NodeDeleteButton onDelete={data.onDelete} />
       
       <div className="p-2 border-b border-emerald-600/30 flex items-center gap-2">
         <div className="w-6 h-6 rounded-lg bg-emerald-500/30 flex items-center justify-center flex-shrink-0">
@@ -138,33 +139,34 @@ const SceneNode = ({ data, selected }) => {
         <select 
           value={data.preset || ''}
           onChange={(e) => data.onChange?.('preset', e.target.value)}
-          className="w-full px-2 py-1.5 rounded-lg bg-black/30 border border-emerald-500/30 text-white text-xs"
+          className="w-full px-2 py-1.5 rounded-lg bg-black/30 border border-emerald-500/30 text-white text-xs appearance-none"
+          style={{ colorScheme: 'dark' }}
         >
-          <option value="">Custom scene...</option>
-          <option value="forest">Enchanted Forest</option>
-          <option value="castle">Castle Interior</option>
-          <option value="beach">Tropical Beach</option>
-          <option value="city">Modern City</option>
-          <option value="space">Outer Space</option>
-          <option value="underwater">Underwater</option>
-          <option value="mountain">Mountain Peak</option>
-          <option value="library">Ancient Library</option>
-          <option value="dreamscape">Dreamscape</option>
-          <option value="sunset-cliffs">Sunset Cliffs</option>
-          <option value="aurora">Northern Lights</option>
-          <option value="cherry-blossom">Cherry Blossom</option>
-          <option value="ruins">Ancient Ruins</option>
-          <option value="throne-room">Throne Room</option>
-          <option value="tavern">Medieval Tavern</option>
-          <option value="garden">Secret Garden</option>
-          <option value="desert">Desert Oasis</option>
-          <option value="crystal-cave">Crystal Cave</option>
-          <option value="floating-islands">Floating Islands</option>
-          <option value="moonlit-lake">Moonlit Lake</option>
-          <option value="battlefield">Battlefield</option>
-          <option value="village">Village Square</option>
-          <option value="ship-deck">Ship Deck</option>
-          <option value="academy">Magic Academy</option>
+          <option value="" className="bg-[#1a1520] text-white">Custom scene...</option>
+          <option value="forest" className="bg-[#1a1520] text-white">Enchanted Forest</option>
+          <option value="castle" className="bg-[#1a1520] text-white">Castle Interior</option>
+          <option value="beach" className="bg-[#1a1520] text-white">Tropical Beach</option>
+          <option value="city" className="bg-[#1a1520] text-white">Modern City</option>
+          <option value="space" className="bg-[#1a1520] text-white">Outer Space</option>
+          <option value="underwater" className="bg-[#1a1520] text-white">Underwater</option>
+          <option value="mountain" className="bg-[#1a1520] text-white">Mountain Peak</option>
+          <option value="library" className="bg-[#1a1520] text-white">Ancient Library</option>
+          <option value="dreamscape" className="bg-[#1a1520] text-white">Dreamscape</option>
+          <option value="sunset-cliffs" className="bg-[#1a1520] text-white">Sunset Cliffs</option>
+          <option value="aurora" className="bg-[#1a1520] text-white">Northern Lights</option>
+          <option value="cherry-blossom" className="bg-[#1a1520] text-white">Cherry Blossom</option>
+          <option value="ruins" className="bg-[#1a1520] text-white">Ancient Ruins</option>
+          <option value="throne-room" className="bg-[#1a1520] text-white">Throne Room</option>
+          <option value="tavern" className="bg-[#1a1520] text-white">Medieval Tavern</option>
+          <option value="garden" className="bg-[#1a1520] text-white">Secret Garden</option>
+          <option value="desert" className="bg-[#1a1520] text-white">Desert Oasis</option>
+          <option value="crystal-cave" className="bg-[#1a1520] text-white">Crystal Cave</option>
+          <option value="floating-islands" className="bg-[#1a1520] text-white">Floating Islands</option>
+          <option value="moonlit-lake" className="bg-[#1a1520] text-white">Moonlit Lake</option>
+          <option value="battlefield" className="bg-[#1a1520] text-white">Battlefield</option>
+          <option value="village" className="bg-[#1a1520] text-white">Village Square</option>
+          <option value="ship-deck" className="bg-[#1a1520] text-white">Ship Deck</option>
+          <option value="academy" className="bg-[#1a1520] text-white">Magic Academy</option>
         </select>
         
         <textarea
@@ -179,22 +181,24 @@ const SceneNode = ({ data, selected }) => {
           <select 
             value={data.timeOfDay || 'day'}
             onChange={(e) => data.onChange?.('timeOfDay', e.target.value)}
-            className="px-2 py-1.5 rounded-lg bg-black/30 border border-emerald-500/30 text-white text-xs"
+            className="px-2 py-1.5 rounded-lg bg-black/30 border border-emerald-500/30 text-white text-xs appearance-none"
+            style={{ colorScheme: 'dark' }}
           >
-            <option value="dawn">Dawn</option>
-            <option value="day">Day</option>
-            <option value="sunset">Sunset</option>
-            <option value="night">Night</option>
+            <option value="dawn" className="bg-[#1a1520] text-white">Dawn</option>
+            <option value="day" className="bg-[#1a1520] text-white">Day</option>
+            <option value="sunset" className="bg-[#1a1520] text-white">Sunset</option>
+            <option value="night" className="bg-[#1a1520] text-white">Night</option>
           </select>
           <select 
             value={data.mood || 'peaceful'}
             onChange={(e) => data.onChange?.('mood', e.target.value)}
-            className="px-2 py-1.5 rounded-lg bg-black/30 border border-emerald-500/30 text-white text-xs"
+            className="px-2 py-1.5 rounded-lg bg-black/30 border border-emerald-500/30 text-white text-xs appearance-none"
+            style={{ colorScheme: 'dark' }}
           >
-            <option value="peaceful">Peaceful</option>
-            <option value="dramatic">Dramatic</option>
-            <option value="mysterious">Mysterious</option>
-            <option value="joyful">Joyful</option>
+            <option value="peaceful" className="bg-[#1a1520] text-white">Peaceful</option>
+            <option value="dramatic" className="bg-[#1a1520] text-white">Dramatic</option>
+            <option value="mysterious" className="bg-[#1a1520] text-white">Mysterious</option>
+            <option value="joyful" className="bg-[#1a1520] text-white">Joyful</option>
           </select>
         </div>
       </div>
