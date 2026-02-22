@@ -53,6 +53,7 @@ export default function Library() {
       if (genre && genre !== 'All') params.append('genre', genre);
       if (ageRange && ageRange !== 'All') params.append('age_rating', ageRange);
       params.append('published_only', 'true');
+      params.append('limit', '24'); // Limit initial load for faster rendering
       
       const res = await axios.get(`${API}/books?${params.toString()}`);
       setBooks(res.data);
