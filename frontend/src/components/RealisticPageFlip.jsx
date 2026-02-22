@@ -576,6 +576,7 @@ const RealisticPageFlip = forwardRef(({
         >
           {allBookPages}
         </HTMLFlipBook>
+          </div>
         </div>
       </div>
 
