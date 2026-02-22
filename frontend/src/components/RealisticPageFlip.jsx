@@ -611,6 +611,17 @@ const RealisticPageFlip = forwardRef(({
           transform-style: preserve-3d;
         }
         
+        /* Hide the blank left page when showing cover (first page) */
+        .book-flipbook.cover-view .stf__block:first-child .--left:first-child {
+          visibility: hidden !important;
+          opacity: 0 !important;
+        }
+        
+        /* When on cover, shift the book to center the cover */
+        .book-flipbook.cover-view .stf__parent {
+          transform: translateX(25%) !important;
+        }
+        
         /* Realistic page shadow during flip */
         .book-flipbook .stf__item {
           background: linear-gradient(to right, 
