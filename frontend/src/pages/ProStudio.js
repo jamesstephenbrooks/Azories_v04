@@ -48,6 +48,15 @@ export default function ProStudio() {
   const [characterImages, setCharacterImages] = useState([]);
   const [isCreatingCharacter, setIsCreatingCharacter] = useState(false);
   
+  // LoRA Training state
+  const [isTrainingLora, setIsTrainingLora] = useState(false);
+  const [trainingProgress, setTrainingProgress] = useState(null);
+  const [falAvailable, setFalAvailable] = useState(false);
+  
+  // Consistency Generation state
+  const [consistencyMethod, setConsistencyMethod] = useState('auto'); // 'auto', 'lora', 'pulid', 'openai'
+  const [selectedImageModel, setSelectedImageModel] = useState('flux-dev');
+  
   // Book linking state
   const [userBooks, setUserBooks] = useState([]);
   const [selectedBookId, setSelectedBookId] = useState('general');
@@ -90,8 +99,22 @@ export default function ProStudio() {
       loadCharacters();
       loadGallery();
       loadUserBooks();
+      checkFalAvailability();
     }
   }, [isAuthenticated]);
+
+  // Check if fal.ai is available
+  const checkFalAvailability = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/fal/models`);
+      if (response.ok) {
+        const data = await response.json();
+        setFalAvailable(data.available);
+      }
+    } catch (error) {
+      console.error('Error checking fal.ai availability:', error);
+    }
+  };
 
   const loadUserBooks = async () => {
     try {
