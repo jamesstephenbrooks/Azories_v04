@@ -158,6 +158,11 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
   const highlightedBookModelRef = useRef(null); // The actual 3D model
   const highlightedBookMixerRef = useRef(null); // Animation mixer for highlighted book
   const gltfLoaderRef = useRef(null); // Shared GLTF loader
+  const teleportPortalsRef = useRef([]); // Teleport portal meshes
+  
+  // Teleport portal state
+  const [nearPortal, setNearPortal] = useState(null); // Portal player is near
+  const lastTeleportTime = useRef(0); // Prevent rapid re-teleporting
   
   // Physics constants - realistic eye level for library scale
   const PLAYER_HEIGHT = 1.1; // Lower eye level for better immersion in scaled library
