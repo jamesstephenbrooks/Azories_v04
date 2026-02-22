@@ -334,15 +334,22 @@ CHARACTER_STYLES = [
     {"id": "watercolor", "name": "Watercolor", "description": "Soft, painterly watercolor style"},
     {"id": "comic", "name": "Comic Book", "description": "Bold lines, superhero comic style"},
     {"id": "fantasy", "name": "Fantasy Art", "description": "Epic fantasy painting style"},
+    {"id": "scifi", "name": "Sci-Fi/Futuristic", "description": "Sleek, technological, futuristic aesthetic"},
+    {"id": "cyberpunk", "name": "Cyberpunk", "description": "Neon-lit, dystopian future style"},
     {"id": "chibi", "name": "Chibi/Cute", "description": "Super-deformed cute style"},
     {"id": "noir", "name": "Noir/Dramatic", "description": "High contrast, dramatic lighting"},
     {"id": "storybook", "name": "Children's Storybook", "description": "Warm, friendly children's book style"},
     {"id": "vintage", "name": "Vintage/Retro", "description": "Classic, nostalgic illustration style"},
+    {"id": "concept-art", "name": "Concept Art", "description": "Professional game/film concept art style"},
+    {"id": "steampunk", "name": "Steampunk", "description": "Victorian-era with steam-powered technology"},
 ]
 
 CHARACTER_GENRES = [
     {"id": "fantasy", "name": "Fantasy", "examples": "elves, wizards, dragons, magical creatures"},
     {"id": "scifi", "name": "Sci-Fi", "examples": "aliens, cyborgs, space explorers, futuristic"},
+    {"id": "futuristic", "name": "Futuristic", "examples": "advanced technology, AI beings, space age"},
+    {"id": "cyberpunk", "name": "Cyberpunk", "examples": "hackers, augmented humans, neon cities"},
+    {"id": "space-opera", "name": "Space Opera", "examples": "galactic heroes, starship crews, alien races"},
     {"id": "contemporary", "name": "Contemporary", "examples": "modern day people, everyday settings"},
     {"id": "historical", "name": "Historical", "examples": "period characters, historical figures"},
     {"id": "horror", "name": "Horror/Dark", "examples": "monsters, vampires, gothic characters"},
@@ -350,8 +357,11 @@ CHARACTER_GENRES = [
     {"id": "romance", "name": "Romance", "examples": "romantic leads, emotional characters"},
     {"id": "mystery", "name": "Mystery/Thriller", "examples": "detectives, spies, mysterious figures"},
     {"id": "superhero", "name": "Superhero", "examples": "heroes, villains, powered beings"},
+    {"id": "post-apocalyptic", "name": "Post-Apocalyptic", "examples": "survivors, mutants, wasteland warriors"},
+    {"id": "steampunk", "name": "Steampunk", "examples": "inventors, airship pilots, clockwork beings"},
     {"id": "animal", "name": "Animals/Creatures", "examples": "anthropomorphic, talking animals, mythical beasts"},
     {"id": "childrens", "name": "Children's", "examples": "friendly characters, educational, whimsical"},
+    {"id": "mecha", "name": "Mecha/Robots", "examples": "giant robots, pilots, mechanical beings"},
 ]
 
 class CharacterCreate(BaseModel):
