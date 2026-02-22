@@ -76,9 +76,9 @@ const GENRE_SECTIONS = [
   },
   { 
     name: 'Humour', 
-    position: { x: -3.41, z: 2.4 }, 
-    bannerPos: { x: -3.41, y: 5.78, z: 2.4 }, // Moved away from wall
-    shelfPos: { x: -3.41, y: 5.3, z: 2.4 }, 
+    position: { x: -3.41, z: 1.8 }, 
+    bannerPos: { x: -3.41, y: 5.78, z: 1.8 }, // Moved further from wall
+    shelfPos: { x: -3.41, y: 5.3, z: 1.8 }, 
     rotation: Math.PI, 
     color: '#f59e0b' 
   },
