@@ -89,11 +89,7 @@ export default function Library() {
     const [imageLoaded, setImageLoaded] = useState(false);
     
     return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true, margin: "-50px" }}
-        transition={{ duration: 0.4 }}
+      <div
         className="book-card group cursor-pointer"
         onClick={() => navigate(`/read/${book.id}`)}
         data-testid={`book-card-${book.id}`}
