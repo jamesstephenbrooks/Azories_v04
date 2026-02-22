@@ -142,7 +142,7 @@ async def generate_with_face_id(
     
     arguments = {
         "prompt": prompt,
-        "image_url": reference_image_url,
+        "reference_image_url": reference_image_url,
         "id_weight": id_weight,
         "image_size": image_size,
         "num_images": 1,
