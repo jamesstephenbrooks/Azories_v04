@@ -88,8 +88,24 @@ export default function ProStudio() {
     if (isAuthenticated) {
       loadCharacters();
       loadGallery();
+      loadUserBooks();
     }
   }, [isAuthenticated]);
+
+  const loadUserBooks = async () => {
+    try {
+      const tkn = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/my-books`, {
+        headers: { Authorization: `Bearer ${tkn}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setUserBooks(data || []);
+      }
+    } catch (error) {
+      console.error('Error loading books:', error);
+    }
+  };
 
   const loadCharacters = async () => {
     try {
