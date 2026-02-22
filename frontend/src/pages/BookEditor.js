@@ -486,8 +486,11 @@ export default function BookEditor() {
   const deletePage = async (pageId) => {
     if (!window.confirm('Delete this page?')) return;
     
+    const token = localStorage.getItem('token');
     try {
-      await axios.delete(`${API}/pages/${pageId}`);
+      await axios.delete(`${API}/pages/${pageId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       toast.success('Page deleted');
       await fetchPages(selectedChapter.id);
     } catch (error) {
