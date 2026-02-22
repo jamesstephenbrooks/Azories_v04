@@ -126,9 +126,11 @@ const CoverPage = forwardRef(({ book, onClick, onListen }, ref) => {
                 <span className="font-heading text-lg">Read</span>
               </button>
               <button 
+                data-testid="cover-listen-btn"
                 onClick={(e) => { 
                   e.stopPropagation(); 
-                  console.log('Listen button clicked, onListen:', typeof onListen);
+                  console.log('Listen button clicked!');
+                  alert('Listen clicked! onListen type: ' + typeof onListen);
                   onListen?.(); 
                 }}
                 className="flex items-center gap-2 px-6 py-3 rounded-full bg-purple-600 hover:bg-purple-500 transition-colors"
