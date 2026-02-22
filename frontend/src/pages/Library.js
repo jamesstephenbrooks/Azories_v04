@@ -295,6 +295,23 @@ export default function Library() {
                   </SelectContent>
                 </Select>
                 
+                {/* Age Range Filter */}
+                <Select value={ageRange} onValueChange={setAgeRange}>
+                  <SelectTrigger 
+                    className="w-full sm:w-40 rounded-full border-2 h-12"
+                    data-testid="age-range-select"
+                  >
+                    <SelectValue placeholder="Age Range" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {AGE_RANGES.map((age) => (
+                      <SelectItem key={age} value={age} data-testid={`age-option-${age}`}>
+                        {age === 'All' ? 'All Ages' : `${age} years`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
                 {/* View Mode Toggle */}
                 <div className="flex gap-2 bg-muted/50 p-1 rounded-full items-center">
                   <Button
