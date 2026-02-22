@@ -559,8 +559,8 @@ export default function BookReader() {
                   onFlipStart={() => setIsFlipping(true)}
                   onFlipEnd={() => setIsFlipping(false)}
                   initialPage={currentPage >= 0 ? currentPage + 1 : 0}
-                  width={isFullscreen ? Math.min(window.innerWidth * 0.42, 700) : 500}
-                  height={isFullscreen ? Math.min(window.innerHeight * 0.85, 900) : 700}
+                  width={isFullscreen ? Math.min(window.innerWidth * 0.45, 850) : 550}
+                  height={isFullscreen ? Math.min(window.innerHeight * 0.88, 1000) : 770}
                   showControls={false}
                   className={isFullscreen ? 'scale-100' : ''}
                 />
