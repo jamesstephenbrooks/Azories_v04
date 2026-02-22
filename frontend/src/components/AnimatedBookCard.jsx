@@ -97,11 +97,9 @@ export default function AnimatedBookCard({ book, onClick, size = 'md' }) {
 // Compact version for lists
 export function AnimatedBookCardCompact({ book, onClick }) {
   return (
-    <motion.div
-      className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 cursor-pointer"
+    <div
+      className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 cursor-pointer transition-transform duration-200 hover:translate-x-1"
       onClick={onClick}
-      whileHover={{ x: 4 }}
-      whileTap={{ scale: 0.98 }}
     >
       <div className="w-12 h-16 rounded overflow-hidden flex-shrink-0">
         {book.cover_image ? (
@@ -116,6 +114,6 @@ export function AnimatedBookCardCompact({ book, onClick }) {
         <h4 className="font-medium text-sm line-clamp-1">{book.title}</h4>
         <p className="text-xs text-muted-foreground">{book.author_name}</p>
       </div>
-    </motion.div>
+    </div>
   );
 }
