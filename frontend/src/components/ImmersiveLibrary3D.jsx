@@ -1610,6 +1610,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         // Check for teleport portal proximity
         const currentTime = Date.now();
         let foundPortal = null;
+        let shouldAutoTeleport = false;
         const playerFootY = camera.position.y - PLAYER_HEIGHT;
         const playerIsGroundFloor = playerFootY < 3;
         
@@ -1622,19 +1623,29 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           const portalIsGroundFloor = portal.floor === 'ground';
           const sameFloor = portalIsGroundFloor === playerIsGroundFloor;
           
-          // Debug logging (only every 60 frames to avoid spam)
-          if (frameCount % 60 === 0 && portal.id === 'stairs-up-back') {
-            console.log(`Portal check: dist=${horizontalDist.toFixed(2)}, radius=${portal.triggerRadius}, playerY=${playerFootY.toFixed(2)}, sameFloor=${sameFloor}`);
+          // Debug logging (only every 120 frames)
+          if (frameCount % 120 === 0 && portal.id === 'stairs-back-bottom') {
+            console.log(`Portal ${portal.id}: dist=${horizontalDist.toFixed(2)}, radius=${portal.triggerRadius}, playerY=${playerFootY.toFixed(2)}, sameFloor=${sameFloor}, onGround=${playerIsGroundFloor}`);
           }
           
-          // Only show portal if on same floor AND within horizontal range
+          // Check if on same floor AND within range
           if (sameFloor && horizontalDist < portal.triggerRadius) {
             foundPortal = portal;
+            // Check if close enough for auto-teleport
+            if (portal.autoTeleportRadius && horizontalDist < portal.autoTeleportRadius) {
+              shouldAutoTeleport = true;
+            }
             break;
           }
         }
         
-        // Update portal state
+        // Auto-teleport if stepping into the ring center
+        if (shouldAutoTeleport && foundPortal && currentTime - lastTeleportTime.current > 1500) {
+          console.log('Auto-teleporting via:', foundPortal.name);
+          activatePortal(foundPortal);
+        }
+        
+        // Update portal state for button display
         if (foundPortal !== nearPortal) {
           if (foundPortal) {
             console.log('Near portal:', foundPortal.name, foundPortal.id);
