@@ -44,6 +44,35 @@ const GENRE_SECTIONS = [
   { name: 'Humour', position: { x: 4, z: -1 }, bannerPos: { x: 4.79, y: 6.5, z: -1 }, shelfPos: { x: 4.5, y: 5.4, z: -1 }, rotation: -Math.PI / 2, color: '#f59e0b' },
 ];
 
+// Age range filter options for library search
+const AGE_FILTER_OPTIONS = [
+  { value: 'all', label: 'All Ages' },
+  { value: '0-3', label: '0-3 years' },
+  { value: '4-6', label: '4-6 years' },
+  { value: '7-9', label: '7-9 years' },
+  { value: '10-12', label: '10-12 years' },
+  { value: '13+', label: '13+ years' },
+];
+
+// Map age_rating values to filter categories
+const matchesAgeFilter = (bookAgeRating, filterValue) => {
+  if (filterValue === 'all') return true;
+  
+  const rating = bookAgeRating || 'All Ages';
+  
+  // Map book age ratings to filter categories
+  const ageMap = {
+    'All Ages': ['all', '0-3', '4-6', '7-9', '10-12', '13+'],
+    '5+': ['4-6', '7-9', '10-12', '13+'],
+    '8+': ['7-9', '10-12', '13+'],
+    '12+': ['10-12', '13+'],
+    '16+': ['13+'],
+  };
+  
+  const allowedFilters = ageMap[rating] || ['all'];
+  return allowedFilters.includes(filterValue);
+};
+
 // Interactive 3D Book Model URL - served from public folder to avoid CORS issues
 const ANIMATED_BOOK_GLB_URL = '/animated_book.glb';
 
