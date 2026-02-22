@@ -723,6 +723,17 @@ export default function BookReader() {
             >
               Auto-Read: {autoRead ? 'ON' : 'OFF'}
             </Button>
+            
+            {/* Hide Controls Button - useful for iPad */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setHideControls(true)}
+              className="rounded-full text-xs ml-2"
+              title="Hide controls"
+            >
+              <FiChevronDown className="w-4 h-4" />
+            </Button>
           </div>
         </div>
       </div>
