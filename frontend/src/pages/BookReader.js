@@ -248,17 +248,36 @@ export default function BookReader() {
   const prevPage = useCallback(() => goToPage(currentPage - 1, 'prev'), [currentPage, goToPage]);
 
   const toggleFullscreen = () => {
-    const bookContainer = document.getElementById('book-container');
-    if (!document.fullscreenElement) {
-      if (bookContainer) {
-        bookContainer.requestFullscreen();
+    // Check if we're on iPad/mobile where native fullscreen might not work
+    const isIpad = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    
+    if (isIpad) {
+      // Use CSS-based fullscreen for iPad
+      setIsFullscreen(!isFullscreen);
+      return;
+    }
+    
+    // Native fullscreen for desktop browsers
+    try {
+      const bookContainer = document.getElementById('book-container');
+      if (!document.fullscreenElement) {
+        if (bookContainer?.requestFullscreen) {
+          bookContainer.requestFullscreen().catch(() => {
+            // Fallback to CSS fullscreen if native fails
+            setIsFullscreen(true);
+          });
+        } else {
+          setIsFullscreen(true);
+        }
+        setIsFullscreen(true);
       } else {
-        document.documentElement.requestFullscreen();
+        document.exitFullscreen().catch(() => {});
+        setIsFullscreen(false);
       }
-      setIsFullscreen(true);
-    } else {
-      document.exitFullscreen();
-      setIsFullscreen(false);
+    } catch (err) {
+      // Fallback to CSS fullscreen
+      setIsFullscreen(!isFullscreen);
     }
   };
 
