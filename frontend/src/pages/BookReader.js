@@ -42,7 +42,7 @@ export default function BookReader() {
   const [audioElement, setAudioElement] = useState(null);
   const [volume, setVolume] = useState([75]);
   const [playbackSpeed, setPlaybackSpeed] = useState([1]);
-  const [autoRead, setAutoRead] = useState(true);  // ON by default
+  const [autoRead, setAutoRead] = useState(false);  // OFF by default - user clicks Read/Listen to enable
   
   const [allPages, setAllPages] = useState([]);
   const [narratorVoice, setNarratorVoice] = useState('');
