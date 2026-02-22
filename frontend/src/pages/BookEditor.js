@@ -1135,20 +1135,15 @@ export default function BookEditor() {
                 <SelectValue placeholder="Select Voice" />
               </SelectTrigger>
               <SelectContent className="max-h-64">
-                {['Female', 'Male', 'Young Female', 'Young Male'].map(category => {
-                  const categoryVoices = voices.filter(v => v.category === category);
-                  if (categoryVoices.length === 0) return null;
-                  return (
-                    <div key={category}>
-                      <div className="px-2 py-1 text-xs text-muted-foreground font-semibold bg-muted/50">{category}</div>
-                      {categoryVoices.map((voice) => (
-                        <SelectItem key={voice.voice_id} value={voice.voice_id} className="text-xs">
-                          {voice.name} <span className="text-muted-foreground">({voice.accent})</span>
-                        </SelectItem>
-                      ))}
-                    </div>
-                  );
-                })}
+                {voices.length > 0 ? (
+                  voices.map((voice) => (
+                    <SelectItem key={voice.voice_id} value={voice.voice_id} className="text-xs">
+                      {voice.name}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <div className="px-2 py-2 text-xs text-muted-foreground">Loading voices...</div>
+                )}
               </SelectContent>
             </Select>
             
