@@ -446,7 +446,8 @@ export default function BookReader() {
       audioElement.pause();
       setIsPlaying(false);
     } else {
-      setAutoRead(true); // Enable auto-read when user clicks play
+      setAutoRead(true);
+      autoReadRef.current = true; // Sync update
       playAudio();
     }
   };
@@ -455,6 +456,7 @@ export default function BookReader() {
   const handleAutoReadToggle = () => {
     const newValue = !autoRead;
     setAutoRead(newValue);
+    autoReadRef.current = newValue; // Sync update
     
     // Immediately stop audio if turning off
     if (!newValue && audioElement) {
