@@ -465,6 +465,14 @@ export default function BookReader() {
 
   // Auto-read effect: play audio when page changes with auto-read enabled
   useEffect(() => {
+    console.log('Auto-read effect triggered:', { 
+      currentPage, 
+      autoReadRef: autoReadRef.current, 
+      autoReadState: autoRead,
+      allPagesLength: allPages.length,
+      hasAudioElement: !!audioElement 
+    });
+    
     // Stop currently playing audio when page changes
     if (audioElement) {
       audioElement.pause();
@@ -475,32 +483,48 @@ export default function BookReader() {
     // Use autoReadRef.current to catch synchronous updates from startListening
     if (autoReadRef.current && currentPage >= 0 && allPages.length > 0) {
       const page = allPages[currentPage];
+      console.log('Auto-read check passed, page data:', { 
+        pageIndex: currentPage,
+        hasTextContent: !!page?.text_content,
+        isChapterTitle: page?.isChapterTitle,
+        textPreview: page?.text_content?.substring(0, 50)
+      });
       
       if (page?.isChapterTitle) {
         // Chapter title page - show briefly then advance
+        console.log('Chapter title page, advancing in 1500ms');
         const timer = setTimeout(() => {
           if (autoReadRef.current && currentPageRef.current < allPages.length - 1) {
             goToPage(currentPageRef.current + 1, 'next');
           }
-        }, 1500); // Reduced from 2500ms for faster flow
+        }, 1500);
         return () => clearTimeout(timer);
       } else if (page?.text_content) {
         // Has text content - play audio immediately
+        console.log('Text content found, playing audio in 100ms');
         const timer = setTimeout(() => {
           if (autoReadRef.current) {
+            console.log('Calling playAudio from auto-read effect');
             playAudio();
           }
-        }, 100); // Reduced from 300ms - audio should be pre-cached
+        }, 100);
         return () => clearTimeout(timer);
       } else if (currentPage < allPages.length - 1) {
         // No content, advance to next page quickly
+        console.log('No content, advancing in 500ms');
         const timer = setTimeout(() => {
           if (autoReadRef.current && currentPageRef.current < allPages.length - 1) {
             goToPage(currentPageRef.current + 1, 'next');
           }
-        }, 500); // Reduced from 1000ms
+        }, 500);
         return () => clearTimeout(timer);
       }
+    } else {
+      console.log('Auto-read check failed:', {
+        autoReadRef: autoReadRef.current,
+        currentPage,
+        allPagesLength: allPages.length
+      });
     }
   }, [currentPage, autoRead, allPages, playAudio, goToPage, audioElement]);
 
