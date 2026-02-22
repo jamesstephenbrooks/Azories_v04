@@ -14,6 +14,7 @@ import AdminCMS from "@/pages/AdminCMS";
 import UserProfile from "@/pages/UserProfile";
 import ArtStudio from "@/pages/ArtStudio";
 import ArtStudioExpert from "@/pages/ArtStudioExpert";
+import ComingSoon from "@/pages/ComingSoon";
 import "@/App.css";
 
 function AppContent() {
@@ -25,6 +26,7 @@ function AppContent() {
       {shouldShow && <OnboardingTutorial onComplete={() => setShouldShow(false)} />}
       <Routes>
         <Route path="/" element={<Landing />} />
+        <Route path="/coming-soon" element={<ComingSoon />} />
         <Route path="/library" element={<Library />} />
         <Route path="/read/:bookId" element={<BookReader />} />
         <Route path="/auth" element={<Auth />} />
