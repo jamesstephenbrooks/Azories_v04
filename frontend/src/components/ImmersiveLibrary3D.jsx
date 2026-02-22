@@ -76,10 +76,10 @@ const GENRE_SECTIONS = [
   },
   { 
     name: 'Humour', 
-    position: { x: 4, z: -1 }, 
-    bannerPos: { x: 4.79, y: 6.5, z: -1 }, 
-    shelfPos: { x: 4.5, y: 5.4, z: -1 }, 
-    rotation: -Math.PI / 2, 
+    position: { x: -3.41, z: 2.88 }, 
+    bannerPos: { x: -3.41, y: 5.78, z: 2.88 }, // Moved to new location
+    shelfPos: { x: -3.41, y: 5.3, z: 2.88 }, 
+    rotation: Math.PI, 
     color: '#f59e0b' 
   },
   // My Books section - shows user's created books
