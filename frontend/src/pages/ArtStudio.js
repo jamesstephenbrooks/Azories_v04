@@ -1521,10 +1521,11 @@ export default function ArtStudio() {
                       <select
                         value={character[trait]}
                         onChange={(e) => setCharacter({ ...character, [trait]: e.target.value })}
-                        className="w-full bg-black/30 border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:border-purple-500 focus:outline-none"
+                        className="w-full bg-black/30 border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:border-purple-500 focus:outline-none appearance-none cursor-pointer"
+                        style={{ colorScheme: 'dark' }}
                       >
                         {options.map(opt => (
-                          <option key={opt} value={opt} className="bg-[#1a1520]">{opt}</option>
+                          <option key={opt} value={opt} className="bg-[#1a1520] text-white py-2">{opt}</option>
                         ))}
                       </select>
                     </div>
