@@ -1156,6 +1156,29 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         
         console.log(`Found ${collisionMeshes.length} collision meshes, ${visibleMeshes.length} visible meshes`);
         
+        // Create invisible collision walls for the bridge railings (thin bars don't raycast well)
+        const railingColliders = [
+          // Left side of bridge
+          { pos: [-2.5, 6.5, -1.06], size: [0.2, 1.5, 10] },
+          // Right side of bridge  
+          { pos: [0.0, 6.5, -1.06], size: [0.2, 1.5, 10] }
+        ];
+        
+        railingColliders.forEach((collider, index) => {
+          const geometry = new THREE.BoxGeometry(collider.size[0], collider.size[1], collider.size[2]);
+          const material = new THREE.MeshBasicMaterial({ 
+            visible: false, // Invisible
+            transparent: true,
+            opacity: 0
+          });
+          const mesh = new THREE.Mesh(geometry, material);
+          mesh.position.set(collider.pos[0], collider.pos[1], collider.pos[2]);
+          mesh.name = `railing_collider_${index}`;
+          scene.add(mesh);
+          collisionMeshes.push(mesh);
+          console.log('✓ Added railing collider:', mesh.name);
+        });
+        
         // Store collision meshes for raycasting
         collisionMeshesRef.current = collisionMeshes;
         
