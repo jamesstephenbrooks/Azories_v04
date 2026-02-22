@@ -732,20 +732,26 @@ export default function Dashboard() {
             </div>
           </motion.div>
           
-          {/* Tabs for Books, Series, and Analytics */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          {/* Tabs for Books, Analytics, and Series */}
+          <Tabs value={activeTab} onValueChange={(value) => {
+            if (value === 'series') {
+              navigate('/series');
+            } else {
+              setActiveTab(value);
+            }
+          }} className="w-full">
             <TabsList className="grid w-full max-w-lg grid-cols-3 mb-6">
               <TabsTrigger value="books" className="rounded-full" data-testid="tab-my-books">
                 <FiBook className="w-4 h-4 mr-2" />
                 My Books
               </TabsTrigger>
-              <TabsTrigger value="series" className="rounded-full" data-testid="tab-my-series">
-                <FiLayers className="w-4 h-4 mr-2" />
-                My Series
-              </TabsTrigger>
               <TabsTrigger value="analytics" className="rounded-full" data-testid="tab-analytics">
                 <FiBarChart2 className="w-4 h-4 mr-2" />
                 Analytics
+              </TabsTrigger>
+              <TabsTrigger value="series" className="rounded-full" data-testid="tab-my-series">
+                <FiLayers className="w-4 h-4 mr-2" />
+                My Series
               </TabsTrigger>
             </TabsList>
             
