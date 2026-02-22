@@ -2953,8 +2953,10 @@ class ArtStudioGenerateRequest(BaseModel):
     transparentBackground: Optional[bool] = False  # Generate with transparent background
     aspectRatio: Optional[str] = "1:1"  # 1:1, 16:9, 9:16, 4:3, 3:4
     qualityLevel: Optional[str] = "high"  # low, medium, high, ultra
+    quality: Optional[str] = "high"  # Alias for qualityLevel
     customStyleDescription: Optional[str] = None  # User's custom style text
     lightingPreset: Optional[str] = "natural"  # natural, neon-pink-blue, golden-hour, dramatic, soft-glow, studio
+    expertMode: Optional[bool] = False  # Expert/Node mode flag for enhanced generation
 
 class ArtStudioSaveRequest(BaseModel):
     image_url: str
