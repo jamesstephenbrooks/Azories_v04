@@ -1759,6 +1759,13 @@ async def generate_video(request: VideoGenerateRequest, current_user: dict = Dep
         if not EMERGENT_LLM_KEY:
             raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
         
+        # Validate duration - Sora 2 only supports 4, 8, or 12 seconds
+        valid_durations = [4, 8, 12]
+        duration = request.duration
+        if duration not in valid_durations:
+            # Round to nearest valid duration
+            duration = min(valid_durations, key=lambda x: abs(x - duration))
+        
         style_prompts = {
             "animation": "colorful, friendly, magical animation suitable for children",
             "scifi": "futuristic science fiction style with space themes, neon colors, advanced technology, cosmic visuals",
@@ -1776,7 +1783,7 @@ async def generate_video(request: VideoGenerateRequest, current_user: dict = Dep
             prompt=f"{request.prompt}. Style: {style_desc}",
             model="sora-2",
             size=request.size,
-            duration=request.duration,
+            duration=duration,
             max_wait_time=600
         )
         
