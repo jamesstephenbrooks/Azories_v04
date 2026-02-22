@@ -1229,11 +1229,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         let detectedFloorY = currentFootY; // Default to staying at current level
         
         if (collisionMeshes.length > 0) {
-          // Cast multiple rays in a "foot" pattern for better stair detection:
-          // - Center ray (current position)
-          // - Forward ray (for detecting upcoming stairs)
-          // - Forward-left and forward-right (for spiral stairs at angles)
-          
+          // Cast rays in a pattern around and ahead of the player for stair detection
+          // More rays = better stair detection on spiral staircases
           const isMoving = playerVelocity.current.x !== 0 || playerVelocity.current.z !== 0;
           const moveDir = isMoving 
             ? new THREE.Vector3(playerVelocity.current.x, 0, playerVelocity.current.z).normalize()
@@ -1242,31 +1239,40 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           // Get perpendicular direction for side rays
           const sideDir = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), moveDir).normalize();
           
-          const rayPositions = [
-            // Center (below player)
-            new THREE.Vector3(camera.position.x, camera.position.y + 0.5, camera.position.z),
-          ];
+          // Multiple ray start heights - cast from higher up to better detect stairs in front
+          const rayHeights = [camera.position.y + 0.3, camera.position.y + 1.0];
           
-          // Add forward rays when moving (for stair climbing detection)
-          if (isMoving) {
-            // Forward center
-            rayPositions.push(new THREE.Vector3(
-              camera.position.x + moveDir.x * 0.4,
-              camera.position.y + 0.5,
-              camera.position.z + moveDir.z * 0.4
-            ));
-            // Forward left (for spiral stairs)
-            rayPositions.push(new THREE.Vector3(
-              camera.position.x + moveDir.x * 0.3 + sideDir.x * 0.25,
-              camera.position.y + 0.5,
-              camera.position.z + moveDir.z * 0.3 + sideDir.z * 0.25
-            ));
-            // Forward right (for spiral stairs)
-            rayPositions.push(new THREE.Vector3(
-              camera.position.x + moveDir.x * 0.3 - sideDir.x * 0.25,
-              camera.position.y + 0.5,
-              camera.position.z + moveDir.z * 0.3 - sideDir.z * 0.25
-            ));
+          const rayPositions = [];
+          
+          for (const rayY of rayHeights) {
+            // Center ray
+            rayPositions.push(new THREE.Vector3(camera.position.x, rayY, camera.position.z));
+            
+            // Add forward rays when moving (for stair climbing detection)
+            if (isMoving) {
+              // Forward rays at different distances
+              rayPositions.push(new THREE.Vector3(
+                camera.position.x + moveDir.x * 0.3,
+                rayY,
+                camera.position.z + moveDir.z * 0.3
+              ));
+              rayPositions.push(new THREE.Vector3(
+                camera.position.x + moveDir.x * 0.6,
+                rayY,
+                camera.position.z + moveDir.z * 0.6
+              ));
+              // Forward-side rays for spiral stairs
+              rayPositions.push(new THREE.Vector3(
+                camera.position.x + moveDir.x * 0.3 + sideDir.x * 0.2,
+                rayY,
+                camera.position.z + moveDir.z * 0.3 + sideDir.z * 0.2
+              ));
+              rayPositions.push(new THREE.Vector3(
+                camera.position.x + moveDir.x * 0.3 - sideDir.x * 0.2,
+                rayY,
+                camera.position.z + moveDir.z * 0.3 - sideDir.z * 0.2
+              ));
+            }
           }
           
           let bestFloorY = null;
