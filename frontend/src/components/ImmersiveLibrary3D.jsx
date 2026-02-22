@@ -1889,10 +1889,28 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                     </button>
                   </div>
                   
+                  {/* Age Filter */}
+                  <div className="px-3 pb-2">
+                    <select
+                      value={ageFilter}
+                      onChange={(e) => setAgeFilter(e.target.value)}
+                      className="w-full px-3 py-2 rounded-lg bg-black/30 border border-purple-500/30 text-white text-sm appearance-none cursor-pointer"
+                      style={{ colorScheme: 'dark' }}
+                      data-testid="age-filter-select"
+                    >
+                      {AGE_FILTER_OPTIONS.map(opt => (
+                        <option key={opt.value} value={opt.value} className="bg-[#1a1520] text-white">
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  
                   {/* Scrollable Book List */}
                   <div className="flex-1 overflow-y-auto p-3 space-y-2">
                     {books
                       .filter(b => b.genre?.toLowerCase() === selectedGenre.toLowerCase())
+                      .filter(b => matchesAgeFilter(b.age_rating, ageFilter))
                       .map((book) => (
                         <button
                           key={book.id}
