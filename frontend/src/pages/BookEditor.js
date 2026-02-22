@@ -1112,6 +1112,70 @@ export default function BookEditor() {
               )}
             </div>
           </div>
+          
+          {/* Narrator Voice Section */}
+          <div className="p-4 border-t border-border">
+            <label className="text-xs text-muted-foreground mb-2 block">Narrator Voice</label>
+            <Select 
+              value={book?.narrator_voice_id || '21m00Tcm4TlvDq8ikWAM'} 
+              onValueChange={async (v) => {
+                const token = localStorage.getItem('azories-token');
+                try {
+                  await axios.put(`${API}/books/${bookId}`, { narrator_voice_id: v }, {
+                    headers: { Authorization: `Bearer ${token}` }
+                  });
+                  setBook({ ...book, narrator_voice_id: v });
+                  toast.success('Voice updated!');
+                } catch (error) {
+                  toast.error('Failed to update voice');
+                }
+              }}
+            >
+              <SelectTrigger className="w-full rounded-lg text-sm">
+                <SelectValue placeholder="Select Voice" />
+              </SelectTrigger>
+              <SelectContent className="max-h-64">
+                {['Female', 'Male', 'Young Female', 'Young Male'].map(category => {
+                  const categoryVoices = voices.filter(v => v.category === category);
+                  if (categoryVoices.length === 0) return null;
+                  return (
+                    <div key={category}>
+                      <div className="px-2 py-1 text-xs text-muted-foreground font-semibold bg-muted/50">{category}</div>
+                      {categoryVoices.map((voice) => (
+                        <SelectItem key={voice.voice_id} value={voice.voice_id} className="text-xs">
+                          {voice.name} <span className="text-muted-foreground">({voice.accent})</span>
+                        </SelectItem>
+                      ))}
+                    </div>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+            
+            <div className="flex items-center gap-2 mt-2">
+              <input
+                type="checkbox"
+                id="lockVoice"
+                checked={book?.narrator_voice_locked || false}
+                onChange={async (e) => {
+                  const token = localStorage.getItem('azories-token');
+                  try {
+                    await axios.put(`${API}/books/${bookId}`, { narrator_voice_locked: e.target.checked }, {
+                      headers: { Authorization: `Bearer ${token}` }
+                    });
+                    setBook({ ...book, narrator_voice_locked: e.target.checked });
+                    toast.success(e.target.checked ? 'Voice locked!' : 'Voice unlocked');
+                  } catch (error) {
+                    toast.error('Failed to update');
+                  }
+                }}
+                className="rounded"
+              />
+              <label htmlFor="lockVoice" className="text-xs text-muted-foreground">
+                Lock voice for readers
+              </label>
+            </div>
+          </div>
         </div>
         
         {/* Main Editor Area */}
