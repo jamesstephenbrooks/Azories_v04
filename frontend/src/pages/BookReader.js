@@ -334,7 +334,7 @@ export default function BookReader() {
     
     // CRITICAL: Prevent duplicate playback for the same page
     // Only play if this page hasn't been played yet
-    if (lastPlayedPageRef.current === pageIndex && isPlaying) {
+    if (lastPlayedPageRef.current === pageIndex) {
       return;
     }
     
@@ -345,13 +345,19 @@ export default function BookReader() {
           if (autoReadRef.current) {
             goToPage(currentPageRef.current + 1, 'next');
           }
-        }, 300); // Reduced from 500ms
+        }, 300);
       }
       return;
     }
     
-    // Mark this page as being played
+    // Mark this page as being played IMMEDIATELY to prevent race conditions
     lastPlayedPageRef.current = pageIndex;
+    
+    // Stop any existing audio first
+    if (audioElement) {
+      audioElement.pause();
+      audioElement.currentTime = 0;
+    }
 
     // Check if audio is already cached
     let audioBase64 = audioCache.current.get(pageIndex);
@@ -365,8 +371,9 @@ export default function BookReader() {
           voice_id: narratorVoice
         });
 
-        // Check if user is still on the same page before playing
+        // CRITICAL: Check if user moved to different page while we were fetching
         if (currentPageRef.current !== pageIndex) {
+          setAudioLoading(false);
           return;
         }
 
@@ -384,17 +391,20 @@ export default function BookReader() {
         }
         setIsPlaying(false);
         setAudioLoading(false);
+        // Reset so user can try again
+        lastPlayedPageRef.current = -999;
         return;
       } finally {
         setAudioLoading(false);
       }
     }
 
-    if (audioBase64) {
-      if (audioElement) {
-        audioElement.pause();
-      }
+    // FINAL CHECK: Make sure we're still on the same page before playing
+    if (currentPageRef.current !== pageIndex) {
+      return;
+    }
 
+    if (audioBase64) {
       const audio = new Audio(`data:audio/mpeg;base64,${audioBase64}`);
       audio.volume = volume[0] / 100;
       audio.playbackRate = playbackSpeed[0];
@@ -405,16 +415,15 @@ export default function BookReader() {
       
       audio.onended = () => {
         setIsPlaying(false);
-        // Continue to next page when audio finishes in auto-read mode - faster transition
+        // Continue to next page when audio finishes in auto-read mode
         if (autoReadRef.current && currentPageRef.current < allPages.length - 1) {
           // Reset lastPlayedPage to allow next page to play
           lastPlayedPageRef.current = -999;
-          // Immediate transition since next audio is pre-loaded
           setTimeout(() => {
             if (autoReadRef.current) {
               goToPage(currentPageRef.current + 1, 'next');
             }
-          }, 200); // Reduced from 500ms for faster flow
+          }, 200);
         }
       };
       
