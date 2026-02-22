@@ -1591,15 +1591,21 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         // Check for teleport portal proximity
         const currentTime = Date.now();
         let foundPortal = null;
+        const playerFootY = camera.position.y - PLAYER_HEIGHT;
         
         for (const portal of TELEPORT_PORTALS) {
           const dx = camera.position.x - portal.triggerPos.x;
           const dz = camera.position.z - portal.triggerPos.z;
-          const dy = Math.abs((camera.position.y - PLAYER_HEIGHT) - portal.triggerPos.y);
           const horizontalDist = Math.sqrt(dx * dx + dz * dz);
           
-          // Check if player is within portal trigger zone (horizontal and vertical)
-          if (horizontalDist < portal.triggerRadius && dy < 2.0) {
+          // Strict floor check: player must be on the same floor as the portal
+          // Ground floor: y < 3, Upper floor: y >= 3
+          const portalIsGroundFloor = portal.triggerPos.y < 3;
+          const playerIsGroundFloor = playerFootY < 3;
+          const sameFloor = portalIsGroundFloor === playerIsGroundFloor;
+          
+          // Only show portal if on same floor AND within horizontal range
+          if (sameFloor && horizontalDist < portal.triggerRadius) {
             foundPortal = portal;
             break;
           }
