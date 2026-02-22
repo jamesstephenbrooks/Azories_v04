@@ -177,8 +177,12 @@ Professional-grade character creation and video generation studio, inspired by H
   - Page numbers/progress - FIXED
   - Voiceover sync - FIXED
 - [x] Remove "Classic" book mode - DONE (Feb 22, 2026)
-- [x] Increase book size - DONE (Feb 22, 2026)
+- [x] Increase book size by 40% - DONE (Feb 22, 2026)
 - [x] Read Aloud → Pause toggle - DONE (Feb 22, 2026)
+- [x] Read button disables auto-read - DONE (Feb 22, 2026)
+- [x] Listen button enables auto-read - DONE (Feb 22, 2026)
+- [x] Auto-read OFF stops immediately - DONE (Feb 22, 2026)
+- [x] Narrator voice lock feature - DONE (Feb 22, 2026)
 - [ ] iPad chapter creation dialog fix (recurring)
 - **TTS Quota Exceeded** - The "Listen" audio feature requires Universal Key credit top-up (Profile → Universal Key → Add Balance)
 
