@@ -406,8 +406,6 @@ const RealisticPageFlip = forwardRef(({
     <CoverPage 
       key="cover" 
       book={book} 
-      onClick={onStartReading || goToNextPage}
-      onListen={onStartListening}
     />
   );
   newPageMapping.push(-1); // Cover = no content page
