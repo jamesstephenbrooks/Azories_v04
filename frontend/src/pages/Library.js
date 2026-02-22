@@ -128,20 +128,11 @@ export default function Library() {
           {/* Book Cover */}
           <div className="aspect-[3/4] relative overflow-hidden bg-muted/30">
             {book.cover_image ? (
-              <>
-                {/* Placeholder while loading */}
-                {!imageLoaded && (
-                  <div className="absolute inset-0 bg-muted/50 animate-pulse" />
-                )}
-                <img 
-                  src={book.cover_image} 
-                  alt={book.title}
-                  className={`w-full h-full object-cover transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
-                  loading="lazy"
-                  decoding="async"
-                  onLoad={() => setImageLoaded(true)}
-                />
-              </>
+              <img 
+                src={book.cover_image} 
+                alt={book.title}
+                className="w-full h-full object-cover"
+              />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
                 <div className="text-center p-4">
