@@ -87,9 +87,9 @@ export default function Library() {
 
   const BookCard = ({ book, index, isFeatured = false }) => (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
+      transition={{ duration: 0.3, delay: Math.min(index * 0.03, 0.3) }}
       className="book-card group cursor-pointer"
       onClick={() => navigate(`/read/${book.id}`)}
       data-testid={`book-card-${book.id}`}
