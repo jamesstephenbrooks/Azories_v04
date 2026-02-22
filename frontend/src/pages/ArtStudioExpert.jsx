@@ -737,6 +737,12 @@ export default function ArtStudioExpert() {
     }));
   }, [setNodes, setEdges, nodes]);
   
+  // Delete specific node by ID
+  const deleteNodeById = useCallback((nodeId) => {
+    setNodes(nds => nds.filter(node => node.id !== nodeId));
+    setEdges(eds => eds.filter(edge => edge.source !== nodeId && edge.target !== nodeId));
+  }, [setNodes, setEdges]);
+  
   // Handle keyboard shortcuts for deletion
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -750,13 +756,15 @@ export default function ArtStudioExpert() {
   
   // Add new node
   const addNode = (type) => {
+    const nodeId = `${type}-${Date.now()}`;
     const newNode = {
-      id: `${type}-${Date.now()}`,
+      id: nodeId,
       type,
       position: { x: Math.random() * 300 + 100, y: Math.random() * 200 + 100 },
       data: getDefaultDataForType(type)
     };
-    newNode.data.onChange = (k, v) => updateNodeData(newNode.id, k, v);
+    newNode.data.onChange = (k, v) => updateNodeData(nodeId, k, v);
+    newNode.data.onDelete = () => deleteNodeById(nodeId);
     setNodes(nds => [...nds, newNode]);
   };
   
