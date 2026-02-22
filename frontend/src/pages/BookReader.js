@@ -119,46 +119,6 @@ export default function BookReader() {
   // Ref to trigger playback after listen button is clicked
   const shouldStartPlayingRef = useRef(false);
 
-  useEffect(() => {
-    // Stop currently playing audio when page changes
-    if (audioElement) {
-      audioElement.pause();
-      setIsPlaying(false);
-    }
-    
-    // Auto-read: play audio for current page content, or auto-advance for chapter titles
-    // Use autoReadRef.current to catch synchronous updates from startListening
-    if (autoReadRef.current && currentPage >= 0 && allPages.length > 0) {
-      const page = allPages[currentPage];
-      
-      if (page?.isChapterTitle) {
-        // Chapter title page - show briefly then advance
-        const timer = setTimeout(() => {
-          if (autoReadRef.current && currentPageRef.current < allPages.length - 1) {
-            goToPage(currentPageRef.current + 1, 'next');
-          }
-        }, 1500); // Reduced from 2500ms for faster flow
-        return () => clearTimeout(timer);
-      } else if (page?.text_content) {
-        // Has text content - play audio immediately
-        const timer = setTimeout(() => {
-          if (autoReadRef.current) {
-            playAudio();
-          }
-        }, 100); // Reduced from 300ms - audio should be pre-cached
-        return () => clearTimeout(timer);
-      } else if (currentPage < allPages.length - 1) {
-        // No content, advance to next page quickly
-        const timer = setTimeout(() => {
-          if (autoReadRef.current && currentPageRef.current < allPages.length - 1) {
-            goToPage(currentPageRef.current + 1, 'next');
-          }
-        }, 500); // Reduced from 1000ms
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [currentPage, autoRead, allPages.length, playAudio, goToPage]);
-
   // Save reading progress when page changes
   useEffect(() => {
     if (user && currentPage >= 0 && totalPages > 0) {
