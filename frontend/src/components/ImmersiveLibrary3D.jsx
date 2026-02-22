@@ -990,8 +990,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     const textureLoader = new THREE.TextureLoader();
     
     TELEPORT_PORTALS.forEach(portal => {
-      // Create a vertical oval plane for the portal using the image
-      const portalGeometry = new THREE.PlaneGeometry(1.4, 2.0);
+      // Create a smaller vertical oval plane for the portal (70% smaller)
+      const portalGeometry = new THREE.PlaneGeometry(0.42, 0.6); // 70% smaller: 1.4*0.3, 2.0*0.3
       
       textureLoader.load(portalTextureUrl, (texture) => {
         const portalMaterial = new THREE.MeshBasicMaterial({
@@ -1001,23 +1001,19 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           opacity: 0.9
         });
         const portalMesh = new THREE.Mesh(portalGeometry, portalMaterial);
-        portalMesh.position.set(portal.triggerPos.x, portal.triggerPos.y + 1.0, portal.triggerPos.z);
+        portalMesh.position.set(portal.triggerPos.x, portal.triggerPos.y + 0.4, portal.triggerPos.z);
         portalMesh.userData = { isPortal: true, portalData: portal };
         scene.add(portalMesh);
         portalMeshes.push(portalMesh);
       });
       
-      // Add multiple lights for stronger glow effect
-      const portalLight1 = new THREE.PointLight(0x00ffff, 2.5, 6);
-      portalLight1.position.set(portal.triggerPos.x, portal.triggerPos.y + 1.0, portal.triggerPos.z);
+      // Add lights for glow effect (smaller range)
+      const portalLight1 = new THREE.PointLight(0x00ffff, 1.5, 3);
+      portalLight1.position.set(portal.triggerPos.x, portal.triggerPos.y + 0.4, portal.triggerPos.z);
       scene.add(portalLight1);
       
-      const portalLight2 = new THREE.PointLight(0x00aaff, 1.5, 4);
-      portalLight2.position.set(portal.triggerPos.x, portal.triggerPos.y + 0.3, portal.triggerPos.z);
-      scene.add(portalLight2);
-      
-      // Add a glowing ring on the floor around the portal
-      const ringGeometry = new THREE.RingGeometry(0.8, 1.2, 32);
+      // Add a smaller, thinner glowing ring on the floor around the portal
+      const ringGeometry = new THREE.RingGeometry(0.2, 0.25, 32); // Much smaller and thinner
       const ringMaterial = new THREE.MeshBasicMaterial({
         color: 0x00ffff,
         transparent: true,
