@@ -44,30 +44,30 @@ const GENRE_SECTIONS = [
   { name: 'Humour', position: { x: 4, z: -1 }, bannerPos: { x: 4.79, y: 6.5, z: -1 }, shelfPos: { x: 4.5, y: 5.4, z: -1 }, rotation: -Math.PI / 2, color: '#f59e0b' },
 ];
 
-// Teleport portals for moving between floors (spiral staircase alternative)
+// Teleport portals for moving between floors
 const TELEPORT_PORTALS = [
   {
     id: 'stairs-up',
     name: 'Go Upstairs',
-    // Position at the base of the spiral staircase (center of library)
-    triggerPos: { x: 0, y: 0, z: -1 },
-    triggerRadius: 1.2,
-    // Destination at the top of the spiral staircase (1st floor)
-    destPos: { x: 0, y: 6, z: -1 },
-    destRotation: 0,
-    color: '#22c55e', // Green for up
+    // Position near back wall to go up
+    triggerPos: { x: -1.77, y: 4.27, z: -6.05 },
+    triggerRadius: 0.6,
+    // Destination at the upper floor
+    destPos: { x: -1.70, y: 4.27, z: 3.10 },
+    destRotation: Math.PI,
+    color: '#ffd700', // Gold
     icon: '↑'
   },
   {
     id: 'stairs-down',
     name: 'Go Downstairs',
-    // Position at the top of the spiral staircase (1st floor)
-    triggerPos: { x: 0, y: 6, z: -1 },
-    triggerRadius: 1.2,
-    // Destination at the bottom
-    destPos: { x: 0, y: 0, z: -1 },
-    destRotation: Math.PI,
-    color: '#ef4444', // Red for down
+    // Position at upper area to go down
+    triggerPos: { x: -1.70, y: 4.27, z: 3.10 },
+    triggerRadius: 0.6,
+    // Destination at the lower area
+    destPos: { x: -1.77, y: 4.27, z: -6.05 },
+    destRotation: 0,
+    color: '#ffd700', // Gold
     icon: '↓'
   }
 ];
