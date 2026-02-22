@@ -1933,6 +1933,7 @@ export default function ArtStudio() {
                           <Button
                             onClick={async () => {
                               try {
+                                console.log('Saving animation to gallery...');
                                 const response = await fetch(`${API_URL}/api/art-studio/save-animation`, {
                                   method: 'POST',
                                   headers: {
@@ -1941,37 +1942,65 @@ export default function ArtStudio() {
                                   },
                                   body: JSON.stringify({
                                     video_url: animatedVideo,
-                                    name: `Animation ${new Date().toLocaleDateString()}`,
+                                    name: `Animation ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`,
                                     motion_prompt: animationMotion,
                                     style: animationStyle
                                   })
                                 });
-                                if (response.ok) {
+                                const data = await response.json();
+                                console.log('Save response:', data);
+                                if (response.ok && data.success) {
                                   toast.success('Animation saved to gallery!');
                                   fetchGallery();
                                 } else {
-                                  throw new Error('Failed to save');
+                                  throw new Error(data.detail || 'Failed to save');
                                 }
                               } catch (error) {
-                                toast.error('Failed to save animation');
+                                console.error('Save animation error:', error);
+                                toast.error('Failed to save: ' + error.message);
                               }
                             }}
                             className="bg-green-600 hover:bg-green-700"
+                            data-testid="save-animation-btn"
                           >
                             <FiSave className="w-4 h-4 mr-2" />
                             Save
                           </Button>
                           <Button
                             onClick={() => {
-                              const link = document.createElement('a');
-                              link.href = animatedVideo;
-                              link.download = `azories-animated-${Date.now()}.mp4`;
-                              link.click();
+                              // Create blob from base64 for better download
+                              try {
+                                const base64Data = animatedVideo.split(',')[1];
+                                const byteCharacters = atob(base64Data);
+                                const byteNumbers = new Array(byteCharacters.length);
+                                for (let i = 0; i < byteCharacters.length; i++) {
+                                  byteNumbers[i] = byteCharacters.charCodeAt(i);
+                                }
+                                const byteArray = new Uint8Array(byteNumbers);
+                                const blob = new Blob([byteArray], { type: 'video/mp4' });
+                                const url = URL.createObjectURL(blob);
+                                const link = document.createElement('a');
+                                link.href = url;
+                                link.download = `azories-animation-1080p-${Date.now()}.mp4`;
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                                URL.revokeObjectURL(url);
+                                toast.success('Downloading 1080p video...');
+                              } catch (error) {
+                                console.error('Download error:', error);
+                                // Fallback to direct link
+                                const link = document.createElement('a');
+                                link.href = animatedVideo;
+                                link.download = `azories-animation-1080p-${Date.now()}.mp4`;
+                                link.click();
+                              }
                             }}
                             className="bg-purple-600 hover:bg-purple-700"
+                            data-testid="download-animation-btn"
                           >
                             <FiDownload className="w-4 h-4 mr-2" />
-                            Download
+                            1080p
                           </Button>
                           <Button
                             variant="outline"
