@@ -50,7 +50,7 @@ export default function CollaborativeWriting({ bookId, isOwner, currentCollabora
 
     try {
       setIsLoading(true);
-      await axios.post(`${API}/api/books/${bookId}/invite`, {
+      await axios.post(`${API}/api/books/${bookId}/collaborators/invite`, {
         email: inviteEmail.trim(),
         role: inviteRole
       });
