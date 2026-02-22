@@ -2557,8 +2557,10 @@ async def generate_consistent_character_image(
         
         # Method 3: Fallback to OpenAI with character description
         if EMERGENT_LLM_KEY:
-            logger.info(f"Generating with OpenAI for character {character['name']}")
-            full_prompt = f"{character.get('description', f'Portrait of {character[\"name\"]}')} {prompt}"
+            char_name = character['name']
+            logger.info(f"Generating with OpenAI for character {char_name}")
+            char_description = character.get('description', f'Portrait of {char_name}')
+            full_prompt = f"{char_description} {prompt}"
             image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
             images = await image_gen.generate_images(
                 prompt=full_prompt,
