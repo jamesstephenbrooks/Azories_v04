@@ -140,29 +140,15 @@ async def generate_with_face_id(
     if not FAL_KEY:
         raise Exception("FAL_KEY not configured")
     
-    # Convert base64 to URL if needed
-    if reference_image_url.startswith('data:'):
-        # For base64 images, we need to upload first or use as-is
-        # fal.ai supports both URLs and base64
-        pass
-    
     arguments = {
         "prompt": prompt,
-        "reference_images": [{"url": reference_image_url}] if not reference_image_url.startswith('data:') else [],
+        "image_url": reference_image_url,
         "id_weight": id_weight,
         "image_size": image_size,
         "num_images": 1,
         "guidance_scale": 4.0,
         "num_inference_steps": 28
     }
-    
-    # Handle base64 reference
-    if reference_image_url.startswith('data:'):
-        if ',' in reference_image_url:
-            base64_data = reference_image_url.split(',')[1]
-        else:
-            base64_data = reference_image_url
-        arguments["reference_images"] = [{"image_base64": base64_data}]
     
     if seed is not None:
         arguments["seed"] = seed
