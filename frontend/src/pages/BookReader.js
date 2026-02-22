@@ -304,6 +304,12 @@ export default function BookReader() {
         voice_id: narratorVoice
       });
 
+      // Check if user is still on the same page before playing
+      if (currentPageRef.current !== pageIndex) {
+        // User navigated away, don't play this audio
+        return;
+      }
+
       if (res.data.audio_base64) {
         if (audioElement) {
           audioElement.pause();
@@ -325,9 +331,12 @@ export default function BookReader() {
           }
         };
         
-        audio.play();
-        setAudioElement(audio);
-        setIsPlaying(true);
+        // Double-check we're still on the correct page before playing
+        if (currentPageRef.current === pageIndex) {
+          audio.play();
+          setAudioElement(audio);
+          setIsPlaying(true);
+        }
       }
     } catch (error) {
       toast.error('Failed to generate audio');
