@@ -6,6 +6,7 @@ Create a digital book creation and reading web application named "Azories" with:
 - **Reader Experience:** A 3D library, full-screen reader, and audiobook options
 - **Creator Experience (Pro Feature):** Rich text editor and sophisticated Art Studio for AI image generation
 - **Art Studio:** High-quality, stylized images with detailed prompts, reference images, and one-click templates
+- **Pro Studio (NEW):** Professional-grade character consistency, Cinema Studio controls, multi-model video generation
 
 ## What's Been Implemented
 
@@ -24,134 +25,147 @@ Create a digital book creation and reading web application named "Azories" with:
   - Quick Templates for one-click generation
 - **30-Day Free Pro Trial:** All new users get automatic Pro access for 30 days
 
-### Recent Updates (Feb 22, 2026 - Batch 2)
-1. **Removed "Made with Emergent" branding** - Badge removed from all pages
-2. **Coming Soon Page** - Created at `/coming-soon` with email waitlist signup
-3. **Faster Library Loading** - Optimized covers from 3.6MB to ~90KB each (195MB total saved)
-4. **Animation Preview Fix** - Added `muted` and `playsInline` for autoplay on iOS
-5. **Smaller Node Delete Buttons** - Reduced X buttons by 50% (from 5x5 to 3x3)
-6. **Grand Library Redesign** - Beautiful promotional banner with fantasy image
-7. **Improved Page Turn Animation** - Added realistic page curl effect with next page visible underneath
-8. **Page Title Updated** - Now shows "Azories - Where Stories Come Alive"
+### NEW: Pro Studio (Feb 22, 2026)
+Professional-grade character creation and video generation studio, inspired by Higgsfield:
 
-### Recent Updates (Feb 22, 2026 - Batch 1)
-1. **iPad/Mobile Experience Fixes:**
-   - Enhanced isMobile() detection for iPad/iPadOS 13+ (checks navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
-   - Improved joystick with larger touch targets, responsive sizing, and safe-area-inset support
-   - Responsive book info card - centered modal on mobile, side panel on desktop
-   - Fixed keyboard handling for text inputs on mobile
-   - Added swipe gestures to Book Reader for page navigation
+1. **Character System:**
+   - Create characters from 10-20 reference images
+   - AI analyzes images to build a character description
+   - Characters persist for consistent generation
+   - My Characters panel for selecting saved characters
 
-2. **Node Studio (Expert Mode) Improvements:**
-   - Added visible X delete buttons on ALL nodes (Character, Scene, Style, Reference, Combine, Output)
-   - Delete buttons trigger node removal with edge cleanup
-   - Keyboard shortcut (Delete/Backspace) still works for selected nodes
+2. **Cinema Studio:**
+   - Camera body selection (ARRI Alexa 35, RED V-Raptor, Sony Venice 2, etc.)
+   - Lens selection (Panavision, Cooke, Zeiss Supreme, Helios, etc.)
+   - Focal length options per lens
+   - Lighting presets (Natural, Golden Hour, Neon, etc.)
+   - Aspect ratio selection (16:9, 9:16, 1:1, etc.)
+   - Generate "Hero Frame" images with cinematic settings
 
-3. **Character Builder Dropdown Fixes:**
-   - Fixed dropdown text visibility on iOS/iPadOS with colorScheme: 'dark' styling
-   - Added explicit option background and text colors
-   - Custom dropdown arrow SVG for consistent appearance
+3. **Shots App:**
+   - Upload one image, generate 9 different angles
+   - Front, 3/4 left/right, profile, looking up/down, over shoulder, back view
+   - Great for building character reference libraries
 
-4. **CSS Global Improvements:**
-   - Safe area insets for notched devices
-   - Better touch targets (min 44px) on touch devices
-   - Fixed select element text visibility across platforms
+4. **Expression Variations:**
+   - Generate same character with different expressions
+   - 12 expression presets: Happy, Sad, Serious, Surprised, etc.
+   - Maintains character consistency
 
-### Previous Updates (Feb 21, 2026)
-1. **Animation Feature:**
-   - New Animate tab in Art Studio
-   - Upload images or select from gallery to animate
-   - Motion description and style settings
-   - Save animations to gallery
-   - Sora 2 AI integration (2-5 min generation time)
+5. **Video Tab:**
+   - Animate hero frames to video
+   - Model selection UI (Sora 2 active, Veo 3.1/Kling 3.0 planned)
+   - Duration control (3-10 seconds)
+   - Motion prompt input
 
-2. **Gallery Enhancements:**
-   - Type filter: All / Images / Animations
-   - Video playback on hover for animations
-   - Animation badge indicators
+6. **Gallery:**
+   - View all generated images and videos
+   - Save/download functionality
 
-3. **Book Content:**
-   - 5 launch books with detailed 10-12 page stories
-   - Removed separate chapter title pages
-   - Text flows naturally with images
+### Recent Updates (Feb 22, 2026)
+1. **Pro Studio Feature:** Complete implementation of professional-grade character studio
+2. **Backend APIs:** New endpoints for /api/pro-studio/* (characters, generate-image, generate-shots, generate-expression, animate-hero)
+3. **Cinema Studio Config:** Camera bodies, lenses, lighting presets configurations
+4. **Pro Studio Button:** Added to Art Studio header with gradient styling and "NEW" tag
+5. **Authentication Fix:** Fixed isAuthenticated bug in ProStudio.js
 
-4. **30-Day Pro Trial:**
-   - New users automatically get Pro subscription
-   - Trial expiration tracked
-   - Banner shows days remaining
+### Previous Updates (Feb 22, 2026 - Earlier)
+- Removed "Made with Emergent" branding
+- Coming Soon Page at `/coming-soon`
+- Faster Library Loading - Optimized covers
+- Animation Preview Fix
+- Node Studio improvements
+- Grand Library Redesign
+- Page Turn Animation improvements
+- 57 books with covers complete
 
 ## Architecture
 
 ```
 /app/
 ├── backend/
-│   ├── server.py              # FastAPI with all endpoints
+│   ├── server.py              # FastAPI with all endpoints including Pro Studio
 │   ├── scripts/
-│   │   └── generate_enhanced_books.py  # Book generation
+│   │   └── generate_enhanced_books.py
 │   └── tests/
+│       └── test_pro_studio.py # NEW: Pro Studio API tests
 ├── frontend/
 │   └── src/
+│       ├── config/
+│       │   └── ProStudioConfig.js  # Camera, lens, model configs
 │       ├── pages/
-│       │   ├── ArtStudio.js       # Main Art Studio (2500+ lines)
+│       │   ├── ProStudio.js       # NEW: Pro Studio component
+│       │   ├── ArtStudio.js       # Art Studio with Pro Studio link
 │       │   ├── ArtStudioExpert.jsx # Expert Mode Node Editor
-│       │   ├── BookReader.js      # Book reading experience with swipe
+│       │   ├── BookReader.js      # Book reading experience
 │       │   ├── BookEditor.js      # Book creation/editing
 │       │   └── Dashboard.js       # User dashboard
 │       ├── hooks/
-│       │   └── useSwipeGestures.js # Touch swipe detection hook
+│       │   └── useSwipeGestures.js
 │       └── components/
-│           ├── TrialBanner.jsx         # Trial status display
-│           └── ImmersiveLibrary3D.jsx  # 3D Library with mobile support
+│           ├── ImmersiveLibrary3D.jsx
+│           └── TrialBanner.jsx
 ```
 
 ## Tech Stack
-- **Frontend:** React, Tailwind CSS, Framer Motion, React Flow (Node Editor)
+- **Frontend:** React, Tailwind CSS, Framer Motion, React Flow (Node Editor), Shadcn UI
 - **Backend:** FastAPI, Pydantic, MongoDB
 - **AI Integrations:** 
-  - OpenAI GPT Image 1 (via Emergent)
-  - OpenAI GPT-4o (via Emergent)
+  - OpenAI GPT Image 1 (via Emergent) - Image generation
+  - OpenAI GPT-4o (via Emergent) - Text/analysis
   - Sora 2 (via Emergent) - Image to Video
-  - ElevenLabs (Audio narration)
+  - ElevenLabs - Audio narration
 
 ## Test Credentials
 - **Pro User:** artstudio3@test.com / password123
 - **New users:** Auto-register to test 30-day trial
 
+## API Endpoints
+
+### Pro Studio APIs
+- `GET /api/pro-studio/characters` - Get user's characters
+- `POST /api/pro-studio/characters` - Create character from reference images
+- `DELETE /api/pro-studio/characters/{id}` - Delete character
+- `POST /api/pro-studio/generate-image` - Generate hero frame with cinema settings
+- `POST /api/pro-studio/generate-shots` - Generate 9 angle shots from 1 image
+- `POST /api/pro-studio/generate-expression` - Generate character with expression
+- `POST /api/pro-studio/animate-hero` - Animate image to video
+
 ## Remaining/Future Tasks
 
-### P0 - Critical (All Verified as Working)
-- [x] iPad/Mobile joystick visibility - FIXED
-- [x] Node Studio delete buttons - FIXED (X buttons on all nodes)
-- [x] Character Builder dropdown text - FIXED (replaced with shadcn Select)
-- [x] Book Reader swipe gestures - IMPLEMENTED
-- [x] Responsive book info card - FIXED
-- [x] iPad keyboard covers chapter popup - FIXED
-- [x] Age range filter in library - IMPLEMENTED (both main Library and 3D Library)
-- [x] Audiobook improvements - ENHANCED (categorized voices, quick speed buttons)
-- [x] Book content - 57 books with covers (100% complete)
-- [x] Start Reading button on book cards - ADDED
-- [x] 3D Library performance optimization for iPad - IMPLEMENTED
+### P0 - Critical
+- [x] Pro Studio implementation - DONE
+- [x] Character consistency system - DONE
+- [x] Cinema Studio controls - DONE
+- [ ] iPad chapter creation dialog fix (recurring)
 
 ### P1 - High Priority
-- [ ] Complete cover generation for remaining books (script running)
-- [ ] Verify animation progress bar and save-to-gallery
-- [ ] Fix 3D library spiral staircase navigation
-- [ ] Integrate fal.ai for true image-to-image style transfer
+- [ ] Integrate Veo 3.1 video model (requires API key)
+- [ ] Integrate Kling 3.0 video model (requires API key)
+- [ ] Generate page images for 50+ books (covers done)
+- [ ] Verify animation workflow end-to-end
+- [ ] Integrate fal.ai for true style transfer
 
 ### P2 - Medium Priority
-- [ ] Implement Pro feature gating after trial expires
-- [ ] Add payment/subscription management (Stripe)
-- [ ] Improve audiobook feature
+- [ ] More realistic page-turn animation (react-pageflip)
+- [ ] Fix 3D library spiral staircase navigation
+- [ ] Replace ambient "wind" sound
+- [ ] Pro feature gating after trial expires
+- [ ] Payment/subscription management (Stripe)
 
 ### P3 - Backlog
 - [ ] Re-integrate "Azora" AI Librarian
 - [ ] Multiplayer library exploration
 - [ ] Vector Logo Creation
 - [ ] Comic book layouts in editor
-- [ ] Comic Book layout support
-- [ ] Refactor ArtStudio.js into smaller components
+- [ ] Improve audiobook feature
 
 ## Known Limitations
 - Animation timeout: Sora 2 takes 2-5 minutes, may timeout via Cloudflare
-- Books need AI-generated cover images
+- Only Sora 2 video model currently active (others need API keys)
+- Books need AI-generated page illustrations
 - Style transfer limited to DALL-E capabilities (fal.ai integration pending)
+
+## 3rd Party Integrations Required
+- **Active:** OpenAI GPT Image 1, GPT-4o, Sora 2 (via Emergent LLM Key), ElevenLabs
+- **Pending:** fal.ai (needs user API key), Veo 3.1 (needs user API key), Kling 3.0 (needs user API key)
