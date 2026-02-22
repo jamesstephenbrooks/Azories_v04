@@ -70,7 +70,7 @@ Rules:
 - Never give inappropriate content
 - Encourage reading and imagination`;
 
-      const response = await axios.post(`${API}/api/ai/reading-buddy`, {
+      const response = await axios.post(`${API}/api/ai/azora`, {
         message: userMessage,
         system_prompt: systemPrompt,
         context: `User is exploring the 3D library. Previous conversation: ${messages.slice(-4).map(m => `${m.role}: ${m.content}`).join(' | ')}`
