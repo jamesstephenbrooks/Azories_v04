@@ -261,13 +261,20 @@ export default function BookReader() {
   };
 
   const startReading = useCallback(() => {
+    // Ensure auto-read is OFF when just reading
+    setAutoRead(false);
+    if (audioElement) {
+      audioElement.pause();
+      setIsPlaying(false);
+    }
+    
     if (currentPage === -1) {
       // Just flip to first page - no auto-read
       if (realisticFlipRef.current) {
         realisticFlipRef.current.nextPage();
       }
     }
-  }, [currentPage]);
+  }, [currentPage, audioElement]);
 
   // startListening is defined after playAudio below
 
