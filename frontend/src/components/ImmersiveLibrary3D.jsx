@@ -1193,12 +1193,14 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
               // Check if it's a stair, ramp, or floor segment
               const isClimbable = hitMesh.includes('stair') || hitMesh.includes('plane05') || 
                                   hitMesh.includes('plane06') || hitMesh.includes('ramp') ||
-                                  hitMesh.includes('step') || hitMesh.includes('floor');
+                                  hitMesh.includes('step') || hitMesh.includes('floor') ||
+                                  hitMesh.includes('spiral') || hitMesh.includes('stone') ||
+                                  hitMesh.includes('climb');
               
               if (isClimbable) {
                 stairDetected = true;
-              } else if (rayY > camera.position.y - PLAYER_HEIGHT + 0.4) {
-                // Only consider it a wall block at knee level or higher
+              } else if (rayY > camera.position.y - PLAYER_HEIGHT + 0.5) {
+                // Only consider it a wall block at waist level or higher (more permissive)
                 blocked = true;
               }
             }
