@@ -30,6 +30,23 @@ from reportlab.lib.units import inch
 from reportlab.lib.utils import ImageReader
 from PIL import Image as PILImage
 
+# Import fal.ai service
+try:
+    from fal_service import (
+        generate_image_flux,
+        generate_with_face_id,
+        train_character_lora,
+        check_training_status,
+        generate_with_lora,
+        upload_image_to_fal,
+        get_available_models as get_fal_models,
+        FAL_KEY
+    )
+    FAL_AVAILABLE = bool(FAL_KEY)
+except ImportError as e:
+    logging.warning(f"fal.ai service not available: {e}")
+    FAL_AVAILABLE = False
+
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
