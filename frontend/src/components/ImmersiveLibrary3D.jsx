@@ -1007,6 +1007,9 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     const textureLoader = new THREE.TextureLoader();
     
     TELEPORT_PORTALS.forEach(portal => {
+      // Use visualY for rendering, triggerPos.y for detection
+      const renderY = portal.visualY !== undefined ? portal.visualY : portal.triggerPos.y;
+      
       // Create a smaller vertical oval plane for the portal (70% smaller)
       const portalGeometry = new THREE.PlaneGeometry(0.42, 0.6); // 70% smaller: 1.4*0.3, 2.0*0.3
       
@@ -1018,7 +1021,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           opacity: 0.9
         });
         const portalMesh = new THREE.Mesh(portalGeometry, portalMaterial);
-        portalMesh.position.set(portal.triggerPos.x, portal.triggerPos.y + 0.4, portal.triggerPos.z);
+        portalMesh.position.set(portal.triggerPos.x, renderY + 0.4, portal.triggerPos.z);
         portalMesh.userData = { isPortal: true, portalData: portal };
         scene.add(portalMesh);
         portalMeshes.push(portalMesh);
@@ -1026,7 +1029,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       
       // Add lights for glow effect (smaller range)
       const portalLight1 = new THREE.PointLight(0x00ffff, 1.5, 3);
-      portalLight1.position.set(portal.triggerPos.x, portal.triggerPos.y + 0.4, portal.triggerPos.z);
+      portalLight1.position.set(portal.triggerPos.x, renderY + 0.4, portal.triggerPos.z);
       scene.add(portalLight1);
       
       // Add a smaller, thinner glowing ring on the floor around the portal
@@ -1039,7 +1042,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       });
       const ringMesh = new THREE.Mesh(ringGeometry, ringMaterial);
       ringMesh.rotation.x = -Math.PI / 2;
-      ringMesh.position.set(portal.triggerPos.x, portal.triggerPos.y + 0.05, portal.triggerPos.z);
+      ringMesh.position.set(portal.triggerPos.x, renderY + 0.05, portal.triggerPos.z);
       ringMesh.userData = { isPortalRing: true };
       scene.add(ringMesh);
     });
