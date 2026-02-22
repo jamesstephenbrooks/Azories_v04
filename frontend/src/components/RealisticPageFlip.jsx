@@ -516,29 +516,34 @@ const RealisticPageFlip = forwardRef(({
     <div className={`realistic-page-flip relative ${className}`} style={{ transform: isFullscreen ? 'scale(1.6)' : 'scale(1.35)', transformOrigin: 'center center' }}>
       {/* Book container with 3D perspective */}
       <div 
-        className="book-container relative"
+        className="book-container relative flex justify-center"
         style={{ 
           perspective: '2000px',
           transformStyle: 'preserve-3d',
-          // Center the book properly when clipping
-          transform: shouldClipLeft ? 'translateX(12%)' : shouldClipRight ? 'translateX(-12%)' : 'translateX(0)',
-          transition: 'transform 0.3s ease-out',
         }}
       >
-        {/* Clip the appropriate side when showing covers */}
+        {/* Wrapper that gets clipped and positioned */}
         <div 
           style={{
-            overflow: (shouldClipLeft || shouldClipRight) ? 'hidden' : 'visible',
-            // Clip left half for front cover, right half for back cover
-            clipPath: shouldClipLeft ? 'inset(0 0 0 50%)' : shouldClipRight ? 'inset(0 50% 0 0)' : 'none',
-            transition: 'clip-path 0.3s ease-out',
+            // Shift to center the visible portion after clipping
+            marginLeft: shouldClipLeft ? `${width/2}px` : shouldClipRight ? `-${width/2}px` : '0',
+            transition: 'margin 0.4s ease-out',
           }}
         >
-        {/* Book shadow underneath */}
-        <div 
-          className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[90%] h-8 bg-black/20 rounded-full blur-xl"
-          style={{ transform: 'translateX(-50%) rotateX(80deg)' }}
-        />
+          {/* Clip the appropriate side when showing covers */}
+          <div 
+            style={{
+              overflow: (shouldClipLeft || shouldClipRight) ? 'hidden' : 'visible',
+              // Clip left half for front cover, right half for back cover
+              clipPath: shouldClipLeft ? 'inset(0 0 0 50%)' : shouldClipRight ? 'inset(0 50% 0 0)' : 'none',
+              transition: 'clip-path 0.4s ease-out',
+            }}
+          >
+          {/* Book shadow underneath */}
+          <div 
+            className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[90%] h-8 bg-black/20 rounded-full blur-xl"
+            style={{ transform: 'translateX(-50%) rotateX(80deg)' }}
+          />
         
         <HTMLFlipBook
           key={`flipbook-${pages.length}`}
