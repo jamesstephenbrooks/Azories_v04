@@ -1321,6 +1321,131 @@ export default function ProStudio() {
         )}
       </AnimatePresence>
 
+      {/* Edit Character Modal */}
+      <AnimatePresence>
+        {editingCharacter && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="bg-gray-900 rounded-xl border border-purple-500/30 p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-white">Edit Character</h2>
+                <Button variant="ghost" size="sm" onClick={() => setEditingCharacter(null)}>
+                  <FiX size={20} />
+                </Button>
+              </div>
+
+              <div className="space-y-4">
+                {/* Name */}
+                <div>
+                  <label className="text-gray-300 text-sm font-medium block mb-1">Name</label>
+                  <Input
+                    value={editForm.name}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, name: e.target.value }))}
+                    className="bg-gray-800/50 border-gray-700 text-white"
+                  />
+                </div>
+
+                {/* Style */}
+                <div>
+                  <label className="text-gray-300 text-sm font-medium block mb-1">Visual Style</label>
+                  <Select value={editForm.style} onValueChange={(v) => setEditForm(prev => ({ ...prev, style: v }))}>
+                    <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-800 border-gray-700 max-h-60">
+                      {characterStyles.map((style) => (
+                        <SelectItem key={style.id} value={style.id} className="text-white">
+                          {style.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Genre */}
+                <div>
+                  <label className="text-gray-300 text-sm font-medium block mb-1">Genre</label>
+                  <Select value={editForm.genre} onValueChange={(v) => setEditForm(prev => ({ ...prev, genre: v }))}>
+                    <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-800 border-gray-700 max-h-60">
+                      {characterGenres.map((genre) => (
+                        <SelectItem key={genre.id} value={genre.id} className="text-white">
+                          {genre.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label className="text-gray-300 text-sm font-medium block mb-1">Description</label>
+                  <Textarea
+                    value={editForm.description_prompt}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, description_prompt: e.target.value }))}
+                    className="bg-gray-800/50 border-gray-700 text-white"
+                    rows={3}
+                  />
+                </div>
+
+                {/* Special Features */}
+                <div>
+                  <label className="text-gray-300 text-sm font-medium block mb-1">Special Features</label>
+                  <Input
+                    value={editForm.special_features}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, special_features: e.target.value }))}
+                    placeholder="e.g., scar on cheek, glowing tattoos"
+                    className="bg-gray-800/50 border-gray-700 text-white"
+                  />
+                </div>
+
+                {/* Personality */}
+                <div>
+                  <label className="text-gray-300 text-sm font-medium block mb-1">Personality</label>
+                  <Input
+                    value={editForm.personality}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, personality: e.target.value }))}
+                    placeholder="e.g., brave and curious"
+                    className="bg-gray-800/50 border-gray-700 text-white"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <Button
+                  onClick={() => regenerateThumbnail(editingCharacter.id)}
+                  variant="outline"
+                  className="border-purple-500/30 text-purple-300 hover:bg-purple-500/20"
+                >
+                  <FiRefreshCw className="mr-2" /> Regenerate Look
+                </Button>
+                <div className="flex-1" />
+                <Button variant="outline" onClick={() => setEditingCharacter(null)}>
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={saveCharacterEdits}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  Save Changes
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <AnimatePresence>
         {isLoading && (
           <motion.div 
