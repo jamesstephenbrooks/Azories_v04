@@ -1112,11 +1112,18 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                 name.includes('_col_') || name.startsWith('col_') || name.endsWith('_col') ||
                 name.includes('bounds') || name.includes('blocker') || name.includes('barrier');
             
+            // Check if this mesh should have collision (walls, floors, railings, etc.)
+            const forceCollision = name.includes('wall') || name.includes('floor') || 
+                name.includes('railing') || name.includes('rail') || name.includes('fence') ||
+                name.includes('balustrade') || name.includes('banister') || name.includes('stair') ||
+                name.includes('step') || name.includes('pillar') || name.includes('column') ||
+                name.includes('post') || name.includes('balcony') || name.includes('bridge');
+            
             // Check if this mesh should be EXCLUDED from collision
-            const excludeFromCollision = name.includes('book') || name.includes('table') || 
+            const excludeFromCollision = !forceCollision && (name.includes('book') || name.includes('table') || 
                 name.includes('chair') || name.includes('ceiling') || name.includes('seat') ||
                 name.includes('lamp') || name.includes('candle') || name.includes('painting') ||
-                name.includes('picture') || name.includes('frame') || name.includes('decoration');
+                name.includes('picture') || name.includes('frame') || name.includes('decoration'));
             
             if (isCollisionOnlyMesh) {
               // Make collision-only meshes invisible but keep for raycasting
