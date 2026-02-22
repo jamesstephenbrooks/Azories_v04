@@ -1811,6 +1811,27 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
             </div>
           )}
           
+          {/* Teleport Portal Prompt */}
+          <AnimatePresence>
+            {nearPortal && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                className="fixed bottom-32 left-1/2 -translate-x-1/2 pointer-events-auto z-50"
+              >
+                <Button
+                  onClick={() => usePortal(nearPortal)}
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6 py-3 rounded-full shadow-lg shadow-purple-500/50 flex items-center gap-2"
+                  data-testid="teleport-portal-btn"
+                >
+                  <FiChevronUp className={`w-5 h-5 ${nearPortal.id === 'stairs-down' ? 'rotate-180' : ''}`} />
+                  {nearPortal.name}
+                </Button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          
           {/* Mobile/Tablet Joystick - Enhanced for iPad */}
           {isMobileDevice && (
             <div 
