@@ -167,6 +167,7 @@ export default function BookReader() {
       const res = await axios.get(`${API}/books/${bookId}/full`);
       setBook(res.data);
       setNarratorVoice(res.data.narrator_voice_id || '21m00Tcm4TlvDq8ikWAM');
+      setNarratorVoiceLocked(res.data.narrator_voice_locked || false);
       
       if (res.data.requires_auth) {
         setRequiresAuth(true);
