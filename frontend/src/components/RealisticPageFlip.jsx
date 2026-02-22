@@ -499,11 +499,10 @@ const RealisticPageFlip = forwardRef(({
           drawShadow={true}
           flippingTime={500}
           usePortrait={false}
-          disableFlipByClick={false}
+          disableFlipByClick={true}
           useMouseEvents={true}
           swipeDistance={30}
           showPageCorners={true}
-          clickEventForward={true}
         >
           {allBookPages}
         </HTMLFlipBook>
