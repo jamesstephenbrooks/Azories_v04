@@ -815,7 +815,7 @@ export default function BookReader() {
             </Button>
             
             <Button
-              variant={autoRead ? "default" : "outline"}
+              variant={isPlaying ? "default" : "outline"}
               size="lg"
               onClick={toggleAudio}
               disabled={audioLoading || isCover}
@@ -826,7 +826,7 @@ export default function BookReader() {
               ) : isPlaying ? (
                 <><FiPause className="w-5 h-5 mr-2" /> Pause</>
               ) : (
-                <><FiPlay className="w-5 h-5 mr-2" /> {autoRead ? 'Reading...' : 'Read Aloud'}</>
+                <><FiPlay className="w-5 h-5 mr-2" /> Read Aloud</>
               )}
             </Button>
             
