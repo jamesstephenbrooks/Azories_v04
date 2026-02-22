@@ -336,6 +336,7 @@ export default function ArtStudio() {
   // Animation progress state
   const [animationProgress, setAnimationProgress] = useState(0);
   const [animationMessage, setAnimationMessage] = useState('');
+  const [animationJobId, setAnimationJobId] = useState(null);
   
   // Animate an image using Sora 2 with polling
   const animateImage = async () => {
@@ -344,9 +345,10 @@ export default function ArtStudio() {
     setIsAnimating(true);
     setAnimationProgress(0);
     setAnimationMessage('Starting animation...');
+    setAnimatedVideo(null);
     
     try {
-      toast.info('Animation started - this takes 2-5 minutes. You can watch the progress below.', {
+      toast.info('Animation started - this takes 2-5 minutes. Watch the progress bar!', {
         duration: 5000
       });
       
@@ -372,48 +374,70 @@ export default function ArtStudio() {
       }
       
       const jobId = startData.job_id;
+      setAnimationJobId(jobId);
       
-      // Poll for status
-      const pollInterval = setInterval(async () => {
+      // Poll for status using recursive setTimeout to avoid stale closures
+      const pollStatus = async () => {
         try {
           const statusResponse = await fetch(`${API_URL}/api/art-studio/animation-status/${jobId}`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           
-          const statusData = await statusResponse.json();
+          if (!statusResponse.ok) {
+            console.error('Status response not ok:', statusResponse.status);
+            // Continue polling
+            setTimeout(pollStatus, 3000);
+            return;
+          }
           
+          const statusData = await statusResponse.json();
+          console.log('Animation status:', statusData);
+          
+          // Update progress
           setAnimationProgress(statusData.progress || 0);
           setAnimationMessage(statusData.message || 'Processing...');
           
           if (statusData.status === 'completed') {
-            clearInterval(pollInterval);
-            setAnimatedVideo(`data:video/mp4;base64,${statusData.video_base64}`);
+            const videoUrl = `data:video/mp4;base64,${statusData.video_base64}`;
+            setAnimatedVideo(videoUrl);
             toast.success('Animation complete!');
             setIsAnimating(false);
+            setAnimationJobId(null);
           } else if (statusData.status === 'failed') {
-            clearInterval(pollInterval);
             toast.error(statusData.message || 'Animation failed');
             setIsAnimating(false);
+            setAnimationJobId(null);
+          } else {
+            // Continue polling
+            setTimeout(pollStatus, 3000);
           }
         } catch (pollError) {
           console.error('Polling error:', pollError);
           // Continue polling on transient errors
+          setTimeout(pollStatus, 3000);
         }
-      }, 3000); // Poll every 3 seconds
+      };
+      
+      // Start polling
+      pollStatus();
       
       // Timeout after 10 minutes
       setTimeout(() => {
-        clearInterval(pollInterval);
-        if (isAnimating) {
-          setIsAnimating(false);
-          toast.error('Animation timed out. Please try again.');
-        }
+        setIsAnimating(prev => {
+          if (prev) {
+            toast.error('Animation timed out. Please try again.');
+            setAnimationJobId(null);
+            return false;
+          }
+          return prev;
+        });
       }, 600000);
       
     } catch (error) {
       console.error('Animation error:', error);
       toast.error('Animation: ' + (error.message || 'An error occurred'));
       setIsAnimating(false);
+      setAnimationJobId(null);
     }
   };
   
