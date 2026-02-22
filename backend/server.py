@@ -4165,6 +4165,37 @@ async def art_studio_delete(image_id: str, current_user: dict = Depends(get_curr
         logging.error(f"Art Studio delete error: {e}")
         raise HTTPException(status_code=500, detail="Failed to delete image")
 
+@api_router.get("/art-studio/gallery/book/{book_id}")
+async def get_book_gallery(book_id: str, current_user: dict = Depends(get_current_user)):
+    """Get all gallery images assigned to a specific book"""
+    user = current_user
+    
+    try:
+        images = []
+        cursor = db.art_studio_gallery.find({
+            "user_id": user["id"],
+            "book_id": book_id
+        }).sort("created_at", -1)
+        
+        async for img in cursor:
+            images.append({
+                "id": str(img["_id"]),
+                "image_url": img.get("image_url"),
+                "name": img.get("name"),
+                "type": img.get("type"),
+                "style": img.get("style"),
+                "character_data": img.get("character_data"),
+                "scene_data": img.get("scene_data"),
+                "book_id": img.get("book_id"),
+                "created_at": img.get("created_at").isoformat() if img.get("created_at") else None
+            })
+        
+        return {"images": images}
+        
+    except Exception as e:
+        logging.error(f"Book gallery error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to load book gallery")
+
 class SaveAnimationRequest(BaseModel):
     video_url: str
     name: str
