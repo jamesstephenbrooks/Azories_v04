@@ -114,19 +114,20 @@ Build a digital book creation and reading application named "Azories" with featu
 ## Known Issues / Pending
 
 ### P0 (Critical)
-- Internal Listen button on book cover doesn't work (react-pageflip captures events) - WORKAROUND: Added external "Start Listening" button
 - ~~Font size selection in Book Editor doesn't apply in reader~~ - **FIXED Feb 24, 2025**
-- Collaborator system backend infrastructure - **ON HOLD per user request**
+- ~~fal.ai API key invalid~~ - **FIXED Feb 22, 2026**
 
 ### P1 (High)
-- Blank page next to front/back cover (react-pageflip showCover behavior)
-- Book centering issues on cover view
+- Re-enable credits system (currently disabled for testing)
+- LoRA training endpoint (stubbed, needs full implementation)
+- Character Portfolio persistence across sessions
 - Back cover visibility at end of book
 
 ### P2 (Medium)
 - Grand Library stair navigation/camera issues
-- Collaborator button opens upward (UI positioning)
 - Full collaboration workflow (backend stubs need implementation)
+- iPad/iPhone UI layout fixes
+- "Read Aloud" button error on iPad
 
 ## Upcoming Tasks
 1. Grand Library - Fix camera/stair collision
