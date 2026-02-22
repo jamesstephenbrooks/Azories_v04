@@ -280,6 +280,35 @@ class AIStoryRequest(BaseModel):
 class SummaryGenerateRequest(BaseModel):
     book_id: str
 
+# Pro Studio Models
+class CharacterCreate(BaseModel):
+    name: str
+    reference_images: List[str]  # Base64 encoded images
+
+class ProStudioImageRequest(BaseModel):
+    prompt: str
+    character_id: Optional[str] = None
+    camera: Optional[str] = "arri-alexa-35"
+    lens: Optional[str] = "panavision-series"
+    focal_length: Optional[str] = "35mm"
+    lighting: Optional[str] = "natural"
+    aspect_ratio: Optional[str] = "16:9"
+
+class GenerateShotsRequest(BaseModel):
+    source_image: str  # Base64 encoded image
+    character_id: Optional[str] = None
+
+class GenerateExpressionRequest(BaseModel):
+    character_id: str
+    expression: str
+    base_prompt: Optional[str] = ""
+
+class AnimateHeroRequest(BaseModel):
+    image_url: str
+    motion_prompt: str = "subtle cinematic movement"
+    model: str = "sora-2"
+    duration: int = 5
+
 class AnalyticsResponse(BaseModel):
     book_id: str
     title: str
