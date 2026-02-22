@@ -373,21 +373,6 @@ export default function ProStudio() {
       console.error(error);
     }
   };
-        setSelectedCharacter(data.character);
-        setCharacterName('');
-        setCharacterImages([]);
-      } else {
-        const error = await response.json();
-        toast.error(error.detail || 'Failed to create character');
-      }
-    } catch (error) {
-      toast.error('Error creating character');
-      console.error(error);
-    } finally {
-      setIsCreatingCharacter(false);
-      setLoadingMessage('');
-    }
-  };
 
   // Train LoRA for character consistency
   const trainCharacterLora = async (characterId) => {
