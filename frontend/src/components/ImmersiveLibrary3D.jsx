@@ -922,9 +922,9 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         opacity: 0.9
       });
       const arrowSprite = new THREE.Sprite(arrowMaterial);
-      arrowSprite.position.set(portal.triggerPos.x, portal.triggerPos.y + 1.2, portal.triggerPos.z);
-      arrowSprite.scale.set(0.8, 0.8, 1);
-      arrowSprite.userData = { isPortalArrow: true, baseY: portal.triggerPos.y + 1.2 };
+      arrowSprite.position.set(portal.triggerPos.x, portal.triggerPos.y + 0.8, portal.triggerPos.z);
+      arrowSprite.scale.set(0.35, 0.35, 1);
+      arrowSprite.userData = { isPortalArrow: true, baseY: portal.triggerPos.y + 0.8 };
       scene.add(arrowSprite);
     });
     teleportPortalsRef.current = portalMeshes;
