@@ -11,19 +11,43 @@ Create a digital book creation and reading web application named "Azories" with:
 
 ### Core Features (Completed)
 - **3D Library:** Immersive library exploration with book shelves
-- **Book Reader:** Full-screen reader with page flip animations, no separate chapter pages
+- **Book Reader:** Full-screen reader with page flip animations, swipe gestures, no separate chapter pages
 - **Audiobook:** AI narration with multiple voices (ElevenLabs integration)
 - **Book Editor:** Create and edit books with rich text and images
 - **Art Studio (Pro):** 
   - Character Builder with 78+ art styles
   - Scene Creator for environments
-  - **NEW: Animate Tab** - Image-to-video animation using Sora 2
+  - **Animate Tab** - Image-to-video animation using Sora 2
+  - **Expert Mode (Node Studio)** - Visual workflow editor with delete buttons on all nodes
   - Gallery with type filtering (Images/Animations)
   - Reference image support (style + character)
   - Quick Templates for one-click generation
 - **30-Day Free Pro Trial:** All new users get automatic Pro access for 30 days
 
-### Recent Updates (Feb 21, 2026)
+### Recent Updates (Feb 22, 2026)
+1. **iPad/Mobile Experience Fixes:**
+   - Enhanced isMobile() detection for iPad/iPadOS 13+ (checks navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+   - Improved joystick with larger touch targets, responsive sizing, and safe-area-inset support
+   - Responsive book info card - centered modal on mobile, side panel on desktop
+   - Fixed keyboard handling for text inputs on mobile
+   - Added swipe gestures to Book Reader for page navigation
+
+2. **Node Studio (Expert Mode) Improvements:**
+   - Added visible X delete buttons on ALL nodes (Character, Scene, Style, Reference, Combine, Output)
+   - Delete buttons trigger node removal with edge cleanup
+   - Keyboard shortcut (Delete/Backspace) still works for selected nodes
+
+3. **Character Builder Dropdown Fixes:**
+   - Fixed dropdown text visibility on iOS/iPadOS with colorScheme: 'dark' styling
+   - Added explicit option background and text colors
+   - Custom dropdown arrow SVG for consistent appearance
+
+4. **CSS Global Improvements:**
+   - Safe area insets for notched devices
+   - Better touch targets (min 44px) on touch devices
+   - Fixed select element text visibility across platforms
+
+### Previous Updates (Feb 21, 2026)
 1. **Animation Feature:**
    - New Animate tab in Art Studio
    - Upload images or select from gallery to animate
@@ -58,17 +82,20 @@ Create a digital book creation and reading web application named "Azories" with:
 ├── frontend/
 │   └── src/
 │       ├── pages/
-│       │   ├── ArtStudio.js   # Main Art Studio (2500+ lines)
-│       │   ├── BookReader.js  # Book reading experience
-│       │   ├── BookEditor.js  # Book creation/editing
-│       │   └── Dashboard.js   # User dashboard
+│       │   ├── ArtStudio.js       # Main Art Studio (2500+ lines)
+│       │   ├── ArtStudioExpert.jsx # Expert Mode Node Editor
+│       │   ├── BookReader.js      # Book reading experience with swipe
+│       │   ├── BookEditor.js      # Book creation/editing
+│       │   └── Dashboard.js       # User dashboard
+│       ├── hooks/
+│       │   └── useSwipeGestures.js # Touch swipe detection hook
 │       └── components/
-│           ├── TrialBanner.jsx # Trial status display
-│           └── ImmersiveLibrary3D.jsx
+│           ├── TrialBanner.jsx         # Trial status display
+│           └── ImmersiveLibrary3D.jsx  # 3D Library with mobile support
 ```
 
 ## Tech Stack
-- **Frontend:** React, Tailwind CSS, Framer Motion
+- **Frontend:** React, Tailwind CSS, Framer Motion, React Flow (Node Editor)
 - **Backend:** FastAPI, Pydantic, MongoDB
 - **AI Integrations:** 
   - OpenAI GPT Image 1 (via Emergent)
@@ -82,22 +109,30 @@ Create a digital book creation and reading web application named "Azories" with:
 
 ## Remaining/Future Tasks
 
+### P0 - Critical (Verified as Working)
+- [x] iPad/Mobile joystick visibility - FIXED (touch detection improved)
+- [x] Node Studio delete buttons - FIXED (X buttons on all nodes)
+- [x] Character Builder dropdown text - FIXED (colorScheme styling)
+- [x] Book Reader swipe gestures - IMPLEMENTED
+- [x] Responsive book info card - FIXED (mobile/tablet layout)
+
 ### P1 - High Priority
-- [ ] Generate cover images for all 5 launch books
+- [ ] Verify animation progress bar and save-to-gallery (user verification pending)
+- [ ] Generate cover images for all 50 launch books
 - [ ] Add page images throughout books
-- [ ] Create more books (target: 50 for launch)
 - [ ] Fix 3D library spiral staircase navigation
-- [ ] Fix mobile joystick UI obstruction
+- [ ] Integrate fal.ai for true image-to-image style transfer
 
 ### P2 - Medium Priority
 - [ ] Implement Pro feature gating after trial expires
-- [ ] Add payment/subscription management
-- [ ] fal.ai integration for true style transfer
+- [ ] Add payment/subscription management (Stripe)
+- [ ] Improve audiobook feature
 
 ### P3 - Backlog
 - [ ] Re-integrate "Azora" AI Librarian
 - [ ] Multiplayer library exploration
 - [ ] Vector Logo Creation
+- [ ] Comic book layouts in editor
 - [ ] Comic Book layout support
 - [ ] Refactor ArtStudio.js into smaller components
 
