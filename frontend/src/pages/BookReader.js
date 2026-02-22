@@ -489,11 +489,11 @@ export default function BookReader() {
                   ref={realisticFlipRef}
                   book={book}
                   pages={allPages}
-                  onPageChange={(page) => {
-                    // Adjust for cover offset (page 0 = cover, page 1 = first content)
-                    const contentPage = page - 1;
-                    setCurrentPage(contentPage);
-                    if (contentPage >= 0) {
+                  onPageChange={(flipPage, contentPageIndex) => {
+                    // contentPageIndex is the actual index in allPages array
+                    // -1 = front cover, -2 = back cover, 0+ = content page
+                    setCurrentPage(contentPageIndex);
+                    if (contentPageIndex >= 0) {
                       saveReadingProgress();
                     }
                   }}
