@@ -55,6 +55,10 @@ export default function BookReader() {
   // AI Reading Buddy
   const [showAIBuddy, setShowAIBuddy] = useState(false);
   
+  // Realistic page flip mode
+  const [useRealisticFlip, setUseRealisticFlip] = useState(true);
+  const realisticFlipRef = useRef(null);
+  
   // Swipe state for visual feedback
   const [swipeHint, setSwipeHint] = useState(null);
   
