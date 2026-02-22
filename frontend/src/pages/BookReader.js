@@ -46,6 +46,7 @@ export default function BookReader() {
   
   const [allPages, setAllPages] = useState([]);
   const [narratorVoice, setNarratorVoice] = useState('');
+  const [narratorVoiceLocked, setNarratorVoiceLocked] = useState(false);
   const [voices, setVoices] = useState([]);  // Available voices for selection
   
   // Reading progress
