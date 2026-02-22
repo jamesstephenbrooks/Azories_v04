@@ -126,7 +126,11 @@ const CoverPage = forwardRef(({ book, onClick, onListen }, ref) => {
                 <span className="font-heading text-lg">Read</span>
               </button>
               <button 
-                onClick={(e) => { e.stopPropagation(); onListen?.(); }}
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  console.log('Listen button clicked, onListen:', typeof onListen);
+                  onListen?.(); 
+                }}
                 className="flex items-center gap-2 px-6 py-3 rounded-full bg-purple-600 hover:bg-purple-500 transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
