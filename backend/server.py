@@ -2388,64 +2388,6 @@ async def delete_character(character_id: str, current_user: dict = Depends(get_c
     })
     return {"success": True}
 
-@api_router.put("/pro-studio/characters/{character_id}")
-async def update_character(character_id: str, request: CharacterUpdate, current_user: dict = Depends(get_current_user)):
-    """Update a character's details"""
-    character = await db.pro_studio_characters.find_one({
-        "id": character_id,
-        "user_id": current_user["id"]
-    })
-    if not character:
-        raise HTTPException(status_code=404, detail="Character not found")
-    
-    # Build update dict from non-null fields
-    update_data = {}
-    if request.name:
-        update_data["name"] = request.name
-    if request.description_prompt is not None:
-        update_data["description_prompt"] = request.description_prompt
-    if request.style:
-        update_data["style"] = request.style
-    if request.genre:
-        update_data["genre"] = request.genre
-    if request.personality is not None:
-        update_data["personality"] = request.personality
-    if request.special_features is not None:
-        update_data["special_features"] = request.special_features
-    if request.physical_traits:
-        update_data["physical_traits"] = request.physical_traits
-    
-    if update_data:
-        update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
-        
-        # Rebuild description if key fields changed
-        if any(k in update_data for k in ['description_prompt', 'style', 'genre', 'special_features']):
-            style_info = next((s for s in CHARACTER_STYLES if s["id"] == update_data.get("style", character.get("style"))), {"name": "illustration"})
-            genre_info = next((g for g in CHARACTER_GENRES if g["id"] == update_data.get("genre", character.get("genre"))), {"name": "fantasy"})
-            
-            desc_parts = [
-                f"Character: {update_data.get('name', character.get('name'))}",
-                f"Style: {style_info.get('name', '')} - {style_info.get('description', '')}",
-                f"Genre: {genre_info.get('name', '')}",
-            ]
-            if update_data.get('description_prompt') or character.get('description_prompt'):
-                desc_parts.append(f"\nAppearance: {update_data.get('description_prompt', character.get('description_prompt'))}")
-            if update_data.get('special_features') or character.get('special_features'):
-                desc_parts.append(f"Special features: {update_data.get('special_features', character.get('special_features'))}")
-            if update_data.get('personality') or character.get('personality'):
-                desc_parts.append(f"Personality: {update_data.get('personality', character.get('personality'))}")
-            
-            update_data["description"] = "\n".join(desc_parts)
-        
-        await db.pro_studio_characters.update_one(
-            {"id": character_id},
-            {"$set": update_data}
-        )
-    
-    # Return updated character
-    updated = await db.pro_studio_characters.find_one({"id": character_id}, {"_id": 0})
-    return {"success": True, "character": updated}
-
 # Character Gallery/Folder endpoints
 @api_router.get("/pro-studio/characters/{character_id}/gallery")
 async def get_character_gallery(character_id: str, current_user: dict = Depends(get_current_user)):
