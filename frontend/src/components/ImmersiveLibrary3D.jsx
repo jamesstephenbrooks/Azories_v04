@@ -1956,10 +1956,18 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                       ))}
                     
                     {/* Empty State */}
-                    {books.filter(b => b.genre?.toLowerCase() === selectedGenre.toLowerCase()).length === 0 && (
+                    {books.filter(b => b.genre?.toLowerCase() === selectedGenre.toLowerCase() && matchesAgeFilter(b.age_rating, ageFilter)).length === 0 && (
                       <div className="text-center py-8">
                         <FiBook className="w-10 h-10 text-purple-500/30 mx-auto mb-2" />
-                        <p className="text-sm text-purple-300/50">No books in this section yet</p>
+                        <p className="text-sm text-purple-300/50">No books match this filter</p>
+                        {ageFilter !== 'all' && (
+                          <button
+                            onClick={() => setAgeFilter('all')}
+                            className="mt-2 text-xs text-purple-400 hover:text-purple-300 underline"
+                          >
+                            Clear age filter
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>
