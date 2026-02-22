@@ -759,36 +759,45 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     camera.position.set(0, PLAYER_HEIGHT, 5);
     cameraRef.current = camera;
 
-    // Create renderer
+    // Check if mobile/tablet for performance optimizations
+    const isMobileDevice = isMobile();
+    const isLowPowerDevice = isMobileDevice || window.navigator.hardwareConcurrency <= 4;
+
+    // Create renderer with mobile-optimized settings
     const renderer = new THREE.WebGLRenderer({
       canvas: canvasRef.current,
-      antialias: true,
+      antialias: !isMobileDevice, // Disable antialiasing on mobile for performance
       powerPreference: 'high-performance',
+      precision: isMobileDevice ? 'mediump' : 'highp', // Lower precision on mobile
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    // Lower pixel ratio on mobile/tablet for better performance
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobileDevice ? 1.5 : 2));
+    // Disable shadows on mobile for better performance
+    renderer.shadowMap.enabled = !isMobileDevice;
+    if (!isMobileDevice) {
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    }
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.5;
     rendererRef.current = renderer;
 
-    // Add warm library lighting
-    const ambientLight = new THREE.AmbientLight(0xfff5e6, 0.6);
+    // Add warm library lighting (reduced on mobile)
+    const ambientLight = new THREE.AmbientLight(0xfff5e6, isMobileDevice ? 0.8 : 0.6);
     scene.add(ambientLight);
 
     const mainLight = new THREE.DirectionalLight(0xffffff, 0.8);
     mainLight.position.set(0, 20, 10);
-    mainLight.castShadow = true;
+    mainLight.castShadow = !isMobileDevice; // Disable shadow casting on mobile
     scene.add(mainLight);
 
-    // Warm point lights like candles/lamps
-    const warmLightPositions = [
-      [0, 8, 0], [-5, 4, -5], [5, 4, -5], [-5, 4, 5], [5, 4, 5]
-    ];
+    // Warm point lights like candles/lamps (fewer on mobile)
+    const warmLightPositions = isMobileDevice 
+      ? [[0, 8, 0], [-5, 4, 0], [5, 4, 0]] // 3 lights on mobile
+      : [[0, 8, 0], [-5, 4, -5], [5, 4, -5], [-5, 4, 5], [5, 4, 5]]; // 5 lights on desktop
     warmLightPositions.forEach(pos => {
-      const light = new THREE.PointLight(0xffaa55, 1.5, 20);
+      const light = new THREE.PointLight(0xffaa55, isMobileDevice ? 1.2 : 1.5, 20);
       light.position.set(pos[0], pos[1], pos[2]);
       scene.add(light);
     });
