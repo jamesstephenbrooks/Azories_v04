@@ -1276,20 +1276,29 @@ export default function ProStudio() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 overflow-auto"
+            className="fixed inset-0 bg-black/95 backdrop-blur-sm z-[60] overflow-auto"
           >
             <div className="max-w-6xl mx-auto p-6">
+              {/* Header with Back Button */}
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-4">
+                  <Button 
+                    variant="ghost" 
+                    onClick={closeCharacterView}
+                    className="text-gray-400 hover:text-white hover:bg-gray-800"
+                  >
+                    <FiArrowLeft className="mr-2" /> Back to Studio
+                  </Button>
+                  <div className="w-px h-8 bg-gray-700" />
                   <img 
                     src={viewingCharacter.thumbnail || viewingCharacter.reference_images?.[0]} 
                     alt={viewingCharacter.name}
-                    className="w-16 h-16 rounded-full object-cover border-2 border-purple-500 cursor-pointer"
+                    className="w-12 h-12 rounded-full object-cover border-2 border-purple-500 cursor-pointer"
                     onClick={() => setPreviewImage({ url: viewingCharacter.thumbnail || viewingCharacter.reference_images?.[0], prompt: viewingCharacter.name })}
                   />
                   <div>
-                    <h2 className="text-2xl font-bold text-white">{viewingCharacter.name}</h2>
-                    <p className="text-gray-400">{viewingCharacter.style} • {viewingCharacter.genre}</p>
+                    <h2 className="text-xl font-bold text-white">{viewingCharacter.name}</h2>
+                    <p className="text-gray-400 text-sm">{viewingCharacter.style} • {viewingCharacter.genre}</p>
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -1313,9 +1322,6 @@ export default function ProStudio() {
                     className="bg-purple-600 hover:bg-purple-700"
                   >
                     <FiZap className="mr-2" /> Use for Generation
-                  </Button>
-                  <Button variant="ghost" onClick={closeCharacterView}>
-                    <FiX size={20} />
                   </Button>
                 </div>
               </div>
