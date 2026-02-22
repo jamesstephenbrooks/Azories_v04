@@ -163,48 +163,52 @@ const TELEPORT_PORTALS = [
     id: 'stairs-up-back',
     name: 'Go Upstairs',
     triggerPos: { x: -1.60, y: 0, z: -6.01 }, // Detection at ground floor
-    visualY: 4.18, // Visual position on stairs (original position)
-    triggerRadius: 1.5, // Larger radius for easier detection
+    visualY: 0.05, // Ring on ground floor
+    triggerRadius: 0.8, // Close proximity
     destPos: { x: -2.22, y: 5.1, z: -6.94 },
     destRotation: 0,
     color: '#00ffff',
-    icon: '↑'
+    icon: '↑',
+    floor: 'ground'
   },
   // Front spiral staircase - "Go Upstairs" at bottom (ground floor)
   {
     id: 'stairs-up-front',
     name: 'Go Upstairs',
     triggerPos: { x: -1.55, y: 0, z: 2.90 }, // Detection at ground floor
-    visualY: 4.29, // Visual position on stairs (original position)
-    triggerRadius: 1.5, // Larger radius for easier detection
+    visualY: 0.05, // Ring on ground floor
+    triggerRadius: 0.8, // Close proximity
     destPos: { x: -2.23, y: 5.1, z: 4.03 },
     destRotation: Math.PI,
     color: '#00ffff',
-    icon: '↑'
+    icon: '↑',
+    floor: 'ground'
   },
   // Back spiral staircase - "Go Downstairs" at top (upper floor)
   {
     id: 'stairs-down-back',
     name: 'Go Downstairs',
     triggerPos: { x: -2.22, y: 5.1, z: -6.94 }, // Detection at upper floor
-    visualY: 6.21, // Visual position at top of stairs (original position)
-    triggerRadius: 1.5, // Larger radius for easier detection
+    visualY: 5.15, // Ring on upper floor
+    triggerRadius: 0.8, // Close proximity
     destPos: { x: -1.60, y: 0, z: -6.01 },
     destRotation: Math.PI,
     color: '#00ffff',
-    icon: '↓'
+    icon: '↓',
+    floor: 'upper'
   },
   // Front spiral staircase - "Go Downstairs" at top (upper floor)
   {
     id: 'stairs-down-front',
     name: 'Go Downstairs',
     triggerPos: { x: -2.23, y: 5.1, z: 4.03 }, // Detection at upper floor
-    visualY: 6.21, // Visual position at top of stairs (original position)
-    triggerRadius: 1.5, // Larger radius for easier detection
+    visualY: 5.15, // Ring on upper floor
+    triggerRadius: 0.8, // Close proximity
     destPos: { x: -1.55, y: 0, z: 2.90 },
     destRotation: 0,
     color: '#00ffff',
-    icon: '↓'
+    icon: '↓',
+    floor: 'upper'
   }
 ];
 
