@@ -763,6 +763,7 @@ export default function BookReader() {
                   )}
                 </div>
               </div>
+            )
             )}
           </div>
         </div>
