@@ -1830,6 +1830,23 @@ export default function ArtStudio() {
                       </div>
                     </div>
                     
+                    {/* Progress Bar (shown while animating) */}
+                    {isAnimating && (
+                      <div className="bg-black/30 rounded-xl p-4 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-white/70 text-sm">Progress</span>
+                          <span className="text-pink-400 font-medium">{animationProgress}%</span>
+                        </div>
+                        <div className="h-3 bg-black/50 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-pink-500 to-purple-500 transition-all duration-500"
+                            style={{ width: `${animationProgress}%` }}
+                          />
+                        </div>
+                        <p className="text-white/50 text-xs text-center">{animationMessage}</p>
+                      </div>
+                    )}
+                    
                     {/* Generate Button */}
                     <Button
                       onClick={animateImage}
@@ -1840,7 +1857,7 @@ export default function ArtStudio() {
                       {isAnimating ? (
                         <>
                           <FiRefreshCw className="w-5 h-5 mr-2 animate-spin" />
-                          Animating... (2-5 min)
+                          Generating... {animationProgress}%
                         </>
                       ) : (
                         <>
