@@ -481,7 +481,34 @@ export default function BookReader() {
           isFullscreen ? 'max-w-[95vw] h-[85vh]' : 'max-w-5xl'
         }`} style={{ perspective: '2000px' }}>
           <div className={`relative h-full ${isFullscreen ? 'flex items-center justify-center' : ''}`}>
-            {isCover ? (
+            
+            {/* Realistic Page Flip Mode */}
+            {useRealisticFlip ? (
+              <div className="flex justify-center items-center">
+                <RealisticPageFlip
+                  ref={realisticFlipRef}
+                  book={book}
+                  pages={allPages}
+                  onPageChange={(page) => {
+                    // Adjust for cover offset (page 0 = cover, page 1 = first content)
+                    const contentPage = page - 1;
+                    setCurrentPage(contentPage);
+                    if (contentPage >= 0) {
+                      saveReadingProgress();
+                    }
+                  }}
+                  onFlipStart={() => setIsFlipping(true)}
+                  onFlipEnd={() => setIsFlipping(false)}
+                  initialPage={currentPage >= 0 ? currentPage + 1 : 0}
+                  width={isFullscreen ? Math.min(window.innerWidth * 0.4, 500) : 380}
+                  height={isFullscreen ? Math.min(window.innerHeight * 0.8, 650) : 520}
+                  showControls={false}
+                  className={isFullscreen ? 'scale-100' : ''}
+                />
+              </div>
+            ) : (
+            /* Original animation mode */
+            isCover ? (
               // Front Cover - Single Page
               <motion.div
                 initial={{ opacity: 0 }}
