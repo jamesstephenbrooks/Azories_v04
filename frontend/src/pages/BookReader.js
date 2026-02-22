@@ -401,12 +401,17 @@ export default function BookReader() {
     setAutoRead(true);
     
     if (currentPage === -1) {
-      // Flip to first page
+      // Flip to first page - audio will start via effect when page changes
       if (realisticFlipRef.current) {
         realisticFlipRef.current.nextPage();
       }
+    } else {
+      // Already on a content page - start playing immediately
+      // Small delay to allow autoRead state to propagate
+      setTimeout(() => {
+        playAudio();
+      }, 100);
     }
-    // The effect will handle playAudio when currentPage changes and autoRead is true
   }, [currentPage]);
 
   useEffect(() => {
