@@ -2442,10 +2442,10 @@ async def fal_generate_with_face(request: FalGenerateWithFaceRequest, current_us
     if not FAL_AVAILABLE:
         raise HTTPException(status_code=503, detail="fal.ai service not available")
     
-    # Check and deduct credits
-    if not await deduct_credits(current_user["id"], "pulid_generate"):
-        credits_needed = CREDIT_COSTS.get("pulid_generate", 3)
-        raise HTTPException(status_code=402, detail=f"Insufficient credits. This operation requires {credits_needed} credits.")
+    # Credits disabled for testing
+    # if not await deduct_credits(current_user["id"], "pulid_generate"):
+    #     credits_needed = CREDIT_COSTS.get("pulid_generate", 3)
+    #     raise HTTPException(status_code=402, detail=f"Insufficient credits. This operation requires {credits_needed} credits.")
     
     try:
         result = await generate_with_face_id(
