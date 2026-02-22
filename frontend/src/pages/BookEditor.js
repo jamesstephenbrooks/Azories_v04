@@ -281,9 +281,12 @@ export default function BookEditor() {
     }
     
     setCreatingChapter(true);
+    const token = localStorage.getItem('token');
     try {
       const res = await axios.post(`${API}/books/${bookId}/chapters`, {
         title: newChapterTitle
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
       });
       toast.success('Chapter created!');
       setNewChapterOpen(false);
@@ -300,8 +303,11 @@ export default function BookEditor() {
   const deleteChapter = async (chapterId) => {
     if (!window.confirm('Delete this chapter and all its pages?')) return;
     
+    const token = localStorage.getItem('token');
     try {
-      await axios.delete(`${API}/chapters/${chapterId}`);
+      await axios.delete(`${API}/chapters/${chapterId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       toast.success('Chapter deleted');
       await fetchChapters();
       if (selectedChapter?.id === chapterId) {
@@ -318,10 +324,13 @@ export default function BookEditor() {
       return;
     }
     
+    const token = localStorage.getItem('token');
     try {
       const res = await axios.post(`${API}/chapters/${selectedChapter.id}/pages`, {
         text_content: '',
         layout_type: book?.layout_mode === 'comic' ? 'comic_2' : 'single'
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
       });
       toast.success('Page added!');
       await fetchPages(selectedChapter.id);
