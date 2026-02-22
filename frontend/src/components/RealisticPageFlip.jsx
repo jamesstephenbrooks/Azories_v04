@@ -127,10 +127,14 @@ const CoverPage = forwardRef(({ book, onClick, onListen }, ref) => {
               </button>
               <button 
                 data-testid="cover-listen-btn"
+                onPointerDown={(e) => {
+                  // Prevent react-pageflip from capturing this click
+                  e.stopPropagation();
+                }}
                 onClick={(e) => { 
                   e.stopPropagation(); 
+                  e.preventDefault();
                   console.log('Listen button clicked!');
-                  alert('Listen clicked! onListen type: ' + typeof onListen);
                   onListen?.(); 
                 }}
                 className="flex items-center gap-2 px-6 py-3 rounded-full bg-purple-600 hover:bg-purple-500 transition-colors"
