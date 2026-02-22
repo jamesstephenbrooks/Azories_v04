@@ -827,6 +827,33 @@ export default function ArtStudioExpert() {
       return;
     }
     
+    // Get reference images from Reference nodes
+    const referenceNodes = nodes.filter(n => n.type === 'reference' && n.data.image);
+    const characterReferenceImage = referenceNodes[0]?.data?.image || null;
+    const styleReferenceImage = referenceNodes[1]?.data?.image || null;
+    
+    // Get style settings
+    const styleNode = nodes.find(n => n.type === 'style');
+    const selectedStyle = styleNode?.data?.style || 'fantasy';
+    
+    // Get character data for advanced settings
+    const characterNode = nodes.find(n => n.type === 'character');
+    const characterData = characterNode ? {
+      name: characterNode.data.name,
+      gender: characterNode.data.gender,
+      age: characterNode.data.age,
+      appearance: characterNode.data.appearance
+    } : null;
+    
+    // Get scene data
+    const sceneNode = nodes.find(n => n.type === 'scene');
+    const sceneData = sceneNode ? {
+      preset: sceneNode.data.preset,
+      description: sceneNode.data.description,
+      timeOfDay: sceneNode.data.timeOfDay,
+      mood: sceneNode.data.mood
+    } : null;
+    
     setIsGenerating(true);
     
     // Update output node to show generating state
@@ -838,7 +865,7 @@ export default function ArtStudioExpert() {
     }));
     
     try {
-      console.log('Sending request to API...');
+      console.log('Sending request to API with expert mode settings...');
       const response = await fetch(`${API_URL}/api/art-studio/generate`, {
         method: 'POST',
         headers: {
@@ -847,11 +874,19 @@ export default function ArtStudioExpert() {
         },
         body: JSON.stringify({
           prompt,
-          style: nodes.find(n => n.type === 'style')?.data?.style || 'fantasy',
+          style: selectedStyle,
           type: 'workflow',
           bookId: selectedBookId !== 'general' ? selectedBookId : null,
           workflowName: workflowName,
-          transparentBackground: transparentBg
+          transparentBackground: transparentBg,
+          // Expert mode extras
+          characterReferenceImage,
+          styleReferenceImage,
+          characterData,
+          sceneData,
+          aspectRatio: '1:1',
+          quality: 'high',
+          expertMode: true
         })
       });
       
