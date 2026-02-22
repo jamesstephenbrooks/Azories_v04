@@ -12,24 +12,20 @@ export default function AnimatedBookCard({ book, onClick, size = 'md' }) {
   };
 
   return (
-    <motion.div
-      className={`relative cursor-pointer ${sizeClasses[size]}`}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
+    <div
+      className={`relative cursor-pointer ${sizeClasses[size]} group transition-transform duration-200 hover:-translate-y-2`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       onClick={onClick}
-      whileHover={{ y: -8 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
     >
       {/* Book Cover Container */}
-      <div className="relative aspect-[3/4] rounded-xl overflow-hidden shadow-lg group">
+      <div className="relative aspect-[3/4] rounded-xl overflow-hidden shadow-lg">
         {/* Cover Image */}
         {book.cover_image ? (
-          <motion.img
+          <img
             src={book.cover_image}
             alt={book.title}
-            className="w-full h-full object-cover"
-            animate={{ scale: isHovered ? 1.05 : 1 }}
-            transition={{ duration: 0.3 }}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
@@ -37,12 +33,9 @@ export default function AnimatedBookCard({ book, onClick, size = 'md' }) {
           </div>
         )}
 
-        {/* Animated overlay on hover */}
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: isHovered ? 1 : 0 }}
-          transition={{ duration: 0.2 }}
+        {/* Overlay on hover */}
+        <div
+          className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
         />
 
         {/* Shimmer effect on hover */}
