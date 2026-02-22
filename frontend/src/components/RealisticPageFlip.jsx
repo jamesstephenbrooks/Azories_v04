@@ -76,7 +76,7 @@ const CoverPage = forwardRef(({ book, onClick }, ref) => {
   return (
     <div 
       ref={ref}
-      className="page-wrapper relative w-full h-full cursor-pointer"
+      className="demoPage page-wrapper relative w-full h-full cursor-pointer"
       data-density="hard"
       onClick={onClick}
     >
