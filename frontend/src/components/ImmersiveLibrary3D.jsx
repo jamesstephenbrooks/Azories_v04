@@ -145,46 +145,48 @@ const GENRE_SECTIONS = [
 ];
 
 // Teleport portals for moving between floors - near spiral staircases
+// Ground floor Y ≈ 0 (camera at ~1.1), Upper floor Y ≈ 5.1 (camera at ~6.2)
 const TELEPORT_PORTALS = [
-  // Back spiral staircase
+  // Back spiral staircase - "Go Upstairs" at bottom (ground floor)
   {
     id: 'stairs-up-back',
     name: 'Go Upstairs',
-    triggerPos: { x: -1.60, y: 4.18, z: -6.01 }, // Bottom of back spiral staircase
-    triggerRadius: 0.5,
-    destPos: { x: -2.22, y: 6.21, z: -6.94 }, // Top of back stairs
+    triggerPos: { x: -1.60, y: 0, z: -6.01 }, // Ground floor near back spiral staircase
+    triggerRadius: 1.0,
+    destPos: { x: -2.22, y: 5.1, z: -6.94 }, // Top of back stairs (upper floor)
     destRotation: 0,
     color: '#00ffff',
     icon: '↑'
   },
-  // Front spiral staircase
+  // Front spiral staircase - "Go Upstairs" at bottom (ground floor)
   {
     id: 'stairs-up-front',
     name: 'Go Upstairs',
-    triggerPos: { x: -1.55, y: 4.29, z: 2.90 }, // Bottom of front spiral staircase
-    triggerRadius: 0.5,
-    destPos: { x: -2.23, y: 6.21, z: 4.03 }, // Top of front stairs
+    triggerPos: { x: -1.55, y: 0, z: 2.90 }, // Ground floor near front spiral staircase
+    triggerRadius: 1.0,
+    destPos: { x: -2.23, y: 5.1, z: 4.03 }, // Top of front stairs (upper floor)
     destRotation: Math.PI,
     color: '#00ffff',
     icon: '↑'
   },
-  // Go down portals
+  // Back spiral staircase - "Go Downstairs" at top (upper floor)
   {
     id: 'stairs-down-back',
     name: 'Go Downstairs',
-    triggerPos: { x: -2.22, y: 6.21, z: -6.94 }, // Top of back spiral staircase
-    triggerRadius: 0.5,
-    destPos: { x: -1.60, y: 4.18, z: -6.01 }, // Bottom of back stairs
+    triggerPos: { x: -2.22, y: 5.1, z: -6.94 }, // Upper floor near back spiral staircase
+    triggerRadius: 1.0,
+    destPos: { x: -1.60, y: 0, z: -6.01 }, // Bottom of back stairs (ground floor)
     destRotation: Math.PI,
     color: '#00ffff',
     icon: '↓'
   },
+  // Front spiral staircase - "Go Downstairs" at top (upper floor)
   {
     id: 'stairs-down-front',
     name: 'Go Downstairs',
-    triggerPos: { x: -2.23, y: 6.21, z: 4.03 }, // Top of front spiral staircase
-    triggerRadius: 0.5,
-    destPos: { x: -1.55, y: 4.29, z: 2.90 }, // Bottom of front stairs
+    triggerPos: { x: -2.23, y: 5.1, z: 4.03 }, // Upper floor near front spiral staircase
+    triggerRadius: 1.0,
+    destPos: { x: -1.55, y: 0, z: 2.90 }, // Bottom of front stairs (ground floor)
     destRotation: 0,
     color: '#00ffff',
     icon: '↓'
