@@ -1009,14 +1009,35 @@ export default function Dashboard() {
                           {/* Books in this series */}
                           {s.books?.length > 0 ? (
                             <div className="space-y-2">
-                              <Label className="text-xs text-muted-foreground">Books in this series:</Label>
+                              <Label className="text-xs text-muted-foreground">Books in this series (drag to reorder):</Label>
                               {s.books.map((book, idx) => (
                                 <div 
                                   key={book.id} 
-                                  className="flex items-center gap-3 p-2 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
+                                  className="flex items-center gap-3 p-2 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors group"
                                 >
+                                  {/* Reorder buttons */}
+                                  <div className="flex flex-col gap-0.5">
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-5 w-5 rounded opacity-50 group-hover:opacity-100"
+                                      disabled={idx === 0}
+                                      onClick={() => reorderBookInSeries(s.id, book.id, idx, idx - 1)}
+                                    >
+                                      <FiChevronUp className="w-3 h-3" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-5 w-5 rounded opacity-50 group-hover:opacity-100"
+                                      disabled={idx === s.books.length - 1}
+                                      onClick={() => reorderBookInSeries(s.id, book.id, idx, idx + 1)}
+                                    >
+                                      <FiChevronDown className="w-3 h-3" />
+                                    </Button>
+                                  </div>
                                   <span className="w-6 h-6 rounded-full bg-primary/20 text-primary text-xs flex items-center justify-center font-semibold">
-                                    {book.series_order || idx + 1}
+                                    {idx + 1}
                                   </span>
                                   {book.cover_image ? (
                                     <img src={book.cover_image} alt="" className="w-8 h-10 object-cover rounded" />
@@ -1026,6 +1047,9 @@ export default function Dashboard() {
                                     </div>
                                   )}
                                   <span className="flex-1 font-ui text-sm truncate">{book.title}</span>
+                                  <span className={`px-2 py-0.5 rounded-full text-xs ${book.is_published ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'}`}>
+                                    {book.is_published ? 'Published' : 'Draft'}
+                                  </span>
                                   <Button
                                     variant="ghost"
                                     size="sm"
@@ -1044,6 +1068,19 @@ export default function Dashboard() {
                                   </Button>
                                 </div>
                               ))}
+                              
+                              {/* Publish All in Series Button */}
+                              {s.books.some(b => !b.is_published) && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="w-full mt-2 rounded-full"
+                                  onClick={() => publishAllInSeries(s.id)}
+                                >
+                                  <FiGlobe className="w-3 h-3 mr-2" />
+                                  Publish All Books in Series
+                                </Button>
+                              )}
                             </div>
                           ) : (
                             <p className="text-sm text-muted-foreground text-center py-2">
