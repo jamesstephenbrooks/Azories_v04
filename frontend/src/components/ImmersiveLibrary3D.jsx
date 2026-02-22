@@ -194,7 +194,7 @@ const TELEPORT_PORTALS = [
     triggerPos: { x: -1.28, y: 6.5, z: -1.06 }, // Middle of bridge
     visualY: 6.60, // Just above bridge floor
     triggerRadius: 1.2,
-    autoTeleportRadius: 0.5,
+    autoTeleportRadius: 0, // No auto-teleport, button only
     destPos: { x: 0, y: 4.0, z: 5 }, // Starting location on ground floor
     destRotation: 0,
     color: '#00ffff',
