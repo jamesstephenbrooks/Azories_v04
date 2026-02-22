@@ -2217,67 +2217,6 @@ async def create_character(request: CharacterCreate, current_user: dict = Depend
                     thumbnail = result["images"][0].get("url")
             except Exception as e:
                 logger.warning(f"Could not generate thumbnail: {e}")
-                    session_id=f"char-{current_user['id']}-{str(uuid.uuid4())[:8]}",
-                    system_message="You are an expert at analyzing images and describing characters in detail for AI image generation."
-                ).with_model("openai", "gpt-4o")
-                
-                style_info = next((s for s in CHARACTER_STYLES if s["id"] == request.style), {"name": request.style})
-                genre_info = next((g for g in CHARACTER_GENRES if g["id"] == request.genre), {"name": request.genre})
-                
-                analysis_prompt = f"""Analyze this character and provide a detailed description for consistent AI image generation.
-                
-                Character Style: {style_info.get('name', request.style)} ({style_info.get('description', '')})
-                Genre: {genre_info.get('name', request.genre)}
-                
-                Include:
-                - Gender and apparent age
-                - Hair color, style, and length
-                - Eye color and shape
-                - Skin tone and complexion
-                - Face shape and distinctive features
-                - Body type (if visible)
-                - Clothing style
-                - Any unique features (scars, tattoos, accessories, etc.)
-                
-                Respond in a detailed paragraph that can be used as a prompt prefix for generating consistent images of this character in the {style_info.get('name', 'specified')} style."""
-                
-                first_image = request.reference_images[0]
-                
-                if first_image.startswith('data:'):
-                    if ',' in first_image:
-                        image_base64 = first_image.split(',')[1]
-                    else:
-                        image_base64 = first_image
-                    
-                    user_msg = UserMessage(
-                        text=analysis_prompt,
-                        file_contents=[ImageContent(image_base64=image_base64)]
-                    )
-                    description = await chat.send_message(user_msg)
-                elif first_image.startswith('http'):
-                    async with aiohttp.ClientSession() as session:
-                        async with session.get(first_image) as resp:
-                            if resp.status == 200:
-                                image_data = await resp.read()
-                                image_base64 = base64.b64encode(image_data).decode('utf-8')
-                                user_msg = UserMessage(
-                                    text=analysis_prompt,
-                                    file_contents=[ImageContent(image_base64=image_base64)]
-                                )
-                                description = await chat.send_message(user_msg)
-                            else:
-                                description = f"Character: {request.name}"
-                else:
-                    user_msg = UserMessage(
-                        text=analysis_prompt,
-                        file_contents=[ImageContent(image_base64=first_image)]
-                    )
-                    description = await chat.send_message(user_msg)
-                
-                thumbnail = first_image
-            else:
-                description = f"Character: {request.name}"
-                thumbnail = request.reference_images[0] if request.reference_images else None
         
         # Create character record
         char_id = str(uuid.uuid4())
