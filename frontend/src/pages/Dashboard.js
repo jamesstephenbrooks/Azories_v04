@@ -935,6 +935,22 @@ export default function Dashboard() {
           )}
             </TabsContent>
             
+            <TabsContent value="series">
+              <div className="text-center py-8">
+                <Button 
+                  onClick={() => navigate('/series')}
+                  className="rounded-full px-8 py-6"
+                  data-testid="go-to-series-page"
+                >
+                  <FiLayers className="w-5 h-5 mr-2" />
+                  Open My Series Page
+                </Button>
+                <p className="text-sm text-muted-foreground mt-4">
+                  Manage your book series, reorder books, and organize your collections
+                </p>
+              </div>
+            </TabsContent>
+            
             <TabsContent value="analytics">
               <AnalyticsDashboard books={books} />
             </TabsContent>
