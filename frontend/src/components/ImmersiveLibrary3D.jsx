@@ -68,9 +68,9 @@ const GENRE_SECTIONS = [
   },
   { 
     name: 'Science Fiction', 
-    position: { x: -0.84, z: 5.03 }, 
-    bannerPos: { x: -0.84, y: 5.87, z: 5.03 }, // Moved to new user-specified location
-    shelfPos: { x: -0.84, y: 5.4, z: 5.03 }, 
+    position: { x: -0.5, z: 4.5 }, 
+    bannerPos: { x: -0.5, y: 5.87, z: 4.5 }, // Moved slightly away from bookcase
+    shelfPos: { x: -0.5, y: 5.4, z: 4.5 }, 
     rotation: Math.PI, 
     color: '#06b6d4'
   },
