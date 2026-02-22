@@ -102,6 +102,7 @@ export default function BookEditor() {
       fetchBook();
       fetchChapters();
       fetchVoices();
+      fetchBookGallery();
     }
   }, [user, bookId]);
 
@@ -110,6 +111,21 @@ export default function BookEditor() {
       fetchPages(selectedChapter.id);
     }
   }, [selectedChapter]);
+
+  const fetchBookGallery = async () => {
+    const token = localStorage.getItem('token');
+    if (!token || !bookId) return;
+    
+    try {
+      const res = await axios.get(`${API}/art-studio/gallery/book/${bookId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setBookGallery(res.data.images || []);
+    } catch (error) {
+      console.error('Failed to load book gallery');
+      setBookGallery([]);
+    }
+  };
 
   const fetchVoices = async () => {
     try {
