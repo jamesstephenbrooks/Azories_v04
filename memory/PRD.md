@@ -28,6 +28,12 @@ Build a digital book creation and reading application named "Azories" with featu
 4. **Faster Transitions** - Reduced delays between pages (500ms -> 200ms) for smoother auto-read experience
 5. **Collaboration API** - Fixed URL mismatch for collaboration endpoints
 
+### Recent Fixes (Feb 24, 2025)
+1. **Font Size Bug Fixed** - Font size selected in Book Editor was not applying in the Book Reader. Root cause: The `get_full_book` API endpoint was missing `setdefault()` calls for `font_size`, `font_family`, and `text_align` fields. When pages in MongoDB didn't have these fields, the frontend received `undefined` values. Fixed by adding defaults in three places in server.py:
+   - `get_full_book()` endpoint (line ~2815)
+   - `get_pages()` endpoint (line ~1499)
+   - `update_page()` endpoint (line ~1522)
+
 ## Architecture
 
 ### Frontend (/app/frontend)
