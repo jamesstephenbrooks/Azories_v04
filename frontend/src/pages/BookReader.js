@@ -108,6 +108,9 @@ export default function BookReader() {
   // Ref to track current page for async operations
   const currentPageRef = useRef(currentPage);
   currentPageRef.current = currentPage;
+  
+  // Ref to trigger playback after listen button is clicked
+  const shouldStartPlayingRef = useRef(false);
 
   useEffect(() => {
     // Auto-read: play audio for current page content, or auto-advance for chapter titles
