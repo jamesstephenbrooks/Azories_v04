@@ -9,6 +9,7 @@ import Library from "@/pages/Library";
 import BookReader from "@/pages/BookReader";
 import Dashboard from "@/pages/Dashboard";
 import BookEditor from "@/pages/BookEditor";
+import MySeries from "@/pages/MySeries";
 import Auth from "@/pages/Auth";
 import AdminCMS from "@/pages/AdminCMS";
 import UserProfile from "@/pages/UserProfile";
@@ -32,6 +33,7 @@ function AppContent() {
         <Route path="/read/:bookId" element={<BookReader />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/series" element={<MySeries />} />
         <Route path="/editor/:bookId" element={<BookEditor />} />
         <Route path="/admin" element={<AdminCMS />} />
         <Route path="/profile" element={<UserProfile />} />
