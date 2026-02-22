@@ -536,4 +536,4 @@ const RealisticPageFlip = forwardRef(({
 RealisticPageFlip.displayName = 'RealisticPageFlip';
 
 export default RealisticPageFlip;
-export { Page, CoverPage, BackCoverPage, ChapterTitlePage, ContentPage };
+export { Page, CoverPage, BackCoverPage, ChapterTitlePage, ContentPage, ImagePage, TextPage };
