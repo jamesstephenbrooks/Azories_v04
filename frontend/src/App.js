@@ -14,6 +14,7 @@ import AdminCMS from "@/pages/AdminCMS";
 import UserProfile from "@/pages/UserProfile";
 import ArtStudio from "@/pages/ArtStudio";
 import ArtStudioExpert from "@/pages/ArtStudioExpert";
+import ProStudio from "@/pages/ProStudio";
 import ComingSoon from "@/pages/ComingSoon";
 import "@/App.css";
 
@@ -37,6 +38,7 @@ function AppContent() {
         <Route path="/profile/:userId" element={<UserProfile />} />
         <Route path="/art-studio" element={<ArtStudio />} />
         <Route path="/art-studio/expert" element={<ArtStudioExpert />} />
+        <Route path="/pro-studio" element={<ProStudio />} />
       </Routes>
       <Toaster position="bottom-right" richColors />
     </>
