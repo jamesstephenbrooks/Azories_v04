@@ -1685,23 +1685,28 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
             child.rotation.y += 0.005;
           }
         }
-        // Pulse portal floor ring - only show on same floor
+        // Pulse portal floor ring - show on same floor with pulsing animation
         if (child.userData?.isPortalRing && child.material) {
           const portalFloor = child.userData.portalFloor;
           const playerOnGround = (camera.position.y - PLAYER_HEIGHT) < 3;
           const showRing = (portalFloor === 'ground' && playerOnGround) || (portalFloor === 'upper' && !playerOnGround);
           child.visible = showRing;
           if (showRing) {
-            child.material.opacity = 0.4 + Math.sin(time * 2) * 0.3;
-            child.rotation.z += 0.02;
+            // Pulsing glow effect
+            child.material.opacity = 0.5 + Math.sin(time * 3) * 0.3;
+            child.rotation.z += 0.01;
           }
         }
-        // Portal lights - only show on same floor
+        // Portal lights - show on same floor
         if (child.userData?.isPortalLight) {
           const portalFloor = child.userData.portalFloor;
           const playerOnGround = (camera.position.y - PLAYER_HEIGHT) < 3;
           const showLight = (portalFloor === 'ground' && playerOnGround) || (portalFloor === 'upper' && !playerOnGround);
           child.visible = showLight;
+          if (showLight && child.intensity !== undefined) {
+            // Pulsing light intensity
+            child.intensity = 1.5 + Math.sin(time * 2) * 0.5;
+          }
         }
       });
       
