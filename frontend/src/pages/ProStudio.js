@@ -871,6 +871,62 @@ export default function ProStudio() {
     document.body.removeChild(link);
   };
 
+  // Load character's generated images (character folder)
+  const loadCharacterGallery = async (characterId) => {
+    try {
+      const token = localStorage.getItem('azories-token');
+      const response = await fetch(`${API_URL}/api/pro-studio/characters/${characterId}/gallery`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setCharacterGallery(data.images || []);
+      }
+    } catch (error) {
+      console.error('Error loading character gallery:', error);
+    }
+  };
+
+  // Save image to character folder
+  const saveToCharacterFolder = async (characterId, imageUrl, prompt, type = 'generated') => {
+    try {
+      const token = localStorage.getItem('azories-token');
+      const response = await fetch(`${API_URL}/api/pro-studio/characters/${characterId}/gallery`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          image_url: imageUrl,
+          prompt: prompt,
+          type: type
+        })
+      });
+      if (response.ok) {
+        toast.success('Image saved to character folder!');
+        // Refresh gallery if viewing this character
+        if (viewingCharacter?.id === characterId) {
+          loadCharacterGallery(characterId);
+        }
+      }
+    } catch (error) {
+      toast.error('Failed to save image');
+    }
+  };
+
+  // View character details with gallery
+  const openCharacterView = async (character) => {
+    setViewingCharacter(character);
+    await loadCharacterGallery(character.id);
+  };
+
+  // Close character view
+  const closeCharacterView = () => {
+    setViewingCharacter(null);
+    setCharacterGallery([]);
+  };
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center">
