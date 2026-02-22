@@ -34,6 +34,23 @@ Build a digital book creation and reading application named "Azories" with featu
    - `get_pages()` endpoint (line ~1499)
    - `update_page()` endpoint (line ~1522)
 
+2. **fal.ai Integration for Character Consistency (Pro Studio)** - Integrated fal.ai API for true face/character consistency:
+   - **FLUX.1 Dev** - Fast, high-quality text-to-image generation
+   - **FLUX Pro** - Premium quality generation
+   - **FLUX PuLID** - Face/identity preservation using reference images
+   - **FLUX LoRA** - Generate with trained character models
+   - **Portrait LoRA Trainer** - Train custom LoRA for 100% consistent characters
+   
+   New API endpoints:
+   - `GET /api/fal/models` - List available fal.ai models
+   - `POST /api/fal/generate` - Generate images with FLUX
+   - `POST /api/fal/generate-with-face` - Generate with face ID preservation (PuLID)
+   - `POST /api/fal/train-lora` - Start LoRA training for a character
+   - `GET /api/fal/training-status/{job_id}` - Check LoRA training progress
+   - `POST /api/fal/generate-with-lora` - Generate with trained LoRA
+   - `POST /api/pro-studio/characters/train-consistency` - Train LoRA for existing character
+   - `POST /api/pro-studio/characters/{id}/generate-consistent` - Smart generation using best available method
+
 ## Architecture
 
 ### Frontend (/app/frontend)
