@@ -397,10 +397,15 @@ export default function ProStudio() {
           setGeneratedImages(prev => [newImage, ...prev]);
           setSelectedHeroFrame(newImage);
           toast.success(`Generated using ${data.method}!`);
+          loadCredits(); // Refresh credits
         }
       } else {
         const error = await response.json();
-        toast.error(error.detail || 'Generation failed');
+        if (response.status === 402) {
+          toast.error(`Insufficient credits. Need ${error.detail || 'more credits'}`);
+        } else {
+          toast.error(error.detail || 'Generation failed');
+        }
       }
     } catch (error) {
       toast.error('Error generating image');
@@ -408,6 +413,7 @@ export default function ProStudio() {
     } finally {
       setIsLoading(false);
       setLoadingMessage('');
+      loadCredits(); // Always refresh credits
     }
   };
 
