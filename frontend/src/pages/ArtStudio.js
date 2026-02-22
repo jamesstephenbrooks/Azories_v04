@@ -2496,11 +2496,22 @@ export default function ArtStudio() {
                     className="w-full h-full object-cover"
                   />
                 ) : selectedGalleryItem ? (
-                  <img
-                    src={selectedGalleryItem.image_url}
-                    alt={selectedGalleryItem.name}
-                    className="w-full h-full object-cover"
-                  />
+                  selectedGalleryItem.type === 'animation' ? (
+                    <video
+                      src={selectedGalleryItem.image_url}
+                      className="w-full h-full object-cover"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                    />
+                  ) : (
+                    <img
+                      src={selectedGalleryItem.image_url}
+                      alt={selectedGalleryItem.name}
+                      className="w-full h-full object-cover"
+                    />
+                  )
                 ) : (
                   <div className="text-center p-4">
                     <FiImage className="w-16 h-16 text-white/20 mx-auto mb-2" />
