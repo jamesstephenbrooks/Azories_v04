@@ -506,6 +506,12 @@ const RealisticPageFlip = forwardRef(({
   // Calculate total content spreads for page indicator
   const totalContentPages = pages.length;
 
+  // Check if we're on cover (first page) or back cover (last page)
+  const isOnFrontCover = currentPage === 0;
+  const isOnBackCover = currentPage >= allBookPages.length - 1;
+  const shouldClipLeft = isOnFrontCover;
+  const shouldClipRight = isOnBackCover;
+
   return (
     <div className={`realistic-page-flip relative ${className}`} style={{ transform: isFullscreen ? 'scale(1.6)' : 'scale(1.35)', transformOrigin: 'center center' }}>
       {/* Book container with 3D perspective */}
@@ -514,17 +520,17 @@ const RealisticPageFlip = forwardRef(({
         style={{ 
           perspective: '2000px',
           transformStyle: 'preserve-3d',
-          // When on cover, shift container right to hide blank left page
-          transform: currentPage === 0 ? 'translateX(25%)' : 'translateX(0)',
+          // Center the book properly when clipping
+          transform: shouldClipLeft ? 'translateX(12%)' : shouldClipRight ? 'translateX(-12%)' : 'translateX(0)',
           transition: 'transform 0.3s ease-out',
         }}
       >
-        {/* Clip the left side when showing cover */}
+        {/* Clip the appropriate side when showing covers */}
         <div 
           style={{
-            overflow: currentPage === 0 ? 'hidden' : 'visible',
-            // Clip the left half when on cover page
-            clipPath: currentPage === 0 ? 'inset(0 0 0 50%)' : 'none',
+            overflow: (shouldClipLeft || shouldClipRight) ? 'hidden' : 'visible',
+            // Clip left half for front cover, right half for back cover
+            clipPath: shouldClipLeft ? 'inset(0 0 0 50%)' : shouldClipRight ? 'inset(0 50% 0 0)' : 'none',
             transition: 'clip-path 0.3s ease-out',
           }}
         >
