@@ -155,70 +155,52 @@ const GENRE_SECTIONS = [
 ];
 
 // Teleport portals for moving between floors - near spiral staircases
-// Each staircase has a pair: bottom (ground) ↔ top (upper)
-// Ground floor is at Y ≈ 4.2, upper floor at Y ≈ 9.2
+// Ground floor is at Y ≈ 4.2, upper floor/bridge at Y ≈ 6.5
 const TELEPORT_PORTALS = [
-  // === BACK STAIRCASE PAIR ===
-  // Bottom of back stairs (ground floor)
+  // === BACK STAIRCASE - Go Upstairs ===
   {
     id: 'stairs-back-bottom',
     name: 'Go Upstairs',
-    triggerPos: { x: -1.53, y: 4.0, z: -5.99 }, // User-provided location
-    visualY: 4.22, // Just above floor at 4.19
+    triggerPos: { x: -1.53, y: 4.0, z: -5.99 },
+    visualY: 4.22,
     triggerRadius: 1.2,
     autoTeleportRadius: 0.5,
-    destPos: { x: -1.53, y: 9.0, z: -5.99 }, // Top of back stairs
+    destPos: { x: -1.28, y: 6.5, z: -1.06 }, // Teleport to bridge
     destRotation: 0,
     color: '#00ffff',
     icon: '↑',
     floor: 'ground',
     pairId: 'back'
   },
-  // Top of back stairs (upper floor)
-  {
-    id: 'stairs-back-top',
-    name: 'Go Downstairs',
-    triggerPos: { x: -1.53, y: 9.0, z: -5.99 },
-    visualY: 9.22, // Just above upper floor
-    triggerRadius: 1.2,
-    autoTeleportRadius: 0.5,
-    destPos: { x: -1.53, y: 4.0, z: -5.99 }, // Bottom of back stairs
-    destRotation: Math.PI,
-    color: '#00ffff',
-    icon: '↓',
-    floor: 'upper',
-    pairId: 'back'
-  },
-  // === FRONT STAIRCASE PAIR ===
-  // Bottom of front stairs (ground floor)
+  // === FRONT STAIRCASE - Go Upstairs ===
   {
     id: 'stairs-front-bottom',
     name: 'Go Upstairs',
-    triggerPos: { x: -1.61, y: 4.0, z: 3.21 }, // User-provided location
-    visualY: 4.22, // Just above floor
+    triggerPos: { x: -1.61, y: 4.0, z: 3.21 },
+    visualY: 4.22,
     triggerRadius: 1.2,
     autoTeleportRadius: 0.5,
-    destPos: { x: -1.61, y: 9.0, z: 3.21 }, // Top of front stairs
+    destPos: { x: -1.28, y: 6.5, z: -1.06 }, // Teleport to bridge
     destRotation: Math.PI,
     color: '#00ffff',
     icon: '↑',
     floor: 'ground',
     pairId: 'front'
   },
-  // Top of front stairs (upper floor)
+  // === BRIDGE - Go Downstairs (single portal in middle of bridge) ===
   {
-    id: 'stairs-front-top',
+    id: 'bridge-down',
     name: 'Go Downstairs',
-    triggerPos: { x: -1.61, y: 9.0, z: 3.21 },
-    visualY: 9.22, // Just above upper floor
+    triggerPos: { x: -1.28, y: 6.5, z: -1.06 }, // Middle of bridge
+    visualY: 6.60, // Just above bridge floor
     triggerRadius: 1.2,
     autoTeleportRadius: 0.5,
-    destPos: { x: -1.61, y: 4.0, z: 3.21 }, // Bottom of front stairs
+    destPos: { x: 0, y: 4.0, z: 5 }, // Starting location on ground floor
     destRotation: 0,
     color: '#00ffff',
     icon: '↓',
     floor: 'upper',
-    pairId: 'front'
+    pairId: 'bridge'
   }
 ];
 
