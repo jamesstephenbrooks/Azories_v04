@@ -22,7 +22,7 @@ export default function Auth() {
   const { login, register } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from || '/dashboard';
+  const from = location.state?.from || '/library';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
