@@ -48,6 +48,9 @@ export default function BookReader() {
   const audioCache = useRef(new Map()); // pageIndex -> audio base64
   const preloadingPages = useRef(new Set()); // pages currently being preloaded
   
+  // Track which page audio has been played for - prevents duplicate playback
+  const lastPlayedPageRef = useRef(-999);
+  
   const [allPages, setAllPages] = useState([]);
   const [narratorVoice, setNarratorVoice] = useState('');
   const [narratorVoiceLocked, setNarratorVoiceLocked] = useState(false);
@@ -323,6 +326,11 @@ export default function BookReader() {
     const pageIndex = currentPageRef.current;
     const pageData = allPages[pageIndex];
     
+    // CRITICAL: Prevent duplicate playback for the same page
+    // Only play if this page hasn't been played yet
+    if (lastPlayedPageRef.current === pageIndex && isPlaying) {
+      return;
+    }
     
     if (!narratorVoice || pageIndex < 0 || !pageData?.text_content) {
       // If page has no text content, move to next page in auto-read mode
@@ -335,6 +343,9 @@ export default function BookReader() {
       }
       return;
     }
+    
+    // Mark this page as being played
+    lastPlayedPageRef.current = pageIndex;
 
     // Check if audio is already cached
     let audioBase64 = audioCache.current.get(pageIndex);
@@ -390,6 +401,8 @@ export default function BookReader() {
         setIsPlaying(false);
         // Continue to next page when audio finishes in auto-read mode - faster transition
         if (autoReadRef.current && currentPageRef.current < allPages.length - 1) {
+          // Reset lastPlayedPage to allow next page to play
+          lastPlayedPageRef.current = -999;
           // Immediate transition since next audio is pre-loaded
           setTimeout(() => {
             if (autoReadRef.current) {
@@ -456,8 +469,8 @@ export default function BookReader() {
 
   // Auto-read effect: play audio when page changes with auto-read enabled
   useEffect(() => {
-    // Don't do anything if already playing - prevents loop
-    if (isPlaying || audioLoading) {
+    // Don't do anything if already playing this page - prevents duplicate playback
+    if (lastPlayedPageRef.current === currentPage && (isPlaying || audioLoading)) {
       return;
     }
     
@@ -476,8 +489,9 @@ export default function BookReader() {
         return () => clearTimeout(timer);
       } else if (page?.text_content) {
         // Has text content - play audio after short delay
+        // Only if we haven't already played this page
         const timer = setTimeout(() => {
-          if (autoReadRef.current && !isPlaying && !audioLoading) {
+          if (autoReadRef.current && lastPlayedPageRef.current !== currentPage) {
             playAudio();
           }
         }, 100);
