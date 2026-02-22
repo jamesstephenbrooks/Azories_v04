@@ -475,11 +475,6 @@ export default function BookReader() {
     // Use autoReadRef.current to catch synchronous updates from startListening
     if (autoReadRef.current && currentPage >= 0 && allPages.length > 0) {
       const page = allPages[currentPage];
-        pageIndex: currentPage,
-        hasTextContent: !!page?.text_content,
-        isChapterTitle: page?.isChapterTitle,
-        textPreview: page?.text_content?.substring(0, 50)
-      });
       
       if (page?.isChapterTitle) {
         // Chapter title page - show briefly then advance
