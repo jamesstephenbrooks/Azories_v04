@@ -63,9 +63,13 @@ Professional-grade character creation and video generation studio, inspired by H
    - Save/download functionality
 
 ### Recent Updates (Feb 22, 2026)
-1. **Book Reader Bug Fixes (CRITICAL):**
+1. **Book Reader Improvements:**
+   - **Removed "Classic" book mode** - Only realistic page flip mode now
+   - **Increased book size** - Larger dimensions (650x870 normal, 900x1050 fullscreen)
+   - **Read Aloud → Pause toggle** - Button correctly shows "Pause" when audio is playing
+   - **Separate Read/Listen buttons on cover** - Hover over cover to see options
    - Fixed front cover showing as two pages instead of one
-   - Fixed content pages now display as spread (image left, text right)
+   - Fixed content pages display as spread (image left, text right)
    - Fixed Next/Previous button navigation through all pages
    - Fixed page numbers update correctly as user navigates
    - Fixed progress bar updates as user reads through the book
