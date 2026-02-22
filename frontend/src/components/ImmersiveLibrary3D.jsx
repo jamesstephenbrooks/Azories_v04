@@ -164,7 +164,7 @@ const TELEPORT_PORTALS = [
     name: 'Go Upstairs',
     triggerPos: { x: -1.60, y: 0, z: -6.01 }, // Detection at ground floor
     visualY: 0.05, // Ring on ground floor
-    triggerRadius: 0.8, // Close proximity
+    triggerRadius: 2.5, // Larger radius for testing
     destPos: { x: -2.22, y: 5.1, z: -6.94 },
     destRotation: 0,
     color: '#00ffff',
@@ -177,7 +177,7 @@ const TELEPORT_PORTALS = [
     name: 'Go Upstairs',
     triggerPos: { x: -1.55, y: 0, z: 2.90 }, // Detection at ground floor
     visualY: 0.05, // Ring on ground floor
-    triggerRadius: 0.8, // Close proximity
+    triggerRadius: 2.5, // Larger radius for testing
     destPos: { x: -2.23, y: 5.1, z: 4.03 },
     destRotation: Math.PI,
     color: '#00ffff',
@@ -190,8 +190,8 @@ const TELEPORT_PORTALS = [
     name: 'Go Downstairs',
     triggerPos: { x: -2.22, y: 5.1, z: -6.94 }, // Detection at upper floor
     visualY: 5.15, // Ring on upper floor
-    triggerRadius: 0.8, // Close proximity
-    destPos: { x: -1.60, y: 0, z: -6.01 },
+    triggerRadius: 1.5,
+    destPos: { x: 0, y: 0, z: 5 }, // Teleport to starting location
     destRotation: Math.PI,
     color: '#00ffff',
     icon: '↓',
@@ -203,8 +203,8 @@ const TELEPORT_PORTALS = [
     name: 'Go Downstairs',
     triggerPos: { x: -2.23, y: 5.1, z: 4.03 }, // Detection at upper floor
     visualY: 5.15, // Ring on upper floor
-    triggerRadius: 0.8, // Close proximity
-    destPos: { x: -1.55, y: 0, z: 2.90 },
+    triggerRadius: 1.5,
+    destPos: { x: 0, y: 0, z: 5 }, // Teleport to starting location
     destRotation: 0,
     color: '#00ffff',
     icon: '↓',
