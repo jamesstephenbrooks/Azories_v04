@@ -409,7 +409,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
   }, []);
 
   // Teleport using a portal
-  const usePortal = useCallback((portal) => {
+  const activatePortal = useCallback((portal) => {
     if (!cameraRef.current || !portal) return;
     
     // Prevent rapid re-teleporting (1 second cooldown)
