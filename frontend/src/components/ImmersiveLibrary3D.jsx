@@ -164,7 +164,7 @@ const TELEPORT_PORTALS = [
     id: 'stairs-back-bottom',
     name: 'Go Upstairs',
     triggerPos: { x: -1.02, y: 0, z: -6.47 }, // User-provided ground floor location
-    visualY: 0.02, // On the floor
+    visualY: 0.15, // Raised above floor geometry
     triggerRadius: 1.2,
     autoTeleportRadius: 0.5,
     destPos: { x: -1.02, y: 5.1, z: -6.47 }, // Top of back stairs
@@ -179,7 +179,7 @@ const TELEPORT_PORTALS = [
     id: 'stairs-back-top',
     name: 'Go Downstairs',
     triggerPos: { x: -1.02, y: 5.1, z: -6.47 },
-    visualY: 5.12, // On the upper floor
+    visualY: 5.25, // Raised above upper floor geometry
     triggerRadius: 1.2,
     autoTeleportRadius: 0.5,
     destPos: { x: -1.02, y: 0, z: -6.47 }, // Bottom of back stairs
@@ -195,7 +195,7 @@ const TELEPORT_PORTALS = [
     id: 'stairs-front-bottom',
     name: 'Go Upstairs',
     triggerPos: { x: -0.57, y: 0, z: 3.61 }, // User-provided ground floor location
-    visualY: 0.02, // On the floor
+    visualY: 0.15, // Raised above floor geometry
     triggerRadius: 1.2,
     autoTeleportRadius: 0.5,
     destPos: { x: -0.57, y: 5.1, z: 3.61 }, // Top of front stairs
@@ -210,7 +210,7 @@ const TELEPORT_PORTALS = [
     id: 'stairs-front-top',
     name: 'Go Downstairs',
     triggerPos: { x: -0.57, y: 5.1, z: 3.61 },
-    visualY: 5.12, // On the upper floor
+    visualY: 5.25, // Raised above upper floor geometry
     triggerRadius: 1.2,
     autoTeleportRadius: 0.5,
     destPos: { x: -0.57, y: 0, z: 3.61 }, // Bottom of front stairs
