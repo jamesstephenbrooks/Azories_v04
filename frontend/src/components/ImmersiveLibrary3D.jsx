@@ -150,7 +150,7 @@ const TELEPORT_PORTALS = [
     id: 'stairs-up',
     name: 'Go Upstairs',
     triggerPos: { x: -1.41, y: 3.62, z: -1.43 }, // Near spiral staircase (ground)
-    triggerRadius: 1.5,
+    triggerRadius: 0.1, // Very small - must be right at the portal
     destPos: { x: -2.22, y: 6.21, z: -6.94 }, // Top of stairs
     destRotation: 0,
     color: '#00ffff',
@@ -160,7 +160,7 @@ const TELEPORT_PORTALS = [
     id: 'stairs-down',
     name: 'Go Downstairs',
     triggerPos: { x: -2.22, y: 6.21, z: -6.94 }, // Top of spiral staircase
-    triggerRadius: 1.5,
+    triggerRadius: 0.1, // Very small - must be right at the portal
     destPos: { x: -1.41, y: 3.62, z: -1.43 }, // Bottom of stairs
     destRotation: Math.PI,
     color: '#00ffff',
