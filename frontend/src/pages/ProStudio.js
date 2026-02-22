@@ -1537,6 +1537,30 @@ export default function ProStudio() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-6">
+        {/* Pro Studio Explanation Banner */}
+        <div className="bg-gradient-to-r from-purple-900/40 to-pink-900/40 rounded-xl border border-purple-500/30 p-4 mb-6">
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+              <FiStar className="text-white" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-white font-semibold mb-1">Pro Studio - Premium Character Consistency</h3>
+              <p className="text-gray-300 text-sm">
+                Create characters with <span className="text-purple-300 font-medium">AI-powered consistency</span> across all your book illustrations. 
+                Train custom LoRA models for 100% accurate character recreation, or use PuLID for face consistency.
+                <span className="text-amber-300 ml-1">Credits required for advanced features.</span>
+              </p>
+            </div>
+            <div className="text-right flex-shrink-0">
+              <div className="text-xs text-gray-400 mb-1">Your Balance</div>
+              <div className="flex items-center gap-1 text-amber-400 font-bold">
+                <FiZap size={14} />
+                <span>{credits}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="bg-black/40 border border-purple-500/20 p-1 mb-6">
             <TabsTrigger value="characters" className="data-[state=active]:bg-purple-600">
