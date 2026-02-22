@@ -124,8 +124,30 @@ export default function ProStudio() {
       loadUserBooks();
       checkFalAvailability();
       loadCredits();
+      loadCharacterOptions();
     }
   }, [isAuthenticated]);
+
+  // Load character styles and genres
+  const loadCharacterOptions = async () => {
+    try {
+      const [stylesRes, genresRes] = await Promise.all([
+        fetch(`${API_URL}/api/pro-studio/character-styles`),
+        fetch(`${API_URL}/api/pro-studio/character-genres`)
+      ]);
+      
+      if (stylesRes.ok) {
+        const data = await stylesRes.json();
+        setCharacterStyles(data.styles || []);
+      }
+      if (genresRes.ok) {
+        const data = await genresRes.json();
+        setCharacterGenres(data.genres || []);
+      }
+    } catch (error) {
+      console.error('Error loading character options:', error);
+    }
+  };
 
   // Check if fal.ai is available
   const checkFalAvailability = async () => {
