@@ -1227,6 +1227,21 @@ export default function ProStudio() {
                 </div>
                 <div className="flex gap-2">
                   <Button 
+                    variant="outline"
+                    onClick={() => regenerateThumbnail(viewingCharacter.id)}
+                    className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                    title="Regenerate thumbnail for better consistency"
+                  >
+                    <FiRefreshCw className="mr-2" /> New Look
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => { openEditModal(viewingCharacter); closeCharacterView(); }}
+                    className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                  >
+                    <FiEdit3 className="mr-2" /> Edit
+                  </Button>
+                  <Button 
                     onClick={() => { setSelectedCharacter(viewingCharacter); closeCharacterView(); }}
                     className="bg-purple-600 hover:bg-purple-700"
                   >
