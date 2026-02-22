@@ -511,6 +511,9 @@ const RealisticPageFlip = forwardRef(({
   const isOnBackCover = currentPage >= allBookPages.length - 1;
   const shouldClipLeft = isOnFrontCover;
   const shouldClipRight = isOnBackCover;
+  
+  // Calculate shift amount - need extra shift to center with controls below
+  const coverShift = (width / 2) + 80; // Extra 80px to align with center of controls
 
   return (
     <div className={`realistic-page-flip relative ${className}`} style={{ transform: isFullscreen ? 'scale(1.6)' : 'scale(1.35)', transformOrigin: 'center center' }}>
@@ -527,7 +530,7 @@ const RealisticPageFlip = forwardRef(({
           style={{
             // Shift LEFT to center when showing front cover (clip left, visible part moves to center)
             // Shift RIGHT to center when showing back cover (clip right, visible part moves to center)
-            marginLeft: shouldClipLeft ? `-${width/2}px` : shouldClipRight ? `${width/2}px` : '0',
+            marginLeft: shouldClipLeft ? `-${coverShift}px` : shouldClipRight ? `${coverShift}px` : '0',
             transition: 'margin 0.4s ease-out',
           }}
         >
