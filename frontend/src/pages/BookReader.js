@@ -682,13 +682,14 @@ export default function BookReader() {
           <div className={`relative h-full ${isFullscreen ? 'flex items-center justify-center' : ''}`}>
             
             {/* Overlay buttons positioned over the cover - these work because they're outside react-pageflip */}
+            {/* Cover is displayed on RIGHT side only (single page), so position buttons there */}
             {isCover && (
               <div 
                 className="absolute z-[70] flex flex-col items-center gap-3"
                 style={{
                   top: '55%',
-                  left: '50%',
-                  transform: 'translate(15%, -50%)',
+                  left: '75%',
+                  transform: 'translate(-50%, -50%)',
                   pointerEvents: 'auto'
                 }}
               >
