@@ -501,11 +501,6 @@ export default function BookReader() {
         }, 500);
         return () => clearTimeout(timer);
       }
-    } else {
-        autoReadRef: autoReadRef.current,
-        currentPage,
-        allPagesLength: allPages.length
-      });
     }
     // Intentionally not including audioElement to prevent re-trigger loop
     // eslint-disable-next-line react-hooks/exhaustive-deps
