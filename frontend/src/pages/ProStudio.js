@@ -902,6 +902,11 @@ export default function ProStudio() {
               <div className="bg-black/40 rounded-xl border border-purple-500/20 p-6">
                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                   <FiUser className="text-purple-400" /> My Characters
+                  {falAvailable && (
+                    <span className="ml-auto text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded-full">
+                      fal.ai Connected
+                    </span>
+                  )}
                 </h2>
                 
                 {characters.length === 0 ? (
@@ -911,32 +916,76 @@ export default function ProStudio() {
                     <p className="text-gray-500 text-sm">Create your first character to get started</p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     {characters.map((char) => (
                       <div
                         key={char.id}
-                        onClick={() => setSelectedCharacter(char)}
-                        className={`cursor-pointer rounded-lg border-2 transition-all ${
+                        className={`rounded-lg border-2 transition-all ${
                           selectedCharacter?.id === char.id 
                             ? 'border-purple-500 bg-purple-900/30' 
                             : 'border-gray-700 hover:border-purple-500/50'
-                        } p-3`}
+                        } p-4`}
                         data-testid={`character-card-${char.id}`}
                       >
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-4">
                           <img 
                             src={char.thumbnail || char.reference_images?.[0]} 
                             alt={char.name}
-                            className="w-12 h-12 rounded-full object-cover"
+                            className="w-16 h-16 rounded-full object-cover cursor-pointer"
+                            onClick={() => setSelectedCharacter(char)}
                           />
-                          <div>
-                            <p className="text-white font-medium">{char.name}</p>
-                            <p className="text-gray-500 text-xs">{char.reference_images?.length || 0} refs</p>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <p className="text-white font-medium">{char.name}</p>
+                              {char.lora_status === 'completed' && (
+                                <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                  <FiCheck size={10} /> LoRA Ready
+                                </span>
+                              )}
+                              {char.lora_status === 'training' && (
+                                <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full animate-pulse">
+                                  Training...
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-gray-500 text-xs">{char.reference_images?.length || 0} reference images</p>
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            {/* Select button */}
+                            <Button
+                              size="sm"
+                              variant={selectedCharacter?.id === char.id ? "default" : "outline"}
+                              onClick={() => setSelectedCharacter(char)}
+                              className={selectedCharacter?.id === char.id ? "bg-purple-600" : "border-gray-600"}
+                            >
+                              {selectedCharacter?.id === char.id ? <FiCheck className="mr-1" /> : null}
+                              Select
+                            </Button>
+                            
+                            {/* Train LoRA button */}
+                            {falAvailable && char.lora_status !== 'completed' && char.lora_status !== 'training' && (
+                              <Button
+                                size="sm"
+                                onClick={() => trainCharacterLora(char.id)}
+                                disabled={isTrainingLora}
+                                className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+                              >
+                                <FiZap className="mr-1" /> Train LoRA
+                              </Button>
+                            )}
                           </div>
                         </div>
-                        {selectedCharacter?.id === char.id && (
-                          <div className="mt-2 flex items-center text-purple-400 text-xs">
-                            <FiCheck className="mr-1" /> Selected
+                        
+                        {/* LoRA Info */}
+                        {char.lora_status === 'completed' && (
+                          <div className="mt-3 p-2 bg-green-500/10 rounded-lg text-xs text-green-300">
+                            This character has a trained LoRA model for 100% consistent generation across all images.
+                          </div>
+                        )}
+                        {!char.lora_status && falAvailable && (
+                          <div className="mt-3 p-2 bg-gray-800/50 rounded-lg text-xs text-gray-400">
+                            Train a LoRA model for this character to ensure 100% consistent face across all generations.
                           </div>
                         )}
                       </div>
@@ -945,6 +994,56 @@ export default function ProStudio() {
                 )}
               </div>
             </div>
+
+            {/* Consistent Generation Panel */}
+            {selectedCharacter && (
+              <div className="bg-black/40 rounded-xl border border-purple-500/20 p-6">
+                <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                  <FiZap className="text-amber-400" /> Generate Consistent Character
+                </h2>
+                <p className="text-gray-400 text-sm mb-4">
+                  {selectedCharacter.lora_status === 'completed' 
+                    ? `Generate ${selectedCharacter.name} with 100% face consistency using trained LoRA.`
+                    : `Generate ${selectedCharacter.name} using face ID preservation (PuLID).`
+                  }
+                </p>
+                
+                <Textarea
+                  placeholder={`Describe the scene for ${selectedCharacter.name}... (e.g., 'sitting in a coffee shop reading a book')`}
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  className="bg-gray-800/50 border-gray-700 text-white mb-4"
+                  rows={3}
+                  data-testid="consistent-gen-prompt"
+                />
+
+                <div className="flex gap-3 mb-4">
+                  <Select value={aspectRatio} onValueChange={setAspectRatio}>
+                    <SelectTrigger className="w-40 bg-gray-800/50 border-gray-700 text-white">
+                      <SelectValue placeholder="Aspect Ratio" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-800 border-gray-700">
+                      {ASPECT_RATIOS.map((ar) => (
+                        <SelectItem key={ar.id} value={ar.id} className="text-white">
+                          {ar.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <Button 
+                  onClick={generateConsistentCharacterImage}
+                  disabled={isLoading || !prompt.trim()}
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                  data-testid="generate-consistent-btn"
+                >
+                  <FiZap className="mr-2" /> 
+                  Generate {selectedCharacter.name} 
+                  {selectedCharacter.lora_status === 'completed' ? ' (LoRA)' : ' (PuLID)'}
+                </Button>
+              </div>
+            )}
 
             {/* Expression Generator */}
             {selectedCharacter && (
