@@ -23,12 +23,16 @@ export default function Library() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [genre, setGenre] = useState('All');
+  const [ageRange, setAgeRange] = useState('All');
   const [genres, setGenres] = useState([]);
   const [activeTab, setActiveTab] = useState('all');
   const [viewMode, setViewMode] = useState('grid'); // 'grid', '3d', or 'immersive'
   const [selectedBook, setSelectedBook] = useState(null);
   const [summaryBook, setSummaryBook] = useState(null);
   const navigate = useNavigate();
+
+  // Age range options
+  const AGE_RANGES = ['All', '0-3', '4-6', '7-9', '10-12', '13+'];
 
   useEffect(() => {
     fetchBooks();
@@ -40,7 +44,7 @@ export default function Library() {
     if (activeTab === 'all') {
       fetchBooks();
     }
-  }, [search, genre]);
+  }, [search, genre, ageRange]);
 
   const fetchBooks = async () => {
     try {
