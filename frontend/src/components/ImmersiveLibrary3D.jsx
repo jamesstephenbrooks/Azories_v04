@@ -1580,9 +1580,9 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         let foundPortal = null;
         let shouldAutoTeleport = false;
         const playerFootY = camera.position.y - PLAYER_HEIGHT;
-        // Ground floor is at Y ≈ 4.2, upper floor at Y ≈ 9.2
-        // Player on ground floor has feet at Y ≈ 4.0-5.0, upper floor at Y ≈ 9.0-10.0
-        const playerIsGroundFloor = playerFootY < 7;
+        // Ground floor is at Y ≈ 4.2, bridge/upper floor at Y ≈ 6.5
+        // Player on ground floor has feet at Y ≈ 4.0-5.0, bridge at Y ≈ 5.5-7.0
+        const playerIsGroundFloor = playerFootY < 5.5;
         
         for (const portal of TELEPORT_PORTALS) {
           const dx = camera.position.x - portal.triggerPos.x;
