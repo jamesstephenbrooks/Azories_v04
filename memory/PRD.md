@@ -199,9 +199,9 @@ Professional-grade character creation and video generation studio, inspired by H
 
 ### P1 - High Priority (Batch 2 Remaining)
 - [x] Create "My Series" dedicated page - DONE (Feb 22, 2026)
-- [ ] Add font and layout editing to text editor
-- [ ] Display chapter titles on first page of new chapters
-- [ ] Fix collaboration popup UI issues - DONE (Feb 22, 2026)
+- [x] Add font and layout editing to text editor - DONE (Feb 22, 2026)
+- [x] Display chapter titles on first page of new chapters - DONE (Feb 22, 2026)
+- [x] Fix collaboration popup UI issues - DONE (Feb 22, 2026)
 - [ ] Integrate Veo 3.1 video model (requires API key)
 - [ ] Integrate Kling 3.0 video model (requires API key)
 - [ ] Generate page images for 50+ books (covers done)
