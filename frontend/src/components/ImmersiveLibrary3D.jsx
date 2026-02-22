@@ -1692,62 +1692,92 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
             </div>
           )}
           
-          {/* Book Info Card (when a book is selected in 3D view) - EXTENDS OUT WITH BOOK ANIMATION */}
+          {/* Book Info Card (when a book is selected in 3D view) - RESPONSIVE for tablets/mobile */}
           <AnimatePresence>
             {selectedBook && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute inset-y-0 right-0 w-[400px] pointer-events-auto z-30 flex items-center"
+                className="fixed inset-0 md:absolute md:inset-y-0 md:right-0 md:left-auto md:w-[400px] lg:w-[450px] pointer-events-auto z-40 flex items-center justify-center md:justify-end"
+                data-testid="book-info-card"
               >
-                {/* Animated Book Cover Flying Out */}
-                <motion.div
-                  initial={{ x: 200, rotateY: -90, scale: 0.5 }}
-                  animate={{ x: 0, rotateY: -15, scale: 1 }}
-                  exit={{ x: 200, rotateY: -90, scale: 0.5 }}
-                  transition={{ type: "spring", damping: 20, stiffness: 100 }}
-                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-10"
-                  style={{ perspective: '1000px', transformStyle: 'preserve-3d' }}
-                >
-                  <div 
-                    className="w-40 h-56 rounded-lg shadow-2xl shadow-purple-500/50 overflow-hidden"
+                {/* Dark overlay for mobile/tablet */}
+                <div 
+                  className="absolute inset-0 bg-black/60 md:bg-transparent"
+                  onClick={() => {
+                    setSelectedBook(null);
+                    setSelectedGenre(null);
+                    removeHighlightedBook();
+                  }}
+                />
+                
+                {/* Card Container - Centered on mobile, right-aligned on desktop */}
+                <div className="relative flex flex-col md:flex-row items-center max-w-[90vw] md:max-w-none">
+                  {/* Animated Book Cover Flying Out - Hidden on mobile for cleaner UI */}
+                  <motion.div
+                    initial={{ x: 200, rotateY: -90, scale: 0.5 }}
+                    animate={{ x: 0, rotateY: -15, scale: 1 }}
+                    exit={{ x: 200, rotateY: -90, scale: 0.5 }}
+                    transition={{ type: "spring", damping: 20, stiffness: 100 }}
+                    className="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-10"
+                    style={{ perspective: '1000px', transformStyle: 'preserve-3d' }}
+                  >
+                    <div 
+                      className="w-32 lg:w-40 h-44 lg:h-56 rounded-lg shadow-2xl shadow-purple-500/50 overflow-hidden"
+                      style={{ 
+                        transform: 'rotateY(-15deg)',
+                        boxShadow: '10px 10px 30px rgba(0,0,0,0.5), -5px 0 20px rgba(168,85,247,0.3)'
+                      }}
+                    >
+                      {selectedBook.cover_image ? (
+                        <img 
+                          src={selectedBook.cover_image} 
+                          alt={selectedBook.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-purple-700 to-purple-900 flex items-center justify-center">
+                          <FiBook className="w-12 h-12 text-purple-300" />
+                        </div>
+                      )}
+                      {/* Book spine effect */}
+                      <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-r from-black/40 to-transparent" />
+                    </div>
+                  </motion.div>
+                  
+                  {/* Info Panel - Full width card on mobile, slide-in panel on desktop */}
+                  <motion.div
+                    initial={{ y: 100, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: 100, opacity: 0 }}
+                    transition={{ delay: 0.1, type: "spring", damping: 25 }}
+                    className="relative w-[85vw] max-w-sm md:w-[280px] lg:w-[300px] bg-gradient-to-b md:bg-gradient-to-l from-[#1a1520] via-[#2d1f3d] to-[#1a1520] md:to-transparent rounded-2xl md:rounded-l-2xl md:rounded-r-none p-5 md:p-6 md:pl-16 lg:pl-20 border border-purple-500/30 md:border-l md:border-y md:border-r-0"
                     style={{ 
-                      transform: 'rotateY(-15deg)',
-                      boxShadow: '10px 10px 30px rgba(0,0,0,0.5), -5px 0 20px rgba(168,85,247,0.3)'
+                      boxShadow: '0 -20px 40px rgba(0,0,0,0.5)',
+                      backdropFilter: 'blur(10px)'
                     }}
                   >
-                    {selectedBook.cover_image ? (
-                      <img 
-                        src={selectedBook.cover_image} 
-                        alt={selectedBook.title}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-purple-700 to-purple-900 flex items-center justify-center">
-                        <FiBook className="w-12 h-12 text-purple-300" />
+                    {/* Book cover for mobile - shown inline */}
+                    <div className="md:hidden flex justify-center mb-4">
+                      <div className="w-24 h-32 rounded-lg shadow-lg overflow-hidden">
+                        {selectedBook.cover_image ? (
+                          <img 
+                            src={selectedBook.cover_image} 
+                            alt={selectedBook.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-purple-700 to-purple-900 flex items-center justify-center">
+                            <FiBook className="w-8 h-8 text-purple-300" />
+                          </div>
+                        )}
                       </div>
-                    )}
-                    {/* Book spine effect */}
-                    <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-r from-black/40 to-transparent" />
-                  </div>
-                </motion.div>
-                
-                {/* Info Panel - Extending from right edge */}
-                <motion.div
-                  initial={{ x: 100, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  exit={{ x: 100, opacity: 0 }}
-                  transition={{ delay: 0.1, type: "spring", damping: 25 }}
-                  className="ml-auto mr-0 w-[280px] bg-gradient-to-l from-[#1a1520] via-[#2d1f3d] to-transparent rounded-l-2xl p-6 pl-20 border-l border-y border-purple-500/30"
-                  style={{ 
-                    boxShadow: '-20px 0 40px rgba(0,0,0,0.5)',
-                    backdropFilter: 'blur(10px)'
-                  }}
-                >
-                  {/* Book Info */}
-                  <h3 className="text-xl font-bold text-white mb-1">{selectedBook.title}</h3>
-                  <p className="text-sm text-purple-300 mb-3">by {selectedBook.author_name || 'Unknown Author'}</p>
+                    </div>
+                    
+                    {/* Book Info */}
+                    <h3 className="text-lg md:text-xl font-bold text-white mb-1 text-center md:text-left">{selectedBook.title}</h3>
+                    <p className="text-sm text-purple-300 mb-3 text-center md:text-left">by {selectedBook.author_name || 'Unknown Author'}</p>
                   
                   {selectedBook.genre && (
                     <div className="mb-3">
