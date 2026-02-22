@@ -737,7 +737,7 @@ async def get_collaborators(book_id: str, current_user: dict = Depends(get_curre
 
 
 @api_router.put("/books/{book_id}/collaborators/{user_id}")
-async def update_collaborator_role(book_id: str, user_id: str, update: CollaboratorInvite, current_user: dict = Depends(get_current_user)):
+async def update_collaborator_role(book_id: str, user_id: str, update: CollaboratorRoleUpdate, current_user: dict = Depends(get_current_user)):
     """Update a collaborator's role"""
     book = await db.books.find_one({"id": book_id}, {"_id": 0})
     if not book:
