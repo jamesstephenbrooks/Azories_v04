@@ -484,8 +484,13 @@ export default function BookReader() {
 
   // Auto-read effect: play audio when page changes with auto-read enabled
   useEffect(() => {
-    // Don't do anything if already playing this page - prevents duplicate playback
-    if (lastPlayedPageRef.current === currentPage && (isPlaying || audioLoading)) {
+    // CRITICAL: Don't trigger during page flip animation
+    if (isFlipping) {
+      return;
+    }
+    
+    // Don't trigger if we're already playing or loading audio for this page
+    if (lastPlayedPageRef.current === currentPage) {
       return;
     }
     
@@ -497,33 +502,31 @@ export default function BookReader() {
       if (page?.isChapterTitle) {
         // Chapter title page - show briefly then advance
         const timer = setTimeout(() => {
-          if (autoReadRef.current && currentPageRef.current < allPages.length - 1) {
+          if (autoReadRef.current && currentPageRef.current < allPages.length - 1 && !isFlipping) {
             goToPage(currentPageRef.current + 1, 'next');
           }
         }, 1500);
         return () => clearTimeout(timer);
       } else if (page?.text_content) {
-        // Has text content - play audio after short delay
-        // Only if we haven't already played this page
+        // Has text content - play audio after flip animation settles
         const timer = setTimeout(() => {
-          if (autoReadRef.current && lastPlayedPageRef.current !== currentPage) {
+          if (autoReadRef.current && lastPlayedPageRef.current !== currentPage && !isFlipping) {
             playAudio();
           }
-        }, 100);
+        }, 300); // Wait for flip to fully settle
         return () => clearTimeout(timer);
       } else if (currentPage < allPages.length - 1) {
         // No content, advance to next page quickly
         const timer = setTimeout(() => {
-          if (autoReadRef.current && currentPageRef.current < allPages.length - 1) {
+          if (autoReadRef.current && currentPageRef.current < allPages.length - 1 && !isFlipping) {
             goToPage(currentPageRef.current + 1, 'next');
           }
         }, 500);
         return () => clearTimeout(timer);
       }
     }
-    // Intentionally not including audioElement to prevent re-trigger loop
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, autoRead, allPages.length, isPlaying, audioLoading]);
+  }, [currentPage, autoRead, allPages.length, isFlipping]);
 
   useEffect(() => {
     if (audioElement) {
