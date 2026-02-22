@@ -37,11 +37,11 @@ const NodeDeleteButton = ({ onDelete }) => (
       e.stopPropagation();
       onDelete?.();
     }}
-    className="absolute top-1 right-1 w-5 h-5 rounded-full bg-red-500/80 hover:bg-red-500 flex items-center justify-center transition-colors z-10"
+    className="absolute top-0.5 right-0.5 w-3 h-3 rounded-full bg-red-500/80 hover:bg-red-500 flex items-center justify-center transition-colors z-10"
     title="Delete node"
     data-testid="node-delete-btn"
   >
-    <FiX className="w-3 h-3 text-white" />
+    <FiX className="w-2 h-2 text-white" />
   </button>
 );
 
