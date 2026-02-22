@@ -1412,42 +1412,176 @@ class AnimateImageRequest(BaseModel):
     duration: int = 4  # 4, 8, or 12 seconds
     style: str = "natural"  # natural, dramatic, subtle
 
+# In-memory job storage for animation jobs
+animation_jobs = {}
+
 @api_router.post("/art-studio/animate-image")
-async def animate_image(request: AnimateImageRequest, current_user: dict = Depends(get_current_user)):
-    """
-    Animate a still image using Sora 2.
-    Takes an image and creates a short video with subtle motion.
-    """
+async def animate_image(request: AnimateImageRequest, background_tasks: BackgroundTasks, current_user: dict = Depends(get_current_user)):
+    """Start an image animation job - returns immediately with job_id for polling"""
     if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Pro subscription required")
     
+    if not EMERGENT_LLM_KEY:
+        raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
+    
+    # Create job ID
+    job_id = str(uuid.uuid4())
+    
+    # Initialize job status
+    animation_jobs[job_id] = {
+        "status": "starting",
+        "progress": 0,
+        "message": "Initializing animation...",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "user_id": current_user["id"]
+    }
+    
+    # Start background task
+    background_tasks.add_task(
+        process_animation_job,
+        job_id,
+        request.image_url,
+        request.motion_prompt,
+        request.duration,
+        request.style,
+        current_user["id"]
+    )
+    
+    return {
+        "success": True,
+        "job_id": job_id,
+        "message": "Animation job started. Poll for progress."
+    }
+
+async def process_animation_job(job_id: str, image_url: str, motion_prompt: str, duration: int, style: str, user_id: str):
+    """Background task to process animation"""
     try:
-        if not EMERGENT_LLM_KEY:
-            raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
+        animation_jobs[job_id]["status"] = "analyzing"
+        animation_jobs[job_id]["progress"] = 10
+        animation_jobs[job_id]["message"] = "Analyzing image..."
         
-        # Analyze the image to create a detailed prompt
         from emergentintegrations.llm.openai import LlmChat, UserMessage, ImageContent
+        from emergentintegrations.llm.openai.video_generation import OpenAIVideoGeneration
         
         chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
-            session_id=f"animate-{current_user['id']}-{str(uuid.uuid4())[:8]}",
+            session_id=f"animate-{user_id}-{job_id[:8]}",
             system_message="You are an image analysis expert. Describe images in detail for video animation."
         ).with_model("openai", "gpt-4o")
         
-        # Get description of the image for the video prompt
         analysis_prompt = """Analyze this image and describe it in detail for video animation. 
         Include: subject, pose, expression, clothing, background, lighting, art style.
         Be specific and detailed. Format as a single paragraph."""
         
-        if request.image_url.startswith('data:'):
-            # Base64 image - extract just the base64 part
-            if ',' in request.image_url:
-                image_base64 = request.image_url.split(',')[1]
+        if image_url.startswith('data:'):
+            if ',' in image_url:
+                image_base64 = image_url.split(',')[1]
             else:
-                image_base64 = request.image_url
+                image_base64 = image_url
         else:
-            # URL - fetch and convert to base64
             import httpx
+            async with httpx.AsyncClient() as client:
+                response = await client.get(image_url, timeout=30)
+                image_bytes = response.content
+                image_base64 = base64.b64encode(image_bytes).decode('utf-8')
+        
+        animation_jobs[job_id]["progress"] = 20
+        animation_jobs[job_id]["message"] = "Understanding image content..."
+        
+        user_msg = UserMessage(
+            text=analysis_prompt,
+            file_contents=[ImageContent(image_base64=image_base64)]
+        )
+        image_description = await chat.send_message(user_msg)
+        
+        animation_jobs[job_id]["status"] = "generating"
+        animation_jobs[job_id]["progress"] = 30
+        animation_jobs[job_id]["message"] = "Starting Sora 2 video generation (2-5 minutes)..."
+        
+        motion_styles = {
+            "natural": "natural subtle movement, gentle breathing, soft hair movement, slight eye blinks",
+            "dramatic": "dramatic cinematic movement, wind blowing, dynamic camera motion, emotional expression changes",
+            "subtle": "very subtle almost still, only slight breathing movement, peaceful and calm"
+        }
+        motion_desc = motion_styles.get(style, motion_styles["natural"])
+        
+        animation_prompt = f"""Animate this exact scene with {motion_desc}:
+{image_description}
+
+Additional motion: {motion_prompt}
+
+Keep the character and scene exactly the same, only add subtle natural movement."""
+        
+        video_gen = OpenAIVideoGeneration(api_key=EMERGENT_LLM_KEY)
+        
+        animation_jobs[job_id]["progress"] = 40
+        animation_jobs[job_id]["message"] = "Sora 2 is generating your animation..."
+        
+        video_bytes = video_gen.text_to_video(
+            prompt=animation_prompt,
+            model="sora-2",
+            size="1280x720",
+            duration=duration,
+            max_wait_time=900
+        )
+        
+        if video_bytes:
+            animation_jobs[job_id]["progress"] = 90
+            animation_jobs[job_id]["message"] = "Finalizing video..."
+            
+            video_base64 = base64.b64encode(video_bytes).decode('utf-8')
+            video_id = str(uuid.uuid4())
+            
+            animation_jobs[job_id] = {
+                "status": "completed",
+                "progress": 100,
+                "message": "Animation complete!",
+                "video_base64": video_base64,
+                "video_id": video_id,
+                "user_id": user_id
+            }
+        else:
+            animation_jobs[job_id] = {
+                "status": "failed",
+                "progress": 0,
+                "message": "Animation generation failed - no video returned",
+                "user_id": user_id
+            }
+            
+    except Exception as e:
+        logger.error(f"Animation job {job_id} failed: {str(e)}")
+        animation_jobs[job_id] = {
+            "status": "failed",
+            "progress": 0,
+            "message": f"Animation failed: {str(e)}",
+            "user_id": user_id
+        }
+
+@api_router.get("/art-studio/animation-status/{job_id}")
+async def get_animation_status(job_id: str, current_user: dict = Depends(get_current_user)):
+    """Poll for animation job status"""
+    if job_id not in animation_jobs:
+        raise HTTPException(status_code=404, detail="Job not found")
+    
+    job = animation_jobs[job_id]
+    
+    if job.get("user_id") != current_user["id"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    if job["status"] != "completed":
+        return {
+            "status": job["status"],
+            "progress": job["progress"],
+            "message": job["message"]
+        }
+    
+    return {
+        "status": "completed",
+        "progress": 100,
+        "message": job["message"],
+        "video_base64": job.get("video_base64"),
+        "video_id": job.get("video_id")
+    }
             async with httpx.AsyncClient() as client:
                 response = await client.get(request.image_url, timeout=30)
                 image_bytes = response.content
