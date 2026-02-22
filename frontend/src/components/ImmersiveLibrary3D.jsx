@@ -1780,25 +1780,25 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                     <p className="text-sm text-purple-300 mb-3 text-center md:text-left">by {selectedBook.author_name || 'Unknown Author'}</p>
                   
                   {selectedBook.genre && (
-                    <div className="mb-3">
+                    <div className="mb-3 text-center md:text-left">
                       <span className="px-3 py-1 bg-purple-500/20 rounded-full text-xs text-purple-300">
                         {selectedBook.genre}
                       </span>
                     </div>
                   )}
                   
-                  {/* Book Summary/Description */}
+                  {/* Book Summary/Description - Hidden on small screens */}
                   {(selectedBook.summary || selectedBook.description) && (
-                    <div className="mb-4 max-h-24 overflow-y-auto">
+                    <div className="hidden sm:block mb-4 max-h-20 overflow-y-auto">
                       <p className="text-[10px] text-purple-400 mb-1 uppercase tracking-wider">Summary</p>
                       <p className="text-xs text-white/70 leading-relaxed">
-                        {(selectedBook.summary || selectedBook.description).substring(0, 150)}...
+                        {(selectedBook.summary || selectedBook.description).substring(0, 120)}...
                       </p>
                     </div>
                   )}
                   
                   {/* Stats */}
-                  <div className="flex gap-3 mb-4 text-xs text-white/50">
+                  <div className="flex justify-center md:justify-start gap-3 mb-4 text-xs text-white/50">
                     <span className="flex items-center gap-1">
                       <FiBook className="w-3 h-3" />
                       {selectedBook.chapters?.length || 0} chapters
@@ -1806,10 +1806,10 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                   </div>
                   
                   {/* Action Buttons */}
-                  <div className="space-y-2">
+                  <div className="flex flex-col gap-2">
                     <Button
                       onClick={() => navigate(`/read/${selectedBook.id || selectedBook._id}`)}
-                      className="w-full bg-purple-600 hover:bg-purple-700 rounded-full text-sm"
+                      className="w-full bg-purple-600 hover:bg-purple-700 rounded-full text-sm py-2"
                       data-testid="read-book-btn"
                     >
                       <FiBookOpen className="mr-2 w-4 h-4" />
@@ -1822,12 +1822,13 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                         setSelectedGenre(null);
                         removeHighlightedBook();
                       }}
-                      className="w-full border-purple-500/30 text-purple-300 hover:bg-purple-500/10 rounded-full text-sm"
+                      className="w-full border-purple-500/30 text-purple-300 hover:bg-purple-500/10 rounded-full text-sm py-2"
                     >
                       Close
                     </Button>
                   </div>
-                </motion.div>
+                  </motion.div>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
