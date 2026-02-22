@@ -348,9 +348,21 @@ export default function BookReader() {
     if (isPlaying && audioElement) {
       audioElement.pause();
       setIsPlaying(false);
-      setAutoRead(false);
     } else {
+      setAutoRead(true); // Enable auto-read when user clicks play
       playAudio();
+    }
+  };
+
+  // Immediate stop when auto-read is turned off
+  const handleAutoReadToggle = () => {
+    const newValue = !autoRead;
+    setAutoRead(newValue);
+    
+    // Immediately stop audio if turning off
+    if (!newValue && audioElement) {
+      audioElement.pause();
+      setIsPlaying(false);
     }
   };
 
