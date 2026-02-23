@@ -795,43 +795,65 @@ export default function Dashboard() {
                 >
                   <Card className="group hover:shadow-lg transition-shadow">
                     <CardHeader className="pb-3">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1 min-w-0">
-                          <CardTitle className="font-heading text-xl line-clamp-1">{book.title}</CardTitle>
-                          <CardDescription className="font-body mt-1 line-clamp-2">
-                            {book.description || 'No description'}
-                          </CardDescription>
-                          {/* Series Badge */}
-                          {book.series_id && (
-                            <div className="mt-2 flex items-center gap-2">
-                              <span className="px-2 py-1 rounded-full bg-primary/10 text-primary text-xs font-ui flex items-center gap-1">
-                                <FiLayers className="w-3 h-3" />
-                                {series.find(s => s.id === book.series_id)?.name || 'Series'}
-                                {book.series_order && ` #${book.series_order}`}
-                              </span>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                className="h-6 w-6 p-0 rounded-full"
-                                onClick={() => removeBookFromSeries(book)}
-                                title="Remove from series"
-                              >
-                                <FiX className="w-3 h-3" />
-                              </Button>
+                      <div className="flex items-start gap-4">
+                        {/* Cover Thumbnail */}
+                        <div 
+                          className="w-16 h-20 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/20 flex-shrink-0 overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+                          onClick={() => navigate(`/editor/${book.id}`)}
+                        >
+                          {book.cover_image ? (
+                            <img 
+                              src={book.cover_image} 
+                              alt={book.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <FiBook className="w-6 h-6 text-primary/40" />
                             </div>
                           )}
                         </div>
-                        <div className="flex flex-col gap-1 items-end">
-                          <span className={`px-3 py-1 rounded-full text-xs font-ui ${
-                            book.is_published ? 'bg-accent/20 text-accent-foreground' : 'bg-muted text-muted-foreground'
-                          }`}>
-                            {book.is_published ? 'Published' : 'Draft'}
-                          </span>
-                          {book.age_rating !== 'All Ages' && (
-                            <span className="px-2 py-0.5 rounded text-xs bg-primary/10 text-primary">
-                              {book.age_rating}
-                            </span>
-                          )}
+                        
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1 min-w-0">
+                              <CardTitle className="font-heading text-xl line-clamp-1">{book.title}</CardTitle>
+                              <CardDescription className="font-body mt-1 line-clamp-2">
+                                {book.description || 'No description'}
+                              </CardDescription>
+                              {/* Series Badge */}
+                              {book.series_id && (
+                                <div className="mt-2 flex items-center gap-2">
+                                  <span className="px-2 py-1 rounded-full bg-primary/10 text-primary text-xs font-ui flex items-center gap-1">
+                                    <FiLayers className="w-3 h-3" />
+                                    {series.find(s => s.id === book.series_id)?.name || 'Series'}
+                                    {book.series_order && ` #${book.series_order}`}
+                                  </span>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="h-6 w-6 p-0 rounded-full"
+                                    onClick={() => removeBookFromSeries(book)}
+                                    title="Remove from series"
+                                  >
+                                    <FiX className="w-3 h-3" />
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex flex-col gap-1 items-end ml-2">
+                              <span className={`px-3 py-1 rounded-full text-xs font-ui ${
+                                book.is_published ? 'bg-accent/20 text-accent-foreground' : 'bg-muted text-muted-foreground'
+                              }`}>
+                                {book.is_published ? 'Published' : 'Draft'}
+                              </span>
+                              {book.age_rating !== 'All Ages' && (
+                                <span className="px-2 py-0.5 rounded text-xs bg-primary/10 text-primary">
+                                  {book.age_rating}
+                                </span>
+                              )}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </CardHeader>
