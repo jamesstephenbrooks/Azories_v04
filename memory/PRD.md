@@ -150,8 +150,8 @@ All books have:
 - Code refactoring (split server.py and ProStudio.js into modules)
 
 ## Next Tasks
-1. LoRA training workflow validation (create character with 3+ images, click Train)
-2. Verify animation save/download functionality
+1. LoRA training workflow validation (requires 50 credits, 3+ reference images)
+2. Animation save/download verification (requires animation generation)
 3. Mobile UI/UX testing on real iPad
 
 ## Future/Backlog
