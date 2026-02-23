@@ -6560,6 +6560,7 @@ async def art_studio_gallery(
                 "prompt": item.get("prompt", ""),  # Original generation prompt
                 "character_data": item.get("character_data"),
                 "scene_data": item.get("scene_data"),
+                "source": item.get("source", "art_studio"),  # art_studio or pro_studio
                 "created_at": item.get("created_at", datetime.now(timezone.utc)).isoformat()
             })
         
