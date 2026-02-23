@@ -1470,16 +1470,28 @@ export default function BookEditor() {
                         {/* Media Preview - Larger size */}
                         <div className="flex justify-center">
                           {selectedPage.video_url ? (
-                            /* Video/Animation Preview - Full width */
-                            <div className="w-full aspect-video rounded-2xl border-2 border-border bg-muted/30 overflow-hidden flex items-center justify-center" style={{ maxHeight: '55vh' }}>
+                            /* Video/Animation Preview - Book page aspect ratio (3:4) */
+                            <div 
+                              className="rounded-2xl border-2 border-border bg-[#fdfbf7] dark:bg-[#2a2a30] overflow-hidden relative shadow-lg"
+                              style={{
+                                aspectRatio: '3/4',
+                                height: '55vh',
+                                width: 'auto',
+                                boxShadow: 'inset -7px 0 30px -7px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.1)'
+                              }}
+                            >
                               <video 
                                 src={selectedPage.video_url}
                                 controls
                                 autoPlay
                                 loop
                                 muted
-                                className="w-full h-full object-contain"
+                                className="absolute inset-0 w-full h-full object-cover"
                               />
+                              <div className="absolute bottom-2 left-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded flex items-center gap-1">
+                                <FiVideo className="w-3 h-3" />
+                                Animation Preview
+                              </div>
                             </div>
                           ) : selectedPage.layout_type?.startsWith('comic') ? (
                             /* Comic layout panels */
