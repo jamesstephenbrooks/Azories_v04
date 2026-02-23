@@ -1585,7 +1585,7 @@ export default function ArtStudioExpert() {
     } finally {
       setIsGenerating(false);
     }
-  }, [nodes, edges, token, navigate, selectedBookId, workflowName, setNodes, copyNode, continueWorkflow, downloadImage, saveToGallery]);
+  }, [nodes, edges, token, navigate, selectedBookId, workflowName, setNodes]);
   
   // Update ref when runOutputNode changes
   useEffect(() => {
