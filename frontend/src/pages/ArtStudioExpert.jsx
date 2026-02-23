@@ -1859,19 +1859,18 @@ export default function ArtStudioExpert() {
             {/* Selection Actions Toolbar - Top Left */}
             <Panel position="top-left" className="!m-2">
               <div className="flex gap-2 bg-black/70 backdrop-blur-sm border border-white/20 rounded-lg p-2">
-                {/* Run Selected Workflow */}
+                {/* Selection Mode Toggle */}
                 <button
-                  onClick={runWorkflow}
-                  disabled={isGenerating}
+                  onClick={() => setSelectionMode(!selectionMode)}
                   className={`p-2 rounded-lg transition-all ${
-                    isGenerating 
-                      ? 'bg-gray-500/30 text-gray-400 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white hover:from-yellow-400 hover:to-orange-400 shadow-lg shadow-yellow-500/20'
+                    selectionMode 
+                      ? 'bg-cyan-500/40 text-cyan-300 border border-cyan-500'
+                      : 'bg-white/10 text-white/60 hover:text-white hover:bg-white/20'
                   }`}
-                  title="Run Workflow (⚡)"
-                  data-testid="lightning-run-btn"
+                  title={selectionMode ? 'Selection Mode ON - Drag to select nodes' : 'Click to enable Selection Mode'}
+                  data-testid="selection-mode-btn"
                 >
-                  <FiZap className={`w-5 h-5 ${isGenerating ? 'animate-pulse' : ''}`} />
+                  <FiMove className="w-5 h-5" />
                 </button>
                 
                 {/* Copy Selected Nodes */}
@@ -1898,6 +1897,7 @@ export default function ArtStudioExpert() {
                       delete copiedData.onSaveToGallery;
                       delete copiedData.onSaveToBook;
                       delete copiedData.onExpand;
+                      delete copiedData.onRunNode;
                       
                       if (node.type === 'output') {
                         copiedData.generating = false;
@@ -1912,7 +1912,8 @@ export default function ArtStudioExpert() {
                           ...copiedData,
                           onChange: (k, v) => updateNodeData(newNodeId, k, v),
                           onDelete: () => deleteNodeById(newNodeId),
-                          onCopyNode: () => copyNode(newNodeId)
+                          onCopyNode: () => copyNode(newNodeId),
+                          onRunNode: node.type === 'output' ? () => runOutputNode(newNodeId) : undefined
                         }
                       });
                     });
@@ -1953,7 +1954,10 @@ export default function ArtStudioExpert() {
             
             <Panel position="bottom-left" className="!bg-black/50 !border-white/10 rounded-lg p-2">
               <p className="text-xs text-white/50">
-                Drag to select nodes • Copy selection • Lock outputs to preserve them
+                {selectionMode 
+                  ? '✓ Selection Mode: Drag a box to select nodes • Click to copy selected'
+                  : 'Click the selection tool (⊞) to enable drag-select • Each Output has its own Run button'
+                }
               </p>
             </Panel>
           </ReactFlow>
