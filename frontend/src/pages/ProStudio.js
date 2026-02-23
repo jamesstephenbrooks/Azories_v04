@@ -1250,6 +1250,90 @@ export default function ProStudio() {
     setCharacterGallery([]);
   };
 
+  // Load scene's generated images (scene folder)
+  const loadSceneGallery = async (sceneId) => {
+    try {
+      const token = localStorage.getItem('azories-token');
+      const response = await fetch(`${API_URL}/api/pro-studio/scenes/${sceneId}/gallery`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setSceneGallery(data.images || []);
+      }
+    } catch (error) {
+      console.error('Error loading scene gallery:', error);
+    }
+  };
+
+  // Save image to scene folder
+  const saveToSceneFolder = async (sceneId, imageUrl, prompt, type = 'generated', characterId = null) => {
+    try {
+      const token = localStorage.getItem('azories-token');
+      const response = await fetch(`${API_URL}/api/pro-studio/scenes/${sceneId}/gallery`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          image_url: imageUrl,
+          prompt: prompt,
+          type: type,
+          character_id: characterId
+        })
+      });
+      if (response.ok) {
+        toast.success('Image saved to scene folder!');
+        if (viewingScene?.id === sceneId) {
+          loadSceneGallery(sceneId);
+        }
+      }
+    } catch (error) {
+      toast.error('Failed to save image');
+    }
+  };
+
+  // View scene details with gallery
+  const openSceneView = async (scene) => {
+    setViewingScene(scene);
+    await loadSceneGallery(scene.id);
+  };
+
+  // Close scene view
+  const closeSceneView = () => {
+    setViewingScene(null);
+    setSceneGallery([]);
+  };
+
+  // Save any image to Art Studio gallery
+  const saveToArtStudioGallery = async (imageUrl, prompt, type = 'pro-studio') => {
+    try {
+      const token = localStorage.getItem('azories-token');
+      const response = await fetch(`${API_URL}/api/art-studio/gallery`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          image_url: imageUrl,
+          prompt: prompt || 'Pro Studio image',
+          model: 'pro-studio',
+          type: type
+        })
+      });
+      if (response.ok) {
+        toast.success('Saved to Art Studio Gallery!');
+        loadGallery(); // Refresh gallery
+      } else {
+        toast.error('Failed to save to gallery');
+      }
+    } catch (error) {
+      toast.error('Error saving to gallery');
+    }
+  };
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center">
