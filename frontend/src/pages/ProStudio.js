@@ -1064,7 +1064,7 @@ export default function ProStudio() {
     }
   };
 
-  // Animate hero frame to video
+  // Animate hero frame to video using fal.ai Kling (Pro feature)
   const animateToVideo = async () => {
     // Get the source image based on selected type
     let sourceImageUrl = null;
@@ -1095,8 +1095,12 @@ export default function ProStudio() {
 
     setIsLoading(true);
     setLoadingProgress(0);
-    const model = VIDEO_MODELS.find(m => m.id === selectedVideoModel);
-    setLoadingMessage(`Animating ${sourceName} with ${model.name}...`);
+    setLoadingMessage(`Animating ${sourceName} with Kling AI (best face fidelity)... This takes 1-2 minutes.`);
+    
+    // Simulate progress for UX
+    const progressInterval = setInterval(() => {
+      setLoadingProgress(prev => Math.min(prev + 2, 90));
+    }, 2000);
 
     try {
       const token = localStorage.getItem('azories-token');
@@ -1109,35 +1113,41 @@ export default function ProStudio() {
         body: JSON.stringify({
           image_url: sourceImageUrl,
           motion_prompt: videoPrompt || 'subtle cinematic movement, breathing, natural motion',
-          model: selectedVideoModel,
+          model: 'kling',
           duration: videoDuration
         })
       });
 
+      clearInterval(progressInterval);
+      
       if (response.ok) {
         const data = await response.json();
-        if (data.job_id) {
-          // Start simulated progress and poll for completion
-          startVideoProgressSimulation();
-          pollVideoStatus(data.job_id);
-        } else if (data.video_url) {
+        if (data.video_url) {
           const newVideo = {
             id: Date.now(),
             url: data.video_url,
             sourceImage: sourceImageUrl,
-            model: selectedVideoModel
+            model: 'kling'
           };
           setGeneratedVideos(prev => [newVideo, ...prev]);
-          toast.success('Video generated!');
-          setIsLoading(false);
-          setLoadingProgress(0);
+          setLoadingProgress(100);
+          toast.success('Video generated with high face fidelity!');
+        } else {
+          toast.error('No video URL returned');
         }
       } else {
         const error = await response.json();
         toast.error(error.detail || 'Animation failed');
-        setIsLoading(false);
-        setLoadingProgress(0);
       }
+    } catch (error) {
+      toast.error('Error animating image');
+      console.error(error);
+    } finally {
+      clearInterval(progressInterval);
+      setIsLoading(false);
+      setLoadingProgress(0);
+    }
+  };
     } catch (error) {
       toast.error('Error animating image');
       console.error(error);
