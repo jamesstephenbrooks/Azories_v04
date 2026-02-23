@@ -3309,7 +3309,11 @@ export default function ProStudio() {
 
                   <Button 
                     onClick={animateToVideo}
-                    disabled={isLoading || !selectedHeroFrame}
+                    disabled={isLoading || (
+                      (videoSourceType === 'hero' && !selectedHeroFrame) ||
+                      (videoSourceType === 'character' && !videoSourceCharacter?.thumbnail) ||
+                      (videoSourceType === 'upload' && !videoUploadedImage)
+                    )}
                     className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                     data-testid="animate-video-btn"
                   >
