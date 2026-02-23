@@ -870,6 +870,9 @@ export default function ArtStudioExpert() {
   // Selection mode state
   const [selectionMode, setSelectionMode] = useState(false);
   
+  // Ref for runOutputNode function to avoid circular dependency
+  const runOutputNodeRef = useRef(null);
+  
   // Save to book modal state
   const [showSaveToBookModal, setShowSaveToBookModal] = useState(false);
   const [imageToSave, setImageToSave] = useState(null);
