@@ -15,6 +15,7 @@ import Auth from "@/pages/Auth";
 import ResetPassword from "@/pages/ResetPassword";
 import AdminCMS from "@/pages/AdminCMS";
 import AdminAnalytics from "@/pages/AdminAnalytics";
+import AdminDashboard from "@/pages/AdminDashboard";
 import UserProfile from "@/pages/UserProfile";
 import ArtStudio from "@/pages/ArtStudio";
 import ArtStudioExpert from "@/pages/ArtStudioExpert";
