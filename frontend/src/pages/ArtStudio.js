@@ -2158,26 +2158,56 @@ export default function ArtStudio() {
                       </div>
                     </div>
                     
-                    {/* Animation Style */}
+                    {/* Animation Style - Movement intensity */}
                     <div>
-                      <label className="text-sm text-white/70 mb-2 block">Animation Style</label>
-                      <div className="grid grid-cols-3 gap-3">
+                      <label className="text-sm text-white/70 mb-2 block">Movement Style</label>
+                      <div className="grid grid-cols-3 gap-2">
                         {[
-                          { id: 'natural', name: 'Natural', desc: 'Subtle, realistic movement' },
-                          { id: 'dramatic', name: 'Dramatic', desc: 'Bold, cinematic motion' },
-                          { id: 'subtle', name: 'Subtle', desc: 'Barely noticeable, calm' }
+                          { id: 'natural', name: 'Natural', desc: 'Subtle, realistic' },
+                          { id: 'dramatic', name: 'Dramatic', desc: 'Bold, cinematic' },
+                          { id: 'subtle', name: 'Subtle', desc: 'Barely noticeable' }
                         ].map(style => (
                           <button
                             key={style.id}
                             onClick={() => setAnimationStyle(style.id)}
-                            className={`p-3 rounded-lg text-left transition-all ${
+                            className={`p-2 rounded-lg text-left transition-all ${
                               animationStyle === style.id
                                 ? 'bg-pink-500/30 border-2 border-pink-500'
                                 : 'bg-white/5 border-2 border-transparent hover:border-white/20'
                             }`}
                           >
-                            <p className="text-white font-medium text-sm">{style.name}</p>
-                            <p className="text-white/50 text-xs">{style.desc}</p>
+                            <p className="text-white font-medium text-xs">{style.name}</p>
+                            <p className="text-white/50 text-[10px]">{style.desc}</p>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Art Style - Visual style of animation */}
+                    <div>
+                      <label className="text-sm text-white/70 mb-2 block">Art Style</label>
+                      <div className="grid grid-cols-4 gap-2">
+                        {[
+                          { id: 'realistic', name: 'Realistic', desc: 'Photorealistic' },
+                          { id: 'cinematic', name: 'Cinematic', desc: 'Movie quality' },
+                          { id: 'anime', name: 'Anime', desc: 'Japanese animation' },
+                          { id: 'cartoon', name: 'Cartoon', desc: 'Animated cartoon' },
+                          { id: 'cyberpunk', name: 'Cyberpunk', desc: 'Neon sci-fi' },
+                          { id: 'fantasy', name: 'Fantasy', desc: 'Magical world' },
+                          { id: 'watercolor', name: 'Watercolor', desc: 'Painted look' },
+                          { id: 'pixar', name: 'Pixar', desc: '3D animated' }
+                        ].map(art => (
+                          <button
+                            key={art.id}
+                            onClick={() => setAnimationArtStyle(art.id)}
+                            className={`p-2 rounded-lg text-center transition-all ${
+                              animationArtStyle === art.id
+                                ? 'bg-purple-500/30 border-2 border-purple-500'
+                                : 'bg-white/5 border-2 border-transparent hover:border-white/20'
+                            }`}
+                          >
+                            <p className="text-white font-medium text-[10px]">{art.name}</p>
+                            <p className="text-white/50 text-[8px]">{art.desc}</p>
                           </button>
                         ))}
                       </div>
