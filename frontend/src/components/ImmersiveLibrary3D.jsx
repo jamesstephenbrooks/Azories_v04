@@ -2164,15 +2164,17 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                     animate={{ x: 0, rotateY: -15, scale: 1 }}
                     exit={{ x: 200, rotateY: -90, scale: 0.5 }}
                     transition={{ type: "spring", damping: 20, stiffness: 100 }}
-                    className="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 z-10"
+                    className="hidden md:block absolute z-10"
                     style={{ 
                       perspective: '1000px', 
                       transformStyle: 'preserve-3d',
-                      transform: 'translateY(-50%) translateX(-85%)'
+                      left: '-140px',
+                      top: '50%',
+                      transform: 'translateY(-50%)'
                     }}
                   >
                     <div 
-                      className="w-32 lg:w-40 h-44 lg:h-56 rounded-lg shadow-2xl shadow-purple-500/50 overflow-hidden"
+                      className="w-28 lg:w-36 h-40 lg:h-48 rounded-lg shadow-2xl shadow-purple-500/50 overflow-hidden"
                       style={{ 
                         transform: 'rotateY(-15deg)',
                         boxShadow: '10px 10px 30px rgba(0,0,0,0.5), -5px 0 20px rgba(168,85,247,0.3)'
