@@ -133,6 +133,9 @@ export default function ProStudio() {
   const [selectedVideoModel, setSelectedVideoModel] = useState('sora-2');
   const [videoDuration, setVideoDuration] = useState(5);
   const [videoPrompt, setVideoPrompt] = useState('');
+  const [videoSourceType, setVideoSourceType] = useState('hero'); // 'hero', 'character', 'upload'
+  const [videoSourceCharacter, setVideoSourceCharacter] = useState(null);
+  const [videoUploadedImage, setVideoUploadedImage] = useState(null);
   
   // Shots App state
   const [shotsSourceImage, setShotsSourceImage] = useState(null);
