@@ -55,11 +55,11 @@ Build a digital book creation and reading application named "Azories" with featu
 - Character and scene creation with AI thumbnails working
 
 ### Payment & Credits System (Feb 23, 2026)
-**Pricing Model (50% profit margin):**
-- Starter: 100 credits for $5 (~10 images)
-- Creator: 500 credits for $20 (~50 images) - MOST POPULAR
-- Pro: 1,000 credits for $35 (~100 images or 1 LoRA)
-- Studio: 5,000 credits for $150 (~500 images)
+**Pricing Model (50% profit margin) - GBP:**
+- Starter: 100 credits for £4 (~10 images)
+- Creator: 500 credits for £16 (~50 images) - MOST POPULAR
+- Pro: 1,000 credits for £28 (~100 images or 1 LoRA)
+- Studio: 5,000 credits for £120 (~500 images)
 
 **VIP Users (Unlimited Credits - tracked for costs):**
 - arianamillb@icloud.com
