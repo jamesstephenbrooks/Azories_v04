@@ -6696,6 +6696,59 @@ async def get_book_gallery(book_id: str, current_user: dict = Depends(get_curren
         logging.error(f"Book gallery error: {e}")
         raise HTTPException(status_code=500, detail="Failed to load book gallery")
 
+# Starter Library Images - Pre-made images for new users
+STARTER_LIBRARY_IMAGES = [
+    # Fantasy Characters
+    {"id": "starter_1", "url": "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800", "name": "Fantasy Princess", "category": "character", "tags": ["fantasy", "princess", "female", "portrait"]},
+    {"id": "starter_2", "url": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800", "name": "Young Heroine", "category": "character", "tags": ["portrait", "female", "young", "hero"]},
+    {"id": "starter_3", "url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800", "name": "Noble Knight", "category": "character", "tags": ["fantasy", "knight", "male", "portrait"]},
+    {"id": "starter_4", "url": "https://images.unsplash.com/photo-1552058544-f2b08422138a?w=800", "name": "Wise Elder", "category": "character", "tags": ["elder", "wizard", "male", "portrait"]},
+    {"id": "starter_5", "url": "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800", "name": "Mystical Maiden", "category": "character", "tags": ["fantasy", "mystical", "female", "portrait"]},
+    # Children Characters
+    {"id": "starter_6", "url": "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=800", "name": "Curious Child", "category": "character", "tags": ["child", "curious", "adventure"]},
+    {"id": "starter_7", "url": "https://images.unsplash.com/photo-1516627145497-ae6968895b74?w=800", "name": "Happy Boy", "category": "character", "tags": ["child", "boy", "happy", "young"]},
+    {"id": "starter_8", "url": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=800", "name": "Confident Teen", "category": "character", "tags": ["teen", "confident", "male"]},
+    # Fantasy Scenes
+    {"id": "starter_10", "url": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800", "name": "Enchanted Forest", "category": "scene", "tags": ["forest", "fantasy", "magical", "nature"]},
+    {"id": "starter_11", "url": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800", "name": "Majestic Mountain", "category": "scene", "tags": ["mountain", "epic", "landscape", "nature"]},
+    {"id": "starter_12", "url": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800", "name": "Tropical Beach", "category": "scene", "tags": ["beach", "tropical", "ocean", "paradise"]},
+    {"id": "starter_13", "url": "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=800", "name": "Outer Space", "category": "scene", "tags": ["space", "cosmic", "stars", "scifi"]},
+    {"id": "starter_14", "url": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800", "name": "Underwater World", "category": "scene", "tags": ["underwater", "ocean", "coral", "sea"]},
+    {"id": "starter_15", "url": "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800", "name": "Ancient Library", "category": "scene", "tags": ["library", "books", "magical", "indoor"]},
+    # Nature & Adventure
+    {"id": "starter_16", "url": "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800", "name": "Sunset Cliffs", "category": "scene", "tags": ["sunset", "cliffs", "dramatic", "nature"]},
+    {"id": "starter_17", "url": "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800", "name": "Northern Lights", "category": "scene", "tags": ["aurora", "arctic", "magical", "night"]},
+    {"id": "starter_18", "url": "https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800", "name": "Cherry Blossoms", "category": "scene", "tags": ["japan", "spring", "flowers", "peaceful"]},
+    # Magical Elements
+    {"id": "starter_19", "url": "https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?w=800", "name": "Moonlit Lake", "category": "scene", "tags": ["moon", "lake", "night", "peaceful"]},
+    {"id": "starter_20", "url": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800", "name": "Floating Islands", "category": "scene", "tags": ["fantasy", "islands", "sky", "magical"]},
+    # Animals
+    {"id": "starter_21", "url": "https://images.unsplash.com/photo-1474511320723-9a56873571b7?w=800", "name": "Majestic Lion", "category": "character", "tags": ["lion", "animal", "majestic", "wildlife"]},
+    {"id": "starter_22", "url": "https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=800", "name": "Wise Owl", "category": "character", "tags": ["owl", "animal", "wise", "bird"]},
+    {"id": "starter_23", "url": "https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?w=800", "name": "Sea Turtle", "category": "character", "tags": ["turtle", "ocean", "animal", "peaceful"]},
+    {"id": "starter_24", "url": "https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?w=800", "name": "Friendly Dragon", "category": "character", "tags": ["dragon", "fantasy", "creature", "magical"]},
+    # More Characters
+    {"id": "starter_25", "url": "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?w=800", "name": "Robot Friend", "category": "character", "tags": ["robot", "scifi", "friendly", "future"]},
+    {"id": "starter_26", "url": "https://images.unsplash.com/photo-1608889825103-eb5ed706fc64?w=800", "name": "Pixar Style Kid", "category": "character", "tags": ["cartoon", "pixar", "kid", "animated"]},
+    # More Scenes
+    {"id": "starter_27", "url": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800", "name": "Galaxy View", "category": "scene", "tags": ["space", "galaxy", "stars", "cosmic"]},
+    {"id": "starter_28", "url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800", "name": "Castle Interior", "category": "scene", "tags": ["castle", "interior", "medieval", "grand"]},
+    {"id": "starter_29", "url": "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=800", "name": "Secret Garden", "category": "scene", "tags": ["garden", "flowers", "magical", "nature"]},
+    {"id": "starter_30", "url": "https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800", "name": "Desert Oasis", "category": "scene", "tags": ["desert", "oasis", "adventure", "warm"]},
+]
+
+@api_router.get("/starter-library")
+async def get_starter_library(category: Optional[str] = None):
+    """Get starter library images for new users - no auth required"""
+    images = STARTER_LIBRARY_IMAGES
+    
+    if category:
+        images = [img for img in images if img.get("category") == category]
+    
+    return {"images": images, "total": len(images)}
+
+
+
 class SaveAnimationRequest(BaseModel):
     video_url: str
     name: str
