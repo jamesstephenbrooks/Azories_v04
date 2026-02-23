@@ -719,6 +719,8 @@ async def add_credits(amount: int = 100, current_user: dict = Depends(get_curren
 async def deduct_credits(user_id: str, operation: str) -> bool:
     """Deduct credits for an operation. Returns True if successful."""
     cost = CREDIT_COSTS.get(operation, 0)
+    actual_cost = ACTUAL_COSTS.get(operation, 0)
+    
     if cost == 0:
         return True
     
@@ -726,14 +728,44 @@ async def deduct_credits(user_id: str, operation: str) -> bool:
     if not user:
         return False
     
+    user_email = user.get("email", "")
+    
+    # Check if user is VIP (unlimited credits but track usage)
+    if user_email.lower() in [v.lower() for v in VIP_USERS]:
+        # Log VIP usage for tracking costs
+        await db.vip_usage.insert_one({
+            "id": str(uuid.uuid4()),
+            "user_id": user_id,
+            "user_email": user_email,
+            "operation": operation,
+            "credits_would_cost": cost,
+            "actual_cost_usd": actual_cost,
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        })
+        logger.info(f"VIP user {user_email} used {operation} (${actual_cost} cost)")
+        return True
+    
     current_credits = user.get("credits", 0)
     if current_credits < cost:
         return False
     
+    # Deduct credits and log the transaction
     await db.users.update_one(
         {"id": user_id},
         {"$set": {"credits": current_credits - cost}}
     )
+    
+    # Log credit usage for analytics
+    await db.credit_usage.insert_one({
+        "id": str(uuid.uuid4()),
+        "user_id": user_id,
+        "operation": operation,
+        "credits_spent": cost,
+        "balance_before": current_credits,
+        "balance_after": current_credits - cost,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    })
+    
     return True
 
 @api_router.post("/auth/upgrade")
