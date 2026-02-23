@@ -5021,7 +5021,7 @@ async def create_checkout_session(request: CreateCheckoutRequest, http_request: 
     # Create checkout session
     checkout_request = CheckoutSessionRequest(
         amount=float(package["price"]),
-        currency="usd",
+        currency=package.get("currency", "gbp"),
         success_url=success_url,
         cancel_url=cancel_url,
         metadata={
@@ -5042,7 +5042,7 @@ async def create_checkout_session(request: CreateCheckoutRequest, http_request: 
         "package_id": request.package_id,
         "credits": package["credits"],
         "amount": package["price"],
-        "currency": "usd",
+        "currency": "gbp",
         "session_id": session.session_id,
         "status": "pending",
         "payment_status": "initiated",
