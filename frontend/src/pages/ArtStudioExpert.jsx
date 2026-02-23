@@ -965,17 +965,6 @@ export default function ArtStudioExpert() {
     }
   };
   
-  // Open gallery picker for an image node
-  const openGalleryPicker = useCallback((nodeId) => {
-    setGalleryPickerCallback(() => (imageUrl) => {
-      updateNodeData(nodeId, 'image', imageUrl);
-      updateNodeData(nodeId, 'label', 'From Gallery');
-      setShowGalleryPicker(false);
-    });
-    loadGalleryImages('art');
-    setShowGalleryPicker(true);
-  }, [updateNodeData]);
-  
   // Node data change handler
   const updateNodeData = useCallback((nodeId, key, value) => {
     setNodes(nds => nds.map(node => {
@@ -992,6 +981,17 @@ export default function ArtStudioExpert() {
       return node;
     }));
   }, [setNodes]);
+  
+  // Open gallery picker for an image node
+  const openGalleryPicker = useCallback((nodeId) => {
+    setGalleryPickerCallback(() => (imageUrl) => {
+      updateNodeData(nodeId, 'image', imageUrl);
+      updateNodeData(nodeId, 'label', 'From Gallery');
+      setShowGalleryPicker(false);
+    });
+    loadGalleryImages('art');
+    setShowGalleryPicker(true);
+  }, [updateNodeData]);
   
   // Initialize nodes with onChange handlers
   useEffect(() => {
