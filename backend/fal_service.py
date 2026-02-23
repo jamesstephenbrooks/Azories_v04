@@ -393,6 +393,102 @@ async def face_swap(
     """
     if not FAL_KEY:
         raise Exception("FAL_KEY not configured")
+
+
+async def generate_video_from_image(
+    image_url: str,
+    prompt: str,
+    duration: int = 5,
+    aspect_ratio: str = "16:9",
+    model: str = "kling"
+) -> Dict[str, Any]:
+    """
+    Generate video from image using fal.ai image-to-video models (Kling, Luma, etc.)
+    
+    This provides much better consistency than text-to-video because it
+    uses the actual image as input, preserving face and clothing details.
+    
+    Args:
+        image_url: URL or base64 data URI of the source image
+        prompt: Motion/action description (e.g., "gentle breathing, hair flowing")
+        duration: Video duration in seconds (5 or 10 for Kling)
+        aspect_ratio: "16:9", "9:16", or "1:1"
+        model: "kling" (best for faces), "luma", or "minimax"
+    
+    Returns:
+        Dict with video URL and metadata
+    """
+    if not FAL_KEY:
+        raise Exception("FAL_KEY not configured")
+    
+    # Handle base64 images - upload first
+    if image_url.startswith('data:'):
+        image_url = await upload_image_to_fal(image_url)
+    
+    # Model configurations
+    model_configs = {
+        "kling": {
+            "endpoint": "fal-ai/kling-video/v1/standard/image-to-video",
+            "duration_param": "duration",
+            "duration_values": {"5": "5", "10": "10"},
+            "aspect_param": "aspect_ratio"
+        },
+        "luma": {
+            "endpoint": "fal-ai/luma-dream-machine/image-to-video",
+            "duration_param": None,  # Luma doesn't have duration param
+            "aspect_param": "aspect_ratio"
+        },
+        "minimax": {
+            "endpoint": "fal-ai/minimax-video/image-to-video",
+            "duration_param": None,
+            "aspect_param": "aspect_ratio"
+        }
+    }
+    
+    config = model_configs.get(model, model_configs["kling"])
+    
+    arguments = {
+        "prompt": prompt,
+        "image_url": image_url
+    }
+    
+    # Add aspect ratio
+    if config.get("aspect_param"):
+        arguments[config["aspect_param"]] = aspect_ratio
+    
+    # Add duration if supported
+    if config.get("duration_param"):
+        dur_str = str(min(duration, 10))
+        if dur_str in config.get("duration_values", {}):
+            arguments[config["duration_param"]] = config["duration_values"][dur_str]
+        else:
+            arguments[config["duration_param"]] = "5"
+    
+    try:
+        logger.info(f"Starting {model} video generation with prompt: {prompt[:100]}...")
+        handler = await fal_client.submit_async(config["endpoint"], arguments=arguments)
+        result = await handler.get()
+        
+        video_url = None
+        if isinstance(result.get("video"), dict):
+            video_url = result["video"].get("url")
+        elif isinstance(result.get("video"), str):
+            video_url = result["video"]
+        
+        if not video_url:
+            raise Exception("No video URL in response")
+        
+        return {
+            "success": True,
+            "video_url": video_url,
+            "model": model,
+            "duration": duration,
+            "prompt": prompt
+        }
+    except Exception as e:
+        logger.error(f"{model} video generation error: {str(e)}")
+        raise Exception(f"Video generation failed: {str(e)}")
+
     
     arguments = {
         "base_image_url": source_image_url,
