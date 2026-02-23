@@ -1141,9 +1141,7 @@ export default function Dashboard() {
                                     </div>
                                   )}
                                   <span className="flex-1 font-ui text-sm truncate">{book.title}</span>
-                                  <span className={`px-2 py-0.5 rounded-full text-xs ${book.is_published ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'}`}>
-                                    {book.is_published ? 'Published' : 'Draft'}
-                                  </span>
+                                  {getPublishStatusBadge(book)}
                                   <Button
                                     variant="ghost"
                                     size="sm"
