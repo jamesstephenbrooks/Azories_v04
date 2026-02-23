@@ -84,9 +84,9 @@ Build a digital book creation and reading application named "Azories" with featu
 - None currently blocking
 
 ### P1 (High)
-- Re-enable credits system (currently credits not deducted for testing)
+- ~~Re-enable credits system~~ ✅ DONE (Feb 23, 2026) - Credits now deducted for all Pro Studio operations
 - LoRA training full workflow validation
-- Video generation UX (long-running tasks need background processing)
+- ~~Video generation UX~~ ✅ IMPROVED (Feb 23, 2026) - Added progress bar display
 
 ### P2 (Medium)
 - Back cover visibility at end of book
