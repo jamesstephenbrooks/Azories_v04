@@ -1835,8 +1835,10 @@ export default function ArtStudioExpert() {
             nodeTypes={nodeTypes}
             fitView
             className="bg-transparent"
-            selectionOnDrag
-            selectionMode="partial"
+            selectionOnDrag={selectionMode}
+            selectionMode={selectionMode ? "partial" : undefined}
+            panOnDrag={!selectionMode}
+            selectNodesOnDrag={selectionMode}
           >
             <Background color="#333" gap={20} />
             <Controls className="!bg-black/50 !border-white/10" />
