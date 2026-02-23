@@ -525,7 +525,9 @@ export default function BookEditor() {
       lastSavedContent.current = JSON.stringify({
         text: selectedPage.text_content,
         image: selectedPage.image_url,
-        video: selectedPage.video_url
+        video: selectedPage.video_url,
+        useVideo: selectedPage.use_video,
+        layoutType: selectedPage.layout_type
       });
       setHasUnsavedChanges(false);
       
