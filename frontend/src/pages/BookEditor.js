@@ -1434,20 +1434,23 @@ export default function BookEditor() {
                       </TabsList>
                       
                       <TabsContent value="media" className="space-y-4">
-                        {/* Media Preview - Constrained height to fit viewport */}
-                        <div className="max-h-[35vh] overflow-hidden">
-                          {selectedPage.use_video && selectedPage.video_url ? (
-                            /* Video Preview */
-                            <div className="aspect-video rounded-2xl border-2 border-border bg-muted/30 overflow-hidden flex items-center justify-center max-h-[35vh]">
+                        {/* Media Preview - Larger size */}
+                        <div className="flex justify-center">
+                          {selectedPage.video_url ? (
+                            /* Video/Animation Preview - Full width */
+                            <div className="w-full aspect-video rounded-2xl border-2 border-border bg-muted/30 overflow-hidden flex items-center justify-center" style={{ maxHeight: '55vh' }}>
                               <video 
                                 src={selectedPage.video_url}
                                 controls
-                                className="w-full h-full object-cover"
+                                autoPlay
+                                loop
+                                muted
+                                className="w-full h-full object-contain"
                               />
                             </div>
                           ) : selectedPage.layout_type?.startsWith('comic') ? (
                             /* Comic layout panels */
-                            <div className={`grid gap-2 ${
+                            <div className={`grid gap-2 w-full ${
                               selectedPage.layout_type === 'comic_2' ? 'grid-cols-2' :
                               selectedPage.layout_type === 'comic_3' ? 'grid-cols-3' :
                               selectedPage.layout_type === 'comic_4' ? 'grid-cols-2 grid-rows-2' : ''
@@ -1480,13 +1483,13 @@ export default function BookEditor() {
                               })}
                             </div>
                           ) : (
-                            /* Book page preview - scaled to fit */
+                            /* Book page preview - larger size */
                             <div 
-                              className="rounded-2xl border-2 border-border bg-[#fdfbf7] dark:bg-[#2a2a30] overflow-hidden flex items-center justify-center relative shadow-lg mx-auto"
+                              className="rounded-2xl border-2 border-border bg-[#fdfbf7] dark:bg-[#2a2a30] overflow-hidden flex items-center justify-center relative shadow-lg"
                               data-testid="page-image-preview"
                               style={{
                                 aspectRatio: '3/4',
-                                maxHeight: '35vh',
+                                height: '55vh',
                                 width: 'auto',
                                 boxShadow: 'inset -7px 0 30px -7px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.1)'
                               }}
@@ -1501,45 +1504,26 @@ export default function BookEditor() {
                                     objectPosition: `${selectedPage.image_position_x || 50}% ${selectedPage.image_position_y || 50}%`
                                   }}
                                 />
-                              ) : selectedPage.video_url ? (
-                                <video 
-                                  src={selectedPage.video_url}
-                                  className="absolute inset-0 w-full h-full object-cover"
-                                  muted
-                                  loop
-                                />
                               ) : (
                                 <div className="text-center p-4">
-                                  <FiImage className="w-8 h-8 mx-auto text-muted-foreground/50 mb-1" />
-                                  <p className="font-body text-xs text-muted-foreground">
-                                    No media - use options below
+                                  <FiImage className="w-12 h-12 mx-auto text-muted-foreground/50 mb-2" />
+                                  <p className="font-body text-sm text-muted-foreground">
+                                    No media selected
+                                  </p>
+                                  <p className="font-body text-xs text-muted-foreground mt-1">
+                                    Upload or select from galleries below
                                   </p>
                                 </div>
                               )}
                               {/* Preview label */}
-                              <div className="absolute bottom-2 left-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded">
-                                {selectedPage.use_video ? 'Video' : 'Image'} Preview
-                              </div>
+                              {selectedPage.image_url && (
+                                <div className="absolute bottom-2 left-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded">
+                                  Page Preview
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
-                        
-                        {/* Use Video Toggle - Always visible if video exists */}
-                        {selectedPage.video_url && (
-                          <div className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20">
-                            <div>
-                              <Label className="font-ui text-sm">Use video on page</Label>
-                              <p className="text-xs text-muted-foreground">Show video instead of image when reading</p>
-                            </div>
-                            <input
-                              type="checkbox"
-                              checked={selectedPage.use_video || false}
-                              onChange={(e) => setSelectedPage({ ...selectedPage, use_video: e.target.checked })}
-                              className="w-5 h-5 accent-purple-500"
-                              data-testid="use-video-toggle"
-                            />
-                          </div>
-                        )}
                         
                         {/* Quick Actions - Upload buttons side by side */}
                         <div className="grid grid-cols-2 gap-2">
