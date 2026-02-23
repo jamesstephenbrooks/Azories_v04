@@ -6911,6 +6911,217 @@ async def save_animation(request: SaveAnimationRequest, current_user: dict = Dep
         raise HTTPException(status_code=500, detail="Failed to save animation")
 
 
+
+# ============================================================================
+# CONTENT MODERATION SYSTEM
+# ============================================================================
+
+class ModerationResult(BaseModel):
+    flagged: bool
+    categories: List[str] = []
+    message: str = ""
+
+class PublishRequestModel(BaseModel):
+    book_id: str
+
+async def moderate_text_content(text: str) -> ModerationResult:
+    """Use AI to moderate text content for inappropriate content"""
+    if not text or len(text.strip()) < 5:
+        return ModerationResult(flagged=False, categories=[], message="Content too short to moderate")
+    
+    try:
+        llm_key = os.environ.get("EMERGENT_LLM_KEY")
+        if not llm_key:
+            logging.warning("No EMERGENT_LLM_KEY for moderation")
+            return ModerationResult(flagged=False, categories=[], message="Moderation skipped - no API key")
+        
+        chat = LlmChat(
+            api_key=llm_key,
+            session_id=f"moderation-{uuid.uuid4()}",
+            system_message="""You are a content moderation assistant for a children's book platform. 
+Analyze the given text and determine if it contains any inappropriate content for a children's book platform.
+
+Categories to check:
+- violence: Graphic violence, gore, or harm to children
+- sexual: Sexual content, nudity, or inappropriate relationships
+- hate: Hate speech, discrimination, or harmful stereotypes
+- profanity: Strong language or profanity
+- harmful: Self-harm, drugs, or dangerous activities for children
+- disturbing: Scary or disturbing content inappropriate for young readers
+
+Respond ONLY in this exact JSON format:
+{"flagged": true/false, "categories": ["category1", "category2"], "reason": "brief explanation"}
+
+If content is safe, respond: {"flagged": false, "categories": [], "reason": "Content is appropriate for children"}"""
+        ).with_model("openai", "gpt-4.1-mini")
+        
+        response = await chat.send_message(UserMessage(text=f"Moderate this children's book content:\n\n{text[:2000]}"))
+        
+        # Parse the response
+        try:
+            import re
+            json_match = re.search(r'\{[^}]+\}', response)
+            if json_match:
+                result = json.loads(json_match.group())
+                return ModerationResult(
+                    flagged=result.get("flagged", False),
+                    categories=result.get("categories", []),
+                    message=result.get("reason", "")
+                )
+        except:
+            pass
+        
+        return ModerationResult(flagged=False, categories=[], message="Moderation completed")
+    except Exception as e:
+        logging.error(f"Moderation error: {e}")
+        return ModerationResult(flagged=False, categories=[], message=f"Moderation error: {str(e)}")
+
+@api_router.post("/books/{book_id}/request-publish")
+async def request_book_publish(book_id: str, background_tasks: BackgroundTasks, current_user: dict = Depends(get_current_user)):
+    """Request to publish a book - triggers content moderation and admin notification"""
+    
+    # Get the book
+    book = await db.books.find_one({"id": book_id, "author_id": current_user["id"]})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found or you don't own it")
+    
+    # Get all pages content for moderation
+    chapters = await db.chapters.find({"book_id": book_id}).to_list(100)
+    all_text_content = []
+    
+    for chapter in chapters:
+        pages = await db.pages.find({"chapter_id": chapter["id"]}).to_list(100)
+        for page in pages:
+            if page.get("text_content"):
+                all_text_content.append(page["text_content"])
+    
+    combined_text = "\n\n".join(all_text_content)
+    
+    # Moderate the content
+    moderation_result = await moderate_text_content(combined_text)
+    
+    # Update book status
+    update_data = {
+        "publish_status": "pending_review" if moderation_result.flagged else "pending_review",
+        "moderation_flags": moderation_result.categories,
+        "moderation_message": moderation_result.message,
+        "publish_requested_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.books.update_one({"id": book_id}, {"$set": update_data})
+    
+    # Send email notification to admin if content is flagged
+    admin_email = "books@azories.com"
+    app_url = os.environ.get("APP_URL", "https://azories.com")
+    
+    if moderation_result.flagged:
+        subject = f"⚠️ FLAGGED: Book '{book['title']}' requires review"
+        html_content = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; padding: 20px;">
+            <h2 style="color: #dc2626;">⚠️ Content Flagged for Review</h2>
+            <p><strong>Book:</strong> {book['title']}</p>
+            <p><strong>Author:</strong> {current_user.get('name', 'Unknown')} ({current_user.get('email', 'Unknown')})</p>
+            <p><strong>Flagged Categories:</strong> {', '.join(moderation_result.categories)}</p>
+            <p><strong>AI Assessment:</strong> {moderation_result.message}</p>
+            <hr>
+            <p>Please review this book before approving for publication.</p>
+            <p><a href="{app_url}/admin/books/{book_id}" style="background: #7c3aed; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Review Book</a></p>
+        </body>
+        </html>
+        """
+    else:
+        subject = f"📚 New book submitted: '{book['title']}'"
+        html_content = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; padding: 20px;">
+            <h2 style="color: #16a34a;">📚 New Book Submission</h2>
+            <p><strong>Book:</strong> {book['title']}</p>
+            <p><strong>Author:</strong> {current_user.get('name', 'Unknown')} ({current_user.get('email', 'Unknown')})</p>
+            <p><strong>Status:</strong> ✅ Passed automated content check</p>
+            <hr>
+            <p>This book has passed automated moderation but still requires admin approval.</p>
+            <p><a href="{app_url}/admin/books/{book_id}" style="background: #7c3aed; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Review & Approve</a></p>
+        </body>
+        </html>
+        """
+    
+    # Send email in background
+    if email_configured():
+        background_tasks.add_task(send_email, admin_email, subject, html_content)
+    
+    return {
+        "success": True,
+        "status": "pending_review",
+        "flagged": moderation_result.flagged,
+        "flags": moderation_result.categories,
+        "message": "Your book has been submitted for review. You will be notified once it's approved." if not moderation_result.flagged else "Your book has been flagged for manual review due to potential content concerns."
+    }
+
+@api_router.post("/admin/books/{book_id}/approve")
+async def admin_approve_book(book_id: str, current_user: dict = Depends(get_current_user)):
+    """Admin endpoint to approve a book for publication"""
+    # Check if user is admin (VIP users for now)
+    vip_emails = ["arianamillb@icloud.com", "jamesstephenbrooks@outlook.com"]
+    if current_user.get("email") not in vip_emails:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    book = await db.books.find_one({"id": book_id})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    await db.books.update_one(
+        {"id": book_id},
+        {"$set": {
+            "publish_status": "published",
+            "is_published": True,
+            "approved_by": current_user["email"],
+            "approved_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    return {"success": True, "message": "Book approved and published"}
+
+@api_router.post("/admin/books/{book_id}/reject")
+async def admin_reject_book(book_id: str, reason: str = "", current_user: dict = Depends(get_current_user)):
+    """Admin endpoint to reject a book"""
+    vip_emails = ["arianamillb@icloud.com", "jamesstephenbrooks@outlook.com"]
+    if current_user.get("email") not in vip_emails:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    book = await db.books.find_one({"id": book_id})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    await db.books.update_one(
+        {"id": book_id},
+        {"$set": {
+            "publish_status": "rejected",
+            "is_published": False,
+            "rejected_by": current_user["email"],
+            "rejected_at": datetime.now(timezone.utc).isoformat(),
+            "rejection_reason": reason
+        }}
+    )
+    
+    return {"success": True, "message": "Book rejected"}
+
+@api_router.get("/admin/pending-reviews")
+async def get_pending_reviews(current_user: dict = Depends(get_current_user)):
+    """Get all books pending review (admin only)"""
+    vip_emails = ["arianamillb@icloud.com", "jamesstephenbrooks@outlook.com"]
+    if current_user.get("email") not in vip_emails:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    pending_books = await db.books.find(
+        {"publish_status": "pending_review"},
+        {"_id": 0}
+    ).to_list(100)
+    
+    return {"books": pending_books, "count": len(pending_books)}
+
+
+
 # Workflow Save/Load Endpoints
 class WorkflowSaveRequest(BaseModel):
     name: str
