@@ -467,6 +467,19 @@ const PromptNode = ({ data, selected }) => {
       <Handle type="target" position={Position.Left} className="!bg-rose-400 !w-3 !h-3" />
       <NodeDeleteButton onDelete={data.onDelete} />
       
+      {/* Copy button */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          data.onCopyNode?.();
+        }}
+        className="absolute top-0.5 right-5 w-4 h-4 rounded bg-blue-500/80 hover:bg-blue-500 flex items-center justify-center transition-colors z-10"
+        title="Duplicate node"
+        data-testid="prompt-node-copy-btn"
+      >
+        <FiCopy className="w-2.5 h-2.5 text-white" />
+      </button>
+      
       <div className="p-3 border-b border-rose-600/30 flex items-center gap-2">
         <div className="w-8 h-8 rounded-lg bg-rose-500/30 flex items-center justify-center">
           <FiType className="text-rose-300" />
