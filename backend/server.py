@@ -747,7 +747,7 @@ async def forgot_password(request: ForgotPasswordRequest, background_tasks: Back
     })
     
     # Get app URL for reset link
-    app_url = os.environ.get("APP_URL", "https://book-hub-pro.preview.emergentagent.com")
+    app_url = os.environ.get("APP_URL", "https://ai-character-gen-12.preview.emergentagent.com")
     reset_url = f"{app_url}/reset-password?token={reset_token}"
     
     # Send reset email
@@ -1167,7 +1167,7 @@ async def generate_invite_link(book_id: str, request: InviteLinkRequest, current
     await db.invites.insert_one(invite_data)
     
     # Generate the link (frontend will handle this route)
-    base_url = os.environ.get('FRONTEND_URL', 'https://book-hub-pro.preview.emergentagent.com')
+    base_url = os.environ.get('FRONTEND_URL', 'https://ai-character-gen-12.preview.emergentagent.com')
     invite_link = f"{base_url}/invite/{invite_token}"
     
     return {"invite_link": invite_link, "token": invite_token}
@@ -7019,7 +7019,7 @@ async def request_book_publish(book_id: str, background_tasks: BackgroundTasks, 
     # Send email notification to admin with AI moderation results
     # Note: Until azories.com domain is verified in Resend, emails go to the registered account email
     admin_email = os.environ.get("ADMIN_NOTIFY_EMAIL", "jamesstephenbrooks@outlook.com")
-    app_url = os.environ.get("APP_URL", "https://book-hub-pro.preview.emergentagent.com")
+    app_url = os.environ.get("APP_URL", "https://ai-character-gen-12.preview.emergentagent.com")
     
     # Different email based on moderation result
     if moderation_result.flagged:
@@ -7147,7 +7147,7 @@ async def admin_approve_book(book_id: str, background_tasks: BackgroundTasks, ad
     
     # Send approval email to creator
     if author_email and email_configured():
-        app_url = os.environ.get("APP_URL", "https://book-hub-pro.preview.emergentagent.com")
+        app_url = os.environ.get("APP_URL", "https://ai-character-gen-12.preview.emergentagent.com")
         subject = f"🎉 Your book '{book['title']}' has been approved!"
         html_content = f"""
         <html>
@@ -7213,7 +7213,7 @@ async def admin_reject_book(book_id: str, background_tasks: BackgroundTasks, rea
     
     # Send rejection email to creator
     if author_email and email_configured():
-        app_url = os.environ.get("APP_URL", "https://book-hub-pro.preview.emergentagent.com")
+        app_url = os.environ.get("APP_URL", "https://ai-character-gen-12.preview.emergentagent.com")
         reason_html = f"""
             <div style="background: #fef2f2; border: 1px solid #dc2626; padding: 15px; border-radius: 8px; margin: 20px 0;">
                 <p style="margin: 0; color: #dc2626; font-weight: bold;">Reason for rejection:</p>

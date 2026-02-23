@@ -12,7 +12,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://book-hub-pro.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://ai-character-gen-12.preview.emergentagent.com').rstrip('/')
 
 # Test credentials - using test/test as per requirements
 TEST_EMAIL = "test"
