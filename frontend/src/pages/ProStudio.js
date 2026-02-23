@@ -3327,7 +3327,7 @@ export default function ProStudio() {
                     className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                     data-testid="animate-video-btn"
                   >
-                    <FiPlay className="mr-2" /> Animate with {VIDEO_MODELS.find(m => m.id === selectedVideoModel)?.name}
+                    <FiPlay className="mr-2" /> Animate with Kling AI (Best Face Fidelity)
                   </Button>
 
                   {selectedVideoModel !== 'sora-2' && (
