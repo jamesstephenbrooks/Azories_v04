@@ -987,6 +987,141 @@ export default function AdminDashboard() {
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Preview Modal */}
+      <Dialog open={!!previewBook} onOpenChange={(open) => !open && closePreview()}>
+        <DialogContent className="max-w-4xl h-[85vh] bg-slate-900 border-white/10 p-0 overflow-hidden">
+          <DialogHeader className="p-4 border-b border-white/10 bg-black/30">
+            <div className="flex items-center justify-between">
+              <div>
+                <DialogTitle className="text-white text-xl">{previewBook?.title}</DialogTitle>
+                <p className="text-white/60 text-sm">by {previewBook?.author_name} • {previewBook?.genre}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                {previewBook?.moderation_flagged ? (
+                  <span className="px-3 py-1 bg-red-500/20 text-red-400 text-sm rounded-full flex items-center gap-1">
+                    <FiAlertTriangle className="w-4 h-4" /> Flagged
+                  </span>
+                ) : previewBook?.moderation_run_at ? (
+                  <span className="px-3 py-1 bg-green-500/20 text-green-400 text-sm rounded-full flex items-center gap-1">
+                    <FiCheck className="w-4 h-4" /> Passed
+                  </span>
+                ) : null}
+              </div>
+            </div>
+          </DialogHeader>
+          
+          <div className="flex-1 overflow-hidden flex flex-col">
+            {previewLoading ? (
+              <div className="flex-1 flex items-center justify-center">
+                <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : previewPages.length > 0 ? (
+              <>
+                {/* Page Content */}
+                <div className="flex-1 overflow-auto p-6">
+                  <div className="max-w-2xl mx-auto">
+                    {previewPages[currentPreviewPage]?.chapterTitle && currentPreviewPage === 0 && (
+                      <h2 className="text-xl font-bold text-purple-400 mb-4">
+                        {previewPages[currentPreviewPage].chapterTitle}
+                      </h2>
+                    )}
+                    
+                    {/* Page Image */}
+                    {(previewPages[currentPreviewPage]?.image_url || previewPages[currentPreviewPage]?.video_url) && (
+                      <div className="mb-4 rounded-xl overflow-hidden bg-black/30">
+                        {previewPages[currentPreviewPage]?.video_url ? (
+                          <video 
+                            src={previewPages[currentPreviewPage].video_url} 
+                            controls 
+                            className="w-full max-h-[300px] object-contain"
+                          />
+                        ) : (
+                          <img 
+                            src={previewPages[currentPreviewPage].image_url} 
+                            alt="Page illustration"
+                            className="w-full max-h-[300px] object-contain"
+                          />
+                        )}
+                      </div>
+                    )}
+                    
+                    {/* Page Text */}
+                    {previewPages[currentPreviewPage]?.text_content && (
+                      <div className="prose prose-invert max-w-none">
+                        <p className="text-white/90 text-lg leading-relaxed whitespace-pre-wrap">
+                          {previewPages[currentPreviewPage].text_content}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Page Navigation */}
+                <div className="p-4 border-t border-white/10 bg-black/30 flex items-center justify-between">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPreviewPage(p => Math.max(0, p - 1))}
+                    disabled={currentPreviewPage === 0}
+                    className="border-white/20 text-white"
+                  >
+                    <FiChevronLeft className="w-4 h-4 mr-1" /> Previous
+                  </Button>
+                  
+                  <span className="text-white/60 text-sm">
+                    Page {currentPreviewPage + 1} of {previewPages.length}
+                  </span>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPreviewPage(p => Math.min(previewPages.length - 1, p + 1))}
+                    disabled={currentPreviewPage >= previewPages.length - 1}
+                    className="border-white/20 text-white"
+                  >
+                    Next <FiChevronRight className="w-4 h-4 ml-1" />
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="flex-1 flex items-center justify-center text-white/60">
+                <div className="text-center">
+                  <FiBook className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                  <p>No pages found in this book</p>
+                </div>
+              </div>
+            )}
+          </div>
+          
+          {/* Action Buttons */}
+          {previewBook && (
+            <div className="p-4 border-t border-white/10 bg-black/30 flex items-center justify-end gap-3">
+              <Button
+                variant="outline"
+                onClick={closePreview}
+                className="border-white/20 text-white"
+              >
+                Close
+              </Button>
+              <Button
+                onClick={() => { handleApprove(previewBook.id, previewBook.title); closePreview(); }}
+                disabled={processing === previewBook.id}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                <FiCheck className="w-4 h-4 mr-2" /> Approve
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => { handleReject(previewBook.id, previewBook.title); closePreview(); }}
+                disabled={processing === previewBook.id}
+              >
+                <FiX className="w-4 h-4 mr-2" /> Reject
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
