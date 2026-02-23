@@ -666,8 +666,8 @@ export default function BookReader() {
       {/* Book Display - with swipe support */}
       <div 
         id="book-container"
-        className={`pt-20 pb-48 px-4 flex items-center justify-center min-h-screen transition-all duration-300 ${
-          isFullscreen ? 'bg-black/95 fixed inset-0 z-50 pt-8 pb-8' : ''
+        className={`pt-16 sm:pt-20 pb-36 sm:pb-48 px-2 sm:px-4 flex items-center justify-center min-h-screen transition-all duration-300 ${
+          isFullscreen ? 'bg-black/95 fixed inset-0 z-50 pt-4 sm:pt-8 pb-4 sm:pb-8' : ''
         }`}
         {...swipeHandlers}
         style={{ touchAction: 'pan-y pinch-zoom' }}
