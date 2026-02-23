@@ -147,6 +147,8 @@ export default function ProStudio() {
       checkFalAvailability();
       loadCredits();
       loadCharacterOptions();
+      loadSceneOptions();
+      loadScenes();
     }
   }, [isAuthenticated]);
 
