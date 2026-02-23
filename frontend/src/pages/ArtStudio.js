@@ -2089,7 +2089,7 @@ export default function ArtStudio() {
                                 console.log('Save response:', data);
                                 if (response.ok && data.success) {
                                   toast.success('Animation saved to gallery!');
-                                  fetchGallery();
+                                  loadGallery(); // Refresh gallery
                                 } else {
                                   throw new Error(data.detail || 'Failed to save');
                                 }
@@ -2105,33 +2105,48 @@ export default function ArtStudio() {
                             Save
                           </Button>
                           <Button
-                            onClick={() => {
-                              // Create blob from base64 for better download
+                            onClick={async () => {
                               try {
-                                const base64Data = animatedVideo.split(',')[1];
-                                const byteCharacters = atob(base64Data);
-                                const byteNumbers = new Array(byteCharacters.length);
-                                for (let i = 0; i < byteCharacters.length; i++) {
-                                  byteNumbers[i] = byteCharacters.charCodeAt(i);
+                                toast.info('Starting download...');
+                                // Check if it's a URL or base64
+                                if (animatedVideo.startsWith('data:')) {
+                                  // Base64 format - convert to blob
+                                  const base64Data = animatedVideo.split(',')[1];
+                                  const byteCharacters = atob(base64Data);
+                                  const byteNumbers = new Array(byteCharacters.length);
+                                  for (let i = 0; i < byteCharacters.length; i++) {
+                                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                                  }
+                                  const byteArray = new Uint8Array(byteNumbers);
+                                  const blob = new Blob([byteArray], { type: 'video/mp4' });
+                                  const url = URL.createObjectURL(blob);
+                                  const link = document.createElement('a');
+                                  link.href = url;
+                                  link.download = `azories-animation-${Date.now()}.mp4`;
+                                  document.body.appendChild(link);
+                                  link.click();
+                                  document.body.removeChild(link);
+                                  URL.revokeObjectURL(url);
+                                  toast.success('Download complete!');
+                                } else {
+                                  // URL format - fetch and download
+                                  const response = await fetch(animatedVideo);
+                                  const blob = await response.blob();
+                                  const url = URL.createObjectURL(blob);
+                                  const link = document.createElement('a');
+                                  link.href = url;
+                                  link.download = `azories-animation-${Date.now()}.mp4`;
+                                  document.body.appendChild(link);
+                                  link.click();
+                                  document.body.removeChild(link);
+                                  URL.revokeObjectURL(url);
+                                  toast.success('Download complete!');
                                 }
-                                const byteArray = new Uint8Array(byteNumbers);
-                                const blob = new Blob([byteArray], { type: 'video/mp4' });
-                                const url = URL.createObjectURL(blob);
-                                const link = document.createElement('a');
-                                link.href = url;
-                                link.download = `azories-animation-1080p-${Date.now()}.mp4`;
-                                document.body.appendChild(link);
-                                link.click();
-                                document.body.removeChild(link);
-                                URL.revokeObjectURL(url);
-                                toast.success('Downloading 1080p video...');
                               } catch (error) {
                                 console.error('Download error:', error);
-                                // Fallback to direct link
-                                const link = document.createElement('a');
-                                link.href = animatedVideo;
-                                link.download = `azories-animation-1080p-${Date.now()}.mp4`;
-                                link.click();
+                                toast.error('Download failed - try right-clicking the video');
+                                // Fallback - open in new tab
+                                window.open(animatedVideo, '_blank');
                               }
                             }}
                             className="bg-purple-600 hover:bg-purple-700"
