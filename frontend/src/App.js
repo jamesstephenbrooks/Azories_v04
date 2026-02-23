@@ -44,9 +44,9 @@ function AppContent() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/series" element={<MySeries />} />
         <Route path="/editor/:bookId" element={<BookEditor />} />
-        <Route path="/admin" element={<AdminCMS />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/cms" element={<AdminCMS />} />
         <Route path="/admin/analytics" element={<AdminAnalytics />} />
-        <Route path="/admin/reviews" element={<AdminDashboard />} />
         <Route path="/profile" element={<UserProfile />} />
         <Route path="/profile/:userId" element={<UserProfile />} />
         <Route path="/art-studio" element={<ArtStudio />} />
