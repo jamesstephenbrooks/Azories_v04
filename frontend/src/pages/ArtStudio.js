@@ -409,6 +409,19 @@ export default function ArtStudio() {
     setCustomStyleDescription(template.customStyle);
   };
   
+  // Apply a scene template (one-click setup for scenes)
+  const applySceneTemplate = (template) => {
+    setSelectedTemplate(template.id);
+    setScene({
+      ...scene,
+      preset: template.preset,
+      timeOfDay: template.timeOfDay,
+      weather: template.weather,
+      mood: template.mood
+    });
+    setCustomStyleDescription(template.customStyle);
+  };
+  
   // Animation progress state
   const [animationProgress, setAnimationProgress] = useState(0);
   const [animationMessage, setAnimationMessage] = useState('');
