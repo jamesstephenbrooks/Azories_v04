@@ -6589,6 +6589,7 @@ async def add_to_art_studio_gallery(request: dict, current_user: dict = Depends(
             "style": request.get("style", ""),
             "model": request.get("model", ""),
             "book_id": request.get("book_id"),
+            "source": request.get("source", "art_studio"),  # art_studio or pro_studio
             "created_at": now
         }
         
