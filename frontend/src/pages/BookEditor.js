@@ -508,6 +508,15 @@ export default function BookEditor() {
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      
+      // Reset unsaved changes tracking
+      lastSavedContent.current = JSON.stringify({
+        text: selectedPage.text_content,
+        image: selectedPage.image_url,
+        video: selectedPage.video_url
+      });
+      setHasUnsavedChanges(false);
+      
       toast.success('Page saved!');
     } catch (error) {
       toast.error('Failed to save page');
