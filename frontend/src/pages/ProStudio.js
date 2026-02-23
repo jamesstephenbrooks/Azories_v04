@@ -2382,7 +2382,7 @@ export default function ProStudio() {
                 </p>
                 
                 <Textarea
-                  placeholder={`Describe the scene for ${selectedCharacter.name}... (e.g., 'sitting in a coffee shop reading a book')`}
+                  placeholder={`Describe what ${selectedCharacter.name} is doing... (e.g., 'running through a magical forest', 'standing on a cliff overlooking the ocean')`}
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   className="bg-gray-800/50 border-gray-700 text-white mb-4"
@@ -2390,20 +2390,70 @@ export default function ProStudio() {
                   data-testid="consistent-gen-prompt"
                 />
 
-                <div className="flex gap-3 mb-4">
-                  <Select value={aspectRatio} onValueChange={setAspectRatio}>
-                    <SelectTrigger className="w-40 bg-gray-800/50 border-gray-700 text-white">
-                      <SelectValue placeholder="Aspect Ratio" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-700">
-                      {ASPECT_RATIOS.map((ar) => (
-                        <SelectItem key={ar.id} value={ar.id} className="text-white">
-                          {ar.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                {/* Scene & Settings Row */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+                  {/* Scene Selection */}
+                  <div>
+                    <label className="text-xs text-gray-400 mb-1 block">Place in Scene (Optional)</label>
+                    <Select 
+                      value={selectedSceneForGeneration?.id || 'none'} 
+                      onValueChange={(v) => setSelectedSceneForGeneration(v === 'none' ? null : scenes.find(s => s.id === v))}
+                    >
+                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white text-sm">
+                        <SelectValue placeholder="No scene" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-700">
+                        <SelectItem value="none" className="text-white">No scene (use prompt)</SelectItem>
+                        {scenes.map((scene) => (
+                          <SelectItem key={scene.id} value={scene.id} className="text-white">
+                            {scene.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Face Similarity */}
+                  <div>
+                    <label className="text-xs text-gray-400 mb-1 block">Face Match Strength</label>
+                    <Select value={faceSimilarity} onValueChange={setFaceSimilarity}>
+                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white text-sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-700">
+                        <SelectItem value="high" className="text-white">High (exact face)</SelectItem>
+                        <SelectItem value="medium" className="text-white">Medium (balanced)</SelectItem>
+                        <SelectItem value="low" className="text-white">Low (artistic)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Aspect Ratio */}
+                  <div>
+                    <label className="text-xs text-gray-400 mb-1 block">Aspect Ratio</label>
+                    <Select value={aspectRatio} onValueChange={setAspectRatio}>
+                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white text-sm">
+                        <SelectValue placeholder="Aspect Ratio" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-700">
+                        {ASPECT_RATIOS.map((ar) => (
+                          <SelectItem key={ar.id} value={ar.id} className="text-white">
+                            {ar.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
+
+                {selectedSceneForGeneration && (
+                  <div className="mb-4 p-3 bg-purple-500/10 rounded-lg border border-purple-500/30">
+                    <p className="text-sm text-purple-300">
+                      <FiLayers className="inline mr-1" />
+                      Character will be placed in: <strong>{selectedSceneForGeneration.name}</strong>
+                    </p>
+                  </div>
+                )}
 
                 <Button 
                   onClick={generateConsistentCharacterImage}
@@ -2413,6 +2463,7 @@ export default function ProStudio() {
                 >
                   <FiZap className="mr-2" /> 
                   Generate {selectedCharacter.name} 
+                  {selectedSceneForGeneration ? ` in ${selectedSceneForGeneration.name}` : ''}
                   {selectedCharacter.lora_status === 'completed' ? ' (LoRA)' : ' (PuLID)'}
                 </Button>
               </div>
