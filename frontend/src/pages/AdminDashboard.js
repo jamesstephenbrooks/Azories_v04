@@ -41,7 +41,7 @@ export default function AdminDashboard() {
   const [previewBook, setPreviewBook] = useState(null);
   const [previewPages, setPreviewPages] = useState([]);
   const [previewLoading, setPreviewLoading] = useState(false);
-  const [currentPreviewPage, setCurrentPreviewPage] = useState(0);
+  const [currentPreviewPage, setCurrentPreviewPage] = useState(-1); // -1 = cover page
   
   // Content Review State
   const [pendingBooks, setPendingBooks] = useState([]);
