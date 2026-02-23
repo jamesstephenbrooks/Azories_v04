@@ -2251,6 +2251,38 @@ export default function ProStudio() {
                   </label>
                 </div>
                 
+                {/* Use Character Image */}
+                {characters.length > 0 && (
+                  <div className="mb-4">
+                    <p className="text-gray-400 text-xs mb-2">Or use a character image:</p>
+                    <div className="flex gap-2 flex-wrap">
+                      {characters.slice(0, 6).map((char) => (
+                        <button
+                          key={char.id}
+                          onClick={() => {
+                            const img = char.thumbnail || char.reference_images?.[0];
+                            if (img) {
+                              setShotsSourceImage(img);
+                              toast.success(`Using ${char.name}'s image`);
+                            }
+                          }}
+                          className="relative group"
+                          title={`Use ${char.name}`}
+                        >
+                          <img 
+                            src={char.thumbnail || char.reference_images?.[0]} 
+                            alt={char.name}
+                            className="w-12 h-12 rounded-full object-cover border-2 border-gray-600 hover:border-purple-500 transition-colors"
+                          />
+                          <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <FiPlus className="text-white" size={16} />
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Or Select from Gallery */}
                 <Button
                   variant="outline"
@@ -2281,18 +2313,52 @@ export default function ProStudio() {
                 ) : (
                   <div className="grid grid-cols-3 gap-2">
                     {shotsResults.map((shot, i) => (
-                      <div key={i} className="relative group">
+                      <div 
+                        key={i} 
+                        className="relative group cursor-pointer"
+                        onClick={() => setPreviewImage({ url: shot.url, prompt: SHOT_TYPES[i]?.name || `Shot ${i+1}` })}
+                      >
                         <img src={shot.url} alt={shot.type} className="w-full aspect-square object-cover rounded-lg" />
                         <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs p-1 text-center">
                           {SHOT_TYPES[i]?.name || `Shot ${i+1}`}
                         </div>
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
-                          <Button size="sm" variant="ghost" onClick={() => saveToGallery(shot)}>
+                          <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); saveToGallery(shot); }}>
                             <FiSave className="text-white" size={14} />
                           </Button>
-                          <Button size="sm" variant="ghost" onClick={() => downloadMedia(shot.url, `shot-${i+1}.png`)}>
+                          <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); downloadMedia(shot.url, `shot-${i+1}.png`); }}>
                             <FiDownload className="text-white" size={14} />
                           </Button>
+                          {selectedCharacter && (
+                            <Button 
+                              size="sm" 
+                              variant="ghost" 
+                              onClick={async (e) => { 
+                                e.stopPropagation(); 
+                                try {
+                                  const token = localStorage.getItem('azories-token');
+                                  const response = await fetch(`${API_URL}/api/pro-studio/characters/${selectedCharacter.id}/add-reference`, {
+                                    method: 'POST',
+                                    headers: {
+                                      'Content-Type': 'application/json',
+                                      Authorization: `Bearer ${token}`
+                                    },
+                                    body: JSON.stringify({ image_url: shot.url })
+                                  });
+                                  if (response.ok) {
+                                    const data = await response.json();
+                                    toast.success(data.message);
+                                    loadCharacters();
+                                  }
+                                } catch (error) {
+                                  toast.error('Error adding reference');
+                                }
+                              }}
+                              title="Add to character references"
+                            >
+                              <FiStar className="text-amber-400" size={14} />
+                            </Button>
+                          )}
                         </div>
                       </div>
                     ))}
