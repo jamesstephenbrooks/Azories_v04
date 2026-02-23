@@ -1311,9 +1311,9 @@ export default function ArtStudioExpert() {
     
     setIsGenerating(true);
     
-    // Update output node to show generating state
+    // Update UNLOCKED output nodes to show generating state (locked ones stay as-is)
     setNodes(nds => nds.map(node => {
-      if (node.type === 'output') {
+      if (node.type === 'output' && !node.data.locked) {
         return { ...node, data: { ...node.data, generating: true, image: null } };
       }
       return node;
@@ -1351,18 +1351,19 @@ export default function ArtStudioExpert() {
         const data = await response.json();
         console.log('Generation successful, image received');
         
-        // Update output node with result
+        // Update UNLOCKED output nodes with result and auto-lock them
         setNodes(nds => nds.map(node => {
-          if (node.type === 'output') {
+          if (node.type === 'output' && !node.data.locked) {
             return {
               ...node,
               data: {
                 ...node.data,
                 generating: false,
                 image: data.image_url,
+                locked: true, // Auto-lock after generation
                 onDownload: (url) => downloadImage(url),
                 onSaveToGallery: (url) => saveToGallery(url),
-                onSaveToBook: (url) => saveToBook(url, selectedBookId),
+                onSaveToBook: (url) => openSaveToBookModal(url),
                 onExpand: (url) => setExpandedImage(url),
                 onCopyNode: () => copyNode(node.id),
                 onContinueWorkflow: (url) => continueWorkflow(url, node.id)
