@@ -92,7 +92,8 @@ export default function BookEditor() {
   const [generalGalleryImages, setGeneralGalleryImages] = useState([]);
   const [proStudioCharacters, setProStudioCharacters] = useState([]);
   const [proStudioScenes, setProStudioScenes] = useState([]);
-  const [galleryTab, setGalleryTab] = useState('book'); // 'book', 'all', 'characters', 'scenes'
+  const [starterLibraryImages, setStarterLibraryImages] = useState([]);
+  const [galleryTab, setGalleryTab] = useState('book'); // 'book', 'all', 'characters', 'scenes', 'starter'
   
   // Cover Gallery picker
   const [showCoverGalleryPicker, setShowCoverGalleryPicker] = useState(false);
@@ -102,6 +103,32 @@ export default function BookEditor() {
   const [newChapterOpen, setNewChapterOpen] = useState(false);
   const [newChapterTitle, setNewChapterTitle] = useState('');
   const [creatingChapter, setCreatingChapter] = useState(false);
+
+  // Unsaved changes warning - beforeunload
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+        return e.returnValue;
+      }
+    };
+    
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasUnsavedChanges]);
+  
+  // Track content changes
+  useEffect(() => {
+    if (selectedPage && lastSavedContent.current !== null) {
+      const currentContent = JSON.stringify({
+        text: selectedPage.text_content,
+        image: selectedPage.image_url,
+        video: selectedPage.video_url
+      });
+      setHasUnsavedChanges(currentContent !== lastSavedContent.current);
+    }
+  }, [selectedPage?.text_content, selectedPage?.image_url, selectedPage?.video_url]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -116,6 +143,7 @@ export default function BookEditor() {
       fetchVoices();
       fetchBookGallery();
       fetchGalleryImages();
+      fetchStarterLibrary();
     }
   }, [user, bookId]);
 
