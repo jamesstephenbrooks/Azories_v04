@@ -924,17 +924,17 @@ export default function BookReader() {
                 }
               }}
               disabled={currentPage === -2 || isFlipping}
-              className="rounded-full px-6"
+              className="rounded-full px-3 sm:px-6 text-xs sm:text-sm"
             >
-              Next
-              <FiChevronRight className="w-5 h-5 ml-1" />
+              <span className="hidden sm:inline">Next</span>
+              <FiChevronRight className="w-4 h-4 sm:w-5 sm:h-5 sm:ml-1" />
             </Button>
           </div>
           
-          {/* Audio Controls - Enhanced */}
-          <div className="flex items-center justify-center gap-4 flex-wrap text-sm">
+          {/* Audio Controls - Enhanced - Hidden on very small screens, shown on landscape/larger */}
+          <div className="hidden sm:flex items-center justify-center gap-2 sm:gap-4 flex-wrap text-sm">
             {/* Current Voice Display (read-only) */}
-            <div className="flex items-center gap-2">
+            <div className="hidden md:flex items-center gap-2">
               <FiMic className="w-4 h-4 text-muted-foreground" />
               <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-muted/50 text-xs text-muted-foreground">
                 <span>{voices.find(v => v.voice_id === narratorVoice)?.name || 'Default Voice'}</span>
@@ -942,7 +942,7 @@ export default function BookReader() {
             </div>
             
             {/* Volume Control */}
-            <div className="flex items-center gap-2 w-28">
+            <div className="flex items-center gap-2 w-24 sm:w-28">
               <button 
                 onClick={() => setVolume(volume[0] > 0 ? [0] : [50])}
                 className="text-muted-foreground hover:text-foreground transition-colors"
@@ -952,14 +952,14 @@ export default function BookReader() {
               <Slider value={volume} onValueChange={setVolume} max={100} step={1} className="flex-1" />
             </div>
             
-            {/* Playback Speed - Quick buttons */}
+            {/* Playback Speed - Quick buttons - fewer on mobile */}
             <div className="flex items-center gap-1">
-              <span className="text-muted-foreground text-xs mr-1">Speed:</span>
-              {[0.75, 1, 1.25, 1.5, 2].map(speed => (
+              <span className="hidden md:inline text-muted-foreground text-xs mr-1">Speed:</span>
+              {[0.75, 1, 1.5, 2].map(speed => (
                 <button
                   key={speed}
                   onClick={() => setPlaybackSpeed([speed])}
-                  className={`px-2 py-1 rounded-full text-xs transition-colors ${
+                  className={`px-1.5 sm:px-2 py-1 rounded-full text-xs transition-colors ${
                     playbackSpeed[0] === speed 
                       ? 'bg-primary text-primary-foreground' 
                       : 'bg-muted/50 hover:bg-muted text-muted-foreground'
@@ -976,7 +976,7 @@ export default function BookReader() {
               onClick={handleAutoReadToggle}
               className="rounded-full text-xs"
             >
-              Auto-Read: {autoRead ? 'ON' : 'OFF'}
+              Auto: {autoRead ? 'ON' : 'OFF'}
             </Button>
             
             {/* Hide Controls Button - useful for iPad */}
@@ -984,7 +984,7 @@ export default function BookReader() {
               variant="ghost"
               size="sm"
               onClick={() => setHideControls(true)}
-              className="rounded-full text-xs ml-2"
+              className="rounded-full text-xs"
               title="Hide controls"
             >
               <FiChevronDown className="w-4 h-4" />
