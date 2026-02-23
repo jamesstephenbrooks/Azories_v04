@@ -87,6 +87,21 @@ export default function ProStudio() {
   // Image preview modal state
   const [previewImage, setPreviewImage] = useState(null);
   
+  // Scene Consistency state
+  const [scenes, setScenes] = useState([]);
+  const [selectedScene, setSelectedScene] = useState(null);
+  const [sceneName, setSceneName] = useState('');
+  const [sceneDescription, setSceneDescription] = useState('');
+  const [sceneStyle, setSceneStyle] = useState('illustration');
+  const [sceneGenre, setSceneGenre] = useState('fantasy');
+  const [sceneLocationType, setSceneLocationType] = useState('outdoor');
+  const [sceneLighting, setSceneLighting] = useState('natural');
+  const [sceneMood, setSceneMood] = useState('peaceful');
+  const [sceneTimeOfDay, setSceneTimeOfDay] = useState('');
+  const [sceneWeather, setSceneWeather] = useState('');
+  const [sceneOptions, setSceneOptions] = useState({ location_types: [], lighting: [], moods: [] });
+  const [isCreatingScene, setIsCreatingScene] = useState(false);
+  
   // Book linking state
   const [userBooks, setUserBooks] = useState([]);
   const [selectedBookId, setSelectedBookId] = useState('general');
