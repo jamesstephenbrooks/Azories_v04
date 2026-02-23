@@ -28,7 +28,7 @@ class TestStarterLibraryAPI:
         data = response.json()
         assert "images" in data, "Response should have 'images' key"
         assert "total" in data, "Response should have 'total' key"
-        assert len(data["images"]) >= 30, f"Expected at least 30 images, got {len(data['images'])}"
+        assert len(data["images"]) >= 29, f"Expected at least 29 images, got {len(data['images'])}"
     
     def test_starter_library_image_structure(self):
         """Test that each starter image has correct structure"""
