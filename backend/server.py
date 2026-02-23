@@ -6557,6 +6557,9 @@ async def art_studio_gallery(
                 "style": item.get("style", "fantasy"),
                 "book_id": item.get("book_id"),
                 "motion_prompt": item.get("motion_prompt", ""),
+                "prompt": item.get("prompt", ""),  # Original generation prompt
+                "character_data": item.get("character_data"),
+                "scene_data": item.get("scene_data"),
                 "created_at": item.get("created_at", datetime.now(timezone.utc)).isoformat()
             })
         
