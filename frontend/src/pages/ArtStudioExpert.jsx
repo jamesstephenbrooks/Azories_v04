@@ -1028,10 +1028,27 @@ export default function ArtStudioExpert() {
       data: {
         ...node.data,
         onChange: (k, v) => updateNodeData(node.id, k, v),
-        onSelectFromGallery: node.type === 'image' ? () => openGalleryPicker(node.id) : undefined
+        onSelectFromGallery: node.type === 'image' ? () => openGalleryPicker(node.id) : undefined,
+        onRunNode: node.type === 'output' ? () => runOutputNode(node.id) : undefined
       }
     })));
   }, []);
+  
+  // Update output nodes with runOutputNode handler when it becomes available
+  useEffect(() => {
+    setNodes(nds => nds.map(node => {
+      if (node.type === 'output') {
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            onRunNode: () => runOutputNode(node.id)
+          }
+        };
+      }
+      return node;
+    }));
+  }, [runOutputNode]);
   
   const onConnect = useCallback((params) => {
     setEdges(eds => addEdge({ ...params, animated: true }, eds));
