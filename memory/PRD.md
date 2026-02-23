@@ -138,9 +138,11 @@ All books have:
 - ✅ Scene Templates - Now shows landscape thumbnails in Scene Creator tab
 - ✅ Animation API fix - Removed unsupported image_path parameter from Sora 2 calls
 
-### Feature Requests (Not Yet Implemented)
-- Node Editor: Workflow button on every output
-- Node Editor: Node copy/duplication functionality
+### Feature Requests - Completed (Feb 23, 2026)
+- ✅ Node Editor: Continue Workflow button on output nodes
+- ✅ Node Editor: Node copy/duplication functionality on all node types
+- ✅ Node Editor: Save to Book functionality for book-specific image libraries
+- ✅ Node Editor: Image node type for workflow continuation
 
 ### P3 (Low Priority)
 - Grand Library stair navigation/camera issues
