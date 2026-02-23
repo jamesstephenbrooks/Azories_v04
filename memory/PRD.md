@@ -124,11 +124,14 @@ All books have:
 
 ### P1 (High Priority)
 - iPad "Read Aloud" fix needs real-device testing
-- LoRA training full workflow validation needed
+- End-to-end LoRA training test (create character with 3+ images, click Train)
 
 ### P2 (Medium Priority)
-- Back cover visibility at end of book
 - Scene list may need refresh to show newly created scenes
+
+### Resolved (Feb 23, 2026)
+- ✅ Back cover visibility at end of book - Fixed by changing Next button disabled condition
+- ✅ LoRA training workflow UI - Validated Train button logic works correctly
 
 ### P3 (Low Priority)
 - Grand Library stair navigation/camera issues
