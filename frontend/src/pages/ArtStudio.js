@@ -524,6 +524,15 @@ export default function ArtStudio() {
         duration: 5000
       });
       
+      // Build enhanced motion prompt including camera movement
+      const cameraPrompts = {
+        'static': '',
+        'slow-zoom': ', slow cinematic zoom in on subject',
+        'slow-pan': ', gentle camera pan from left to right',
+        'orbit': ', camera slowly orbiting around the subject'
+      };
+      const enhancedMotion = animationMotion + (cameraPrompts[animationCameraMotion] || '');
+      
       // Start the animation job
       const startResponse = await fetch(`${API_URL}/api/art-studio/animate-image`, {
         method: 'POST',
@@ -533,9 +542,10 @@ export default function ArtStudio() {
         },
         body: JSON.stringify({
           image_url: animatingImage,
-          motion_prompt: animationMotion,
+          motion_prompt: enhancedMotion,
           duration: 4,
-          style: animationStyle
+          style: animationStyle,
+          original_prompt: animatingImageData?.prompt || ''  // Pass original prompt for better consistency
         })
       });
       
