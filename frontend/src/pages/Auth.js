@@ -107,16 +107,93 @@ export default function Auth() {
               <span className="font-heading text-3xl font-bold logo-text">Azories</span>
             </Link>
             <CardTitle className="font-heading text-2xl mt-4">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
+              {showForgotPassword 
+                ? 'Reset Password' 
+                : (isLogin ? 'Welcome Back' : 'Create Account')}
             </CardTitle>
             <CardDescription className="font-body">
-              {isLogin 
-                ? 'Sign in to continue your storytelling journey' 
-                : 'Start creating magical stories today'}
+              {showForgotPassword 
+                ? "Enter your email and we'll send you a reset link"
+                : (isLogin 
+                  ? 'Sign in to continue your storytelling journey' 
+                  : 'Start creating magical stories today')}
             </CardDescription>
           </CardHeader>
           
           <CardContent className="pt-6">
+            {/* Forgot Password Form */}
+            {showForgotPassword ? (
+              forgotSent ? (
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <FiMail className="w-8 h-8 text-green-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">Check Your Email</h3>
+                  <p className="text-muted-foreground mb-4">
+                    We've sent a password reset link to <strong>{forgotEmail}</strong>
+                  </p>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    The link will expire in 1 hour. If you don't see the email, check your spam folder.
+                  </p>
+                  <Button 
+                    variant="outline"
+                    onClick={() => {
+                      setShowForgotPassword(false);
+                      setForgotSent(false);
+                      setForgotEmail('');
+                    }}
+                    className="rounded-full"
+                  >
+                    Back to Sign In
+                  </Button>
+                </div>
+              ) : (
+                <form onSubmit={handleForgotPassword} className="space-y-5">
+                  <div className="space-y-2">
+                    <Label htmlFor="forgot-email" className="font-ui">Email Address</Label>
+                    <div className="relative">
+                      <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        id="forgot-email"
+                        type="email"
+                        placeholder="you@example.com"
+                        value={forgotEmail}
+                        onChange={(e) => setForgotEmail(e.target.value)}
+                        className="pl-10 rounded-full border-2 h-12"
+                        required
+                        data-testid="forgot-email-input"
+                      />
+                    </div>
+                  </div>
+                  
+                  <Button 
+                    type="submit" 
+                    className="w-full rounded-full h-12 font-ui text-lg"
+                    disabled={loading}
+                    data-testid="forgot-submit-btn"
+                  >
+                    {loading ? 'Sending...' : (
+                      <>
+                        <FiSend className="mr-2" />
+                        Send Reset Link
+                      </>
+                    )}
+                  </Button>
+                  
+                  <div className="text-center">
+                    <button
+                      type="button"
+                      onClick={() => setShowForgotPassword(false)}
+                      className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      Back to Sign In
+                    </button>
+                  </div>
+                </form>
+              )
+            ) : (
+              /* Regular Login/Register Form */
+              <>
             <form onSubmit={handleSubmit} className="space-y-5">
               {!isLogin && (
                 <div className="space-y-2">
