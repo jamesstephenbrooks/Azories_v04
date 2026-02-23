@@ -27,23 +27,31 @@ Build a full-featured digital book platform ("Azories") with:
 
 ## What's Been Implemented
 
-### Session: Feb 23, 2026 (Latest)
-- **Art Studio Header Redesign**:
+### Session: Feb 23, 2026 (Current)
+- **Unsaved Changes Warning Fixed**:
+  - Now tracks `use_video` and `layout_type` fields (video checkbox triggers warning)
+  - Shows "Unsaved changes" indicator when any content is modified
+  - Browser confirms before leaving with unsaved edits
+- **Book Editor Preview Scaled**:
+  - Media preview constrained to max 35vh height to fit within viewport
+  - Book page preview maintains aspect ratio while fitting screen
+- **Media Tab Combined**:
+  - Merged Image and Video tabs into single "Media" tab
+  - Upload Image and Upload Video buttons side-by-side
+  - Single "Select from Galleries" button for all media types
+- **Node Editor 2nd Output Fix**:
+  - Added `onRunNode` callback when creating new Output nodes via toolbar
+  - Multiple output nodes now all have working Run buttons
+- **Art Studio Header Reorganized**:
   - Node Workflow moved to tab navigation (next to Character Builder) - both FREE
   - Pro Studio button kept in header with "PRO" badge
   - Gallery button now has prominent green gradient styling with count
 - **Starter Library (100 images)**:
   - Added `/api/starter-library` endpoint with 100 diverse free images
-  - Categories: characters, scenes, animals, fantasy, nature, space
   - Available in Art Studio Gallery (collapsible amber section)
   - Available in Book Editor Gallery Picker (new "⭐ Starter Library" tab)
-- **Unsaved Changes Warning**:
-  - Book Editor now tracks content changes
-  - Shows "Unsaved changes" indicator in header
-  - Browser warns before leaving page with unsaved changes
-  - Save button highlights (amber) when changes are pending
 
-### Previous Session: Feb 23, 2026
+### Session: Feb 23, 2026 (Earlier)
 - **Fixed Node Editor errors**: Resolved infinite loop, updateNodeData reference, canvasRef issues
 - **Animation Enhancement**: 
   - Auto-populate motion prompt from gallery image
