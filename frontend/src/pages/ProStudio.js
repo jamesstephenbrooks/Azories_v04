@@ -517,19 +517,26 @@ export default function ProStudio() {
       return;
     }
     if (!prompt.trim()) {
-      toast.error('Please enter a prompt');
+      toast.error('Please enter a prompt describing what the character is doing (e.g., "running through a forest", "standing on a cliff")');
       return;
     }
 
     setIsLoading(true);
     const method = selectedCharacter.lora_status === 'completed' ? 'LoRA' : 'PuLID';
-    setLoadingMessage(`Generating consistent image using ${method}...`);
+    const sceneInfo = selectedSceneForGeneration ? ` in scene "${selectedSceneForGeneration.name}"` : '';
+    setLoadingMessage(`Generating ${selectedCharacter.name}${sceneInfo} using ${method}...`);
 
     try {
       const token = localStorage.getItem('azories-token');
       const formData = new FormData();
       formData.append('prompt', prompt);
       formData.append('image_size', aspectRatio === '16:9' ? 'landscape_16_9' : aspectRatio === '9:16' ? 'portrait_16_9' : 'square_hd');
+      formData.append('id_strength', faceSimilarity);
+      
+      // Add scene if selected
+      if (selectedSceneForGeneration) {
+        formData.append('scene_id', selectedSceneForGeneration.id);
+      }
 
       const response = await fetch(`${API_URL}/api/pro-studio/characters/${selectedCharacter.id}/generate-consistent`, {
         method: 'POST',
