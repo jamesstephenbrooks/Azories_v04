@@ -7124,13 +7124,16 @@ async def unpublish_book(book_id: str, current_user: dict = Depends(get_current_
     return {"success": True, "message": "Book unpublished and returned to draft status"}
 
 @api_router.post("/admin/books/{book_id}/approve")
-async def admin_approve_book(book_id: str, admin: dict = Depends(get_admin_user)):
+async def admin_approve_book(book_id: str, background_tasks: BackgroundTasks, admin: dict = Depends(get_admin_user)):
     """Admin endpoint to approve a book for publication"""
-    # Uses dedicated admin authentication
-    
-    book = await db.books.find_one({"id": book_id})
+    book = await db.books.find_one({"id": book_id}, {"_id": 0})
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
+    
+    # Get the author's email
+    author = await db.users.find_one({"id": book.get("author_id")}, {"_id": 0})
+    author_email = author.get("email") if author else None
+    author_name = author.get("name", "Author") if author else "Author"
     
     await db.books.update_one(
         {"id": book_id},
@@ -7142,16 +7145,60 @@ async def admin_approve_book(book_id: str, admin: dict = Depends(get_admin_user)
         }}
     )
     
+    # Send approval email to creator
+    if author_email and email_configured():
+        app_url = os.environ.get("APP_URL", "https://book-hub-pro.preview.emergentagent.com")
+        subject = f"🎉 Your book '{book['title']}' has been approved!"
+        html_content = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+            <div style="background: linear-gradient(135deg, #16a34a, #22c55e); padding: 20px; border-radius: 12px 12px 0 0;">
+                <h1 style="color: white; margin: 0; font-size: 24px;">🎉 Congratulations!</h1>
+            </div>
+            
+            <div style="background: #ffffff; padding: 25px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+                <h2 style="color: #16a34a; margin-top: 0;">Your Book Has Been Approved!</h2>
+                
+                <p>Hi {author_name},</p>
+                
+                <p>Great news! Your book <strong>"{book['title']}"</strong> has been reviewed and approved for publication on Azories.</p>
+                
+                <div style="background: #f0fdf4; border: 1px solid #16a34a; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                    <p style="margin: 0; color: #16a34a; font-weight: bold;">✅ Your book is now live!</p>
+                    <p style="margin: 10px 0 0 0; color: #166534;">Readers can now discover and enjoy your story in the Azories library.</p>
+                </div>
+                
+                <div style="text-align: center; margin: 25px 0;">
+                    <a href="{app_url}/read/{book_id}" style="background: #16a34a; color: white; padding: 12px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; display: inline-block;">View Your Book</a>
+                </div>
+                
+                <p style="color: #6b7280;">Thank you for sharing your creativity with the Azories community!</p>
+                
+                <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
+                <p style="color: #9ca3af; font-size: 12px; text-align: center;">
+                    The Azories Team<br>
+                    <a href="{app_url}" style="color: #7c3aed;">azories.com</a>
+                </p>
+            </div>
+        </body>
+        </html>
+        """
+        background_tasks.add_task(send_email, author_email, subject, html_content)
+        logging.info(f"Approval notification sent to {author_email} for book {book_id}")
+    
     return {"success": True, "message": "Book approved and published"}
 
 @api_router.post("/admin/books/{book_id}/reject")
-async def admin_reject_book(book_id: str, reason: str = "", admin: dict = Depends(get_admin_user)):
+async def admin_reject_book(book_id: str, background_tasks: BackgroundTasks, reason: str = "", admin: dict = Depends(get_admin_user)):
     """Admin endpoint to reject a book"""
-    # Uses dedicated admin authentication
-    
-    book = await db.books.find_one({"id": book_id})
+    book = await db.books.find_one({"id": book_id}, {"_id": 0})
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
+    
+    # Get the author's email
+    author = await db.users.find_one({"id": book.get("author_id")}, {"_id": 0})
+    author_email = author.get("email") if author else None
+    author_name = author.get("name", "Author") if author else "Author"
     
     await db.books.update_one(
         {"id": book_id},
@@ -7163,6 +7210,58 @@ async def admin_reject_book(book_id: str, reason: str = "", admin: dict = Depend
             "rejection_reason": reason
         }}
     )
+    
+    # Send rejection email to creator
+    if author_email and email_configured():
+        app_url = os.environ.get("APP_URL", "https://book-hub-pro.preview.emergentagent.com")
+        reason_html = f"""
+            <div style="background: #fef2f2; border: 1px solid #dc2626; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <p style="margin: 0; color: #dc2626; font-weight: bold;">Reason for rejection:</p>
+                <p style="margin: 10px 0 0 0; color: #991b1b;">{reason if reason else "No specific reason provided. Please review our content guidelines."}</p>
+            </div>
+        """ if reason else ""
+        
+        subject = f"📚 Update on your book '{book['title']}'"
+        html_content = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+            <div style="background: linear-gradient(135deg, #7c3aed, #a855f7); padding: 20px; border-radius: 12px 12px 0 0;">
+                <h1 style="color: white; margin: 0; font-size: 24px;">📚 Book Review Update</h1>
+            </div>
+            
+            <div style="background: #ffffff; padding: 25px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+                <h2 style="color: #1f2937; margin-top: 0;">Your Book Needs Some Changes</h2>
+                
+                <p>Hi {author_name},</p>
+                
+                <p>Thank you for submitting <strong>"{book['title']}"</strong> to Azories. After careful review, we weren't able to approve your book for publication at this time.</p>
+                
+                {reason_html}
+                
+                <p style="color: #4b5563;"><strong>What you can do:</strong></p>
+                <ul style="color: #4b5563;">
+                    <li>Review and update your book content</li>
+                    <li>Make sure it follows our community guidelines</li>
+                    <li>Submit it again for review when ready</li>
+                </ul>
+                
+                <div style="text-align: center; margin: 25px 0;">
+                    <a href="{app_url}/editor/{book_id}" style="background: #7c3aed; color: white; padding: 12px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; display: inline-block;">Edit Your Book</a>
+                </div>
+                
+                <p style="color: #6b7280;">We appreciate your creativity and look forward to seeing your revised submission!</p>
+                
+                <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
+                <p style="color: #9ca3af; font-size: 12px; text-align: center;">
+                    The Azories Team<br>
+                    <a href="{app_url}" style="color: #7c3aed;">azories.com</a>
+                </p>
+            </div>
+        </body>
+        </html>
+        """
+        background_tasks.add_task(send_email, author_email, subject, html_content)
+        logging.info(f"Rejection notification sent to {author_email} for book {book_id}")
     
     return {"success": True, "message": "Book rejected"}
 
