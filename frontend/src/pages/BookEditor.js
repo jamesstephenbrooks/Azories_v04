@@ -167,6 +167,16 @@ export default function BookEditor() {
       setBookGallery([]);
     }
   };
+  
+  const fetchStarterLibrary = async () => {
+    try {
+      const res = await axios.get(`${API}/starter-library`);
+      setStarterLibraryImages(res.data.images || []);
+    } catch (error) {
+      console.error('Failed to load starter library');
+      setStarterLibraryImages([]);
+    }
+  };
 
   const fetchVoices = async () => {
     try {
