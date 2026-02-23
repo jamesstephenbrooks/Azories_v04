@@ -775,9 +775,9 @@ export default function AdminDashboard() {
                   ))}
                 </tbody>
               </table>
-              {allBooks.length === 0 && (
+              {filteredBooks.length === 0 && (
                 <div className="text-center py-12 text-white/60">
-                  No books found
+                  {allBooks.length === 0 ? 'No books found' : 'No books match your filters'}
                 </div>
               )}
             </div>
@@ -785,6 +785,20 @@ export default function AdminDashboard() {
 
           {/* Users Tab */}
           <TabsContent value="users">
+            {/* User Search */}
+            <div className="mb-4 p-4 bg-white/5 rounded-xl border border-white/10">
+              <div className="relative max-w-md">
+                <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 w-4 h-4" />
+                <Input
+                  placeholder="Search users by name or email..."
+                  value={userSearchQuery}
+                  onChange={(e) => setUserSearchQuery(e.target.value)}
+                  className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                  data-testid="user-search-input"
+                />
+              </div>
+            </div>
+            
             <div className="bg-white/5 backdrop-blur rounded-2xl border border-white/10 overflow-hidden">
               <table className="w-full">
                 <thead>
