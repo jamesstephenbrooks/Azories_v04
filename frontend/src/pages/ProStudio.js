@@ -171,6 +171,35 @@ export default function ProStudio() {
     }
   };
 
+  // Load scene options
+  const loadSceneOptions = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/pro-studio/scene-options`);
+      if (response.ok) {
+        const data = await response.json();
+        setSceneOptions(data);
+      }
+    } catch (error) {
+      console.error('Error loading scene options:', error);
+    }
+  };
+
+  // Load user's scenes
+  const loadScenes = async () => {
+    try {
+      const token = localStorage.getItem('azories-token');
+      const response = await fetch(`${API_URL}/api/pro-studio/scenes`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setScenes(data.scenes || []);
+      }
+    } catch (error) {
+      console.error('Error loading scenes:', error);
+    }
+  };
+
   // Check if fal.ai is available
   const checkFalAvailability = async () => {
     try {
