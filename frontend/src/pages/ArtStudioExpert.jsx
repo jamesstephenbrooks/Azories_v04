@@ -630,12 +630,13 @@ const ImageNode = ({ data, selected }) => {
   );
 };
 
-// Output Node - Fixed size with expand preview option and lock functionality
+// Output Node - Fixed size with expand preview option, lock functionality, and RUN button
 const OutputNode = ({ data, selected }) => {
-  const isLocked = data.locked ?? false; // Default to unlocked for backward compatibility
+  const isLocked = data.locked ?? false;
+  const isGenerating = data.generating ?? false;
   
   return (
-    <div className={`relative bg-gradient-to-br from-pink-900/90 to-pink-800/90 rounded-xl border-2 ${selected ? 'border-pink-400' : isLocked ? 'border-yellow-500/70' : 'border-pink-600/50'} shadow-xl backdrop-blur-sm w-[220px] h-[340px]`}>
+    <div className={`relative bg-gradient-to-br from-pink-900/90 to-pink-800/90 rounded-xl border-2 ${selected ? 'border-pink-400' : isLocked ? 'border-yellow-500/70' : 'border-pink-600/50'} shadow-xl backdrop-blur-sm w-[220px]`}>
       <Handle type="target" position={Position.Left} className="!bg-pink-400 !w-3 !h-3" />
       <Handle type="source" position={Position.Right} className="!bg-yellow-400 !w-3 !h-3" id="continue" />
       <NodeDeleteButton onDelete={data.onDelete} />
@@ -668,7 +669,7 @@ const OutputNode = ({ data, selected }) => {
               data.onChange?.('locked', !isLocked);
             }}
             className={`p-1 rounded transition-colors ${isLocked ? 'bg-yellow-500/30 text-yellow-300' : 'bg-white/10 text-white/50 hover:text-white'}`}
-            title={isLocked ? 'Locked - output won\'t change when re-running. Click to unlock.' : 'Unlocked - output may change when re-running. Click to lock.'}
+            title={isLocked ? 'Locked - click to unlock' : 'Unlocked - click to lock'}
           >
             {isLocked ? (
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -683,8 +684,40 @@ const OutputNode = ({ data, selected }) => {
         )}
       </div>
       
-      <div className="p-2 h-[180px]">
-        {data.generating ? (
+      {/* RUN BUTTON - Prominent at the top */}
+      <div className="px-2 pt-2">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            data.onRunNode?.();
+          }}
+          disabled={isGenerating || isLocked}
+          className={`w-full py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+            isGenerating 
+              ? 'bg-pink-500/30 text-pink-300 cursor-wait'
+              : isLocked
+              ? 'bg-gray-500/30 text-gray-400 cursor-not-allowed'
+              : 'bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-400 hover:to-purple-400 text-white shadow-lg shadow-pink-500/30'
+          }`}
+          title={isLocked ? 'Unlock to run' : 'Run this output stream'}
+          data-testid="output-run-btn"
+        >
+          {isGenerating ? (
+            <>
+              <FiRefreshCw className="w-4 h-4 animate-spin" />
+              Running...
+            </>
+          ) : (
+            <>
+              <FiPlay className="w-4 h-4" />
+              Run
+            </>
+          )}
+        </button>
+      </div>
+      
+      <div className="p-2 h-[160px]">
+        {isGenerating ? (
           <div className="w-full h-full bg-black/30 rounded-lg flex flex-col items-center justify-center">
             <motion.div
               animate={{ rotate: 360 }}
@@ -709,29 +742,26 @@ const OutputNode = ({ data, selected }) => {
                 Locked
               </div>
             )}
-            {/* Action buttons row 1 */}
-            <div className="absolute bottom-2 left-2 right-2 flex gap-1 justify-center">
+            {/* Action buttons */}
+            <div className="absolute bottom-1 left-1 right-1 flex gap-1 justify-center">
               <button
                 onClick={() => data.onExpand?.(data.image)}
-                className="p-1.5 bg-blue-600/80 rounded-lg hover:bg-blue-600 flex-1 flex items-center justify-center"
-                title="Expand Preview"
-                data-testid="output-expand-btn"
+                className="p-1 bg-blue-600/80 rounded hover:bg-blue-600 flex items-center justify-center"
+                title="Expand"
               >
                 <FiMaximize2 className="w-3 h-3 text-white" />
               </button>
               <button
                 onClick={() => data.onSaveToGallery?.(data.image)}
-                className="p-1.5 bg-green-600/80 rounded-lg hover:bg-green-600 flex-1 flex items-center justify-center"
+                className="p-1 bg-green-600/80 rounded hover:bg-green-600 flex items-center justify-center"
                 title="Save to Gallery"
-                data-testid="output-save-gallery-btn"
               >
                 <FiSave className="w-3 h-3 text-white" />
               </button>
               <button
                 onClick={() => data.onDownload?.(data.image)}
-                className="p-1.5 bg-purple-600/80 rounded-lg hover:bg-purple-600 flex-1 flex items-center justify-center"
+                className="p-1 bg-purple-600/80 rounded hover:bg-purple-600 flex items-center justify-center"
                 title="Download"
-                data-testid="output-download-btn"
               >
                 <FiDownload className="w-3 h-3 text-white" />
               </button>
@@ -740,32 +770,27 @@ const OutputNode = ({ data, selected }) => {
         ) : (
           <div className="w-full h-full bg-black/30 rounded-lg flex flex-col items-center justify-center">
             <FiImage className="w-8 h-8 text-pink-300/30 mb-2" />
-            <span className="text-[10px] text-pink-300/50 text-center px-2">Run workflow to generate</span>
+            <span className="text-[10px] text-pink-300/50 text-center px-2">Click Run above</span>
           </div>
         )}
       </div>
       
       {/* Bottom action buttons when image exists */}
       {data.image && (
-        <div className="px-2 pb-2 space-y-1.5">
-          {/* Save to Book button */}
+        <div className="px-2 pb-2 space-y-1">
           <button
             onClick={() => data.onSaveToBook?.(data.image)}
             className="w-full py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 rounded-lg text-xs font-medium text-white flex items-center justify-center gap-1"
-            title="Save this image to a book's library"
-            data-testid="output-save-book-btn"
+            title="Save to Book"
           >
             <FiBook className="w-3 h-3" /> Save to Book
           </button>
-          
-          {/* Continue Workflow button */}
           <button
             onClick={() => data.onContinueWorkflow?.(data.image)}
             className="w-full py-1.5 bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 rounded-lg text-xs font-medium text-white flex items-center justify-center gap-1"
-            title="Use this output as input for a new branch"
-            data-testid="output-continue-btn"
+            title="Continue Workflow"
           >
-            <FiRefreshCw className="w-3 h-3" /> Continue Workflow
+            <FiRefreshCw className="w-3 h-3" /> Continue
           </button>
         </div>
       )}
