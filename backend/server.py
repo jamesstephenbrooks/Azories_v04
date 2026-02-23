@@ -6696,7 +6696,7 @@ async def get_book_gallery(book_id: str, current_user: dict = Depends(get_curren
         logging.error(f"Book gallery error: {e}")
         raise HTTPException(status_code=500, detail="Failed to load book gallery")
 
-# Starter Library Images - Pre-made images for new users
+# Starter Library Images - Pre-made images for new users (100+ diverse images)
 STARTER_LIBRARY_IMAGES = [
     # Fantasy Characters
     {"id": "starter_1", "url": "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800", "name": "Fantasy Princess", "category": "character", "tags": ["fantasy", "princess", "female", "portrait"]},
@@ -6708,6 +6708,7 @@ STARTER_LIBRARY_IMAGES = [
     {"id": "starter_6", "url": "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=800", "name": "Curious Child", "category": "character", "tags": ["child", "curious", "adventure"]},
     {"id": "starter_7", "url": "https://images.unsplash.com/photo-1516627145497-ae6968895b74?w=800", "name": "Happy Boy", "category": "character", "tags": ["child", "boy", "happy", "young"]},
     {"id": "starter_8", "url": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=800", "name": "Confident Teen", "category": "character", "tags": ["teen", "confident", "male"]},
+    {"id": "starter_9", "url": "https://images.unsplash.com/photo-1765635648081-73f1e9e2189a?w=800", "name": "Superhero Kid", "category": "character", "tags": ["child", "superhero", "costume", "adventure"]},
     # Fantasy Scenes
     {"id": "starter_10", "url": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800", "name": "Enchanted Forest", "category": "scene", "tags": ["forest", "fantasy", "magical", "nature"]},
     {"id": "starter_11", "url": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800", "name": "Majestic Mountain", "category": "scene", "tags": ["mountain", "epic", "landscape", "nature"]},
@@ -6735,6 +6736,100 @@ STARTER_LIBRARY_IMAGES = [
     {"id": "starter_28", "url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800", "name": "Castle Interior", "category": "scene", "tags": ["castle", "interior", "medieval", "grand"]},
     {"id": "starter_29", "url": "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=800", "name": "Secret Garden", "category": "scene", "tags": ["garden", "flowers", "magical", "nature"]},
     {"id": "starter_30", "url": "https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800", "name": "Desert Oasis", "category": "scene", "tags": ["desert", "oasis", "adventure", "warm"]},
+    # Fairy Tale Castles
+    {"id": "starter_31", "url": "https://images.unsplash.com/photo-1754901690791-0658f9a36cdf?w=800", "name": "Fairy Tale Castle", "category": "scene", "tags": ["castle", "fantasy", "fairy tale", "magical"]},
+    {"id": "starter_32", "url": "https://images.unsplash.com/photo-1766156555244-572b9757433b?w=800", "name": "Colorful Castle", "category": "scene", "tags": ["castle", "colorful", "fantasy", "fairytale"]},
+    {"id": "starter_33", "url": "https://images.pexels.com/photos/14811896/pexels-photo-14811896.jpeg?w=800", "name": "Night Castle", "category": "scene", "tags": ["castle", "night", "purple", "magical"]},
+    # Children Adventure
+    {"id": "starter_34", "url": "https://images.unsplash.com/photo-1763819089956-5749bf52653c?w=800", "name": "Tree Climber", "category": "character", "tags": ["child", "adventure", "nature", "climbing"]},
+    {"id": "starter_35", "url": "https://images.pexels.com/photos/5604965/pexels-photo-5604965.jpeg?w=800", "name": "Forest Explorers", "category": "character", "tags": ["children", "camping", "adventure", "forest"]},
+    {"id": "starter_36", "url": "https://images.unsplash.com/photo-1762921602540-fcd477689f52?w=800", "name": "Running Child", "category": "character", "tags": ["child", "running", "outdoor", "happy"]},
+    # Mystical Forest
+    {"id": "starter_37", "url": "https://images.unsplash.com/photo-1719457842736-96ee8082a524?w=800", "name": "Forest Stream", "category": "scene", "tags": ["forest", "stream", "peaceful", "nature"]},
+    {"id": "starter_38", "url": "https://images.pexels.com/photos/15022098/pexels-photo-15022098.jpeg?w=800", "name": "Forest Fairy", "category": "character", "tags": ["fairy", "forest", "magical", "fantasy"]},
+    {"id": "starter_39", "url": "https://images.unsplash.com/photo-1573689705959-7786e029b31e?w=800", "name": "Magical Trees", "category": "scene", "tags": ["forest", "trees", "mystical", "nature"]},
+    # Cute Animals
+    {"id": "starter_40", "url": "https://images.unsplash.com/photo-1706745262357-5ecaa3154433?w=800", "name": "Fluffy Puppy", "category": "character", "tags": ["dog", "puppy", "cute", "pet"]},
+    {"id": "starter_41", "url": "https://images.unsplash.com/photo-1767101607738-c93754ce5220?w=800", "name": "Curious Puppy", "category": "character", "tags": ["dog", "puppy", "curious", "cute"]},
+    {"id": "starter_42", "url": "https://images.pexels.com/photos/28990269/pexels-photo-28990269.jpeg?w=800", "name": "Maltipoo Puppy", "category": "character", "tags": ["dog", "puppy", "fluffy", "cute"]},
+    {"id": "starter_43", "url": "https://images.unsplash.com/photo-1594653283108-953a4f93400e?w=800", "name": "White Dog", "category": "character", "tags": ["dog", "white", "pet", "friendly"]},
+    # Adventure Scenes
+    {"id": "starter_44", "url": "https://images.pexels.com/photos/30104945/pexels-photo-30104945.jpeg?w=800", "name": "Pirate Ship", "category": "scene", "tags": ["ship", "pirate", "adventure", "ocean"]},
+    {"id": "starter_45", "url": "https://images.unsplash.com/photo-1760875658787-ff2474c6385c?w=800", "name": "Sailing Ship", "category": "scene", "tags": ["ship", "sailing", "ocean", "adventure"]},
+    {"id": "starter_46", "url": "https://images.pexels.com/photos/28830053/pexels-photo-28830053.jpeg?w=800", "name": "Pirate Captain", "category": "character", "tags": ["pirate", "captain", "adventure", "ocean"]},
+    # Rainbow & Fantasy
+    {"id": "starter_47", "url": "https://images.unsplash.com/photo-1759670944001-430986689b77?w=800", "name": "Rainbow Girl", "category": "character", "tags": ["rainbow", "colorful", "fantasy", "child"]},
+    {"id": "starter_48", "url": "https://images.pexels.com/photos/10098871/pexels-photo-10098871.jpeg?w=800", "name": "Unicorn Baby", "category": "character", "tags": ["unicorn", "baby", "cute", "costume"]},
+    # More Portraits
+    {"id": "starter_49", "url": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=800", "name": "Smiling Woman", "category": "character", "tags": ["woman", "smile", "portrait", "happy"]},
+    {"id": "starter_50", "url": "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=800", "name": "Young Man", "category": "character", "tags": ["man", "young", "portrait", "confident"]},
+    # Nature Scenes
+    {"id": "starter_51", "url": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800", "name": "Misty Valley", "category": "scene", "tags": ["valley", "mist", "nature", "peaceful"]},
+    {"id": "starter_52", "url": "https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=800", "name": "Waterfall", "category": "scene", "tags": ["waterfall", "nature", "dramatic", "water"]},
+    {"id": "starter_53", "url": "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=800", "name": "Green Hills", "category": "scene", "tags": ["hills", "green", "nature", "landscape"]},
+    {"id": "starter_54", "url": "https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800", "name": "Forest Path", "category": "scene", "tags": ["forest", "path", "nature", "adventure"]},
+    # City & Urban
+    {"id": "starter_55", "url": "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800", "name": "City Skyline", "category": "scene", "tags": ["city", "skyline", "urban", "modern"]},
+    {"id": "starter_56", "url": "https://images.unsplash.com/photo-1514565131-fce0801e5785?w=800", "name": "Street Scene", "category": "scene", "tags": ["street", "urban", "city", "life"]},
+    # Animals - Wildlife
+    {"id": "starter_57", "url": "https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?w=800", "name": "Fox Portrait", "category": "character", "tags": ["fox", "animal", "wildlife", "cute"]},
+    {"id": "starter_58", "url": "https://images.unsplash.com/photo-1474511320723-9a56873571b7?w=800", "name": "Wild Cat", "category": "character", "tags": ["cat", "wild", "animal", "predator"]},
+    {"id": "starter_59", "url": "https://images.unsplash.com/photo-1551969014-7d2c4cddf0b6?w=800", "name": "Bunny Rabbit", "category": "character", "tags": ["rabbit", "bunny", "cute", "animal"]},
+    {"id": "starter_60", "url": "https://images.unsplash.com/photo-1474511320723-9a56873571b7?w=800", "name": "Deer in Forest", "category": "character", "tags": ["deer", "forest", "wildlife", "peaceful"]},
+    # Space & Cosmos
+    {"id": "starter_61", "url": "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800", "name": "Nebula", "category": "scene", "tags": ["space", "nebula", "cosmic", "colorful"]},
+    {"id": "starter_62", "url": "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=800", "name": "Milky Way", "category": "scene", "tags": ["space", "milky way", "stars", "night"]},
+    {"id": "starter_63", "url": "https://images.unsplash.com/photo-1454789548928-9efd52dc4031?w=800", "name": "Earth from Space", "category": "scene", "tags": ["earth", "space", "planet", "cosmic"]},
+    # Beach & Ocean
+    {"id": "starter_64", "url": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800", "name": "Paradise Beach", "category": "scene", "tags": ["beach", "paradise", "tropical", "ocean"]},
+    {"id": "starter_65", "url": "https://images.unsplash.com/photo-1519046904884-53103b34b206?w=800", "name": "Ocean Waves", "category": "scene", "tags": ["ocean", "waves", "water", "dramatic"]},
+    {"id": "starter_66", "url": "https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=800", "name": "Calm Sea", "category": "scene", "tags": ["sea", "calm", "peaceful", "water"]},
+    # Seasons
+    {"id": "starter_67", "url": "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=800", "name": "Autumn Leaves", "category": "scene", "tags": ["autumn", "leaves", "fall", "colorful"]},
+    {"id": "starter_68", "url": "https://images.unsplash.com/photo-1491002052546-bf38f186af56?w=800", "name": "Winter Snow", "category": "scene", "tags": ["winter", "snow", "cold", "peaceful"]},
+    {"id": "starter_69", "url": "https://images.unsplash.com/photo-1462275646964-a0e3571f4f67?w=800", "name": "Spring Flowers", "category": "scene", "tags": ["spring", "flowers", "colorful", "nature"]},
+    {"id": "starter_70", "url": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800", "name": "Summer Beach", "category": "scene", "tags": ["summer", "beach", "sunny", "tropical"]},
+    # Fantasy Creatures
+    {"id": "starter_71", "url": "https://images.unsplash.com/photo-1577493340887-b7bfff550145?w=800", "name": "Dragon Eye", "category": "character", "tags": ["dragon", "eye", "fantasy", "creature"]},
+    {"id": "starter_72", "url": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800", "name": "Magical Forest", "category": "scene", "tags": ["forest", "magical", "fantasy", "enchanted"]},
+    # More Children
+    {"id": "starter_73", "url": "https://images.unsplash.com/photo-1503919545889-aef636e10ad4?w=800", "name": "Reading Child", "category": "character", "tags": ["child", "reading", "book", "curious"]},
+    {"id": "starter_74", "url": "https://images.unsplash.com/photo-1489710437720-ebb67ec84dd2?w=800", "name": "Happy Girl", "category": "character", "tags": ["girl", "happy", "child", "smiling"]},
+    {"id": "starter_75", "url": "https://images.unsplash.com/photo-1445633743309-b60418bedbba?w=800", "name": "Playful Boy", "category": "character", "tags": ["boy", "playful", "child", "outdoor"]},
+    # Architecture
+    {"id": "starter_76", "url": "https://images.unsplash.com/photo-1431576901776-e539bd916ba2?w=800", "name": "Old Castle", "category": "scene", "tags": ["castle", "old", "medieval", "architecture"]},
+    {"id": "starter_77", "url": "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800", "name": "London Bridge", "category": "scene", "tags": ["bridge", "london", "city", "landmark"]},
+    {"id": "starter_78", "url": "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=800", "name": "Paris Tower", "category": "scene", "tags": ["paris", "tower", "landmark", "romantic"]},
+    # More Animals
+    {"id": "starter_79", "url": "https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=800", "name": "Barn Owl", "category": "character", "tags": ["owl", "bird", "wise", "night"]},
+    {"id": "starter_80", "url": "https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?w=800", "name": "Swimming Turtle", "category": "character", "tags": ["turtle", "swimming", "ocean", "peaceful"]},
+    {"id": "starter_81", "url": "https://images.unsplash.com/photo-1474511320723-9a56873571b7?w=800", "name": "King Lion", "category": "character", "tags": ["lion", "king", "majestic", "wildlife"]},
+    # Magical Elements
+    {"id": "starter_82", "url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800", "name": "Magic Book", "category": "scene", "tags": ["book", "magic", "fantasy", "mystical"]},
+    {"id": "starter_83", "url": "https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?w=800", "name": "Magic Moon", "category": "scene", "tags": ["moon", "magic", "night", "mystical"]},
+    # More Landscapes
+    {"id": "starter_84", "url": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800", "name": "Snow Mountain", "category": "scene", "tags": ["mountain", "snow", "winter", "epic"]},
+    {"id": "starter_85", "url": "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800", "name": "Sunset Valley", "category": "scene", "tags": ["valley", "sunset", "golden", "nature"]},
+    {"id": "starter_86", "url": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800", "name": "Alpine Peaks", "category": "scene", "tags": ["alps", "peaks", "mountain", "dramatic"]},
+    # Fantasy Portraits
+    {"id": "starter_87", "url": "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800", "name": "Elf Princess", "category": "character", "tags": ["elf", "princess", "fantasy", "mystical"]},
+    {"id": "starter_88", "url": "https://images.unsplash.com/photo-1552058544-f2b08422138a?w=800", "name": "Old Wizard", "category": "character", "tags": ["wizard", "old", "wise", "magic"]},
+    # Indoor Scenes
+    {"id": "starter_89", "url": "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800", "name": "Magic Library", "category": "scene", "tags": ["library", "books", "magic", "indoor"]},
+    {"id": "starter_90", "url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800", "name": "Grand Hall", "category": "scene", "tags": ["hall", "grand", "medieval", "castle"]},
+    # More Nature
+    {"id": "starter_91", "url": "https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=800", "name": "Rainbow Falls", "category": "scene", "tags": ["waterfall", "rainbow", "nature", "magical"]},
+    {"id": "starter_92", "url": "https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800", "name": "Green Forest", "category": "scene", "tags": ["forest", "green", "nature", "peaceful"]},
+    # Diverse Characters
+    {"id": "starter_93", "url": "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=800", "name": "Cool Guy", "category": "character", "tags": ["man", "cool", "portrait", "young"]},
+    {"id": "starter_94", "url": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=800", "name": "Kind Woman", "category": "character", "tags": ["woman", "kind", "portrait", "warm"]},
+    {"id": "starter_95", "url": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800", "name": "Brave Girl", "category": "character", "tags": ["girl", "brave", "young", "hero"]},
+    # Final Adventures
+    {"id": "starter_96", "url": "https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800", "name": "Desert Journey", "category": "scene", "tags": ["desert", "journey", "adventure", "sand"]},
+    {"id": "starter_97", "url": "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800", "name": "Aurora Sky", "category": "scene", "tags": ["aurora", "sky", "night", "magical"]},
+    {"id": "starter_98", "url": "https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800", "name": "Sakura Garden", "category": "scene", "tags": ["sakura", "garden", "japan", "spring"]},
+    {"id": "starter_99", "url": "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=800", "name": "Hidden Garden", "category": "scene", "tags": ["garden", "hidden", "magical", "flowers"]},
+    {"id": "starter_100", "url": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800", "name": "Deep Space", "category": "scene", "tags": ["space", "deep", "cosmic", "stars"]},
 ]
 
 @api_router.get("/starter-library")
