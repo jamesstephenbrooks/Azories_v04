@@ -686,6 +686,103 @@ export default function BookEditor() {
 
   const isComicMode = book?.layout_mode === 'comic';
 
+  // Voice narration functions
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+      
+      audioChunksRef.current = [];
+      
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+      
+      recorder.onstop = async () => {
+        stream.getTracks().forEach(track => track.stop());
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        await transcribeAudio(audioBlob);
+      };
+      
+      recorder.start();
+      setMediaRecorder(recorder);
+      setIsRecording(true);
+      toast.info('Recording... Speak your story!');
+    } catch (error) {
+      console.error('Microphone access error:', error);
+      toast.error('Could not access microphone. Please allow microphone permissions.');
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorder && isRecording) {
+      mediaRecorder.stop();
+      setIsRecording(false);
+      toast.info('Processing your narration...');
+    }
+  };
+
+  const transcribeAudio = async (audioBlob) => {
+    const token = localStorage.getItem('azories-token');
+    if (!token) {
+      toast.error('Please log in first');
+      return;
+    }
+
+    setIsTranscribing(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', audioBlob, 'narration.webm');
+      formData.append('language', 'en');
+
+      const response = await axios.post(`${API}/speech-to-text`, formData, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      if (response.data.success && response.data.text) {
+        // Append transcribed text to existing content
+        const currentText = selectedPage?.text_content || '';
+        const newText = currentText 
+          ? `${currentText}\n\n${response.data.text}`
+          : response.data.text;
+        
+        setSelectedPage({ ...selectedPage, text_content: newText });
+        toast.success('Narration transcribed! Review and edit if needed.');
+      } else {
+        toast.error('Could not transcribe audio');
+      }
+    } catch (error) {
+      console.error('Transcription error:', error);
+      toast.error(error.response?.data?.detail || 'Failed to transcribe audio');
+    } finally {
+      setIsTranscribing(false);
+    }
+  };
+
+  const goToNextPageAfterNarration = async () => {
+    // First save current page
+    await savePage();
+    
+    // Find current page index
+    const currentIndex = pages.findIndex(p => p.id === selectedPage?.id);
+    
+    if (currentIndex >= 0 && currentIndex < pages.length - 1) {
+      // Go to next page
+      const nextPage = pages[currentIndex + 1];
+      setSelectedPage(nextPage);
+      toast.info(`Moved to page ${currentIndex + 2}`);
+    } else {
+      // Create new page if at the end
+      await addPage();
+      toast.success('New page created for your next narration!');
+    }
+  };
+
   const downloadBook = async () => {
     const token = localStorage.getItem('azories-token');
     if (!token) {
