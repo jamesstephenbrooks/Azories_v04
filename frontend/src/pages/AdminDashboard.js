@@ -613,15 +613,15 @@ export default function AdminDashboard() {
                               size="sm"
                               variant="outline"
                               onClick={() => handleRunModeration(book.id, book.title)}
-                              disabled={moderating === book.id || book.moderation_run_at}
+                              disabled={moderating === book.id}
                               className="text-xs bg-blue-500/10 hover:bg-blue-500/20 border-blue-500/50 text-blue-400"
                             >
                               {moderating === book.id ? (
                                 <div className="w-3 h-3 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mr-1" />
                               ) : (
-                                <FiSearch className="w-3 h-3 mr-1" />
+                                <FiRefreshCw className="w-3 h-3 mr-1" />
                               )}
-                              Scan
+                              Re-scan
                             </Button>
                             <Button
                               size="sm"
