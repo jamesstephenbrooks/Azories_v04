@@ -136,8 +136,8 @@ const Credits = () => {
               <div className="p-6">
                 <h3 className="text-xl font-bold text-white capitalize mb-2">{id}</h3>
                 <div className="mb-4">
-                  <span className="text-4xl font-bold text-white">${pkg.price}</span>
-                  <span className="text-gray-400 ml-2">USD</span>
+                  <span className="text-4xl font-bold text-white">£{pkg.price}</span>
+                  <span className="text-gray-400 ml-2">GBP</span>
                 </div>
                 
                 <div className="bg-black/20 rounded-lg p-3 mb-4">
