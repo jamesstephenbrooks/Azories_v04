@@ -1244,7 +1244,7 @@ export default function ProStudio() {
   const saveToGallery = async (item, type = 'image') => {
     try {
       const token = localStorage.getItem('azories-token');
-      const response = await fetch(`${API_URL}/api/art-studio/gallery/save`, {
+      const response = await fetch(`${API_URL}/api/art-studio/gallery`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1252,17 +1252,23 @@ export default function ProStudio() {
         },
         body: JSON.stringify({
           image_url: item.url,
+          name: item.name || item.prompt || 'Pro Studio Image',
           prompt: item.prompt || '',
           style: type,
-          is_animation: type === 'video'
+          type: type === 'video' ? 'animation' : 'image',
+          source: 'pro_studio'  // Mark as Pro Studio item
         })
       });
 
       if (response.ok) {
         toast.success('Saved to gallery!');
         loadGallery();
+      } else {
+        const err = await response.json().catch(() => ({}));
+        toast.error(err.detail || 'Failed to save');
       }
     } catch (error) {
+      console.error('Save error:', error);
       toast.error('Failed to save');
     }
   };
