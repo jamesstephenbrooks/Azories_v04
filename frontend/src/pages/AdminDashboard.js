@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -8,11 +8,13 @@ import { Label } from '../components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { toast } from 'sonner';
 import { 
   FiShield, FiBook, FiCheck, FiX, FiAlertTriangle, 
   FiEye, FiEyeOff, FiClock, FiUser, FiArrowLeft, FiLogIn, FiSearch, FiRefreshCw,
-  FiUsers, FiBarChart2, FiStar, FiAward, FiTrash2, FiLock, FiLogOut, FiDatabase, FiFilter, FiImage
+  FiUsers, FiBarChart2, FiStar, FiAward, FiTrash2, FiLock, FiLogOut, FiDatabase, FiFilter, FiImage,
+  FiChevronLeft, FiChevronRight
 } from 'react-icons/fi';
 
 const API = process.env.REACT_APP_BACKEND_URL;
@@ -34,6 +36,12 @@ export default function AdminDashboard() {
   const [genreFilter, setGenreFilter] = useState('All');
   const [ageFilter, setAgeFilter] = useState('All');
   const [userSearchQuery, setUserSearchQuery] = useState('');
+  
+  // Preview Modal State
+  const [previewBook, setPreviewBook] = useState(null);
+  const [previewPages, setPreviewPages] = useState([]);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [currentPreviewPage, setCurrentPreviewPage] = useState(0);
   
   // Content Review State
   const [pendingBooks, setPendingBooks] = useState([]);
