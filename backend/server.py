@@ -4467,6 +4467,8 @@ async def get_full_book(book_id: str, current_user: dict = Depends(get_optional_
             page.setdefault("image_url_2", "")
             page.setdefault("image_url_3", "")
             page.setdefault("image_url_4", "")
+            page.setdefault("video_url", "")
+            page.setdefault("use_video", False)
             page.setdefault("layout_type", "single")
             page.setdefault("image_position_x", 50)
             page.setdefault("image_position_y", 50)
