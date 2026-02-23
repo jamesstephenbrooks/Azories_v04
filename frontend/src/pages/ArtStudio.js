@@ -105,6 +105,82 @@ const QUICK_TEMPLATES = [
   }
 ];
 
+// SCENE QUICK TEMPLATES - Landscape/environment templates for Scene Creator
+const SCENE_QUICK_TEMPLATES = [
+  {
+    id: 'enchanted-forest',
+    name: 'Enchanted Forest',
+    description: 'Magical forest with glowing mushrooms',
+    image: 'https://images.unsplash.com/photo-1770203691538-23b02e1b11ce?w=200&h=120&fit=crop',
+    preset: 'forest',
+    timeOfDay: 'dusk',
+    weather: 'foggy',
+    mood: 'mysterious',
+    customStyle: 'magical enchanted forest, bioluminescent mushrooms, ancient twisted trees, ethereal mist, fairy tale atmosphere, mystical lighting, fantasy art style',
+    popular: true
+  },
+  {
+    id: 'sunset-beach',
+    name: 'Golden Sunset Beach',
+    description: 'Tropical paradise at golden hour',
+    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=200&h=120&fit=crop',
+    preset: 'beach',
+    timeOfDay: 'dusk',
+    weather: 'clear',
+    mood: 'peaceful',
+    customStyle: 'tropical beach sunset, golden hour lighting, palm trees silhouettes, calm ocean waves, vibrant orange and pink sky, paradise vacation vibes',
+    popular: true
+  },
+  {
+    id: 'neon-city',
+    name: 'Cyberpunk City',
+    description: 'Futuristic neon-lit cityscape',
+    image: 'https://images.unsplash.com/photo-1747499967281-c0c5eec9933c?w=200&h=120&fit=crop',
+    preset: 'city',
+    timeOfDay: 'night',
+    weather: 'rainy',
+    mood: 'dramatic',
+    customStyle: 'cyberpunk city at night, neon signs, rain-slicked streets, towering skyscrapers, holographic advertisements, blade runner atmosphere',
+    popular: true
+  },
+  {
+    id: 'cosmic-space',
+    name: 'Cosmic Nebula',
+    description: 'Breathtaking space with stars and nebulae',
+    image: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=200&h=120&fit=crop',
+    preset: 'space',
+    timeOfDay: 'night',
+    weather: 'clear',
+    mood: 'epic',
+    customStyle: 'cosmic space scene, colorful nebula clouds, millions of stars, distant galaxies, epic scale, science fiction atmosphere, astronomical beauty',
+    popular: true
+  },
+  {
+    id: 'snowy-mountain',
+    name: 'Snowy Peaks',
+    description: 'Majestic snow-capped mountains',
+    image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=120&fit=crop',
+    preset: 'mountain',
+    timeOfDay: 'dawn',
+    weather: 'snowy',
+    mood: 'epic',
+    customStyle: 'majestic snow-capped mountain peaks, dramatic alpine landscape, pristine white snow, misty valleys, epic scale, adventure atmosphere',
+    popular: true
+  },
+  {
+    id: 'cozy-library',
+    name: 'Ancient Library',
+    description: 'Mystical library with towering bookshelves',
+    image: 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=200&h=120&fit=crop',
+    preset: 'library',
+    timeOfDay: 'day',
+    weather: 'clear',
+    mood: 'peaceful',
+    customStyle: 'ancient magical library, towering wooden bookshelves, warm candlelight, floating books, dust motes in sunbeams, cozy scholarly atmosphere',
+    popular: true
+  }
+];
+
 const ART_STYLE_CATEGORIES = [
   {
     category: 'Sci-Fi & Futuristic',
