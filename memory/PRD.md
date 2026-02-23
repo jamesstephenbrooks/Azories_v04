@@ -39,13 +39,20 @@ Build a full-featured digital book platform ("Azories") with:
   
 - **Publishing Workflow FULLY FIXED**:
   - **BLOCKED direct publish**: Removed `is_published` and `publish_status` from `BookUpdate` model
-  - User clicks "Submit for Review" → status changes to `pending_review` (book stays unpublished)
+  - User clicks "Submit for Review" → **AUTO AI moderation runs** → status changes to `pending_review`
   - Added `/api/books/{id}/unpublish` endpoint for users to withdraw published books
-  - Email notification sent to `book@azories.com` when book submitted
+  - **Email notification** sent with AI verdict (PASSED/FLAGGED) and book details
   - Dashboard shows status badges: Published (green), Pending Review (amber), Rejected (red), Draft (gray)
-  - Admin manually runs AI moderation via "Scan" button
+  - Admin sees AI verdict box (green=passed, red=flagged) with moderation message
+  - **Preview opens in new tab** so admin can easily return to review page
+  - **Re-scan button** allows admin to re-run moderation if needed
   - **Only admin can publish**: via `/api/admin/books/{id}/approve`
   - Fixed all direct publish code in Dashboard.js and MySeries.js
+  
+- **Email Configuration Note**:
+  - Currently using Resend test domain (`onboarding@resend.dev`)
+  - Emails sent to `jamesstephenbrooks@outlook.com` (Resend registered email)
+  - To send to `book@azories.com`, verify `azories.com` domain in Resend dashboard
   
 - **COMBINED Admin Dashboard** (at `/admin`):
   - **Stats Bar**: Pending Review, Flagged, Total Books, Published, Total Users
