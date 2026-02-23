@@ -824,6 +824,15 @@ export default function ProStudio() {
         };
         setGeneratedImages(prev => [newImage, ...prev]);
         toast.success('Scene image generated!');
+        
+        // Auto-save to scene folder
+        await saveToSceneFolder(
+          selectedScene.id,
+          data.image_url,
+          data.prompt,
+          'generated',
+          selectedCharacter?.id
+        );
       } else {
         const error = await response.json();
         toast.error(error.detail || 'Generation failed');
