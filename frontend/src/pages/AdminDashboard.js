@@ -288,6 +288,28 @@ export default function AdminDashboard() {
     }
   };
 
+  const [generatingCovers, setGeneratingCovers] = useState(false);
+  
+  const generateMissingCovers = async () => {
+    setGeneratingCovers(true);
+    try {
+      const res = await axios.post(`${API}/api/admin/generate-missing-covers`, {}, getAuthHeaders());
+      if (res.data.updated > 0) {
+        toast.success(`Generated ${res.data.updated} cover images!`);
+        fetchAllData();
+      } else {
+        toast.info(res.data.message || 'All books already have covers');
+      }
+      if (res.data.errors?.length > 0) {
+        console.error('Cover generation errors:', res.data.errors);
+      }
+    } catch (error) {
+      toast.error('Failed to generate covers');
+    } finally {
+      setGeneratingCovers(false);
+    }
+  };
+
   // Get publish status badge
   const getPublishStatusBadge = (book) => {
     if (book.is_published || book.publish_status === 'published') {
