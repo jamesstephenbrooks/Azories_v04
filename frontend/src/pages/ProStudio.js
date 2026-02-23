@@ -2460,8 +2460,8 @@ export default function ProStudio() {
                           <img 
                             src={scene.thumbnail || scene.reference_images?.[0]} 
                             alt={scene.name}
-                            className="w-20 h-14 rounded-lg object-cover cursor-pointer"
-                            onClick={() => setPreviewImage({ url: scene.thumbnail, prompt: scene.name })}
+                            className="w-20 h-14 rounded-lg object-cover cursor-pointer hover:ring-2 hover:ring-purple-500"
+                            onClick={() => openSceneView(scene)}
                           />
                           <div className="flex-1 min-w-0">
                             <p className="text-white font-medium truncate">{scene.name}</p>
@@ -2472,6 +2472,15 @@ export default function ProStudio() {
                             </div>
                           </div>
                           <div className="flex gap-1">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => openSceneView(scene)}
+                              className="text-purple-400 hover:bg-purple-500/20 p-1"
+                              title="View scene folder"
+                            >
+                              <FiFolder size={14} />
+                            </Button>
                             <Button
                               size="sm"
                               variant={selectedScene?.id === scene.id ? "default" : "outline"}
