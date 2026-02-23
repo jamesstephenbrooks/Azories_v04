@@ -1031,7 +1031,13 @@ export default function ArtStudioExpert() {
       data: {
         ...node.data,
         onChange: (k, v) => updateNodeData(node.id, k, v),
-        onSelectFromGallery: node.type === 'image' ? () => openGalleryPicker(node.id) : undefined
+        onSelectFromGallery: node.type === 'image' ? () => openGalleryPicker(node.id) : undefined,
+        // Use ref wrapper for runOutputNode to avoid circular dependency
+        onRunNode: node.type === 'output' ? () => {
+          if (runOutputNodeRef.current) {
+            runOutputNodeRef.current(node.id);
+          }
+        } : undefined
       }
     })));
   }, []);
