@@ -323,6 +323,7 @@ class PageUpdate(BaseModel):
     image_url_3: Optional[str] = None
     image_url_4: Optional[str] = None
     video_url: Optional[str] = None
+    use_video: Optional[bool] = None
     audio_url: Optional[str] = None
     order: Optional[int] = None
     layout_type: Optional[str] = None
@@ -344,6 +345,7 @@ class PageResponse(BaseModel):
     image_url_3: str = ""
     image_url_4: str = ""
     video_url: str = ""
+    use_video: bool = False
     audio_url: str = ""
     order: int
     layout_type: str = "standard"
