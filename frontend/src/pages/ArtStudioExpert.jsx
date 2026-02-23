@@ -1240,6 +1240,16 @@ export default function ArtStudioExpert() {
     newNode.data.onChange = (k, v) => updateNodeData(nodeId, k, v);
     newNode.data.onDelete = () => deleteNodeById(nodeId);
     newNode.data.onCopyNode = () => copyNode(nodeId);
+    
+    // Add onRunNode callback for output nodes
+    if (type === 'output') {
+      newNode.data.onRunNode = () => {
+        if (runOutputNodeRef.current) {
+          runOutputNodeRef.current(nodeId);
+        }
+      };
+    }
+    
     setNodes(nds => [...nds, newNode]);
   };
   
