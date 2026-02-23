@@ -4989,6 +4989,532 @@ async def get_recommendations(current_user: dict = Depends(get_current_user)):
 
 
 
+# ============ STRIPE PAYMENTS ============
+
+class CreateCheckoutRequest(BaseModel):
+    package_id: str
+    origin_url: str
+
+class PaymentTransaction(BaseModel):
+    id: str
+    user_id: str
+    user_email: str
+    package_id: str
+    credits: int
+    amount: float
+    currency: str
+    session_id: str
+    status: str
+    payment_status: str
+    created_at: str
+    completed_at: Optional[str] = None
+
+@api_router.get("/payments/packages")
+async def get_credit_packages():
+    """Get available credit packages"""
+    return {
+        "packages": CREDIT_PACKAGES,
+        "credit_costs": CREDIT_COSTS
+    }
+
+@api_router.post("/payments/create-checkout")
+async def create_checkout_session(request: CreateCheckoutRequest, http_request: Request, current_user: dict = Depends(get_current_user)):
+    """Create a Stripe checkout session for purchasing credits"""
+    package = CREDIT_PACKAGES.get(request.package_id)
+    if not package:
+        raise HTTPException(status_code=400, detail="Invalid package")
+    
+    # Build URLs from frontend origin
+    success_url = f"{request.origin_url}/payment-success?session_id={{CHECKOUT_SESSION_ID}}"
+    cancel_url = f"{request.origin_url}/credits"
+    
+    # Initialize Stripe
+    host_url = str(http_request.base_url).rstrip('/')
+    webhook_url = f"{host_url}/api/webhook/stripe"
+    stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url=webhook_url)
+    
+    # Create checkout session
+    checkout_request = CheckoutSessionRequest(
+        amount=float(package["price"]),
+        currency="usd",
+        success_url=success_url,
+        cancel_url=cancel_url,
+        metadata={
+            "user_id": current_user["id"],
+            "user_email": current_user.get("email", ""),
+            "package_id": request.package_id,
+            "credits": str(package["credits"])
+        }
+    )
+    
+    session = await stripe_checkout.create_checkout_session(checkout_request)
+    
+    # Create pending transaction record
+    transaction = {
+        "id": str(uuid.uuid4()),
+        "user_id": current_user["id"],
+        "user_email": current_user.get("email", ""),
+        "package_id": request.package_id,
+        "credits": package["credits"],
+        "amount": package["price"],
+        "currency": "usd",
+        "session_id": session.session_id,
+        "status": "pending",
+        "payment_status": "initiated",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "completed_at": None
+    }
+    await db.payment_transactions.insert_one(transaction)
+    
+    return {
+        "checkout_url": session.url,
+        "session_id": session.session_id
+    }
+
+@api_router.get("/payments/status/{session_id}")
+async def get_payment_status(session_id: str, http_request: Request, current_user: dict = Depends(get_current_user)):
+    """Check payment status and add credits if successful"""
+    # Find the transaction
+    transaction = await db.payment_transactions.find_one({"session_id": session_id}, {"_id": 0})
+    if not transaction:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+    
+    # Verify user owns this transaction
+    if transaction["user_id"] != current_user["id"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    # If already completed, return status
+    if transaction["payment_status"] == "paid":
+        return {
+            "status": "complete",
+            "payment_status": "paid",
+            "credits_added": transaction["credits"],
+            "message": "Payment already processed"
+        }
+    
+    # Check with Stripe
+    host_url = str(http_request.base_url).rstrip('/')
+    webhook_url = f"{host_url}/api/webhook/stripe"
+    stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url=webhook_url)
+    
+    checkout_status = await stripe_checkout.get_checkout_status(session_id)
+    
+    # Update transaction status
+    now = datetime.now(timezone.utc).isoformat()
+    
+    if checkout_status.payment_status == "paid":
+        # Check if we already processed this (prevent double-crediting)
+        existing = await db.payment_transactions.find_one({
+            "session_id": session_id,
+            "payment_status": "paid"
+        })
+        
+        if not existing:
+            # Add credits to user
+            user = await db.users.find_one({"id": current_user["id"]})
+            current_credits = user.get("credits", 0)
+            new_credits = current_credits + transaction["credits"]
+            
+            await db.users.update_one(
+                {"id": current_user["id"]},
+                {"$set": {"credits": new_credits}}
+            )
+            
+            # Update transaction
+            await db.payment_transactions.update_one(
+                {"session_id": session_id},
+                {"$set": {
+                    "status": "complete",
+                    "payment_status": "paid",
+                    "completed_at": now
+                }}
+            )
+            
+            logger.info(f"Credits added: {transaction['credits']} to user {current_user['email']}")
+            
+            return {
+                "status": "complete",
+                "payment_status": "paid",
+                "credits_added": transaction["credits"],
+                "new_balance": new_credits,
+                "message": "Payment successful! Credits added to your account."
+            }
+        else:
+            return {
+                "status": "complete",
+                "payment_status": "paid",
+                "credits_added": transaction["credits"],
+                "message": "Payment already processed"
+            }
+    
+    elif checkout_status.status == "expired":
+        await db.payment_transactions.update_one(
+            {"session_id": session_id},
+            {"$set": {
+                "status": "expired",
+                "payment_status": "expired"
+            }}
+        )
+        return {
+            "status": "expired",
+            "payment_status": "expired",
+            "message": "Payment session expired"
+        }
+    
+    return {
+        "status": checkout_status.status,
+        "payment_status": checkout_status.payment_status,
+        "message": "Payment is being processed"
+    }
+
+@api_router.post("/webhook/stripe")
+async def stripe_webhook(request: Request):
+    """Handle Stripe webhooks"""
+    try:
+        body = await request.body()
+        signature = request.headers.get("Stripe-Signature")
+        
+        host_url = str(request.base_url).rstrip('/')
+        webhook_url = f"{host_url}/api/webhook/stripe"
+        stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url=webhook_url)
+        
+        webhook_response = await stripe_checkout.handle_webhook(body, signature)
+        
+        if webhook_response.payment_status == "paid":
+            session_id = webhook_response.session_id
+            metadata = webhook_response.metadata
+            
+            # Find and update transaction
+            transaction = await db.payment_transactions.find_one({"session_id": session_id})
+            if transaction and transaction.get("payment_status") != "paid":
+                user_id = metadata.get("user_id")
+                credits = int(metadata.get("credits", 0))
+                
+                # Add credits
+                user = await db.users.find_one({"id": user_id})
+                if user:
+                    current_credits = user.get("credits", 0)
+                    await db.users.update_one(
+                        {"id": user_id},
+                        {"$set": {"credits": current_credits + credits}}
+                    )
+                
+                # Update transaction
+                await db.payment_transactions.update_one(
+                    {"session_id": session_id},
+                    {"$set": {
+                        "status": "complete",
+                        "payment_status": "paid",
+                        "completed_at": datetime.now(timezone.utc).isoformat()
+                    }}
+                )
+        
+        return {"status": "ok"}
+    except Exception as e:
+        logger.error(f"Webhook error: {e}")
+        return {"status": "error", "message": str(e)}
+
+# ============ ADMIN ANALYTICS ============
+
+@api_router.get("/admin/analytics")
+async def get_admin_analytics(current_user: dict = Depends(get_current_user)):
+    """Get admin analytics dashboard data"""
+    # Check if user is admin or VIP
+    user_email = current_user.get("email", "").lower()
+    is_admin = current_user.get("role") == "admin"
+    is_vip = user_email in [v.lower() for v in VIP_USERS]
+    
+    if not is_admin and not is_vip:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    now = datetime.now(timezone.utc)
+    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    week_ago = now - timedelta(days=7)
+    month_ago = now - timedelta(days=30)
+    
+    # User stats
+    total_users = await db.users.count_documents({})
+    users_today = await db.users.count_documents({"created_at": {"$gte": today_start.isoformat()}})
+    users_this_week = await db.users.count_documents({"created_at": {"$gte": week_ago.isoformat()}})
+    
+    # Book stats
+    total_books = await db.books.count_documents({})
+    published_books = await db.books.count_documents({"is_published": True})
+    
+    # Revenue stats
+    total_revenue_pipeline = [
+        {"$match": {"payment_status": "paid"}},
+        {"$group": {"_id": None, "total": {"$sum": "$amount"}}}
+    ]
+    revenue_result = await db.payment_transactions.aggregate(total_revenue_pipeline).to_list(1)
+    total_revenue = revenue_result[0]["total"] if revenue_result else 0
+    
+    # Revenue this month
+    month_revenue_pipeline = [
+        {"$match": {"payment_status": "paid", "completed_at": {"$gte": month_ago.isoformat()}}},
+        {"$group": {"_id": None, "total": {"$sum": "$amount"}}}
+    ]
+    month_revenue_result = await db.payment_transactions.aggregate(month_revenue_pipeline).to_list(1)
+    month_revenue = month_revenue_result[0]["total"] if month_revenue_result else 0
+    
+    # Credits purchased
+    credits_pipeline = [
+        {"$match": {"payment_status": "paid"}},
+        {"$group": {"_id": None, "total": {"$sum": "$credits"}}}
+    ]
+    credits_result = await db.payment_transactions.aggregate(credits_pipeline).to_list(1)
+    total_credits_purchased = credits_result[0]["total"] if credits_result else 0
+    
+    # VIP usage costs
+    vip_cost_pipeline = [
+        {"$group": {"_id": None, "total": {"$sum": "$actual_cost_usd"}}}
+    ]
+    vip_cost_result = await db.vip_usage.aggregate(vip_cost_pipeline).to_list(1)
+    vip_total_cost = vip_cost_result[0]["total"] if vip_cost_result else 0
+    
+    # Credit usage stats
+    credit_usage_pipeline = [
+        {"$group": {
+            "_id": "$operation",
+            "count": {"$sum": 1},
+            "total_credits": {"$sum": "$credits_spent"}
+        }}
+    ]
+    usage_by_operation = await db.credit_usage.aggregate(credit_usage_pipeline).to_list(100)
+    
+    # Recent transactions
+    recent_transactions = await db.payment_transactions.find(
+        {"payment_status": "paid"},
+        {"_id": 0}
+    ).sort("completed_at", -1).limit(10).to_list(10)
+    
+    # Most active users
+    active_users_pipeline = [
+        {"$group": {
+            "_id": "$user_id",
+            "total_spent": {"$sum": "$credits_spent"}
+        }},
+        {"$sort": {"total_spent": -1}},
+        {"$limit": 10}
+    ]
+    active_users = await db.credit_usage.aggregate(active_users_pipeline).to_list(10)
+    
+    # Add user details to active users
+    for user_stat in active_users:
+        user = await db.users.find_one({"id": user_stat["_id"]}, {"_id": 0, "email": 1, "name": 1})
+        if user:
+            user_stat["email"] = user.get("email", "")
+            user_stat["name"] = user.get("name", "")
+    
+    # Page views (book reads)
+    total_reads = await db.reading_progress.count_documents({})
+    
+    # Book completion rate
+    completed_books = await db.reading_progress.count_documents({"completed": True})
+    completion_rate = (completed_books / total_reads * 100) if total_reads > 0 else 0
+    
+    return {
+        "users": {
+            "total": total_users,
+            "today": users_today,
+            "this_week": users_this_week
+        },
+        "books": {
+            "total": total_books,
+            "published": published_books
+        },
+        "revenue": {
+            "total": total_revenue,
+            "this_month": month_revenue,
+            "currency": "USD"
+        },
+        "credits": {
+            "total_purchased": total_credits_purchased,
+            "usage_by_operation": usage_by_operation
+        },
+        "vip_costs": {
+            "total_cost_usd": round(vip_total_cost, 2),
+            "note": "Cost of VIP user operations"
+        },
+        "engagement": {
+            "total_reads": total_reads,
+            "completed_books": completed_books,
+            "completion_rate": round(completion_rate, 1)
+        },
+        "recent_transactions": recent_transactions,
+        "active_users": active_users
+    }
+
+@api_router.get("/admin/vip-usage")
+async def get_vip_usage(current_user: dict = Depends(get_current_user)):
+    """Get VIP user usage statistics"""
+    user_email = current_user.get("email", "").lower()
+    is_admin = current_user.get("role") == "admin"
+    is_vip = user_email in [v.lower() for v in VIP_USERS]
+    
+    if not is_admin and not is_vip:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    # Get VIP usage grouped by user
+    pipeline = [
+        {"$group": {
+            "_id": "$user_email",
+            "total_operations": {"$sum": 1},
+            "total_cost_usd": {"$sum": "$actual_cost_usd"},
+            "operations": {"$push": {
+                "operation": "$operation",
+                "cost": "$actual_cost_usd",
+                "timestamp": "$timestamp"
+            }}
+        }}
+    ]
+    
+    vip_usage = await db.vip_usage.aggregate(pipeline).to_list(100)
+    
+    # Get recent VIP operations
+    recent_ops = await db.vip_usage.find(
+        {},
+        {"_id": 0}
+    ).sort("timestamp", -1).limit(50).to_list(50)
+    
+    return {
+        "vip_users": VIP_USERS,
+        "usage_by_user": vip_usage,
+        "recent_operations": recent_ops
+    }
+
+# ============ LEGAL PAGES ============
+
+@api_router.get("/legal/terms")
+async def get_terms_of_service():
+    """Get Terms of Service"""
+    return {
+        "title": "Terms of Service",
+        "last_updated": "2026-02-23",
+        "content": """
+# Terms of Service
+
+Welcome to Azories! By using our platform, you agree to these terms.
+
+## 1. Service Description
+Azories is a digital storytelling platform where users can create, read, and share illustrated books using AI-powered tools.
+
+## 2. User Accounts
+- You must be at least 13 years old to create an account
+- You are responsible for maintaining the security of your account
+- You must provide accurate information when registering
+
+## 3. Content Guidelines
+- All content must be appropriate for the selected age rating
+- No inappropriate, violent, or harmful content is allowed
+- You retain ownership of content you create, but grant us license to display it
+
+## 4. Credits and Payments
+- Credits are used for Pro Studio AI features
+- Credits are non-refundable once purchased
+- Prices are subject to change with notice
+
+## 5. Intellectual Property
+- AI-generated content is owned by the user who created it
+- You may not use the platform to infringe on others' copyrights
+
+## 6. Termination
+We reserve the right to terminate accounts that violate these terms.
+
+## 7. Contact
+For questions, contact us at books@azories.com
+"""
+    }
+
+@api_router.get("/legal/privacy")
+async def get_privacy_policy():
+    """Get Privacy Policy"""
+    return {
+        "title": "Privacy Policy",
+        "last_updated": "2026-02-23",
+        "content": """
+# Privacy Policy
+
+Your privacy is important to us. This policy explains how we collect, use, and protect your information.
+
+## 1. Information We Collect
+- Account information (email, name)
+- Content you create (books, images)
+- Usage data (pages viewed, features used)
+- Payment information (processed securely via Stripe)
+
+## 2. How We Use Your Information
+- To provide and improve our services
+- To process payments
+- To communicate with you about your account
+- To analyze usage patterns and improve the platform
+
+## 3. Data Storage
+- Your data is stored securely on our servers
+- We use industry-standard encryption
+- We do not sell your personal information
+
+## 4. Cookies
+We use cookies to:
+- Keep you logged in
+- Remember your preferences
+- Analyze site traffic
+
+## 5. Third-Party Services
+We use:
+- Stripe for payments
+- fal.ai for image generation
+- OpenAI for text and video generation
+
+## 6. Your Rights
+You can:
+- Access your data
+- Request deletion of your account
+- Opt out of marketing communications
+
+## 7. Contact
+For privacy concerns, contact us at books@azories.com
+"""
+    }
+
+@api_router.post("/contact")
+async def submit_contact_form(
+    name: str = Form(...),
+    email: str = Form(...),
+    subject: str = Form(...),
+    message: str = Form(...)
+):
+    """Submit a contact form message"""
+    contact = {
+        "id": str(uuid.uuid4()),
+        "name": name,
+        "email": email,
+        "subject": subject,
+        "message": message,
+        "status": "new",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.contact_messages.insert_one(contact)
+    
+    return {
+        "success": True,
+        "message": "Thank you for your message! We'll get back to you soon."
+    }
+
+@api_router.get("/admin/contact-messages")
+async def get_contact_messages(current_user: dict = Depends(get_current_user)):
+    """Get contact form messages (admin only)"""
+    user_email = current_user.get("email", "").lower()
+    is_admin = current_user.get("role") == "admin"
+    is_vip = user_email in [v.lower() for v in VIP_USERS]
+    
+    if not is_admin and not is_vip:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    messages = await db.contact_messages.find({}, {"_id": 0}).sort("created_at", -1).limit(100).to_list(100)
+    return {"messages": messages}
+
+
 # ============ ROOT ============
 
 @api_router.get("/")
