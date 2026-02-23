@@ -1411,18 +1411,6 @@ export default function ArtStudioExpert() {
     setShowSaveToBookModal(true);
   };
   
-  // Run workflow on selected nodes only
-  const runSelectedWorkflow = async () => {
-    if (selectedNodeIds.size === 0) {
-      alert('Please select nodes first using drag selection');
-      return;
-    }
-    
-    // For now, run the entire workflow but only update selected output nodes
-    // In future, this could be enhanced to only process connected sub-graphs
-    await runWorkflow();
-  };
-  
   const downloadImage = (url) => {
     const link = document.createElement('a');
     link.href = url;
