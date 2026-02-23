@@ -580,10 +580,12 @@ const ImageNode = ({ data, selected }) => {
   );
 };
 
-// Output Node - Fixed size with expand preview option
+// Output Node - Fixed size with expand preview option and lock functionality
 const OutputNode = ({ data, selected }) => {
+  const isLocked = data.locked ?? false; // Default to unlocked for backward compatibility
+  
   return (
-    <div className={`relative bg-gradient-to-br from-pink-900/90 to-pink-800/90 rounded-xl border-2 ${selected ? 'border-pink-400' : 'border-pink-600/50'} shadow-xl backdrop-blur-sm w-[220px] h-[320px]`}>
+    <div className={`relative bg-gradient-to-br from-pink-900/90 to-pink-800/90 rounded-xl border-2 ${selected ? 'border-pink-400' : isLocked ? 'border-yellow-500/70' : 'border-pink-600/50'} shadow-xl backdrop-blur-sm w-[220px] h-[340px]`}>
       <Handle type="target" position={Position.Left} className="!bg-pink-400 !w-3 !h-3" />
       <Handle type="source" position={Position.Right} className="!bg-yellow-400 !w-3 !h-3" id="continue" />
       <NodeDeleteButton onDelete={data.onDelete} />
@@ -608,6 +610,27 @@ const OutputNode = ({ data, selected }) => {
           <FiZap className="text-pink-300 w-3 h-3" />
         </div>
         <h4 className="text-xs font-semibold text-white flex-1">Output</h4>
+        {/* Lock indicator and toggle */}
+        {data.image && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              data.onChange?.('locked', !isLocked);
+            }}
+            className={`p-1 rounded transition-colors ${isLocked ? 'bg-yellow-500/30 text-yellow-300' : 'bg-white/10 text-white/50 hover:text-white'}`}
+            title={isLocked ? 'Locked - output won\'t change when re-running. Click to unlock.' : 'Unlocked - output may change when re-running. Click to lock.'}
+          >
+            {isLocked ? (
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+              </svg>
+            ) : (
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 2a5 5 0 00-5 5v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2H7V7a3 3 0 015.905-.75 1 1 0 001.937-.5A5.002 5.002 0 0010 2z" />
+              </svg>
+            )}
+          </button>
+        )}
       </div>
       
       <div className="p-2 h-[180px]">
@@ -627,6 +650,15 @@ const OutputNode = ({ data, selected }) => {
               alt="Generated" 
               className="w-full h-full object-cover rounded-lg"
             />
+            {/* Lock overlay indicator */}
+            {isLocked && (
+              <div className="absolute top-1 left-1 bg-yellow-500/80 px-1.5 py-0.5 rounded text-[9px] text-black font-medium flex items-center gap-1">
+                <svg className="w-2 h-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                </svg>
+                Locked
+              </div>
+            )}
             {/* Action buttons row 1 */}
             <div className="absolute bottom-2 left-2 right-2 flex gap-1 justify-center">
               <button
@@ -670,7 +702,7 @@ const OutputNode = ({ data, selected }) => {
           <button
             onClick={() => data.onSaveToBook?.(data.image)}
             className="w-full py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 rounded-lg text-xs font-medium text-white flex items-center justify-center gap-1"
-            title="Save this image to the selected book's library"
+            title="Save this image to a book's library"
             data-testid="output-save-book-btn"
           >
             <FiBook className="w-3 h-3" /> Save to Book
