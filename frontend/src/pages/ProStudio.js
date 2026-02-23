@@ -81,6 +81,8 @@ export default function ProStudio() {
   // Consistency Generation state
   const [consistencyMethod, setConsistencyMethod] = useState('auto'); // 'auto', 'lora', 'pulid', 'openai'
   const [selectedImageModel, setSelectedImageModel] = useState('flux-dev');
+  const [selectedSceneForGeneration, setSelectedSceneForGeneration] = useState(null); // Scene to place character in
+  const [faceSimilarity, setFaceSimilarity] = useState('high'); // 'high', 'medium', 'low'
   
   // Character folder/gallery state
   const [characterGallery, setCharacterGallery] = useState([]);
