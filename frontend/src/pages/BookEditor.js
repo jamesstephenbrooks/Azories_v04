@@ -124,11 +124,13 @@ export default function BookEditor() {
       const currentContent = JSON.stringify({
         text: selectedPage.text_content,
         image: selectedPage.image_url,
-        video: selectedPage.video_url
+        video: selectedPage.video_url,
+        useVideo: selectedPage.use_video,
+        layoutType: selectedPage.layout_type
       });
       setHasUnsavedChanges(currentContent !== lastSavedContent.current);
     }
-  }, [selectedPage?.text_content, selectedPage?.image_url, selectedPage?.video_url]);
+  }, [selectedPage?.text_content, selectedPage?.image_url, selectedPage?.video_url, selectedPage?.use_video, selectedPage?.layout_type]);
 
   useEffect(() => {
     if (!authLoading && !user) {
