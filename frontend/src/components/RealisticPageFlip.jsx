@@ -178,27 +178,40 @@ const ChapterTitlePage = forwardRef(({ chapter, chapterNumber, totalChapters, is
 
 ChapterTitlePage.displayName = 'ChapterTitlePage';
 
-// Image-only page (for left side of spread)
+// Image-only page (for left side of spread) - now supports video too
 const ImagePage = forwardRef(({ page, pageNumber }, ref) => {
   const hasImage = page?.image_url && page.image_url.trim() !== '';
+  const hasVideo = page?.video_url && page.video_url.trim() !== '';
+  const useVideo = page?.use_video && hasVideo;
   
   return (
     <Page ref={ref} pageNumber={pageNumber} isLeft={true}>
-      <div className="h-full flex items-center justify-center p-2">
-        {hasImage ? (
-          <div className="w-full h-full rounded-lg overflow-hidden shadow-lg">
-            <img 
-              src={page.image_url} 
-              alt=""
-              className="w-full h-full object-cover"
-              style={{
-                objectFit: page.image_fit || 'cover',
-                objectPosition: `${page.image_position_x || 50}% ${page.image_position_y || 50}%`
-              }}
-            />
-          </div>
+      <div className="h-full w-full flex items-center justify-center -m-6 md:-m-10">
+        {useVideo ? (
+          <video 
+            src={page.video_url}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+            style={{
+              objectFit: page.video_fit || 'cover',
+              objectPosition: 'center'
+            }}
+          />
+        ) : hasImage ? (
+          <img 
+            src={page.image_url} 
+            alt=""
+            className="w-full h-full object-cover"
+            style={{
+              objectFit: page.image_fit || 'cover',
+              objectPosition: `${page.image_position_x || 50}% ${page.image_position_y || 50}%`
+            }}
+          />
         ) : (
-          <div className="w-full h-full rounded-lg bg-muted/10 border border-dashed border-muted-foreground/20 flex items-center justify-center">
+          <div className="w-full h-full bg-muted/10 flex items-center justify-center">
             <div className="text-center text-muted-foreground/40">
               <div className="w-16 h-16 mx-auto mb-2 rounded-full bg-muted/20 flex items-center justify-center">
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
