@@ -1196,7 +1196,10 @@ export default function ArtStudioExpert() {
                 image: data.image_url,
                 onDownload: (url) => downloadImage(url),
                 onSaveToGallery: (url) => saveToGallery(url),
-                onExpand: (url) => setExpandedImage(url)
+                onSaveToBook: (url) => saveToBook(url, selectedBookId),
+                onExpand: (url) => setExpandedImage(url),
+                onCopyNode: () => copyNode(node.id),
+                onContinueWorkflow: (url) => continueWorkflow(url, node.id)
               }
             };
           }
