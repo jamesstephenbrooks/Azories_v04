@@ -7115,6 +7115,44 @@ async def get_pending_reviews(admin: dict = Depends(get_admin_user)):
     
     return {"books": pending_books, "count": len(pending_books)}
 
+@api_router.post("/admin/books/{book_id}/run-moderation")
+async def admin_run_moderation(book_id: str, admin: dict = Depends(get_admin_user)):
+    """Admin can manually run content moderation on a book"""
+    book = await db.books.find_one({"id": book_id}, {"_id": 0})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    # Get all pages content for moderation
+    chapters = await db.chapters.find({"book_id": book_id}, {"_id": 0}).to_list(100)
+    combined_text = f"Title: {book.get('title', '')}\n\nDescription: {book.get('description', '')}\n\n"
+    
+    for chapter in chapters:
+        pages = await db.pages.find({"chapter_id": chapter["id"]}, {"_id": 0}).to_list(100)
+        for page in pages:
+            if page.get("text_content"):
+                combined_text += page["text_content"] + "\n\n"
+    
+    # Run moderation
+    moderation_result = await moderate_text_content(combined_text)
+    
+    # Update book with moderation results
+    await db.books.update_one(
+        {"id": book_id},
+        {"$set": {
+            "moderation_flags": moderation_result.categories,
+            "moderation_message": moderation_result.message,
+            "moderation_run_at": datetime.now(timezone.utc).isoformat(),
+            "moderation_run_by": admin.get("username", "Admin")
+        }}
+    )
+    
+    return {
+        "success": True,
+        "flagged": moderation_result.flagged,
+        "categories": moderation_result.categories,
+        "message": moderation_result.message
+    }
+
 
 
 # Workflow Save/Load Endpoints
