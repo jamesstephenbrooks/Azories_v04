@@ -268,22 +268,55 @@ export default function BookEditor() {
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
     
     try {
-      // Use the correct endpoint: /pages/{page_id}
+      // When adding an image, clear video and set use_video to false
       await axios.put(`${API}/pages/${selectedPage.id}`, {
-        [imageKey]: imageUrl
+        [imageKey]: imageUrl,
+        video_url: null,
+        use_video: false
       }, { headers });
       
       setPages(prevPages => 
         prevPages.map(p => 
-          p.id === selectedPage.id ? { ...p, [imageKey]: imageUrl } : p
+          p.id === selectedPage.id ? { ...p, [imageKey]: imageUrl, video_url: null, use_video: false } : p
         )
       );
-      setSelectedPage(prev => ({ ...prev, [imageKey]: imageUrl }));
+      setSelectedPage(prev => ({ ...prev, [imageKey]: imageUrl, video_url: null, use_video: false }));
       setShowGalleryPicker(false);
-      toast.success('Image added from Art Studio');
+      toast.success('Image added to page');
     } catch (error) {
       console.error('Gallery add error:', error);
       toast.error('Failed to add image: ' + (error.response?.data?.detail || error.message));
+    }
+  };
+  
+  // Add video/animation to page from gallery
+  const addGalleryVideoToPage = async (videoUrl) => {
+    if (!selectedPage) {
+      toast.error('Please select a page first');
+      return;
+    }
+    
+    const token = localStorage.getItem('azories-token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    
+    try {
+      // When adding a video, set video_url and use_video, keep image as fallback
+      await axios.put(`${API}/pages/${selectedPage.id}`, {
+        video_url: videoUrl,
+        use_video: true
+      }, { headers });
+      
+      setPages(prevPages => 
+        prevPages.map(p => 
+          p.id === selectedPage.id ? { ...p, video_url: videoUrl, use_video: true } : p
+        )
+      );
+      setSelectedPage(prev => ({ ...prev, video_url: videoUrl, use_video: true }));
+      setShowGalleryPicker(false);
+      toast.success('Animation added to page');
+    } catch (error) {
+      console.error('Gallery video add error:', error);
+      toast.error('Failed to add animation: ' + (error.response?.data?.detail || error.message));
     }
   };
   
