@@ -1,4 +1,5 @@
 /* App-specific styles - Azories */
+@import './styles/mobile.css';
 
 /* Remove default centering */
 .App {
