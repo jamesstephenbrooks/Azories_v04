@@ -35,6 +35,9 @@ async def send_email(to_email: str, subject: str, html_content: str) -> dict:
         logger.warning("Email service not configured - RESEND_API_KEY missing")
         return {"success": False, "email_id": None, "error": "Email service not configured"}
     
+    # Fallback email for unverified domains
+    FALLBACK_EMAIL = os.environ.get("FALLBACK_NOTIFY_EMAIL", "jamesstephenbrooks@outlook.com")
+    
     params = {
         "from": f"{APP_NAME} <{SENDER_EMAIL}>",
         "to": [to_email],
@@ -48,8 +51,22 @@ async def send_email(to_email: str, subject: str, html_content: str) -> dict:
         logger.info(f"Email sent to {to_email}: {subject}")
         return {"success": True, "email_id": email.get("id"), "error": None}
     except Exception as e:
-        logger.error(f"Failed to send email to {to_email}: {str(e)}")
-        return {"success": False, "email_id": None, "error": str(e)}
+        error_msg = str(e)
+        # If domain not verified, try sending to fallback email
+        if "verify a domain" in error_msg.lower() and to_email != FALLBACK_EMAIL:
+            logger.warning(f"Domain not verified for {to_email}, trying fallback: {FALLBACK_EMAIL}")
+            params["to"] = [FALLBACK_EMAIL]
+            params["subject"] = f"[For: {to_email}] {subject}"
+            try:
+                email = await asyncio.to_thread(resend.Emails.send, params)
+                logger.info(f"Email sent to fallback {FALLBACK_EMAIL}: {subject}")
+                return {"success": True, "email_id": email.get("id"), "error": None}
+            except Exception as e2:
+                logger.error(f"Failed to send to fallback email: {str(e2)}")
+                return {"success": False, "email_id": None, "error": str(e2)}
+        
+        logger.error(f"Failed to send email to {to_email}: {error_msg}")
+        return {"success": False, "email_id": None, "error": error_msg}
 
 # Email Templates
 
