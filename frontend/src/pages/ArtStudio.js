@@ -2088,20 +2088,33 @@ export default function ArtStudio() {
                       </div>
                     </div>
                     
-                    {/* Progress Bar (shown while animating) */}
+                    {/* Progress Indicator (shown while animating) */}
                     {isAnimating && (
                       <div className="bg-black/30 rounded-xl p-4 space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-white/70 text-sm">Progress</span>
-                          <span className="text-pink-400 font-medium">{animationProgress}%</span>
+                        <div className="flex items-center gap-3">
+                          <FiRefreshCw className="w-5 h-5 text-pink-400 animate-spin flex-shrink-0" />
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-white text-sm font-medium">Generating Animation</span>
+                              {animationProgress > 0 && (
+                                <span className="text-pink-400 font-medium text-sm">{animationProgress}%</span>
+                              )}
+                            </div>
+                            {animationProgress > 0 ? (
+                              <div className="h-2 bg-black/50 rounded-full overflow-hidden">
+                                <div 
+                                  className="h-full bg-gradient-to-r from-pink-500 to-purple-500 transition-all duration-500"
+                                  style={{ width: `${animationProgress}%` }}
+                                />
+                              </div>
+                            ) : (
+                              <div className="h-2 bg-black/50 rounded-full overflow-hidden">
+                                <div className="h-full w-full bg-gradient-to-r from-pink-500/30 to-purple-500/30 animate-pulse" />
+                              </div>
+                            )}
+                          </div>
                         </div>
-                        <div className="h-3 bg-black/50 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-gradient-to-r from-pink-500 to-purple-500 transition-all duration-500"
-                            style={{ width: `${animationProgress}%` }}
-                          />
-                        </div>
-                        <p className="text-white/50 text-xs text-center">{animationMessage}</p>
+                        <p className="text-white/60 text-xs text-center">{animationMessage || 'Initializing...'}</p>
                       </div>
                     )}
                     
