@@ -1769,9 +1769,12 @@ export default function ProStudio() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="bg-black/40 border border-purple-500/20 p-1 mb-6">
+          <TabsList className="bg-black/40 border border-purple-500/20 p-1 mb-6 flex-wrap">
             <TabsTrigger value="characters" className="data-[state=active]:bg-purple-600">
               <FiUser className="mr-2" /> Characters
+            </TabsTrigger>
+            <TabsTrigger value="scenes" className="data-[state=active]:bg-purple-600">
+              <FiLayers className="mr-2" /> Scenes
             </TabsTrigger>
             <TabsTrigger value="cinema" className="data-[state=active]:bg-purple-600">
               <FiCamera className="mr-2" /> Cinema Studio
