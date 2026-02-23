@@ -866,58 +866,58 @@ export default function BookReader() {
       
       {/* Bottom Controls */}
       <div className={`fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-xl border-t border-border z-40 transition-transform duration-300 ${hideControls ? 'translate-y-full' : ''}`}>
-        <div className="max-w-4xl mx-auto px-4 py-4">
+        <div className="max-w-4xl mx-auto px-2 sm:px-4 py-2 sm:py-4">
           {/* Navigation */}
-          <div className="flex items-center justify-center gap-4 mb-4">
+          <div className="flex items-center justify-center gap-2 sm:gap-4 mb-2 sm:mb-4">
             <Button
               variant="outline"
-              size="lg"
+              size="default"
               onClick={() => {
                 if (realisticFlipRef.current) {
                   realisticFlipRef.current.prevPage();
                 }
               }}
               disabled={currentPage <= -1 || isFlipping}
-              className="rounded-full px-6"
+              className="rounded-full px-3 sm:px-6 text-xs sm:text-sm"
             >
-              <FiChevronLeft className="w-5 h-5 mr-1" />
-              Previous
+              <FiChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 sm:mr-1" />
+              <span className="hidden sm:inline">Previous</span>
             </Button>
             
             {/* Show Start Listening on cover, Read Aloud on other pages */}
             {isCover ? (
               <Button
                 variant="default"
-                size="lg"
+                size="default"
                 onClick={startListening}
-                className="rounded-full px-8 bg-purple-600 hover:bg-purple-500"
+                className="rounded-full px-4 sm:px-8 bg-purple-600 hover:bg-purple-500 text-xs sm:text-sm"
                 data-testid="cover-start-listening-btn"
               >
-                <FiPlay className="w-5 h-5 mr-2" />
-                Start Listening
+                <FiPlay className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                <span className="hidden xs:inline">Start</span> Listen
               </Button>
             ) : (
               <Button
                 variant={(isPlaying || autoRead) ? "default" : "outline"}
-                size="lg"
+                size="default"
                 onClick={isPlaying || autoRead ? handleAutoReadToggle : toggleAudio}
                 disabled={audioLoading}
-                className="rounded-full px-8"
+                className="rounded-full px-4 sm:px-8 text-xs sm:text-sm"
                 data-testid="read-aloud-btn"
               >
                 {audioLoading ? (
-                  <><div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" /> Loading...</>
+                  <><div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-1 sm:mr-2" /> <span className="hidden sm:inline">Loading...</span></>
                 ) : (isPlaying || autoRead) ? (
-                  <><FiPause className="w-5 h-5 mr-2" /> Pause</>
+                  <><FiPause className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" /> Pause</>
                 ) : (
-                  <><FiPlay className="w-5 h-5 mr-2" /> Read Aloud</>
+                  <><FiPlay className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" /> <span className="hidden sm:inline">Read</span> Aloud</>
                 )}
               </Button>
             )}
             
             <Button
               variant="outline"
-              size="lg"
+              size="default"
               onClick={() => {
                 if (realisticFlipRef.current) {
                   realisticFlipRef.current.nextPage();
