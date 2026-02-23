@@ -2095,6 +2095,102 @@ export default function ArtStudioExpert() {
           </motion.div>
         )}
       </AnimatePresence>
+      
+      {/* Gallery Picker Modal for Image Nodes */}
+      <AnimatePresence>
+        {showGalleryPicker && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-8"
+            onClick={() => setShowGalleryPicker(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="bg-gradient-to-b from-[#2a2035] to-[#1a1520] rounded-2xl border border-white/10 shadow-2xl p-6 w-full max-w-2xl max-h-[80vh] flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                  <FiImage className="text-yellow-400" />
+                  Select from Gallery
+                </h3>
+                <button
+                  onClick={() => setShowGalleryPicker(false)}
+                  className="p-1.5 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+                >
+                  <FiX className="w-5 h-5" />
+                </button>
+              </div>
+              
+              {/* Gallery Tabs */}
+              <div className="flex gap-2 mb-4">
+                <button
+                  onClick={() => { setGalleryTab('art'); loadGalleryImages('art'); }}
+                  className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    galleryTab === 'art' 
+                      ? 'bg-purple-500/30 text-purple-300 border border-purple-500/50' 
+                      : 'bg-white/5 text-white/60 hover:text-white'
+                  }`}
+                >
+                  Art Studio
+                </button>
+                <button
+                  onClick={() => { setGalleryTab('pro'); loadGalleryImages('pro'); }}
+                  className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    galleryTab === 'pro' 
+                      ? 'bg-pink-500/30 text-pink-300 border border-pink-500/50' 
+                      : 'bg-white/5 text-white/60 hover:text-white'
+                  }`}
+                >
+                  Pro Studio
+                </button>
+              </div>
+              
+              {/* Gallery Grid */}
+              <div className="flex-1 overflow-y-auto">
+                {galleryImages.length === 0 ? (
+                  <div className="text-center py-12">
+                    <FiImage className="w-12 h-12 mx-auto text-white/20 mb-3" />
+                    <p className="text-white/40 text-sm">No images in {galleryTab === 'art' ? 'Art' : 'Pro'} Studio gallery</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-4 gap-3">
+                    {galleryImages.filter(g => g.type !== 'animation').map((item) => (
+                      <button
+                        key={item._id || item.id}
+                        onClick={() => {
+                          if (galleryPickerCallback) {
+                            galleryPickerCallback(item.image_url);
+                          }
+                        }}
+                        className="relative rounded-lg overflow-hidden border-2 border-transparent hover:border-yellow-500 transition-all group aspect-square"
+                      >
+                        <img 
+                          src={item.image_url} 
+                          alt={item.name || 'Gallery image'} 
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                          <FiCheck className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                        {item.name && (
+                          <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-2 py-1">
+                            <p className="text-white text-xs truncate">{item.name}</p>
+                          </div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
