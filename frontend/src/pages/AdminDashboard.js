@@ -1016,45 +1016,100 @@ export default function AdminDashboard() {
               <div className="flex-1 flex items-center justify-center">
                 <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
               </div>
-            ) : previewPages.length > 0 ? (
+            ) : (
               <>
-                {/* Page Content */}
-                <div className="flex-1 overflow-auto p-6">
-                  <div className="max-w-2xl mx-auto">
-                    {previewPages[currentPreviewPage]?.chapterTitle && currentPreviewPage === 0 && (
-                      <h2 className="text-xl font-bold text-purple-400 mb-4">
-                        {previewPages[currentPreviewPage].chapterTitle}
-                      </h2>
-                    )}
-                    
-                    {/* Page Image */}
-                    {(previewPages[currentPreviewPage]?.image_url || previewPages[currentPreviewPage]?.video_url) && (
-                      <div className="mb-4 rounded-xl overflow-hidden bg-black/30">
-                        {previewPages[currentPreviewPage]?.video_url ? (
-                          <video 
-                            src={previewPages[currentPreviewPage].video_url} 
-                            controls 
-                            className="w-full max-h-[300px] object-contain"
+                {/* Book Reader Style Preview */}
+                <div className="flex-1 overflow-auto">
+                  {/* Cover Page (currentPreviewPage === -1) or Content Pages */}
+                  {currentPreviewPage === -1 ? (
+                    /* Cover Page */
+                    <div className="h-full flex items-center justify-center p-6 bg-gradient-to-b from-slate-800 to-slate-900">
+                      <div className="text-center max-w-md">
+                        {previewBook?.cover_image ? (
+                          <img 
+                            src={previewBook.cover_image} 
+                            alt={previewBook.title}
+                            className="w-64 h-auto mx-auto rounded-xl shadow-2xl mb-6 border border-white/10"
                           />
                         ) : (
-                          <img 
-                            src={previewPages[currentPreviewPage].image_url} 
-                            alt="Page illustration"
-                            className="w-full max-h-[300px] object-contain"
-                          />
+                          <div className="w-64 h-80 mx-auto rounded-xl bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center mb-6 shadow-2xl">
+                            <FiBook className="w-20 h-20 text-white/50" />
+                          </div>
+                        )}
+                        <h1 className="text-3xl font-bold text-white mb-2">{previewBook?.title}</h1>
+                        <p className="text-lg text-purple-400 mb-4">by {previewBook?.author_name}</p>
+                        <div className="flex items-center justify-center gap-3 text-sm text-white/60 mb-4">
+                          <span className="px-3 py-1 bg-white/10 rounded-full">{previewBook?.genre}</span>
+                          <span className="px-3 py-1 bg-white/10 rounded-full">{previewBook?.age_rating || 'All Ages'}</span>
+                        </div>
+                        {previewBook?.description && (
+                          <p className="text-white/70 text-sm leading-relaxed max-w-sm mx-auto">
+                            {previewBook.description}
+                          </p>
                         )}
                       </div>
-                    )}
-                    
-                    {/* Page Text */}
-                    {previewPages[currentPreviewPage]?.text_content && (
-                      <div className="prose prose-invert max-w-none">
-                        <p className="text-white/90 text-lg leading-relaxed whitespace-pre-wrap">
-                          {previewPages[currentPreviewPage].text_content}
-                        </p>
+                    </div>
+                  ) : previewPages.length > 0 ? (
+                    /* Content Page */
+                    <div className="h-full flex items-center justify-center p-6 bg-gradient-to-b from-slate-800 to-slate-900">
+                      <div className="max-w-2xl w-full">
+                        {/* Chapter Title */}
+                        {previewPages[currentPreviewPage]?.chapterTitle && (
+                          <p className="text-purple-400 text-sm font-medium mb-2">
+                            Chapter: {previewPages[currentPreviewPage].chapterTitle}
+                          </p>
+                        )}
+                        
+                        {/* Page Media - Full Width */}
+                        {(previewPages[currentPreviewPage]?.image_url || previewPages[currentPreviewPage]?.video_url) && (
+                          <div className="mb-6 rounded-xl overflow-hidden bg-black/50 flex items-center justify-center">
+                            {previewPages[currentPreviewPage]?.video_url ? (
+                              <video 
+                                src={previewPages[currentPreviewPage].video_url} 
+                                controls 
+                                className="w-full max-h-[400px] object-contain"
+                              />
+                            ) : (
+                              <img 
+                                src={previewPages[currentPreviewPage].image_url} 
+                                alt="Page illustration"
+                                className="w-full max-h-[400px] object-contain"
+                              />
+                            )}
+                          </div>
+                        )}
+                        
+                        {/* Page Text */}
+                        {previewPages[currentPreviewPage]?.text_content && (
+                          <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+                            <p className="text-white/90 text-lg leading-relaxed whitespace-pre-wrap">
+                              {previewPages[currentPreviewPage].text_content}
+                            </p>
+                          </div>
+                        )}
+                        
+                        {/* Empty page indicator */}
+                        {!previewPages[currentPreviewPage]?.image_url && 
+                         !previewPages[currentPreviewPage]?.video_url && 
+                         !previewPages[currentPreviewPage]?.text_content && (
+                          <div className="text-center text-white/40 py-12">
+                            <FiBook className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                            <p>This page has no content</p>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  ) : (
+                    /* No Pages Message */
+                    <div className="h-full flex items-center justify-center p-6 bg-gradient-to-b from-slate-800 to-slate-900">
+                      <div className="text-center">
+                        <FiBook className="w-16 h-16 mx-auto mb-4 text-white/30" />
+                        <h3 className="text-xl font-semibold text-white mb-2">No Content Pages</h3>
+                        <p className="text-white/60">This book has no content pages yet.</p>
+                        <p className="text-white/40 text-sm mt-2">The author may still be working on it.</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 
                 {/* Page Navigation */}
@@ -1062,35 +1117,28 @@ export default function AdminDashboard() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setCurrentPreviewPage(p => Math.max(0, p - 1))}
-                    disabled={currentPreviewPage === 0}
+                    onClick={() => setCurrentPreviewPage(p => Math.max(-1, p - 1))}
+                    disabled={currentPreviewPage === -1}
                     className="border-white/20 text-white"
                   >
                     <FiChevronLeft className="w-4 h-4 mr-1" /> Previous
                   </Button>
                   
                   <span className="text-white/60 text-sm">
-                    Page {currentPreviewPage + 1} of {previewPages.length}
+                    {currentPreviewPage === -1 ? 'Cover' : `Page ${currentPreviewPage + 1} of ${previewPages.length}`}
                   </span>
                   
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setCurrentPreviewPage(p => Math.min(previewPages.length - 1, p + 1))}
-                    disabled={currentPreviewPage >= previewPages.length - 1}
+                    disabled={currentPreviewPage >= previewPages.length - 1 || previewPages.length === 0}
                     className="border-white/20 text-white"
                   >
                     Next <FiChevronRight className="w-4 h-4 ml-1" />
                   </Button>
                 </div>
               </>
-            ) : (
-              <div className="flex-1 flex items-center justify-center text-white/60">
-                <div className="text-center">
-                  <FiBook className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                  <p>No pages found in this book</p>
-                </div>
-              </div>
             )}
           </div>
           
