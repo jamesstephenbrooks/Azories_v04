@@ -1641,7 +1641,7 @@ export default function ArtStudioExpert() {
         </div>
         
         {/* React Flow Canvas */}
-        <div className="flex-1 relative" ref={canvasRef}>
+        <div className="flex-1 relative">
           <ReactFlow
             nodes={nodes}
             edges={edges}
