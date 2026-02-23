@@ -254,6 +254,27 @@ export default function AdminDashboard() {
     }
   };
 
+  // Filter books based on search and filters
+  const filteredBooks = useMemo(() => {
+    return allBooks.filter(book => {
+      const matchesSearch = !searchQuery.trim() || 
+        book.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        book.author_name?.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesGenre = genreFilter === 'All' || book.genre === genreFilter;
+      const matchesAge = ageFilter === 'All' || book.age_rating === ageFilter;
+      return matchesSearch && matchesGenre && matchesAge;
+    });
+  }, [allBooks, searchQuery, genreFilter, ageFilter]);
+
+  // Filter users based on search
+  const filteredUsers = useMemo(() => {
+    if (!userSearchQuery.trim()) return users;
+    return users.filter(user => 
+      user.name?.toLowerCase().includes(userSearchQuery.toLowerCase()) ||
+      user.email?.toLowerCase().includes(userSearchQuery.toLowerCase())
+    );
+  }, [users, userSearchQuery]);
+
   const seedTestBooks = async () => {
     setLoading(true);
     try {
