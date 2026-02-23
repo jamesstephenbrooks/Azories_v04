@@ -2465,6 +2465,60 @@ export default function ArtStudio() {
                   const imageCount = gallery.filter(g => g.type !== 'animation').length;
                   const animationCount = gallery.filter(g => g.type === 'animation').length;
                   
+                  // Group by source
+                  const artStudioItems = filteredGallery.filter(g => g.source !== 'pro_studio');
+                  const proStudioItems = filteredGallery.filter(g => g.source === 'pro_studio');
+                  
+                  // Gallery item renderer
+                  const renderGalleryItem = (item) => (
+                    <div
+                      key={item._id}
+                      className={`relative group rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
+                        selectedGalleryItem?._id === item._id
+                          ? item.type === 'animation' ? 'border-pink-500' : 'border-purple-500'
+                          : 'border-transparent hover:border-white/30'
+                      }`}
+                      onClick={() => setSelectedGalleryItem(item)}
+                    >
+                      {item.type === 'animation' ? (
+                        <video
+                          src={item.image_url}
+                          className="w-full aspect-square object-cover"
+                          muted
+                          loop
+                          onMouseEnter={(e) => e.target.play()}
+                          onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
+                        />
+                      ) : (
+                        <img
+                          src={item.image_url}
+                          alt={item.name}
+                          className="w-full aspect-square object-cover"
+                        />
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="absolute bottom-0 left-0 right-0 p-3">
+                          <p className="text-white text-sm font-medium truncate">{item.name}</p>
+                          <p className="text-white/50 text-xs flex items-center gap-1">
+                            {item.type === 'animation' ? <FiVideo className="w-3 h-3" /> : <FiImage className="w-3 h-3" />}
+                            {item.type === 'animation' ? 'Animation' : item.style}
+                          </p>
+                        </div>
+                      </div>
+                      {item.type === 'animation' && (
+                        <div className="absolute top-2 left-2 px-2 py-0.5 bg-pink-500 rounded text-xs text-white flex items-center gap-1">
+                          <FiPlay className="w-2.5 h-2.5" />
+                          Video
+                        </div>
+                      )}
+                      {item.source === 'pro_studio' && (
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-gradient-to-r from-yellow-500 to-orange-500 rounded text-xs text-white font-medium">
+                          PRO
+                        </div>
+                      )}
+                    </div>
+                  );
+                  
                   return (
                     <>
                       <p className="text-xs text-white/40 mb-4">
@@ -2489,49 +2543,60 @@ export default function ArtStudio() {
                           )}
                         </div>
                       ) : (
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                          {filteredGallery.map((item) => (
-                            <div
-                              key={item._id}
-                              className={`relative group rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
-                                selectedGalleryItem?._id === item._id
-                                  ? item.type === 'animation' ? 'border-pink-500' : 'border-purple-500'
-                                  : 'border-transparent hover:border-white/30'
-                              }`}
-                              onClick={() => setSelectedGalleryItem(item)}
-                            >
-                              {item.type === 'animation' ? (
-                                <video
-                                  src={item.image_url}
-                                  className="w-full aspect-square object-cover"
-                                  muted
-                                  loop
-                                  onMouseEnter={(e) => e.target.play()}
-                                  onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
-                                />
-                              ) : (
-                                <img
-                                  src={item.image_url}
-                                  alt={item.name}
-                                  className="w-full aspect-square object-cover"
-                                />
-                              )}
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                                <div className="absolute bottom-0 left-0 right-0 p-3">
-                                  <p className="text-white text-sm font-medium truncate">{item.name}</p>
-                                  <p className="text-white/50 text-xs flex items-center gap-1">
-                                    {item.type === 'animation' ? <FiVideo className="w-3 h-3" /> : <FiImage className="w-3 h-3" />}
-                                    {item.type === 'animation' ? 'Animation' : item.style}
-                                  </p>
+                        <div className="space-y-4">
+                          {/* Pro Studio Section */}
+                          {proStudioItems.length > 0 && (
+                            <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-xl border border-yellow-500/20 overflow-hidden">
+                              <button
+                                onClick={() => setProStudioExpanded(!proStudioExpanded)}
+                                className="w-full px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-colors"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <div className="w-6 h-6 rounded bg-gradient-to-r from-yellow-500 to-orange-500 flex items-center justify-center">
+                                    <FiStar className="w-3 h-3 text-white" />
+                                  </div>
+                                  <span className="text-sm font-semibold text-yellow-300">Pro Studio</span>
+                                  <span className="text-xs text-yellow-400/60">({proStudioItems.length})</span>
                                 </div>
-                              </div>
-                              {/* Animation badge */}
-                              {item.type === 'animation' && (
-                                <div className="absolute top-2 left-2 px-2 py-0.5 bg-pink-500 rounded text-xs text-white flex items-center gap-1">
-                                  <FiPlay className="w-2.5 h-2.5" />
-                                  Video
+                                <FiChevronDown className={`w-4 h-4 text-yellow-400 transition-transform ${proStudioExpanded ? 'rotate-180' : ''}`} />
+                              </button>
+                              {proStudioExpanded && (
+                                <div className="p-4 pt-0">
+                                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                    {proStudioItems.map(renderGalleryItem)}
+                                  </div>
                                 </div>
                               )}
+                            </div>
+                          )}
+                          
+                          {/* Art Studio Section */}
+                          {artStudioItems.length > 0 && (
+                            <div className="bg-purple-500/10 rounded-xl border border-purple-500/20 overflow-hidden">
+                              <button
+                                onClick={() => setArtStudioExpanded(!artStudioExpanded)}
+                                className="w-full px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-colors"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <div className="w-6 h-6 rounded bg-purple-500 flex items-center justify-center">
+                                    <FiImage className="w-3 h-3 text-white" />
+                                  </div>
+                                  <span className="text-sm font-semibold text-purple-300">Art Studio</span>
+                                  <span className="text-xs text-purple-400/60">({artStudioItems.length})</span>
+                                </div>
+                                <FiChevronDown className={`w-4 h-4 text-purple-400 transition-transform ${artStudioExpanded ? 'rotate-180' : ''}`} />
+                              </button>
+                              {artStudioExpanded && (
+                                <div className="p-4 pt-0">
+                                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                    {artStudioItems.map(renderGalleryItem)}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      )}
                               {/* Animate button (only for images) */}
                               {item.type !== 'animation' && (
                                 <button
