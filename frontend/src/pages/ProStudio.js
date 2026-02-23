@@ -13,7 +13,8 @@ import {
   FiImage, FiUser, FiVideo, FiCamera, FiGrid, FiSave, FiDownload, 
   FiTrash2, FiPlus, FiZap, FiSliders, FiRefreshCw, FiArrowLeft, 
   FiFolder, FiUpload, FiCheck, FiEye, FiMaximize2, FiSettings, 
-  FiX, FiPlay, FiPause, FiFilm, FiStar, FiAperture, FiEdit3
+  FiX, FiPlay, FiPause, FiFilm, FiStar, FiAperture, FiEdit3, FiLayers,
+  FiSun, FiCloud, FiMoon
 } from 'react-icons/fi';
 import {
   CAMERA_BODIES,
