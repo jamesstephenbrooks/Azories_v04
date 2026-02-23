@@ -7074,7 +7074,7 @@ async def admin_approve_book(book_id: str, admin: dict = Depends(get_admin_user)
         {"$set": {
             "publish_status": "published",
             "is_published": True,
-            "approved_by": current_user["email"],
+            "approved_by": admin.get("username", "Admin"),
             "approved_at": datetime.now(timezone.utc).isoformat()
         }}
     )
@@ -7095,7 +7095,7 @@ async def admin_reject_book(book_id: str, reason: str = "", admin: dict = Depend
         {"$set": {
             "publish_status": "rejected",
             "is_published": False,
-            "rejected_by": current_user["email"],
+            "rejected_by": admin.get("username", "Admin"),
             "rejected_at": datetime.now(timezone.utc).isoformat(),
             "rejection_reason": reason
         }}
