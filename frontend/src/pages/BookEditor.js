@@ -992,10 +992,17 @@ export default function BookEditor() {
               Preview
             </Button>
             
+            {/* Unsaved changes indicator */}
+            {hasUnsavedChanges && (
+              <span className="px-2 py-1 text-xs bg-amber-500/20 text-amber-500 rounded-full animate-pulse">
+                Unsaved changes
+              </span>
+            )}
+            
             <Button
               onClick={savePage}
               disabled={saving || !selectedPage}
-              className="rounded-full"
+              className={`rounded-full ${hasUnsavedChanges ? 'bg-amber-500 hover:bg-amber-600' : ''}`}
               data-testid="save-page"
             >
               <FiSave className="mr-2 w-4 h-4" />
