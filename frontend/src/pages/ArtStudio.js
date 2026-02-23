@@ -477,6 +477,7 @@ export default function ArtStudio() {
   const [animatingImageData, setAnimatingImageData] = useState(null); // Store full gallery item data
   const [animationMotion, setAnimationMotion] = useState('gentle breathing, hair flowing');
   const [animationStyle, setAnimationStyle] = useState('natural');
+  const [animationArtStyle, setAnimationArtStyle] = useState('cinematic'); // Art style for animation
   const [animationCameraMotion, setAnimationCameraMotion] = useState('static'); // Camera movement option
   const [isAnimating, setIsAnimating] = useState(false);
   const [animatedVideo, setAnimatedVideo] = useState(null);
