@@ -357,7 +357,7 @@ export default function MySeries() {
                             onClick={() => publishAllInSeries(s.id)}
                           >
                             <FiGlobe className="w-3 h-3 mr-1" />
-                            Publish All
+                            Submit for Review
                           </Button>
                         )}
                       </div>
