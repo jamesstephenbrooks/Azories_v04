@@ -1579,53 +1579,26 @@ export default function BookEditor() {
                           )}
                         </div>
                         
-                        {/* AI Video Generation */}
-                        <div className="space-y-3">
-                          <Label className="font-ui">Generate with Sora AI</Label>
-                          <Select value={videoStyle} onValueChange={setVideoStyle}>
-                            <SelectTrigger className="rounded-full">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="animation">Children's Animation</SelectItem>
-                              <SelectItem value="comic">Comic Book Style</SelectItem>
-                              <SelectItem value="realistic">Realistic/Cinematic</SelectItem>
-                              <SelectItem value="scifi">Sci-Fi / Futuristic</SelectItem>
-                              <SelectItem value="anime">Anime Style</SelectItem>
-                              <SelectItem value="fantasy">Fantasy/Magical</SelectItem>
-                              <SelectItem value="pixar">3D Pixar Style</SelectItem>
-                              <SelectItem value="watercolor">Watercolor Animation</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <div className="flex gap-2">
-                            <Input
-                              placeholder="Describe the animated scene..."
-                              value={videoPrompt}
-                              onChange={(e) => setVideoPrompt(e.target.value)}
-                              className="rounded-full border-2"
-                              data-testid="video-prompt"
+                        {/* Use Video Instead of Image Toggle */}
+                        {selectedPage.video_url && (
+                          <div className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20">
+                            <div>
+                              <Label className="font-ui text-sm">Use video on page</Label>
+                              <p className="text-xs text-muted-foreground">Show video instead of image when reading</p>
+                            </div>
+                            <input
+                              type="checkbox"
+                              checked={selectedPage.use_video || false}
+                              onChange={(e) => setSelectedPage({ ...selectedPage, use_video: e.target.checked })}
+                              className="w-5 h-5 accent-purple-500"
+                              data-testid="use-video-toggle"
                             />
-                            <Button
-                              onClick={generateVideo}
-                              disabled={generatingVideo}
-                              className="rounded-full"
-                              data-testid="generate-video-btn"
-                            >
-                              {generatingVideo ? (
-                                <FiLoader className="w-4 h-4 animate-spin" />
-                              ) : (
-                                'Generate'
-                              )}
-                            </Button>
                           </div>
-                          <p className="text-xs text-muted-foreground">
-                            Video generation takes 2-5 minutes
-                          </p>
-                        </div>
+                        )}
                         
                         {/* Video Upload */}
                         <div className="space-y-3">
-                          <Label className="font-ui">Or upload your own</Label>
+                          <Label className="font-ui">Upload Video</Label>
                           <input
                             type="file"
                             ref={videoInputRef}
@@ -1659,6 +1632,26 @@ export default function BookEditor() {
                               </p>
                             </div>
                           )}
+                        </div>
+                        
+                        {/* Use from Gallery */}
+                        <div className="space-y-3 pt-2 border-t border-border">
+                          <Label className="font-ui">Use from Gallery</Label>
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              fetchGalleryImages();
+                              setShowGalleryPicker(true);
+                            }}
+                            className="w-full rounded-full border-purple-500/50 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-500/10"
+                            data-testid="video-from-gallery-btn"
+                          >
+                            <FiVideo className="mr-2 w-4 h-4" />
+                            Select from Art Studio / Pro Studio
+                          </Button>
+                          <p className="text-xs text-muted-foreground text-center">
+                            Select videos from your Art Studio or Pro Studio galleries
+                          </p>
                         </div>
                       </TabsContent>
                     </Tabs>
