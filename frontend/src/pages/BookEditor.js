@@ -167,6 +167,48 @@ export default function BookEditor() {
       console.error('Failed to load general gallery images');
       setGeneralGalleryImages([]);
     }
+    
+    try {
+      // Fetch Pro Studio characters with their galleries
+      const charRes = await axios.get(`${API}/pro-studio/characters`, { headers });
+      const characters = charRes.data || [];
+      // Get galleries for characters with images
+      const charsWithGalleries = await Promise.all(
+        characters.map(async (char) => {
+          try {
+            const galleryRes = await axios.get(`${API}/pro-studio/characters/${char.id}/gallery`, { headers });
+            return { ...char, gallery: galleryRes.data || [] };
+          } catch {
+            return { ...char, gallery: [] };
+          }
+        })
+      );
+      setProStudioCharacters(charsWithGalleries.filter(c => c.gallery.length > 0));
+    } catch (error) {
+      console.error('Failed to load Pro Studio characters');
+      setProStudioCharacters([]);
+    }
+    
+    try {
+      // Fetch Pro Studio scenes with their galleries
+      const sceneRes = await axios.get(`${API}/pro-studio/scenes`, { headers });
+      const scenes = sceneRes.data || [];
+      // Get galleries for scenes with images
+      const scenesWithGalleries = await Promise.all(
+        scenes.map(async (scene) => {
+          try {
+            const galleryRes = await axios.get(`${API}/pro-studio/scenes/${scene.id}/gallery`, { headers });
+            return { ...scene, gallery: galleryRes.data || [] };
+          } catch {
+            return { ...scene, gallery: [] };
+          }
+        })
+      );
+      setProStudioScenes(scenesWithGalleries.filter(s => s.gallery.length > 0));
+    } catch (error) {
+      console.error('Failed to load Pro Studio scenes');
+      setProStudioScenes([]);
+    }
   };
   
   // Use image from Art Studio gallery
