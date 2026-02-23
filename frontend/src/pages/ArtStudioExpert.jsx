@@ -1052,7 +1052,7 @@ export default function ArtStudioExpert() {
       console.error('Save to book error:', error);
       alert('Failed to save image to book library');
     }
-  }, [nodes, token, workflowName, userBooks]);
+  }, [nodes, token, workflowName, userBooks, saveToGallery]);
   
   // Handle keyboard shortcuts for deletion
   useEffect(() => {
