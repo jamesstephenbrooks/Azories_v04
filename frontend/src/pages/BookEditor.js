@@ -358,9 +358,19 @@ export default function BookEditor() {
       const res = await axios.get(`${API}/chapters/${chapterId}/pages`);
       setPages(res.data);
       if (res.data.length > 0) {
-        setSelectedPage(res.data[0]);
+        const firstPage = res.data[0];
+        setSelectedPage(firstPage);
+        // Initialize saved content tracking
+        lastSavedContent.current = JSON.stringify({
+          text: firstPage.text_content,
+          image: firstPage.image_url,
+          video: firstPage.video_url
+        });
+        setHasUnsavedChanges(false);
       } else {
         setSelectedPage(null);
+        lastSavedContent.current = null;
+        setHasUnsavedChanges(false);
       }
     } catch (error) {
       console.error('Error fetching pages:', error);
