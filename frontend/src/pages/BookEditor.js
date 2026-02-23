@@ -1600,8 +1600,11 @@ export default function BookEditor() {
                               data-testid="use-from-gallery-btn"
                             >
                               <FiImage className="mr-2 w-4 h-4" />
-                              Use from Art Studio Gallery
+                              Select from Art Studio / Pro Studio
                             </Button>
+                            <p className="text-xs text-muted-foreground text-center mt-1">
+                              Select images from your Art Studio or Pro Studio galleries
+                            </p>
                           </div>
                         </div>
                       </TabsContent>
