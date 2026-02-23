@@ -678,7 +678,8 @@ const nodeTypes = {
   reference: ReferenceNode,
   prompt: PromptNode,
   combine: CombineNode,
-  output: OutputNode
+  output: OutputNode,
+  image: ImageNode
 };
 
 // Initial nodes for new workflow
