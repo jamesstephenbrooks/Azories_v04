@@ -556,9 +556,9 @@ class AdminResponse(BaseModel):
     token_type: str = "bearer"
     admin_name: str
 
-# Admin credentials (in production, these should be in environment variables)
-ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'azories_admin')
-ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'AzoriesAdmin2024!')
+# Admin credentials - dedicated admin login
+ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'Admin')
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'Routetofreedom')
 
 # ============ AUTH HELPERS ============
 
@@ -7061,12 +7061,9 @@ async def request_book_publish(book_id: str, background_tasks: BackgroundTasks, 
     }
 
 @api_router.post("/admin/books/{book_id}/approve")
-async def admin_approve_book(book_id: str, current_user: dict = Depends(get_current_user)):
+async def admin_approve_book(book_id: str, admin: dict = Depends(get_admin_user)):
     """Admin endpoint to approve a book for publication"""
-    # Check if user is admin (VIP users for now)
-    vip_emails = ["arianamillb@icloud.com", "jamesstephenbrooks@outlook.com"]
-    if current_user.get("email") not in vip_emails:
-        raise HTTPException(status_code=403, detail="Admin access required")
+    # Uses dedicated admin authentication
     
     book = await db.books.find_one({"id": book_id})
     if not book:
@@ -7085,11 +7082,9 @@ async def admin_approve_book(book_id: str, current_user: dict = Depends(get_curr
     return {"success": True, "message": "Book approved and published"}
 
 @api_router.post("/admin/books/{book_id}/reject")
-async def admin_reject_book(book_id: str, reason: str = "", current_user: dict = Depends(get_current_user)):
+async def admin_reject_book(book_id: str, reason: str = "", admin: dict = Depends(get_admin_user)):
     """Admin endpoint to reject a book"""
-    vip_emails = ["arianamillb@icloud.com", "jamesstephenbrooks@outlook.com"]
-    if current_user.get("email") not in vip_emails:
-        raise HTTPException(status_code=403, detail="Admin access required")
+    # Uses dedicated admin authentication
     
     book = await db.books.find_one({"id": book_id})
     if not book:
@@ -7109,11 +7104,9 @@ async def admin_reject_book(book_id: str, reason: str = "", current_user: dict =
     return {"success": True, "message": "Book rejected"}
 
 @api_router.get("/admin/pending-reviews")
-async def get_pending_reviews(current_user: dict = Depends(get_current_user)):
+async def get_pending_reviews(admin: dict = Depends(get_admin_user)):
     """Get all books pending review (admin only)"""
-    vip_emails = ["arianamillb@icloud.com", "jamesstephenbrooks@outlook.com"]
-    if current_user.get("email") not in vip_emails:
-        raise HTTPException(status_code=403, detail="Admin access required")
+    # Uses dedicated admin authentication
     
     pending_books = await db.books.find(
         {"publish_status": "pending_review"},
