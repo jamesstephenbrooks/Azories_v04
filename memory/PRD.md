@@ -43,19 +43,22 @@ Build a full-featured digital book platform ("Azories") with:
   - Dashboard shows status badges: Published (green), Pending Review (amber), Rejected (red), Draft (gray)
   - Admin manually triggers AI moderation from dashboard
   
-- **Admin Dashboard Updated**:
-  - Login form with Username/Password fields
-  - Stats cards: Pending Reviews, Flagged Content, Not Yet Scanned
-  - Book list with Preview, Scan (run moderation), Approve, Reject buttons
-  - Moderation results shown inline with flagged categories
+- **COMBINED Admin Dashboard** (at `/admin`):
+  - **Stats Bar**: Pending Review, Flagged, Total Books, Published, Total Users
+  - **Tabs**:
+    - Pending Reviews: View books awaiting approval, run AI moderation, approve/reject
+    - All Books: Full CMS - publish/unpublish, feature, best-of-week, delete
+    - Users: User management - name, email, subscription, credits, join date
+    - Analytics: Total books, published, users, pro users, views, reads
+  - "Seed Test Books" button for testing
   
 - **Library Thumbnail Fix**:
   - Fixed book cover positioning in ImmersiveLibrary3D component
   - Cover now positioned with `left: -140px` instead of `translateX(-85%)`
 
 - **Route Updates**:
-  - `/admin` → AdminDashboard (content moderation)
-  - `/admin/cms` → AdminCMS (full book management)
+  - `/admin` → Combined AdminDashboard (CMS + Content Moderation + Users + Analytics)
+  - `/admin/cms` → Legacy AdminCMS (kept for backwards compatibility)
   - Onboarding modal skipped on admin pages
 
 ### Previous Sessions
