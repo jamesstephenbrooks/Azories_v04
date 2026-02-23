@@ -484,6 +484,10 @@ export default function ArtStudio() {
   // Gallery type filter state
   const [galleryTypeFilter, setGalleryTypeFilter] = useState('all'); // 'all', 'images', 'animations'
   
+  // Gallery section collapse state
+  const [artStudioExpanded, setArtStudioExpanded] = useState(true);
+  const [proStudioExpanded, setProStudioExpanded] = useState(true);
+  
   // Apply a quick template (one-click setup)
   const applyQuickTemplate = (template) => {
     setSelectedTemplate(template.id);
