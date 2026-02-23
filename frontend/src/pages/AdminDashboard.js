@@ -649,15 +649,26 @@ export default function AdminDashboard() {
           <TabsContent value="books" className="space-y-4">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <h2 className="text-xl font-heading font-bold text-white">All Books ({filteredBooks.length})</h2>
-              <Button
-                onClick={seedTestBooks}
-                disabled={loading}
-                variant="outline"
-                className="rounded-full border-white/20 text-white hover:bg-white/10"
-              >
-                <FiDatabase className="w-4 h-4 mr-2" />
-                {loading ? 'Seeding...' : 'Seed Test Books'}
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  onClick={generateMissingCovers}
+                  disabled={generatingCovers}
+                  variant="outline"
+                  className="rounded-full border-green-500/30 text-green-400 hover:bg-green-500/10"
+                >
+                  <FiImage className="w-4 h-4 mr-2" />
+                  {generatingCovers ? 'Generating...' : 'Generate Missing Covers'}
+                </Button>
+                <Button
+                  onClick={seedTestBooks}
+                  disabled={loading}
+                  variant="outline"
+                  className="rounded-full border-white/20 text-white hover:bg-white/10"
+                >
+                  <FiDatabase className="w-4 h-4 mr-2" />
+                  {loading ? 'Seeding...' : 'Seed Test Books'}
+                </Button>
+              </div>
             </div>
             
             {/* Search and Filter Bar */}
