@@ -2597,33 +2597,6 @@ export default function ArtStudio() {
                           )}
                         </div>
                       )}
-                              {/* Animate button (only for images) */}
-                              {item.type !== 'animation' && (
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    openAnimateModal(item.image_url);
-                                  }}
-                                  className="absolute top-2 left-2 p-1.5 bg-pink-500/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                                  title="Animate this image"
-                                >
-                                  <FiPlay className="w-3 h-3 text-white" />
-                                </button>
-                              )}
-                              {/* Delete button */}
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  deleteFromGallery(item._id);
-                                }}
-                                className="absolute top-2 right-2 p-1.5 bg-red-500/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                              >
-                                <FiTrash2 className="w-3 h-3 text-white" />
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
                     </>
                   );
                 })()}
