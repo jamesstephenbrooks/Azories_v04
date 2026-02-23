@@ -3547,13 +3547,13 @@ async def generate_consistent_character_image(
             style_desc = character.get('style', 'illustration')
             genre_desc = character.get('genre', 'fantasy')
             
-            # Map id_strength to actual weight values
+            # Map id_strength to actual weight values (max is 1.0)
             id_weight_map = {
-                "high": 2.0,    # Maximum face similarity
-                "medium": 1.5,  # Balanced
-                "low": 1.0      # More artistic freedom
+                "high": 1.0,    # Maximum face similarity
+                "medium": 0.7,  # Balanced
+                "low": 0.4      # More artistic freedom
             }
-            id_weight = id_weight_map.get(id_strength, 1.8)
+            id_weight = id_weight_map.get(id_strength, 1.0)
             
             # Build a focused prompt for PuLID - don't include full character description
             # as that can confuse the face preservation. Focus on action/scene.
