@@ -1822,6 +1822,104 @@ export default function ProStudio() {
         )}
       </AnimatePresence>
 
+      {/* Scene View Modal */}
+      <AnimatePresence>
+        {viewingScene && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/95 backdrop-blur-sm z-[60] overflow-auto"
+          >
+            <div className="max-w-6xl mx-auto p-6">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-4">
+                  <Button 
+                    variant="ghost" 
+                    onClick={closeSceneView}
+                    className="text-gray-400 hover:text-white hover:bg-gray-800"
+                  >
+                    <FiArrowLeft className="mr-2" /> Back to Scenes
+                  </Button>
+                  <div className="w-px h-8 bg-gray-700" />
+                  <img 
+                    src={viewingScene.thumbnail || viewingScene.reference_images?.[0]} 
+                    alt={viewingScene.name}
+                    className="w-16 h-10 rounded-lg object-cover cursor-pointer"
+                    onClick={() => setPreviewImage({ url: viewingScene.thumbnail, prompt: viewingScene.name })}
+                  />
+                  <div>
+                    <h2 className="text-xl font-bold text-white">{viewingScene.name}</h2>
+                    <p className="text-gray-400 text-sm">{viewingScene.lighting} • {viewingScene.mood}</p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={() => { setSelectedScene(viewingScene); closeSceneView(); }}
+                    className="bg-purple-600 hover:bg-purple-700"
+                  >
+                    <FiZap className="mr-2" /> Use for Generation
+                  </Button>
+                </div>
+              </div>
+
+              {/* Scene Description */}
+              <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4 mb-6">
+                <h3 className="text-white font-medium mb-2">Scene Description</h3>
+                <p className="text-gray-300 text-sm whitespace-pre-wrap">{viewingScene.description}</p>
+                <div className="flex gap-2 mt-3 flex-wrap">
+                  {viewingScene.time_of_day && <span className="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded">{viewingScene.time_of_day}</span>}
+                  {viewingScene.weather && <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded">{viewingScene.weather}</span>}
+                  {viewingScene.location_type && <span className="text-xs bg-green-500/20 text-green-300 px-2 py-1 rounded">{viewingScene.location_type}</span>}
+                </div>
+              </div>
+
+              {/* Scene Folder/Gallery */}
+              <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4">
+                <h3 className="text-white font-medium mb-3 flex items-center gap-2">
+                  <FiFolder className="text-purple-400" /> Scene Folder ({sceneGallery.length} images)
+                </h3>
+                {sceneGallery.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <FiImage className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <p>No generated images yet</p>
+                    <p className="text-sm">Select this scene and generate images to build your collection</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                    {sceneGallery.map((img) => (
+                      <div 
+                        key={img.id}
+                        className="relative group cursor-pointer"
+                        onClick={() => setPreviewImage({ url: img.image_url, prompt: img.prompt })}
+                      >
+                        <img 
+                          src={img.image_url} 
+                          alt={img.prompt || 'Generated'}
+                          className="w-full aspect-video object-cover rounded-lg hover:ring-2 hover:ring-purple-500 transition-all"
+                        />
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-1">
+                          <Button 
+                            size="sm" 
+                            variant="ghost"
+                            onClick={(e) => { e.stopPropagation(); saveToArtStudioGallery(img.image_url, img.prompt, 'scene'); }}
+                            title="Save to Gallery"
+                          >
+                            <FiSave className="text-white" size={14} />
+                          </Button>
+                          <FiMaximize2 className="text-white" size={18} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <AnimatePresence>
         {isLoading && (
           <motion.div 
