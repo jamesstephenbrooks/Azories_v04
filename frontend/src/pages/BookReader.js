@@ -459,6 +459,16 @@ export default function BookReader() {
   }, [allPages, narratorVoice, volume, playbackSpeed, audioElement, preloadAudio, goToPage]);
 
   const toggleAudio = () => {
+    // On iOS, we need to unlock audio context on first user interaction
+    if (!iosAudioUnlocked) {
+      // Create and play a silent audio to unlock
+      const silentAudio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
+      silentAudio.play().then(() => {
+        setIosAudioUnlocked(true);
+        silentAudio.pause();
+      }).catch(() => {});
+    }
+    
     if (isPlaying && audioElement) {
       audioElement.pause();
       setIsPlaying(false);
