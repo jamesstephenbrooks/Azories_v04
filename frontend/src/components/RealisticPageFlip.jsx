@@ -519,7 +519,14 @@ const RealisticPageFlip = forwardRef(({
   const coverShift = (width / 2) + 80; // Extra 80px to align with center of controls
 
   return (
-    <div className={`realistic-page-flip relative ${className}`} style={{ transform: isFullscreen ? 'scale(1.6)' : 'scale(1.35)', transformOrigin: 'center center' }}>
+    <div className={`realistic-page-flip relative ${className}`} style={{ 
+      transform: isFullscreen 
+        ? 'scale(1.4)' 
+        : width < 350 
+          ? 'scale(1.15)' // Smaller scale on mobile
+          : 'scale(1.35)', 
+      transformOrigin: 'center center' 
+    }}>
       {/* Book container with 3D perspective */}
       <div 
         className="book-container relative flex justify-center"
