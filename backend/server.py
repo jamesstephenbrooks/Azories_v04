@@ -716,6 +716,101 @@ async def get_me(current_user: dict = Depends(get_current_user)):
         trial_days_remaining=trial_days_remaining
     )
 
+# ============ PASSWORD RESET ============
+
+@api_router.post("/auth/forgot-password")
+async def forgot_password(request: ForgotPasswordRequest, background_tasks: BackgroundTasks):
+    """Request a password reset email"""
+    user = await db.users.find_one({"email": request.email.lower()}, {"_id": 0})
+    
+    # Always return success to prevent email enumeration attacks
+    if not user:
+        return {"message": "If this email exists, a reset link has been sent."}
+    
+    # Generate reset token
+    reset_token = generate_reset_token()
+    expiry = get_token_expiry()
+    
+    # Store reset token in database
+    await db.password_resets.delete_many({"user_id": user["id"]})  # Remove old tokens
+    await db.password_resets.insert_one({
+        "id": str(uuid.uuid4()),
+        "user_id": user["id"],
+        "token": reset_token,
+        "expires_at": expiry.isoformat(),
+        "created_at": datetime.utcnow().isoformat()
+    })
+    
+    # Get app URL for reset link
+    app_url = os.environ.get("APP_URL", "https://workflow-enhanced-1.preview.emergentagent.com")
+    reset_url = f"{app_url}/reset-password?token={reset_token}"
+    
+    # Send reset email
+    if email_configured():
+        reset_html = get_password_reset_email_html(user["name"], reset_token, reset_url)
+        background_tasks.add_task(send_email, request.email, "Reset Your Azories Password", reset_html)
+        logger.info(f"Password reset email queued for {request.email}")
+    else:
+        logger.warning(f"Email not configured - reset token for {request.email}: {reset_token}")
+    
+    return {"message": "If this email exists, a reset link has been sent."}
+
+@api_router.post("/auth/reset-password")
+async def reset_password(request: ResetPasswordRequest, background_tasks: BackgroundTasks):
+    """Reset password using a valid token"""
+    # Find the reset token
+    reset_record = await db.password_resets.find_one({"token": request.token}, {"_id": 0})
+    
+    if not reset_record:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset token")
+    
+    # Check if token has expired
+    expiry = datetime.fromisoformat(reset_record["expires_at"])
+    if datetime.utcnow() > expiry:
+        await db.password_resets.delete_one({"token": request.token})
+        raise HTTPException(status_code=400, detail="Reset token has expired")
+    
+    # Get user
+    user = await db.users.find_one({"id": reset_record["user_id"]}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=400, detail="User not found")
+    
+    # Validate new password
+    if len(request.new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    
+    # Update password
+    new_hash = hash_password(request.new_password)
+    await db.users.update_one(
+        {"id": user["id"]},
+        {"$set": {"password": new_hash}}
+    )
+    
+    # Delete used token
+    await db.password_resets.delete_one({"token": request.token})
+    
+    # Send confirmation email
+    if email_configured():
+        changed_html = get_password_changed_email_html(user["name"])
+        background_tasks.add_task(send_email, user["email"], "Your Azories Password Has Been Changed", changed_html)
+    
+    logger.info(f"Password reset completed for user {user['id']}")
+    return {"message": "Password has been reset successfully. You can now log in."}
+
+@api_router.get("/auth/verify-reset-token/{token}")
+async def verify_reset_token(token: str):
+    """Verify if a password reset token is valid"""
+    reset_record = await db.password_resets.find_one({"token": token}, {"_id": 0})
+    
+    if not reset_record:
+        return {"valid": False, "message": "Invalid token"}
+    
+    expiry = datetime.fromisoformat(reset_record["expires_at"])
+    if datetime.utcnow() > expiry:
+        return {"valid": False, "message": "Token has expired"}
+    
+    return {"valid": True, "message": "Token is valid"}
+
 @api_router.get("/credits/balance")
 async def get_credit_balance(current_user: dict = Depends(get_current_user)):
     """Get user's credit balance and costs"""
