@@ -1162,11 +1162,19 @@ export default function ProStudio() {
         
         if (response.ok) {
           const data = await response.json();
-          setLoadingMessage(data.message || 'Processing...');
-          setLoadingProgress(data.progress || 0);
+          if (data.message) {
+            setLoadingMessage(data.message);
+          }
+          if (data.progress) {
+            setLoadingProgress(Math.max(loadingProgress, data.progress));
+          }
           
           if (data.status === 'completed' && data.video_base64) {
             clearInterval(pollInterval);
+            if (window.videoProgressInterval) {
+              clearInterval(window.videoProgressInterval);
+            }
+            setLoadingProgress(100);
             const newVideo = {
               id: Date.now(),
               url: `data:video/mp4;base64,${data.video_base64}`,
@@ -1179,6 +1187,9 @@ export default function ProStudio() {
             setLoadingProgress(0);
           } else if (data.status === 'failed') {
             clearInterval(pollInterval);
+            if (window.videoProgressInterval) {
+              clearInterval(window.videoProgressInterval);
+            }
             toast.error(data.message || 'Video generation failed');
             setIsLoading(false);
             setLoadingMessage('');
@@ -1193,6 +1204,9 @@ export default function ProStudio() {
     // Timeout after 10 minutes
     setTimeout(() => {
       clearInterval(pollInterval);
+      if (window.videoProgressInterval) {
+        clearInterval(window.videoProgressInterval);
+      }
       if (isLoading) {
         setIsLoading(false);
         setLoadingMessage('');
