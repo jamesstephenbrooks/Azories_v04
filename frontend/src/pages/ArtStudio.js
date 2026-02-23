@@ -2571,6 +2571,57 @@ export default function ArtStudio() {
                       <p className="text-xs text-white/40 mb-4">
                         {imageCount} images, {animationCount} animations
                       </p>
+                      
+                      {/* Starter Library Section - Always show */}
+                      {starterLibrary.length > 0 && showStarterInGallery && (
+                        <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 rounded-xl border border-amber-500/30 overflow-hidden mb-4">
+                          <div className="w-full px-4 py-3 flex items-center justify-between border-b border-amber-500/20">
+                            <div className="flex items-center gap-2">
+                              <span className="text-amber-400">⭐</span>
+                              <span className="text-white font-medium">Starter Library</span>
+                              <span className="text-xs text-amber-400/60 ml-2">{starterLibrary.length} free images</span>
+                            </div>
+                            <button
+                              onClick={() => setShowStarterInGallery(false)}
+                              className="text-white/50 hover:text-white text-xs"
+                            >
+                              Hide
+                            </button>
+                          </div>
+                          <div className="p-4">
+                            <p className="text-xs text-white/50 mb-3">Free images to get you started! Click to use as reference or save to your gallery.</p>
+                            <div className="grid grid-cols-6 gap-2 max-h-40 overflow-y-auto">
+                              {starterLibrary.map((img) => (
+                                <div
+                                  key={img.id}
+                                  className="relative group rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-amber-500 transition-all"
+                                  onClick={() => {
+                                    if (galleryPickerTarget === 'style') {
+                                      setStyleReferenceImage(img.url);
+                                    } else {
+                                      setCharacterReferenceImage(img.url);
+                                    }
+                                    toast.success(`${img.name} selected as reference!`);
+                                  }}
+                                >
+                                  <img
+                                    src={img.url}
+                                    alt={img.name}
+                                    className="w-full aspect-square object-cover"
+                                  />
+                                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <span className="text-white text-[10px] text-center px-1">{img.name}</span>
+                                  </div>
+                                  <div className="absolute top-0.5 right-0.5 bg-amber-500 text-white text-[8px] px-1 rounded">
+                                    {img.category}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
                       {filteredGallery.length === 0 ? (
                         <div className="text-center py-12">
                           {galleryTypeFilter === 'animations' ? (
