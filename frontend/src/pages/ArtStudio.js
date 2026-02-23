@@ -529,14 +529,28 @@ export default function ArtStudio() {
         duration: 5000
       });
       
-      // Build enhanced motion prompt including camera movement
+      // Build enhanced motion prompt including camera movement and art style
       const cameraPrompts = {
         'static': '',
         'slow-zoom': ', slow cinematic zoom in on subject',
         'slow-pan': ', gentle camera pan from left to right',
         'orbit': ', camera slowly orbiting around the subject'
       };
-      const enhancedMotion = animationMotion + (cameraPrompts[animationCameraMotion] || '');
+      
+      // Art style prompts to enhance the animation look
+      const artStylePrompts = {
+        'realistic': 'photorealistic, high detail, natural lighting',
+        'cinematic': 'cinematic quality, film grain, dramatic lighting, movie-like',
+        'anime': 'anime style animation, vibrant colors, Japanese animation aesthetic',
+        'cartoon': 'cartoon animation style, smooth motion, animated',
+        'cyberpunk': 'cyberpunk aesthetic, neon lights, futuristic, sci-fi atmosphere',
+        'fantasy': 'magical fantasy style, ethereal lighting, enchanted atmosphere',
+        'watercolor': 'watercolor painting style, soft edges, artistic brushstrokes',
+        'pixar': '3D animated Pixar style, smooth rendering, vibrant colors'
+      };
+      
+      const artStylePrompt = artStylePrompts[animationArtStyle] || artStylePrompts['cinematic'];
+      const enhancedMotion = `${artStylePrompt}, ${animationMotion}${cameraPrompts[animationCameraMotion] || ''}`;
       
       // Start the animation job
       const startResponse = await fetch(`${API_URL}/api/art-studio/animate-image`, {
