@@ -2598,6 +2598,242 @@ async def regenerate_character_thumbnail(character_id: str, current_user: dict =
         logger.error(f"Thumbnail regeneration error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# ==================== Scene Consistency Endpoints ====================
+
+SCENE_TYPES = [
+    {"id": "indoor", "name": "Indoor", "description": "Interior spaces like rooms, buildings"},
+    {"id": "outdoor", "name": "Outdoor", "description": "Exterior natural or urban environments"},
+    {"id": "urban", "name": "Urban", "description": "City streets, buildings, modern settings"},
+    {"id": "nature", "name": "Nature", "description": "Forests, mountains, beaches, natural landscapes"},
+    {"id": "fantasy", "name": "Fantasy", "description": "Magical, otherworldly locations"},
+    {"id": "scifi", "name": "Sci-Fi", "description": "Futuristic, technological environments"},
+]
+
+LIGHTING_OPTIONS = [
+    {"id": "natural", "name": "Natural Light"},
+    {"id": "golden_hour", "name": "Golden Hour"},
+    {"id": "blue_hour", "name": "Blue Hour"},
+    {"id": "dramatic", "name": "Dramatic"},
+    {"id": "soft", "name": "Soft/Diffused"},
+    {"id": "neon", "name": "Neon/Cyberpunk"},
+    {"id": "candlelight", "name": "Candlelight"},
+    {"id": "moonlight", "name": "Moonlight"},
+]
+
+MOOD_OPTIONS = [
+    {"id": "peaceful", "name": "Peaceful"},
+    {"id": "mysterious", "name": "Mysterious"},
+    {"id": "adventurous", "name": "Adventurous"},
+    {"id": "romantic", "name": "Romantic"},
+    {"id": "tense", "name": "Tense"},
+    {"id": "whimsical", "name": "Whimsical"},
+    {"id": "dark", "name": "Dark"},
+    {"id": "cheerful", "name": "Cheerful"},
+]
+
+@api_router.get("/pro-studio/scene-options")
+async def get_scene_options():
+    """Get available scene configuration options"""
+    return {
+        "location_types": SCENE_TYPES,
+        "lighting": LIGHTING_OPTIONS,
+        "moods": MOOD_OPTIONS
+    }
+
+@api_router.post("/pro-studio/scenes")
+async def create_scene(request: SceneCreate, current_user: dict = Depends(get_current_user)):
+    """Create a new scene for consistent backgrounds/environments"""
+    if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Pro subscription required")
+    
+    try:
+        # Build scene description
+        style_info = next((s for s in CHARACTER_STYLES if s["id"] == request.style), {"name": request.style})
+        genre_info = next((g for g in CHARACTER_GENRES if g["id"] == request.genre), {"name": request.genre})
+        location_info = next((l for l in SCENE_TYPES if l["id"] == request.location_type), {"name": request.location_type or "location"})
+        lighting_info = next((l for l in LIGHTING_OPTIONS if l["id"] == request.lighting), {"name": request.lighting or "natural"})
+        mood_info = next((m for m in MOOD_OPTIONS if m["id"] == request.mood), {"name": request.mood or ""})
+        
+        desc_parts = [
+            f"Scene: {request.name}",
+            f"Description: {request.description}",
+            f"Style: {style_info.get('name', request.style)}",
+            f"Genre: {genre_info.get('name', request.genre)}",
+            f"Location: {location_info.get('name', '')}",
+            f"Lighting: {lighting_info.get('name', '')}",
+        ]
+        if request.time_of_day:
+            desc_parts.append(f"Time: {request.time_of_day}")
+        if request.weather:
+            desc_parts.append(f"Weather: {request.weather}")
+        if mood_info.get('name'):
+            desc_parts.append(f"Mood: {mood_info.get('name')}")
+        
+        full_description = "\n".join(desc_parts)
+        
+        # Generate a thumbnail for the scene
+        thumbnail = None
+        gen_prompt = f"{request.description}, {style_info.get('name', '')} style, {location_info.get('name', '')} scene, {lighting_info.get('name', '')} lighting, {genre_info.get('name', '')} genre, no characters, background environment, scenic, detailed"
+        
+        if FAL_AVAILABLE:
+            result = await generate_image_flux(
+                prompt=gen_prompt,
+                model="flux-dev",
+                image_size="landscape_16_9",
+                num_images=1
+            )
+            if result.get("images"):
+                thumbnail = result["images"][0].get("url")
+        
+        scene_id = str(uuid.uuid4())
+        now = datetime.now(timezone.utc).isoformat()
+        
+        scene = {
+            "id": scene_id,
+            "user_id": current_user["id"],
+            "name": request.name,
+            "description": full_description,
+            "description_prompt": request.description,
+            "style": request.style,
+            "genre": request.genre,
+            "location_type": request.location_type,
+            "lighting": request.lighting,
+            "mood": request.mood,
+            "time_of_day": request.time_of_day,
+            "weather": request.weather,
+            "reference_images": request.reference_images[:10] if request.reference_images else [],
+            "thumbnail": thumbnail,
+            "created_at": now,
+            "updated_at": now
+        }
+        
+        # Add thumbnail as first reference if we have one
+        if thumbnail and not scene.get("reference_images"):
+            scene["reference_images"] = [thumbnail]
+        
+        await db.pro_studio_scenes.insert_one(scene)
+        scene.pop("_id", None)
+        
+        return {"scene": scene, "success": True}
+        
+    except Exception as e:
+        logger.error(f"Scene creation error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/pro-studio/scenes")
+async def get_scenes(current_user: dict = Depends(get_current_user)):
+    """Get user's saved scenes"""
+    scenes = await db.pro_studio_scenes.find(
+        {"user_id": current_user["id"]},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(50)
+    return {"scenes": scenes}
+
+@api_router.get("/pro-studio/scenes/{scene_id}")
+async def get_scene(scene_id: str, current_user: dict = Depends(get_current_user)):
+    """Get a specific scene"""
+    scene = await db.pro_studio_scenes.find_one(
+        {"id": scene_id, "user_id": current_user["id"]},
+        {"_id": 0}
+    )
+    if not scene:
+        raise HTTPException(status_code=404, detail="Scene not found")
+    return {"scene": scene}
+
+@api_router.put("/pro-studio/scenes/{scene_id}")
+async def update_scene(scene_id: str, request: SceneUpdate, current_user: dict = Depends(get_current_user)):
+    """Update a scene"""
+    scene = await db.pro_studio_scenes.find_one({"id": scene_id, "user_id": current_user["id"]})
+    if not scene:
+        raise HTTPException(status_code=404, detail="Scene not found")
+    
+    update_data = {k: v for k, v in request.dict().items() if v is not None and k != 'add_reference_images'}
+    
+    if request.add_reference_images:
+        existing = scene.get("reference_images", [])
+        update_data["reference_images"] = (existing + request.add_reference_images)[:10]
+    
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.pro_studio_scenes.update_one({"id": scene_id}, {"$set": update_data})
+    
+    updated = await db.pro_studio_scenes.find_one({"id": scene_id}, {"_id": 0})
+    return {"scene": updated, "success": True}
+
+@api_router.delete("/pro-studio/scenes/{scene_id}")
+async def delete_scene(scene_id: str, current_user: dict = Depends(get_current_user)):
+    """Delete a scene"""
+    result = await db.pro_studio_scenes.delete_one({"id": scene_id, "user_id": current_user["id"]})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Scene not found")
+    return {"success": True}
+
+@api_router.post("/pro-studio/scenes/{scene_id}/generate")
+async def generate_scene_image(scene_id: str, request: dict, current_user: dict = Depends(get_current_user)):
+    """Generate an image using the scene's style and settings"""
+    if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Pro subscription required")
+    
+    scene = await db.pro_studio_scenes.find_one({"id": scene_id, "user_id": current_user["id"]})
+    if not scene:
+        raise HTTPException(status_code=404, detail="Scene not found")
+    
+    try:
+        additional_prompt = request.get("prompt", "")
+        character_id = request.get("character_id")
+        
+        # Build scene prompt
+        style_info = next((s for s in CHARACTER_STYLES if s["id"] == scene.get("style")), {"name": "illustration"})
+        lighting_info = next((l for l in LIGHTING_OPTIONS if l["id"] == scene.get("lighting")), {"name": ""})
+        mood_info = next((m for m in MOOD_OPTIONS if m["id"] == scene.get("mood")), {"name": ""})
+        
+        prompt_parts = [scene.get("description_prompt", "")]
+        if additional_prompt:
+            prompt_parts.insert(0, additional_prompt)
+        prompt_parts.extend([
+            f"{style_info.get('name', '')} style",
+            f"{lighting_info.get('name', '')} lighting" if lighting_info.get('name') else "",
+            f"{mood_info.get('name', '')} mood" if mood_info.get('name') else "",
+            scene.get("time_of_day", ""),
+            scene.get("weather", ""),
+            "detailed background, scenic"
+        ])
+        
+        # If a character is specified, add character to the scene
+        if character_id:
+            character = await db.pro_studio_characters.find_one(
+                {"id": character_id, "user_id": current_user["id"]}
+            )
+            if character:
+                prompt_parts.insert(0, f"{character.get('description_prompt', character['name'])}, ")
+        
+        full_prompt = ", ".join([p for p in prompt_parts if p])
+        
+        # Generate image
+        if FAL_AVAILABLE:
+            result = await generate_image_flux(
+                prompt=full_prompt,
+                model="flux-dev",
+                image_size=request.get("image_size", "landscape_16_9"),
+                num_images=1
+            )
+            if result.get("images"):
+                return {"success": True, "image_url": result["images"][0].get("url"), "prompt": full_prompt}
+        
+        # Fallback to OpenAI
+        if EMERGENT_LLM_KEY:
+            image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
+            images = await image_gen.generate_images(prompt=full_prompt, model="gpt-image-1", number_of_images=1)
+            if images:
+                image_base64 = base64.b64encode(images[0]).decode('utf-8')
+                return {"success": True, "image_url": f"data:image/png;base64,{image_base64}", "prompt": full_prompt}
+        
+        raise HTTPException(status_code=500, detail="No generation method available")
+        
+    except Exception as e:
+        logger.error(f"Scene generation error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.post("/pro-studio/generate-image")
 async def pro_studio_generate_image(request: ProStudioImageRequest, current_user: dict = Depends(get_current_user)):
     """Generate a hero frame with Cinema Studio settings"""
