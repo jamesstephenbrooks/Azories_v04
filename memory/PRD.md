@@ -22,11 +22,28 @@ Build a full-featured digital book platform ("Azories") with:
 3. ✅ Stripe payments integration
 4. ✅ Book Editor with voice narration
 5. ✅ Email notifications (welcome, password reset)
-6. ⏳ Backend refactoring (in progress)
+6. ✅ Starter Library - 100 free images for users
+7. ⏳ Backend refactoring (in progress)
 
 ## What's Been Implemented
 
-### Session: Feb 23, 2026
+### Session: Feb 23, 2026 (Latest)
+- **Art Studio Header Redesign**:
+  - Node Workflow moved to tab navigation (next to Character Builder) - both FREE
+  - Pro Studio button kept in header with "PRO" badge
+  - Gallery button now has prominent green gradient styling with count
+- **Starter Library (100 images)**:
+  - Added `/api/starter-library` endpoint with 100 diverse free images
+  - Categories: characters, scenes, animals, fantasy, nature, space
+  - Available in Art Studio Gallery (collapsible amber section)
+  - Available in Book Editor Gallery Picker (new "⭐ Starter Library" tab)
+- **Unsaved Changes Warning**:
+  - Book Editor now tracks content changes
+  - Shows "Unsaved changes" indicator in header
+  - Browser warns before leaving page with unsaved changes
+  - Save button highlights (amber) when changes are pending
+
+### Previous Session: Feb 23, 2026
 - **Fixed Node Editor errors**: Resolved infinite loop, updateNodeData reference, canvasRef issues
 - **Animation Enhancement**: 
   - Auto-populate motion prompt from gallery image
@@ -62,12 +79,16 @@ Build a full-featured digital book platform ("Azories") with:
 ## Prioritized Backlog
 
 ### P0 - Critical
+- [x] Starter Library (100 images) - DONE
+- [x] Art Studio header reorganization - DONE
+- [x] Unsaved changes warning in Book Editor - DONE
 - [ ] Test animation save bug fix
 - [ ] Test email notifications
 
 ### P1 - High Priority
 - [ ] Complete backend refactoring (server.py → routes/)
 - [ ] Test Book Editor UX features (video, galleries)
+- [ ] Book-specific media library in Book Editor
 
 ### P2 - Medium Priority
 - [ ] Frontend refactoring (ProStudio.js)
