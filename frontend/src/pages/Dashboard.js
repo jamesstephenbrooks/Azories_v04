@@ -897,8 +897,22 @@ export default function Dashboard() {
                           <FiEdit2 className="mr-2 w-4 h-4" />
                           Edit
                         </Button>
-                        <Button variant="outline" size="icon" className="rounded-full" onClick={() => togglePublish(book)}>
-                          {book.is_published ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                        <Button 
+                          variant="outline" 
+                          size="icon" 
+                          className="rounded-full" 
+                          onClick={() => togglePublish(book)}
+                          title={book.is_published || book.publish_status === 'published' 
+                            ? 'Unpublish' 
+                            : book.publish_status === 'pending_review' 
+                              ? 'Pending Review' 
+                              : 'Submit for Review'}
+                        >
+                          {book.is_published || book.publish_status === 'published' 
+                            ? <FiEyeOff className="w-4 h-4" /> 
+                            : book.publish_status === 'pending_review'
+                              ? <FiClock className="w-4 h-4 text-amber-500" />
+                              : <FiSend className="w-4 h-4" />}
                         </Button>
                         <Button variant="outline" size="icon" className="rounded-full" onClick={() => fetchAnalytics(book.id)}>
                           <FiBarChart2 className="w-4 h-4" />
