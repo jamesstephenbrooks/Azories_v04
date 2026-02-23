@@ -744,7 +744,7 @@ async def forgot_password(request: ForgotPasswordRequest, background_tasks: Back
     })
     
     # Get app URL for reset link
-    app_url = os.environ.get("APP_URL", "https://workflow-enhanced-1.preview.emergentagent.com")
+    app_url = os.environ.get("APP_URL", "https://book-studio-4.preview.emergentagent.com")
     reset_url = f"{app_url}/reset-password?token={reset_token}"
     
     # Send reset email
@@ -1162,7 +1162,7 @@ async def generate_invite_link(book_id: str, request: InviteLinkRequest, current
     await db.invites.insert_one(invite_data)
     
     # Generate the link (frontend will handle this route)
-    base_url = os.environ.get('FRONTEND_URL', 'https://workflow-enhanced-1.preview.emergentagent.com')
+    base_url = os.environ.get('FRONTEND_URL', 'https://book-studio-4.preview.emergentagent.com')
     invite_link = f"{base_url}/invite/{invite_token}"
     
     return {"invite_link": invite_link, "token": invite_token}
