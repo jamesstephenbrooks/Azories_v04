@@ -2172,11 +2172,13 @@ export default function ArtStudio() {
                                   toast.success('Animation saved to gallery!');
                                   loadGallery(); // Refresh gallery
                                 } else {
-                                  throw new Error(data.detail || 'Failed to save');
+                                  const errorMsg = data.detail || 'Failed to save';
+                                  throw new Error(errorMsg);
                                 }
                               } catch (error) {
                                 console.error('Save animation error:', error);
-                                toast.error('Failed to save: ' + error.message);
+                                const errorMessage = typeof error === 'string' ? error : (error.message || 'Unknown error');
+                                toast.error('Failed to save: ' + errorMessage);
                               }
                             }}
                             className="bg-green-600 hover:bg-green-700"
