@@ -1020,6 +1020,7 @@ export default function ArtStudioExpert() {
     };
     newNode.data.onChange = (k, v) => updateNodeData(nodeId, k, v);
     newNode.data.onDelete = () => deleteNodeById(nodeId);
+    newNode.data.onCopyNode = () => copyNode(nodeId);
     setNodes(nds => [...nds, newNode]);
   };
   
