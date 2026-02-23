@@ -935,7 +935,7 @@ async def generate_invite_link(book_id: str, request: InviteLinkRequest, current
     await db.invites.insert_one(invite_data)
     
     # Generate the link (frontend will handle this route)
-    base_url = os.environ.get('FRONTEND_URL', 'https://character-gen-10.preview.emergentagent.com')
+    base_url = os.environ.get('FRONTEND_URL', 'https://pro-studio-1.preview.emergentagent.com')
     invite_link = f"{base_url}/invite/{invite_token}"
     
     return {"invite_link": invite_link, "token": invite_token}
