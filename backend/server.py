@@ -3214,6 +3214,11 @@ async def fal_train_character_lora(request: FalTrainLoraRequest, current_user: d
     if len(request.reference_images) < 3:
         raise HTTPException(status_code=400, detail="At least 3 reference images required")
     
+    # Credits check for LoRA training (expensive operation)
+    if not await deduct_credits(current_user["id"], "lora_training"):
+        credits_needed = CREDIT_COSTS.get("lora_training", 50)
+        raise HTTPException(status_code=402, detail=f"Insufficient credits. LoRA training requires {credits_needed} credits.")
+    
     try:
         result = await train_character_lora(
             character_name=request.character_name,
