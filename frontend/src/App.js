@@ -12,6 +12,7 @@ import Dashboard from "@/pages/Dashboard";
 import BookEditor from "@/pages/BookEditor";
 import MySeries from "@/pages/MySeries";
 import Auth from "@/pages/Auth";
+import ResetPassword from "@/pages/ResetPassword";
 import AdminCMS from "@/pages/AdminCMS";
 import AdminAnalytics from "@/pages/AdminAnalytics";
 import UserProfile from "@/pages/UserProfile";
