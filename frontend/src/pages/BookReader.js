@@ -618,7 +618,7 @@ export default function BookReader() {
             <div>
               <h1 className="font-heading font-bold text-lg line-clamp-1">{book?.title}</h1>
               <p className="font-ui text-xs text-muted-foreground">
-                {isCover ? 'Front Cover' : currentPageData?.chapterTitle || ''}
+                {isCover ? 'Front Cover' : currentPage === -2 ? 'Back Cover' : currentPageData?.isChapterTitle ? currentPageData?.chapterTitle : `Page ${currentPage + 1}`}
               </p>
             </div>
           </div>
