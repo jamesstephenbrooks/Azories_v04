@@ -915,7 +915,7 @@ export default function ArtStudioExpert() {
     setEdges(eds => eds.filter(edge => edge.source !== nodeId && edge.target !== nodeId));
   }, [setNodes, setEdges]);
   
-  // Copy/Duplicate a node with offset position
+  // Copy/Duplicate a node with offset position - preserves ALL data including images
   const copyNode = useCallback((nodeId) => {
     const nodeToCopy = nodes.find(n => n.id === nodeId);
     if (!nodeToCopy) return;
@@ -924,7 +924,7 @@ export default function ArtStudioExpert() {
     const offsetX = 50;
     const offsetY = 50;
     
-    // Deep copy the data, excluding function handlers
+    // Deep copy the data, excluding function handlers but KEEPING images and all content
     const copiedData = { ...nodeToCopy.data };
     delete copiedData.onChange;
     delete copiedData.onDelete;
@@ -935,10 +935,11 @@ export default function ArtStudioExpert() {
     delete copiedData.onSaveToBook;
     delete copiedData.onExpand;
     
-    // For output nodes, don't copy the generated image (start fresh)
+    // KEEP the image for all node types including output (user requested to preserve images when copying)
+    // Only reset generating state
     if (nodeToCopy.type === 'output') {
-      copiedData.image = null;
       copiedData.generating = false;
+      copiedData.locked = false; // New nodes are unlocked
     }
     
     const newNode = {
@@ -958,7 +959,74 @@ export default function ArtStudioExpert() {
     
     setNodes(nds => [...nds, newNode]);
     console.log(`Copied node ${nodeId} to ${newNodeId}`);
+    return newNodeId;
   }, [nodes, setNodes, updateNodeData, deleteNodeById]);
+  
+  // Copy multiple selected nodes with their connections
+  const copySelectedNodes = useCallback(() => {
+    const selectedNodes = nodes.filter(n => selectedNodeIds.has(n.id));
+    if (selectedNodes.length === 0) return;
+    
+    const idMapping = {}; // Old ID -> New ID
+    const newNodes = [];
+    const offsetX = 100;
+    const offsetY = 100;
+    
+    // First pass: create new nodes
+    selectedNodes.forEach(node => {
+      const newNodeId = `${node.type}-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+      idMapping[node.id] = newNodeId;
+      
+      // Deep copy data, preserving ALL content including images
+      const copiedData = { ...node.data };
+      delete copiedData.onChange;
+      delete copiedData.onDelete;
+      delete copiedData.onCopyNode;
+      delete copiedData.onContinueWorkflow;
+      delete copiedData.onDownload;
+      delete copiedData.onSaveToGallery;
+      delete copiedData.onSaveToBook;
+      delete copiedData.onExpand;
+      
+      if (node.type === 'output') {
+        copiedData.generating = false;
+        copiedData.locked = false;
+      }
+      
+      const newNode = {
+        id: newNodeId,
+        type: node.type,
+        position: {
+          x: node.position.x + offsetX,
+          y: node.position.y + offsetY
+        },
+        data: copiedData
+      };
+      
+      newNode.data.onChange = (k, v) => updateNodeData(newNodeId, k, v);
+      newNode.data.onDelete = () => deleteNodeById(newNodeId);
+      newNode.data.onCopyNode = () => copyNode(newNodeId);
+      
+      newNodes.push(newNode);
+    });
+    
+    // Second pass: recreate edges between copied nodes
+    const selectedIds = new Set(selectedNodes.map(n => n.id));
+    const newEdges = edges
+      .filter(e => selectedIds.has(e.source) && selectedIds.has(e.target))
+      .map(e => ({
+        ...e,
+        id: `e-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+        source: idMapping[e.source],
+        target: idMapping[e.target]
+      }));
+    
+    setNodes(nds => [...nds, ...newNodes]);
+    setEdges(eds => [...eds, ...newEdges]);
+    setSelectedNodeIds(new Set(newNodes.map(n => n.id))); // Select the new nodes
+    
+    console.log(`Copied ${newNodes.length} nodes and ${newEdges.length} edges`);
+  }, [nodes, edges, selectedNodeIds, setNodes, setEdges, updateNodeData, deleteNodeById, copyNode]);
   
   // Continue workflow from an output image - creates an ImageNode for further branching
   const continueWorkflow = useCallback((imageUrl, sourceNodeId) => {
