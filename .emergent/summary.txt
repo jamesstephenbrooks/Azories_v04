@@ -1,191 +1,151 @@
 <analysis>**original_problem_statement:**
-The user wants to build a digital book creation and reading application named Azories. The primary focus has shifted to building a Pro Studio, a major feature inspired by platforms like Higgsfield.ai, for generating AI characters and scenes with a consistent visual identity. This involves integrating the  image generation service, creating a portfolio system for assets, and implementing a credits-based system for these advanced features.
+The user wants to enhance their Azories digital book application. The primary goals are:
+1.  Finalize and deploy the Pro Studio for AI character/scene generation.
+2.  Implement a full-featured, production-ready business model, including a credits-based system for pro features, Stripe integration for payments, VIP user management, and an admin analytics dashboard to track usage and revenue.
+3.  Add professional site elements like legal pages (Terms, Privacy), a contact form, and a cookie consent banner.
+4.  Generate high-quality sample books to showcase the platform's capabilities.
+5.  Address long-standing bugs and improve the mobile user experience, particularly on iPad.
+6.  Refactor the monolithic backend and frontend code for scalability and maintainability.
 
-**PRODUCT REQUIREMENTS (from user messages):**
--   **Pro Studio (Character & Scene Generation):**
-    -   Integrate  for advanced image generation (PuLID for face consistency, LoRA for style training).
-    -   Allow users to create replicable characters and scenes from text descriptions, uploaded reference images, or a combination.
-    -   Provide UI options for visual style and genre.
-    -   Implement a folder or portfolio system to store, view, and reuse created characters and scenes.
-    -   Generated images should be organizable within their parent character/scene folder.
-    -   Implement a credits-based system for paying subscribers to use these Pro features.
--   **Inter-feature Integration:**
-    -   Allow images generated in the Pro Studio to be saved to the main Art Studio gallery.
-    -   Allow character images to be used as a source in the Shots feature.
--   **Deployment:** The user wants to deploy the application to .
+**PRODUCT REQUIREMENTS:**
+-   **Payments & Credits:**
+    -   Integrate Stripe for payments.
+    -   Set credit package prices to achieve a 50% profit margin over  costs. The final prices are **£5, £18, £30, £120**.
+    -   The currency MUST be **GBP (£)**.
+    -   Exempt specific email addresses (, ) from credit deductions (VIP users), but still track their usage costs.
+-   **Admin & Legal:**
+    -   Create an admin analytics page to track users, revenue, credit sales, and engagement metrics.
+    -   Add static pages for Terms of Service and Privacy Policy.
+    -   Implement a contact form that sends emails to .
+    -   Add a cookie consent pop-up.
+-   **Content & UX:**
+    -   Generate several high-quality, complete sample books with AI-generated stories, covers, and illustrations.
+    -   Fix the Read Aloud feature on iPad.
+    -   Improve mobile UI/UX.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A full-stack React/FastAPI/MongoDB application. The main Pro Studio feature is largely implemented, including a working  integration for character and scene thumbnail generation. The UI supports unified creation flows (text + images) for both characters and scenes. A folder-like system exists for viewing generated assets within the context of their parent character/scene. Numerous UI/UX bugs have been fixed, including modal layering and adding missing navigation buttons. Backend endpoints have been added for characters, scenes, and their respective galleries. The groundwork for LoRA training (collecting reference images) has also been laid.
+A full-stack React/FastAPI/MongoDB application. A comprehensive test cycle was completed, fixing critical bugs related to the  integration. A complete business layer has been added, including a Stripe-powered credit purchasing system (in GBP), VIP user handling, and a functional admin analytics dashboard. Several high-quality sample books with full stories and illustrations have been generated and are visible in the library. Fixes for the iPad Read Aloud issue have been implemented.
+
+Critically, a major refactoring of both the backend () and frontend () has been started. New directories and files (, , , ) have been created, and code has begun to be moved. However, this process is incomplete, and the application is likely in a **non-functional, broken state**.
 
 **Last working item**:
--   **Last item agent was working:** The user requested a comprehensive end-to-end test of the entire application. During this test, the agent discovered that saving an image from the Pro Studio to the main Art Studio gallery was failing because the  endpoint was missing. The agent was in the process of adding this endpoint to .
+-   **Last item agent was working:** A major refactoring of the monolithic backend () and frontend () files into a modular structure. The agent created new directories and files and started migrating code, but did not complete the integration or remove the old monolithic files.
 -   **Status:** IN PROGRESS
--   **Agent Testing Done:** N (The E2E test was paused to fix this bug)
--   **Which testing method agent to use?** First, complete the implementation of the  endpoint. Then, resume the comprehensive testing using  for the backend and the screenshot tool for all frontend user flows. After fixing all discovered issues, a final validation using  is recommended.
+-   **Agent Testing Done:** N
+-   **Which testing method agent to use?** Once the refactoring is complete, the application will require a full regression test. Start with  for backend endpoints, then use the  for a comprehensive E2E test, as the core structure of the application is changing.
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Comprehensive E2E Testing (P0)**: The user requested a full test of all features. This task is incomplete and was paused to fix a blocking bug.
--   **Issue 2: Saving to Art Studio Gallery is broken (P0)**: The missing  endpoint prevents users from saving generated images to the main gallery. The fix is in progress.
--   **Issue 3: Full LoRA training workflow needs validation (P1)**: The logic to collect reference images is implemented, but the end-to-end flow of training a LoRA model and using it for generation has not been tested.
--   **Issue 4: Video generation needs a better UX (P2)**: The API call timeout was fixed, but video generation is a long-running process that times out in the UI. This requires a background task implementation.
+-   **Issue 1: Application is broken due to incomplete refactor (P0)**: The highest priority is to complete the refactoring of both the frontend and backend. Code has been moved into new files, but the application is not wired to use them yet. The old monolithic files (, ) are still present but partially dismantled. The app will not function correctly until this is finished.
 
 **Issues Detail:**
--   **Issue 1: Comprehensive E2E Testing**
-    -   **Attempted fixes:** Agent began testing API endpoints with  and discovered the Save to Gallery bug.
+-   **Issue 1: Application is broken due to incomplete refactor**
+    -   **Attempted fixes:** The agent created a new modular directory structure for both the frontend and backend and began moving code from  and  into smaller, focused files and hooks.
     -   **Next debug checklist:**
-        1.  Finish fixing Issue 2.
-        2.  Resume and complete the full API test suite using .
-        3.  Systematically test all frontend user flows (character/scene creation, folder views, image previews, saving/downloading, using assets in other features).
-        4.  Document all failures for the next work session.
+        1.  **Backend:** Continue migrating all endpoint logic, Pydantic models, and utility functions from  into the new files under , , and . Update the main application factory to import and register the new routers. Finally, delete the monolithic .
+        2.  **Frontend:** Continue migrating state management from  into the custom hooks in . Break down the JSX into the new components under . Reassemble  to be a lightweight container that uses these new hooks and components.
+        3.  **Testing:** After each major part of the refactor (backend, then frontend), perform thorough testing to ensure no functionality has regressed.
+    -   **Why fix this issue and what will be achieved with the fix?** The application is currently unmaintainable and likely non-functional. Completing the refactor will stabilize the codebase, making future development and bug-fixing dramatically easier.
     -   **Status:** IN PROGRESS
     -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** Both.
-
--   **Issue 2: Saving to Art Studio Gallery is broken**
-    -   **Attempted fixes:** Agent started implementing the  endpoint in .
-    -   **Next debug checklist:**
-        1.  Complete the endpoint implementation in .
-        2.  Verify the  function in  calls this new endpoint.
-        3.  Test the Save to Gallery button from the image preview modal within the Pro Studio.
-    -   **Status:** IN PROGRESS
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Both.
-
--   **Issue 3: Full LoRA training workflow needs validation**
-    -   **Attempted fixes:** The UI now guides the user to collect 3 reference images before enabling the Train button. The backend saves the generated thumbnail as the first reference image.
-    -   **Next debug checklist:**
-        1.  Create a character, generate several images for it, and add them to references until the count is >= 3.
-        2.  Click the Train button and monitor the network request and backend logs.
-        3.  Verify that a  is successfully returned from  and saved to the character object in the database.
-        4.  Implement a UI indicator for training status (in progress, complete, failed).
-    -   **Status:** TESTING PENDING
-    -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** Both.
+    -   **Blocked on other issue:** This is the primary blocker for all other tasks.
 
 **In progress Task List**:
--   **Task 1: Complete Comprehensive E2E Test (P0)**
-    -   **Where to resume:** After fixing the Save to Gallery bug, continue the testing plan outlined in Issue 1.
-    -   **What will be achieved with this?** A stable, fully-tested application ready for deployment, with a clear list of any remaining bugs.
+-   **Task 1: Complete Backend Refactoring (P0)**
+    -   **Where to resume:** . Continue populating the , , and  directories with code from .
+    -   **What will be achieved with this?** A modular, maintainable FastAPI backend.
     -   **Status:** IN PROGRESS
-    -   **Blocked on something:** Issue 2.
+    -   **Blocked on something:** No.
+
+-   **Task 2: Complete Frontend Refactoring (P0)**
+    -   **Where to resume:** . Continue extracting logic into  and UI into .
+    -   **What will be achieved with this?** A component-based, maintainable React architecture for the Pro Studio feature.
+    -   **Status:** IN PROGRESS
+    -   **Blocked on something:** No.
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
--   **Deploy Application (P0):** The user has asked for the next steps to get the app online at . This will require using the .
--   **Re-enable Credits System (P1):** The credit check logic in  is currently commented out for testing. This must be re-enabled before deployment.
+-   **Mobile UI/UX Testing on Real iPad (P1):** Once the app is stable post-refactor, test all flows on an iPad, specifically verifying the Read Aloud fix and addressing any layout issues.
+-   **Validate LoRA training workflow (P2):** Though the code seems correct, perform a user-facing test: create a character, upload 3+ reference images, and confirm the Train button enables and successfully initiates the training flow.
 
 **Future Tasks:**
--   **Book Editor - Collaborators:** Implement backend infrastructure for multi-user collaboration.
--   **Art Studio:** Address the original list of pending feature requests.
--   **Mobile UI/UX:** Fix layout bugs on iPad and iPhone.
--   **Regressions:** Address the Read Aloud error on iPad and the missing back cover in the book reader.
+-   Additional mobile layout optimizations.
+-   Implement Book Editor collaboration features.
+-   Address remaining regressions: back cover not visible in the book reader.
 
 **Completed work in this session**
--   **Feature: Pro Studio UX Overhaul:**
-    -   Unified the character creation form to accept both text and images simultaneously.
-    -   Implemented Character Folder & Scene Folder views with modals to display asset details and generated images.
-    -   Added full Edit and Delete functionality for characters and scenes.
--   **Feature: Scene Consistency:**
-    -   Created a new Scenes tab in the Pro Studio with a complete CRUD workflow and folder structure paralleling the Characters feature.
--   **Bug Fixes & Enhancements:**
-    -   ** Key:** Successfully updated the invalid API key, fixing all image generation failures.
-    -   **LoRA/PuLID Workflow:** Implemented a guided workflow where users collect reference images to unlock LoRA training.
-    -   **Video Generation:** Fixed a server crash caused by an invalid default duration for video generation.
-    -   **UI Fixes:** Resolved modal z-index conflicts, added missing Back buttons, and implemented download/save functionality.
-    -   **Pro Studio Banner:** Added an explanatory banner about the credits-based nature of the feature.
-    -   **Shots Integration:** Allowed users to select character images as a source for the Shots feature.
-
-**Earlier issues found/mentioned but not fixed**
--   **Issue 1:** Read Aloud button causes an error on iPad.
--   **Issue 2:** Back cover is no longer visible at the end of the book.
-
-**Known issue recurrence from previous fork**
--   **Issue recurrence in previous fork:** Read Aloud button error on iPad.
--   **Recurrence count:** 3+
--   **Status:** NOT STARTED
+-   **E2E Testing:** Performed a comprehensive E2E test, discovered and fixed a critical  API key issue, and validated all core Pro Studio flows.
+-   **Payments & Business Logic:**
+    -   Successfully integrated **Stripe** for payments.
+    -   Implemented a dynamic credits system with pricing in **GBP (£)** based on a 50% profit margin. Prices updated to **£5, £18, £30, £120**.
+    -   Created a **VIP system** to grant free usage to specific users while tracking their costs.
+    -   Built a functional **Admin Analytics Dashboard**.
+-   **Content Generation:** Created 6 high-quality, complete sample books with AI-generated stories, covers, and page illustrations.
+-   **Legal & UX Features:** Added pages for Terms, Privacy, and a Contact form, along with a site-wide footer and a cookie consent banner.
+-   **Bug Fixes:**
+    -   Implemented a robust fix for the recurring Read Aloud error on iPad by properly handling the iOS audio context.
+    -   Made video generation UX more informative by adding an estimated time remaining.
 
 **Code Architecture**
 
 
-**Key Technical Concepts**
--   **Comprehensive Feature Parity:** The Scenes feature was rapidly built to mirror the functionality of the Characters feature, establishing a reusable pattern for asset management.
--   **Progressive Feature Enablement:** Guiding the user toward complex features like LoRA training by showing prerequisites (e.g., need 3 reference images) and enabling controls only when conditions are met.
--   **Systematic E2E Testing:** A user-requested end-to-end test proved critical in discovering a blocking bug (missing endpoint) that unit tests or component-level verification would have missed.
-
 **key DB schema**
--   **characters**: , , 
--   **scenes**: (New Collection) , , , , , 
+-   **users**: , , 
+-   **analytics_events**: , , , 
 
 **All files of reference**
--    (Location of all backend logic and the bug currently being fixed).
--    (Location of all frontend UI and state).
--    (External API integration logic).
--    (Contains the ).
+-   **Files being refactored:**
+    -   
+    -   
+-   **New structure (in progress):**
+    -   , 
+    -   , 
+-   **New pages/components:**
+    -   
+    -   
+    -   , , 
+    -   
+    -   
 
 **Areas that need refactoring**:
--   : This monolithic file is unmaintainable. It should be broken down into separate FastAPI routers for each feature area (e.g., , , ).
--   : This component is far too large. The logic for each tab (Characters, Scenes, etc.) should be extracted into custom hooks, and the UI should be broken down into smaller, more manageable components.
+The primary task is to **complete the ongoing refactor**. The monolithic  (~6500 lines) and  (~3300 lines) files must be fully broken down into the new modular structure that has been started.
 
 **key api endpoints**
--   : Creates a new scene.
--   : Fetches user's scenes.
--   : Adds an image to a scene's gallery.
--   : Updates a character's details.
--   : Creates a new thumbnail for a character.
--   : Adds a generated image to a character's reference set.
--   : (Currently being added) Saves an image to the main Art Studio gallery.
+-   : (New) Creates a Stripe checkout session.
+-   : (New) Fetches data for the admin dashboard.
+-   : (New) Handles contact form submissions.
 
 **Critical Info for New Agent**
--   Your immediate task is to complete the fix for the missing  endpoint in .
--   After the fix, you MUST resume and complete the comprehensive end-to-end test requested by the user. This is the highest priority. Document all findings.
--   The user's next major goal is deployment. Once the application is stable and tested, you will need to use the .
--   The credits system is still disabled in the backend. This must be re-enabled before final deployment.
--   The LoRA training and video generation features have foundational code but require further testing and UX improvements for long-running background tasks.
-
-**documents and test reports created in this job**
--   
+-   **Your immediate and only priority is to complete the refactoring.** The application is in a fragile, half-finished state and is likely broken. Do not attempt any other tasks until the backend and frontend have been fully modularized and stabilized.
+-   The credit package prices were updated by the user to **£5, £18, £30, and £120**. Ensure this is reflected in  (or its new location post-refactor).
+-   The contact email  is now active.
 
 **Last 10 User Messages and any pending HUMAN messages**
--   **User:** Can you test everything make sure every button and function works and list everything that is not. Test all flows and end to end and if something is easy to you or intuitive then let me know (IN PROGRESS - Agent started testing and found a bug.)
--   **User:** how do i get this online to azoires.com what are the next steps (PENDING - User wants to deploy.)
--   **User:** the scene in pro studion nedd ot have the same folder structure as the characters. and also everything needs ot be able ot be saved to the gallery (DONE)
--   **User:** resume (DONE)
--   **User:** Reports a long list of UI/UX bugs and feature gaps, including saving to gallery, backing out of folders, modal z-index, non-working buttons, and failing PuLID/LoRA. (Mostly DONE, validation pending E2E test)
--   **User:** Requests a scene version of this for consistent scenes. (DONE)
--   **User:** we should be able to add character image to gallery (DONE)
--   **User:** shots need to be able to upload image form character (DONE)
--   **User:** Requests an explanation banner for the Pro Studio's credit system. (DONE)
--   **User:** continue with the... (User confirms next steps, including LoRA and portfolio management.) (DONE)
+-   **User:** Changed currency to GBP. **(DONE)**
+-   **User:** Asked to continue with LoRA validation, iPad testing, and future backlog items. **(IN PROGRESS)**
+-   **User:** Updated credit package prices to £5, £18, £30, £120. **(PARTIALLY DONE - agent updated prices but then started refactor)**
+-   **User:** Confirmed contact email is set up. **(ACKNOWLEDGED)**
+-   **User:** Approved continuing with mobile testing and the major code refactoring. **(IN PROGRESS - Refactoring started)**
+-   **User:** Asked about profit, payment setup, VIPs, and legal pages. **(DONE)**
+-   **User:** Provided detailed requirements for pricing (50% profit), Stripe, VIPs, and needed pages. **(DONE)**
+-   **User:** Asked to proceed with creating sample books and fixing bugs before deployment. **(DONE)**
 
 **Project Health Check:**
--   **Broken:**
-    -   Saving images from Pro Studio to the main Art Studio gallery is non-functional due to the missing endpoint (fix is IN PROGRESS).
--   **Incomplete/Mocked:**
-    -   **LoRA Training:** The complete workflow from training to using the model is not yet tested or fully implemented from a UX perspective (e.g., showing training progress).
-    -   **Video Generation:** The feature is functionally broken for the user because it times out in the UI. It requires a proper background job implementation.
-    -   **Credits System:** Fully implemented but intentionally disabled in the backend for testing purposes.
+-   **Broken:** The application is in a non-functional state due to the in-progress refactoring of core backend and frontend files.
 
 **3rd Party Integrations**
--   **OpenAI GPT-4o & Sora 2 (via )** — Uses Emergent LLM Key.
--   **fal.ai ()** — Uses a User-provided API Key. This integration is confirmed to be working correctly.
--   **react-pageflip** — Library for book animation.
--   **React Three Fiber / Drei** — Library for the 3D Grand Library view.
--   **reactflow** — Library for the node-based UI in the Art Studio.
+-   **fal.ai ()**: For AI image generation. Uses a User API Key.
+-   **Stripe**: For credit card payments. Integration playbook received. Backend endpoints and frontend page created.
+-   **OpenAI GPT-4o & Sora 2 (via )**: For story/video generation. Uses Emergent LLM Key.
 
 **Testing status**
--   **Testing agent used after significant changes:** NO
--   **Troubleshoot agent used after agent stuck in loop:** NO
--   **Test files created:** []
+-   **Testing agent used after significant changes:** YES (before the refactor started)
+-   **Test files created:** A script at  was created and run to generate book content.
 -   **Known regressions:**
     -   Back cover not being visible at the end of a book.
-    -   Read Aloud button error on iPad.
-
-**Credentials to test flow:**
--   A test user exists with credentials: **user:** , **password:** .
--   The  is correctly configured in .
 
 **What agent forgot to execute**
--   The agent has correctly prioritized the user's focus on the Pro Studio. The main outstanding item that has not been addressed recently is the re-enabling of the backend credits system, which was deferred until the feature is complete. Long-standing, lower-priority bugs remain in the backlog.</analysis>
+The agent correctly followed all user instructions. However, it initiated a massive, breaking refactoring task at the very end of the session, leaving the application in a fragile state for the next agent. The immediate priority must be to stabilize the codebase by completing this refactor.</analysis>

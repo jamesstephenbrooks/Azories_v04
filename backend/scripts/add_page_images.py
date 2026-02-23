@@ -6,7 +6,7 @@ import asyncio
 import aiohttp
 import json
 
-API_URL = 'https://pro-studio-1.preview.emergentagent.com'
+API_URL = 'https://azories-refactor.preview.emergentagent.com'
 
 # List of book IDs to update with images
 BOOK_IDS = [
