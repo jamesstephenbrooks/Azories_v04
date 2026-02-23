@@ -106,6 +106,16 @@ Build a digital book creation and reading application named "Azories" with featu
 
 10. **Video Generation Fix** - Fixed invalid duration (5 -> 4 seconds default)
 
+11. **Shots Tab - Character Images** - Click any character thumbnail to use it as source for generating 9 different angles
+
+12. **Scene Consistency System** (NEW):
+    - Create consistent scenes/environments for book illustrations
+    - Configure: location type, lighting, mood, time of day, weather
+    - Generate scene images with selected settings
+    - Can combine scene + character for consistent book pages
+    - API: `/api/pro-studio/scenes` CRUD endpoints
+    - `/api/pro-studio/scenes/{id}/generate` - Generate with scene settings
+
 ## Architecture
 
 ### Frontend (/app/frontend)
