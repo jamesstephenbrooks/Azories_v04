@@ -1423,8 +1423,9 @@ export default function ProStudio() {
               <Button
                 size="sm"
                 variant="ghost"
-                onClick={() => addCredits(100)}
+                onClick={goToPurchaseCredits}
                 className="ml-2 text-amber-300 hover:text-amber-100 hover:bg-amber-500/20 h-6 px-2"
+                title="Buy more credits"
               >
                 <FiPlus size={14} />
               </Button>
