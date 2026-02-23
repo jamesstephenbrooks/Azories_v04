@@ -39,6 +39,7 @@ function AppContent() {
         <Route path="/library" element={<Library />} />
         <Route path="/read/:bookId" element={<BookReader />} />
         <Route path="/auth" element={<Auth />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/series" element={<MySeries />} />
         <Route path="/editor/:bookId" element={<BookEditor />} />
