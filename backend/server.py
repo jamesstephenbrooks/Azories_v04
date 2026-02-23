@@ -599,7 +599,7 @@ async def get_optional_user(credentials: HTTPAuthorizationCredentials = Depends(
 # ============ AUTH ROUTES ============
 
 @api_router.post("/auth/register", response_model=TokenResponse)
-async def register(user_data: UserCreate):
+async def register(user_data: UserCreate, background_tasks: BackgroundTasks):
     existing = await db.users.find_one({"email": user_data.email})
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -622,6 +622,11 @@ async def register(user_data: UserCreate):
         "created_at": now_iso
     }
     await db.users.insert_one(user)
+    
+    # Send welcome email in background
+    if email_configured():
+        welcome_html = get_welcome_email_html(user_data.name)
+        background_tasks.add_task(send_email, user_data.email, "Welcome to Azories! 🎉", welcome_html)
     
     token = create_token(user_id, user_data.email, "user")
     return TokenResponse(
