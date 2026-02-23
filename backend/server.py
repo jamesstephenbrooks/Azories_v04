@@ -3511,8 +3511,16 @@ async def generate_consistent_character_image(
         # Method 1: Use trained LoRA (best consistency)
         if FAL_AVAILABLE and character.get("lora_status") == "completed" and character.get("lora_url"):
             logger.info(f"Generating with LoRA for character {character['name']}")
+            
+            # Include character style in the prompt for style consistency
+            style_desc = character.get('style', 'illustration')
+            genre_desc = character.get('genre', 'fantasy')
+            
+            # Build prompt with style information
+            styled_prompt = f"{prompt}, {style_desc} style, {genre_desc} genre, high quality"
+            
             result = await generate_with_lora(
-                prompt=prompt,
+                prompt=styled_prompt,
                 lora_url=character["lora_url"],
                 trigger_word=character.get("lora_trigger_word", character["name"].lower()),
                 lora_scale=1.0,
@@ -3522,7 +3530,8 @@ async def generate_consistent_character_image(
             return {
                 **result,
                 "method": "lora",
-                "character_id": character_id
+                "character_id": character_id,
+                "style_used": style_desc
             }
         
         # Method 2: Use PuLID face ID
