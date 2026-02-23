@@ -295,12 +295,43 @@ export default function Dashboard() {
 
   const togglePublish = async (book) => {
     try {
-      await axios.put(`${API}/books/${book.id}`, { is_published: !book.is_published });
-      toast.success(book.is_published ? 'Book unpublished' : 'Book published!');
+      // If book is published, simply unpublish it
+      if (book.is_published || book.publish_status === 'published') {
+        await axios.put(`${API}/books/${book.id}`, { 
+          is_published: false, 
+          publish_status: 'draft' 
+        });
+        toast.success('Book unpublished');
+        fetchMyBooks();
+        return;
+      }
+      
+      // If book is in pending_review, show message
+      if (book.publish_status === 'pending_review') {
+        toast.info('This book is already pending admin review');
+        return;
+      }
+      
+      // Otherwise, request publish (sends to admin for review)
+      const response = await axios.post(`${API}/books/${book.id}/request-publish`);
+      toast.success(response.data.message || 'Book submitted for review!');
       fetchMyBooks();
     } catch (error) {
-      toast.error('Failed to update book');
+      toast.error(error.response?.data?.detail || 'Failed to update book');
     }
+  };
+
+  const getPublishStatusBadge = (book) => {
+    if (book.is_published || book.publish_status === 'published') {
+      return <span className="text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-500">Published</span>;
+    }
+    if (book.publish_status === 'pending_review') {
+      return <span className="text-xs px-2 py-1 rounded-full bg-amber-500/20 text-amber-500">Pending Review</span>;
+    }
+    if (book.publish_status === 'rejected') {
+      return <span className="text-xs px-2 py-1 rounded-full bg-red-500/20 text-red-500">Rejected</span>;
+    }
+    return <span className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground">Draft</span>;
   };
 
   const deleteBook = async (bookId) => {
