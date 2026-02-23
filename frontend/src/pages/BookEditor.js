@@ -1399,19 +1399,20 @@ export default function BookEditor() {
                             })}
                           </div>
                         ) : (
-                          /* Portrait aspect ratio - compact when empty, larger when has image */
+                          /* Portrait aspect ratio - Book page preview (WYSIWYG) */
                           <div className="space-y-3">
                             <div 
-                              className={`rounded-2xl border-2 border-dashed border-border bg-muted/30 overflow-hidden flex items-center justify-center relative transition-all ${
-                                selectedPage.image_url ? 'aspect-[3/4]' : 'h-32'
-                              }`}
+                              className="rounded-2xl border-2 border-border bg-[#fdfbf7] dark:bg-[#2a2a30] overflow-hidden flex items-center justify-center relative aspect-[3/4] shadow-lg"
                               data-testid="page-image-preview"
+                              style={{
+                                boxShadow: 'inset -7px 0 30px -7px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.1)'
+                              }}
                             >
                               {selectedPage.image_url ? (
                                 <img 
                                   src={selectedPage.image_url} 
                                   alt="Page illustration"
-                                  className="w-full h-full"
+                                  className="absolute inset-0 w-full h-full"
                                   style={{
                                     objectFit: selectedPage.image_fit || 'cover',
                                     objectPosition: `${selectedPage.image_position_x || 50}% ${selectedPage.image_position_y || 50}%`
@@ -1425,6 +1426,10 @@ export default function BookEditor() {
                                   </p>
                                 </div>
                               )}
+                              {/* Page preview label */}
+                              <div className="absolute bottom-2 left-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded">
+                                Preview: Left Page
+                              </div>
                             </div>
                             
                             {/* Book Gallery Quick Access - Show assigned images for this book */}
