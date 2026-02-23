@@ -1564,7 +1564,11 @@ export default function ArtStudioExpert() {
                 onExpand: (url) => setExpandedImage(url),
                 onCopyNode: () => copyNode(node.id),
                 onContinueWorkflow: (url) => continueWorkflow(url, node.id),
-                onRunNode: () => runOutputNode(node.id)
+                onRunNode: () => {
+                  if (runOutputNodeRef.current) {
+                    runOutputNodeRef.current(node.id);
+                  }
+                }
               }
             };
           }
