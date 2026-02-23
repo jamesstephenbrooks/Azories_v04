@@ -302,12 +302,9 @@ export default function Dashboard() {
 
   const togglePublish = async (book) => {
     try {
-      // If book is published, simply unpublish it
+      // If book is published, use unpublish endpoint
       if (book.is_published || book.publish_status === 'published') {
-        await axios.put(`${API}/books/${book.id}`, { 
-          is_published: false, 
-          publish_status: 'draft' 
-        });
+        await axios.post(`${API}/books/${book.id}/unpublish`);
         toast.success('Book unpublished');
         fetchMyBooks();
         return;
