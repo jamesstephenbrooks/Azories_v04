@@ -256,6 +256,19 @@ export default function Auth() {
               >
                 {loading ? 'Please wait...' : (isLogin ? 'Sign In' : 'Create Account')}
               </Button>
+              
+              {isLogin && (
+                <div className="text-center">
+                  <button
+                    type="button"
+                    onClick={() => setShowForgotPassword(true)}
+                    className="font-body text-sm text-primary hover:underline transition-colors"
+                    data-testid="forgot-password-link"
+                  >
+                    Forgot your password?
+                  </button>
+                </div>
+              )}
             </form>
             
             <div className="mt-6 text-center">
@@ -270,6 +283,8 @@ export default function Auth() {
                   : 'Already have an account? Sign in'}
               </button>
             </div>
+              </>
+            )}
           </CardContent>
         </Card>
       </motion.div>
