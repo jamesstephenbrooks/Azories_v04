@@ -684,6 +684,10 @@ export default function ArtStudio() {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showProfileSelector, setShowProfileSelector] = useState(false);
   
+  // Starter Library state
+  const [starterLibrary, setStarterLibrary] = useState([]);
+  const [showStarterInGallery, setShowStarterInGallery] = useState(true);
+  
   // Load gallery and books on mount
   useEffect(() => {
     if (token) {
@@ -691,8 +695,21 @@ export default function ArtStudio() {
       loadUserBooks();
       loadPromptHistory();
       loadCharacterProfiles();
+      loadStarterLibrary();
     }
   }, [token]);
+  
+  const loadStarterLibrary = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/starter-library`);
+      if (response.ok) {
+        const data = await response.json();
+        setStarterLibrary(data.images || []);
+      }
+    } catch (error) {
+      console.error('Failed to load starter library:', error);
+    }
+  };
   
   const loadCharacterProfiles = async () => {
     try {
