@@ -366,7 +366,9 @@ export default function BookEditor() {
         lastSavedContent.current = JSON.stringify({
           text: firstPage.text_content,
           image: firstPage.image_url,
-          video: firstPage.video_url
+          video: firstPage.video_url,
+          useVideo: firstPage.use_video,
+          layoutType: firstPage.layout_type
         });
         setHasUnsavedChanges(false);
       } else {
