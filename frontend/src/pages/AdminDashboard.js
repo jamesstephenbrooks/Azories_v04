@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 import { 
   FiShield, FiBook, FiCheck, FiX, FiAlertTriangle, 
   FiEye, FiEyeOff, FiClock, FiUser, FiArrowLeft, FiLogIn, FiSearch, FiRefreshCw,
-  FiUsers, FiBarChart2, FiStar, FiAward, FiTrash2, FiLock, FiLogOut, FiDatabase, FiFilter
+  FiUsers, FiBarChart2, FiStar, FiAward, FiTrash2, FiLock, FiLogOut, FiDatabase, FiFilter, FiImage
 } from 'react-icons/fi';
 
 const API = process.env.REACT_APP_BACKEND_URL;
