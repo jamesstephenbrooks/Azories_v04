@@ -1,37 +1,93 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
-import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
 import { 
   FiShield, FiBook, FiCheck, FiX, FiAlertTriangle, 
-  FiEye, FiClock, FiUser, FiArrowLeft 
+  FiEye, FiClock, FiUser, FiArrowLeft, FiLogIn, FiSearch, FiRefreshCw 
 } from 'react-icons/fi';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
 export default function AdminDashboard() {
-  const { user } = useAuth();
   const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginLoading, setLoginLoading] = useState(false);
   const [pendingBooks, setPendingBooks] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(null);
+  const [moderating, setModerating] = useState(null);
   
-  const VIP_EMAILS = ['arianamillb@icloud.com', 'jamesstephenbrooks@outlook.com'];
-  const isAdmin = user && VIP_EMAILS.includes(user.email);
-
+  // Check if admin token exists
   useEffect(() => {
-    if (user && isAdmin) {
-      fetchPendingBooks();
+    const token = localStorage.getItem('azories-admin-token');
+    if (token) {
+      verifyAdminToken(token);
     }
-  }, [user, isAdmin]);
+  }, []);
 
-  const fetchPendingBooks = async () => {
+  const verifyAdminToken = async (token) => {
     try {
-      const token = localStorage.getItem('azories-token');
-      const res = await fetch(`${API}/api/admin/pending-reviews`, {
+      const res = await fetch(`${API}/api/admin/verify`, {
         headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        setIsLoggedIn(true);
+        fetchPendingBooks(token);
+      } else {
+        localStorage.removeItem('azories-admin-token');
+      }
+    } catch (error) {
+      console.error('Admin verification failed:', error);
+      localStorage.removeItem('azories-admin-token');
+    }
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoginLoading(true);
+    try {
+      const res = await fetch(`${API}/api/admin/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('azories-admin-token', data.access_token);
+        setIsLoggedIn(true);
+        toast.success('Admin login successful');
+        fetchPendingBooks(data.access_token);
+      } else {
+        toast.error('Invalid admin credentials');
+      }
+    } catch (error) {
+      toast.error('Login failed');
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('azories-admin-token');
+    setIsLoggedIn(false);
+    setPendingBooks([]);
+    toast.success('Logged out');
+  };
+
+  const fetchPendingBooks = async (token) => {
+    const adminToken = token || localStorage.getItem('azories-admin-token');
+    if (!adminToken) return;
+    
+    setLoading(true);
+    try {
+      const res = await fetch(`${API}/api/admin/pending-reviews`, {
+        headers: { Authorization: `Bearer ${adminToken}` }
       });
       if (res.ok) {
         const data = await res.json();
@@ -44,13 +100,41 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleRunModeration = async (bookId, bookTitle) => {
+    setModerating(bookId);
+    try {
+      const adminToken = localStorage.getItem('azories-admin-token');
+      const res = await fetch(`${API}/api/admin/books/${bookId}/run-moderation`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${adminToken}` }
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        if (data.flagged) {
+          toast.warning(`"${bookTitle}" flagged: ${data.categories.join(', ')}`);
+        } else {
+          toast.success(`"${bookTitle}" passed moderation check`);
+        }
+        // Refresh the list to show updated moderation status
+        fetchPendingBooks();
+      } else {
+        toast.error('Failed to run moderation');
+      }
+    } catch (error) {
+      toast.error('Error running moderation');
+    } finally {
+      setModerating(null);
+    }
+  };
+
   const handleApprove = async (bookId, bookTitle) => {
     setProcessing(bookId);
     try {
-      const token = localStorage.getItem('azories-token');
+      const adminToken = localStorage.getItem('azories-admin-token');
       const res = await fetch(`${API}/api/admin/books/${bookId}/approve`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${adminToken}` }
       });
       if (res.ok) {
         toast.success(`"${bookTitle}" has been approved and published!`);
@@ -69,10 +153,10 @@ export default function AdminDashboard() {
     const reason = window.prompt('Please provide a reason for rejection (optional):');
     setProcessing(bookId);
     try {
-      const token = localStorage.getItem('azories-token');
+      const adminToken = localStorage.getItem('azories-admin-token');
       const res = await fetch(`${API}/api/admin/books/${bookId}/reject?reason=${encodeURIComponent(reason || '')}`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${adminToken}` }
       });
       if (res.ok) {
         toast.success(`"${bookTitle}" has been rejected`);
@@ -87,30 +171,67 @@ export default function AdminDashboard() {
     }
   };
 
-  if (!user) {
+  // Admin Login Screen
+  if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-background to-background/95 flex items-center justify-center">
-        <Card className="max-w-md">
-          <CardContent className="pt-6 text-center">
-            <FiShield className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-            <h2 className="text-xl font-bold mb-2">Admin Access Required</h2>
-            <p className="text-muted-foreground mb-4">Please log in to access the admin dashboard.</p>
-            <Button onClick={() => navigate('/auth')}>Sign In</Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-background to-background/95 flex items-center justify-center">
-        <Card className="max-w-md">
-          <CardContent className="pt-6 text-center">
-            <FiShield className="w-16 h-16 mx-auto text-red-500 mb-4" />
-            <h2 className="text-xl font-bold mb-2">Access Denied</h2>
-            <p className="text-muted-foreground mb-4">You don't have permission to access the admin dashboard.</p>
-            <Button variant="outline" onClick={() => navigate('/')}>Go Home</Button>
+      <div className="min-h-screen bg-gradient-to-b from-background to-background/95 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <div className="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <FiShield className="w-8 h-8 text-purple-500" />
+            </div>
+            <CardTitle className="text-2xl">Admin Login</CardTitle>
+            <CardDescription>Enter your admin credentials to access the dashboard</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Username</label>
+                <Input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Enter admin username"
+                  required
+                  data-testid="admin-username-input"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Password</label>
+                <Input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter admin password"
+                  required
+                  data-testid="admin-password-input"
+                />
+              </div>
+              <Button 
+                type="submit" 
+                className="w-full" 
+                disabled={loginLoading}
+                data-testid="admin-login-btn"
+              >
+                {loginLoading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                    Logging in...
+                  </>
+                ) : (
+                  <>
+                    <FiLogIn className="w-4 h-4 mr-2" />
+                    Login
+                  </>
+                )}
+              </Button>
+            </form>
+            <div className="mt-6 pt-4 border-t text-center">
+              <Button variant="ghost" onClick={() => navigate('/')}>
+                <FiArrowLeft className="w-4 h-4 mr-2" />
+                Back to Home
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -134,9 +255,14 @@ export default function AdminDashboard() {
               <p className="text-sm text-muted-foreground">Content Moderation & Approvals</p>
             </div>
           </div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <FiUser className="w-4 h-4" />
-            {user.email}
+          <div className="flex items-center gap-4">
+            <Button variant="outline" size="sm" onClick={() => fetchPendingBooks()}>
+              <FiRefreshCw className="w-4 h-4 mr-2" />
+              Refresh
+            </Button>
+            <Button variant="ghost" size="sm" onClick={handleLogout}>
+              Logout
+            </Button>
           </div>
         </div>
       </header>
@@ -172,12 +298,12 @@ export default function AdminDashboard() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Safe to Approve</p>
-                  <p className="text-3xl font-bold text-green-500">
-                    {pendingBooks.filter(b => !b.moderation_flags?.length).length}
+                  <p className="text-sm text-muted-foreground">Not Yet Scanned</p>
+                  <p className="text-3xl font-bold text-blue-500">
+                    {pendingBooks.filter(b => !b.moderation_run_at).length}
                   </p>
                 </div>
-                <FiCheck className="w-8 h-8 text-green-500/50" />
+                <FiSearch className="w-8 h-8 text-blue-500/50" />
               </div>
             </CardContent>
           </Card>
@@ -187,7 +313,7 @@ export default function AdminDashboard() {
         <Card>
           <CardHeader>
             <CardTitle>Books Pending Review</CardTitle>
-            <CardDescription>Review and approve or reject book submissions</CardDescription>
+            <CardDescription>Review and approve or reject book submissions. Run AI moderation to scan content.</CardDescription>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -209,8 +335,11 @@ export default function AdminDashboard() {
                     className={`p-4 rounded-xl border ${
                       book.moderation_flags?.length > 0 
                         ? 'border-red-500/50 bg-red-500/5' 
-                        : 'border-border bg-muted/30'
+                        : book.moderation_run_at 
+                          ? 'border-green-500/50 bg-green-500/5'
+                          : 'border-border bg-muted/30'
                     }`}
+                    data-testid={`pending-book-${book.id}`}
                   >
                     <div className="flex items-start gap-4">
                       {/* Book Cover */}
@@ -231,12 +360,26 @@ export default function AdminDashboard() {
                             <h3 className="font-semibold text-lg truncate">{book.title}</h3>
                             <p className="text-sm text-muted-foreground">by {book.author_name}</p>
                           </div>
-                          {book.moderation_flags?.length > 0 && (
-                            <span className="px-2 py-1 bg-red-500/20 text-red-500 text-xs rounded-full flex items-center gap-1 flex-shrink-0">
-                              <FiAlertTriangle className="w-3 h-3" />
-                              Flagged
-                            </span>
-                          )}
+                          <div className="flex flex-col gap-1 flex-shrink-0">
+                            {book.moderation_flags?.length > 0 && (
+                              <span className="px-2 py-1 bg-red-500/20 text-red-500 text-xs rounded-full flex items-center gap-1">
+                                <FiAlertTriangle className="w-3 h-3" />
+                                Flagged
+                              </span>
+                            )}
+                            {book.moderation_run_at && !book.moderation_flags?.length && (
+                              <span className="px-2 py-1 bg-green-500/20 text-green-500 text-xs rounded-full flex items-center gap-1">
+                                <FiCheck className="w-3 h-3" />
+                                Scanned
+                              </span>
+                            )}
+                            {!book.moderation_run_at && (
+                              <span className="px-2 py-1 bg-blue-500/20 text-blue-500 text-xs rounded-full flex items-center gap-1">
+                                <FiSearch className="w-3 h-3" />
+                                Not Scanned
+                              </span>
+                            )}
+                          </div>
                         </div>
                         
                         {/* Moderation Info */}
@@ -280,15 +423,32 @@ export default function AdminDashboard() {
                           variant="outline"
                           onClick={() => navigate(`/read/${book.id}`)}
                           className="text-xs"
+                          data-testid={`preview-btn-${book.id}`}
                         >
                           <FiEye className="w-3 h-3 mr-1" />
                           Preview
                         </Button>
                         <Button
                           size="sm"
+                          variant="outline"
+                          onClick={() => handleRunModeration(book.id, book.title)}
+                          disabled={moderating === book.id}
+                          className="text-xs bg-blue-500/10 hover:bg-blue-500/20 border-blue-500/50"
+                          data-testid={`moderate-btn-${book.id}`}
+                        >
+                          {moderating === book.id ? (
+                            <div className="w-3 h-3 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mr-1" />
+                          ) : (
+                            <FiSearch className="w-3 h-3 mr-1" />
+                          )}
+                          Scan
+                        </Button>
+                        <Button
+                          size="sm"
                           onClick={() => handleApprove(book.id, book.title)}
                           disabled={processing === book.id}
                           className="bg-green-600 hover:bg-green-700 text-xs"
+                          data-testid={`approve-btn-${book.id}`}
                         >
                           <FiCheck className="w-3 h-3 mr-1" />
                           Approve
@@ -299,6 +459,7 @@ export default function AdminDashboard() {
                           onClick={() => handleReject(book.id, book.title)}
                           disabled={processing === book.id}
                           className="text-xs"
+                          data-testid={`reject-btn-${book.id}`}
                         >
                           <FiX className="w-3 h-3 mr-1" />
                           Reject
