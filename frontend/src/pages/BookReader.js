@@ -429,13 +429,28 @@ export default function BookReader() {
       
       // Double-check we're still on the correct page before playing
       if (currentPageRef.current === pageIndex) {
-        audio.play().catch(e => {
-          console.error('Audio play failed:', e);
-          // On iOS, audio might fail without user interaction - try again
-          setIsPlaying(false);
-        });
-        setAudioElement(audio);
-        setIsPlaying(true);
+        // On iOS/iPad, we need to handle audio context unlocking
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              setAudioElement(audio);
+              setIsPlaying(true);
+            })
+            .catch(e => {
+              console.error('Audio play failed:', e);
+              // On iOS/iPad, audio fails without user interaction
+              // Show a helpful message
+              if (e.name === 'NotAllowedError') {
+                toast.error('Tap "Read Aloud" again to start audio (iOS requires tap interaction)');
+              }
+              setIsPlaying(false);
+              lastPlayedPageRef.current = -999; // Allow retry
+            });
+        } else {
+          setAudioElement(audio);
+          setIsPlaying(true);
+        }
       }
     }
   }, [allPages, narratorVoice, volume, playbackSpeed, audioElement, preloadAudio, goToPage]);
