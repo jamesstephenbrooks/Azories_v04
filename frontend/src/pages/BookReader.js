@@ -842,7 +842,7 @@ export default function BookReader() {
                   realisticFlipRef.current.nextPage();
                 }
               }}
-              disabled={currentPage >= totalPages - 1 || isFlipping}
+              disabled={currentPage === -2 || isFlipping}
               className="rounded-full px-6"
             >
               Next
