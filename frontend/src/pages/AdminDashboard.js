@@ -564,17 +564,24 @@ export default function AdminDashboard() {
                               </div>
                             </div>
                             
-                            {/* Moderation Info */}
-                            {book.moderation_flags?.length > 0 && (
-                              <div className="mt-2 p-2 bg-red-500/10 rounded-lg">
-                                <p className="text-xs text-red-400 font-medium mb-1">Flagged Categories:</p>
-                                <div className="flex flex-wrap gap-1">
-                                  {book.moderation_flags.map((flag, i) => (
-                                    <span key={i} className="px-2 py-0.5 bg-red-500/20 text-red-400 text-xs rounded">
-                                      {flag}
-                                    </span>
-                                  ))}
-                                </div>
+                            {/* AI Moderation Result */}
+                            {book.moderation_run_at && (
+                              <div className={`mt-2 p-3 rounded-lg ${book.moderation_flagged ? 'bg-red-500/10 border border-red-500/30' : 'bg-green-500/10 border border-green-500/30'}`}>
+                                <p className={`text-xs font-semibold mb-1 ${book.moderation_flagged ? 'text-red-400' : 'text-green-400'}`}>
+                                  {book.moderation_flagged ? '⚠️ AI Verdict: FLAGGED' : '✅ AI Verdict: PASSED'}
+                                </p>
+                                {book.moderation_flags?.length > 0 && (
+                                  <div className="flex flex-wrap gap-1 mb-2">
+                                    {book.moderation_flags.map((flag, i) => (
+                                      <span key={i} className="px-2 py-0.5 bg-red-500/20 text-red-400 text-xs rounded">
+                                        {flag}
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
+                                {book.moderation_message && (
+                                  <p className="text-xs text-white/60">{book.moderation_message}</p>
+                                )}
                               </div>
                             )}
                             
