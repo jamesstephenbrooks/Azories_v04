@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 import { 
   FiImage, FiUser, FiLayers, FiGrid, FiSave, FiDownload, 
   FiTrash2, FiPlus, FiZap, FiSliders, FiDroplet, FiRefreshCw,
-  FiArrowLeft, FiFolder, FiStar, FiCopy, FiEdit2, FiUpload, FiBook, FiCheck,
+  FiArrowLeft, FiFolder, FiStar, FiCopy, FiEdit2, FiEdit3, FiUpload, FiBook, FiCheck,
   FiEye, FiMaximize2, FiSettings, FiX, FiChevronDown, FiChevronUp, FiSearch,
   FiPlay, FiVideo
 } from 'react-icons/fi';
