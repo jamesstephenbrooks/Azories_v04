@@ -1875,14 +1875,18 @@ async def set_age_rating(book_id: str, age_rating: str, admin: dict = Depends(ge
 
 @api_router.post("/admin/books/{book_id}/publish")
 async def admin_publish_book(book_id: str, admin: dict = Depends(get_admin_user)):
-    """Admin can publish/unpublish any book"""
+    """Admin can publish/unpublish any book directly"""
     book = await db.books.find_one({"id": book_id}, {"_id": 0})
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
     
     new_status = not book.get("is_published", False)
-    await db.books.update_one({"id": book_id}, {"$set": {"is_published": new_status}})
-    return {"is_published": new_status}
+    update_data = {
+        "is_published": new_status,
+        "publish_status": "published" if new_status else "draft"
+    }
+    await db.books.update_one({"id": book_id}, {"$set": update_data})
+    return {"is_published": new_status, "publish_status": update_data["publish_status"]}
 
 @api_router.delete("/admin/books/{book_id}")
 async def admin_delete_book(book_id: str, admin: dict = Depends(get_admin_user)):
