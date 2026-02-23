@@ -66,6 +66,9 @@ export default function BookReader() {
   // Hide controls (for iPad immersive mode)
   const [hideControls, setHideControls] = useState(false);
   
+  // iOS audio unlock state
+  const [iosAudioUnlocked, setIosAudioUnlocked] = useState(false);
+  
   // Realistic page flip mode - always enabled
   const realisticFlipRef = useRef(null);
   
