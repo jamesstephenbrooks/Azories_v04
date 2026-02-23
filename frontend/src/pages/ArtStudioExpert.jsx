@@ -867,6 +867,9 @@ export default function ArtStudioExpert() {
   const [isSavingWorkflow, setIsSavingWorkflow] = useState(false);
   const [workflowSaveMessage, setWorkflowSaveMessage] = useState('');
   
+  // Selection mode state
+  const [selectionMode, setSelectionMode] = useState(false);
+  
   // Save to book modal state
   const [showSaveToBookModal, setShowSaveToBookModal] = useState(false);
   const [imageToSave, setImageToSave] = useState(null);
