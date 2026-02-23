@@ -15,96 +15,105 @@ Build a full-featured digital book platform ("Azories") with:
 - **Authors**: Create illustrated digital books with AI-generated imagery
 - **Readers**: Discover and read books in immersive page-flip experience
 - **VIP Users**: arianamillb@icloud.com, jamesstephenbrooks@outlook.com (exempt from credit deductions)
+- **Admin**: Dedicated login (Admin/Routetofreedom) for content moderation and approval
 
 ## Core Requirements
 1. ✅ Art Studio - Free AI image generation
 2. ✅ Pro Studio - Advanced workflows with credits
 3. ✅ Stripe payments integration
 4. ✅ Book Editor with voice narration
-5. ✅ Email notifications (welcome, password reset)
+5. ✅ Email notifications (welcome, password reset, admin publish notification)
 6. ✅ Starter Library - 100 free images for users
-7. ⏳ Backend refactoring (in progress)
+7. ✅ Admin Dashboard with dedicated login
+8. ✅ Content moderation system
+9. ⏳ Backend refactoring (in progress)
 
 ## What's Been Implemented
 
-### Session: Feb 23, 2026 (Current)
-- **Unsaved Changes Warning Fixed**:
-  - Now tracks `use_video` and `layout_type` fields (video checkbox triggers warning)
-  - Shows "Unsaved changes" indicator when any content is modified
-  - Browser confirms before leaving with unsaved edits
-- **Book Editor Preview Scaled**:
-  - Media preview constrained to max 35vh height to fit within viewport
-  - Book page preview maintains aspect ratio while fitting screen
-- **Media Tab Combined**:
-  - Merged Image and Video tabs into single "Media" tab
-  - Upload Image and Upload Video buttons side-by-side
-  - Single "Select from Galleries" button for all media types
-- **Node Editor 2nd Output Fix**:
-  - Added `onRunNode` callback when creating new Output nodes via toolbar
-  - Multiple output nodes now all have working Run buttons
-- **Art Studio Header Reorganized**:
-  - Node Workflow moved to tab navigation (next to Character Builder) - both FREE
-  - Pro Studio button kept in header with "PRO" badge
-  - Gallery button now has prominent green gradient styling with count
-- **Starter Library (100 images)**:
-  - Added `/api/starter-library` endpoint with 100 diverse free images
-  - Available in Art Studio Gallery (collapsible amber section)
-  - Available in Book Editor Gallery Picker (new "⭐ Starter Library" tab)
+### Session: Dec 23, 2026 (Current)
+- **Dedicated Admin Login Implemented**:
+  - Username: `Admin`, Password: `Routetofreedom`
+  - Separate JWT token with `admin: true` claim
+  - All admin endpoints now use `get_admin_user` dependency
+  - Admin token stored in `azories-admin-token` localStorage
+  
+- **Publishing Workflow Refined**:
+  - User clicks "Submit for Review" → status changes to `pending_review`
+  - Email notification sent to `book@azories.com`
+  - Dashboard shows status badges: Published (green), Pending Review (amber), Rejected (red), Draft (gray)
+  - Admin manually triggers AI moderation from dashboard
+  
+- **Admin Dashboard Updated**:
+  - Login form with Username/Password fields
+  - Stats cards: Pending Reviews, Flagged Content, Not Yet Scanned
+  - Book list with Preview, Scan (run moderation), Approve, Reject buttons
+  - Moderation results shown inline with flagged categories
+  
+- **Library Thumbnail Fix**:
+  - Fixed book cover positioning in ImmersiveLibrary3D component
+  - Cover now positioned with `left: -140px` instead of `translateX(-85%)`
 
-### Session: Feb 23, 2026 (Earlier)
-- **Fixed Node Editor errors**: Resolved infinite loop, updateNodeData reference, canvasRef issues
-- **Animation Enhancement**: 
-  - Auto-populate motion prompt from gallery image
-  - Camera movement options (Static, Slow Zoom, Slow Pan, Orbit)
-  - Shows selected image info (name, style, prompt)
-- **Node Workflow Improvements**:
-  - Lightning bolt run button in top-left
-  - Copy selected nodes with all data preserved
-  - Drag selection enabled
-  - Combine node: 4 input handles
-  - Output node lock/unlock (auto-lock after generation)
-  - Image node: Upload + Gallery picker (Art/Pro Studio tabs)
-- **Save to Book**: Modal with book dropdown selector
+- **Route Updates**:
+  - `/admin` → AdminDashboard (content moderation)
+  - `/admin/cms` → AdminCMS (full book management)
+  - Onboarding modal skipped on admin pages
 
 ### Previous Sessions
-- LoRA Training feature fixed & verified
-- Voice Narration (Whisper integration)
-- Email system (Resend integration) 
-- Book cover thumbnails on dashboard
-- Video support in book pages
-- Gallery picker integration in Book Editor
-- Node editor copy & continue workflow buttons
-- Backend route refactoring initiated
+- **UI/UX Overhaul**: Art Studio reorganization, Media tab combined, unsaved changes warning
+- **Starter Library**: 100 images, accessible in Art Studio and Book Editor
+- **Node Editor Fixes**: 2nd Output node working, copy nodes, drag selection
+- **Voice Narration**: Whisper integration
+- **Email System**: Resend integration
+- **Backend Refactoring**: Started migrating to routes/
 
 ## Tech Stack
-- **Frontend**: React, Shadcn UI, ReactFlow
+- **Frontend**: React, Shadcn UI, ReactFlow, Tailwind CSS
 - **Backend**: FastAPI, Pydantic
 - **Database**: MongoDB
-- **AI**: fal.ai (PuLID, LoRA, Kling), emergentintegrations (Sora 2), OpenAI (Whisper)
-- **Email**: Resend
+- **AI**: fal.ai (PuLID, LoRA, Kling), emergentintegrations (Sora 2, OpenAI Moderation), OpenAI (Whisper)
+- **Email**: Resend (to `book@azories.com`)
 - **Payments**: Stripe
+
+## Key API Endpoints
+
+### Admin Endpoints (require admin JWT)
+- `POST /api/admin/login` - Admin login (Admin/Routetofreedom)
+- `GET /api/admin/verify` - Verify admin token
+- `GET /api/admin/pending-reviews` - Get books pending review
+- `POST /api/admin/books/{id}/run-moderation` - Run AI moderation
+- `POST /api/admin/books/{id}/approve` - Approve and publish book
+- `POST /api/admin/books/{id}/reject?reason=...` - Reject book
+
+### Publishing Flow
+- `POST /api/books/{id}/request-publish` - Submit book for review (sends email)
 
 ## Prioritized Backlog
 
-### P0 - Critical
-- [x] Starter Library (100 images) - DONE
-- [x] Art Studio header reorganization - DONE
-- [x] Unsaved changes warning in Book Editor - DONE
-- [ ] Test animation save bug fix
-- [ ] Test email notifications
+### P0 - Critical (DONE THIS SESSION)
+- [x] Dedicated Admin Login (Admin/Routetofreedom)
+- [x] Publishing workflow with Pending Review status
+- [x] Admin triggers moderation from dashboard
+- [x] Email notification to book@azories.com
+- [x] Library thumbnail fix
 
 ### P1 - High Priority
+- [ ] Test PuLID with new fal.ai API key
 - [ ] Complete backend refactoring (server.py → routes/)
-- [ ] Test Book Editor UX features (video, galleries)
-- [ ] Book-specific media library in Book Editor
+- [ ] Character consistency improvements
 
 ### P2 - Medium Priority
-- [ ] Frontend refactoring (ProStudio.js)
+- [ ] Frontend refactoring (ProStudio.js, BookEditor.js)
 - [ ] Mobile UI/UX improvements (iPad)
 
 ### P3 - Future
 - [ ] Real-time collaboration
 - [ ] Sample book generation
-- [ ] Cookie consent banner
-- [ ] Legal pages (Terms, Privacy)
-- [ ] Contact form
+- [ ] readkids.com competitor analysis
+
+## Admin Credentials
+- **Username**: Admin
+- **Password**: Routetofreedom
+- **Route**: /admin
+
+## Test Credentials
+- **VIP User**: jamesstephenbrooks@outlook.com / test123
