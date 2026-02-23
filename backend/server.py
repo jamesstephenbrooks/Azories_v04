@@ -6,6 +6,7 @@ from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
+import secrets
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional, Literal, Dict
@@ -33,6 +34,13 @@ from PIL import Image as PILImage
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
+
+# Import email service
+from services.email_service import (
+    send_email, is_configured as email_configured,
+    get_welcome_email_html, get_password_reset_email_html, 
+    get_password_changed_email_html, generate_reset_token, get_token_expiry
+)
 
 # Import fal.ai service AFTER dotenv loads
 try:
