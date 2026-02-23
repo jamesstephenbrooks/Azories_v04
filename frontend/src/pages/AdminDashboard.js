@@ -318,6 +318,43 @@ export default function AdminDashboard() {
     }
   };
 
+  // Preview book function
+  const openPreview = async (book) => {
+    setPreviewBook(book);
+    setPreviewLoading(true);
+    setCurrentPreviewPage(0);
+    try {
+      const res = await axios.get(`${API}/api/books/${book.id}/full`, getAuthHeaders());
+      const bookData = res.data;
+      // Flatten all pages from all chapters
+      const allPages = [];
+      if (bookData.chapters) {
+        for (const chapter of bookData.chapters) {
+          if (chapter.pages) {
+            for (const page of chapter.pages) {
+              allPages.push({
+                ...page,
+                chapterTitle: chapter.title
+              });
+            }
+          }
+        }
+      }
+      setPreviewPages(allPages);
+    } catch (error) {
+      console.error('Failed to load book preview:', error);
+      toast.error('Failed to load book preview');
+    } finally {
+      setPreviewLoading(false);
+    }
+  };
+
+  const closePreview = () => {
+    setPreviewBook(null);
+    setPreviewPages([]);
+    setCurrentPreviewPage(0);
+  };
+
   // Get publish status badge
   const getPublishStatusBadge = (book) => {
     if (book.is_published || book.publish_status === 'published') {
