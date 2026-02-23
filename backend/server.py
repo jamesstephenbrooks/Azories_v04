@@ -2004,6 +2004,7 @@ async def update_page(page_id: str, page_data: PageUpdate, current_user: dict = 
     updated.setdefault("image_url_2", "")
     updated.setdefault("image_url_3", "")
     updated.setdefault("image_url_4", "")
+    updated.setdefault("use_video", False)
     updated.setdefault("layout_type", "single")
     updated.setdefault("image_position_x", 50)
     updated.setdefault("image_position_y", 50)
