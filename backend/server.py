@@ -2766,6 +2766,63 @@ async def delete_scene(scene_id: str, current_user: dict = Depends(get_current_u
     result = await db.pro_studio_scenes.delete_one({"id": scene_id, "user_id": current_user["id"]})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Scene not found")
+    # Also delete scene gallery
+    await db.scene_gallery.delete_many({"scene_id": scene_id, "user_id": current_user["id"]})
+    return {"success": True}
+
+# Scene Gallery/Folder endpoints
+@api_router.get("/pro-studio/scenes/{scene_id}/gallery")
+async def get_scene_gallery(scene_id: str, current_user: dict = Depends(get_current_user)):
+    """Get all generated images for a scene (scene folder)"""
+    scene = await db.pro_studio_scenes.find_one({"id": scene_id, "user_id": current_user["id"]})
+    if not scene:
+        raise HTTPException(status_code=404, detail="Scene not found")
+    
+    images = await db.scene_gallery.find(
+        {"scene_id": scene_id, "user_id": current_user["id"]},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    return {"images": images, "scene_id": scene_id, "count": len(images)}
+
+@api_router.post("/pro-studio/scenes/{scene_id}/gallery")
+async def add_to_scene_gallery(scene_id: str, request: dict, current_user: dict = Depends(get_current_user)):
+    """Save a generated image to a scene's folder/gallery"""
+    scene = await db.pro_studio_scenes.find_one({"id": scene_id, "user_id": current_user["id"]})
+    if not scene:
+        raise HTTPException(status_code=404, detail="Scene not found")
+    
+    image_url = request.get("image_url")
+    if not image_url:
+        raise HTTPException(status_code=400, detail="image_url is required")
+    
+    now = datetime.now(timezone.utc).isoformat()
+    gallery_item = {
+        "id": str(uuid.uuid4()),
+        "scene_id": scene_id,
+        "user_id": current_user["id"],
+        "image_url": image_url,
+        "prompt": request.get("prompt", ""),
+        "type": request.get("type", "generated"),
+        "character_id": request.get("character_id"),
+        "created_at": now
+    }
+    
+    await db.scene_gallery.insert_one(gallery_item)
+    gallery_item.pop("_id", None)
+    
+    return {"success": True, "item": gallery_item}
+
+@api_router.delete("/pro-studio/scenes/{scene_id}/gallery/{image_id}")
+async def delete_from_scene_gallery(scene_id: str, image_id: str, current_user: dict = Depends(get_current_user)):
+    """Delete an image from a scene's gallery"""
+    result = await db.scene_gallery.delete_one({
+        "id": image_id,
+        "scene_id": scene_id,
+        "user_id": current_user["id"]
+    })
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Image not found")
     return {"success": True}
 
 @api_router.post("/pro-studio/scenes/{scene_id}/generate")
