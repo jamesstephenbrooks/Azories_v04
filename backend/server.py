@@ -5311,7 +5311,7 @@ async def get_admin_analytics(current_user: dict = Depends(get_current_user)):
         "revenue": {
             "total": total_revenue,
             "this_month": month_revenue,
-            "currency": "USD"
+            "currency": "GBP"
         },
         "credits": {
             "total_purchased": total_credits_purchased,
