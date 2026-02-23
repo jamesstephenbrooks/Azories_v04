@@ -6991,32 +6991,101 @@ async def request_book_publish(book_id: str, background_tasks: BackgroundTasks, 
     if not book:
         raise HTTPException(status_code=404, detail="Book not found or you don't own it")
     
-    # Update book status to pending review (admin will run moderation manually)
+    # Get all pages content for AI moderation
+    chapters = await db.chapters.find({"book_id": book_id}, {"_id": 0}).to_list(100)
+    combined_text = f"Title: {book.get('title', '')}\n\nDescription: {book.get('description', '')}\n\n"
+    
+    for chapter in chapters:
+        pages = await db.pages.find({"chapter_id": chapter["id"]}, {"_id": 0}).to_list(100)
+        for page in pages:
+            if page.get("text_content"):
+                combined_text += page["text_content"] + "\n\n"
+    
+    # Run AI moderation automatically
+    moderation_result = await moderate_text_content(combined_text)
+    
+    # Update book status to pending review with moderation results
     update_data = {
         "publish_status": "pending_review",
-        "publish_requested_at": datetime.now(timezone.utc).isoformat()
+        "publish_requested_at": datetime.now(timezone.utc).isoformat(),
+        "moderation_flags": moderation_result.categories,
+        "moderation_message": moderation_result.message,
+        "moderation_flagged": moderation_result.flagged,
+        "moderation_run_at": datetime.now(timezone.utc).isoformat()
     }
     
     await db.books.update_one({"id": book_id}, {"$set": update_data})
     
-    # Send email notification to admin
+    # Send email notification to admin with AI moderation results
     admin_email = "book@azories.com"
     app_url = os.environ.get("APP_URL", "https://book-hub-pro.preview.emergentagent.com")
     
-    subject = f"📚 New book submitted for review: '{book['title']}'"
+    # Different email based on moderation result
+    if moderation_result.flagged:
+        subject = f"⚠️ FLAGGED: Book '{book['title']}' requires review"
+        status_color = "#dc2626"
+        status_icon = "⚠️"
+        verdict_html = f"""
+        <div style="background: #fef2f2; border: 1px solid #dc2626; padding: 15px; border-radius: 8px; margin: 15px 0;">
+            <h3 style="color: #dc2626; margin: 0 0 10px 0;">⚠️ AI Moderation: FLAGGED</h3>
+            <p style="margin: 5px 0;"><strong>Flagged Categories:</strong> {', '.join(moderation_result.categories)}</p>
+            <p style="margin: 5px 0;"><strong>AI Assessment:</strong> {moderation_result.message}</p>
+        </div>
+        """
+    else:
+        subject = f"✅ New book ready for review: '{book['title']}'"
+        status_color = "#16a34a"
+        status_icon = "✅"
+        verdict_html = f"""
+        <div style="background: #f0fdf4; border: 1px solid #16a34a; padding: 15px; border-radius: 8px; margin: 15px 0;">
+            <h3 style="color: #16a34a; margin: 0 0 10px 0;">✅ AI Moderation: PASSED</h3>
+            <p style="margin: 5px 0;">{moderation_result.message}</p>
+        </div>
+        """
+    
     html_content = f"""
     <html>
-    <body style="font-family: Arial, sans-serif; padding: 20px;">
-        <h2 style="color: #7c3aed;">📚 New Book Submission</h2>
-        <p><strong>Book:</strong> {book['title']}</p>
-        <p><strong>Author:</strong> {current_user.get('name', 'Unknown')} ({current_user.get('email', 'Unknown')})</p>
-        <p><strong>Genre:</strong> {book.get('genre', 'Unknown')}</p>
-        <p><strong>Age Rating:</strong> {book.get('age_rating', 'All Ages')}</p>
-        <hr>
-        <p>Please log in to the Admin Dashboard to review this book and run content moderation.</p>
-        <p><a href="{app_url}/admin" style="background: #7c3aed; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Go to Admin Dashboard</a></p>
-        <br>
-        <p style="color: #666; font-size: 12px;">Admin Login: Username: Admin</p>
+    <body style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+        <div style="background: linear-gradient(135deg, #7c3aed, #a855f7); padding: 20px; border-radius: 12px 12px 0 0;">
+            <h1 style="color: white; margin: 0; font-size: 24px;">📚 Azories Book Review</h1>
+        </div>
+        
+        <div style="background: #ffffff; padding: 20px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+            <h2 style="color: #1f2937; margin-top: 0;">{status_icon} New Book Submission</h2>
+            
+            <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+                <tr>
+                    <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>Book Title:</strong></td>
+                    <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">{book['title']}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>Author:</strong></td>
+                    <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">{current_user.get('name', 'Unknown')} ({current_user.get('email', 'Unknown')})</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>Genre:</strong></td>
+                    <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">{book.get('genre', 'Unknown')}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>Age Rating:</strong></td>
+                    <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">{book.get('age_rating', 'All Ages')}</td>
+                </tr>
+            </table>
+            
+            {verdict_html}
+            
+            <p style="color: #6b7280; margin-top: 20px;">Please log in to the Admin Dashboard to review this book and make a final decision.</p>
+            
+            <div style="text-align: center; margin: 25px 0;">
+                <a href="{app_url}/admin" style="background: #7c3aed; color: white; padding: 12px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; display: inline-block;">Review Book</a>
+            </div>
+            
+            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
+            <p style="color: #9ca3af; font-size: 12px; text-align: center;">
+                Admin Login: Username: <code>Admin</code><br>
+                Azories Content Management System
+            </p>
+        </div>
     </body>
     </html>
     """
@@ -7024,13 +7093,15 @@ async def request_book_publish(book_id: str, background_tasks: BackgroundTasks, 
     # Send email in background
     if email_configured():
         background_tasks.add_task(send_email, admin_email, subject, html_content)
-        logging.info(f"Admin notification email sent for book {book_id}")
+        logging.info(f"Admin notification email sent for book {book_id} (flagged: {moderation_result.flagged})")
     else:
         logging.warning(f"Email not configured - admin notification for book {book_id} skipped")
     
     return {
         "success": True,
         "status": "pending_review",
+        "flagged": moderation_result.flagged,
+        "moderation_result": moderation_result.message,
         "message": "Your book has been submitted for review. An admin will review it and you will be notified once it's approved."
     }
 
