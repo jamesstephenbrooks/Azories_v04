@@ -641,47 +641,51 @@ const OutputNode = ({ data, selected }) => {
       <Handle type="source" position={Position.Right} className="!bg-yellow-400 !w-3 !h-3" id="continue" />
       <NodeDeleteButton onDelete={data.onDelete} />
       
-      {/* Copy button in header */}
+      {/* Lock button - Top LEFT for better spacing */}
+      {data.image && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            data.onChange?.('locked', !isLocked);
+          }}
+          className={`absolute top-0.5 left-1 w-5 h-5 rounded flex items-center justify-center transition-colors z-10 ${
+            isLocked ? 'bg-yellow-500/80 text-black' : 'bg-white/20 text-white/60 hover:text-white hover:bg-white/30'
+          }`}
+          title={isLocked ? 'Locked - click to unlock' : 'Unlocked - click to lock'}
+          data-testid="output-lock-btn"
+        >
+          {isLocked ? (
+            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+            </svg>
+          ) : (
+            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 2a5 5 0 00-5 5v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2H7V7a3 3 0 015.905-.75 1 1 0 001.937-.5A5.002 5.002 0 0010 2z" />
+            </svg>
+          )}
+        </button>
+      )}
+      
+      {/* Copy button - Top RIGHT */}
       {data.image && (
         <button
           onClick={(e) => {
             e.stopPropagation();
             data.onCopyNode?.();
           }}
-          className="absolute top-0.5 right-5 w-4 h-4 rounded bg-blue-500/80 hover:bg-blue-500 flex items-center justify-center transition-colors z-10"
+          className="absolute top-0.5 right-5 w-5 h-5 rounded bg-blue-500/80 hover:bg-blue-500 flex items-center justify-center transition-colors z-10"
           title="Duplicate this output node"
           data-testid="output-node-copy-btn"
         >
-          <FiCopy className="w-2.5 h-2.5 text-white" />
+          <FiCopy className="w-3 h-3 text-white" />
         </button>
       )}
       
-      <div className="p-2 border-b border-pink-600/30 flex items-center gap-2">
+      <div className="p-2 border-b border-pink-600/30 flex items-center justify-center gap-2">
         <div className="w-5 h-5 rounded-lg bg-pink-500/30 flex items-center justify-center flex-shrink-0">
           <FiZap className="text-pink-300 w-3 h-3" />
         </div>
-        <h4 className="text-xs font-semibold text-white flex-1">Output</h4>
-        {/* Lock indicator and toggle */}
-        {data.image && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              data.onChange?.('locked', !isLocked);
-            }}
-            className={`p-1 rounded transition-colors ${isLocked ? 'bg-yellow-500/30 text-yellow-300' : 'bg-white/10 text-white/50 hover:text-white'}`}
-            title={isLocked ? 'Locked - click to unlock' : 'Unlocked - click to lock'}
-          >
-            {isLocked ? (
-              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-              </svg>
-            ) : (
-              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 2a5 5 0 00-5 5v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2H7V7a3 3 0 015.905-.75 1 1 0 001.937-.5A5.002 5.002 0 0010 2z" />
-              </svg>
-            )}
-          </button>
-        )}
+        <h4 className="text-xs font-semibold text-white">Output</h4>
       </div>
       
       {/* RUN BUTTON - Prominent at the top */}
