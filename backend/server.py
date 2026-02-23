@@ -704,7 +704,19 @@ async def get_credit_balance(current_user: dict = Depends(get_current_user)):
 
 @api_router.post("/credits/add")
 async def add_credits(amount: int = 100, current_user: dict = Depends(get_current_user)):
-    """Add credits to user account (for testing/purchasing)"""
+    """Add credits - ADMIN/VIP ONLY for manual additions. Regular users must purchase via Stripe."""
+    user_email = current_user.get("email", "").lower()
+    is_admin = current_user.get("role") == "admin"
+    is_vip = user_email in [v.lower() for v in VIP_USERS]
+    
+    # Only admins and VIP users can add credits directly (for testing/comp)
+    # Regular users must purchase via Stripe checkout
+    if not is_admin and not is_vip:
+        raise HTTPException(
+            status_code=403, 
+            detail="Credits must be purchased through the store. Please use the Buy Credits page."
+        )
+    
     current_credits = current_user.get("credits", 0)
     new_balance = current_credits + amount
     
@@ -712,6 +724,18 @@ async def add_credits(amount: int = 100, current_user: dict = Depends(get_curren
         {"id": current_user["id"]},
         {"$set": {"credits": new_balance}}
     )
+    
+    # Log the manual credit addition
+    await db.credit_additions.insert_one({
+        "id": str(uuid.uuid4()),
+        "user_id": current_user["id"],
+        "user_email": user_email,
+        "amount": amount,
+        "previous_balance": current_credits,
+        "new_balance": new_balance,
+        "added_by": "admin" if is_admin else "vip_self",
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    })
     
     return {
         "success": True,
