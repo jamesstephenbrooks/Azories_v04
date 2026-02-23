@@ -896,53 +896,70 @@ export default function Dashboard() {
                         <span className="font-ui">{book.read_count || 0} reads</span>
                       </div>
                       
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <Button variant="default" size="sm" className="rounded-full flex-1" onClick={() => navigate(`/editor/${book.id}`)}>
-                          <FiEdit2 className="mr-2 w-4 h-4" />
-                          Edit
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="icon" 
-                          className="rounded-full" 
-                          onClick={() => togglePublish(book)}
-                          title={book.is_published || book.publish_status === 'published' 
-                            ? 'Unpublish' 
-                            : book.publish_status === 'pending_review' 
-                              ? 'Pending Review' 
-                              : 'Submit for Review'}
-                        >
-                          {book.is_published || book.publish_status === 'published' 
-                            ? <FiEyeOff className="w-4 h-4" /> 
-                            : book.publish_status === 'pending_review'
-                              ? <FiClock className="w-4 h-4 text-amber-500" />
-                              : <FiSend className="w-4 h-4" />}
-                        </Button>
-                        <Button variant="outline" size="icon" className="rounded-full" onClick={() => fetchAnalytics(book.id)}>
-                          <FiBarChart2 className="w-4 h-4" />
-                        </Button>
-                        {/* Add to Series Button */}
-                        {!book.series_id && (
+                      <div className="flex items-center justify-between gap-3">
+                        {/* Left side - Edit and utility buttons */}
+                        <div className="flex items-center gap-2">
+                          <Button variant="default" size="sm" className="rounded-full" onClick={() => navigate(`/editor/${book.id}`)}>
+                            <FiEdit2 className="mr-2 w-4 h-4" />
+                            Edit
+                          </Button>
+                          <Button variant="outline" size="icon" className="rounded-full" onClick={() => fetchAnalytics(book.id)}>
+                            <FiBarChart2 className="w-4 h-4" />
+                          </Button>
+                          {!book.series_id && (
+                            <Button 
+                              variant="outline" 
+                              size="icon" 
+                              className="rounded-full"
+                              onClick={() => {
+                                setSelectedBookForSeries(book);
+                                setIsAddToSeriesOpen(true);
+                              }}
+                              title="Add to Series"
+                            >
+                              <FiLink className="w-4 h-4" />
+                            </Button>
+                          )}
                           <Button 
                             variant="outline" 
                             size="icon" 
-                            className="rounded-full"
-                            onClick={() => {
-                              setSelectedBookForSeries(book);
-                              setIsAddToSeriesOpen(true);
-                            }}
-                            title="Add to Series"
+                            className="rounded-full text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                            onClick={() => deleteBook(book.id)}
                           >
-                            <FiLink className="w-4 h-4" />
+                            <FiTrash2 className="w-4 h-4" />
                           </Button>
-                        )}
+                        </div>
+                        
+                        {/* Right side - Prominent Publish button */}
                         <Button 
-                          variant="outline" 
-                          size="icon" 
-                          className="rounded-full text-destructive hover:bg-destructive hover:text-destructive-foreground"
-                          onClick={() => deleteBook(book.id)}
+                          variant={book.is_published || book.publish_status === 'published' ? "outline" : "default"}
+                          size="sm"
+                          className={`rounded-full px-6 ${
+                            book.is_published || book.publish_status === 'published'
+                              ? 'border-green-500 text-green-600 hover:bg-green-50'
+                              : book.publish_status === 'pending_review'
+                                ? 'bg-amber-500 hover:bg-amber-600 text-white'
+                                : 'bg-purple-600 hover:bg-purple-700 text-white'
+                          }`}
+                          onClick={() => togglePublish(book)}
+                          data-testid={`publish-btn-${book.id}`}
                         >
-                          <FiTrash2 className="w-4 h-4" />
+                          {book.is_published || book.publish_status === 'published' ? (
+                            <>
+                              <FiEyeOff className="mr-2 w-4 h-4" />
+                              Unpublish
+                            </>
+                          ) : book.publish_status === 'pending_review' ? (
+                            <>
+                              <FiClock className="mr-2 w-4 h-4" />
+                              Pending Review
+                            </>
+                          ) : (
+                            <>
+                              <FiSend className="mr-2 w-4 h-4" />
+                              Publish
+                            </>
+                          )}
                         </Button>
                       </div>
                     </CardContent>
