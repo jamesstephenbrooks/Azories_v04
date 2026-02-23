@@ -995,6 +995,8 @@ async def create_book(book_data: BookCreate, current_user: dict = Depends(get_cu
         "age_rating": book_data.age_rating or "All Ages",
         "series_id": None,
         "series_order": None,
+        "publish_status": "draft",  # New: draft, pending_review, published, rejected
+        "moderation_flags": [],
         "view_count": 0,
         "read_count": 0,
         "created_at": now,
