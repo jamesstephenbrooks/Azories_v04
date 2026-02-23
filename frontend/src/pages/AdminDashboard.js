@@ -322,10 +322,12 @@ export default function AdminDashboard() {
   const openPreview = async (book) => {
     setPreviewBook(book);
     setPreviewLoading(true);
-    setCurrentPreviewPage(0);
+    setCurrentPreviewPage(-1); // Start at cover page
     try {
       const res = await axios.get(`${API}/api/books/${book.id}/full`, getAuthHeaders());
       const bookData = res.data;
+      // Update previewBook with full data
+      setPreviewBook(bookData);
       // Flatten all pages from all chapters
       const allPages = [];
       if (bookData.chapters) {
@@ -352,7 +354,7 @@ export default function AdminDashboard() {
   const closePreview = () => {
     setPreviewBook(null);
     setPreviewPages([]);
-    setCurrentPreviewPage(0);
+    setCurrentPreviewPage(-1);
   };
 
   // Get publish status badge
