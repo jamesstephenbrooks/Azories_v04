@@ -474,7 +474,7 @@ export default function Library() {
       
       {/* Summary/Back Cover Popup Dialog */}
       <Dialog open={!!summaryBook} onOpenChange={() => setSummaryBook(null)}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="font-heading text-2xl flex items-center gap-2">
               <FiBook className="text-primary" />
@@ -485,23 +485,30 @@ export default function Library() {
             </DialogDescription>
           </DialogHeader>
           <div className="pt-4 space-y-4">
-            {/* Back cover image if exists */}
-            {summaryBook?.back_cover_image && (
-              <div className="rounded-xl overflow-hidden max-h-48">
-                <img 
-                  src={summaryBook.back_cover_image} 
-                  alt="Back cover" 
-                  className="w-full h-full object-cover"
-                />
+            {/* Layout: Image on left, Summary on right for larger screens */}
+            <div className="flex flex-col md:flex-row gap-4">
+              {/* Back cover image if exists */}
+              {summaryBook?.back_cover_image && (
+                <div className="md:w-1/3 flex-shrink-0">
+                  <div className="rounded-xl overflow-hidden aspect-[3/4]">
+                    <img 
+                      src={summaryBook.back_cover_image} 
+                      alt="Back cover" 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+              )}
+              
+              {/* Summary text */}
+              <div className={`flex-1 ${summaryBook?.back_cover_image ? '' : 'w-full'}`}>
+                <div className="p-4 rounded-xl bg-muted/50 space-y-3 h-full">
+                  <h4 className="font-heading font-semibold text-sm text-muted-foreground uppercase tracking-wide">Summary</h4>
+                  <p className="font-body text-base leading-relaxed">
+                    {summaryBook?.back_cover_text || summaryBook?.description || 'A magical story awaits you...'}
+                  </p>
+                </div>
               </div>
-            )}
-            
-            {/* Summary text */}
-            <div className="p-4 rounded-xl bg-muted/50 space-y-3">
-              <h4 className="font-heading font-semibold text-sm text-muted-foreground uppercase tracking-wide">Summary</h4>
-              <p className="font-body text-base leading-relaxed">
-                {summaryBook?.back_cover_text || summaryBook?.description || 'A magical story awaits you...'}
-              </p>
             </div>
             
             {/* Quick info */}
