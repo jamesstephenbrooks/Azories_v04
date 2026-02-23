@@ -2909,7 +2909,7 @@ async def generate_scene_image(scene_id: str, request: dict, current_user: dict 
         
         # Build scene prompt
         style_info = next((s for s in CHARACTER_STYLES if s["id"] == scene.get("style")), {"name": "illustration"})
-        lighting_info = next((l for l in LIGHTING_OPTIONS if l["id"] == scene.get("lighting")), {"name": ""})
+        lighting_info = next((lit for lit in LIGHTING_OPTIONS if lit["id"] == scene.get("lighting")), {"name": ""})
         mood_info = next((m for m in MOOD_OPTIONS if m["id"] == scene.get("mood")), {"name": ""})
         
         prompt_parts = [scene.get("description_prompt", "")]
