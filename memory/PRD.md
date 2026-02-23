@@ -49,9 +49,12 @@ Build a full-featured digital book platform ("Azories") with:
   - **Only admin can publish**: via `/api/admin/books/{id}/approve`
   - Fixed all direct publish code in Dashboard.js and MySeries.js
   
-- **Email Configuration Note**:
+- **Email Notifications (Complete System)**:
+  - **On Submit**: Admin receives email with AI verdict (PASSED/FLAGGED)
+  - **On Approve**: Creator receives "🎉 Your book has been approved!" with link to view
+  - **On Reject**: Creator receives "📚 Update on your book" with rejection reason and link to edit
   - Currently using Resend test domain (`onboarding@resend.dev`)
-  - Emails sent to `jamesstephenbrooks@outlook.com` (Resend registered email)
+  - Emails sent to registered Resend email (`jamesstephenbrooks@outlook.com`)
   - To send to `book@azories.com`, verify `azories.com` domain in Resend dashboard
   
 - **COMBINED Admin Dashboard** (at `/admin`):
