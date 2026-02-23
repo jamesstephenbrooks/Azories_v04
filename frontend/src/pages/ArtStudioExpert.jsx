@@ -1439,6 +1439,145 @@ export default function ArtStudioExpert() {
     setShowSaveToBookModal(true);
   };
   
+  // Run a specific output node (trace back its connected stream)
+  const runOutputNode = useCallback(async (outputNodeId) => {
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+    
+    const outputNode = nodes.find(n => n.id === outputNodeId);
+    if (!outputNode || outputNode.data.locked) return;
+    
+    // Build prompt from nodes connected to this specific output
+    const getConnectedNodes = (nodeId, visited = new Set()) => {
+      if (visited.has(nodeId)) return [];
+      visited.add(nodeId);
+      
+      const incomingEdges = edges.filter(e => e.target === nodeId);
+      let connectedNodes = [];
+      
+      for (const edge of incomingEdges) {
+        const sourceNode = nodes.find(n => n.id === edge.source);
+        if (sourceNode) {
+          connectedNodes.push(sourceNode);
+          connectedNodes = connectedNodes.concat(getConnectedNodes(edge.source, visited));
+        }
+      }
+      
+      return connectedNodes;
+    };
+    
+    const processNode = (node) => {
+      if (node.type === 'character') {
+        const parts = [];
+        if (node.data.name) parts.push(node.data.name);
+        if (node.data.gender) parts.push(node.data.gender);
+        if (node.data.age) parts.push(node.data.age);
+        if (node.data.appearance) parts.push(node.data.appearance);
+        return parts.join(', ');
+      }
+      if (node.type === 'scene') {
+        const parts = [];
+        if (node.data.preset) parts.push(node.data.preset + ' setting');
+        if (node.data.description) parts.push(node.data.description);
+        if (node.data.timeOfDay) parts.push(node.data.timeOfDay + ' time');
+        if (node.data.mood) parts.push(node.data.mood + ' atmosphere');
+        return parts.join(', ');
+      }
+      if (node.type === 'style') return `${node.data.style || 'fantasy'} art style`;
+      if (node.type === 'prompt') return node.data.text || '';
+      return '';
+    };
+    
+    const connectedNodes = getConnectedNodes(outputNodeId);
+    const promptParts = connectedNodes.map(processNode).filter(Boolean);
+    const prompt = promptParts.join(', ') + ', highly detailed, professional illustration';
+    
+    if (!prompt || prompt === ', highly detailed, professional illustration') {
+      alert('Please connect some nodes with content to this output.');
+      return;
+    }
+    
+    // Get reference images and style from connected nodes
+    const referenceNodes = connectedNodes.filter(n => n.type === 'reference' && n.data.image);
+    const styleNode = connectedNodes.find(n => n.type === 'style');
+    const characterNode = connectedNodes.find(n => n.type === 'character');
+    const hasTransparentBg = characterNode?.data?.transparentBg || false;
+    
+    // Set this specific node to generating
+    setNodes(nds => nds.map(node => {
+      if (node.id === outputNodeId) {
+        return { ...node, data: { ...node.data, generating: true, image: null } };
+      }
+      return node;
+    }));
+    
+    setIsGenerating(true);
+    
+    try {
+      const response = await fetch(`${API_URL}/api/art-studio/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          prompt,
+          style: styleNode?.data?.style || 'fantasy',
+          type: 'workflow',
+          bookId: selectedBookId !== 'general' ? selectedBookId : null,
+          workflowName: workflowName,
+          transparentBackground: hasTransparentBg,
+          characterReferenceImage: referenceNodes[0]?.data?.image || null,
+          styleReferenceImage: referenceNodes[1]?.data?.image || null,
+          aspectRatio: '1:1',
+          quality: 'high',
+          expertMode: true
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        
+        setNodes(nds => nds.map(node => {
+          if (node.id === outputNodeId) {
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                generating: false,
+                image: data.image_url,
+                locked: true,
+                onDownload: (url) => downloadImage(url),
+                onSaveToGallery: (url) => saveToGallery(url),
+                onSaveToBook: (url) => openSaveToBookModal(url),
+                onExpand: (url) => setExpandedImage(url),
+                onCopyNode: () => copyNode(node.id),
+                onContinueWorkflow: (url) => continueWorkflow(url, node.id),
+                onRunNode: () => runOutputNode(node.id)
+              }
+            };
+          }
+          return node;
+        }));
+      } else {
+        throw new Error('Generation failed');
+      }
+    } catch (error) {
+      console.error('Run output node error:', error);
+      setNodes(nds => nds.map(node => {
+        if (node.id === outputNodeId) {
+          return { ...node, data: { ...node.data, generating: false } };
+        }
+        return node;
+      }));
+      alert(`Failed to generate: ${error.message}`);
+    } finally {
+      setIsGenerating(false);
+    }
+  }, [nodes, edges, token, navigate, selectedBookId, workflowName, setNodes, copyNode, continueWorkflow, downloadImage, saveToGallery]);
+  
   const downloadImage = (url) => {
     const link = document.createElement('a');
     link.href = url;
