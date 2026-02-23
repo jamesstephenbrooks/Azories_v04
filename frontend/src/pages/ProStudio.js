@@ -41,6 +41,7 @@ export default function ProStudio() {
   const [activeTab, setActiveTab] = useState('characters');
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
+  const [loadingProgress, setLoadingProgress] = useState(0);
   
   // Character state
   const [characters, setCharacters] = useState([]);
