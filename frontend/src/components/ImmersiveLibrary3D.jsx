@@ -2164,8 +2164,12 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                     animate={{ x: 0, rotateY: -15, scale: 1 }}
                     exit={{ x: 200, rotateY: -90, scale: 0.5 }}
                     transition={{ type: "spring", damping: 20, stiffness: 100 }}
-                    className="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-10"
-                    style={{ perspective: '1000px', transformStyle: 'preserve-3d' }}
+                    className="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 z-10"
+                    style={{ 
+                      perspective: '1000px', 
+                      transformStyle: 'preserve-3d',
+                      transform: 'translateY(-50%) translateX(-85%)'
+                    }}
                   >
                     <div 
                       className="w-32 lg:w-40 h-44 lg:h-56 rounded-lg shadow-2xl shadow-purple-500/50 overflow-hidden"
@@ -2196,7 +2200,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: 100, opacity: 0 }}
                     transition={{ delay: 0.1, type: "spring", damping: 25 }}
-                    className="relative w-[85vw] max-w-sm md:w-[280px] lg:w-[300px] bg-gradient-to-b md:bg-gradient-to-l from-[#1a1520] via-[#2d1f3d] to-[#1a1520] md:to-transparent rounded-2xl md:rounded-l-2xl md:rounded-r-none p-5 md:p-6 md:pl-16 lg:pl-20 border border-purple-500/30 md:border-l md:border-y md:border-r-0"
+                    className="relative w-[85vw] max-w-sm md:w-[280px] lg:w-[320px] bg-gradient-to-b md:bg-gradient-to-l from-[#1a1520] via-[#2d1f3d] to-[#1a1520] md:to-transparent rounded-2xl md:rounded-l-2xl md:rounded-r-none p-5 md:p-6 border border-purple-500/30 md:border-l md:border-y md:border-r-0"
                     style={{ 
                       boxShadow: '0 -20px 40px rgba(0,0,0,0.5)',
                       backdropFilter: 'blur(10px)'
