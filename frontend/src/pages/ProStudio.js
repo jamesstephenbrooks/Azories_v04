@@ -1132,6 +1132,7 @@ export default function ProStudio() {
         if (response.ok) {
           const data = await response.json();
           setLoadingMessage(data.message || 'Processing...');
+          setLoadingProgress(data.progress || 0);
           
           if (data.status === 'completed' && data.video_base64) {
             clearInterval(pollInterval);
@@ -1144,11 +1145,13 @@ export default function ProStudio() {
             toast.success('Video generated!');
             setIsLoading(false);
             setLoadingMessage('');
+            setLoadingProgress(0);
           } else if (data.status === 'failed') {
             clearInterval(pollInterval);
             toast.error(data.message || 'Video generation failed');
             setIsLoading(false);
             setLoadingMessage('');
+            setLoadingProgress(0);
           }
         }
       } catch (error) {
@@ -1162,6 +1165,7 @@ export default function ProStudio() {
       if (isLoading) {
         setIsLoading(false);
         setLoadingMessage('');
+        setLoadingProgress(0);
         toast.error('Video generation timed out. Please try again.');
       }
     }, 600000);
