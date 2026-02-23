@@ -1692,23 +1692,76 @@ export default function ArtStudioExpert() {
                 
                 {/* Copy Selected Nodes */}
                 <button
-                  onClick={copySelectedNodes}
-                  disabled={selectedNodeIds.size === 0}
+                  onClick={() => {
+                    const selected = nodes.filter(n => n.selected);
+                    if (selected.length === 0) return;
+                    
+                    const idMapping = {};
+                    const newNodes = [];
+                    const offsetX = 100;
+                    const offsetY = 100;
+                    
+                    selected.forEach(node => {
+                      const newNodeId = `${node.type}-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+                      idMapping[node.id] = newNodeId;
+                      
+                      const copiedData = { ...node.data };
+                      delete copiedData.onChange;
+                      delete copiedData.onDelete;
+                      delete copiedData.onCopyNode;
+                      delete copiedData.onContinueWorkflow;
+                      delete copiedData.onDownload;
+                      delete copiedData.onSaveToGallery;
+                      delete copiedData.onSaveToBook;
+                      delete copiedData.onExpand;
+                      
+                      if (node.type === 'output') {
+                        copiedData.generating = false;
+                        copiedData.locked = false;
+                      }
+                      
+                      newNodes.push({
+                        id: newNodeId,
+                        type: node.type,
+                        position: { x: node.position.x + offsetX, y: node.position.y + offsetY },
+                        data: {
+                          ...copiedData,
+                          onChange: (k, v) => updateNodeData(newNodeId, k, v),
+                          onDelete: () => deleteNodeById(newNodeId),
+                          onCopyNode: () => copyNode(newNodeId)
+                        }
+                      });
+                    });
+                    
+                    const selectedIds = new Set(selected.map(n => n.id));
+                    const newEdges = edges
+                      .filter(e => selectedIds.has(e.source) && selectedIds.has(e.target))
+                      .map(e => ({
+                        ...e,
+                        id: `e-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+                        source: idMapping[e.source],
+                        target: idMapping[e.target]
+                      }));
+                    
+                    setNodes(nds => [...nds, ...newNodes]);
+                    setEdges(eds => [...eds, ...newEdges]);
+                  }}
+                  disabled={!nodes.some(n => n.selected)}
                   className={`p-2 rounded-lg transition-all ${
-                    selectedNodeIds.size === 0
+                    !nodes.some(n => n.selected)
                       ? 'bg-gray-500/30 text-gray-400 cursor-not-allowed'
                       : 'bg-blue-500/30 text-blue-300 hover:bg-blue-500/50'
                   }`}
-                  title={`Copy Selected Nodes (${selectedNodeIds.size} selected)`}
+                  title="Copy Selected Nodes"
                   data-testid="copy-selected-btn"
                 >
                   <FiCopy className="w-5 h-5" />
                 </button>
                 
                 {/* Selection count */}
-                {selectedNodeIds.size > 0 && (
+                {nodes.filter(n => n.selected).length > 0 && (
                   <div className="px-2 flex items-center text-xs text-white/70">
-                    {selectedNodeIds.size} selected
+                    {nodes.filter(n => n.selected).length} selected
                   </div>
                 )}
               </div>
