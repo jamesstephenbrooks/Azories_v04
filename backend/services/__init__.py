@@ -9,3 +9,13 @@ from .auth import (
     deduct_credits,
     is_vip_user
 )
+
+from .email_service import (
+    send_email,
+    is_configured as email_configured,
+    get_welcome_email_html,
+    get_password_reset_email_html,
+    get_password_changed_email_html,
+    generate_reset_token,
+    get_token_expiry
+)
