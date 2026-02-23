@@ -241,7 +241,7 @@ class BookUpdate(BaseModel):
     cover_title: Optional[str] = None
     cover_subtitle: Optional[str] = None
     back_cover_text: Optional[str] = None
-    is_published: Optional[bool] = None
+    # is_published removed - users must go through review process
     is_featured: Optional[bool] = None
     is_best_of_week: Optional[bool] = None
     layout_mode: Optional[str] = None
@@ -250,7 +250,7 @@ class BookUpdate(BaseModel):
     age_rating: Optional[str] = None
     series_id: Optional[str] = None
     series_order: Optional[int] = None
-    publish_status: Optional[str] = None  # draft, pending_review, published, rejected
+    # publish_status cannot be set directly by users
 
 class SeriesCreate(BaseModel):
     name: str
