@@ -1,0 +1,240 @@
+/* Mobile and iPad optimizations for Azories */
+
+/* Base responsive utilities */
+@media (max-width: 768px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+  
+  .mobile-full-width {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  .mobile-padding {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  
+  .mobile-stack {
+    flex-direction: column !important;
+  }
+}
+
+/* iPad specific (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .ipad-grid-2 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .ipad-padding {
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+  }
+}
+
+/* Touch-friendly interactions */
+@media (hover: none) and (pointer: coarse) {
+  /* Increase tap targets on touch devices */
+  button, 
+  [role="button"],
+  .clickable {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Remove hover effects that don't work well on touch */
+  .hover-effect:hover {
+    transform: none !important;
+  }
+  
+  /* Better scrolling on touch */
+  .touch-scroll {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+  }
+}
+
+/* Safe area insets for notched devices */
+@supports (padding: max(0px)) {
+  .safe-area-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+  
+  .safe-area-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  
+  .safe-area-left {
+    padding-left: max(1rem, env(safe-area-inset-left));
+  }
+  
+  .safe-area-right {
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+}
+
+/* Book reader iPad optimizations */
+.book-reader-container {
+  touch-action: pan-x pan-y;
+}
+
+@media (max-width: 1024px) {
+  .book-reader-container {
+    padding: 0;
+  }
+  
+  .book-page {
+    width: 100vw !important;
+    max-width: 100vw !important;
+  }
+  
+  /* Larger controls for touch */
+  .reader-controls button {
+    padding: 12px 20px;
+    font-size: 16px;
+  }
+  
+  /* Hide sidebar on smaller screens */
+  .reader-sidebar {
+    position: fixed;
+    left: -100%;
+    transition: left 0.3s ease;
+    z-index: 100;
+  }
+  
+  .reader-sidebar.open {
+    left: 0;
+  }
+}
+
+/* Pro Studio iPad layout */
+@media (max-width: 1024px) {
+  .pro-studio-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+  }
+  
+  .pro-studio-sidebar {
+    order: 2;
+  }
+  
+  .pro-studio-main {
+    order: 1;
+  }
+  
+  /* Character/Scene cards */
+  .asset-card {
+    flex-direction: row;
+    align-items: center;
+    padding: 0.75rem;
+  }
+  
+  .asset-card-thumbnail {
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+  }
+  
+  .asset-card-actions {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+}
+
+/* Credits page mobile */
+@media (max-width: 768px) {
+  .credits-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .credit-package {
+    padding: 1.5rem;
+  }
+}
+
+/* Gallery mobile grid */
+@media (max-width: 640px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.5rem;
+  }
+}
+
+/* Modal optimizations for mobile */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95vw !important;
+    max-width: 95vw !important;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .modal-close-button {
+    position: sticky;
+    top: 0;
+    background: inherit;
+    z-index: 10;
+  }
+}
+
+/* Form inputs touch optimization */
+@media (hover: none) {
+  input, 
+  textarea, 
+  select {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+}
+
+/* Loading overlay mobile */
+@media (max-width: 768px) {
+  .loading-overlay .loading-content {
+    padding: 2rem;
+  }
+  
+  .loading-progress-bar {
+    width: 80vw;
+    max-width: 300px;
+  }
+}
+
+/* Navigation mobile */
+@media (max-width: 768px) {
+  .main-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.9);
+    padding: 0.5rem;
+    z-index: 50;
+  }
+  
+  .main-nav-links {
+    display: flex;
+    justify-content: space-around;
+  }
+  
+  .main-nav-link {
+    flex-direction: column;
+    align-items: center;
+    font-size: 12px;
+  }
+  
+  .main-nav-link svg {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+}
+
+/* Animations reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
