@@ -1923,27 +1923,63 @@ export default function BookEditor() {
               return (
                 <ScrollArea className="h-[50vh]">
                   <div className="grid grid-cols-3 md:grid-cols-4 gap-3 p-1">
-                    {currentImages.map((img, idx) => (
-                      <button
-                        key={img.id || idx}
-                        onClick={() => addGalleryImageToPage(img.image_url, activeImageSlot)}
-                        className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-purple-500 transition-all"
-                      >
-                        <img 
-                          src={img.image_url} 
-                          alt={img.name || 'Gallery image'}
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <span className="text-white text-sm font-medium">Use Image</span>
-                        </div>
-                        {img.name && (
-                          <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-2 py-1">
-                            <p className="text-white text-xs truncate">{img.name}</p>
+                    {currentImages.map((img, idx) => {
+                      const isAnimation = img.type === 'animation';
+                      const mediaUrl = img.image_url;
+                      
+                      return (
+                        <button
+                          key={img.id || idx}
+                          onClick={() => {
+                            if (isAnimation) {
+                              // For animations, set video_url
+                              setSelectedPage(prev => ({
+                                ...prev,
+                                video_url: mediaUrl,
+                                image_url: null // Clear image when adding video
+                              }));
+                              setShowGalleryPicker(false);
+                            } else {
+                              addGalleryImageToPage(mediaUrl, activeImageSlot);
+                            }
+                          }}
+                          className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-purple-500 transition-all"
+                        >
+                          {isAnimation ? (
+                            <video 
+                              src={mediaUrl} 
+                              className="w-full h-full object-cover"
+                              muted
+                              loop
+                              autoPlay
+                              playsInline
+                            />
+                          ) : (
+                            <img 
+                              src={mediaUrl} 
+                              alt={img.name || 'Gallery image'}
+                              className="w-full h-full object-cover"
+                            />
+                          )}
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <span className="text-white text-sm font-medium">
+                              {isAnimation ? 'Use Animation' : 'Use Image'}
+                            </span>
                           </div>
-                        )}
-                      </button>
-                    ))}
+                          {isAnimation && (
+                            <div className="absolute top-1 right-1 bg-pink-500 text-white text-[8px] px-1.5 py-0.5 rounded">
+                              <FiVideo className="inline w-2 h-2 mr-0.5" />
+                              Video
+                            </div>
+                          )}
+                          {img.name && (
+                            <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-2 py-1">
+                              <p className="text-white text-xs truncate">{img.name}</p>
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                 </ScrollArea>
               );
