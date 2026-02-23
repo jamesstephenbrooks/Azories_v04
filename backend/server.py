@@ -3457,14 +3457,22 @@ async def generate_consistent_character_image(
     prompt: str = Form(...),
     image_size: str = Form("landscape_16_9"),
     seed: Optional[int] = Form(None),
+    scene_id: Optional[str] = Form(None),
+    id_strength: str = Form("high"),  # "high", "medium", "low" - face similarity strength
     current_user: dict = Depends(get_current_user)
 ):
-    """Generate a consistent image of a character
+    """Generate a consistent image of a character, optionally in a scene
     
     Uses the best available method:
     1. Trained LoRA (most consistent) - if available
     2. PuLID face ID - if LoRA not trained
     3. Prompt-based - fallback
+    
+    Args:
+        character_id: The character to generate
+        prompt: Action/pose description (e.g., "running through forest", "standing heroically")
+        scene_id: Optional scene to place character in
+        id_strength: Face similarity - "high" (strict match), "medium", "low" (more artistic)
     """
     if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Pro subscription required")
@@ -3477,6 +3485,16 @@ async def generate_consistent_character_image(
     
     if not character:
         raise HTTPException(status_code=404, detail="Character not found")
+    
+    # Get scene if specified
+    scene_context = ""
+    if scene_id:
+        scene = await db.pro_studio_scenes.find_one({
+            "id": scene_id,
+            "user_id": current_user["id"]
+        })
+        if scene:
+            scene_context = f"Setting: {scene.get('description', '')}. Environment: {scene.get('location_type', '')} with {scene.get('lighting', 'natural')} lighting, {scene.get('mood', '')} mood, {scene.get('time_of_day', 'day')} time, {scene.get('weather', 'clear')} weather."
     
     try:
         # Determine which method will be used and charge appropriate credits
