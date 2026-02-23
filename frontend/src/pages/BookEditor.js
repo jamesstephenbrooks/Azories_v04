@@ -48,6 +48,13 @@ export default function BookEditor() {
   const [imageStyle, setImageStyle] = useState('illustration');
   const [videoStyle, setVideoStyle] = useState('animation');
   
+  // Voice narration state (speech-to-text)
+  const [isRecording, setIsRecording] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState(null);
+  const [audioChunks, setAudioChunks] = useState([]);
+  const audioChunksRef = useRef([]);
+  
   // Book gallery state (images assigned to this book from Art Studio)
   const [bookGallery, setBookGallery] = useState([]);
   const [showBookGallery, setShowBookGallery] = useState(false);
