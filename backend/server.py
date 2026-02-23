@@ -1662,25 +1662,6 @@ async def admin_delete_book(book_id: str, admin: dict = Depends(get_admin_user))
     await db.books.delete_one({"id": book_id})
     return {"message": "Book deleted by admin"}
 
-@api_router.get("/admin/analytics")
-async def admin_get_analytics(admin: dict = Depends(get_admin_user)):
-    """Get platform-wide analytics"""
-    total_books = await db.books.count_documents({})
-    published_books = await db.books.count_documents({"is_published": True})
-    total_users = await db.users.count_documents({})
-    pro_users = await db.users.count_documents({"subscription": "pro"})
-    
-    # Top books by reads
-    top_books = await db.books.find({"is_published": True}, {"_id": 0}).sort("read_count", -1).limit(10).to_list(10)
-    
-    return {
-        "total_books": total_books,
-        "published_books": published_books,
-        "total_users": total_users,
-        "pro_users": pro_users,
-        "top_books": [{"id": b["id"], "title": b["title"], "reads": b.get("read_count", 0)} for b in top_books]
-    }
-
 # ============ CHAPTER ROUTES ============
 
 @api_router.post("/books/{book_id}/chapters", response_model=ChapterResponse)
