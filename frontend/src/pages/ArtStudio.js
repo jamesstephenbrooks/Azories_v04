@@ -2023,17 +2023,61 @@ export default function ArtStudio() {
                           {gallery.filter(g => g.type !== 'animation').map((item) => (
                             <button
                               key={item._id}
-                              onClick={() => setAnimatingImage(item.image_url)}
+                              onClick={() => {
+                                setAnimatingImage(item.image_url);
+                                setAnimatingImageData(item);
+                                // Auto-populate motion prompt from original generation data
+                                if (item.prompt || item.name) {
+                                  const basePrompt = item.prompt || item.name || '';
+                                  const motionSuggestion = basePrompt.includes('portrait') || basePrompt.includes('character')
+                                    ? 'gentle breathing, subtle head movement, soft blinking, hair gently flowing'
+                                    : basePrompt.includes('scene') || basePrompt.includes('landscape')
+                                    ? 'gentle camera pan, soft light changes, subtle environmental movement'
+                                    : 'gentle breathing, subtle movement, natural animation';
+                                  setAnimationMotion(motionSuggestion);
+                                }
+                                // Set style to match original if available
+                                if (item.style) {
+                                  const styleMap = {
+                                    'fantasy': 'natural',
+                                    'cinematic': 'dramatic',
+                                    'anime': 'dramatic',
+                                    'realistic': 'natural',
+                                    'subtle': 'subtle'
+                                  };
+                                  setAnimationStyle(styleMap[item.style] || 'natural');
+                                }
+                              }}
                               className={`relative rounded-lg overflow-hidden border-2 transition-all ${
                                 animatingImage === item.image_url ? 'border-pink-500' : 'border-transparent hover:border-white/30'
                               }`}
                             >
                               <img src={item.image_url} alt={item.name} className="w-full aspect-square object-cover" />
+                              {item.name && (
+                                <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-1 py-0.5">
+                                  <p className="text-white text-[10px] truncate">{item.name}</p>
+                                </div>
+                              )}
                             </button>
                           ))}
                         </div>
                       )}
                     </div>
+                    
+                    {/* Auto-populated info from selected gallery image */}
+                    {animatingImageData && (
+                      <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-3">
+                        <p className="text-xs text-purple-300 font-medium mb-1">Selected: {animatingImageData.name || 'Gallery Image'}</p>
+                        {animatingImageData.style && (
+                          <p className="text-xs text-white/50">Original Style: {animatingImageData.style}</p>
+                        )}
+                        {animatingImageData.prompt && (
+                          <p className="text-xs text-white/40 mt-1 truncate" title={animatingImageData.prompt}>
+                            Prompt: {animatingImageData.prompt.substring(0, 80)}...
+                          </p>
+                        )}
+                      </div>
+                    )}
                   </div>
                   
                   {/* Animation Settings Section */}
@@ -2050,6 +2094,32 @@ export default function ArtStudio() {
                         className="w-full bg-black/30 border border-white/20 rounded-lg px-4 py-3 text-white min-h-[100px]"
                         data-testid="animate-motion-input"
                       />
+                    </div>
+                    
+                    {/* Camera Movement */}
+                    <div>
+                      <label className="text-sm text-white/70 mb-2 block">Camera Movement</label>
+                      <div className="grid grid-cols-4 gap-2">
+                        {[
+                          { id: 'static', name: 'Static', desc: 'No camera motion' },
+                          { id: 'slow-zoom', name: 'Slow Zoom', desc: 'Gradual zoom in' },
+                          { id: 'slow-pan', name: 'Slow Pan', desc: 'Gentle side pan' },
+                          { id: 'orbit', name: 'Orbit', desc: 'Circle around subject' }
+                        ].map(cam => (
+                          <button
+                            key={cam.id}
+                            onClick={() => setAnimationCameraMotion(cam.id)}
+                            className={`p-2 rounded-lg text-center transition-all ${
+                              animationCameraMotion === cam.id
+                                ? 'bg-cyan-500/30 border-2 border-cyan-500'
+                                : 'bg-white/5 border-2 border-transparent hover:border-white/20'
+                            }`}
+                          >
+                            <p className="text-white font-medium text-xs">{cam.name}</p>
+                            <p className="text-white/50 text-[10px]">{cam.desc}</p>
+                          </button>
+                        ))}
+                      </div>
                     </div>
                     
                     {/* Animation Style */}
