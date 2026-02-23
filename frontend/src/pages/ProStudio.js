@@ -102,6 +102,8 @@ export default function ProStudio() {
   const [sceneWeather, setSceneWeather] = useState('');
   const [sceneOptions, setSceneOptions] = useState({ location_types: [], lighting: [], moods: [] });
   const [isCreatingScene, setIsCreatingScene] = useState(false);
+  const [viewingScene, setViewingScene] = useState(null);
+  const [sceneGallery, setSceneGallery] = useState([]);
   
   // Book linking state
   const [userBooks, setUserBooks] = useState([]);
