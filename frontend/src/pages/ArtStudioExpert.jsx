@@ -949,6 +949,33 @@ export default function ArtStudioExpert() {
     }
   };
   
+  // Load gallery images for the image node picker
+  const loadGalleryImages = async (type = 'art') => {
+    try {
+      const endpoint = type === 'pro' ? '/api/pro-studio/gallery' : '/api/art-studio/gallery';
+      const response = await fetch(`${API_URL}${endpoint}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setGalleryImages(data || []);
+      }
+    } catch (error) {
+      console.error('Failed to load gallery:', error);
+    }
+  };
+  
+  // Open gallery picker for an image node
+  const openGalleryPicker = useCallback((nodeId) => {
+    setGalleryPickerCallback(() => (imageUrl) => {
+      updateNodeData(nodeId, 'image', imageUrl);
+      updateNodeData(nodeId, 'label', 'From Gallery');
+      setShowGalleryPicker(false);
+    });
+    loadGalleryImages('art');
+    setShowGalleryPicker(true);
+  }, [updateNodeData]);
+  
   // Node data change handler
   const updateNodeData = useCallback((nodeId, key, value) => {
     setNodes(nds => nds.map(node => {
