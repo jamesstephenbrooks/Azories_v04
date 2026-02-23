@@ -3160,52 +3160,43 @@ async def generate_expression(request: GenerateExpressionRequest, current_user: 
 
 @api_router.post("/pro-studio/animate-hero")
 async def animate_hero_frame(request: AnimateHeroRequest, background_tasks: BackgroundTasks, current_user: dict = Depends(get_current_user)):
-    """Animate a hero frame to video using the selected model"""
+    """Animate a hero frame to video using fal.ai Kling (best facial consistency)"""
     if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Pro subscription required")
-    
-    if not EMERGENT_LLM_KEY:
-        raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
-    
-    # Currently only Sora 2 is supported via Emergent
-    # Other models would need their own API keys
-    if request.model not in ["sora-2"]:
-        # Fall back to Sora 2 for unsupported models
-        logger.warning(f"Model {request.model} not available, using Sora 2")
     
     # Credits check for video generation
     if not await deduct_credits(current_user["id"], "video_generate"):
         credits_needed = CREDIT_COSTS.get("video_generate", 10)
         raise HTTPException(status_code=402, detail=f"Insufficient credits. Video generation requires {credits_needed} credits.")
     
-    # Create job ID
-    job_id = str(uuid.uuid4())
-    
-    # Initialize job status
-    animation_jobs[job_id] = {
-        "status": "starting",
-        "progress": 0,
-        "message": "Initializing video generation...",
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "user_id": current_user["id"]
-    }
-    
-    # Start background task - reuse the existing animation process
-    background_tasks.add_task(
-        process_animation_job,
-        job_id,
-        request.image_url,
-        request.motion_prompt,
-        min(request.duration, 10),  # Cap at 10 seconds
-        "cinematic",
-        current_user["id"]
-    )
-    
-    return {
-        "job_id": job_id,
-        "status": "started",
-        "message": "Video generation started. Poll /api/art-studio/animation-status/{job_id} for progress."
-    }
+    # Use fal.ai Kling for Pro Studio (best face consistency)
+    if FAL_AVAILABLE:
+        try:
+            logger.info(f"Pro Studio: Starting Kling video generation for user {current_user['id']}")
+            result = await generate_video_from_image(
+                image_url=request.image_url,
+                prompt=request.motion_prompt or "gentle breathing, subtle natural movement, soft hair motion",
+                duration=min(request.duration, 10),
+                aspect_ratio="16:9",
+                model="kling"  # Kling is best for facial consistency
+            )
+            
+            if result.get("success") and result.get("video_url"):
+                return {
+                    "success": True,
+                    "video_url": result["video_url"],
+                    "model": "kling",
+                    "message": "Video generated with Kling (high face fidelity)"
+                }
+            else:
+                raise Exception("No video URL returned")
+                
+        except Exception as e:
+            logger.error(f"Kling video generation failed: {str(e)}")
+            # Don't fall back - return error since this is a paid feature
+            raise HTTPException(status_code=500, detail=f"Video generation failed: {str(e)}")
+    else:
+        raise HTTPException(status_code=503, detail="Video generation service not available (fal.ai not configured)")
 
 # ==================== FAL.AI CHARACTER CONSISTENCY ENDPOINTS ====================
 
