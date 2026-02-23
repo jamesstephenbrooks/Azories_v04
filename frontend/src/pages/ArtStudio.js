@@ -1236,7 +1236,7 @@ export default function ArtStudio() {
           </div>
           
           <div className="flex items-center gap-3">
-            {/* Pro Studio Link */}
+            {/* Pro Studio Link - Premium Feature */}
             <Button 
               onClick={() => navigate('/pro-studio')}
               className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
@@ -1244,19 +1244,7 @@ export default function ArtStudio() {
             >
               <FiVideo className="w-4 h-4 mr-2" />
               Pro Studio
-              <span className="ml-2 text-[10px] px-1.5 py-0.5 bg-white/20 rounded">NEW</span>
-            </Button>
-            
-            {/* Expert Mode Link */}
-            <Button 
-              variant="outline" 
-              onClick={() => navigate('/art-studio/expert')}
-              className="border-amber-500/50 text-amber-300 hover:bg-amber-500/20"
-              data-testid="expert-mode-btn"
-            >
-              <FiStar className="w-4 h-4 mr-2" />
-              Expert Mode
-              <span className="ml-2 text-[10px] px-1.5 py-0.5 bg-amber-500/30 rounded">Node Workflow</span>
+              <span className="ml-2 text-[10px] px-1.5 py-0.5 bg-white/20 rounded">PRO</span>
             </Button>
             
             {/* Book Assignment Dropdown */}
@@ -1279,9 +1267,9 @@ export default function ArtStudio() {
               </Select>
             </div>
             
+            {/* Gallery Button - More Prominent */}
             <Button 
-              variant="outline" 
-              className="border-purple-500/50 text-purple-300 hover:bg-purple-500/20"
+              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg shadow-emerald-500/25"
               onClick={() => setActiveTab('gallery')}
               data-testid="gallery-button"
             >
