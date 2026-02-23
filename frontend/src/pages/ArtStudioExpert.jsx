@@ -846,6 +846,12 @@ export default function ArtStudioExpert() {
   const [showSaveToBookModal, setShowSaveToBookModal] = useState(false);
   const [imageToSave, setImageToSave] = useState(null);
   
+  // Gallery picker state for Image nodes
+  const [showGalleryPicker, setShowGalleryPicker] = useState(false);
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [galleryPickerCallback, setGalleryPickerCallback] = useState(null);
+  const [galleryTab, setGalleryTab] = useState('art'); // 'art' or 'pro'
+  
   // Load user's books
   useEffect(() => {
     if (token) {
