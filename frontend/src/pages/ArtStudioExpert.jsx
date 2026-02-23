@@ -792,12 +792,6 @@ export default function ArtStudioExpert() {
   const [isSavingWorkflow, setIsSavingWorkflow] = useState(false);
   const [workflowSaveMessage, setWorkflowSaveMessage] = useState('');
   
-  // Selection and copy state
-  const [selectedNodeIds, setSelectedNodeIds] = useState(new Set());
-  const [selectionBox, setSelectionBox] = useState(null); // {startX, startY, endX, endY}
-  const [isDraggingSelection, setIsDraggingSelection] = useState(false);
-  const canvasRef = useRef(null);
-  
   // Save to book modal state
   const [showSaveToBookModal, setShowSaveToBookModal] = useState(false);
   const [imageToSave, setImageToSave] = useState(null);
