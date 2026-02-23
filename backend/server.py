@@ -7123,6 +7123,84 @@ async def admin_run_moderation(book_id: str, admin: dict = Depends(get_admin_use
         "message": moderation_result.message
     }
 
+@api_router.post("/admin/generate-missing-covers")
+async def admin_generate_missing_covers(admin: dict = Depends(get_admin_user)):
+    """Generate cover images for books that don't have them"""
+    import httpx
+    
+    # Find books without cover images
+    books_without_covers = await db.books.find(
+        {"$or": [{"cover_image": None}, {"cover_image": ""}, {"cover_image": {"$exists": False}}]},
+        {"_id": 0, "id": 1, "title": 1, "genre": 1, "description": 1}
+    ).to_list(100)
+    
+    if not books_without_covers:
+        return {"success": True, "message": "All books already have covers", "updated": 0}
+    
+    updated_count = 0
+    errors = []
+    
+    for book in books_without_covers:
+        try:
+            # Generate a cover image prompt based on book title and genre
+            title = book.get("title", "Untitled")
+            genre = book.get("genre", "Fantasy")
+            description = book.get("description", "")[:200]
+            
+            prompt = f"Children's book cover illustration for '{title}', {genre} genre. Vibrant colors, whimsical, professional book cover design. {description}"
+            
+            # Use fal.ai to generate image
+            fal_key = os.environ.get("FAL_KEY")
+            if not fal_key:
+                errors.append(f"{title}: No FAL_KEY configured")
+                continue
+                
+            async with httpx.AsyncClient(timeout=60.0) as client:
+                response = await client.post(
+                    "https://fal.run/fal-ai/flux/schnell",
+                    headers={
+                        "Authorization": f"Key {fal_key}",
+                        "Content-Type": "application/json"
+                    },
+                    json={
+                        "prompt": prompt,
+                        "image_size": "portrait_4_3",
+                        "num_images": 1
+                    }
+                )
+                
+                if response.status_code == 200:
+                    result = response.json()
+                    if result.get("images") and len(result["images"]) > 0:
+                        image_url = result["images"][0].get("url")
+                        if image_url:
+                            # Download and convert to base64
+                            img_response = await client.get(image_url)
+                            if img_response.status_code == 200:
+                                import base64
+                                img_base64 = base64.b64encode(img_response.content).decode('utf-8')
+                                cover_data = f"data:image/png;base64,{img_base64}"
+                                
+                                await db.books.update_one(
+                                    {"id": book["id"]},
+                                    {"$set": {"cover_image": cover_data}}
+                                )
+                                updated_count += 1
+                                logging.info(f"Generated cover for: {title}")
+                else:
+                    errors.append(f"{title}: API error {response.status_code}")
+                    
+        except Exception as e:
+            errors.append(f"{book.get('title', 'Unknown')}: {str(e)}")
+            logging.error(f"Cover generation error for {book.get('id')}: {e}")
+    
+    return {
+        "success": True,
+        "message": f"Generated {updated_count} cover images",
+        "updated": updated_count,
+        "total_without_covers": len(books_without_covers),
+        "errors": errors if errors else None
+    }
 
 
 # Workflow Save/Load Endpoints
