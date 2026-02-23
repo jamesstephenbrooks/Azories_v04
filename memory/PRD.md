@@ -178,6 +178,8 @@ All books have:
 - `GET/POST /api/pro-studio/characters/{id}/gallery` - Character folder
 - `GET/POST /api/pro-studio/scenes/{id}/gallery` - Scene folder
 - `POST /api/art-studio/gallery` - Save to main gallery
+- `GET/POST /api/books/{book_id}/images` - Book image library (NEW)
+- `DELETE /api/books/{book_id}/images/{image_id}` - Delete book image (NEW)
 - `GET /api/credits/balance` - Get credits
 - `POST /api/credits/add` - Add credits
 - `POST /api/create-checkout-session` - Stripe checkout
