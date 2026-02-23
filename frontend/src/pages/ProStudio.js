@@ -3144,19 +3144,125 @@ export default function ProStudio() {
                   />
                 </div>
 
-                {/* Selected Hero Frame */}
+                {/* Selected Source - Hero Frame, Character, Scene, or Upload */}
                 <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4">
                   <h3 className="text-white font-medium mb-3">Source Image</h3>
-                  {selectedHeroFrame ? (
-                    <div className="relative">
-                      <img src={selectedHeroFrame.url} alt="Hero" className="w-full rounded-lg" />
-                      <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
-                        Ready to animate
+                  
+                  {/* Source type selector */}
+                  <div className="flex gap-2 mb-3">
+                    <Button
+                      size="sm"
+                      variant={videoSourceType === 'hero' ? 'default' : 'outline'}
+                      onClick={() => setVideoSourceType('hero')}
+                      className={videoSourceType === 'hero' ? 'bg-purple-600' : 'border-gray-600'}
+                    >
+                      Hero Frame
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant={videoSourceType === 'character' ? 'default' : 'outline'}
+                      onClick={() => setVideoSourceType('character')}
+                      className={videoSourceType === 'character' ? 'bg-purple-600' : 'border-gray-600'}
+                    >
+                      Character
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant={videoSourceType === 'upload' ? 'default' : 'outline'}
+                      onClick={() => setVideoSourceType('upload')}
+                      className={videoSourceType === 'upload' ? 'bg-purple-600' : 'border-gray-600'}
+                    >
+                      Upload
+                    </Button>
+                  </div>
+
+                  {/* Hero Frame Source */}
+                  {videoSourceType === 'hero' && (
+                    selectedHeroFrame ? (
+                      <div className="relative">
+                        <img src={selectedHeroFrame.url} alt="Hero" className="w-full rounded-lg" />
+                        <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
+                          Ready to animate
+                        </div>
                       </div>
+                    ) : (
+                      <div className="text-center py-6 text-gray-500 border-2 border-dashed border-gray-700 rounded-lg">
+                        <FiImage className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">Go to Cinema Studio to generate a hero frame</p>
+                      </div>
+                    )
+                  )}
+
+                  {/* Character Source */}
+                  {videoSourceType === 'character' && (
+                    <div>
+                      <Select 
+                        value={videoSourceCharacter?.id || ''} 
+                        onValueChange={(v) => setVideoSourceCharacter(characters.find(c => c.id === v))}
+                      >
+                        <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white mb-3">
+                          <SelectValue placeholder="Select a character" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-800 border-gray-700">
+                          {characters.filter(c => c.thumbnail).map((char) => (
+                            <SelectItem key={char.id} value={char.id} className="text-white">
+                              {char.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {videoSourceCharacter?.thumbnail ? (
+                        <div className="relative">
+                          <img src={videoSourceCharacter.thumbnail} alt={videoSourceCharacter.name} className="w-full rounded-lg" />
+                          <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
+                            {videoSourceCharacter.name}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="text-center py-6 text-gray-500 border-2 border-dashed border-gray-700 rounded-lg">
+                          <FiUser className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                          <p className="text-sm">Select a character with a thumbnail</p>
+                        </div>
+                      )}
                     </div>
-                  ) : (
-                    <div className="text-center py-8 text-gray-500">
-                      <p>Select a hero frame from Cinema Studio</p>
+                  )}
+
+                  {/* Upload Source */}
+                  {videoSourceType === 'upload' && (
+                    <div>
+                      {videoUploadedImage ? (
+                        <div className="relative">
+                          <img src={videoUploadedImage} alt="Uploaded" className="w-full rounded-lg" />
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            className="absolute top-2 right-2"
+                            onClick={() => setVideoUploadedImage(null)}
+                          >
+                            <FiX className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <label className="block">
+                          <div className="text-center py-6 text-gray-500 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-purple-500 transition-colors">
+                            <FiUpload className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                            <p className="text-sm">Click to upload an image</p>
+                          </div>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onload = (ev) => setVideoUploadedImage(ev.target.result);
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                          />
+                        </label>
+                      )}
                     </div>
                   )}
                 </div>
