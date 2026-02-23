@@ -1641,7 +1641,7 @@ export default function ArtStudioExpert() {
         </div>
         
         {/* React Flow Canvas */}
-        <div className="flex-1">
+        <div className="flex-1 relative" ref={canvasRef}>
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -1651,6 +1651,12 @@ export default function ArtStudioExpert() {
             nodeTypes={nodeTypes}
             fitView
             className="bg-transparent"
+            selectionOnDrag
+            selectionMode="partial"
+            onSelectionChange={(params) => {
+              const ids = new Set(params.nodes?.map(n => n.id) || []);
+              setSelectedNodeIds(ids);
+            }}
           >
             <Background color="#333" gap={20} />
             <Controls className="!bg-black/50 !border-white/10" />
@@ -1670,9 +1676,51 @@ export default function ArtStudioExpert() {
               }}
             />
             
+            {/* Selection Actions Toolbar - Top Left */}
+            <Panel position="top-left" className="!m-2">
+              <div className="flex gap-2 bg-black/70 backdrop-blur-sm border border-white/20 rounded-lg p-2">
+                {/* Run Selected Workflow */}
+                <button
+                  onClick={runWorkflow}
+                  disabled={isGenerating}
+                  className={`p-2 rounded-lg transition-all ${
+                    isGenerating 
+                      ? 'bg-gray-500/30 text-gray-400 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white hover:from-yellow-400 hover:to-orange-400 shadow-lg shadow-yellow-500/20'
+                  }`}
+                  title="Run Workflow (⚡)"
+                  data-testid="lightning-run-btn"
+                >
+                  <FiZap className={`w-5 h-5 ${isGenerating ? 'animate-pulse' : ''}`} />
+                </button>
+                
+                {/* Copy Selected Nodes */}
+                <button
+                  onClick={copySelectedNodes}
+                  disabled={selectedNodeIds.size === 0}
+                  className={`p-2 rounded-lg transition-all ${
+                    selectedNodeIds.size === 0
+                      ? 'bg-gray-500/30 text-gray-400 cursor-not-allowed'
+                      : 'bg-blue-500/30 text-blue-300 hover:bg-blue-500/50'
+                  }`}
+                  title={`Copy Selected Nodes (${selectedNodeIds.size} selected)`}
+                  data-testid="copy-selected-btn"
+                >
+                  <FiCopy className="w-5 h-5" />
+                </button>
+                
+                {/* Selection count */}
+                {selectedNodeIds.size > 0 && (
+                  <div className="px-2 flex items-center text-xs text-white/70">
+                    {selectedNodeIds.size} selected
+                  </div>
+                )}
+              </div>
+            </Panel>
+            
             <Panel position="bottom-left" className="!bg-black/50 !border-white/10 rounded-lg p-2">
               <p className="text-xs text-white/50">
-                Drag nodes • Connect handles • Run workflow
+                Drag to select nodes • Copy selection • Lock outputs to preserve them
               </p>
             </Panel>
           </ReactFlow>
