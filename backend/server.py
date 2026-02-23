@@ -3406,6 +3406,19 @@ async def generate_consistent_character_image(
         raise HTTPException(status_code=404, detail="Character not found")
     
     try:
+        # Determine which method will be used and charge appropriate credits
+        if FAL_AVAILABLE and character.get("lora_status") == "completed" and character.get("lora_url"):
+            credit_operation = "lora_generate"
+        elif FAL_AVAILABLE and character.get("reference_images"):
+            credit_operation = "pulid_generate"
+        else:
+            credit_operation = "flux_generate"
+        
+        # Deduct credits
+        if not await deduct_credits(current_user["id"], credit_operation):
+            credits_needed = CREDIT_COSTS.get(credit_operation, 2)
+            raise HTTPException(status_code=402, detail=f"Insufficient credits. This operation requires {credits_needed} credits.")
+        
         # Method 1: Use trained LoRA (best consistency)
         if FAL_AVAILABLE and character.get("lora_status") == "completed" and character.get("lora_url"):
             logger.info(f"Generating with LoRA for character {character['name']}")
