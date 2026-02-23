@@ -463,6 +463,58 @@ const CombineNode = ({ data, selected }) => {
   );
 };
 
+// Image Node - For workflow continuation (output image as new input)
+const ImageNode = ({ data, selected }) => {
+  return (
+    <div className={`relative bg-gradient-to-br from-yellow-900/90 to-orange-800/90 rounded-xl border-2 ${selected ? 'border-yellow-400' : 'border-yellow-600/50'} shadow-xl backdrop-blur-sm w-[180px] h-[220px]`}>
+      <Handle type="target" position={Position.Left} className="!bg-yellow-400 !w-3 !h-3" />
+      <NodeDeleteButton onDelete={data.onDelete} />
+      
+      {/* Copy button */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          data.onCopyNode?.();
+        }}
+        className="absolute top-0.5 right-5 w-4 h-4 rounded bg-blue-500/80 hover:bg-blue-500 flex items-center justify-center transition-colors z-10"
+        title="Duplicate node"
+        data-testid="image-node-copy-btn"
+      >
+        <FiCopy className="w-2.5 h-2.5 text-white" />
+      </button>
+      
+      <div className="p-2 border-b border-yellow-600/30 flex items-center gap-2">
+        <div className="w-5 h-5 rounded-lg bg-yellow-500/30 flex items-center justify-center flex-shrink-0">
+          <FiRefreshCw className="text-yellow-300 w-3 h-3" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <h4 className="text-xs font-semibold text-white truncate">{data.label || 'Image Input'}</h4>
+          <p className="text-[9px] text-yellow-300/70">From workflow</p>
+        </div>
+      </div>
+      
+      <div className="p-2 h-[160px]">
+        {data.image ? (
+          <div className="relative w-full h-full">
+            <img 
+              src={data.image} 
+              alt="Workflow output" 
+              className="w-full h-full object-cover rounded-lg border border-yellow-500/30"
+            />
+          </div>
+        ) : (
+          <div className="w-full h-full bg-black/30 rounded-lg flex flex-col items-center justify-center">
+            <FiImage className="w-8 h-8 text-yellow-300/30 mb-2" />
+            <span className="text-[10px] text-yellow-300/50">No image</span>
+          </div>
+        )}
+      </div>
+      
+      <Handle type="source" position={Position.Right} className="!bg-yellow-400 !w-3 !h-3" />
+    </div>
+  );
+};
+
 // Output Node - Fixed size with expand preview option
 const OutputNode = ({ data, selected }) => {
   return (
