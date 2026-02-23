@@ -648,7 +648,7 @@ export default function AdminDashboard() {
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => window.open(`/read/${book.id}`, '_blank')}
+                              onClick={() => openPreview(book)}
                               className="text-xs border-white/20 text-white hover:bg-white/10"
                             >
                               <FiEye className="w-3 h-3 mr-1" />
