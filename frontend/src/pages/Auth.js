@@ -30,6 +30,25 @@ export default function Auth() {
   const location = useLocation();
   const from = location.state?.from || '/library';
 
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    if (!forgotEmail.trim()) {
+      toast.error('Please enter your email');
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      await axios.post(`${API}/api/auth/forgot-password`, { email: forgotEmail });
+      setForgotSent(true);
+      toast.success('Reset link sent! Check your email.');
+    } catch (error) {
+      toast.error('Failed to send reset email. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
