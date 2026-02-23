@@ -26,22 +26,9 @@ export const useCredits = () => {
   }, []);
 
   const addCredits = async (amount) => {
-    const token = localStorage.getItem('azories-token');
-
-    try {
-      const response = await fetch(`${API_URL}/api/credits/add?amount=${amount}`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setCredits(data.new_balance);
-        toast.success(`Added ${amount} credits!`);
-      }
-    } catch (error) {
-      toast.error('Error adding credits');
-      console.error(error);
-    }
+    // Direct credit addition is restricted - redirect to purchase page
+    toast.error('Please purchase credits through the store');
+    window.location.href = '/credits';
   };
 
   const checkCredits = (operation) => {
