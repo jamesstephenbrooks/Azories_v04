@@ -173,25 +173,31 @@ export default function MySeries() {
   };
 
   const publishAllInSeries = async (seriesId) => {
-    if (!window.confirm('Publish all books in this series?')) return;
+    if (!window.confirm('Submit all books in this series for review?')) return;
     
     const token = localStorage.getItem('azories-token');
     const seriesData = series.find(s => s.id === seriesId);
     if (!seriesData?.books) return;
     
     try {
+      let submitted = 0;
       for (const book of seriesData.books) {
-        if (!book.is_published) {
-          await axios.put(`${API}/books/${book.id}`, { is_published: true }, {
+        if (!book.is_published && book.publish_status !== 'pending_review') {
+          await axios.post(`${API}/books/${book.id}/request-publish`, {}, {
             headers: { Authorization: `Bearer ${token}` }
           });
+          submitted++;
         }
       }
-      toast.success('All books in series published!');
+      if (submitted > 0) {
+        toast.success(`${submitted} book(s) submitted for admin review!`);
+      } else {
+        toast.info('All books are already published or pending review');
+      }
       fetchSeries();
       fetchBooks();
     } catch (error) {
-      toast.error('Failed to publish some books');
+      toast.error('Failed to submit some books for review');
     }
   };
 
