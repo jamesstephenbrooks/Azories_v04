@@ -2157,10 +2157,25 @@ export default function ArtStudio() {
                                 return;
                               }
                               
+                              // Validate animatedVideo before attempting save
+                              if (!animatedVideo || typeof animatedVideo !== 'string') {
+                                toast.error('No video to save');
+                                return;
+                              }
+                              
                               try {
                                 console.log('Saving animation to gallery...');
                                 console.log('Video URL type:', typeof animatedVideo);
-                                console.log('Video URL starts with:', animatedVideo?.substring(0, 50));
+                                console.log('Video URL length:', animatedVideo?.length);
+                                
+                                // Create a clean copy of the data to avoid cloning issues
+                                const videoData = String(animatedVideo);
+                                const requestBody = JSON.stringify({
+                                  video_url: videoData,
+                                  name: `Animation ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`,
+                                  motion_prompt: String(animationMotion || 'animation'),
+                                  style: String(animationStyle || 'natural')
+                                });
                                 
                                 const saveResponse = await fetch(`${API_URL}/api/art-studio/save-animation`, {
                                   method: 'POST',
@@ -2168,26 +2183,33 @@ export default function ArtStudio() {
                                     'Content-Type': 'application/json',
                                     'Authorization': `Bearer ${animationToken}`
                                   },
-                                  body: JSON.stringify({
-                                    video_url: animatedVideo,
-                                    name: `Animation ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`,
-                                    motion_prompt: animationMotion || 'animation',
-                                    style: animationStyle || 'natural'
-                                  })
+                                  body: requestBody
                                 });
                                 
-                                const saveData = await saveResponse.json();
+                                // Parse response safely
+                                let saveData;
+                                try {
+                                  saveData = await saveResponse.json();
+                                } catch (parseErr) {
+                                  console.error('Failed to parse save response:', parseErr);
+                                  toast.error('Server returned invalid response');
+                                  return;
+                                }
+                                
                                 console.log('Save response:', saveData);
                                 
                                 if (saveResponse.ok && saveData.success) {
                                   toast.success('Animation saved to gallery!');
                                   loadGallery(); // Refresh gallery
                                 } else {
-                                  toast.error('Failed to save: ' + (saveData.detail || 'Server error'));
+                                  const errorMsg = saveData?.detail || saveData?.message || 'Server error';
+                                  toast.error('Failed to save: ' + String(errorMsg));
                                 }
                               } catch (err) {
                                 console.error('Save animation error:', err);
-                                toast.error('Failed to save animation');
+                                // Ensure we pass a plain string to toast
+                                const errMessage = err instanceof Error ? err.message : 'Unknown error';
+                                toast.error('Failed to save: ' + errMessage);
                               }
                             }}
                             className="bg-green-600 hover:bg-green-700"
