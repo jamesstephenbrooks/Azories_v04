@@ -1176,7 +1176,7 @@ export default function Dashboard() {
                                   onClick={() => publishAllInSeries(s.id)}
                                 >
                                   <FiGlobe className="w-3 h-3 mr-2" />
-                                  Publish All Books in Series
+                                  Submit All for Review
                                 </Button>
                               )}
                             </div>
