@@ -52,6 +52,19 @@ const CharacterNode = ({ data, selected }) => {
       <Handle type="target" position={Position.Left} className="!bg-purple-400 !w-3 !h-3" />
       <NodeDeleteButton onDelete={data.onDelete} />
       
+      {/* Copy button */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          data.onCopyNode?.();
+        }}
+        className="absolute top-0.5 right-5 w-4 h-4 rounded bg-blue-500/80 hover:bg-blue-500 flex items-center justify-center transition-colors z-10"
+        title="Duplicate node"
+        data-testid="character-node-copy-btn"
+      >
+        <FiCopy className="w-2.5 h-2.5 text-white" />
+      </button>
+      
       <div className="p-2 border-b border-purple-600/30 flex items-center gap-2">
         <div className="w-6 h-6 rounded-lg bg-purple-500/30 flex items-center justify-center flex-shrink-0">
           <FiUser className="text-purple-300 w-3 h-3" />
