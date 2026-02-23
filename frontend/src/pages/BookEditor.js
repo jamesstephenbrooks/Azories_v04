@@ -1965,13 +1965,8 @@ export default function BookEditor() {
                           key={img.id || idx}
                           onClick={() => {
                             if (isAnimation) {
-                              // For animations, set video_url
-                              setSelectedPage(prev => ({
-                                ...prev,
-                                video_url: mediaUrl,
-                                image_url: null // Clear image when adding video
-                              }));
-                              setShowGalleryPicker(false);
+                              // For animations, use the video handler
+                              addGalleryVideoToPage(mediaUrl);
                             } else {
                               addGalleryImageToPage(mediaUrl, activeImageSlot);
                             }
