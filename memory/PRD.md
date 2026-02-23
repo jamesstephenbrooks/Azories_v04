@@ -143,22 +143,24 @@ All books have:
 - ✅ Node Editor: Node copy/duplication functionality on all node types
 - ✅ Node Editor: Save to Book functionality for book-specific image libraries
 - ✅ Node Editor: Image node type for workflow continuation
+- ✅ Voice Narration: Speech-to-text for book writing (OpenAI Whisper)
+- ✅ LoRA Training: Fixed with new fal.ai API key - training now starts successfully
 
 ### P3 (Low Priority)
 - Grand Library stair navigation/camera issues
 - iPad/iPhone UI layout optimizations
-- Code refactoring (split server.py and ProStudio.js into modules)
+- Code refactoring (split server.py and ProStudio.js into modules) - STARTED
 
 ## Next Tasks
-1. LoRA training workflow validation (requires 50 credits, 3+ reference images)
-2. Animation save/download verification (requires animation generation)
-3. Mobile UI/UX testing on real iPad
+1. Code refactoring continuation (migrate routes from server.py to modules)
+2. Mobile UI/UX testing on real iPad
+3. Animation save/download full verification
 
 ## Future/Backlog
-- Export Book as PDF feature
+- Export Book as PDF feature (already exists)
 - Book Editor collaboration features
 - Additional mobile optimizations
-- Code modularization (low priority since app is stable)
+- Frontend refactoring (ProStudio.js split into components)
 
 ## 3rd Party Integrations
 - **OpenAI GPT-4o & Sora 2** (via Emergent LLM Key) - Text generation, video
