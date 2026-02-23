@@ -180,10 +180,20 @@ All books have:
 - `GET/POST /api/pro-studio/characters/{id}/gallery` - Character folder
 - `GET/POST /api/pro-studio/scenes/{id}/gallery` - Scene folder
 - `POST /api/art-studio/gallery` - Save to main gallery
-- `GET/POST /api/books/{book_id}/images` - Book image library (NEW)
-- `DELETE /api/books/{book_id}/images/{image_id}` - Delete book image (NEW)
+- `GET/POST /api/books/{book_id}/images` - Book image library
+- `DELETE /api/books/{book_id}/images/{image_id}` - Delete book image
+- `POST /api/speech-to-text` - Voice narration transcription (NEW)
 - `GET /api/credits/balance` - Get credits
 - `POST /api/credits/add` - Add credits
 - `POST /api/create-checkout-session` - Stripe checkout
 - `GET /api/admin/analytics` - Admin dashboard data
 - `POST /api/contact` - Contact form submission
+
+## Code Refactoring Status
+Backend route modules created (templates):
+- `/app/backend/routes/auth.py` - Authentication
+- `/app/backend/routes/credits.py` - Credits management
+- `/app/backend/routes/books.py` - Book CRUD
+- `/app/backend/routes/pro_studio.py` - Pro Studio features
+
+See `/app/memory/REFACTORING_PLAN.md` for full details.
