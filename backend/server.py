@@ -250,6 +250,7 @@ class BookUpdate(BaseModel):
     age_rating: Optional[str] = None
     series_id: Optional[str] = None
     series_order: Optional[int] = None
+    publish_status: Optional[str] = None  # draft, pending_review, published, rejected
 
 class SeriesCreate(BaseModel):
     name: str
@@ -278,6 +279,8 @@ class BookResponse(BaseModel):
     layout_mode: str
     narrator_voice_id: str
     age_rating: str
+    publish_status: str = "draft"  # draft, pending_review, published, rejected
+    moderation_flags: Optional[List[str]] = []
     created_at: str
     updated_at: str
     chapter_count: int = 0
