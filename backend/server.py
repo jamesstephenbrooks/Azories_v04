@@ -1118,6 +1118,86 @@ async def delete_book(book_id: str, current_user: dict = Depends(get_current_use
     
     return {"message": "Book deleted"}
 
+# Book Image Library endpoint - save workflow outputs to book
+@api_router.post("/books/{book_id}/images")
+async def save_image_to_book(book_id: str, request: Request, current_user: dict = Depends(get_current_user)):
+    """Save an image from the Art Studio workflow to a book's image library"""
+    data = await request.json()
+    image_url = data.get("image_url")
+    name = data.get("name", "Workflow Image")
+    image_type = data.get("type", "illustration")  # character, scene, illustration
+    style = data.get("style", "fantasy")
+    metadata = data.get("metadata", {})
+    
+    if not image_url:
+        raise HTTPException(status_code=400, detail="image_url is required")
+    
+    # Verify user has access to this book
+    book = await db.books.find_one({"id": book_id}, {"_id": 0})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    # Check if user is author or collaborator
+    is_author = book["author_id"] == current_user["id"]
+    collaborators = book.get("collaborators", [])
+    is_collaborator = any(c.get("user_id") == current_user["id"] for c in collaborators)
+    
+    if not is_author and not is_collaborator:
+        raise HTTPException(status_code=403, detail="Not authorized to add images to this book")
+    
+    # Create book image entry
+    book_image = {
+        "id": str(uuid.uuid4()),
+        "book_id": book_id,
+        "user_id": current_user["id"],
+        "image_url": image_url,
+        "name": name,
+        "type": image_type,
+        "style": style,
+        "metadata": metadata,
+        "created_at": datetime.utcnow().isoformat()
+    }
+    
+    await db.book_images.insert_one(book_image)
+    
+    # Return without _id
+    book_image.pop("_id", None)
+    return {"success": True, "image": book_image}
+
+@api_router.get("/books/{book_id}/images")
+async def get_book_images(book_id: str, current_user: dict = Depends(get_current_user)):
+    """Get all images in a book's library"""
+    book = await db.books.find_one({"id": book_id}, {"_id": 0})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    # Check access
+    is_author = book["author_id"] == current_user["id"]
+    collaborators = book.get("collaborators", [])
+    is_collaborator = any(c.get("user_id") == current_user["id"] for c in collaborators)
+    
+    if not is_author and not is_collaborator:
+        raise HTTPException(status_code=403, detail="Not authorized to view this book's images")
+    
+    images = await db.book_images.find({"book_id": book_id}, {"_id": 0}).to_list(500)
+    return {"images": images}
+
+@api_router.delete("/books/{book_id}/images/{image_id}")
+async def delete_book_image(book_id: str, image_id: str, current_user: dict = Depends(get_current_user)):
+    """Delete an image from a book's library"""
+    book = await db.books.find_one({"id": book_id}, {"_id": 0})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    if book["author_id"] != current_user["id"]:
+        raise HTTPException(status_code=403, detail="Only the book author can delete images")
+    
+    result = await db.book_images.delete_one({"id": image_id, "book_id": book_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Image not found")
+    
+    return {"success": True}
+
 @api_router.get("/books/{book_id}/download")
 async def download_book_pdf(book_id: str, current_user: dict = Depends(get_current_user)):
     """Download a book as interactive PDF (for the creator only)"""
