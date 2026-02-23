@@ -179,14 +179,29 @@ const ChapterTitlePage = forwardRef(({ chapter, chapterNumber, totalChapters, is
 ChapterTitlePage.displayName = 'ChapterTitlePage';
 
 // Image-only page (for left side of spread) - now supports video too
+// Images and videos fill the entire page and are centered
 const ImagePage = forwardRef(({ page, pageNumber }, ref) => {
   const hasImage = page?.image_url && page.image_url.trim() !== '';
   const hasVideo = page?.video_url && page.video_url.trim() !== '';
   const useVideo = page?.use_video && hasVideo;
   
   return (
-    <Page ref={ref} pageNumber={pageNumber} isLeft={true}>
-      <div className="h-full w-full flex items-center justify-center -m-6 md:-m-10">
+    <div 
+      ref={ref}
+      className="demoPage page-wrapper relative w-full h-full"
+      data-density="soft"
+    >
+      {/* Full-page media container - no padding, fills entire page */}
+      <div 
+        className="absolute inset-0 bg-[#fdfbf7] dark:bg-[#2a2a30] overflow-hidden"
+        style={{
+          boxShadow: 'inset -7px 0 30px -7px rgba(0,0,0,0.12)',
+        }}
+      >
+        {/* Spine shadow gradient */}
+        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black/10 to-transparent pointer-events-none z-10" />
+        
+        {/* Full-page media - centered and covering the entire page */}
         {useVideo ? (
           <video 
             src={page.video_url}
@@ -194,9 +209,9 @@ const ImagePage = forwardRef(({ page, pageNumber }, ref) => {
             loop
             muted
             playsInline
-            className="w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full"
             style={{
-              objectFit: page.video_fit || 'cover',
+              objectFit: 'cover',
               objectPosition: 'center'
             }}
           />
@@ -204,14 +219,14 @@ const ImagePage = forwardRef(({ page, pageNumber }, ref) => {
           <img 
             src={page.image_url} 
             alt=""
-            className="w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full"
             style={{
-              objectFit: page.image_fit || 'cover',
+              objectFit: 'cover',
               objectPosition: `${page.image_position_x || 50}% ${page.image_position_y || 50}%`
             }}
           />
         ) : (
-          <div className="w-full h-full bg-muted/10 flex items-center justify-center">
+          <div className="absolute inset-0 bg-muted/10 flex items-center justify-center">
             <div className="text-center text-muted-foreground/40">
               <div className="w-16 h-16 mx-auto mb-2 rounded-full bg-muted/20 flex items-center justify-center">
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -222,8 +237,15 @@ const ImagePage = forwardRef(({ page, pageNumber }, ref) => {
             </div>
           </div>
         )}
+        
+        {/* Page number overlay */}
+        {pageNumber && (
+          <div className="absolute bottom-4 left-6 text-sm text-white/70 drop-shadow-lg z-20">
+            {pageNumber}
+          </div>
+        )}
       </div>
-    </Page>
+    </div>
   );
 });
 
