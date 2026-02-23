@@ -2505,17 +2505,42 @@ export default function ArtStudio() {
                           </p>
                         </div>
                       </div>
+                      {/* Animation badge */}
                       {item.type === 'animation' && (
                         <div className="absolute top-2 left-2 px-2 py-0.5 bg-pink-500 rounded text-xs text-white flex items-center gap-1">
                           <FiPlay className="w-2.5 h-2.5" />
                           Video
                         </div>
                       )}
+                      {/* Pro Studio badge */}
                       {item.source === 'pro_studio' && (
-                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-gradient-to-r from-yellow-500 to-orange-500 rounded text-xs text-white font-medium">
+                        <div className="absolute top-2 right-8 px-2 py-0.5 bg-gradient-to-r from-yellow-500 to-orange-500 rounded text-xs text-white font-medium">
                           PRO
                         </div>
                       )}
+                      {/* Animate button (only for images) */}
+                      {item.type !== 'animation' && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openAnimateModal(item.image_url);
+                          }}
+                          className="absolute bottom-2 left-2 p-1.5 bg-pink-500/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                          title="Animate this image"
+                        >
+                          <FiPlay className="w-3 h-3 text-white" />
+                        </button>
+                      )}
+                      {/* Delete button */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteFromGallery(item._id);
+                        }}
+                        className="absolute top-2 right-2 p-1.5 bg-red-500/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <FiTrash2 className="w-3 h-3 text-white" />
+                      </button>
                     </div>
                   );
                   
