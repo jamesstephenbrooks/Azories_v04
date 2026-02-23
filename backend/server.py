@@ -4232,6 +4232,65 @@ async def generate_tts(request: TTSRequest):
         logger.error(f"Error generating TTS: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error generating TTS: {str(e)}")
 
+# ============ SPEECH TO TEXT (WHISPER) ============
+
+@api_router.post("/speech-to-text")
+async def transcribe_audio(
+    file: UploadFile = File(...),
+    language: str = "en",
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Transcribe audio to text using OpenAI Whisper.
+    Used for voice narration feature in book editor.
+    Supports: mp3, mp4, mpeg, mpga, m4a, wav, webm (max 25MB)
+    """
+    try:
+        from emergentintegrations.llm.openai import OpenAISpeechToText
+        
+        emergent_key = os.environ.get("EMERGENT_LLM_KEY")
+        if not emergent_key:
+            raise HTTPException(status_code=500, detail="Speech-to-text service not configured")
+        
+        # Check file size (25MB limit)
+        contents = await file.read()
+        if len(contents) > 25 * 1024 * 1024:
+            raise HTTPException(status_code=400, detail="Audio file too large. Maximum size is 25MB.")
+        
+        # Check file type
+        valid_types = ["audio/mp3", "audio/mp4", "audio/mpeg", "audio/mpga", "audio/m4a", "audio/wav", "audio/webm", "audio/ogg", "video/webm"]
+        if file.content_type and file.content_type not in valid_types:
+            # Also accept by extension
+            if not any(file.filename.lower().endswith(ext) for ext in ['.mp3', '.mp4', '.mpeg', '.mpga', '.m4a', '.wav', '.webm', '.ogg']):
+                raise HTTPException(status_code=400, detail=f"Unsupported audio format: {file.content_type}")
+        
+        # Initialize Whisper STT
+        stt = OpenAISpeechToText(api_key=emergent_key)
+        
+        # Create file-like object from bytes
+        import io
+        audio_file = io.BytesIO(contents)
+        audio_file.name = file.filename or "audio.webm"
+        
+        # Transcribe
+        response = await stt.transcribe(
+            file=audio_file,
+            model="whisper-1",
+            language=language,
+            response_format="json",
+            prompt="This is a story being narrated for a children's book. Transcribe it clearly with proper punctuation."
+        )
+        
+        return {
+            "text": response.text,
+            "success": True
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error transcribing audio: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error transcribing audio: {str(e)}")
+
 # ============ FILE UPLOAD ============
 
 @api_router.post("/upload/image")
