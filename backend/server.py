@@ -386,6 +386,31 @@ class CharacterUpdate(BaseModel):
     special_features: Optional[str] = None
     add_reference_images: Optional[List[str]] = None  # Add more reference images
 
+# Scene Consistency Models
+class SceneCreate(BaseModel):
+    name: str
+    description: str  # Scene description (location, time of day, atmosphere)
+    style: Optional[str] = "illustration"
+    genre: Optional[str] = "fantasy"
+    reference_images: Optional[List[str]] = []  # Reference images for the scene
+    lighting: Optional[str] = None  # Lighting conditions
+    mood: Optional[str] = None  # Emotional mood
+    time_of_day: Optional[str] = None  # Morning, afternoon, night, etc.
+    weather: Optional[str] = None  # Weather conditions
+    location_type: Optional[str] = None  # Indoor, outdoor, urban, nature, etc.
+
+class SceneUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    style: Optional[str] = None
+    genre: Optional[str] = None
+    lighting: Optional[str] = None
+    mood: Optional[str] = None
+    time_of_day: Optional[str] = None
+    weather: Optional[str] = None
+    location_type: Optional[str] = None
+    add_reference_images: Optional[List[str]] = None
+
 # fal.ai Character Consistency Models
 class FalTrainLoraRequest(BaseModel):
     character_name: str
