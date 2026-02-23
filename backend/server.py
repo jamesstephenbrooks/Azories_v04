@@ -145,6 +145,53 @@ CREDIT_COSTS = {
     "video_generate": 10,      # Video generation
 }
 
+# Actual costs to us (for tracking VIP usage)
+ACTUAL_COSTS = {
+    "flux_generate": 0.025,    # $0.025 per image
+    "flux_pro_generate": 0.05, # $0.05 per image
+    "pulid_generate": 0.08,    # $0.08 per image
+    "lora_training": 2.00,     # $2.00 per training
+    "lora_generate": 0.05,     # $0.05 per image
+    "video_generate": 0.50,    # $0.50 per video (5 second)
+}
+
+# VIP users who get unlimited free credits (but we track usage)
+VIP_USERS = [
+    "arianamillb@icloud.com",
+    "jamesstephenbrooks@outlook.com"
+]
+
+# Credit packages for purchase (with 50% profit margin)
+CREDIT_PACKAGES = {
+    "starter": {
+        "credits": 100,
+        "price": 5.00,
+        "description": "~10 AI images or 1 video",
+        "popular": False
+    },
+    "creator": {
+        "credits": 500,
+        "price": 20.00,
+        "description": "~50 AI images or 5 videos",
+        "popular": True
+    },
+    "pro": {
+        "credits": 1000,
+        "price": 35.00,
+        "description": "~100 AI images or 1 LoRA training",
+        "popular": False
+    },
+    "studio": {
+        "credits": 5000,
+        "price": 150.00,
+        "description": "~500 AI images or 50 videos",
+        "popular": False
+    }
+}
+
+# Stripe configuration
+STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY', 'sk_test_emergent')
+
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
