@@ -134,11 +134,13 @@ All books have:
 - ✅ LoRA training workflow UI - Validated Train button logic works correctly
 - ✅ Credits security - Regular users must now purchase via Stripe, can't add credits directly
 - ✅ PuLID/LoRA style consistency - Now includes character's style/genre in generation prompts
+- ✅ fal.ai API key updated - New key working for all fal.ai features
+- ✅ Scene Templates - Now shows landscape thumbnails in Scene Creator tab
+- ✅ Animation API fix - Removed unsupported image_path parameter from Sora 2 calls
 
 ### Feature Requests (Not Yet Implemented)
 - Node Editor: Workflow button on every output
 - Node Editor: Node copy/duplication functionality
-- Quick Templates: Should change based on active tab (Character vs Scene)
 
 ### P3 (Low Priority)
 - Grand Library stair navigation/camera issues
