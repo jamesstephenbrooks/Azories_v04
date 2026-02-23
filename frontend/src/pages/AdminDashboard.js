@@ -596,7 +596,7 @@ export default function AdminDashboard() {
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => navigate(`/read/${book.id}`)}
+                              onClick={() => window.open(`/read/${book.id}`, '_blank')}
                               className="text-xs border-white/20 text-white hover:bg-white/10"
                             >
                               <FiEye className="w-3 h-3 mr-1" />
@@ -606,7 +606,7 @@ export default function AdminDashboard() {
                               size="sm"
                               variant="outline"
                               onClick={() => handleRunModeration(book.id, book.title)}
-                              disabled={moderating === book.id}
+                              disabled={moderating === book.id || book.moderation_run_at}
                               className="text-xs bg-blue-500/10 hover:bg-blue-500/20 border-blue-500/50 text-blue-400"
                             >
                               {moderating === book.id ? (
