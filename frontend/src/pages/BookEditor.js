@@ -412,6 +412,7 @@ export default function BookEditor() {
             image_url_3: selectedPage.image_url_3,
             image_url_4: selectedPage.image_url_4,
             video_url: selectedPage.video_url,
+            use_video: selectedPage.use_video,
             layout_type: selectedPage.layout_type
           }, {
             headers: { Authorization: `Bearer ${token}` }
