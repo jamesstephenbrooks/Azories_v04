@@ -7034,6 +7034,23 @@ async def request_book_publish(book_id: str, background_tasks: BackgroundTasks, 
         "message": "Your book has been submitted for review. An admin will review it and you will be notified once it's approved."
     }
 
+@api_router.post("/books/{book_id}/unpublish")
+async def unpublish_book(book_id: str, current_user: dict = Depends(get_current_user)):
+    """User can unpublish their own book (withdraw from publication)"""
+    book = await db.books.find_one({"id": book_id, "author_id": current_user["id"]})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found or you don't own it")
+    
+    await db.books.update_one(
+        {"id": book_id},
+        {"$set": {
+            "is_published": False,
+            "publish_status": "draft"
+        }}
+    )
+    
+    return {"success": True, "message": "Book unpublished and returned to draft status"}
+
 @api_router.post("/admin/books/{book_id}/approve")
 async def admin_approve_book(book_id: str, admin: dict = Depends(get_admin_user)):
     """Admin endpoint to approve a book for publication"""
