@@ -1425,60 +1425,69 @@ export default function BookEditor() {
                       )}
                     </div>
                     
-                    <Tabs defaultValue="image">
+                    <Tabs defaultValue="media">
                       <TabsList className="mb-4">
-                        <TabsTrigger value="image" data-testid="tab-image">
+                        <TabsTrigger value="media" data-testid="tab-media">
                           <FiImage className="mr-2 w-4 h-4" />
-                          Image
-                        </TabsTrigger>
-                        <TabsTrigger value="video" data-testid="tab-video">
-                          <FiVideo className="mr-2 w-4 h-4" />
-                          Video
+                          Media
                         </TabsTrigger>
                       </TabsList>
                       
-                      <TabsContent value="image" className="space-y-4">
-                        {/* Image Preview(s) */}
-                        {selectedPage.layout_type?.startsWith('comic') ? (
-                          <div className={`grid gap-2 ${
-                            selectedPage.layout_type === 'comic_2' ? 'grid-cols-2' :
-                            selectedPage.layout_type === 'comic_3' ? 'grid-cols-3' :
-                            selectedPage.layout_type === 'comic_4' ? 'grid-cols-2 grid-rows-2' : ''
-                          }`}>
-                            {[1, 2, 3, 4].slice(0, 
-                              selectedPage.layout_type === 'comic_2' ? 2 :
-                              selectedPage.layout_type === 'comic_3' ? 3 : 4
-                            ).map((slot) => {
-                              const imgUrl = slot === 1 ? selectedPage.image_url :
-                                            slot === 2 ? selectedPage.image_url_2 :
-                                            slot === 3 ? selectedPage.image_url_3 :
-                                            selectedPage.image_url_4;
-                              return (
-                                <div 
-                                  key={slot}
-                                  className={`aspect-square rounded-xl border-2 ${
-                                    activeImageSlot === slot ? 'border-primary' : 'border-dashed border-border'
-                                  } bg-muted/30 overflow-hidden cursor-pointer`}
-                                  onClick={() => setActiveImageSlot(slot)}
-                                >
-                                  {imgUrl ? (
-                                    <img src={imgUrl} alt={`Panel ${slot}`} className="w-full h-full object-cover" />
-                                  ) : (
-                                    <div className="w-full h-full flex items-center justify-center">
-                                      <span className="font-ui text-sm text-muted-foreground">Panel {slot}</span>
-                                    </div>
-                                  )}
-                                </div>
-                              );
-                            })}
-                          </div>
-                        ) : (
-                          /* Portrait aspect ratio - Book page preview (WYSIWYG) */
-                          <div className="space-y-3">
+                      <TabsContent value="media" className="space-y-4">
+                        {/* Media Preview - Constrained height to fit viewport */}
+                        <div className="max-h-[35vh] overflow-hidden">
+                          {selectedPage.use_video && selectedPage.video_url ? (
+                            /* Video Preview */
+                            <div className="aspect-video rounded-2xl border-2 border-border bg-muted/30 overflow-hidden flex items-center justify-center max-h-[35vh]">
+                              <video 
+                                src={selectedPage.video_url}
+                                controls
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ) : selectedPage.layout_type?.startsWith('comic') ? (
+                            /* Comic layout panels */
+                            <div className={`grid gap-2 ${
+                              selectedPage.layout_type === 'comic_2' ? 'grid-cols-2' :
+                              selectedPage.layout_type === 'comic_3' ? 'grid-cols-3' :
+                              selectedPage.layout_type === 'comic_4' ? 'grid-cols-2 grid-rows-2' : ''
+                            }`}>
+                              {[1, 2, 3, 4].slice(0, 
+                                selectedPage.layout_type === 'comic_2' ? 2 :
+                                selectedPage.layout_type === 'comic_3' ? 3 : 4
+                              ).map((slot) => {
+                                const imgUrl = slot === 1 ? selectedPage.image_url :
+                                              slot === 2 ? selectedPage.image_url_2 :
+                                              slot === 3 ? selectedPage.image_url_3 :
+                                              selectedPage.image_url_4;
+                                return (
+                                  <div 
+                                    key={slot}
+                                    className={`aspect-square rounded-xl border-2 ${
+                                      activeImageSlot === slot ? 'border-primary' : 'border-dashed border-border'
+                                    } bg-muted/30 overflow-hidden cursor-pointer`}
+                                    onClick={() => setActiveImageSlot(slot)}
+                                  >
+                                    {imgUrl ? (
+                                      <img src={imgUrl} alt={`Panel ${slot}`} className="w-full h-full object-cover" />
+                                    ) : (
+                                      <div className="w-full h-full flex items-center justify-center">
+                                        <span className="font-ui text-sm text-muted-foreground">Panel {slot}</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            /* Book page preview - scaled to fit */
                             <div 
-                              className="rounded-2xl border-2 border-border bg-[#fdfbf7] dark:bg-[#2a2a30] overflow-hidden flex items-center justify-center relative aspect-[3/4] shadow-lg"
+                              className="rounded-2xl border-2 border-border bg-[#fdfbf7] dark:bg-[#2a2a30] overflow-hidden flex items-center justify-center relative shadow-lg mx-auto"
                               data-testid="page-image-preview"
                               style={{
+                                aspectRatio: '3/4',
+                                maxHeight: '35vh',
+                                width: 'auto',
                                 boxShadow: 'inset -7px 0 30px -7px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.1)'
                               }}
                             >
@@ -1492,19 +1501,114 @@ export default function BookEditor() {
                                     objectPosition: `${selectedPage.image_position_x || 50}% ${selectedPage.image_position_y || 50}%`
                                   }}
                                 />
+                              ) : selectedPage.video_url ? (
+                                <video 
+                                  src={selectedPage.video_url}
+                                  className="absolute inset-0 w-full h-full object-cover"
+                                  muted
+                                  loop
+                                />
                               ) : (
                                 <div className="text-center p-4">
                                   <FiImage className="w-8 h-8 mx-auto text-muted-foreground/50 mb-1" />
                                   <p className="font-body text-xs text-muted-foreground">
-                                    No image - use options below
+                                    No media - use options below
                                   </p>
                                 </div>
                               )}
-                              {/* Page preview label */}
+                              {/* Preview label */}
                               <div className="absolute bottom-2 left-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded">
-                                Preview: Left Page
+                                {selectedPage.use_video ? 'Video' : 'Image'} Preview
                               </div>
                             </div>
+                          )}
+                        </div>
+                        
+                        {/* Use Video Toggle - Always visible if video exists */}
+                        {selectedPage.video_url && (
+                          <div className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20">
+                            <div>
+                              <Label className="font-ui text-sm">Use video on page</Label>
+                              <p className="text-xs text-muted-foreground">Show video instead of image when reading</p>
+                            </div>
+                            <input
+                              type="checkbox"
+                              checked={selectedPage.use_video || false}
+                              onChange={(e) => setSelectedPage({ ...selectedPage, use_video: e.target.checked })}
+                              className="w-5 h-5 accent-purple-500"
+                              data-testid="use-video-toggle"
+                            />
+                          </div>
+                        )}
+                        
+                        {/* Quick Actions - Upload buttons side by side */}
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <input
+                              type="file"
+                              ref={fileInputRef}
+                              onChange={handleImageUpload}
+                              accept="image/*"
+                              className="hidden"
+                            />
+                            <Button
+                              variant="outline"
+                              onClick={() => fileInputRef.current?.click()}
+                              className="w-full rounded-full"
+                              data-testid="upload-image-btn"
+                            >
+                              <FiUpload className="mr-2 w-4 h-4" />
+                              Upload Image
+                            </Button>
+                          </div>
+                          <div>
+                            <input
+                              type="file"
+                              ref={videoInputRef}
+                              onChange={handleVideoUpload}
+                              accept="video/*"
+                              className="hidden"
+                            />
+                            <Button
+                              variant="outline"
+                              onClick={() => videoInputRef.current?.click()}
+                              className="w-full rounded-full"
+                              data-testid="upload-video-btn"
+                              disabled={isUploading}
+                            >
+                              {isUploading && videoUploadProgress > 0 ? (
+                                <FiLoader className="mr-2 w-4 h-4 animate-spin" />
+                              ) : (
+                                <FiUpload className="mr-2 w-4 h-4" />
+                              )}
+                              {isUploading ? `${videoUploadProgress}%` : 'Upload Video'}
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        {/* Video Upload Progress Bar */}
+                        {isUploading && videoUploadProgress > 0 && (
+                          <div className="space-y-1">
+                            <Progress value={videoUploadProgress} className="h-2" />
+                            <p className="text-xs text-muted-foreground text-center">
+                              {videoUploadProgress}% uploaded
+                            </p>
+                          </div>
+                        )}
+                        
+                        {/* Gallery Button - Select from galleries */}
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            fetchGalleryImages();
+                            setShowGalleryPicker(true);
+                          }}
+                          className="w-full rounded-full border-purple-500/50 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-500/10"
+                          data-testid="media-from-gallery-btn"
+                        >
+                          <FiGrid className="mr-2 w-4 h-4" />
+                          Select from Galleries (Images & Animations)
+                        </Button>
                             
                             {/* Book Gallery Quick Access - Show assigned images for this book */}
                             {bookGallery.length > 0 && !selectedPage.image_url && (
