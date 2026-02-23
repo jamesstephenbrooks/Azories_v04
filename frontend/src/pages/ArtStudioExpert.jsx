@@ -1887,6 +1887,87 @@ export default function ArtStudioExpert() {
           </motion.div>
         )}
       </AnimatePresence>
+      
+      {/* Save to Book Modal with Dropdown */}
+      <AnimatePresence>
+        {showSaveToBookModal && imageToSave && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-8"
+            onClick={() => setShowSaveToBookModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="bg-gradient-to-b from-[#2a2035] to-[#1a1520] rounded-2xl border border-white/10 shadow-2xl p-6 w-full max-w-md"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                  <FiBook className="text-emerald-400" />
+                  Save to Book
+                </h3>
+                <button
+                  onClick={() => setShowSaveToBookModal(false)}
+                  className="p-1.5 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+                >
+                  <FiX className="w-5 h-5" />
+                </button>
+              </div>
+              
+              {/* Image Preview */}
+              <div className="mb-4 rounded-xl overflow-hidden border border-white/10 aspect-square max-h-48 mx-auto">
+                <img 
+                  src={imageToSave} 
+                  alt="Image to save" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              
+              {/* Book Selection */}
+              <div className="mb-6">
+                <label className="text-sm text-white/70 mb-2 block">Select Book</label>
+                <select
+                  value={selectedBookId}
+                  onChange={(e) => setSelectedBookId(e.target.value)}
+                  className="w-full bg-black/40 border border-white/20 rounded-lg px-4 py-3 text-white appearance-none"
+                  data-testid="save-to-book-dropdown"
+                >
+                  <option value="general">General Gallery (No Book)</option>
+                  {userBooks.map(book => (
+                    <option key={book.id} value={book.id}>{book.title}</option>
+                  ))}
+                </select>
+              </div>
+              
+              {/* Actions */}
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowSaveToBookModal(false)}
+                  className="flex-1 border-white/20 text-white"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={async () => {
+                    await saveToBook(imageToSave, selectedBookId);
+                    setShowSaveToBookModal(false);
+                    setImageToSave(null);
+                  }}
+                  className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500"
+                >
+                  <FiCheck className="w-4 h-4 mr-2" />
+                  Save
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
