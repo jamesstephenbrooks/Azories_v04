@@ -37,18 +37,21 @@ Build a full-featured digital book platform ("Azories") with:
   - All admin endpoints now use `get_admin_user` dependency
   - Admin token stored in `azories-admin-token` localStorage
   
-- **Publishing Workflow Refined**:
-  - User clicks "Submit for Review" → status changes to `pending_review`
+- **Publishing Workflow FIXED**:
+  - User clicks "Submit for Review" → status changes to `pending_review` (NOT directly published)
   - Email notification sent to `book@azories.com`
   - Dashboard shows status badges: Published (green), Pending Review (amber), Rejected (red), Draft (gray)
   - Admin manually triggers AI moderation from dashboard
+  - Fixed all direct publish buttons in Dashboard.js and MySeries.js
   
 - **COMBINED Admin Dashboard** (at `/admin`):
   - **Stats Bar**: Pending Review, Flagged, Total Books, Published, Total Users
+  - **Search & Filters**: Search by title/author, filter by Genre, filter by Age Rating
+  - **Generate Missing Covers**: AI-powered cover generation for books without images
   - **Tabs**:
     - Pending Reviews: View books awaiting approval, run AI moderation, approve/reject
     - All Books: Full CMS - publish/unpublish, feature, best-of-week, delete
-    - Users: User management - name, email, subscription, credits, join date
+    - Users: User management with search - name, email, subscription, credits, join date
     - Analytics: Total books, published, users, pro users, views, reads
   - "Seed Test Books" button for testing
   
