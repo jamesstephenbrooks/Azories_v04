@@ -402,6 +402,19 @@ const ReferenceNode = ({ data, selected }) => {
       <Handle type="target" position={Position.Left} className="!bg-cyan-400 !w-3 !h-3" />
       <NodeDeleteButton onDelete={data.onDelete} />
       
+      {/* Copy button */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          data.onCopyNode?.();
+        }}
+        className="absolute top-0.5 right-5 w-4 h-4 rounded bg-blue-500/80 hover:bg-blue-500 flex items-center justify-center transition-colors z-10"
+        title="Duplicate node"
+        data-testid="reference-node-copy-btn"
+      >
+        <FiCopy className="w-2.5 h-2.5 text-white" />
+      </button>
+      
       <div className="p-2 border-b border-cyan-600/30 flex items-center gap-2">
         <div className="w-5 h-5 rounded-lg bg-cyan-500/30 flex items-center justify-center flex-shrink-0">
           <FiImage className="text-cyan-300 w-3 h-3" />
