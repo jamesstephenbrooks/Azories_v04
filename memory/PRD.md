@@ -54,6 +54,28 @@ Build a digital book creation and reading application named "Azories" with featu
 - All Pro Studio tabs functional
 - Character and scene creation with AI thumbnails working
 
+### Payment & Credits System (Feb 23, 2026)
+**Pricing Model (50% profit margin):**
+- Starter: 100 credits for $5 (~10 images)
+- Creator: 500 credits for $20 (~50 images) - MOST POPULAR
+- Pro: 1,000 credits for $35 (~100 images or 1 LoRA)
+- Studio: 5,000 credits for $150 (~500 images)
+
+**VIP Users (Unlimited Credits - tracked for costs):**
+- arianamillb@icloud.com
+- jamesstephenbrooks@outlook.com
+
+### Professional Features Added (Feb 23, 2026)
+- Cookie Consent popup (GDPR compliant)
+- Terms of Service page (/terms)
+- Privacy Policy page (/privacy)
+- Contact form (/contact) - books@azories.com
+- Admin Analytics dashboard (/admin/analytics)
+  - User metrics, revenue, book stats
+  - Credit usage tracking
+  - VIP cost monitoring
+- Stripe payment integration for credit purchases
+
 ## Sample Books Created (Feb 23, 2026)
 6 fully illustrated children's books with AI-generated content:
 1. **Luna's Rainbow Adventure** - Sci-Fi (3D render style)
