@@ -7017,7 +7017,8 @@ async def request_book_publish(book_id: str, background_tasks: BackgroundTasks, 
     await db.books.update_one({"id": book_id}, {"$set": update_data})
     
     # Send email notification to admin with AI moderation results
-    admin_email = "book@azories.com"
+    # Note: Until azories.com domain is verified in Resend, emails go to the registered account email
+    admin_email = os.environ.get("ADMIN_NOTIFY_EMAIL", "jamesstephenbrooks@outlook.com")
     app_url = os.environ.get("APP_URL", "https://book-hub-pro.preview.emergentagent.com")
     
     # Different email based on moderation result
