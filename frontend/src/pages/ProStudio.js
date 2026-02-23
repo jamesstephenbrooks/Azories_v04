@@ -2211,6 +2211,239 @@ export default function ProStudio() {
             )}
           </TabsContent>
 
+          {/* Scenes Tab */}
+          <TabsContent value="scenes" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Create Scene Panel */}
+              <div className="bg-black/40 rounded-xl border border-purple-500/20 p-6">
+                <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                  <FiLayers className="text-purple-400" /> Create Scene
+                </h2>
+                <p className="text-gray-400 text-sm mb-4">
+                  Create consistent scenes/environments for your book illustrations.
+                </p>
+
+                {/* Scene Name */}
+                <Input
+                  placeholder="Scene name (e.g., Enchanted Forest, Cyber City)"
+                  value={sceneName}
+                  onChange={(e) => setSceneName(e.target.value)}
+                  className="bg-gray-800/50 border-gray-700 text-white mb-4"
+                />
+
+                {/* Scene Description */}
+                <Textarea
+                  placeholder="Describe the scene in detail... (e.g., 'A mystical forest with glowing mushrooms, ancient trees with faces, soft mist floating between the roots')"
+                  value={sceneDescription}
+                  onChange={(e) => setSceneDescription(e.target.value)}
+                  className="bg-gray-800/50 border-gray-700 text-white mb-4"
+                  rows={3}
+                />
+
+                {/* Style & Genre */}
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div>
+                    <label className="text-gray-400 text-xs mb-1 block">Visual Style</label>
+                    <Select value={sceneStyle} onValueChange={setSceneStyle}>
+                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-700 max-h-60">
+                        {characterStyles.map((style) => (
+                          <SelectItem key={style.id} value={style.id} className="text-white">{style.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-gray-400 text-xs mb-1 block">Genre</label>
+                    <Select value={sceneGenre} onValueChange={setSceneGenre}>
+                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-700 max-h-60">
+                        {characterGenres.map((genre) => (
+                          <SelectItem key={genre.id} value={genre.id} className="text-white">{genre.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Location, Lighting, Mood */}
+                <div className="grid grid-cols-3 gap-3 mb-4">
+                  <div>
+                    <label className="text-gray-400 text-xs mb-1 block">Location</label>
+                    <Select value={sceneLocationType} onValueChange={setSceneLocationType}>
+                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-700">
+                        {sceneOptions.location_types?.map((loc) => (
+                          <SelectItem key={loc.id} value={loc.id} className="text-white">{loc.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-gray-400 text-xs mb-1 block">Lighting</label>
+                    <Select value={sceneLighting} onValueChange={setSceneLighting}>
+                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-700">
+                        {sceneOptions.lighting?.map((light) => (
+                          <SelectItem key={light.id} value={light.id} className="text-white">{light.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-gray-400 text-xs mb-1 block">Mood</label>
+                    <Select value={sceneMood} onValueChange={setSceneMood}>
+                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-700">
+                        {sceneOptions.moods?.map((mood) => (
+                          <SelectItem key={mood.id} value={mood.id} className="text-white">{mood.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Time of Day & Weather (optional) */}
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <Input
+                    placeholder="Time of day (e.g., sunset)"
+                    value={sceneTimeOfDay}
+                    onChange={(e) => setSceneTimeOfDay(e.target.value)}
+                    className="bg-gray-800/50 border-gray-700 text-white text-sm"
+                  />
+                  <Input
+                    placeholder="Weather (e.g., light rain)"
+                    value={sceneWeather}
+                    onChange={(e) => setSceneWeather(e.target.value)}
+                    className="bg-gray-800/50 border-gray-700 text-white text-sm"
+                  />
+                </div>
+
+                <Button 
+                  onClick={createScene}
+                  disabled={isCreatingScene || !sceneName.trim() || !sceneDescription.trim()}
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                >
+                  {isCreatingScene ? 'Creating...' : 'Create Scene'}
+                </Button>
+              </div>
+
+              {/* My Scenes Panel */}
+              <div className="bg-black/40 rounded-xl border border-purple-500/20 p-6">
+                <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                  <FiLayers className="text-purple-400" /> My Scenes
+                </h2>
+                
+                {scenes.length === 0 ? (
+                  <div className="text-center py-12">
+                    <FiLayers className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                    <p className="text-gray-400">No scenes yet</p>
+                    <p className="text-gray-500 text-sm">Create your first scene for consistent backgrounds</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 gap-4 max-h-96 overflow-y-auto">
+                    {scenes.map((scene) => (
+                      <div
+                        key={scene.id}
+                        className={`rounded-lg border-2 transition-all ${
+                          selectedScene?.id === scene.id 
+                            ? 'border-purple-500 bg-purple-900/30' 
+                            : 'border-gray-700 hover:border-purple-500/50'
+                        } p-3`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <img 
+                            src={scene.thumbnail || scene.reference_images?.[0]} 
+                            alt={scene.name}
+                            className="w-20 h-14 rounded-lg object-cover cursor-pointer"
+                            onClick={() => setPreviewImage({ url: scene.thumbnail, prompt: scene.name })}
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white font-medium truncate">{scene.name}</p>
+                            <p className="text-gray-500 text-xs truncate">{scene.description_prompt}</p>
+                            <div className="flex gap-1 mt-1 flex-wrap">
+                              {scene.lighting && <span className="text-xs bg-gray-700 px-1.5 py-0.5 rounded text-gray-300">{scene.lighting}</span>}
+                              {scene.mood && <span className="text-xs bg-gray-700 px-1.5 py-0.5 rounded text-gray-300">{scene.mood}</span>}
+                            </div>
+                          </div>
+                          <div className="flex gap-1">
+                            <Button
+                              size="sm"
+                              variant={selectedScene?.id === scene.id ? "default" : "outline"}
+                              onClick={() => setSelectedScene(scene)}
+                              className={selectedScene?.id === scene.id ? "bg-purple-600" : "border-gray-600"}
+                            >
+                              {selectedScene?.id === scene.id ? <FiCheck /> : 'Use'}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => deleteScene(scene.id)}
+                              className="text-red-400 hover:bg-red-500/20 p-1"
+                            >
+                              <FiTrash2 size={14} />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Generate with Scene */}
+            {selectedScene && (
+              <div className="bg-black/40 rounded-xl border border-purple-500/20 p-6">
+                <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                  <FiZap className="text-amber-400" /> Generate with Scene
+                </h2>
+                <p className="text-gray-400 text-sm mb-4">
+                  Generate images using "{selectedScene.name}" settings. 
+                  {selectedCharacter && ` Adding ${selectedCharacter.name} to the scene.`}
+                </p>
+
+                <Textarea
+                  placeholder="Additional prompt (optional) - describe what's happening in this scene..."
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  className="bg-gray-800/50 border-gray-700 text-white mb-4"
+                  rows={2}
+                />
+
+                <div className="flex gap-3">
+                  <Button 
+                    onClick={generateWithScene}
+                    disabled={isLoading}
+                    className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                  >
+                    <FiZap className="mr-2" /> Generate Scene Image
+                  </Button>
+                  {selectedCharacter && (
+                    <div className="flex items-center gap-2 bg-gray-800/50 px-3 py-2 rounded-lg">
+                      <img 
+                        src={selectedCharacter.thumbnail} 
+                        alt={selectedCharacter.name}
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                      <span className="text-sm text-gray-300">{selectedCharacter.name}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </TabsContent>
+
           {/* Cinema Studio Tab */}
           <TabsContent value="cinema" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
