@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -7,14 +7,19 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { toast } from 'sonner';
 import { 
   FiShield, FiBook, FiCheck, FiX, FiAlertTriangle, 
   FiEye, FiEyeOff, FiClock, FiUser, FiArrowLeft, FiLogIn, FiSearch, FiRefreshCw,
-  FiUsers, FiBarChart2, FiStar, FiAward, FiTrash2, FiLock, FiLogOut, FiDatabase
+  FiUsers, FiBarChart2, FiStar, FiAward, FiTrash2, FiLock, FiLogOut, FiDatabase, FiFilter
 } from 'react-icons/fi';
 
 const API = process.env.REACT_APP_BACKEND_URL;
+
+// Available genres and age ratings
+const GENRES = ['All', 'Fantasy', 'Adventure', 'Mystery', 'Science Fiction', 'Fairy Tales', 'Educational', 'Animals', 'Humor', 'Action', 'Other'];
+const AGE_RATINGS = ['All', 'All Ages', '5+', '8+', '12+', '16+'];
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -23,6 +28,12 @@ export default function AdminDashboard() {
   const [password, setPassword] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
   const [adminName, setAdminName] = useState('Admin');
+  
+  // Search & Filter State
+  const [searchQuery, setSearchQuery] = useState('');
+  const [genreFilter, setGenreFilter] = useState('All');
+  const [ageFilter, setAgeFilter] = useState('All');
+  const [userSearchQuery, setUserSearchQuery] = useState('');
   
   // Content Review State
   const [pendingBooks, setPendingBooks] = useState([]);
