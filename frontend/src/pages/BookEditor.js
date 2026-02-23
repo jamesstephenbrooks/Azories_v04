@@ -1954,6 +1954,16 @@ export default function BookEditor() {
           {/* Gallery Tabs */}
           <div className="flex flex-wrap gap-2 mt-2 border-b border-border pb-2">
             <button
+              onClick={() => setGalleryTab('starter')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                galleryTab === 'starter' 
+                  ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white' 
+                  : 'bg-amber-500/20 hover:bg-amber-500/30 text-amber-600'
+              }`}
+            >
+              ⭐ Starter Library ({starterLibraryImages.length})
+            </button>
+            <button
               onClick={() => setGalleryTab('book')}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                 galleryTab === 'book' 
@@ -1996,6 +2006,45 @@ export default function BookEditor() {
           </div>
           
           <div className="mt-4">
+            {/* Starter Library images */}
+            {galleryTab === 'starter' && (
+              <ScrollArea className="h-[50vh]">
+                {starterLibraryImages.length === 0 ? (
+                  <div className="text-center py-12">
+                    <FiImage className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
+                    <h3 className="font-medium text-lg mb-2">Loading starter images...</h3>
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Free images to get you started! Click any image to add it to your page.
+                    </p>
+                    <div className="grid grid-cols-4 md:grid-cols-5 gap-3">
+                      {starterLibraryImages.map((img) => (
+                        <div 
+                          key={img.id}
+                          className="relative group cursor-pointer rounded-lg overflow-hidden border-2 border-transparent hover:border-amber-500 transition-all"
+                          onClick={() => addGalleryImageToPage(img.url, activeImageSlot)}
+                        >
+                          <img 
+                            src={img.url} 
+                            alt={img.name} 
+                            className="w-full aspect-square object-cover"
+                          />
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
+                            <span className="text-white text-xs font-medium truncate">{img.name}</span>
+                          </div>
+                          <div className="absolute top-1 right-1 bg-amber-500 text-white text-[8px] px-1 rounded">
+                            {img.category}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </ScrollArea>
+            )}
+            
             {/* Art Studio images */}
             {(galleryTab === 'book' || galleryTab === 'all') && (() => {
               const currentImages = galleryTab === 'book' ? galleryImages : generalGalleryImages;
