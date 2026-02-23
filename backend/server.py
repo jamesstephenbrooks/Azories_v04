@@ -6570,6 +6570,34 @@ async def art_studio_gallery(
         logging.error(f"Art Studio gallery error: {e}")
         raise HTTPException(status_code=500, detail="Failed to load gallery")
 
+
+@api_router.post("/art-studio/gallery/migrate-sources")
+async def migrate_gallery_sources(current_user: dict = Depends(get_current_user)):
+    """Migrate gallery items to have correct source based on type"""
+    try:
+        # Update items with type='character' or type='scene' that have wrong source
+        result = await db.art_studio_gallery.update_many(
+            {
+                "user_id": current_user["id"],
+                "$or": [
+                    {"type": "character"},
+                    {"type": "scene"}
+                ],
+                "source": {"$ne": "pro_studio"}
+            },
+            {"$set": {"source": "pro_studio"}}
+        )
+        
+        return {
+            "success": True,
+            "modified": result.modified_count,
+            "message": f"Updated {result.modified_count} items to pro_studio source"
+        }
+    except Exception as e:
+        logging.error(f"Migration error: {e}")
+        raise HTTPException(status_code=500, detail="Migration failed")
+
+
 @api_router.post("/art-studio/gallery")
 async def add_to_art_studio_gallery(request: dict, current_user: dict = Depends(get_current_user)):
     """Save an image to the Art Studio gallery"""
