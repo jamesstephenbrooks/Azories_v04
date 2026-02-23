@@ -210,6 +210,14 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
     user: UserResponse
 
+# Password Reset Models
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+
 class BookCreate(BaseModel):
     title: str
     description: Optional[str] = ""
