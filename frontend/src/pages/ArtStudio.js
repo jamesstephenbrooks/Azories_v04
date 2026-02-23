@@ -107,77 +107,158 @@ const QUICK_TEMPLATES = [
 
 // SCENE QUICK TEMPLATES - Landscape/environment templates for Scene Creator
 const SCENE_QUICK_TEMPLATES = [
+  // Fantasy & Magical
   {
     id: 'enchanted-forest',
     name: 'Enchanted Forest',
     description: 'Magical forest with glowing mushrooms',
-    image: 'https://images.unsplash.com/photo-1770203691538-23b02e1b11ce?w=200&h=120&fit=crop',
+    image: 'https://images.unsplash.com/photo-1763321402439-41eb2a0c7e7b?w=300&h=180&fit=crop',
     preset: 'forest',
     timeOfDay: 'dusk',
     weather: 'foggy',
     mood: 'mysterious',
-    customStyle: 'magical enchanted forest, bioluminescent mushrooms, ancient twisted trees, ethereal mist, fairy tale atmosphere, mystical lighting, fantasy art style',
+    category: 'fantasy',
+    customStyle: 'magical enchanted forest, bioluminescent mushrooms, ancient twisted trees, ethereal mist, fairy tale atmosphere, mystical lighting',
     popular: true
   },
   {
+    id: 'fantasy-castle',
+    name: 'Fantasy Castle',
+    description: 'Majestic castle on mountain peak',
+    image: 'https://images.unsplash.com/photo-1763446365107-6b35499f487c?w=300&h=180&fit=crop',
+    preset: 'castle',
+    timeOfDay: 'day',
+    weather: 'clear',
+    mood: 'epic',
+    category: 'fantasy',
+    customStyle: 'majestic fantasy castle, mountain peak, fairy tale kingdom, dramatic clouds, medieval architecture, epic fantasy landscape'
+  },
+  // Nature & Outdoors
+  {
     id: 'sunset-beach',
-    name: 'Golden Sunset Beach',
-    description: 'Tropical paradise at golden hour',
-    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=200&h=120&fit=crop',
+    name: 'Tropical Sunset',
+    description: 'Paradise beach at golden hour',
+    image: 'https://images.pexels.com/photos/14923406/pexels-photo-14923406.jpeg?w=300&h=180&fit=crop',
     preset: 'beach',
     timeOfDay: 'dusk',
     weather: 'clear',
     mood: 'peaceful',
-    customStyle: 'tropical beach sunset, golden hour lighting, palm trees silhouettes, calm ocean waves, vibrant orange and pink sky, paradise vacation vibes',
+    category: 'nature',
+    customStyle: 'tropical beach sunset, golden hour lighting, palm trees silhouettes, calm ocean waves, vibrant sky',
     popular: true
   },
   {
+    id: 'snowy-mountain',
+    name: 'Alpine Peaks',
+    description: 'Majestic snow-capped mountains',
+    image: 'https://images.pexels.com/photos/31048552/pexels-photo-31048552.jpeg?w=300&h=180&fit=crop',
+    preset: 'mountain',
+    timeOfDay: 'dawn',
+    weather: 'snowy',
+    mood: 'epic',
+    category: 'nature',
+    customStyle: 'majestic snow-capped mountain peaks, alpine landscape, pristine snow, dramatic sky, adventure atmosphere'
+  },
+  {
+    id: 'desert-dunes',
+    name: 'Golden Desert',
+    description: 'Vast desert dunes at sunset',
+    image: 'https://images.pexels.com/photos/712392/pexels-photo-712392.jpeg?w=300&h=180&fit=crop',
+    preset: 'desert',
+    timeOfDay: 'dusk',
+    weather: 'clear',
+    mood: 'peaceful',
+    category: 'nature',
+    customStyle: 'vast desert landscape, golden sand dunes, sunset sky, warm golden light, serene atmosphere'
+  },
+  {
+    id: 'cherry-blossom',
+    name: 'Cherry Blossoms',
+    description: 'Japanese spring garden',
+    image: 'https://images.pexels.com/photos/15589092/pexels-photo-15589092.jpeg?w=300&h=180&fit=crop',
+    preset: 'garden',
+    timeOfDay: 'day',
+    weather: 'clear',
+    mood: 'peaceful',
+    category: 'nature',
+    customStyle: 'japanese cherry blossom garden, pink sakura flowers, spring atmosphere, soft natural light, serene beauty'
+  },
+  // Sci-Fi & Futuristic
+  {
     id: 'neon-city',
     name: 'Cyberpunk City',
-    description: 'Futuristic neon-lit cityscape',
-    image: 'https://images.unsplash.com/photo-1747499967281-c0c5eec9933c?w=200&h=120&fit=crop',
+    description: 'Neon-lit futuristic cityscape',
+    image: 'https://images.pexels.com/photos/31419072/pexels-photo-31419072.jpeg?w=300&h=180&fit=crop',
     preset: 'city',
     timeOfDay: 'night',
     weather: 'rainy',
     mood: 'dramatic',
-    customStyle: 'cyberpunk city at night, neon signs, rain-slicked streets, towering skyscrapers, holographic advertisements, blade runner atmosphere',
+    category: 'scifi',
+    customStyle: 'cyberpunk city at night, neon signs, rain-slicked streets, holographic ads, blade runner atmosphere',
     popular: true
   },
   {
     id: 'cosmic-space',
     name: 'Cosmic Nebula',
-    description: 'Breathtaking space with stars and nebulae',
-    image: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=200&h=120&fit=crop',
+    description: 'Deep space with stars and galaxies',
+    image: 'https://images.unsplash.com/photo-1504812333783-63b845853c20?w=300&h=180&fit=crop',
     preset: 'space',
     timeOfDay: 'night',
     weather: 'clear',
     mood: 'epic',
-    customStyle: 'cosmic space scene, colorful nebula clouds, millions of stars, distant galaxies, epic scale, science fiction atmosphere, astronomical beauty',
-    popular: true
+    category: 'scifi',
+    customStyle: 'cosmic space scene, colorful nebula clouds, millions of stars, distant galaxies, science fiction'
   },
   {
-    id: 'snowy-mountain',
-    name: 'Snowy Peaks',
-    description: 'Majestic snow-capped mountains',
-    image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=120&fit=crop',
-    preset: 'mountain',
-    timeOfDay: 'dawn',
-    weather: 'snowy',
-    mood: 'epic',
-    customStyle: 'majestic snow-capped mountain peaks, dramatic alpine landscape, pristine white snow, misty valleys, epic scale, adventure atmosphere',
-    popular: true
+    id: 'scifi-interior',
+    name: 'Spaceship Bridge',
+    description: 'Futuristic spacecraft interior',
+    image: 'https://images.unsplash.com/photo-1656187304167-f5efa9b94dbe?w=300&h=180&fit=crop',
+    preset: 'interior',
+    timeOfDay: 'day',
+    weather: 'clear',
+    mood: 'dramatic',
+    category: 'scifi',
+    customStyle: 'futuristic spaceship interior, control panels, holographic displays, sleek technology, sci-fi atmosphere'
   },
+  // Indoor & Interior
   {
     id: 'cozy-library',
     name: 'Ancient Library',
-    description: 'Mystical library with towering bookshelves',
-    image: 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=200&h=120&fit=crop',
+    description: 'Cozy library with towering shelves',
+    image: 'https://images.pexels.com/photos/2553425/pexels-photo-2553425.jpeg?w=300&h=180&fit=crop',
     preset: 'library',
     timeOfDay: 'day',
     weather: 'clear',
     mood: 'peaceful',
-    customStyle: 'ancient magical library, towering wooden bookshelves, warm candlelight, floating books, dust motes in sunbeams, cozy scholarly atmosphere',
-    popular: true
+    category: 'interior',
+    customStyle: 'ancient library, towering wooden bookshelves, warm candlelight, cozy scholarly atmosphere'
+  },
+  // Underwater
+  {
+    id: 'underwater-reef',
+    name: 'Coral Kingdom',
+    description: 'Vibrant underwater coral reef',
+    image: 'https://images.pexels.com/photos/920157/pexels-photo-920157.jpeg?w=300&h=180&fit=crop',
+    preset: 'underwater',
+    timeOfDay: 'day',
+    weather: 'clear',
+    mood: 'peaceful',
+    category: 'underwater',
+    customStyle: 'vibrant underwater coral reef, tropical fish, crystal clear water, colorful marine life, ocean paradise'
+  },
+  // Dark & Mysterious
+  {
+    id: 'haunted-mansion',
+    name: 'Haunted Manor',
+    description: 'Spooky gothic mansion',
+    image: 'https://images.unsplash.com/photo-1640303850203-7bf7c76b4557?w=300&h=180&fit=crop',
+    preset: 'mansion',
+    timeOfDay: 'night',
+    weather: 'foggy',
+    mood: 'mysterious',
+    category: 'dark',
+    customStyle: 'haunted gothic mansion, dark atmosphere, eerie chandelier, shadows, spooky victorian interior'
   }
 ];
 
