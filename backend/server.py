@@ -165,21 +165,21 @@ VIP_USERS = [
 CREDIT_PACKAGES = {
     "starter": {
         "credits": 100,
-        "price": 4.00,
+        "price": 5.00,
         "currency": "gbp",
         "description": "~10 AI images or 1 video",
         "popular": False
     },
     "creator": {
         "credits": 500,
-        "price": 16.00,
+        "price": 18.00,
         "currency": "gbp",
         "description": "~50 AI images or 5 videos",
         "popular": True
     },
     "pro": {
         "credits": 1000,
-        "price": 28.00,
+        "price": 30.00,
         "currency": "gbp",
         "description": "~100 AI images or 1 LoRA training",
         "popular": False
