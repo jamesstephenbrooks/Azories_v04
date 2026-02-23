@@ -766,6 +766,120 @@ export default function ArtStudioExpert() {
     setEdges(eds => eds.filter(edge => edge.source !== nodeId && edge.target !== nodeId));
   }, [setNodes, setEdges]);
   
+  // Copy/Duplicate a node with offset position
+  const copyNode = useCallback((nodeId) => {
+    const nodeToCopy = nodes.find(n => n.id === nodeId);
+    if (!nodeToCopy) return;
+    
+    const newNodeId = `${nodeToCopy.type}-${Date.now()}`;
+    const offsetX = 50;
+    const offsetY = 50;
+    
+    // Deep copy the data, excluding function handlers
+    const copiedData = { ...nodeToCopy.data };
+    delete copiedData.onChange;
+    delete copiedData.onDelete;
+    delete copiedData.onCopyNode;
+    delete copiedData.onContinueWorkflow;
+    delete copiedData.onDownload;
+    delete copiedData.onSaveToGallery;
+    delete copiedData.onSaveToBook;
+    delete copiedData.onExpand;
+    
+    // For output nodes, don't copy the generated image (start fresh)
+    if (nodeToCopy.type === 'output') {
+      copiedData.image = null;
+      copiedData.generating = false;
+    }
+    
+    const newNode = {
+      id: newNodeId,
+      type: nodeToCopy.type,
+      position: { 
+        x: nodeToCopy.position.x + offsetX, 
+        y: nodeToCopy.position.y + offsetY 
+      },
+      data: copiedData
+    };
+    
+    // Add handlers
+    newNode.data.onChange = (k, v) => updateNodeData(newNodeId, k, v);
+    newNode.data.onDelete = () => deleteNodeById(newNodeId);
+    newNode.data.onCopyNode = () => copyNode(newNodeId);
+    
+    setNodes(nds => [...nds, newNode]);
+    console.log(`Copied node ${nodeId} to ${newNodeId}`);
+  }, [nodes, setNodes, updateNodeData, deleteNodeById]);
+  
+  // Continue workflow from an output image - creates an ImageNode for further branching
+  const continueWorkflow = useCallback((imageUrl, sourceNodeId) => {
+    const sourceNode = nodes.find(n => n.id === sourceNodeId);
+    const newNodeId = `image-${Date.now()}`;
+    
+    const newNode = {
+      id: newNodeId,
+      type: 'image',
+      position: { 
+        x: (sourceNode?.position?.x || 600) + 100, 
+        y: (sourceNode?.position?.y || 130) 
+      },
+      data: {
+        image: imageUrl,
+        label: 'Workflow Output',
+        onChange: (k, v) => updateNodeData(newNodeId, k, v),
+        onDelete: () => deleteNodeById(newNodeId),
+        onCopyNode: () => copyNode(newNodeId)
+      }
+    };
+    
+    setNodes(nds => [...nds, newNode]);
+    console.log(`Created continuation node from ${sourceNodeId}`);
+  }, [nodes, setNodes, updateNodeData, deleteNodeById]);
+  
+  // Save image to a specific book's library
+  const saveToBook = useCallback(async (imageUrl, bookId) => {
+    if (!bookId || bookId === 'general') {
+      // Fall back to general gallery
+      await saveToGallery(imageUrl);
+      return;
+    }
+    
+    try {
+      const characterNode = nodes.find(n => n.type === 'character');
+      const sceneNode = nodes.find(n => n.type === 'scene');
+      const styleNode = nodes.find(n => n.type === 'style');
+      
+      const response = await fetch(`${API_URL}/api/books/${bookId}/images`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          image_url: imageUrl,
+          name: characterNode?.data?.name || sceneNode?.data?.preset || 'Workflow Image',
+          type: characterNode ? 'character' : sceneNode ? 'scene' : 'illustration',
+          style: styleNode?.data?.style || 'fantasy',
+          metadata: {
+            characterData: characterNode?.data || null,
+            sceneData: sceneNode?.data || null,
+            workflowName: workflowName
+          }
+        })
+      });
+      
+      if (response.ok) {
+        const bookName = userBooks.find(b => b.id === bookId)?.title || 'book';
+        alert(`Image saved to "${bookName}" library!`);
+      } else {
+        throw new Error('Failed to save to book');
+      }
+    } catch (error) {
+      console.error('Save to book error:', error);
+      alert('Failed to save image to book library');
+    }
+  }, [nodes, token, workflowName, userBooks]);
+  
   // Handle keyboard shortcuts for deletion
   useEffect(() => {
     const handleKeyDown = (e) => {
