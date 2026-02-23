@@ -3485,6 +3485,7 @@ async def generate_consistent_character_image(
 # ==================== END FAL.AI ENDPOINTS ====================
 
 
+@api_router.post("/ai/generate-story")
 async def generate_story(request: AIStoryRequest, current_user: dict = Depends(get_current_user)):
     """Generate a complete story from an idea using AI"""
     if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
