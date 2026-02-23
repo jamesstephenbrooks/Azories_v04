@@ -930,11 +930,11 @@ export default function Dashboard() {
                           </Button>
                         </div>
                         
-                        {/* Right side - Prominent Publish button */}
+                        {/* Right side - Publish button */}
                         <Button 
                           variant={book.is_published || book.publish_status === 'published' ? "outline" : "default"}
                           size="sm"
-                          className={`rounded-full px-6 ${
+                          className={`rounded-full px-3 text-xs ${
                             book.is_published || book.publish_status === 'published'
                               ? 'border-green-500 text-green-600 hover:bg-green-50'
                               : book.publish_status === 'pending_review'
@@ -946,17 +946,17 @@ export default function Dashboard() {
                         >
                           {book.is_published || book.publish_status === 'published' ? (
                             <>
-                              <FiEyeOff className="mr-2 w-4 h-4" />
+                              <FiEyeOff className="mr-1 w-3 h-3" />
                               Unpublish
                             </>
                           ) : book.publish_status === 'pending_review' ? (
                             <>
-                              <FiClock className="mr-2 w-4 h-4" />
-                              Pending Review
+                              <FiClock className="mr-1 w-3 h-3" />
+                              Pending
                             </>
                           ) : (
                             <>
-                              <FiSend className="mr-2 w-4 h-4" />
+                              <FiSend className="mr-1 w-3 h-3" />
                               Publish
                             </>
                           )}
