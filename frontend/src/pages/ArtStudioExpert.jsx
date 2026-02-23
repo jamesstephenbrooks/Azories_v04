@@ -999,7 +999,8 @@ export default function ArtStudioExpert() {
       ...node,
       data: {
         ...node.data,
-        onChange: (k, v) => updateNodeData(node.id, k, v)
+        onChange: (k, v) => updateNodeData(node.id, k, v),
+        onSelectFromGallery: node.type === 'image' ? () => openGalleryPicker(node.id) : undefined
       }
     })));
   }, []);
