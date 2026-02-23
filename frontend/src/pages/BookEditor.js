@@ -1609,6 +1609,30 @@ export default function BookEditor() {
                           <FiGrid className="mr-2 w-4 h-4" />
                           Select from Galleries (Images & Animations)
                         </Button>
+                        
+                        {/* Book Gallery Quick Access */}
+                        {bookGallery.length > 0 && !selectedPage.image_url && (
+                          <div className="bg-muted/30 rounded-xl p-3">
+                            <div className="flex items-center justify-between mb-2">
+                              <h4 className="text-xs font-semibold text-foreground/70">
+                                Book Gallery ({bookGallery.length})
+                              </h4>
+                            </div>
+                            <div className="grid grid-cols-4 gap-2 max-h-16 overflow-hidden">
+                              {bookGallery.slice(0, 4).map((img) => (
+                                <div 
+                                  key={img.id}
+                                  className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-primary transition-colors"
+                                  onClick={() => addGalleryImageToPage(img.image_url, activeImageSlot)}
+                                >
+                                  <img src={img.image_url} alt="" className="w-full h-full object-cover" />
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </TabsContent>
+                    </Tabs>
                   </div>
                 </ScrollArea>
               </div>
