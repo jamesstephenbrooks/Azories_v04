@@ -1148,13 +1148,6 @@ export default function ProStudio() {
       setLoadingProgress(0);
     }
   };
-    } catch (error) {
-      toast.error('Error animating image');
-      console.error(error);
-      setIsLoading(false);
-      setLoadingProgress(0);
-    }
-  };
 
   // Simulate progress for long-running video generation
   const startVideoProgressSimulation = () => {
