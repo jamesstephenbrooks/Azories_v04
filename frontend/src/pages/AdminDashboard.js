@@ -811,7 +811,7 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((user) => (
+                  {filteredUsers.map((user) => (
                     <tr key={user.id} className="border-b border-white/5 hover:bg-white/5">
                       <td className="p-4 text-white font-medium">{user.name}</td>
                       <td className="p-4 text-white/70">{user.email}</td>
@@ -832,9 +832,9 @@ export default function AdminDashboard() {
                   ))}
                 </tbody>
               </table>
-              {users.length === 0 && (
+              {filteredUsers.length === 0 && (
                 <div className="text-center py-12 text-white/60">
-                  No users found
+                  {users.length === 0 ? 'No users found' : 'No users match your search'}
                 </div>
               )}
             </div>
