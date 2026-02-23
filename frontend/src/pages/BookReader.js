@@ -75,6 +75,87 @@ export default function BookReader() {
   // Swipe state for visual feedback
   const [swipeHint, setSwipeHint] = useState(null);
   
+  // Responsive window size for mobile/landscape
+  const [windowSize, setWindowSize] = useState({
+    width: typeof window !== 'undefined' ? window.innerWidth : 1200,
+    height: typeof window !== 'undefined' ? window.innerHeight : 800
+  });
+  
+  // Listen to window resize for responsive book sizing
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    };
+    window.addEventListener('resize', handleResize);
+    // Also listen for orientation change on mobile
+    window.addEventListener('orientationchange', () => {
+      setTimeout(handleResize, 100); // Delay to get accurate dimensions
+    });
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
+  }, []);
+  
+  // Calculate responsive book dimensions
+  const getBookDimensions = () => {
+    const { width: vw, height: vh } = windowSize;
+    const isLandscape = vw > vh;
+    const isMobile = vw < 768;
+    const isTablet = vw >= 768 && vw < 1024;
+    
+    if (isFullscreen) {
+      // Fullscreen mode - maximize usage
+      if (isLandscape) {
+        const bookWidth = Math.min(vw * 0.38, 700);
+        const bookHeight = Math.min(vh * 0.85, 900);
+        return { width: bookWidth, height: bookHeight };
+      } else {
+        const bookWidth = Math.min(vw * 0.45, 600);
+        const bookHeight = Math.min(vh * 0.70, 800);
+        return { width: bookWidth, height: bookHeight };
+      }
+    }
+    
+    // Normal mode - account for header and controls
+    if (isMobile) {
+      if (isLandscape) {
+        // Mobile landscape - wider but shorter
+        const availableHeight = vh - 180; // Header + controls
+        const bookHeight = Math.min(availableHeight * 0.85, 400);
+        const bookWidth = Math.min(bookHeight * 0.7, vw * 0.35);
+        return { width: bookWidth, height: bookHeight };
+      } else {
+        // Mobile portrait
+        const bookWidth = Math.min(vw * 0.42, 280);
+        const bookHeight = Math.min(vh * 0.45, 400);
+        return { width: bookWidth, height: bookHeight };
+      }
+    }
+    
+    if (isTablet) {
+      if (isLandscape) {
+        // Tablet landscape (iPad)
+        const bookWidth = Math.min(vw * 0.32, 450);
+        const bookHeight = Math.min(vh * 0.65, 600);
+        return { width: bookWidth, height: bookHeight };
+      } else {
+        // Tablet portrait
+        const bookWidth = Math.min(vw * 0.40, 400);
+        const bookHeight = Math.min(vh * 0.50, 550);
+        return { width: bookWidth, height: bookHeight };
+      }
+    }
+    
+    // Desktop
+    return { width: 500, height: 680 };
+  };
+  
+  const bookDimensions = getBookDimensions();
+  
   const isCover = currentPage === -1;
   const totalPages = allPages.length;
   const currentPageData = currentPage >= 0 ? allPages[currentPage] : null;
