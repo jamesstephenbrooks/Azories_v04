@@ -6980,84 +6980,54 @@ If content is safe, respond: {"flagged": false, "categories": [], "reason": "Con
 
 @api_router.post("/books/{book_id}/request-publish")
 async def request_book_publish(book_id: str, background_tasks: BackgroundTasks, current_user: dict = Depends(get_current_user)):
-    """Request to publish a book - triggers content moderation and admin notification"""
+    """Request to publish a book - sends notification to admin for review"""
     
     # Get the book
     book = await db.books.find_one({"id": book_id, "author_id": current_user["id"]})
     if not book:
         raise HTTPException(status_code=404, detail="Book not found or you don't own it")
     
-    # Get all pages content for moderation
-    chapters = await db.chapters.find({"book_id": book_id}).to_list(100)
-    all_text_content = []
-    
-    for chapter in chapters:
-        pages = await db.pages.find({"chapter_id": chapter["id"]}).to_list(100)
-        for page in pages:
-            if page.get("text_content"):
-                all_text_content.append(page["text_content"])
-    
-    combined_text = "\n\n".join(all_text_content)
-    
-    # Moderate the content
-    moderation_result = await moderate_text_content(combined_text)
-    
-    # Update book status
+    # Update book status to pending review (admin will run moderation manually)
     update_data = {
-        "publish_status": "pending_review" if moderation_result.flagged else "pending_review",
-        "moderation_flags": moderation_result.categories,
-        "moderation_message": moderation_result.message,
+        "publish_status": "pending_review",
         "publish_requested_at": datetime.now(timezone.utc).isoformat()
     }
     
     await db.books.update_one({"id": book_id}, {"$set": update_data})
     
-    # Send email notification to admin if content is flagged
-    admin_email = "books@azories.com"
-    app_url = os.environ.get("APP_URL", "https://azories.com")
+    # Send email notification to admin
+    admin_email = "book@azories.com"
+    app_url = os.environ.get("APP_URL", "https://book-hub-pro.preview.emergentagent.com")
     
-    if moderation_result.flagged:
-        subject = f"⚠️ FLAGGED: Book '{book['title']}' requires review"
-        html_content = f"""
-        <html>
-        <body style="font-family: Arial, sans-serif; padding: 20px;">
-            <h2 style="color: #dc2626;">⚠️ Content Flagged for Review</h2>
-            <p><strong>Book:</strong> {book['title']}</p>
-            <p><strong>Author:</strong> {current_user.get('name', 'Unknown')} ({current_user.get('email', 'Unknown')})</p>
-            <p><strong>Flagged Categories:</strong> {', '.join(moderation_result.categories)}</p>
-            <p><strong>AI Assessment:</strong> {moderation_result.message}</p>
-            <hr>
-            <p>Please review this book before approving for publication.</p>
-            <p><a href="{app_url}/admin/books/{book_id}" style="background: #7c3aed; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Review Book</a></p>
-        </body>
-        </html>
-        """
-    else:
-        subject = f"📚 New book submitted: '{book['title']}'"
-        html_content = f"""
-        <html>
-        <body style="font-family: Arial, sans-serif; padding: 20px;">
-            <h2 style="color: #16a34a;">📚 New Book Submission</h2>
-            <p><strong>Book:</strong> {book['title']}</p>
-            <p><strong>Author:</strong> {current_user.get('name', 'Unknown')} ({current_user.get('email', 'Unknown')})</p>
-            <p><strong>Status:</strong> ✅ Passed automated content check</p>
-            <hr>
-            <p>This book has passed automated moderation but still requires admin approval.</p>
-            <p><a href="{app_url}/admin/books/{book_id}" style="background: #7c3aed; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Review & Approve</a></p>
-        </body>
-        </html>
-        """
+    subject = f"📚 New book submitted for review: '{book['title']}'"
+    html_content = f"""
+    <html>
+    <body style="font-family: Arial, sans-serif; padding: 20px;">
+        <h2 style="color: #7c3aed;">📚 New Book Submission</h2>
+        <p><strong>Book:</strong> {book['title']}</p>
+        <p><strong>Author:</strong> {current_user.get('name', 'Unknown')} ({current_user.get('email', 'Unknown')})</p>
+        <p><strong>Genre:</strong> {book.get('genre', 'Unknown')}</p>
+        <p><strong>Age Rating:</strong> {book.get('age_rating', 'All Ages')}</p>
+        <hr>
+        <p>Please log in to the Admin Dashboard to review this book and run content moderation.</p>
+        <p><a href="{app_url}/admin" style="background: #7c3aed; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Go to Admin Dashboard</a></p>
+        <br>
+        <p style="color: #666; font-size: 12px;">Admin Login: Username: Admin</p>
+    </body>
+    </html>
+    """
     
     # Send email in background
     if email_configured():
         background_tasks.add_task(send_email, admin_email, subject, html_content)
+        logging.info(f"Admin notification email sent for book {book_id}")
+    else:
+        logging.warning(f"Email not configured - admin notification for book {book_id} skipped")
     
     return {
         "success": True,
         "status": "pending_review",
-        "flagged": moderation_result.flagged,
-        "flags": moderation_result.categories,
-        "message": "Your book has been submitted for review. You will be notified once it's approved." if not moderation_result.flagged else "Your book has been flagged for manual review due to potential content concerns."
+        "message": "Your book has been submitted for review. An admin will review it and you will be notified once it's approved."
     }
 
 @api_router.post("/admin/books/{book_id}/approve")
