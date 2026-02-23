@@ -2151,34 +2151,43 @@ export default function ArtStudio() {
                         <div className="grid grid-cols-3 gap-2 mt-3">
                           <Button
                             onClick={async () => {
+                              const animationToken = localStorage.getItem('azories-token');
+                              if (!animationToken) {
+                                toast.error('Please log in to save');
+                                return;
+                              }
+                              
                               try {
                                 console.log('Saving animation to gallery...');
-                                const response = await fetch(`${API_URL}/api/art-studio/save-animation`, {
+                                console.log('Video URL type:', typeof animatedVideo);
+                                console.log('Video URL starts with:', animatedVideo?.substring(0, 50));
+                                
+                                const saveResponse = await fetch(`${API_URL}/api/art-studio/save-animation`, {
                                   method: 'POST',
                                   headers: {
                                     'Content-Type': 'application/json',
-                                    'Authorization': `Bearer ${token}`
+                                    'Authorization': `Bearer ${animationToken}`
                                   },
                                   body: JSON.stringify({
                                     video_url: animatedVideo,
                                     name: `Animation ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`,
-                                    motion_prompt: animationMotion,
-                                    style: animationStyle
+                                    motion_prompt: animationMotion || 'animation',
+                                    style: animationStyle || 'natural'
                                   })
                                 });
-                                const data = await response.json();
-                                console.log('Save response:', data);
-                                if (response.ok && data.success) {
+                                
+                                const saveData = await saveResponse.json();
+                                console.log('Save response:', saveData);
+                                
+                                if (saveResponse.ok && saveData.success) {
                                   toast.success('Animation saved to gallery!');
                                   loadGallery(); // Refresh gallery
                                 } else {
-                                  const errorMsg = data.detail || 'Failed to save';
-                                  throw new Error(errorMsg);
+                                  toast.error('Failed to save: ' + (saveData.detail || 'Server error'));
                                 }
-                              } catch (error) {
-                                console.error('Save animation error:', error);
-                                const errorMessage = typeof error === 'string' ? error : (error.message || 'Unknown error');
-                                toast.error('Failed to save: ' + errorMessage);
+                              } catch (err) {
+                                console.error('Save animation error:', err);
+                                toast.error('Failed to save animation');
                               }
                             }}
                             className="bg-green-600 hover:bg-green-700"
