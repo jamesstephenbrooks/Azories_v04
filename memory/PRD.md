@@ -145,6 +145,11 @@ All books have:
 - ✅ Node Editor: Image node type for workflow continuation
 - ✅ Voice Narration: Speech-to-text for book writing (OpenAI Whisper)
 - ✅ LoRA Training: Fixed with new fal.ai API key - training now starts successfully
+- ✅ Email System: Welcome emails, password reset flow with Resend
+- ✅ Dashboard: Book cover thumbnails in My Books cards
+- ✅ Book Editor: Video support with "Use video on page" toggle
+- ✅ Book Editor: Gallery picker with Art Studio + Pro Studio galleries
+- ✅ Book Reader: Full-page images/videos with proper aspect ratio
 
 ### P3 (Low Priority)
 - Grand Library stair navigation/camera issues
