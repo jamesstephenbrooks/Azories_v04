@@ -9,6 +9,7 @@ Build a digital book creation and reading application named "Azories" with featu
 - 3D library environment
 - Art Studio for generating assets
 - **Pro Studio** for AI-powered character and scene consistency
+- **Business Model** with credits, Stripe payments, VIP users, and admin analytics
 
 ## What's Been Implemented
 
@@ -47,25 +48,20 @@ Build a digital book creation and reading application named "Azories" with featu
    - Video generation (Sora 2)
    - Gallery for saving generated images
 
-### E2E Testing Results (Feb 23, 2026)
-- **Backend: 100% (33/33 tests passed)**
-- **Frontend: 100% (all tested features working)**
-- fal.ai integration confirmed working with updated API key
-- All Pro Studio tabs functional
-- Character and scene creation with AI thumbnails working
-
-### Payment & Credits System (Feb 23, 2026)
+### Payment & Credits System (Completed - Feb 23, 2026)
 **Pricing Model (50% profit margin) - GBP:**
-- Starter: 100 credits for £4 (~10 images)
-- Creator: 500 credits for £16 (~50 images) - MOST POPULAR
-- Pro: 1,000 credits for £28 (~100 images or 1 LoRA)
-- Studio: 5,000 credits for £120 (~500 images)
+| Package | Credits | Price |
+|---------|---------|-------|
+| Starter | 100 | £5 |
+| Creator | 500 | £18 (Most Popular) |
+| Pro | 1,000 | £30 |
+| Studio | 5,000 | £120 |
 
 **VIP Users (Unlimited Credits - tracked for costs):**
 - arianamillb@icloud.com
 - jamesstephenbrooks@outlook.com
 
-### Professional Features Added (Feb 23, 2026)
+### Professional Features (Completed - Feb 23, 2026)
 - Cookie Consent popup (GDPR compliant)
 - Terms of Service page (/terms)
 - Privacy Policy page (/privacy)
@@ -91,6 +87,13 @@ All books have:
 - Age-appropriate engaging stories
 - Published and ready to read
 
+## E2E Testing Results (Feb 23, 2026)
+- **Backend: 100% (33/33 tests passed)**
+- **Frontend: 100% (all tested features working)**
+- fal.ai integration confirmed working
+- All Pro Studio tabs functional
+- Character and scene creation with AI thumbnails working
+
 ## Architecture
 
 ### Frontend (/app/frontend)
@@ -98,9 +101,11 @@ All books have:
 - react-pageflip for book animations
 - Shadcn/UI components
 - Key files:
-  - `/pages/ProStudio.js` - Pro Studio UI (~3000+ lines)
+  - `/pages/ProStudio.js` - Pro Studio UI (~3300 lines)
   - `/pages/BookReader.js` - Main reader component
   - `/pages/BookEditor.js` - Book editing
+  - `/pages/Credits.js` - Credit purchasing UI
+  - `/pages/AdminAnalytics.js` - Admin dashboard
 
 ### Backend (/app/backend)
 - FastAPI
@@ -108,50 +113,51 @@ All books have:
 - fal.ai integration for image generation
 - OpenAI TTS integration
 - Key files:
-  - `server.py` - Main API (monolithic)
+  - `server.py` - Main API (~6500 lines, monolithic)
   - `fal_service.py` - fal.ai integration
 
-### Environment
+### Environment Variables
 - Frontend: REACT_APP_BACKEND_URL
-- Backend: MONGO_URL, DB_NAME, EMERGENT_LLM_KEY, FAL_KEY
+- Backend: MONGO_URL, DB_NAME, EMERGENT_LLM_KEY, FAL_KEY, STRIPE_API_KEY
 
 ## Known Issues / Pending
 
-### P0 (Critical)
-- None currently blocking
+### P1 (High Priority)
+- iPad "Read Aloud" fix needs real-device testing
+- LoRA training full workflow validation needed
 
-### P1 (High)
-- ~~Re-enable credits system~~ ✅ DONE (Feb 23, 2026) - Credits now deducted for all Pro Studio operations
-- LoRA training full workflow validation
-- ~~Video generation UX~~ ✅ IMPROVED (Feb 23, 2026) - Added progress bar display
-
-### P2 (Medium)
+### P2 (Medium Priority)
 - Back cover visibility at end of book
-- "Read Aloud" button error on iPad
 - Scene list may need refresh to show newly created scenes
 
-### P3 (Low)
+### P3 (Low Priority)
 - Grand Library stair navigation/camera issues
-- iPad/iPhone UI layout fixes
-- Code refactoring (split server.py and ProStudio.js)
+- iPad/iPhone UI layout optimizations
+- Code refactoring (split server.py and ProStudio.js into modules)
 
-## Upcoming Tasks
-1. **Deploy to azories.com** - User's next requested step
-2. Re-enable credits system before deployment
-3. Full LoRA training implementation and testing
+## Next Tasks
+1. Mobile UI/UX testing on real iPad
+2. LoRA training workflow validation
+3. Fix back cover visibility regression
+
+## Future/Backlog
+- Export Book as PDF feature
+- Book Editor collaboration features
+- Additional mobile optimizations
+- Code modularization (low priority since app is stable)
 
 ## 3rd Party Integrations
 - **OpenAI GPT-4o & Sora 2** (via Emergent LLM Key) - Text generation, video
 - **fal.ai** (fal-client) - Image generation (FLUX), PuLID, LoRA
+- **Stripe** - Payment processing
 - **react-pageflip** - Book animations
 - **React Three Fiber / Drei** - 3D library view
 
 ## Test Credentials
 - Email: test@test.com
 - Password: test123
-- OR Email: test / Password: test (alternate)
 
-## API Endpoints (Key)
+## Key API Endpoints
 - `POST /api/auth/login` - User login
 - `GET/POST /api/pro-studio/characters` - Character CRUD
 - `GET/POST /api/pro-studio/scenes` - Scene CRUD
@@ -160,3 +166,6 @@ All books have:
 - `POST /api/art-studio/gallery` - Save to main gallery
 - `GET /api/credits/balance` - Get credits
 - `POST /api/credits/add` - Add credits
+- `POST /api/create-checkout-session` - Stripe checkout
+- `GET /api/admin/analytics` - Admin dashboard data
+- `POST /api/contact` - Contact form submission
