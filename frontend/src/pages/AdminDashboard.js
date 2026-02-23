@@ -625,8 +625,8 @@ export default function AdminDashboard() {
 
           {/* All Books Tab */}
           <TabsContent value="books" className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-heading font-bold text-white">All Books</h2>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <h2 className="text-xl font-heading font-bold text-white">All Books ({filteredBooks.length})</h2>
               <Button
                 onClick={seedTestBooks}
                 disabled={loading}
@@ -636,6 +636,52 @@ export default function AdminDashboard() {
                 <FiDatabase className="w-4 h-4 mr-2" />
                 {loading ? 'Seeding...' : 'Seed Test Books'}
               </Button>
+            </div>
+            
+            {/* Search and Filter Bar */}
+            <div className="flex flex-col md:flex-row gap-3 p-4 bg-white/5 rounded-xl border border-white/10">
+              <div className="relative flex-1">
+                <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 w-4 h-4" />
+                <Input
+                  placeholder="Search by title or author..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                  data-testid="book-search-input"
+                />
+              </div>
+              <Select value={genreFilter} onValueChange={setGenreFilter}>
+                <SelectTrigger className="w-full md:w-[180px] bg-white/5 border-white/10 text-white" data-testid="genre-filter">
+                  <FiFilter className="w-4 h-4 mr-2 text-white/40" />
+                  <SelectValue placeholder="Genre" />
+                </SelectTrigger>
+                <SelectContent>
+                  {GENRES.map(genre => (
+                    <SelectItem key={genre} value={genre}>{genre}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={ageFilter} onValueChange={setAgeFilter}>
+                <SelectTrigger className="w-full md:w-[150px] bg-white/5 border-white/10 text-white" data-testid="age-filter">
+                  <FiUser className="w-4 h-4 mr-2 text-white/40" />
+                  <SelectValue placeholder="Age Rating" />
+                </SelectTrigger>
+                <SelectContent>
+                  {AGE_RATINGS.map(age => (
+                    <SelectItem key={age} value={age}>{age}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {(searchQuery || genreFilter !== 'All' || ageFilter !== 'All') && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => { setSearchQuery(''); setGenreFilter('All'); setAgeFilter('All'); }}
+                  className="text-white/60 hover:text-white"
+                >
+                  Clear
+                </Button>
+              )}
             </div>
             
             <div className="bg-white/5 backdrop-blur rounded-2xl border border-white/10 overflow-hidden">
@@ -651,7 +697,7 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {allBooks.map((book) => (
+                  {filteredBooks.map((book) => (
                     <tr key={book.id} className="border-b border-white/5 hover:bg-white/5">
                       <td className="p-4">
                         <div className="w-12 h-16 rounded-lg overflow-hidden bg-white/10">
