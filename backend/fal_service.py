@@ -116,7 +116,7 @@ async def generate_image_flux(
 async def generate_with_face_id(
     prompt: str,
     reference_image_url: str,
-    id_weight: float = 1.5,
+    id_weight: float = 1.0,
     image_size: str = "landscape_16_9",
     seed: Optional[int] = None,
     mode: str = "fidelity"  # "fidelity" for max face similarity, "style" for more artistic freedom
@@ -131,7 +131,7 @@ async def generate_with_face_id(
     Args:
         prompt: Text description of the scene/pose
         reference_image_url: URL or base64 of the reference face image
-        id_weight: Strength of identity preservation (0.0-3.0, higher = more similar face)
+        id_weight: Strength of identity preservation (0.0-1.0, higher = more similar face)
         image_size: Output image size
         seed: Random seed for reproducibility
         mode: "fidelity" for max face match, "style" for artistic variation
@@ -142,9 +142,12 @@ async def generate_with_face_id(
     if not FAL_KEY:
         raise Exception("FAL_KEY not configured")
     
-    # Adjust id_weight based on mode
+    # Ensure id_weight is within valid range (0.0 - 1.0)
+    id_weight = min(max(id_weight, 0.0), 1.0)
+    
+    # For fidelity mode, use maximum weight
     if mode == "fidelity":
-        id_weight = max(id_weight, 1.8)  # Higher weight for better face match
+        id_weight = 1.0
     
     arguments = {
         "prompt": prompt,
@@ -152,9 +155,8 @@ async def generate_with_face_id(
         "id_weight": id_weight,
         "image_size": image_size,
         "num_images": 1,
-        "guidance_scale": 3.5,  # Lower guidance for better face preservation
-        "num_inference_steps": 30,  # More steps for better quality
-        "true_cfg_scale": 1.5  # Enable true CFG for better prompt following
+        "guidance_scale": 3.0,  # Lower guidance for better face preservation
+        "num_inference_steps": 30  # More steps for better quality
     }
     
     if seed is not None:
