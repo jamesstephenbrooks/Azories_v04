@@ -1653,10 +1653,6 @@ export default function ArtStudioExpert() {
             className="bg-transparent"
             selectionOnDrag
             selectionMode="partial"
-            onSelectionChange={(params) => {
-              const ids = new Set(params.nodes?.map(n => n.id) || []);
-              setSelectedNodeIds(ids);
-            }}
           >
             <Background color="#333" gap={20} />
             <Controls className="!bg-black/50 !border-white/10" />
