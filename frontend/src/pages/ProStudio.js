@@ -707,6 +707,133 @@ export default function ProStudio() {
     }
   };
 
+  // Create a new scene
+  const createScene = async () => {
+    if (!sceneName.trim()) {
+      toast.error('Please enter a scene name');
+      return;
+    }
+    if (!sceneDescription.trim()) {
+      toast.error('Please describe the scene');
+      return;
+    }
+
+    setIsCreatingScene(true);
+    setLoadingMessage('Creating scene...');
+
+    try {
+      const token = localStorage.getItem('azories-token');
+      const response = await fetch(`${API_URL}/api/pro-studio/scenes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          name: sceneName,
+          description: sceneDescription,
+          style: sceneStyle,
+          genre: sceneGenre,
+          location_type: sceneLocationType,
+          lighting: sceneLighting,
+          mood: sceneMood,
+          time_of_day: sceneTimeOfDay,
+          weather: sceneWeather
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        toast.success(`Scene "${sceneName}" created!`);
+        setScenes(prev => [data.scene, ...prev]);
+        // Reset form
+        setSceneName('');
+        setSceneDescription('');
+        setSceneTimeOfDay('');
+        setSceneWeather('');
+      } else {
+        const error = await response.json();
+        toast.error(error.detail || 'Error creating scene');
+      }
+    } catch (error) {
+      toast.error('Error creating scene');
+      console.error(error);
+    } finally {
+      setIsCreatingScene(false);
+      setLoadingMessage('');
+    }
+  };
+
+  // Delete a scene
+  const deleteScene = async (sceneId) => {
+    if (!window.confirm('Delete this scene?')) return;
+
+    try {
+      const token = localStorage.getItem('azories-token');
+      const response = await fetch(`${API_URL}/api/pro-studio/scenes/${sceneId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (response.ok) {
+        toast.success('Scene deleted');
+        setScenes(prev => prev.filter(s => s.id !== sceneId));
+        if (selectedScene?.id === sceneId) setSelectedScene(null);
+      }
+    } catch (error) {
+      toast.error('Error deleting scene');
+    }
+  };
+
+  // Generate image with scene
+  const generateWithScene = async () => {
+    if (!selectedScene) {
+      toast.error('Please select a scene');
+      return;
+    }
+
+    setIsLoading(true);
+    setLoadingMessage('Generating with scene settings...');
+
+    try {
+      const token = localStorage.getItem('azories-token');
+      const response = await fetch(`${API_URL}/api/pro-studio/scenes/${selectedScene.id}/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          prompt: prompt,
+          character_id: selectedCharacter?.id,
+          image_size: aspectRatio === '16:9' ? 'landscape_16_9' : aspectRatio === '9:16' ? 'portrait_16_9' : 'square_hd'
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const newImage = {
+          id: Date.now(),
+          url: data.image_url,
+          prompt: data.prompt,
+          scene: selectedScene.name,
+          character: selectedCharacter?.name
+        };
+        setGeneratedImages(prev => [newImage, ...prev]);
+        toast.success('Scene image generated!');
+      } else {
+        const error = await response.json();
+        toast.error(error.detail || 'Generation failed');
+      }
+    } catch (error) {
+      toast.error('Error generating image');
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+      setLoadingMessage('');
+    }
+  };
+
   // Generate with fal.ai FLUX
   const generateWithFal = async () => {
     if (!prompt.trim()) {
