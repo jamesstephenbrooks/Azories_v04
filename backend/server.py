@@ -5636,6 +5636,41 @@ async def art_studio_gallery(
         logging.error(f"Art Studio gallery error: {e}")
         raise HTTPException(status_code=500, detail="Failed to load gallery")
 
+@api_router.post("/art-studio/gallery")
+async def add_to_art_studio_gallery(request: dict, current_user: dict = Depends(get_current_user)):
+    """Save an image to the Art Studio gallery"""
+    user = current_user
+    
+    image_url = request.get("image_url")
+    if not image_url:
+        raise HTTPException(status_code=400, detail="image_url is required")
+    
+    try:
+        now = datetime.now(timezone.utc)
+        gallery_item = {
+            "user_id": user["id"],
+            "image_url": image_url,
+            "name": request.get("name", request.get("prompt", "Untitled")),
+            "prompt": request.get("prompt", ""),
+            "type": request.get("type", "image"),
+            "style": request.get("style", ""),
+            "model": request.get("model", ""),
+            "book_id": request.get("book_id"),
+            "created_at": now
+        }
+        
+        result = await db.art_studio_gallery.insert_one(gallery_item)
+        
+        return {
+            "success": True,
+            "id": str(result.inserted_id),
+            "message": "Image saved to gallery"
+        }
+        
+    except Exception as e:
+        logging.error(f"Art Studio gallery save error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to save to gallery")
+
 @api_router.delete("/art-studio/gallery/{image_id}")
 async def art_studio_delete(image_id: str, current_user: dict = Depends(get_current_user)):
     """Delete an image from user's gallery"""
