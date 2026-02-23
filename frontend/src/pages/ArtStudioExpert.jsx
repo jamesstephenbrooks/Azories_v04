@@ -1381,8 +1381,9 @@ export default function ArtStudioExpert() {
       console.error('Workflow error:', error);
       alert(`Failed to generate image: ${error.message}`);
       
+      // Reset generating state on unlocked outputs
       setNodes(nds => nds.map(node => {
-        if (node.type === 'output') {
+        if (node.type === 'output' && !node.data.locked) {
           return { ...node, data: { ...node.data, generating: false } };
         }
         return node;
@@ -1390,6 +1391,24 @@ export default function ArtStudioExpert() {
     } finally {
       setIsGenerating(false);
     }
+  };
+  
+  // Open save to book modal with selected image
+  const openSaveToBookModal = (imageUrl) => {
+    setImageToSave(imageUrl);
+    setShowSaveToBookModal(true);
+  };
+  
+  // Run workflow on selected nodes only
+  const runSelectedWorkflow = async () => {
+    if (selectedNodeIds.size === 0) {
+      alert('Please select nodes first using drag selection');
+      return;
+    }
+    
+    // For now, run the entire workflow but only update selected output nodes
+    // In future, this could be enhanced to only process connected sub-graphs
+    await runWorkflow();
   };
   
   const downloadImage = (url) => {
