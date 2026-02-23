@@ -2671,19 +2671,22 @@ async def create_scene(request: SceneCreate, current_user: dict = Depends(get_cu
         
         full_description = "\n".join(desc_parts)
         
-        # Generate a thumbnail for the scene
+        # Generate a thumbnail for the scene (optional - don't fail if this errors)
         thumbnail = None
         gen_prompt = f"{request.description}, {style_info.get('name', '')} style, {location_info.get('name', '')} scene, {lighting_info.get('name', '')} lighting, {genre_info.get('name', '')} genre, no characters, background environment, scenic, detailed"
         
         if FAL_AVAILABLE:
-            result = await generate_image_flux(
-                prompt=gen_prompt,
-                model="flux-dev",
-                image_size="landscape_16_9",
-                num_images=1
-            )
-            if result.get("images"):
-                thumbnail = result["images"][0].get("url")
+            try:
+                result = await generate_image_flux(
+                    prompt=gen_prompt,
+                    model="flux-dev",
+                    image_size="landscape_16_9",
+                    num_images=1
+                )
+                if result.get("images"):
+                    thumbnail = result["images"][0].get("url")
+            except Exception as thumb_err:
+                logger.warning(f"Could not generate scene thumbnail: {thumb_err}")
         
         scene_id = str(uuid.uuid4())
         now = datetime.now(timezone.utc).isoformat()
