@@ -1073,8 +1073,9 @@ export default function ProStudio() {
     }
 
     setIsLoading(true);
+    setLoadingProgress(0);
     const model = VIDEO_MODELS.find(m => m.id === selectedVideoModel);
-    setLoadingMessage(`Animating with ${model.name} (this may take a few minutes)...`);
+    setLoadingMessage(`Animating with ${model.name}...`);
 
     try {
       const token = localStorage.getItem('azories-token');
@@ -1095,7 +1096,8 @@ export default function ProStudio() {
       if (response.ok) {
         const data = await response.json();
         if (data.job_id) {
-          // Poll for completion
+          // Start simulated progress and poll for completion
+          startVideoProgressSimulation();
           pollVideoStatus(data.job_id);
         } else if (data.video_url) {
           const newVideo = {
@@ -1107,17 +1109,46 @@ export default function ProStudio() {
           setGeneratedVideos(prev => [newVideo, ...prev]);
           toast.success('Video generated!');
           setIsLoading(false);
+          setLoadingProgress(0);
         }
       } else {
         const error = await response.json();
         toast.error(error.detail || 'Animation failed');
         setIsLoading(false);
+        setLoadingProgress(0);
       }
     } catch (error) {
       toast.error('Error animating image');
       console.error(error);
       setIsLoading(false);
+      setLoadingProgress(0);
     }
+  };
+
+  // Simulate progress for long-running video generation
+  const startVideoProgressSimulation = () => {
+    let progress = 5;
+    const interval = setInterval(() => {
+      progress += Math.random() * 8;
+      if (progress > 95) progress = 95; // Cap at 95% until actual completion
+      setLoadingProgress(Math.round(progress));
+      
+      // Update message based on progress
+      if (progress < 20) {
+        setLoadingMessage('Initializing video generation...');
+      } else if (progress < 40) {
+        setLoadingMessage('Processing image frames...');
+      } else if (progress < 60) {
+        setLoadingMessage('Applying motion effects...');
+      } else if (progress < 80) {
+        setLoadingMessage('Rendering video...');
+      } else {
+        setLoadingMessage('Finalizing... almost done!');
+      }
+    }, 3000);
+    
+    // Store interval ID to clear it later
+    window.videoProgressInterval = interval;
   };
 
   // Poll video generation status
