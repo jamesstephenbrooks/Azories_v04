@@ -1066,15 +1066,37 @@ export default function ProStudio() {
 
   // Animate hero frame to video
   const animateToVideo = async () => {
-    if (!selectedHeroFrame) {
-      toast.error('Please select a hero frame to animate');
-      return;
+    // Get the source image based on selected type
+    let sourceImageUrl = null;
+    let sourceName = '';
+    
+    if (videoSourceType === 'hero') {
+      if (!selectedHeroFrame) {
+        toast.error('Please select a hero frame to animate');
+        return;
+      }
+      sourceImageUrl = selectedHeroFrame.url;
+      sourceName = 'hero frame';
+    } else if (videoSourceType === 'character') {
+      if (!videoSourceCharacter?.thumbnail) {
+        toast.error('Please select a character with a thumbnail');
+        return;
+      }
+      sourceImageUrl = videoSourceCharacter.thumbnail;
+      sourceName = videoSourceCharacter.name;
+    } else if (videoSourceType === 'upload') {
+      if (!videoUploadedImage) {
+        toast.error('Please upload an image to animate');
+        return;
+      }
+      sourceImageUrl = videoUploadedImage;
+      sourceName = 'uploaded image';
     }
 
     setIsLoading(true);
     setLoadingProgress(0);
     const model = VIDEO_MODELS.find(m => m.id === selectedVideoModel);
-    setLoadingMessage(`Animating with ${model.name}...`);
+    setLoadingMessage(`Animating ${sourceName} with ${model.name}...`);
 
     try {
       const token = localStorage.getItem('azories-token');
@@ -1085,7 +1107,7 @@ export default function ProStudio() {
           Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
-          image_url: selectedHeroFrame.url,
+          image_url: sourceImageUrl,
           motion_prompt: videoPrompt || 'subtle cinematic movement, breathing, natural motion',
           model: selectedVideoModel,
           duration: videoDuration
@@ -1102,7 +1124,7 @@ export default function ProStudio() {
           const newVideo = {
             id: Date.now(),
             url: data.video_url,
-            sourceImage: selectedHeroFrame.url,
+            sourceImage: sourceImageUrl,
             model: selectedVideoModel
           };
           setGeneratedVideos(prev => [newVideo, ...prev]);
