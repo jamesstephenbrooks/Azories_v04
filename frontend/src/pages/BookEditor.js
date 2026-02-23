@@ -924,7 +924,7 @@ export default function BookEditor() {
       toast.info(`Moved to page ${currentIndex + 2}`);
     } else {
       // Create new page if at the end
-      await addPage();
+      await createPage();
       toast.success('New page created for your next narration!');
     }
   };
