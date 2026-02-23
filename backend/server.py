@@ -2010,44 +2010,28 @@ async def process_animation_job(job_id: str, image_url: str, motion_prompt: str,
         }
         motion_desc = motion_styles.get(style, motion_styles["natural"])
         
-        animation_prompt = f"""Animate this exact scene with {motion_desc}:
+        # Build comprehensive animation prompt using the detailed image description
+        animation_prompt = f"""Create a video animation of this exact scene with {motion_desc}:
+
 {image_description}
 
-Additional motion: {motion_prompt}
+Motion details: {motion_prompt}
 
-Keep the character and scene exactly the same, only add subtle natural movement."""
+Important: Maintain exact visual consistency with the description above. The character, setting, colors, lighting, and art style must match precisely. Only add natural movement and animation while preserving the original appearance."""
         
         video_gen = OpenAIVideoGeneration(api_key=EMERGENT_LLM_KEY)
         
         animation_jobs[job_id]["progress"] = 40
-        animation_jobs[job_id]["message"] = "Sora 2 is generating your animation using the original image..."
+        animation_jobs[job_id]["message"] = "Sora 2 is generating your animation..."
         
-        # Save the image temporarily for reference
-        import tempfile
-        import os
-        temp_image_path = None
-        
-        try:
-            # Create temp file with the image
-            with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as temp_file:
-                temp_image_path = temp_file.name
-                image_data = base64.b64decode(image_base64)
-                temp_file.write(image_data)
-            
-            # Generate video using the actual image as reference
-            video_bytes = video_gen.text_to_video(
-                prompt=animation_prompt,
-                model="sora-2",
-                size="1280x720",
-                duration=duration,
-                max_wait_time=900,
-                image_path=temp_image_path,  # Use the actual image as reference
-                mime_type="image/jpeg"
-            )
-        finally:
-            # Clean up temp file
-            if temp_image_path and os.path.exists(temp_image_path):
-                os.remove(temp_image_path)
+        # Generate video (text-to-video without reference image as Sora 2 API doesn't support image input)
+        video_bytes = video_gen.text_to_video(
+            prompt=animation_prompt,
+            model="sora-2",
+            size="1280x720",
+            duration=duration,
+            max_wait_time=900
+        )
         
         if video_bytes:
             animation_jobs[job_id]["progress"] = 90
