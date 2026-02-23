@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { Toaster } from "@/components/ui/sonner";
@@ -29,11 +29,15 @@ import "@/App.css";
 
 function AppContent() {
   const { shouldShow, setShouldShow } = useOnboarding();
+  const location = useLocation();
+  
+  // Don't show onboarding on admin pages
+  const isAdminPage = location.pathname.startsWith('/admin');
   
   return (
     <>
       <OfflineIndicator />
-      {shouldShow && <OnboardingTutorial onComplete={() => setShouldShow(false)} />}
+      {shouldShow && !isAdminPage && <OnboardingTutorial onComplete={() => setShouldShow(false)} />}
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/coming-soon" element={<ComingSoon />} />
