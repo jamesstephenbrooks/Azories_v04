@@ -975,6 +975,41 @@ export default function ArtStudioExpert() {
     console.log(`Created continuation node from ${sourceNodeId}`);
   }, [nodes, setNodes, updateNodeData, deleteNodeById]);
   
+  // Save image to Art Studio gallery (useCallback for proper dependency handling)
+  const saveToGallery = useCallback(async (imageUrl) => {
+    try {
+      const characterNode = nodes.find(n => n.type === 'character');
+      const sceneNode = nodes.find(n => n.type === 'scene');
+      const styleNode = nodes.find(n => n.type === 'style');
+      
+      const response = await fetch(`${API_URL}/api/art-studio/save`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          image_url: imageUrl,
+          name: characterNode?.data?.name || sceneNode?.data?.name || 'Workflow Generation',
+          type: characterNode ? 'character' : 'scene',
+          style: styleNode?.data?.style || 'fantasy',
+          bookId: selectedBookId !== 'general' ? selectedBookId : null,
+          characterData: characterNode?.data || null,
+          sceneData: sceneNode?.data || null
+        })
+      });
+      
+      if (response.ok) {
+        alert('Image saved to gallery!');
+      } else {
+        throw new Error('Failed to save');
+      }
+    } catch (error) {
+      console.error('Save error:', error);
+      alert('Failed to save image to gallery');
+    }
+  }, [nodes, token, selectedBookId]);
+  
   // Save image to a specific book's library
   const saveToBook = useCallback(async (imageUrl, bookId) => {
     if (!bookId || bookId === 'general') {
