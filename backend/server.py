@@ -3099,6 +3099,11 @@ async def animate_hero_frame(request: AnimateHeroRequest, background_tasks: Back
         # Fall back to Sora 2 for unsupported models
         logger.warning(f"Model {request.model} not available, using Sora 2")
     
+    # Credits check for video generation
+    if not await deduct_credits(current_user["id"], "video_generate"):
+        credits_needed = CREDIT_COSTS.get("video_generate", 10)
+        raise HTTPException(status_code=402, detail=f"Insufficient credits. Video generation requires {credits_needed} credits.")
+    
     # Create job ID
     job_id = str(uuid.uuid4())
     
