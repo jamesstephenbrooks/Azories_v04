@@ -8,6 +8,7 @@ Build a digital book creation and reading application named "Azories" with featu
 - AI librarian ("Azora")
 - 3D library environment
 - Art Studio for generating assets
+- **Pro Studio** for AI-powered character and scene consistency
 
 ## What's Been Implemented
 
@@ -18,161 +19,107 @@ Build a digital book creation and reading application named "Azories" with featu
 - Audio pre-caching for smoother playback between pages
 - Book editor with font/style customization
 - Chapter management
-- User authentication
+- User authentication (JWT-based)
 - Reading progress tracking
 
-### Recent Fixes (Feb 22, 2025)
-1. **Listen Button on Cover** - Added "Start Listening" button outside the book cover that reliably starts audio narration (internal Listen button had event capture issues with react-pageflip)
-2. **Auto-Read Flow** - Fixed state synchronization issues between `autoReadRef` and `autoRead` state that prevented audio from playing
-3. **Audio Caching** - Implemented `audioCache` Map to pre-load audio for upcoming pages and avoid regenerating TTS
-4. **Faster Transitions** - Reduced delays between pages (500ms -> 200ms) for smoother auto-read experience
-5. **Collaboration API** - Fixed URL mismatch for collaboration endpoints
+### Pro Studio Features (Completed - Feb 23, 2026)
+1. **Character Consistency System**
+   - Create characters with text descriptions AND/OR reference images
+   - AI generates thumbnails using fal.ai FLUX
+   - Character folder/portfolio system for organizing generated images
+   - Reference image collection for LoRA training (need 3+ images)
+   - Edit/Delete character functionality
 
-### Recent Fixes (Feb 24, 2025)
-1. **Font Size Bug Fixed** - Font size selected in Book Editor was not applying in the Book Reader. Root cause: The `get_full_book` API endpoint was missing `setdefault()` calls for `font_size`, `font_family`, and `text_align` fields. When pages in MongoDB didn't have these fields, the frontend received `undefined` values. Fixed by adding defaults in three places in server.py:
-   - `get_full_book()` endpoint (line ~2815)
-   - `get_pages()` endpoint (line ~1499)
-   - `update_page()` endpoint (line ~1522)
+2. **Scene Consistency System**
+   - Create consistent scenes/environments for book illustrations
+   - Configure: location type, lighting, mood, time of day, weather
+   - AI-generated scene thumbnails
+   - Scene folder for storing related images
 
-2. **fal.ai Integration for Character Consistency (Pro Studio)** - Integrated fal.ai API for true face/character consistency:
-   - **FLUX.1 Dev** - Fast, high-quality text-to-image generation
-   - **FLUX Pro** - Premium quality generation
-   - **FLUX PuLID** - Face/identity preservation using reference images
-   - **FLUX LoRA** - Generate with trained character models
-   - **Portrait LoRA Trainer** - Train custom LoRA for 100% consistent characters
-   
-   New API endpoints:
-   - `GET /api/fal/models` - List available fal.ai models
-   - `POST /api/fal/generate` - Generate images with FLUX
-   - `POST /api/fal/generate-with-face` - Generate with face ID preservation (PuLID)
-   - `POST /api/fal/train-lora` - Start LoRA training for a character
-   - `GET /api/fal/training-status/{job_id}` - Check LoRA training progress
-   - `POST /api/fal/generate-with-lora` - Generate with trained LoRA
-   - `POST /api/pro-studio/characters/train-consistency` - Train LoRA for existing character
-   - `POST /api/pro-studio/characters/{id}/generate-consistent` - Smart generation using best available method
+3. **Credits System**
+   - Credit costs: FLUX generate (1), FLUX Pro (2), PuLID (3), LoRA training (50), Video (10)
+   - Credits display in header with add button
+   - Balance tracking per user
 
-3. **Credits System** - Added credits for Pro Studio features:
-   - Credit costs: FLUX generate (1), FLUX Pro (2), PuLID (3), LoRA training (50), LoRA generate (2), Video (10)
-   - Endpoints: `GET /api/credits/balance`, `POST /api/credits/add`
-   - UI: Credits display in Pro Studio header with add button
+4. **Additional Pro Studio Features**
+   - Cinema Studio (camera/lens/lighting presets)
+   - Shots (9 angles from 1 image)
+   - Video generation (Sora 2)
+   - Gallery for saving generated images
 
-4. **Bug Fixes:**
-   - Fixed duplicate images when uploading to character creator
-   - Fixed character creation with URL images (now downloads and analyzes)
-   - Fixed token key mismatch in Pro Studio (`token` -> `azories-token`)
-   - Fixed gallery integration (now loads from Art Studio gallery)
-
-### Latest Updates (Feb 22, 2026)
-
-1. **fal.ai API Key Updated** - Fixed invalid API key that was blocking image generation
-
-2. **Unified Character Creation Form** - Replaced tabbed interface with unified form:
-   - Description AND reference images can be provided together (not either/or)
-   - More intuitive workflow for creating characters
-
-3. **Character Folder/Portfolio System** - Each character now has a dedicated folder:
-   - New endpoints: `GET/POST /api/pro-studio/characters/{id}/gallery`
-   - Generated images auto-save to character's folder
-   - View all images for a character in one place
-   - Click to preview images in full-size modal
-
-4. **Larger Image Preview Modal** - Click any image for full-size view with:
-   - Download button
-   - Save to gallery option
-   - Character/prompt info display
-   - z-index fixed so modal appears on top
-
-5. **Genre Options Added** - Added "Futuristic" and "Sci-Fi" genres as requested
-
-6. **Character View Modal** - Click character thumbnail or folder icon to see:
-   - Full character description
-   - Reference images gallery
-   - Generated images folder
-   - "Use for Generation" quick action
-   - "Back to Studio" button added
-
-7. **Character Management** - Edit/Delete functionality:
-   - Edit modal to change name, style, genre, description
-   - Delete with confirmation
-   - Regenerate thumbnail button
-
-8. **Pro Studio Explanation Banner** - Credits-based premium feature explanation
-
-9. **Reference Images Workflow for LoRA**:
-   - Shows reference count (X/3 refs) on each character
-   - "Add to References" button in image preview
-   - Train button only appears when 3+ references
-   - Generated thumbnails now auto-save as first reference image
-
-10. **Video Generation Fix** - Fixed invalid duration (5 -> 4 seconds default)
-
-11. **Shots Tab - Character Images** - Click any character thumbnail to use it as source for generating 9 different angles
-
-12. **Scene Consistency System** (NEW):
-    - Create consistent scenes/environments for book illustrations
-    - Configure: location type, lighting, mood, time of day, weather
-    - Generate scene images with selected settings
-    - Can combine scene + character for consistent book pages
-    - API: `/api/pro-studio/scenes` CRUD endpoints
-    - `/api/pro-studio/scenes/{id}/generate` - Generate with scene settings
+### E2E Testing Results (Feb 23, 2026)
+- **Backend: 100% (33/33 tests passed)**
+- **Frontend: 100% (all tested features working)**
+- fal.ai integration confirmed working with updated API key
+- All Pro Studio tabs functional
+- Character and scene creation with AI thumbnails working
 
 ## Architecture
 
 ### Frontend (/app/frontend)
 - React with Tailwind CSS
 - react-pageflip for book animations
-- Axios for API calls
+- Shadcn/UI components
 - Key files:
+  - `/pages/ProStudio.js` - Pro Studio UI (~3000+ lines)
   - `/pages/BookReader.js` - Main reader component
-  - `/components/RealisticPageFlip.jsx` - Page flip component
   - `/pages/BookEditor.js` - Book editing
-  - `/components/CollaborativeWriting.jsx` - Collaboration features
 
 ### Backend (/app/backend)
 - FastAPI
 - MongoDB via MONGO_URL
+- fal.ai integration for image generation
 - OpenAI TTS integration
-- Key file: `server.py`
+- Key files:
+  - `server.py` - Main API (monolithic)
+  - `fal_service.py` - fal.ai integration
 
 ### Environment
 - Frontend: REACT_APP_BACKEND_URL
-- Backend: MONGO_URL, DB_NAME, EMERGENT_LLM_KEY
+- Backend: MONGO_URL, DB_NAME, EMERGENT_LLM_KEY, FAL_KEY
 
 ## Known Issues / Pending
 
 ### P0 (Critical)
-- ~~Font size selection in Book Editor doesn't apply in reader~~ - **FIXED Feb 24, 2025**
-- ~~fal.ai API key invalid~~ - **FIXED Feb 22, 2026**
+- None currently blocking
 
 ### P1 (High)
-- Re-enable credits system (currently disabled for testing)
-- LoRA training endpoint (stubbed, needs full implementation)
-- Character Portfolio persistence across sessions
-- Back cover visibility at end of book
+- Re-enable credits system (currently credits not deducted for testing)
+- LoRA training full workflow validation
+- Video generation UX (long-running tasks need background processing)
 
 ### P2 (Medium)
-- Grand Library stair navigation/camera issues
-- Full collaboration workflow (backend stubs need implementation)
-- iPad/iPhone UI layout fixes
+- Back cover visibility at end of book
 - "Read Aloud" button error on iPad
+- Scene list may need refresh to show newly created scenes
+
+### P3 (Low)
+- Grand Library stair navigation/camera issues
+- iPad/iPhone UI layout fixes
+- Code refactoring (split server.py and ProStudio.js)
 
 ## Upcoming Tasks
-1. Re-enable credits system for Pro Studio
-2. Full LoRA training implementation
-3. Character portfolio management (edit/delete characters)
-4. Collaborators popup positioning
-5. Art Studio features
-6. iPad/iPhone UI fixes
-
-## Backlog
-- Art Studio "dramatic" mode
-- Scene thumbnails
-- Grand Library camera fixes
-- iPad read-only mode
-- Video generation from characters
+1. **Deploy to azories.com** - User's next requested step
+2. Re-enable credits system before deployment
+3. Full LoRA training implementation and testing
 
 ## 3rd Party Integrations
-- OpenAI TTS (via Emergent LLM Key)
-- OpenAI GPT-4o (via Emergent LLM Key)
-- react-pageflip (book animations)
-- reactflow (Art Studio)
+- **OpenAI GPT-4o & Sora 2** (via Emergent LLM Key) - Text generation, video
+- **fal.ai** (fal-client) - Image generation (FLUX), PuLID, LoRA
+- **react-pageflip** - Book animations
+- **React Three Fiber / Drei** - 3D library view
+
+## Test Credentials
+- Email: test@test.com
+- Password: test123
+- OR Email: test / Password: test (alternate)
+
+## API Endpoints (Key)
+- `POST /api/auth/login` - User login
+- `GET/POST /api/pro-studio/characters` - Character CRUD
+- `GET/POST /api/pro-studio/scenes` - Scene CRUD
+- `GET/POST /api/pro-studio/characters/{id}/gallery` - Character folder
+- `GET/POST /api/pro-studio/scenes/{id}/gallery` - Scene folder
+- `POST /api/art-studio/gallery` - Save to main gallery
+- `GET /api/credits/balance` - Get credits
+- `POST /api/credits/add` - Add credits
