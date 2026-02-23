@@ -1587,6 +1587,11 @@ export default function ArtStudioExpert() {
     }
   }, [nodes, edges, token, navigate, selectedBookId, workflowName, setNodes, copyNode, continueWorkflow, downloadImage, saveToGallery]);
   
+  // Update ref when runOutputNode changes
+  useEffect(() => {
+    runOutputNodeRef.current = runOutputNode;
+  }, [runOutputNode]);
+  
   const downloadImage = (url) => {
     const link = document.createElement('a');
     link.href = url;
