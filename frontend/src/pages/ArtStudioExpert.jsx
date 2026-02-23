@@ -509,9 +509,11 @@ const PromptNode = ({ data, selected }) => {
 const CombineNode = ({ data, selected }) => {
   return (
     <div className={`relative bg-gradient-to-br from-violet-900/90 to-violet-800/90 rounded-xl border-2 ${selected ? 'border-violet-400' : 'border-violet-600/50'} shadow-xl min-w-[120px] backdrop-blur-sm`}>
-      <Handle type="target" position={Position.Left} id="a" className="!bg-violet-400 !w-3 !h-3" style={{ top: '30%' }} />
-      <Handle type="target" position={Position.Left} id="b" className="!bg-violet-400 !w-3 !h-3" style={{ top: '50%' }} />
-      <Handle type="target" position={Position.Left} id="c" className="!bg-violet-400 !w-3 !h-3" style={{ top: '70%' }} />
+      {/* Multiple input handles - a, b, c, d for flexibility */}
+      <Handle type="target" position={Position.Left} id="a" className="!bg-violet-400 !w-3 !h-3" style={{ top: '20%' }} />
+      <Handle type="target" position={Position.Left} id="b" className="!bg-violet-400 !w-3 !h-3" style={{ top: '40%' }} />
+      <Handle type="target" position={Position.Left} id="c" className="!bg-violet-400 !w-3 !h-3" style={{ top: '60%' }} />
+      <Handle type="target" position={Position.Left} id="d" className="!bg-violet-400 !w-3 !h-3" style={{ top: '80%' }} />
       <NodeDeleteButton onDelete={data.onDelete} />
       
       <div className="p-3 flex items-center justify-center">
@@ -521,6 +523,7 @@ const CombineNode = ({ data, selected }) => {
       </div>
       <div className="pb-2 text-center">
         <span className="text-xs text-violet-300">Combine</span>
+        <p className="text-[9px] text-violet-400/50">4 inputs</p>
       </div>
       
       <Handle type="source" position={Position.Right} className="!bg-violet-400 !w-3 !h-3" />
@@ -528,10 +531,24 @@ const CombineNode = ({ data, selected }) => {
   );
 };
 
-// Image Node - For workflow continuation (output image as new input)
+// Image Node - For workflow continuation or manual image upload
 const ImageNode = ({ data, selected }) => {
+  const fileInputRef = useRef(null);
+  
+  const handleFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      data.onChange?.('image', event.target.result);
+      data.onChange?.('label', file.name.split('.')[0] || 'Uploaded Image');
+    };
+    reader.readAsDataURL(file);
+  };
+  
   return (
-    <div className={`relative bg-gradient-to-br from-yellow-900/90 to-orange-800/90 rounded-xl border-2 ${selected ? 'border-yellow-400' : 'border-yellow-600/50'} shadow-xl backdrop-blur-sm w-[180px] h-[220px]`}>
+    <div className={`relative bg-gradient-to-br from-yellow-900/90 to-orange-800/90 rounded-xl border-2 ${selected ? 'border-yellow-400' : 'border-yellow-600/50'} shadow-xl backdrop-blur-sm w-[180px]`}>
       <Handle type="target" position={Position.Left} className="!bg-yellow-400 !w-3 !h-3" />
       <NodeDeleteButton onDelete={data.onDelete} />
       
@@ -554,23 +571,56 @@ const ImageNode = ({ data, selected }) => {
         </div>
         <div className="flex-1 min-w-0">
           <h4 className="text-xs font-semibold text-white truncate">{data.label || 'Image Input'}</h4>
-          <p className="text-[9px] text-yellow-300/70">From workflow</p>
+          <p className="text-[9px] text-yellow-300/70">{data.image ? 'Ready' : 'Upload or select'}</p>
         </div>
       </div>
       
-      <div className="p-2 h-[160px]">
+      <div className="p-2">
         {data.image ? (
-          <div className="relative w-full h-full">
+          <div className="relative w-full aspect-square">
             <img 
               src={data.image} 
-              alt="Workflow output" 
+              alt="Input" 
               className="w-full h-full object-cover rounded-lg border border-yellow-500/30"
             />
+            {/* Clear button */}
+            <button
+              onClick={() => {
+                data.onChange?.('image', null);
+                data.onChange?.('label', 'Image Input');
+              }}
+              className="absolute top-1 right-1 p-1 bg-red-500/80 rounded hover:bg-red-500 transition-colors"
+              title="Remove image"
+            >
+              <FiX className="w-3 h-3 text-white" />
+            </button>
           </div>
         ) : (
-          <div className="w-full h-full bg-black/30 rounded-lg flex flex-col items-center justify-center">
-            <FiImage className="w-8 h-8 text-yellow-300/30 mb-2" />
-            <span className="text-[10px] text-yellow-300/50">No image</span>
+          <div className="space-y-2">
+            {/* Upload from device */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileUpload}
+              className="hidden"
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full py-2 bg-yellow-500/20 hover:bg-yellow-500/30 rounded-lg text-xs text-yellow-300 flex items-center justify-center gap-1.5 transition-colors"
+            >
+              <FiUpload className="w-3 h-3" />
+              Upload Image
+            </button>
+            
+            {/* Select from gallery */}
+            <button
+              onClick={() => data.onSelectFromGallery?.()}
+              className="w-full py-2 bg-purple-500/20 hover:bg-purple-500/30 rounded-lg text-xs text-purple-300 flex items-center justify-center gap-1.5 transition-colors"
+            >
+              <FiImage className="w-3 h-3" />
+              From Gallery
+            </button>
           </div>
         )}
       </div>
