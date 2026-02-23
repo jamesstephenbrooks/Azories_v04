@@ -3539,29 +3539,46 @@ async def generate_consistent_character_image(
         # Method 2: Use PuLID face ID
         if FAL_AVAILABLE and character.get("reference_images"):
             logger.info(f"Generating with PuLID for character {character['name']}")
-            # Get first reference image
+            # Get first reference image (should be best quality face shot)
             ref_image = character["reference_images"][0]
             
-            # Include character style and genre in the prompt for consistency
+            # Get character attributes for the prompt
+            char_name = character.get('name', 'character')
             style_desc = character.get('style', 'illustration')
             genre_desc = character.get('genre', 'fantasy')
-            char_desc = character.get('description', '')
             
-            # Build a complete prompt that includes style information
-            full_prompt = f"{char_desc}, {prompt}, {style_desc} style, {genre_desc} genre, high quality"
+            # Map id_strength to actual weight values
+            id_weight_map = {
+                "high": 2.0,    # Maximum face similarity
+                "medium": 1.5,  # Balanced
+                "low": 1.0      # More artistic freedom
+            }
+            id_weight = id_weight_map.get(id_strength, 1.8)
+            
+            # Build a focused prompt for PuLID - don't include full character description
+            # as that can confuse the face preservation. Focus on action/scene.
+            if scene_context:
+                # Character in a scene
+                full_prompt = f"A person {prompt}. {scene_context} Rendered in {style_desc} art style, {genre_desc} genre, high quality, detailed"
+            else:
+                # Character action/pose without specific scene
+                full_prompt = f"A person {prompt}, full body shot showing the scene and environment, {style_desc} art style, {genre_desc} genre, high quality, detailed, NOT a close-up portrait"
             
             result = await generate_with_face_id(
                 prompt=full_prompt,
                 reference_image_url=ref_image,
-                id_weight=1.0,
+                id_weight=id_weight,
                 image_size=image_size,
-                seed=seed
+                seed=seed,
+                mode="fidelity" if id_strength == "high" else "style"
             )
             return {
                 **result,
                 "method": "pulid",
                 "character_id": character_id,
-                "style_used": style_desc
+                "style_used": style_desc,
+                "scene_id": scene_id,
+                "id_strength": id_strength
             }
         
         # Method 3: Fallback to OpenAI with character description
