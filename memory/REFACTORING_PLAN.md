@@ -104,11 +104,13 @@ Contains:
 - [x] Created `/app/backend/routes/auth.py` (authentication routes)
 - [x] Created `/app/backend/routes/credits.py` (credits management)
 - [x] Created `/app/backend/routes/__init__.py` (router aggregation)
+- [x] Created `/app/backend/routes/books.py` (books route template)
+- [x] Created `/app/backend/routes/pro_studio.py` (pro studio route template)
 
 ### In Progress
-- [ ] Extract Pydantic models from server.py
-- [ ] Create books.py route module
-- [ ] Create pro_studio.py route module
+- [ ] Migrate actual route implementations from server.py to modules
+- [ ] Create service layer for business logic
+- [ ] Frontend ProStudio.js refactoring
 
 ### Not Started
 - [ ] Frontend ProStudio.js refactoring
