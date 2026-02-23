@@ -150,9 +150,9 @@ All books have:
 - Code refactoring (split server.py and ProStudio.js into modules)
 
 ## Next Tasks
-1. Mobile UI/UX testing on real iPad
-2. LoRA training workflow validation
-3. Fix back cover visibility regression
+1. LoRA training workflow validation (create character with 3+ images, click Train)
+2. Verify animation save/download functionality
+3. Mobile UI/UX testing on real iPad
 
 ## Future/Backlog
 - Export Book as PDF feature
