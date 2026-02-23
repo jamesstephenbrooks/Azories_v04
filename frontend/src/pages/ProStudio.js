@@ -1933,9 +1933,22 @@ export default function ProStudio() {
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center"
           >
-            <div className="text-center">
+            <div className="text-center max-w-sm">
               <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-              <p className="text-white text-lg">{loadingMessage}</p>
+              <p className="text-white text-lg mb-3">{loadingMessage}</p>
+              {loadingProgress > 0 && (
+                <div className="w-64 mx-auto">
+                  <div className="bg-gray-700 rounded-full h-2 overflow-hidden">
+                    <motion.div 
+                      className="bg-gradient-to-r from-purple-500 to-pink-500 h-full"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${loadingProgress}%` }}
+                      transition={{ duration: 0.5 }}
+                    />
+                  </div>
+                  <p className="text-gray-400 text-sm mt-2">{loadingProgress}% complete</p>
+                </div>
+              )}
             </div>
           </motion.div>
         )}
