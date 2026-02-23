@@ -1254,20 +1254,20 @@ export default function ArtStudio() {
                   )}
                 </div>
                 
-                {/* QUICK TEMPLATES - One-click popular styles (EASY FOR KIDS!) */}
+                {/* QUICK TEMPLATES - One-click popular styles */}
                 <div className="mb-4 pb-4 border-b border-white/10">
                   <h4 className="text-xs font-bold text-yellow-400 uppercase tracking-wider mb-2 flex items-center gap-1">
                     <FiStar className="w-3 h-3" />
-                    Quick Templates
+                    {activeTab === 'scene' ? 'Scene Templates' : 'Quick Templates'}
                     <span className="text-white/40 font-normal">(1-click!)</span>
                   </h4>
                   <div className="grid grid-cols-2 gap-2">
-                    {QUICK_TEMPLATES.map(template => (
+                    {(activeTab === 'scene' ? SCENE_QUICK_TEMPLATES : QUICK_TEMPLATES).map(template => (
                       <button
                         key={template.id}
-                        onClick={() => applyQuickTemplate(template)}
+                        onClick={() => activeTab === 'scene' ? applySceneTemplate(template) : applyQuickTemplate(template)}
                         data-testid={`template-${template.id}`}
-                        className={`relative group rounded-lg overflow-hidden aspect-square border-2 transition-all ${
+                        className={`relative group rounded-lg overflow-hidden ${activeTab === 'scene' ? 'aspect-video' : 'aspect-square'} border-2 transition-all ${
                           selectedTemplate === template.id
                             ? 'border-yellow-400 shadow-lg shadow-yellow-400/30'
                             : 'border-white/10 hover:border-white/30'
@@ -1297,7 +1297,9 @@ export default function ArtStudio() {
                     ))}
                   </div>
                   <p className="text-[10px] text-white/40 mt-2 text-center">
-                    Click a template to apply style + lighting + effects instantly!
+                    {activeTab === 'scene' 
+                      ? 'Click a template to apply scene settings instantly!' 
+                      : 'Click a template to apply style + lighting + effects instantly!'}
                   </p>
                 </div>
                 
