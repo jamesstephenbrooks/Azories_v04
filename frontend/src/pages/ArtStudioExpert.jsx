@@ -1395,6 +1395,7 @@ export default function ArtStudioExpert() {
     { type: 'scene', icon: FiLayers, label: 'Scene', color: 'emerald' },
     { type: 'style', icon: FiSliders, label: 'Style', color: 'amber' },
     { type: 'reference', icon: FiImage, label: 'Reference', color: 'cyan' },
+    { type: 'image', icon: FiRefreshCw, label: 'Image', color: 'yellow' },
     { type: 'prompt', icon: FiType, label: 'Prompt', color: 'rose' },
     { type: 'combine', icon: FiGrid, label: 'Combine', color: 'violet' },
     { type: 'output', icon: FiZap, label: 'Output', color: 'pink' }
