@@ -236,22 +236,9 @@ export default function ProStudio() {
     }
   };
 
-  // Add credits (for testing/purchasing)
-  const addCredits = async (amount = 100) => {
-    try {
-      const token = localStorage.getItem('azories-token');
-      const response = await fetch(`${API_URL}/api/credits/add?amount=${amount}`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setCredits(data.new_balance);
-        toast.success(`Added ${amount} credits!`);
-      }
-    } catch (error) {
-      toast.error('Error adding credits');
-    }
+  // Navigate to Credits page for purchasing
+  const goToPurchaseCredits = () => {
+    navigate('/credits');
   };
 
   const loadUserBooks = async () => {
