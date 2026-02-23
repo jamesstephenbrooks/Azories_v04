@@ -2715,8 +2715,8 @@ async def create_scene(request: SceneCreate, current_user: dict = Depends(get_cu
         # Build scene description
         style_info = next((s for s in CHARACTER_STYLES if s["id"] == request.style), {"name": request.style})
         genre_info = next((g for g in CHARACTER_GENRES if g["id"] == request.genre), {"name": request.genre})
-        location_info = next((l for l in SCENE_TYPES if l["id"] == request.location_type), {"name": request.location_type or "location"})
-        lighting_info = next((l for l in LIGHTING_OPTIONS if l["id"] == request.lighting), {"name": request.lighting or "natural"})
+        location_info = next((loc for loc in SCENE_TYPES if loc["id"] == request.location_type), {"name": request.location_type or "location"})
+        lighting_info = next((lit for lit in LIGHTING_OPTIONS if lit["id"] == request.lighting), {"name": request.lighting or "natural"})
         mood_info = next((m for m in MOOD_OPTIONS if m["id"] == request.mood), {"name": request.mood or ""})
         
         desc_parts = [
