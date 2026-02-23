@@ -873,11 +873,7 @@ export default function Dashboard() {
                               )}
                             </div>
                             <div className="flex flex-col gap-1 items-end ml-2">
-                              <span className={`px-3 py-1 rounded-full text-xs font-ui ${
-                                book.is_published ? 'bg-accent/20 text-accent-foreground' : 'bg-muted text-muted-foreground'
-                              }`}>
-                                {book.is_published ? 'Published' : 'Draft'}
-                              </span>
+                              {getPublishStatusBadge(book)}
                               {book.age_rating !== 'All Ages' && (
                                 <span className="px-2 py-0.5 rounded text-xs bg-primary/10 text-primary">
                                   {book.age_rating}
