@@ -583,28 +583,34 @@ const ImageNode = ({ data, selected }) => {
 // Output Node - Fixed size with expand preview option
 const OutputNode = ({ data, selected }) => {
   return (
-    <div className={`relative bg-gradient-to-br from-pink-900/90 to-pink-800/90 rounded-xl border-2 ${selected ? 'border-pink-400' : 'border-pink-600/50'} shadow-xl backdrop-blur-sm w-[220px] h-[280px]`}>
+    <div className={`relative bg-gradient-to-br from-pink-900/90 to-pink-800/90 rounded-xl border-2 ${selected ? 'border-pink-400' : 'border-pink-600/50'} shadow-xl backdrop-blur-sm w-[220px] h-[320px]`}>
       <Handle type="target" position={Position.Left} className="!bg-pink-400 !w-3 !h-3" />
       <Handle type="source" position={Position.Right} className="!bg-yellow-400 !w-3 !h-3" id="continue" />
       <NodeDeleteButton onDelete={data.onDelete} />
+      
+      {/* Copy button in header */}
+      {data.image && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            data.onCopyNode?.();
+          }}
+          className="absolute top-0.5 right-5 w-4 h-4 rounded bg-blue-500/80 hover:bg-blue-500 flex items-center justify-center transition-colors z-10"
+          title="Duplicate this output node"
+          data-testid="output-node-copy-btn"
+        >
+          <FiCopy className="w-2.5 h-2.5 text-white" />
+        </button>
+      )}
       
       <div className="p-2 border-b border-pink-600/30 flex items-center gap-2">
         <div className="w-5 h-5 rounded-lg bg-pink-500/30 flex items-center justify-center flex-shrink-0">
           <FiZap className="text-pink-300 w-3 h-3" />
         </div>
         <h4 className="text-xs font-semibold text-white flex-1">Output</h4>
-        {data.image && (
-          <button
-            onClick={() => data.onCopyNode?.()}
-            className="p-1 bg-gray-600/50 rounded hover:bg-gray-500/50"
-            title="Duplicate this output"
-          >
-            <FiCopy className="w-3 h-3 text-white" />
-          </button>
-        )}
       </div>
       
-      <div className="p-2 h-[190px]">
+      <div className="p-2 h-[180px]">
         {data.generating ? (
           <div className="w-full h-full bg-black/30 rounded-lg flex flex-col items-center justify-center">
             <motion.div
@@ -621,12 +627,13 @@ const OutputNode = ({ data, selected }) => {
               alt="Generated" 
               className="w-full h-full object-cover rounded-lg"
             />
-            {/* Action buttons */}
+            {/* Action buttons row 1 */}
             <div className="absolute bottom-2 left-2 right-2 flex gap-1 justify-center">
               <button
                 onClick={() => data.onExpand?.(data.image)}
                 className="p-1.5 bg-blue-600/80 rounded-lg hover:bg-blue-600 flex-1 flex items-center justify-center"
                 title="Expand Preview"
+                data-testid="output-expand-btn"
               >
                 <FiMaximize2 className="w-3 h-3 text-white" />
               </button>
@@ -634,6 +641,7 @@ const OutputNode = ({ data, selected }) => {
                 onClick={() => data.onSaveToGallery?.(data.image)}
                 className="p-1.5 bg-green-600/80 rounded-lg hover:bg-green-600 flex-1 flex items-center justify-center"
                 title="Save to Gallery"
+                data-testid="output-save-gallery-btn"
               >
                 <FiSave className="w-3 h-3 text-white" />
               </button>
@@ -641,6 +649,7 @@ const OutputNode = ({ data, selected }) => {
                 onClick={() => data.onDownload?.(data.image)}
                 className="p-1.5 bg-purple-600/80 rounded-lg hover:bg-purple-600 flex-1 flex items-center justify-center"
                 title="Download"
+                data-testid="output-download-btn"
               >
                 <FiDownload className="w-3 h-3 text-white" />
               </button>
@@ -654,13 +663,25 @@ const OutputNode = ({ data, selected }) => {
         )}
       </div>
       
-      {/* Continue Workflow Button */}
+      {/* Bottom action buttons when image exists */}
       {data.image && (
-        <div className="px-2 pb-2">
+        <div className="px-2 pb-2 space-y-1.5">
+          {/* Save to Book button */}
+          <button
+            onClick={() => data.onSaveToBook?.(data.image)}
+            className="w-full py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 rounded-lg text-xs font-medium text-white flex items-center justify-center gap-1"
+            title="Save this image to the selected book's library"
+            data-testid="output-save-book-btn"
+          >
+            <FiBook className="w-3 h-3" /> Save to Book
+          </button>
+          
+          {/* Continue Workflow button */}
           <button
             onClick={() => data.onContinueWorkflow?.(data.image)}
             className="w-full py-1.5 bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 rounded-lg text-xs font-medium text-white flex items-center justify-center gap-1"
             title="Use this output as input for a new branch"
+            data-testid="output-continue-btn"
           >
             <FiRefreshCw className="w-3 h-3" /> Continue Workflow
           </button>
