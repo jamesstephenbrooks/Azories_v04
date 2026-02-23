@@ -3530,8 +3530,17 @@ async def generate_consistent_character_image(
             logger.info(f"Generating with PuLID for character {character['name']}")
             # Get first reference image
             ref_image = character["reference_images"][0]
+            
+            # Include character style and genre in the prompt for consistency
+            style_desc = character.get('style', 'illustration')
+            genre_desc = character.get('genre', 'fantasy')
+            char_desc = character.get('description', '')
+            
+            # Build a complete prompt that includes style information
+            full_prompt = f"{char_desc}, {prompt}, {style_desc} style, {genre_desc} genre, high quality"
+            
             result = await generate_with_face_id(
-                prompt=f"{character.get('description', '')} {prompt}",
+                prompt=full_prompt,
                 reference_image_url=ref_image,
                 id_weight=1.0,
                 image_size=image_size,
@@ -3540,7 +3549,8 @@ async def generate_consistent_character_image(
             return {
                 **result,
                 "method": "pulid",
-                "character_id": character_id
+                "character_id": character_id,
+                "style_used": style_desc
             }
         
         # Method 3: Fallback to OpenAI with character description
