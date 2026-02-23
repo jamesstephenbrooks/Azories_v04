@@ -1032,6 +1032,7 @@ export default function ArtStudioExpert() {
       case 'prompt': return { text: '' };
       case 'combine': return {};
       case 'output': return { image: null, generating: false };
+      case 'image': return { image: null, label: 'Image Input' };
       default: return {};
     }
   };
