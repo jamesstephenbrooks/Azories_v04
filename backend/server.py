@@ -164,6 +164,8 @@ ACTUAL_COSTS = {
     "lora_training": 2.00,     # $2.00 per training
     "lora_generate": 0.05,     # $0.05 per image
     "video_generate": 0.50,    # $0.50 per video (5 second)
+    "shots_generate": 0.25,    # $0.25 for 9 shots
+    "expression_generate": 0.05, # $0.05 per expression
 }
 
 # VIP users who get unlimited free credits (but we track usage)
