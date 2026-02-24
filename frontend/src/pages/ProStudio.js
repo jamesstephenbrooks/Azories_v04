@@ -136,6 +136,9 @@ export default function ProStudio() {
   const [videoSourceType, setVideoSourceType] = useState('hero'); // 'hero', 'character', 'upload'
   const [videoSourceCharacter, setVideoSourceCharacter] = useState(null);
   const [videoUploadedImage, setVideoUploadedImage] = useState(null);
+  const [videoCharacterGallery, setVideoCharacterGallery] = useState([]); // Gallery images for selected character
+  const [videoSelectedImage, setVideoSelectedImage] = useState(null); // Selected image from gallery (with description)
+  const [videoArtStyle, setVideoArtStyle] = useState('cinematic'); // Style option for consistency
   
   // Shots App state
   const [shotsSourceImage, setShotsSourceImage] = useState(null);
