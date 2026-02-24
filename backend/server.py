@@ -3420,8 +3420,8 @@ async def pro_studio_generate_image(request: ProStudioImageRequest, current_user
         raise HTTPException(status_code=500, detail=f"Error generating image: {str(e)}")
 
 @api_router.post("/pro-studio/generate-shots")
-async def generate_shots(request: GenerateShotsRequest, current_user: dict = Depends(get_current_user)):
-    """Generate 9 different angle shots from one source image"""
+async def generate_shots(request: GenerateShotsRequest, background_tasks: BackgroundTasks, current_user: dict = Depends(get_current_user)):
+    """Generate 9 different angle shots from one source image - returns task_id for polling"""
     if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Pro subscription required")
     
@@ -3433,102 +3433,31 @@ async def generate_shots(request: GenerateShotsRequest, current_user: dict = Dep
         credits_needed = CREDIT_COSTS.get("shots_generate", 5)
         raise HTTPException(status_code=402, detail=f"Insufficient credits. Shots generation requires {credits_needed} credits. Please purchase more credits.")
     
-    try:
-        # First, analyze the source image to understand the subject
-        from emergentintegrations.llm.openai import LlmChat, UserMessage, ImageContent
-        
-        chat = LlmChat(
-            api_key=EMERGENT_LLM_KEY,
-            session_id=f"shots-{current_user['id']}-{str(uuid.uuid4())[:8]}",
-            system_message="You are an expert at analyzing images. Describe subjects precisely for regeneration."
-        ).with_model("openai", "gpt-4o")
-        
-        # Handle source image - could be base64 data URI or URL
-        source_image = request.source_image
-        logger.info(f"Shots: Received image, length={len(source_image)}, starts_with={source_image[:50] if source_image else 'None'}...")
-        
-        # If it's a URL, download and convert to base64
-        if source_image.startswith('http://') or source_image.startswith('https://'):
-            try:
-                import aiohttp
-                async with aiohttp.ClientSession() as session:
-                    async with session.get(source_image) as resp:
-                        if resp.status == 200:
-                            image_bytes = await resp.read()
-                            image_base64 = base64.b64encode(image_bytes).decode('utf-8')
-                        else:
-                            raise Exception(f"Failed to download image: HTTP {resp.status}")
-            except Exception as dl_error:
-                logger.error(f"Failed to download source image: {dl_error}")
-                raise HTTPException(status_code=400, detail="Could not access the source image URL")
-        elif source_image.startswith('data:'):
-            # Extract base64 from data URI
-            if ',' in source_image:
-                image_base64 = source_image.split(',')[1]
-            else:
-                image_base64 = source_image.replace('data:image/png;base64,', '').replace('data:image/jpeg;base64,', '')
-        else:
-            # Assume it's raw base64
-            image_base64 = source_image
-        
-        # Validate the base64
-        try:
-            # Fix padding if needed
-            missing_padding = len(image_base64) % 4
-            if missing_padding:
-                image_base64 += '=' * (4 - missing_padding)
-            
-            decoded = base64.b64decode(image_base64)
-            if len(decoded) < 100:
-                raise ValueError("Image too small")
-            logger.info(f"Shots: Decoded image successfully, size={len(decoded)} bytes")
-        except Exception as b64_error:
-            logger.error(f"Invalid base64 image: {b64_error}")
-            raise HTTPException(status_code=400, detail="Invalid image format. Please provide a valid image.")
-        
-        user_msg = UserMessage(
-            text="Describe this person/subject in detail for image generation. Include: gender, age, hair, eyes, skin, clothing, setting. Be very specific. Respond in one paragraph.",
-            file_contents=[ImageContent(image_base64=image_base64)]
-        )
-        analysis = await chat.send_message(user_msg)
-        
-        base_description = analysis.strip() if isinstance(analysis, str) else str(analysis)
-        
-        # Generate 9 shots with different angles
-        shots = []
-        image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
-        
-        for i, shot_prompt in enumerate(SHOT_TYPE_PROMPTS):
-            full_prompt = f"{base_description}, {shot_prompt}, professional portrait photography, consistent lighting, high quality"
-            
-            try:
-                images = await image_gen.generate_images(
-                    prompt=full_prompt,
-                    model="gpt-image-1",
-                    number_of_images=1
-                )
-                
-                if images and len(images) > 0:
-                    image_base64 = base64.b64encode(images[0]).decode('utf-8')
-                    shots.append({
-                        "url": f"data:image/png;base64,{image_base64}",
-                        "type": f"shot_{i+1}"
-                    })
-            except Exception as shot_error:
-                logger.error(f"Error generating shot {i+1}: {str(shot_error)}")
-                continue
-        
-        return {"shots": shots, "success": True, "total": len(shots)}
-        
-    except Exception as e:
-        error_msg = str(e)
-        logger.error(f"Error generating shots: {error_msg}")
-        
-        # Check for budget exceeded error
-        if check_budget_error(error_msg):
-            raise get_budget_error_response()
-        
-        raise HTTPException(status_code=500, detail=f"Error generating shots: {error_msg}")
+    # Create task and return immediately
+    task_id = str(uuid.uuid4())
+    TASK_STORE[task_id] = {
+        "status": "pending",
+        "user_id": current_user["id"],
+        "type": "shots",
+        "created_at": datetime.now(timezone.utc),
+        "progress": 0,
+        "result": None,
+        "error": None
+    }
+    
+    logger.info(f"Shots generation task {task_id} created for user {current_user['id']}")
+    
+    # Start background task
+    background_tasks.add_task(
+        run_shots_generation_task,
+        task_id,
+        current_user["id"],
+        request.source_image,
+        request.character_id
+    )
+    
+    # Return task ID immediately (HTTP 202 Accepted)
+    return {"task_id": task_id, "status": "pending", "message": "Shots generation started. Poll /api/tasks/{task_id} for status."}
 
 @api_router.post("/pro-studio/generate-expression")
 async def generate_expression(request: GenerateExpressionRequest, current_user: dict = Depends(get_current_user)):
