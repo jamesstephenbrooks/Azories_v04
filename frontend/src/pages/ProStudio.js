@@ -3859,7 +3859,10 @@ export default function ProStudio() {
                   <div className="flex gap-3 mb-4">
                     {cinemaSourceImage ? (
                       <Button 
-                        onClick={generateCinemaVariant}
+                        onClick={() => {
+                          if (!checkCreditsOrRedirect(1, 'Generate Variant')) return;
+                          generateCinemaVariant();
+                        }}
                         disabled={isLoading}
                         className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                         data-testid="generate-variant-btn"
@@ -3868,7 +3871,10 @@ export default function ProStudio() {
                       </Button>
                     ) : (
                       <Button 
-                        onClick={generateHeroFrame}
+                        onClick={() => {
+                          if (!checkCreditsOrRedirect(1, 'Generate Hero Frame')) return;
+                          generateHeroFrame();
+                        }}
                         disabled={isLoading || !prompt.trim()}
                         className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                         data-testid="generate-hero-btn"
