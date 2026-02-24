@@ -2244,25 +2244,113 @@ export default function BookEditor() {
         </DialogContent>
       </Dialog>
       
-      {/* Cover Gallery Picker Modal */}
+      {/* Cover Gallery Picker Modal - Full featured with all tabs */}
       <Dialog open={showCoverGalleryPicker} onOpenChange={setShowCoverGalleryPicker}>
         <DialogContent className="max-w-4xl max-h-[80vh]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <FiImage className="text-purple-500" />
-              Select {coverGalleryTarget === 'front' ? 'Front' : 'Back'} Cover from Art Studio
+              Select {coverGalleryTarget === 'front' ? 'Front' : 'Back'} Cover Image
             </DialogTitle>
           </DialogHeader>
           
+          {/* Gallery Tabs - Same as main gallery */}
+          <div className="flex flex-wrap gap-2 mt-2 border-b border-border pb-2">
+            <button
+              onClick={() => setGalleryTab('starter')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                galleryTab === 'starter' 
+                  ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white' 
+                  : 'bg-amber-500/20 hover:bg-amber-500/30 text-amber-600'
+              }`}
+            >
+              ⭐ Starter Library ({starterLibraryImages.length})
+            </button>
+            <button
+              onClick={() => setGalleryTab('book')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                galleryTab === 'book' 
+                  ? 'bg-purple-500 text-white' 
+                  : 'bg-muted hover:bg-muted/80'
+              }`}
+            >
+              This Book ({galleryImages.length})
+            </button>
+            <button
+              onClick={() => setGalleryTab('all')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                galleryTab === 'all' 
+                  ? 'bg-purple-500 text-white' 
+                  : 'bg-muted hover:bg-muted/80'
+              }`}
+            >
+              Art Studio ({generalGalleryImages.length})
+            </button>
+            <button
+              onClick={() => setGalleryTab('characters')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                galleryTab === 'characters' 
+                  ? 'bg-pink-500 text-white' 
+                  : 'bg-muted hover:bg-muted/80'
+              }`}
+            >
+              Pro Characters ({proStudioCharacters.reduce((sum, c) => sum + c.gallery.length, 0)})
+            </button>
+            <button
+              onClick={() => setGalleryTab('scenes')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                galleryTab === 'scenes' 
+                  ? 'bg-emerald-500 text-white' 
+                  : 'bg-muted hover:bg-muted/80'
+              }`}
+            >
+              Pro Scenes ({proStudioScenes.reduce((sum, s) => sum + s.gallery.length, 0)})
+            </button>
+          </div>
+          
           <div className="mt-4">
-            {(() => {
-              const allImages = [...galleryImages, ...generalGalleryImages];
+            {/* Starter Library images for cover */}
+            {galleryTab === 'starter' && (
+              <ScrollArea className="h-[50vh]">
+                {starterLibraryImages.length === 0 ? (
+                  <div className="text-center py-12">
+                    <FiImage className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
+                    <h3 className="font-medium text-lg mb-2">Loading starter images...</h3>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-3 md:grid-cols-4 gap-3 p-1">
+                    {starterLibraryImages.map((img, idx) => (
+                      <button
+                        key={img.id || idx}
+                        onClick={() => addCoverFromGallery(img.image_url)}
+                        className="group relative aspect-[3/4] rounded-lg overflow-hidden border-2 border-transparent hover:border-amber-500 transition-all"
+                      >
+                        <img 
+                          src={img.image_url} 
+                          alt={img.name || 'Starter image'}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <span className="text-white text-sm font-medium">Use as Cover</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </ScrollArea>
+            )}
+            
+            {/* Book & Art Studio images for cover */}
+            {(galleryTab === 'book' || galleryTab === 'all') && (() => {
+              const currentImages = galleryTab === 'book' ? galleryImages : generalGalleryImages;
               
-              if (allImages.length === 0) {
+              if (currentImages.length === 0) {
                 return (
                   <div className="text-center py-8">
                     <FiImage className="w-12 h-12 mx-auto text-muted-foreground/50 mb-4" />
-                    <p className="text-muted-foreground">No images in your Art Studio gallery</p>
+                    <p className="text-muted-foreground">
+                      {galleryTab === 'book' ? 'No images for this book' : 'No images in Art Studio'}
+                    </p>
                     <Button
                       onClick={() => {
                         setShowCoverGalleryPicker(false);
@@ -2280,7 +2368,7 @@ export default function BookEditor() {
               return (
                 <ScrollArea className="h-[50vh]">
                   <div className="grid grid-cols-3 md:grid-cols-4 gap-3 p-1">
-                    {allImages.map((img, idx) => (
+                    {currentImages.map((img, idx) => (
                       <button
                         key={img.id || idx}
                         onClick={() => addCoverFromGallery(img.image_url)}
@@ -2300,6 +2388,138 @@ export default function BookEditor() {
                 </ScrollArea>
               );
             })()}
+            
+            {/* Pro Studio Characters for cover */}
+            {galleryTab === 'characters' && (
+              proStudioCharacters.length === 0 ? (
+                <div className="text-center py-12">
+                  <FiUser className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
+                  <h3 className="font-medium text-lg mb-2">No Pro Studio Characters</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Create characters in Pro Studio to see their images here.
+                  </p>
+                  <Button
+                    onClick={() => {
+                      setShowCoverGalleryPicker(false);
+                      navigate('/pro-studio');
+                    }}
+                    className="rounded-full bg-pink-500 hover:bg-pink-600"
+                  >
+                    <FiZap className="mr-2" />
+                    Go to Pro Studio
+                  </Button>
+                </div>
+              ) : (
+                <ScrollArea className="h-[50vh]">
+                  {proStudioCharacters.map((char) => (
+                    <div key={char.id} className="mb-6">
+                      <h4 className="font-medium mb-2 flex items-center gap-2">
+                        <FiUser className="text-pink-500" />
+                        {char.name}
+                        <span className="text-xs text-muted-foreground">
+                          ({char.gallery?.length || 0} images)
+                        </span>
+                      </h4>
+                      {char.gallery?.length > 0 ? (
+                        <div className="grid grid-cols-4 gap-2">
+                          {char.gallery.map((img, idx) => (
+                            <button
+                              key={idx}
+                              onClick={() => addCoverFromGallery(img.image_url)}
+                              className="group relative aspect-[3/4] rounded-lg overflow-hidden border-2 border-transparent hover:border-pink-500 transition-all"
+                            >
+                              <img 
+                                src={img.image_url} 
+                                alt={`${char.name} image`}
+                                className="w-full h-full object-cover"
+                              />
+                              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <span className="text-white text-xs font-medium">Use</span>
+                              </div>
+                              {img.type === 'master' && (
+                                <span className="absolute top-1 left-1 bg-pink-500 text-white text-[10px] px-1.5 py-0.5 rounded">
+                                  Master
+                                </span>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-xs text-muted-foreground italic">
+                          No images yet. Generate images in Pro Studio.
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </ScrollArea>
+              )
+            )}
+            
+            {/* Pro Studio Scenes for cover */}
+            {galleryTab === 'scenes' && (
+              proStudioScenes.length === 0 ? (
+                <div className="text-center py-12">
+                  <FiLayers className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
+                  <h3 className="font-medium text-lg mb-2">No Pro Studio Scenes</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Create scenes in Pro Studio to see their images here.
+                  </p>
+                  <Button
+                    onClick={() => {
+                      setShowCoverGalleryPicker(false);
+                      navigate('/pro-studio');
+                    }}
+                    className="rounded-full bg-emerald-500 hover:bg-emerald-600"
+                  >
+                    <FiZap className="mr-2" />
+                    Go to Pro Studio
+                  </Button>
+                </div>
+              ) : (
+                <ScrollArea className="h-[50vh]">
+                  {proStudioScenes.map((scene) => (
+                    <div key={scene.id} className="mb-6">
+                      <h4 className="font-medium mb-2 flex items-center gap-2">
+                        <FiLayers className="text-emerald-500" />
+                        {scene.name}
+                        <span className="text-xs text-muted-foreground">
+                          ({scene.gallery?.length || 0} images)
+                        </span>
+                      </h4>
+                      {scene.gallery?.length > 0 ? (
+                        <div className="grid grid-cols-4 gap-2">
+                          {scene.gallery.map((img, idx) => (
+                            <button
+                              key={idx}
+                              onClick={() => addCoverFromGallery(img.image_url)}
+                              className="group relative aspect-[3/4] rounded-lg overflow-hidden border-2 border-transparent hover:border-emerald-500 transition-all"
+                            >
+                              <img 
+                                src={img.image_url} 
+                                alt={`${scene.name} image`}
+                                className="w-full h-full object-cover"
+                              />
+                              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <span className="text-white text-xs font-medium">Use</span>
+                              </div>
+                              {img.type === 'preview' && (
+                                <span className="absolute top-1 left-1 bg-emerald-500 text-white text-[10px] px-1.5 py-0.5 rounded">
+                                  Preview
+                                </span>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-xs text-muted-foreground italic">
+                          No images yet. Generate images in Pro Studio.
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </ScrollArea>
+              )
+            )}
           </div>
         </DialogContent>
       </Dialog>
