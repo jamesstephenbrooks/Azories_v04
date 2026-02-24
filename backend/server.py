@@ -152,6 +152,8 @@ CREDIT_COSTS = {
     "lora_training": 50,       # Train LoRA model
     "lora_generate": 2,        # Generate with trained LoRA
     "video_generate": 10,      # Video generation
+    "shots_generate": 5,       # 9 angle shots generation
+    "expression_generate": 2,  # Expression generation
 }
 
 # Actual costs to us (for tracking VIP usage)
