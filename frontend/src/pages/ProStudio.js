@@ -1894,7 +1894,7 @@ export default function ProStudio() {
                   <Button 
                     variant="outline"
                     onClick={() => regenerateThumbnail(viewingCharacter.id)}
-                    className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                    className="border-blue-400/50 text-blue-300 hover:bg-blue-500/20 hover:border-blue-400"
                     title="Regenerate thumbnail for better consistency"
                   >
                     <FiRefreshCw className="mr-2" /> New Look
@@ -1902,13 +1902,13 @@ export default function ProStudio() {
                   <Button 
                     variant="outline"
                     onClick={() => { openEditModal(viewingCharacter); closeCharacterView(); }}
-                    className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                    className="border-amber-400/50 text-amber-300 hover:bg-amber-500/20 hover:border-amber-400"
                   >
                     <FiEdit3 className="mr-2" /> Edit
                   </Button>
                   <Button 
                     onClick={() => { setSelectedCharacter(viewingCharacter); closeCharacterView(); }}
-                    className="bg-purple-600 hover:bg-purple-700"
+                    className="bg-purple-600 hover:bg-purple-700 text-white"
                   >
                     <FiZap className="mr-2" /> Use for Generation
                   </Button>
