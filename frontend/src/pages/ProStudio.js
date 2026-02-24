@@ -3429,12 +3429,37 @@ export default function ProStudio() {
                         } p-3`}
                       >
                         <div className="flex items-start gap-3">
-                          <img 
-                            src={scene.thumbnail || scene.reference_images?.[0]} 
-                            alt={scene.name}
-                            className="w-20 h-14 rounded-lg object-cover cursor-pointer hover:ring-2 hover:ring-purple-500"
-                            onClick={() => openSceneView(scene)}
-                          />
+                          <div className="relative group">
+                            <img 
+                              src={scene.thumbnail || scene.reference_images?.[0]} 
+                              alt={scene.name}
+                              className="w-20 h-14 rounded-lg object-cover cursor-pointer hover:ring-2 hover:ring-purple-500"
+                              onClick={() => openSceneView(scene)}
+                            />
+                            {/* Crop overlay on hover */}
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-1">
+                              <button 
+                                onClick={(e) => { 
+                                  e.stopPropagation(); 
+                                  openCropModal(scene.thumbnail || scene.reference_images?.[0], 'scene', scene.id); 
+                                }}
+                                className="p-1 bg-purple-500/80 rounded hover:bg-purple-600"
+                                title="Crop"
+                              >
+                                <FiCrop className="text-white" size={12} />
+                              </button>
+                              <button 
+                                onClick={(e) => { 
+                                  e.stopPropagation(); 
+                                  openSceneView(scene); 
+                                }}
+                                className="p-1 bg-gray-700/80 rounded hover:bg-gray-600"
+                                title="View Folder"
+                              >
+                                <FiFolder className="text-white" size={12} />
+                              </button>
+                            </div>
+                          </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-white font-medium truncate">{scene.name}</p>
                             <p className="text-gray-500 text-xs truncate">{scene.description_prompt}</p>
@@ -3457,7 +3482,7 @@ export default function ProStudio() {
                               size="sm"
                               variant={selectedScene?.id === scene.id ? "default" : "outline"}
                               onClick={() => setSelectedScene(scene)}
-                              className={selectedScene?.id === scene.id ? "bg-purple-600" : "border-gray-600"}
+                              className={selectedScene?.id === scene.id ? "bg-purple-600" : "border-gray-600 text-gray-300"}
                             >
                               {selectedScene?.id === scene.id ? <FiCheck /> : 'Use'}
                             </Button>
