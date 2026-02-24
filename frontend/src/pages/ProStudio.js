@@ -1166,6 +1166,77 @@ export default function ProStudio() {
     }
   };
 
+  // Generate variant from source image with Cinema Studio settings
+  const generateCinemaVariant = async () => {
+    if (!cinemaSourceImage) {
+      toast.error('Please select a source image first');
+      return;
+    }
+
+    setIsLoading(true);
+    setLoadingMessage(`Creating cinema variant of ${cinemaSourceImage.name || 'image'}...`);
+
+    try {
+      const cinemaPrompt = buildCinemaPrompt(selectedCamera, selectedLens, selectedFocalLength);
+      const lightingPreset = LIGHTING_PRESETS.find(l => l.id === selectedLighting);
+      
+      // Build prompt that describes re-creating the image with new camera settings
+      const variantPrompt = [
+        prompt || 'recreate this image with the following camera settings',
+        cinemaPrompt,
+        lightingPreset?.prompt || ''
+      ].filter(Boolean).join(', ');
+
+      const token = localStorage.getItem('azories-token');
+      
+      // Use image-to-image endpoint with the source
+      const response = await fetch(`${API_URL}/api/pro-studio/generate-variant`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          source_image: cinemaSourceImage.url,
+          prompt: variantPrompt,
+          camera: selectedCamera,
+          lens: selectedLens,
+          focal_length: selectedFocalLength,
+          lighting: selectedLighting,
+          aspect_ratio: aspectRatio,
+          strength: 0.7 // Keep some of the original while applying new style
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const newImage = {
+          id: Date.now(),
+          url: data.image_url,
+          prompt: variantPrompt,
+          sourceImage: cinemaSourceImage.url,
+          settings: { selectedCamera, selectedLens, selectedFocalLength, selectedLighting }
+        };
+        setGeneratedImages(prev => [newImage, ...prev]);
+        setSelectedHeroFrame(newImage);
+        toast.success('Cinema variant generated!');
+      } else {
+        const error = await response.json();
+        if (response.status === 402) {
+          handleCreditError(error.detail);
+        } else {
+          toast.error(error.detail || 'Variant generation failed');
+        }
+      }
+    } catch (error) {
+      toast.error('Error generating variant');
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+      setLoadingMessage('');
+    }
+  };
+
   // Generate shots (9 angles from 1 image)
   // Helper to resize image to reduce payload size
   const resizeImageForAPI = async (imageData, maxSize = 1024) => {
