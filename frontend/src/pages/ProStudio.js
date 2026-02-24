@@ -156,6 +156,14 @@ export default function ProStudio() {
   const [cinemaSourceImage, setCinemaSourceImage] = useState(null); // { url, name, type: 'character'|'scene'|'gallery' }
   const [showCinemaSourcePicker, setShowCinemaSourcePicker] = useState(false);
   
+  // Crop state
+  const [showCropModal, setShowCropModal] = useState(false);
+  const [cropImage, setCropImage] = useState(null); // { url, type: 'scene'|'character', parentId }
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [cropAspect, setCropAspect] = useState(16 / 9);
+  
   // Expression state
   const [selectedExpression, setSelectedExpression] = useState('neutral');
   
