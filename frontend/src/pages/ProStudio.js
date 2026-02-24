@@ -4571,10 +4571,15 @@ export default function ProStudio() {
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                  {filteredGallery.map((item) => (
+                  {filteredGallery.map((item) => {
+                    // Determine if this is a video/animation
+                    const isVideo = item.type === 'video' || item.type === 'animation' || item.is_animation || 
+                                    (item.image_url && item.image_url.includes('video/'));
+                    
+                    return (
                     <div key={item.id} className="relative group rounded-lg overflow-hidden bg-gray-800 border border-gray-700 hover:border-purple-500/50 transition-colors">
                       {/* Media Preview */}
-                      {item.type === 'video' || item.is_animation ? (
+                      {isVideo ? (
                         <div className="relative w-full aspect-square bg-gray-900">
                           <video 
                             src={item.image_url || item.url} 
