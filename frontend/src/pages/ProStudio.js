@@ -1182,6 +1182,7 @@ export default function ProStudio() {
   const pollTaskStatus = async (taskId, onProgress, maxPolls = 120) => {
     const token = localStorage.getItem('azories-token');
     let polls = 0;
+    let consecutiveErrors = 0;
     
     while (polls < maxPolls) {
       try {
@@ -1190,9 +1191,30 @@ export default function ProStudio() {
         });
         
         if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.detail || 'Failed to check task status');
+          // Handle gateway errors (502, 504) - retry silently
+          if (response.status === 502 || response.status === 504) {
+            consecutiveErrors++;
+            if (consecutiveErrors >= 5) {
+              throw new Error('Server temporarily unavailable. Please try again later.');
+            }
+            // Wait and retry
+            await new Promise(resolve => setTimeout(resolve, 5000));
+            polls++;
+            continue;
+          }
+          // For other errors, try to get error message
+          let errorMsg = `Server error: ${response.status}`;
+          try {
+            const errorData = await response.json();
+            errorMsg = errorData.detail || errorMsg;
+          } catch (e) {
+            // Ignore JSON parse errors
+          }
+          throw new Error(errorMsg);
         }
+        
+        // Reset consecutive errors on success
+        consecutiveErrors = 0;
         
         const task = await response.json();
         
