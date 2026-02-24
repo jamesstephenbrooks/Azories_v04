@@ -4507,32 +4507,38 @@ export default function ProStudio() {
                           className="w-full aspect-square object-cover" 
                           muted 
                           playsInline 
-                          loop 
-                          onMouseEnter={(e) => e.target.play()}
+                          loop
+                          preload="metadata"
+                          onMouseEnter={(e) => e.target.play().catch(() => {})}
                           onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
-                          onError={(e) => {
-                            e.target.style.display = 'none';
-                            e.target.parentElement.querySelector('.fallback-placeholder')?.classList.remove('hidden');
-                          }}
                         />
                       ) : (
-                        <img 
-                          src={item.image_url || item.url} 
-                          alt={item.prompt || 'Gallery item'} 
-                          className="w-full aspect-square object-cover" 
-                          onError={(e) => {
-                            e.target.style.display = 'none';
-                            e.target.parentElement.querySelector('.fallback-placeholder')?.classList.remove('hidden');
-                          }}
-                        />
+                        <>
+                          <img 
+                            src={item.image_url || item.url} 
+                            alt={item.prompt || 'Gallery item'} 
+                            className="w-full aspect-square object-cover" 
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              e.target.nextElementSibling?.classList.remove('hidden');
+                            }}
+                          />
+                          <div className="hidden w-full aspect-square bg-gray-700 flex items-center justify-center">
+                            <div className="text-center text-gray-500">
+                              <FiImage className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                              <span className="text-xs">Unavailable</span>
+                            </div>
+                          </div>
+                        </>
                       )}
-                      {/* Fallback placeholder for broken images */}
-                      <div className="fallback-placeholder hidden w-full aspect-square bg-gray-700 flex items-center justify-center">
-                        <div className="text-center text-gray-500">
-                          <FiImage className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                          <span className="text-xs">Image unavailable</span>
+                      
+                      {/* Video indicator */}
+                      {(item.type === 'video' || item.is_animation) && (
+                        <div className="absolute top-2 right-2 bg-pink-500 text-white text-xs px-1.5 py-0.5 rounded flex items-center gap-1">
+                          <FiVideo className="w-3 h-3" />
+                          Video
                         </div>
-                      </div>
+                      )}
                       
                       {/* Hover Actions */}
                       <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 p-2">
