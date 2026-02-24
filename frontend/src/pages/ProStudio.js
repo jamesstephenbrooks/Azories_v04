@@ -3452,6 +3452,29 @@ export default function ProStudio() {
                 <div className="bg-black/40 rounded-xl border border-purple-500/20 p-6">
                   <h2 className="text-xl font-bold text-white mb-4">Animate to Video</h2>
                   
+                  {/* Art Style Selector for Consistency */}
+                  <div className="mb-4">
+                    <label className="text-sm text-gray-400 mb-2 block">Art Style (for consistency)</label>
+                    <Select value={videoArtStyle} onValueChange={setVideoArtStyle}>
+                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
+                        <SelectValue placeholder="Select art style" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-700">
+                        <SelectItem value="cinematic" className="text-white">🎬 Cinematic</SelectItem>
+                        <SelectItem value="anime" className="text-white">🎌 Anime</SelectItem>
+                        <SelectItem value="realistic" className="text-white">📷 Realistic</SelectItem>
+                        <SelectItem value="cyberpunk" className="text-white">🌃 Cyberpunk</SelectItem>
+                        <SelectItem value="fantasy" className="text-white">🧙 Fantasy</SelectItem>
+                        <SelectItem value="cartoon" className="text-white">🎨 Cartoon</SelectItem>
+                        <SelectItem value="watercolor" className="text-white">🖌️ Watercolor</SelectItem>
+                        <SelectItem value="oil-painting" className="text-white">🎨 Oil Painting</SelectItem>
+                        <SelectItem value="3d-render" className="text-white">💎 3D Render</SelectItem>
+                        <SelectItem value="none" className="text-white">— No Style Override</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-gray-500 mt-1">Match your character's art style for consistent results</p>
+                  </div>
+                  
                   <Textarea
                     placeholder="Describe the motion... (e.g., 'gentle wind blowing hair, soft breathing, subtle camera dolly forward')"
                     value={videoPrompt}
@@ -3465,7 +3488,7 @@ export default function ProStudio() {
                     onClick={animateToVideo}
                     disabled={isLoading || (
                       (videoSourceType === 'hero' && !selectedHeroFrame) ||
-                      (videoSourceType === 'character' && !videoSourceCharacter?.thumbnail) ||
+                      (videoSourceType === 'character' && !videoSelectedImage?.url && !videoSourceCharacter?.thumbnail) ||
                       (videoSourceType === 'upload' && !videoUploadedImage)
                     )}
                     className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
