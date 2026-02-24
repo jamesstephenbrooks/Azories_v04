@@ -7866,6 +7866,145 @@ async def admin_get_full_book(book_id: str, admin: dict = Depends(get_admin_user
         "chapters": full_chapters
     }
 
+
+# ==========================================================================================
+# CONTACT FORM
+# ==========================================================================================
+
+class ContactRequest(BaseModel):
+    name: str
+    email: str
+    subject: Optional[str] = ""
+    category: str = "general"
+    message: str
+
+@api_router.post("/contact")
+async def submit_contact_form(request: ContactRequest, background_tasks: BackgroundTasks):
+    """Handle contact form submissions - sends email to admin"""
+    
+    category_labels = {
+        "general": "General Inquiry",
+        "support": "Technical Support",
+        "publishing": "Book Publishing",
+        "business": "Business & Partnerships"
+    }
+    
+    category_label = category_labels.get(request.category, "General Inquiry")
+    subject_line = request.subject or f"{category_label} from {request.name}"
+    
+    # Email to admin
+    admin_email = os.environ.get("ADMIN_NOTIFY_EMAIL", "books@azories.com")
+    backup_email = os.environ.get("BACKUP_ADMIN_EMAIL")
+    
+    html_content = f"""
+    <html>
+    <body style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+        <div style="background: linear-gradient(135deg, #7c3aed, #a855f7); padding: 20px; border-radius: 12px 12px 0 0;">
+            <h1 style="color: white; margin: 0; font-size: 24px;">📬 New Contact Message</h1>
+        </div>
+        
+        <div style="background: #ffffff; padding: 20px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+            <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+                <tr>
+                    <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; width: 120px;"><strong>From:</strong></td>
+                    <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">{request.name}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;"><strong>Email:</strong></td>
+                    <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">
+                        <a href="mailto:{request.email}" style="color: #7c3aed;">{request.email}</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;"><strong>Category:</strong></td>
+                    <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">{category_label}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;"><strong>Subject:</strong></td>
+                    <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">{request.subject or 'No subject'}</td>
+                </tr>
+            </table>
+            
+            <div style="background: #f9fafb; border-radius: 8px; padding: 15px; margin: 20px 0;">
+                <h3 style="color: #374151; margin: 0 0 10px 0;">Message:</h3>
+                <p style="color: #4b5563; line-height: 1.6; white-space: pre-wrap; margin: 0;">{request.message}</p>
+            </div>
+            
+            <div style="text-align: center; margin: 20px 0;">
+                <a href="mailto:{request.email}?subject=Re: {subject_line}" 
+                   style="background: #7c3aed; color: white; padding: 12px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; display: inline-block;">
+                    Reply to {request.name}
+                </a>
+            </div>
+            
+            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
+            <p style="color: #9ca3af; font-size: 12px; text-align: center;">
+                This message was sent from the Azories contact form.
+            </p>
+        </div>
+    </body>
+    </html>
+    """
+    
+    if email_configured():
+        # Send to primary admin
+        background_tasks.add_task(send_email, admin_email, f"[Azories Contact] {subject_line}", html_content)
+        logging.info(f"Contact form email sent to {admin_email} from {request.email}")
+        
+        # Send to backup admin if configured
+        if backup_email and backup_email != admin_email:
+            background_tasks.add_task(send_email, backup_email, f"[BACKUP] [Azories Contact] {subject_line}", html_content)
+        
+        # Send confirmation to user
+        confirmation_html = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+            <div style="background: linear-gradient(135deg, #7c3aed, #a855f7); padding: 20px; border-radius: 12px 12px 0 0;">
+                <h1 style="color: white; margin: 0; font-size: 24px;">📬 Message Received!</h1>
+            </div>
+            
+            <div style="background: #ffffff; padding: 20px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+                <h2 style="color: #1f2937; margin-top: 0;">Hi {request.name}! 👋</h2>
+                
+                <p style="color: #4b5563; line-height: 1.6;">
+                    Thank you for reaching out to Azories! We've received your message and will get back to you as soon as possible.
+                </p>
+                
+                <div style="background: #f3f4f6; border-radius: 8px; padding: 15px; margin: 20px 0;">
+                    <p style="color: #6b7280; margin: 0;"><strong>Your message:</strong></p>
+                    <p style="color: #4b5563; margin: 10px 0 0 0; font-style: italic;">"{request.message[:200]}{'...' if len(request.message) > 200 else ''}"</p>
+                </div>
+                
+                <p style="color: #4b5563; line-height: 1.6;">
+                    We typically respond within <strong>1-2 business days</strong>.
+                </p>
+                
+                <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
+                <p style="color: #9ca3af; font-size: 12px; text-align: center;">
+                    © 2026 Azories. Happy storytelling! ✨
+                </p>
+            </div>
+        </body>
+        </html>
+        """
+        background_tasks.add_task(send_email, request.email, "We received your message - Azories", confirmation_html)
+    
+    # Also save to database for records
+    contact_record = {
+        "name": request.name,
+        "email": request.email,
+        "subject": request.subject,
+        "category": request.category,
+        "message": request.message,
+        "created_at": datetime.now(timezone.utc),
+        "status": "new"
+    }
+    await db.contact_messages.insert_one(contact_record)
+    
+    return {"success": True, "message": "Message sent successfully"}
+
+
+
 @api_router.post("/admin/generate-missing-covers")
 async def admin_generate_missing_covers(admin: dict = Depends(get_admin_user)):
     """Generate cover images for books that don't have them"""
