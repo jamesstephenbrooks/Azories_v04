@@ -51,7 +51,25 @@ Build a full-featured digital book platform ("Azories") with:
    - "Master" badge on primary character image
    - Close button (X) to dismiss gallery
 
-3. **Bug Fix:** Fixed `/api/my-books` -> `/api/books/my` endpoint mismatch
+3. **Generation Preview Modal:**
+   - When generating images for Characters or Scenes, popup shows result
+   - Options: Save to Character folder, Save to Scene folder, Save to Gallery, Download
+   - Image also added to session's generated images list
+
+4. **Cinema Studio Source Image Picker (NEW):**
+   - Select any existing image from Characters, Scenes, or Gallery
+   - Create variants with different camera settings (Camera, Lens, Lighting)
+   - New `POST /api/pro-studio/generate-variant` endpoint
+   - Analyzes source image and regenerates with cinema settings
+
+5. **Image Crop Feature (NEW):**
+   - Added `react-easy-crop` library
+   - Crop button on Scene and Character gallery images
+   - Adjustable aspect ratios: 16:9, 4:3, 1:1, 3:4, 9:16, Free
+   - Zoom slider for precise control
+   - Saves cropped image to appropriate folder
+
+6. **Bug Fix:** Fixed `/api/my-books` -> `/api/books/my` endpoint mismatch
 
 **Previous Session (Feb 24, 2026):**
 
