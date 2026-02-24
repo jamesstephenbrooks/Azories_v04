@@ -454,17 +454,28 @@ export default function ProStudio() {
         }
       }
       
-      // Add generated videos if stored separately
-      if (generatedVideos.length > 0) {
-        const videoItems = generatedVideos.map(vid => ({
-          id: vid.id,
-          image_url: vid.url,
-          prompt: vid.prompt || 'Generated video',
-          source: 'video-generation',
-          type: 'video',
-          is_animation: true
-        }));
-        allItems = [...allItems, ...videoItems];
+      // Fetch all videos from the videos endpoint
+      try {
+        const videosRes = await fetch(`${API_URL}/api/pro-studio/videos`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (videosRes.ok) {
+          const videosData = await videosRes.json();
+          const videoItems = (videosData.videos || []).map(vid => ({
+            id: vid.id,
+            image_url: vid.video_url,
+            name: vid.name,
+            prompt: vid.name || 'Video',
+            source: vid.source === 'character' ? 'character-video' : 'art-studio-video',
+            type: 'video',
+            is_animation: true,
+            character_name: vid.character_name,
+            created_at: vid.created_at
+          }));
+          allItems = [...allItems, ...videoItems];
+        }
+      } catch (e) {
+        console.error('Error loading videos:', e);
       }
       
       // Sort by created_at descending (newest first)
