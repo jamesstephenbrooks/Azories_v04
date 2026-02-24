@@ -4682,7 +4682,7 @@ export default function ProStudio() {
                           >
                             <FiImage className="text-white w-4 h-4" />
                           </Button>
-                          {item.type !== 'video' && (
+                          {!isVideo && (
                             <Button 
                               size="sm" 
                               variant="ghost" 
