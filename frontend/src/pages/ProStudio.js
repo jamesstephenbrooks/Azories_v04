@@ -4606,13 +4606,21 @@ export default function ProStudio() {
                           <img 
                             src={item.image_url || item.url} 
                             alt={item.prompt || 'Gallery item'} 
-                            className="w-full aspect-square object-cover" 
-                            onError={(e) => {
-                              e.target.style.display = 'none';
-                              e.target.nextElementSibling?.classList.remove('hidden');
+                            className="w-full aspect-square object-cover"
+                            loading="lazy"
+                            onLoad={(e) => {
+                              // Successfully loaded
+                              e.target.style.opacity = '1';
                             }}
+                            onError={(e) => {
+                              // Failed to load - show fallback
+                              e.target.style.display = 'none';
+                              const fallback = e.target.parentElement.querySelector('.image-fallback');
+                              if (fallback) fallback.classList.remove('hidden');
+                            }}
+                            style={{ opacity: 0.7, transition: 'opacity 0.3s' }}
                           />
-                          <div className="hidden w-full aspect-square bg-gray-700 flex items-center justify-center">
+                          <div className="image-fallback hidden w-full aspect-square bg-gray-700 flex items-center justify-center absolute inset-0">
                             <div className="text-center text-gray-500">
                               <FiImage className="w-8 h-8 mx-auto mb-2 opacity-50" />
                               <span className="text-xs">Unavailable</span>
