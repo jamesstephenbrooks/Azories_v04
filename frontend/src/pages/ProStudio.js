@@ -1342,6 +1342,51 @@ export default function ProStudio() {
     setCharacterGallery([]);
   };
 
+  // Load character gallery for video mode
+  const loadVideoCharacterGallery = async (characterId) => {
+    try {
+      const token = localStorage.getItem('azories-token');
+      const response = await fetch(`${API_URL}/api/pro-studio/characters/${characterId}/gallery`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setVideoCharacterGallery(data.images || []);
+      }
+    } catch (error) {
+      console.error('Error loading video character gallery:', error);
+    }
+  };
+
+  // Handle character selection for video - load their gallery
+  const handleVideoCharacterSelect = async (characterId) => {
+    const character = characters.find(c => c.id === characterId);
+    setVideoSourceCharacter(character);
+    setVideoSelectedImage(null); // Reset selected image
+    if (character) {
+      await loadVideoCharacterGallery(characterId);
+      // Auto-select master image with its description
+      if (character.thumbnail) {
+        setVideoSelectedImage({
+          url: character.thumbnail,
+          prompt: character.description || character.appearance_traits || 'Character master image',
+          type: 'master'
+        });
+        // Pre-fill prompt with character description
+        setVideoPrompt(`${character.name} - ${character.description || 'subtle cinematic movement'}`);
+      }
+    }
+  };
+
+  // Select an image from character gallery for video
+  const selectVideoImage = (image) => {
+    setVideoSelectedImage(image);
+    // Update prompt with the image's description
+    if (image.prompt) {
+      setVideoPrompt(image.prompt);
+    }
+  };
+
   // Load scene's generated images (scene folder)
   const loadSceneGallery = async (sceneId) => {
     try {
