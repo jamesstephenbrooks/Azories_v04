@@ -7604,15 +7604,9 @@ async def request_book_publish(book_id: str, background_tasks: BackgroundTasks, 
     
     # Send email in background
     if email_configured():
-        # Send to primary admin email
+        # Send to admin email
         background_tasks.add_task(send_email, admin_email, subject, html_content)
         logging.info(f"Admin notification email sent for book {book_id} to {admin_email}")
-        
-        # Also send to backup admin email (personal email) to ensure delivery
-        backup_admin_email = os.environ.get("BACKUP_ADMIN_EMAIL", "jamesstephenbrooks@outlook.com")
-        if backup_admin_email and backup_admin_email != admin_email:
-            background_tasks.add_task(send_email, backup_admin_email, f"[BACKUP] {subject}", html_content)
-            logging.info(f"Backup admin notification sent to {backup_admin_email}")
         
         # Also send confirmation email to the author
         author_email = current_user.get("email")
