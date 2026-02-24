@@ -4583,7 +4583,7 @@ export default function ProStudio() {
                   size="sm"
                   variant={galleryFilter === 'all' ? 'default' : 'outline'}
                   onClick={() => setGalleryFilter('all')}
-                  className={`text-xs ${galleryFilter === 'all' ? 'bg-purple-600' : 'border-gray-600'}`}
+                  className={`text-xs ${galleryFilter === 'all' ? 'bg-purple-600' : 'border-gray-600 text-gray-300'}`}
                 >
                   All
                 </Button>
@@ -4591,7 +4591,7 @@ export default function ProStudio() {
                   size="sm"
                   variant={galleryFilter === 'images' ? 'default' : 'outline'}
                   onClick={() => setGalleryFilter('images')}
-                  className={`text-xs ${galleryFilter === 'images' ? 'bg-purple-600' : 'border-gray-600'}`}
+                  className={`text-xs ${galleryFilter === 'images' ? 'bg-purple-600' : 'border-gray-600 text-gray-300'}`}
                 >
                   Images Only
                 </Button>
@@ -4599,7 +4599,7 @@ export default function ProStudio() {
                   size="sm"
                   variant={galleryFilter === 'characters' ? 'default' : 'outline'}
                   onClick={() => setGalleryFilter('characters')}
-                  className={`text-xs ${galleryFilter === 'characters' ? 'bg-purple-600' : 'border-gray-600'}`}
+                  className={`text-xs ${galleryFilter === 'characters' ? 'bg-purple-600' : 'border-gray-600 text-gray-300'}`}
                 >
                   Characters
                 </Button>
@@ -4608,7 +4608,7 @@ export default function ProStudio() {
                     size="sm"
                     variant={galleryFilter === 'videos' ? 'default' : 'outline'}
                     onClick={() => setGalleryFilter('videos')}
-                    className={`text-xs ${galleryFilter === 'videos' ? 'bg-purple-600' : 'border-gray-600'}`}
+                    className={`text-xs ${galleryFilter === 'videos' ? 'bg-purple-600' : 'border-gray-600 text-gray-300'}`}
                   >
                     Videos
                   </Button>
@@ -4616,7 +4616,7 @@ export default function ProStudio() {
                 
                 {/* Upload button */}
                 <label className="ml-auto">
-                  <Button size="sm" variant="outline" className="border-gray-600 text-xs cursor-pointer" asChild>
+                  <Button size="sm" variant="outline" className="border-gray-600 text-gray-300 text-xs cursor-pointer" asChild>
                     <span>
                       <FiUpload className="w-3 h-3 mr-1" /> Upload New
                     </span>
