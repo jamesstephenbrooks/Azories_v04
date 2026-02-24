@@ -86,6 +86,9 @@ export default function BookEditor() {
   const [videoUploadProgress, setVideoUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   
+  // Expanded image/video viewer
+  const [expandedMedia, setExpandedMedia] = useState(null); // {type: 'image'|'video', url: string, name: string}
+  
   // Art Studio Gallery picker
   const [showGalleryPicker, setShowGalleryPicker] = useState(false);
   const [galleryImages, setGalleryImages] = useState([]);
