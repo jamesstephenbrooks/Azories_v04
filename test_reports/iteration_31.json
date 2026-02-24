@@ -1,0 +1,103 @@
+{
+  "summary": "Iteration 31 - Async Task Polling & Character Gallery in Shots: All backend APIs for async task polling verified working. Frontend character gallery feature in Shots panel works correctly.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "General",
+        "issues": ["Onboarding tutorial modal (z-[100]) blocks UI testing - localStorage flags don't fully prevent it"]
+      }
+    ]
+  },
+  "test_results": {
+    "backend_tests_passed": 12,
+    "backend_tests_failed": 0,
+    "features_verified": [
+      {
+        "feature": "Shots async task polling - generate-shots returns task_id immediately",
+        "status": "WORKING",
+        "endpoint": "POST /api/pro-studio/generate-shots",
+        "details": "Returns {task_id, status: 'pending', message} immediately instead of 520 timeout"
+      },
+      {
+        "feature": "Task status endpoint",
+        "status": "WORKING",
+        "endpoint": "GET /api/tasks/{task_id}",
+        "details": "Returns {task_id, status, result, error, progress} - properly tracks task state"
+      },
+      {
+        "feature": "Task progress tracking",
+        "status": "WORKING",
+        "details": "Progress field (0-100) updates as task processes"
+      },
+      {
+        "feature": "Task authorization",
+        "status": "WORKING",
+        "details": "Task belongs to user - returns 403 for others, 404 for invalid task_id"
+      },
+      {
+        "feature": "Video async task polling - animate-hero returns task_id",
+        "status": "WORKING",
+        "endpoint": "POST /api/pro-studio/animate-hero",
+        "details": "Returns task_id for async polling instead of sync wait"
+      },
+      {
+        "feature": "Character gallery in Shots panel",
+        "status": "WORKING",
+        "details": "Clicking a character shows 'Character's Gallery' with Master image + generated images"
+      },
+      {
+        "feature": "Selecting image from character gallery",
+        "status": "WORKING",
+        "details": "Clicking gallery image updates source image in Shots upload area"
+      },
+      {
+        "feature": "Generate 9 Shots button enablement",
+        "status": "WORKING",
+        "details": "Button enabled (not disabled) when source image is set from character gallery"
+      },
+      {
+        "feature": "Character gallery endpoint",
+        "status": "WORKING",
+        "endpoint": "GET /api/pro-studio/characters/{id}/gallery",
+        "details": "Returns {images: [...]} with character's generated images"
+      },
+      {
+        "feature": "VIP user credit bypass",
+        "status": "WORKING",
+        "details": "VIP users (jamesstephenbrooks@outlook.com) can generate without credit check - usage tracked but not deducted"
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_async_task_polling.py",
+    "/app/test_reports/pytest/pytest_async_polling_iter31.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Async task polling pattern correctly implemented: POST returns task_id immediately, frontend polls GET /api/tasks/{task_id}",
+    "TASK_STORE in-memory dict stores task state with user_id, status, progress, result, error fields",
+    "Background tasks use BackgroundTasks from FastAPI to run generation asynchronously",
+    "Character gallery in Shots panel implemented via handleShotsCharacterSelect() which calls loadShotsCharacterGallery()",
+    "shotsCharacterGallery state properly populated with master + reference + generated images"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_async_task_polling.py"
+  ],
+  "success_rate": {
+    "backend": "100% (12/12 tests passed)",
+    "frontend": "100% (All Shots panel features verified working)"
+  },
+  "test_credentials": {
+    "vip_user": {"email": "jamesstephenbrooks@outlook.com", "password": "test123"}
+  },
+  "seed_data_creation": "No seed data created - used existing VIP user and characters (Ariza, Dax)",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Async task polling for Shots and Video generation fully working. POST endpoints return task_id immediately, frontend polls /api/tasks/{task_id} every 3 seconds. Character gallery in Shots panel loads when character is clicked, shows master image + generated images. Onboarding modal issue persists but doesn't affect core functionality."
+}
