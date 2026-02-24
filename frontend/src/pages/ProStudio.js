@@ -251,6 +251,23 @@ export default function ProStudio() {
     navigate('/credits');
   };
 
+  // Handle insufficient credits error with toast and buy button
+  const handleCreditError = (errorDetail) => {
+    toast.error(
+      <div className="flex flex-col gap-2">
+        <span className="font-medium">Insufficient credits!</span>
+        <span className="text-sm opacity-80">{errorDetail || 'Please purchase more credits'}</span>
+        <button 
+          onClick={() => navigate('/credits')}
+          className="mt-1 px-3 py-1 bg-amber-500 text-black rounded text-sm font-medium hover:bg-amber-400"
+        >
+          Buy Credits
+        </button>
+      </div>,
+      { duration: 8000 }
+    );
+  };
+
   const loadUserBooks = async () => {
     try {
       const tkn = localStorage.getItem('azories-token');
