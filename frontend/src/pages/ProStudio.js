@@ -1135,7 +1135,7 @@ export default function ProStudio() {
           Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
-          source_image: shotsSourceImage,
+          source_image: resizedImage,
           character_id: selectedCharacter?.id
         })
       });
