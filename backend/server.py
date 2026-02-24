@@ -554,6 +554,8 @@ class ProStudioImageRequest(BaseModel):
 class GenerateShotsRequest(BaseModel):
     source_image: str  # Base64 encoded image
     character_id: Optional[str] = None
+    style: Optional[str] = "realistic"  # Art style for generation
+    character_style: Optional[str] = None  # Character's specific style if available
 
 class GenerateExpressionRequest(BaseModel):
     character_id: str
