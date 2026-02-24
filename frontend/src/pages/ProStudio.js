@@ -1147,7 +1147,6 @@ export default function ProStudio() {
       });
       
       clearTimeout(timeoutId);
-      });
 
       if (response.ok) {
         const data = await response.json();
