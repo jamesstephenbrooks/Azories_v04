@@ -6999,9 +6999,21 @@ async def add_to_art_studio_gallery(request: dict, current_user: dict = Depends(
     
     try:
         now = datetime.now(timezone.utc)
+        
+        # If image is base64, upload it to fal.ai CDN for better performance
+        final_url = image_url
+        if image_url.startswith('data:image'):
+            try:
+                logging.info("Uploading base64 image to fal.ai CDN...")
+                final_url = await upload_image_to_fal(image_url)
+                logging.info(f"Image uploaded to: {final_url}")
+            except Exception as upload_error:
+                logging.warning(f"Failed to upload to CDN, using base64: {upload_error}")
+                final_url = image_url
+        
         gallery_item = {
             "user_id": user["id"],
-            "image_url": image_url,
+            "image_url": final_url,
             "name": request.get("name", request.get("prompt", "Untitled")),
             "prompt": request.get("prompt", ""),
             "type": request.get("type", "image"),
@@ -7017,7 +7029,8 @@ async def add_to_art_studio_gallery(request: dict, current_user: dict = Depends(
         return {
             "success": True,
             "id": str(result.inserted_id),
-            "message": "Image saved to gallery"
+            "message": "Image saved to gallery",
+            "image_url": final_url
         }
         
     except Exception as e:
