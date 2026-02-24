@@ -1294,15 +1294,37 @@ export default function ProStudio() {
       });
 
       if (!startResponse.ok) {
-        const error = await startResponse.json();
+        // Handle gateway errors
+        if (startResponse.status === 502 || startResponse.status === 504) {
+          throw new Error('Server is busy. Please try again in a moment.');
+        }
+        // Try to parse error response
+        let errorDetail = 'Failed to start shots generation';
+        try {
+          const errorText = await startResponse.text();
+          if (errorText) {
+            const errorData = JSON.parse(errorText);
+            errorDetail = errorData.detail || errorDetail;
+          }
+        } catch (e) {
+          // Use default error message
+        }
         if (startResponse.status === 402) {
-          handleCreditError(error.detail);
+          handleCreditError(errorDetail);
           return;
         }
-        throw new Error(error.detail || 'Failed to start shots generation');
+        throw new Error(errorDetail);
       }
       
-      const { task_id } = await startResponse.json();
+      // Parse successful response
+      let responseData;
+      try {
+        responseData = await startResponse.json();
+      } catch (parseErr) {
+        throw new Error('Invalid response from server');
+      }
+      
+      const { task_id } = responseData;
       
       if (!task_id) {
         throw new Error('No task ID returned from server');
