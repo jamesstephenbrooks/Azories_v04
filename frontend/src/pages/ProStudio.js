@@ -1389,6 +1389,9 @@ export default function ProStudio() {
       // Resize image to reduce payload size (max 1024px)
       const resizedImage = await resizeImageForAPI(shotsSourceImage, 1024);
       
+      // Get character style if a character is selected
+      const characterStyle = shotsSelectedCharacter?.style || null;
+      
       // Start the task (returns immediately with task_id)
       const startResponse = await fetch(`${API_URL}/api/pro-studio/generate-shots`, {
         method: 'POST',
@@ -1398,7 +1401,9 @@ export default function ProStudio() {
         },
         body: JSON.stringify({
           source_image: resizedImage,
-          character_id: selectedCharacter?.id
+          character_id: shotsSelectedCharacter?.id,
+          style: shotsStyle,
+          character_style: characterStyle
         })
       });
 
