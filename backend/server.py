@@ -3511,7 +3511,7 @@ async def generate_expression(request: GenerateExpressionRequest, current_user: 
 
 @api_router.post("/pro-studio/animate-hero")
 async def animate_hero_frame(request: AnimateHeroRequest, background_tasks: BackgroundTasks, current_user: dict = Depends(get_current_user)):
-    """Animate a hero frame to video using fal.ai Kling (best facial consistency)"""
+    """Animate a hero frame to video using fal.ai Kling - returns task_id for polling"""
     if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Pro subscription required")
     
@@ -3520,34 +3520,71 @@ async def animate_hero_frame(request: AnimateHeroRequest, background_tasks: Back
         credits_needed = CREDIT_COSTS.get("video_generate", 10)
         raise HTTPException(status_code=402, detail=f"Insufficient credits. Video generation requires {credits_needed} credits.")
     
-    # Use fal.ai Kling for Pro Studio (best face consistency)
-    if FAL_AVAILABLE:
-        try:
-            logger.info(f"Pro Studio: Starting Kling video generation for user {current_user['id']}")
-            result = await generate_video_from_image(
-                image_url=request.image_url,
-                prompt=request.motion_prompt or "gentle breathing, subtle natural movement, soft hair motion",
-                duration=min(request.duration, 10),
-                aspect_ratio="16:9",
-                model="kling"  # Kling is best for facial consistency
-            )
-            
-            if result.get("success") and result.get("video_url"):
-                return {
-                    "success": True,
-                    "video_url": result["video_url"],
-                    "model": "kling",
-                    "message": "Video generated with Kling (high face fidelity)"
-                }
-            else:
-                raise Exception("No video URL returned")
-                
-        except Exception as e:
-            logger.error(f"Kling video generation failed: {str(e)}")
-            # Don't fall back - return error since this is a paid feature
-            raise HTTPException(status_code=500, detail=f"Video generation failed: {str(e)}")
-    else:
+    if not FAL_AVAILABLE:
         raise HTTPException(status_code=503, detail="Video generation service not available (fal.ai not configured)")
+    
+    # Create task and return immediately
+    task_id = str(uuid.uuid4())
+    TASK_STORE[task_id] = {
+        "status": "pending",
+        "user_id": current_user["id"],
+        "type": "video",
+        "created_at": datetime.now(timezone.utc),
+        "progress": 0,
+        "result": None,
+        "error": None
+    }
+    
+    logger.info(f"Video generation task {task_id} created for user {current_user['id']}")
+    
+    # Start background task
+    background_tasks.add_task(
+        run_video_generation_task,
+        task_id,
+        current_user["id"],
+        request.image_url,
+        request.motion_prompt,
+        request.duration
+    )
+    
+    return {"task_id": task_id, "status": "pending", "message": "Video generation started. Poll /api/tasks/{task_id} for status."}
+
+async def run_video_generation_task(task_id: str, user_id: str, image_url: str, motion_prompt: str, duration: int):
+    """Background task to generate video with Kling"""
+    try:
+        TASK_STORE[task_id]["status"] = "processing"
+        TASK_STORE[task_id]["progress"] = 10
+        
+        logger.info(f"Task {task_id}: Starting Kling video generation")
+        
+        result = await generate_video_from_image(
+            image_url=image_url,
+            prompt=motion_prompt or "gentle breathing, subtle natural movement, soft hair motion",
+            duration=min(duration, 10),
+            aspect_ratio="16:9",
+            model="kling"
+        )
+        
+        TASK_STORE[task_id]["progress"] = 90
+        
+        if result.get("success") and result.get("video_url"):
+            TASK_STORE[task_id]["status"] = "completed"
+            TASK_STORE[task_id]["result"] = {
+                "video_url": result["video_url"],
+                "model": "kling"
+            }
+            TASK_STORE[task_id]["progress"] = 100
+            logger.info(f"Task {task_id}: Video generation completed")
+        else:
+            TASK_STORE[task_id]["status"] = "failed"
+            TASK_STORE[task_id]["error"] = "No video URL returned"
+            logger.error(f"Task {task_id}: No video URL returned")
+            
+    except Exception as e:
+        error_msg = str(e)
+        logger.error(f"Task {task_id}: Video generation failed: {error_msg}")
+        TASK_STORE[task_id]["status"] = "failed"
+        TASK_STORE[task_id]["error"] = f"Video generation failed: {error_msg}"
 
 # ==================== FAL.AI CHARACTER CONSISTENCY ENDPOINTS ====================
 
