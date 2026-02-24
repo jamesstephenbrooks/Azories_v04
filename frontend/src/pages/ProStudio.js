@@ -3081,7 +3081,10 @@ export default function ProStudio() {
                 </details>
 
                 <Button 
-                  onClick={createCharacter}
+                  onClick={() => {
+                    if (!checkCreditsOrRedirect(1, 'Create Character')) return;
+                    createCharacter();
+                  }}
                   disabled={isCreatingCharacter || !characterName.trim() || (!characterDescription.trim() && characterImages.length < 1)}
                   className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                   data-testid="create-character-btn"
