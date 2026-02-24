@@ -3804,7 +3804,7 @@ export default function ProStudio() {
         </Tabs>
       </main>
       
-      {/* Gallery Picker Modal */}
+      {/* Gallery Picker Modal - Universal for all features */}
       <AnimatePresence>
         {showGalleryPicker && (
           <motion.div 
@@ -3818,69 +3818,203 @@ export default function ProStudio() {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-gray-900 rounded-xl border border-purple-500/20 w-full max-w-4xl max-h-[80vh] overflow-hidden"
+              className="bg-gray-900 rounded-xl border border-purple-500/20 w-full max-w-5xl max-h-[85vh] overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-4 border-b border-gray-800 flex items-center justify-between">
                 <h3 className="text-lg font-bold text-white">
-                  {galleryPickerMode === 'character' ? 'Select Images for Character' : 'Select Source Image'}
+                  {galleryPickerMode === 'character' ? 'Select Images for Character' : 
+                   galleryPickerMode === 'video' ? 'Select Image for Video' :
+                   galleryPickerMode === 'shots' ? 'Select Source Image' : 'Select from Gallery'}
                 </h3>
                 <button onClick={() => setShowGalleryPicker(false)} className="text-gray-400 hover:text-white">
                   <FiX size={20} />
                 </button>
               </div>
               
-              <div className="p-4 overflow-y-auto max-h-[60vh]">
-                {gallery.length === 0 ? (
+              {/* Quick Filters */}
+              <div className="px-4 py-2 border-b border-gray-800 flex gap-2 flex-wrap">
+                <Button
+                  size="sm"
+                  variant={galleryFilter === 'all' ? 'default' : 'outline'}
+                  onClick={() => setGalleryFilter('all')}
+                  className={`text-xs ${galleryFilter === 'all' ? 'bg-purple-600' : 'border-gray-600'}`}
+                >
+                  All
+                </Button>
+                <Button
+                  size="sm"
+                  variant={galleryFilter === 'images' ? 'default' : 'outline'}
+                  onClick={() => setGalleryFilter('images')}
+                  className={`text-xs ${galleryFilter === 'images' ? 'bg-purple-600' : 'border-gray-600'}`}
+                >
+                  Images Only
+                </Button>
+                <Button
+                  size="sm"
+                  variant={galleryFilter === 'characters' ? 'default' : 'outline'}
+                  onClick={() => setGalleryFilter('characters')}
+                  className={`text-xs ${galleryFilter === 'characters' ? 'bg-purple-600' : 'border-gray-600'}`}
+                >
+                  Characters
+                </Button>
+                {galleryPickerMode !== 'video' && (
+                  <Button
+                    size="sm"
+                    variant={galleryFilter === 'videos' ? 'default' : 'outline'}
+                    onClick={() => setGalleryFilter('videos')}
+                    className={`text-xs ${galleryFilter === 'videos' ? 'bg-purple-600' : 'border-gray-600'}`}
+                  >
+                    Videos
+                  </Button>
+                )}
+                
+                {/* Upload button */}
+                <label className="ml-auto">
+                  <Button size="sm" variant="outline" className="border-gray-600 text-xs cursor-pointer" asChild>
+                    <span>
+                      <FiUpload className="w-3 h-3 mr-1" /> Upload New
+                    </span>
+                  </Button>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                          if (galleryPickerCallback) {
+                            galleryPickerCallback({
+                              url: event.target.result,
+                              prompt: file.name,
+                              source: 'upload'
+                            });
+                          }
+                          setShowGalleryPicker(false);
+                          toast.success('Image uploaded and selected');
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
+                </label>
+              </div>
+              
+              <div className="p-4 overflow-y-auto max-h-[55vh]">
+                {filteredGallery.length === 0 ? (
                   <div className="text-center py-12 text-gray-500">
                     <FiFolder className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                    <p>Your gallery is empty</p>
-                    <p className="text-sm mt-2">Generate some images in Art Studio first</p>
+                    <p>No images found</p>
+                    <p className="text-sm mt-2">
+                      {gallery.length === 0 
+                        ? 'Create characters and generate images to see them here' 
+                        : 'Try a different filter or upload a new image'}
+                    </p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-4 md:grid-cols-5 gap-3">
-                    {gallery.filter(item => !item.is_animation).map((item) => (
+                  <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-3">
+                    {filteredGallery
+                      .filter(item => galleryPickerMode === 'video' ? item.type !== 'video' : true)
+                      .map((item) => (
                       <div 
                         key={item.id} 
-                        className="relative cursor-pointer rounded-lg overflow-hidden border-2 border-transparent hover:border-purple-500 transition-colors"
+                        className="relative cursor-pointer rounded-lg overflow-hidden border-2 border-gray-700 hover:border-purple-500 transition-colors group"
                         onClick={() => {
-                          if (galleryPickerMode === 'character') {
-                            // Add to character images
+                          const imageData = {
+                            id: item.id,
+                            url: item.image_url || item.url,
+                            prompt: item.prompt,
+                            character_name: item.character_name,
+                            source: item.source
+                          };
+                          
+                          if (galleryPickerCallback) {
+                            galleryPickerCallback(imageData);
+                            if (galleryPickerMode !== 'character') {
+                              setShowGalleryPicker(false);
+                            }
+                            toast.success('Image selected');
+                          } else if (galleryPickerMode === 'character') {
                             const newImage = {
                               id: Date.now() + Math.random(),
-                              url: item.image_url,
+                              url: item.image_url || item.url,
                               name: item.prompt?.substring(0, 20) || 'Gallery Image'
                             };
                             setCharacterImages(prev => [...prev, newImage]);
                             toast.success('Image added to character references');
+                          } else if (galleryPickerMode === 'video') {
+                            setVideoUploadedImage(item.image_url || item.url);
+                            setVideoPrompt(item.prompt || '');
+                            setVideoSourceType('upload');
+                            setShowGalleryPicker(false);
+                            toast.success('Image selected for video');
                           } else {
-                            // Set as shots source
-                            setShotsSourceImage(item.image_url);
+                            setShotsSourceImage(item.image_url || item.url);
                             setShowGalleryPicker(false);
                             toast.success('Source image selected');
                           }
                         }}
                       >
-                        <img 
-                          src={item.image_url} 
-                          alt="" 
-                          className="w-full aspect-square object-cover"
-                        />
+                        {item.type === 'video' || item.is_animation ? (
+                          <video 
+                            src={item.image_url || item.url} 
+                            className="w-full aspect-square object-cover"
+                            muted
+                            playsInline
+                          />
+                        ) : (
+                          <img 
+                            src={item.image_url || item.url} 
+                            alt={item.prompt || ''} 
+                            className="w-full aspect-square object-cover"
+                          />
+                        )}
+                        
+                        {/* Badges */}
+                        <div className="absolute top-1 left-1 flex flex-col gap-0.5">
+                          {item.is_master && (
+                            <span className="bg-yellow-500 text-black text-[9px] px-1 py-0.5 rounded font-medium">★ Master</span>
+                          )}
+                          {item.character_name && (
+                            <span className="bg-blue-500/90 text-white text-[9px] px-1 py-0.5 rounded truncate max-w-[80px]">
+                              {item.character_name}
+                            </span>
+                          )}
+                          {(item.type === 'video' || item.is_animation) && (
+                            <span className="bg-purple-500 text-white text-[9px] px-1 py-0.5 rounded flex items-center gap-0.5">
+                              <FiVideo size={8} />
+                            </span>
+                          )}
+                        </div>
+                        
+                        {/* Hover overlay with prompt */}
+                        <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-1">
+                          <p className="text-white/90 text-[10px] line-clamp-2">
+                            {item.prompt?.substring(0, 50) || 'No description'}
+                          </p>
+                        </div>
                       </div>
                     ))}
                   </div>
                 )}
               </div>
               
-              <div className="p-4 border-t border-gray-800 flex justify-end gap-3">
-                <Button variant="ghost" onClick={() => setShowGalleryPicker(false)}>
-                  Cancel
-                </Button>
-                {galleryPickerMode === 'character' && (
-                  <Button onClick={() => setShowGalleryPicker(false)} className="bg-purple-600 hover:bg-purple-700">
-                    Done ({characterImages.length} selected)
+              <div className="p-4 border-t border-gray-800 flex justify-between items-center">
+                <span className="text-sm text-gray-400">
+                  {filteredGallery.length} item{filteredGallery.length !== 1 ? 's' : ''} available
+                </span>
+                <div className="flex gap-3">
+                  <Button variant="ghost" onClick={() => setShowGalleryPicker(false)}>
+                    Cancel
                   </Button>
-                )}
+                  {galleryPickerMode === 'character' && (
+                    <Button onClick={() => setShowGalleryPicker(false)} className="bg-purple-600 hover:bg-purple-700">
+                      Done ({characterImages.length} selected)
+                    </Button>
+                  )}
+                </div>
               </div>
             </motion.div>
           </motion.div>
