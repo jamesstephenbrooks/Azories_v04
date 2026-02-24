@@ -16,7 +16,7 @@ import { toast } from 'sonner';
 import { 
   FiArrowLeft, FiPlus, FiSave, FiTrash2, FiImage, FiVideo, FiUpload,
   FiBook, FiSettings, FiLoader, FiGrid, FiLayout, FiBookOpen, FiMic, FiZap, FiDownload,
-  FiUsers
+  FiUsers, FiUser, FiLayers
 } from 'react-icons/fi';
 import CollaborativeWriting from '@/components/CollaborativeWriting';
 
