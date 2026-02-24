@@ -119,7 +119,9 @@ async def generate_with_face_id(
     id_weight: float = 1.0,
     image_size: str = "landscape_16_9",
     seed: Optional[int] = None,
-    mode: str = "fidelity"  # "fidelity" for max face similarity, "style" for more artistic freedom
+    mode: str = "fidelity",  # "fidelity" for max face similarity, "style" for more artistic freedom
+    character_appearance: Optional[str] = None,  # Appearance traits to inject
+    art_style: Optional[str] = None  # Art style to enforce
 ) -> Dict[str, Any]:
     """
     Generate image while preserving face identity using PuLID
@@ -135,6 +137,8 @@ async def generate_with_face_id(
         image_size: Output image size
         seed: Random seed for reproducibility
         mode: "fidelity" for max face match, "style" for artistic variation
+        character_appearance: Key appearance traits to maintain (hair, eyes, etc.)
+        art_style: Specific art style to enforce for consistency
     
     Returns:
         Dict with generated image and metadata
@@ -149,14 +153,28 @@ async def generate_with_face_id(
     if mode == "fidelity":
         id_weight = 1.0
     
+    # Build enhanced prompt with appearance and style enforcement
+    enhanced_prompt = prompt
+    
+    # Inject character appearance traits if provided
+    if character_appearance:
+        enhanced_prompt = f"{character_appearance}, {enhanced_prompt}"
+    
+    # Enforce art style if provided
+    if art_style:
+        enhanced_prompt = f"{enhanced_prompt}, {art_style} art style, consistent visual style"
+    
+    # Add quality tags
+    enhanced_prompt = f"{enhanced_prompt}, high quality, detailed, professional"
+    
     arguments = {
-        "prompt": prompt,
+        "prompt": enhanced_prompt,
         "reference_image_url": reference_image_url,
         "id_weight": id_weight,
         "image_size": image_size,
         "num_images": 1,
-        "guidance_scale": 3.0,  # Lower guidance for better face preservation
-        "num_inference_steps": 30  # More steps for better quality
+        "guidance_scale": 2.5,  # Lower guidance for better face preservation
+        "num_inference_steps": 35  # More steps for better quality
     }
     
     if seed is not None:
