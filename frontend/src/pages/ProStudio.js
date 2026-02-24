@@ -1497,7 +1497,12 @@ export default function ProStudio() {
 
   // Select an image from character gallery for video
   const selectVideoImage = (image) => {
-    setVideoSelectedImage(image);
+    // Ensure we have a normalized url field
+    const normalizedImage = {
+      ...image,
+      url: image.url || image.image_url
+    };
+    setVideoSelectedImage(normalizedImage);
     // Update prompt with the image's description
     if (image.prompt) {
       setVideoPrompt(image.prompt);
