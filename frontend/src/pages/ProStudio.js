@@ -4620,6 +4620,22 @@ export default function ProStudio() {
                             size="sm" 
                             variant="ghost" 
                             className="bg-white/10 hover:bg-white/20"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setExpandedItem({
+                                type: item.type === 'video' || item.is_animation ? 'video' : 'image',
+                                url: item.image_url || item.url,
+                                name: item.prompt || item.name || 'Gallery item'
+                              });
+                            }}
+                            title="Expand"
+                          >
+                            <FiMaximize2 className="text-white w-4 h-4" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            className="bg-white/10 hover:bg-white/20"
                             onClick={() => downloadMedia(item.image_url || item.url, `gallery-${item.id}.${item.type === 'video' ? 'mp4' : 'png'}`)}
                             title="Download"
                           >
