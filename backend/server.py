@@ -3381,6 +3381,19 @@ async def pro_studio_generate_image(request: ProStudioImageRequest, current_user
     if not EMERGENT_LLM_KEY:
         raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
     
+    # Art style mapping
+    ART_STYLE_PROMPTS = {
+        "realistic": "photorealistic, professional photography, natural lighting, high detail",
+        "cinematic": "cinematic, movie still, dramatic lighting, film grain, professional color grading",
+        "cartoon": "cartoon style, animated, bold colors, clean lines, expressive",
+        "anime": "anime style, manga, Japanese animation, vibrant colors, detailed eyes",
+        "pixar": "Pixar style, 3D animated, smooth render, family-friendly, expressive features",
+        "watercolor": "watercolor painting, soft edges, artistic, painterly style, delicate colors",
+        "comic": "comic book style, bold outlines, dynamic shading, graphic novel",
+        "fantasy": "fantasy art style, magical, ethereal, detailed, imaginative",
+        "storybook": "children's book illustration, soft colors, whimsical, gentle, friendly"
+    }
+    
     try:
         # Build full prompt with cinema settings
         prompt_parts = [request.prompt]
@@ -3408,6 +3421,10 @@ async def pro_studio_generate_image(request: ProStudioImageRequest, current_user
         lighting_desc = LIGHTING_CONFIGS.get(request.lighting, "")
         if lighting_desc:
             prompt_parts.append(lighting_desc)
+        
+        # Add art style
+        art_style_prompt = ART_STYLE_PROMPTS.get(request.art_style, ART_STYLE_PROMPTS["cinematic"])
+        prompt_parts.append(art_style_prompt)
         
         # Add quality enhancers
         prompt_parts.append("professional photography, 8K resolution, masterfully composed")
