@@ -250,7 +250,8 @@ export default function BookEditor() {
         })
       );
       // Show characters that have any images (including master)
-      setProStudioCharacters(charsWithGalleries.filter(c => c.gallery.length > 0));
+      // But also include characters without images so users can see them
+      setProStudioCharacters(charsWithGalleries);
     } catch (error) {
       console.error('Failed to load Pro Studio characters');
       setProStudioCharacters([]);
@@ -294,7 +295,8 @@ export default function BookEditor() {
         })
       );
       // Show scenes that have any images (including preview)
-      setProStudioScenes(scenesWithGalleries.filter(s => s.gallery.length > 0));
+      // But also include scenes without images so users can see them
+      setProStudioScenes(scenesWithGalleries);
     } catch (error) {
       console.error('Failed to load Pro Studio scenes');
       setProStudioScenes([]);
