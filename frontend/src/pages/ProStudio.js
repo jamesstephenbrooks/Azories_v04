@@ -4857,6 +4857,183 @@ export default function ProStudio() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Cinema Source Image Picker Modal */}
+      <AnimatePresence>
+        {showCinemaSourcePicker && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowCinemaSourcePicker(false)}
+          >
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-gray-900 rounded-xl border border-purple-500/30 w-full max-w-5xl max-h-[85vh] overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="p-4 border-b border-gray-800 flex items-center justify-between">
+                <div>
+                  <h3 className="text-xl font-bold text-white">Select Source Image</h3>
+                  <p className="text-sm text-gray-400">Choose an image to create a variant with cinema settings</p>
+                </div>
+                <button onClick={() => setShowCinemaSourcePicker(false)} className="text-gray-400 hover:text-white">
+                  <FiX size={24} />
+                </button>
+              </div>
+              
+              {/* Tabs for source selection */}
+              <div className="p-4 overflow-y-auto max-h-[70vh]">
+                <Tabs defaultValue="characters" className="w-full">
+                  <TabsList className="bg-gray-800/50 mb-4">
+                    <TabsTrigger value="characters" className="data-[state=active]:bg-purple-600">
+                      <FiUser className="mr-2" /> Characters
+                    </TabsTrigger>
+                    <TabsTrigger value="scenes" className="data-[state=active]:bg-purple-600">
+                      <FiLayers className="mr-2" /> Scenes
+                    </TabsTrigger>
+                    <TabsTrigger value="gallery" className="data-[state=active]:bg-purple-600">
+                      <FiGrid className="mr-2" /> Gallery
+                    </TabsTrigger>
+                  </TabsList>
+                  
+                  {/* Characters Tab */}
+                  <TabsContent value="characters">
+                    {characters.length === 0 ? (
+                      <div className="text-center py-8 text-gray-500">
+                        <FiUser className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                        <p>No characters created yet</p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {characters.map((char) => (
+                          <button
+                            key={char.id}
+                            onClick={() => {
+                              setCinemaSourceImage({
+                                url: char.thumbnail || char.reference_images?.[0],
+                                name: char.name,
+                                type: 'Character'
+                              });
+                              setShowCinemaSourcePicker(false);
+                              toast.success(`Selected ${char.name}`);
+                            }}
+                            className="group relative rounded-xl overflow-hidden border-2 border-transparent hover:border-purple-500 transition-all"
+                          >
+                            <img 
+                              src={char.thumbnail || char.reference_images?.[0]} 
+                              alt={char.name}
+                              className="w-full aspect-square object-cover"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-3">
+                              <span className="text-white font-medium">{char.name}</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </TabsContent>
+                  
+                  {/* Scenes Tab */}
+                  <TabsContent value="scenes">
+                    {scenes.length === 0 ? (
+                      <div className="text-center py-8 text-gray-500">
+                        <FiLayers className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                        <p>No scenes created yet</p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {scenes.map((scene) => (
+                          <button
+                            key={scene.id}
+                            onClick={() => {
+                              if (scene.preview_url) {
+                                setCinemaSourceImage({
+                                  url: scene.preview_url,
+                                  name: scene.name,
+                                  type: 'Scene'
+                                });
+                                setShowCinemaSourcePicker(false);
+                                toast.success(`Selected ${scene.name}`);
+                              } else {
+                                toast.error('This scene has no preview image');
+                              }
+                            }}
+                            className="group relative rounded-xl overflow-hidden border-2 border-transparent hover:border-purple-500 transition-all"
+                          >
+                            {scene.preview_url ? (
+                              <img 
+                                src={scene.preview_url} 
+                                alt={scene.name}
+                                className="w-full aspect-video object-cover"
+                              />
+                            ) : (
+                              <div className="w-full aspect-video bg-gray-800 flex items-center justify-center">
+                                <FiLayers className="text-gray-600 w-8 h-8" />
+                              </div>
+                            )}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-3">
+                              <span className="text-white font-medium">{scene.name}</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </TabsContent>
+                  
+                  {/* Gallery Tab */}
+                  <TabsContent value="gallery">
+                    {gallery.filter(item => item.type !== 'video').length === 0 ? (
+                      <div className="text-center py-8 text-gray-500">
+                        <FiGrid className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                        <p>No images in gallery</p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
+                        {gallery.filter(item => item.type !== 'video').slice(0, 20).map((item) => (
+                          <button
+                            key={item.id}
+                            onClick={() => {
+                              setCinemaSourceImage({
+                                url: item.image_url || item.url,
+                                name: item.prompt?.slice(0, 30) || 'Gallery Image',
+                                type: 'Gallery'
+                              });
+                              setShowCinemaSourcePicker(false);
+                              toast.success('Image selected');
+                            }}
+                            className="group relative rounded-lg overflow-hidden border-2 border-transparent hover:border-purple-500 transition-all"
+                          >
+                            <img 
+                              src={item.image_url || item.url} 
+                              alt={item.prompt || 'Gallery'}
+                              className="w-full aspect-square object-cover"
+                            />
+                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <FiPlus className="text-white w-6 h-6" />
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </TabsContent>
+                </Tabs>
+              </div>
+              
+              {/* Footer */}
+              <div className="p-4 border-t border-gray-800 flex justify-end">
+                <Button variant="ghost" onClick={() => setShowCinemaSourcePicker(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
