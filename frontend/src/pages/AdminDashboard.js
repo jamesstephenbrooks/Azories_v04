@@ -828,6 +828,15 @@ export default function AdminDashboard() {
                         <div className="flex items-center gap-2">
                           <Button
                             size="sm"
+                            variant="outline"
+                            onClick={() => openPreview(book)}
+                            className="rounded-full h-8 w-8 p-0"
+                            title="Preview Book"
+                          >
+                            <FiBook className="w-3 h-3" />
+                          </Button>
+                          <Button
+                            size="sm"
                             variant={book.is_published ? "default" : "outline"}
                             onClick={() => togglePublish(book.id)}
                             className="rounded-full h-8 w-8 p-0"
