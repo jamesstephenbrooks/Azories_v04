@@ -143,6 +143,7 @@ export default function ProStudio() {
   // Shots App state
   const [shotsSourceImage, setShotsSourceImage] = useState(null);
   const [shotsResults, setShotsResults] = useState([]);
+  const [showShotsReview, setShowShotsReview] = useState(false); // Modal to review generated shots
   
   // Expression state
   const [selectedExpression, setSelectedExpression] = useState('neutral');
