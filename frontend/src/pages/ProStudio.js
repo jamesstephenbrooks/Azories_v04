@@ -1152,7 +1152,8 @@ export default function ProStudio() {
       if (response.ok) {
         const data = await response.json();
         setShotsResults(data.shots || []);
-        toast.success('9 shots generated!');
+        setShowShotsReview(true); // Open review modal
+        toast.success('9 shots generated! Review and save your favorites.');
         loadCredits(); // Refresh credits
       } else {
         const error = await response.json();
@@ -1163,8 +1164,12 @@ export default function ProStudio() {
         }
       }
     } catch (error) {
-      toast.error('Error generating shots');
-      console.error(error);
+      if (error.name === 'AbortError') {
+        toast.error('Request timed out. Shots generation takes ~2 minutes. Please try again.');
+      } else {
+        toast.error('Error generating shots');
+        console.error(error);
+      }
     } finally {
       setIsLoading(false);
       setLoadingMessage('');
