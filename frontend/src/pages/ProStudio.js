@@ -3640,44 +3640,161 @@ export default function ProStudio() {
             </div>
           </TabsContent>
 
-          {/* Gallery Tab */}
+          {/* Gallery Tab - Unified Pro Studio Gallery */}
           <TabsContent value="gallery" className="space-y-6">
             <div className="bg-black/40 rounded-xl border border-purple-500/20 p-6">
-              <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                <FiFolder className="text-purple-400" /> My Gallery
-              </h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                  <FiFolder className="text-purple-400" /> Pro Studio Gallery
+                </h2>
+                <div className="flex items-center gap-2">
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={loadGallery}
+                    className="border-gray-600 text-gray-300 hover:bg-gray-800"
+                  >
+                    <FiRefreshCw className="w-4 h-4 mr-1" /> Refresh
+                  </Button>
+                </div>
+              </div>
               
-              {gallery.length === 0 ? (
+              {/* Filter Tabs */}
+              <div className="flex gap-2 mb-4 flex-wrap">
+                <Button
+                  size="sm"
+                  variant={galleryFilter === 'all' ? 'default' : 'outline'}
+                  onClick={() => setGalleryFilter('all')}
+                  className={galleryFilter === 'all' ? 'bg-purple-600' : 'border-gray-600'}
+                >
+                  All ({gallery.length})
+                </Button>
+                <Button
+                  size="sm"
+                  variant={galleryFilter === 'images' ? 'default' : 'outline'}
+                  onClick={() => setGalleryFilter('images')}
+                  className={galleryFilter === 'images' ? 'bg-purple-600' : 'border-gray-600'}
+                >
+                  <FiImage className="w-3 h-3 mr-1" /> Images ({gallery.filter(i => i.type === 'image').length})
+                </Button>
+                <Button
+                  size="sm"
+                  variant={galleryFilter === 'videos' ? 'default' : 'outline'}
+                  onClick={() => setGalleryFilter('videos')}
+                  className={galleryFilter === 'videos' ? 'bg-purple-600' : 'border-gray-600'}
+                >
+                  <FiVideo className="w-3 h-3 mr-1" /> Videos ({gallery.filter(i => i.type === 'video' || i.is_animation).length})
+                </Button>
+                <Button
+                  size="sm"
+                  variant={galleryFilter === 'characters' ? 'default' : 'outline'}
+                  onClick={() => setGalleryFilter('characters')}
+                  className={galleryFilter === 'characters' ? 'bg-purple-600' : 'border-gray-600'}
+                >
+                  <FiUser className="w-3 h-3 mr-1" /> Characters ({gallery.filter(i => i.source === 'character' || i.source === 'character-gallery').length})
+                </Button>
+              </div>
+              
+              {filteredGallery.length === 0 ? (
                 <div className="text-center py-16 text-gray-500">
                   <FiFolder className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                  <p className="text-lg">Your gallery is empty</p>
-                  <p className="text-sm mt-2">Start creating to fill it up!</p>
+                  <p className="text-lg">
+                    {gallery.length === 0 ? 'Your gallery is empty' : 'No items match this filter'}
+                  </p>
+                  <p className="text-sm mt-2">
+                    {gallery.length === 0 ? 'Create characters, generate images, and make videos to fill it up!' : 'Try a different filter'}
+                  </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {gallery.map((item) => (
-                    <div key={item.id} className="relative group rounded-lg overflow-hidden">
-                      {item.is_animation ? (
-                        <video src={item.image_url} className="w-full aspect-square object-cover" muted playsInline loop 
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                  {filteredGallery.map((item) => (
+                    <div key={item.id} className="relative group rounded-lg overflow-hidden bg-gray-800 border border-gray-700 hover:border-purple-500/50 transition-colors">
+                      {/* Media Preview */}
+                      {item.type === 'video' || item.is_animation ? (
+                        <video 
+                          src={item.image_url || item.url} 
+                          className="w-full aspect-square object-cover" 
+                          muted 
+                          playsInline 
+                          loop 
                           onMouseEnter={(e) => e.target.play()}
                           onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
                         />
                       ) : (
-                        <img src={item.image_url} alt={item.prompt} className="w-full aspect-square object-cover" />
+                        <img 
+                          src={item.image_url || item.url} 
+                          alt={item.prompt || 'Gallery item'} 
+                          className="w-full aspect-square object-cover" 
+                        />
                       )}
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                        <Button size="sm" variant="ghost" onClick={() => downloadMedia(item.image_url, `gallery-${item.id}.${item.is_animation ? 'mp4' : 'png'}`)}>
-                          <FiDownload className="text-white" />
-                        </Button>
-                        <Button size="sm" variant="ghost" onClick={() => setSelectedHeroFrame({ id: item.id, url: item.image_url })}>
-                          <FiImage className="text-white" />
-                        </Button>
-                      </div>
-                      {item.is_animation && (
-                        <div className="absolute top-2 left-2 bg-purple-500 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
-                          <FiVideo size={10} /> Video
+                      
+                      {/* Hover Actions */}
+                      <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 p-2">
+                        <div className="flex gap-1">
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            className="bg-white/10 hover:bg-white/20"
+                            onClick={() => downloadMedia(item.image_url || item.url, `gallery-${item.id}.${item.type === 'video' ? 'mp4' : 'png'}`)}
+                            title="Download"
+                          >
+                            <FiDownload className="text-white w-4 h-4" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            className="bg-white/10 hover:bg-white/20"
+                            onClick={() => {
+                              setSelectedHeroFrame({ id: item.id, url: item.image_url || item.url, prompt: item.prompt });
+                              toast.success('Selected as source image');
+                            }}
+                            title="Use as source"
+                          >
+                            <FiImage className="text-white w-4 h-4" />
+                          </Button>
+                          {item.type !== 'video' && (
+                            <Button 
+                              size="sm" 
+                              variant="ghost" 
+                              className="bg-white/10 hover:bg-white/20"
+                              onClick={() => {
+                                setVideoSourceType('upload');
+                                setVideoUploadedImage(item.image_url || item.url);
+                                setVideoPrompt(item.prompt || '');
+                                setActiveTab('video');
+                                toast.success('Ready for video animation');
+                              }}
+                              title="Animate to video"
+                            >
+                              <FiVideo className="text-white w-4 h-4" />
+                            </Button>
+                          )}
                         </div>
-                      )}
+                        {item.prompt && (
+                          <p className="text-white/80 text-xs text-center line-clamp-2 px-1">
+                            {item.prompt.substring(0, 60)}...
+                          </p>
+                        )}
+                      </div>
+                      
+                      {/* Badges */}
+                      <div className="absolute top-1 left-1 flex flex-col gap-1">
+                        {(item.type === 'video' || item.is_animation) && (
+                          <span className="bg-purple-500 text-white text-[10px] px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                            <FiVideo size={10} /> Video
+                          </span>
+                        )}
+                        {item.is_master && (
+                          <span className="bg-yellow-500 text-black text-[10px] px-1.5 py-0.5 rounded font-medium">
+                            ★ Master
+                          </span>
+                        )}
+                        {item.character_name && (
+                          <span className="bg-blue-500/80 text-white text-[10px] px-1.5 py-0.5 rounded">
+                            {item.character_name}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
