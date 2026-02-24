@@ -144,6 +144,8 @@ export default function ProStudio() {
   const [shotsSourceImage, setShotsSourceImage] = useState(null);
   const [shotsResults, setShotsResults] = useState([]);
   const [showShotsReview, setShowShotsReview] = useState(false); // Modal to review generated shots
+  const [shotsSelectedCharacter, setShotsSelectedCharacter] = useState(null); // Selected character for shots
+  const [shotsCharacterGallery, setShotsCharacterGallery] = useState([]); // Gallery images for selected character
   
   // Expression state
   const [selectedExpression, setSelectedExpression] = useState('neutral');
