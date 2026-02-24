@@ -3338,11 +3338,8 @@ async def generate_shots(request: GenerateShotsRequest, current_user: dict = Dep
         logger.error(f"Error generating shots: {error_msg}")
         
         # Check for budget exceeded error
-        if "Budget has been exceeded" in error_msg or "budget" in error_msg.lower():
-            raise HTTPException(
-                status_code=503, 
-                detail="AI service budget exceeded. Please contact support or try again later. You can add balance via Profile > Universal Key > Add Balance."
-            )
+        if check_budget_error(error_msg):
+            raise get_budget_error_response()
         
         raise HTTPException(status_code=500, detail=f"Error generating shots: {error_msg}")
 
