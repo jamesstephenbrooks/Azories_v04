@@ -550,6 +550,7 @@ class ProStudioImageRequest(BaseModel):
     focal_length: Optional[str] = "35mm"
     lighting: Optional[str] = "natural"
     aspect_ratio: Optional[str] = "16:9"
+    art_style: Optional[str] = "cinematic"  # Art style for generation
 
 class GenerateShotsRequest(BaseModel):
     source_image: str  # Base64 encoded image
@@ -3453,6 +3454,7 @@ class GenerateVariantRequest(BaseModel):
     lighting: Optional[str] = None
     aspect_ratio: Optional[str] = "16:9"
     strength: Optional[float] = 0.7  # How much to keep from original (0-1)
+    art_style: Optional[str] = "cinematic"  # Art style for generation
 
 @api_router.post("/pro-studio/generate-variant")
 async def generate_variant(request: GenerateVariantRequest, current_user: dict = Depends(get_current_user)):
