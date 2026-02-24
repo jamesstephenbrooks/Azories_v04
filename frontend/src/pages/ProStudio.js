@@ -4148,6 +4148,121 @@ export default function ProStudio() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Shots Review Modal */}
+      <AnimatePresence>
+        {showShotsReview && shotsResults.length > 0 && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowShotsReview(false)}
+          >
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-gray-900 rounded-xl border border-purple-500/30 w-full max-w-6xl max-h-[90vh] overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-4 border-b border-gray-800 flex items-center justify-between">
+                <div>
+                  <h3 className="text-xl font-bold text-white">Generated Shots</h3>
+                  <p className="text-sm text-gray-400">{shotsResults.length} angles generated • Select to save or download</p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={async () => {
+                      // Save all to gallery
+                      for (const shot of shotsResults) {
+                        await saveToGallery(shot.url, shot.type || 'shot', 'shot');
+                      }
+                      toast.success('All shots saved to gallery!');
+                      loadGallery();
+                    }}
+                    className="border-green-400/50 text-green-300 hover:bg-green-500/20"
+                  >
+                    <FiSave className="mr-1" /> Save All
+                  </Button>
+                  <button onClick={() => setShowShotsReview(false)} className="text-gray-400 hover:text-white">
+                    <FiX size={24} />
+                  </button>
+                </div>
+              </div>
+              
+              <div className="p-4 overflow-y-auto max-h-[70vh]">
+                <div className="grid grid-cols-3 gap-4">
+                  {shotsResults.map((shot, idx) => (
+                    <div key={idx} className="relative group rounded-xl overflow-hidden bg-gray-800 border border-gray-700">
+                      <img 
+                        src={shot.url} 
+                        alt={shot.type || `Shot ${idx + 1}`}
+                        className="w-full aspect-square object-cover"
+                      />
+                      <div className="absolute top-2 left-2 bg-black/70 px-2 py-1 rounded text-xs text-white">
+                        {shot.type || `Angle ${idx + 1}`}
+                      </div>
+                      
+                      {/* Hover actions */}
+                      <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            onClick={() => downloadMedia(shot.url, `shot-${shot.type || idx + 1}.png`)}
+                            className="bg-white/20 hover:bg-white/30"
+                          >
+                            <FiDownload className="mr-1" /> Download
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={async () => {
+                              await saveToGallery(shot.url, shot.type || `Shot ${idx + 1}`, 'shot');
+                              toast.success('Saved to gallery!');
+                              loadGallery();
+                            }}
+                            className="bg-purple-600 hover:bg-purple-700"
+                          >
+                            <FiSave className="mr-1" /> Save
+                          </Button>
+                        </div>
+                        {selectedCharacter && (
+                          <Button
+                            size="sm"
+                            onClick={async () => {
+                              await saveToCharacterFolder(
+                                selectedCharacter.id,
+                                shot.url,
+                                shot.type || `Shot ${idx + 1}`,
+                                'shot'
+                              );
+                              toast.success(`Saved to ${selectedCharacter.name}'s folder!`);
+                            }}
+                            className="bg-blue-600 hover:bg-blue-700"
+                          >
+                            <FiUser className="mr-1" /> Save to {selectedCharacter.name}
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="p-4 border-t border-gray-800 flex justify-between">
+                <span className="text-gray-400 text-sm">
+                  Tip: Hover over each shot for save options
+                </span>
+                <Button variant="ghost" onClick={() => setShowShotsReview(false)}>
+                  Close
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
