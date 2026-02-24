@@ -1968,6 +1968,17 @@ export default function BookEditor() {
             >
               Pro Scenes ({proStudioScenes.reduce((sum, s) => sum + s.gallery.length, 0)})
             </button>
+            <button
+              onClick={() => setGalleryTab('videos')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                galleryTab === 'videos' 
+                  ? 'bg-blue-500 text-white' 
+                  : 'bg-muted hover:bg-muted/80'
+              }`}
+            >
+              <FiVideo className="inline mr-1" />
+              Videos ({proStudioVideos.length})
+            </button>
           </div>
           
           <div className="mt-4">
