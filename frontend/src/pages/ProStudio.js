@@ -3508,7 +3508,7 @@ export default function ProStudio() {
 
                   {/* Upload Source */}
                   {videoSourceType === 'upload' && (
-                    <div>
+                    <div className="space-y-3">
                       {videoUploadedImage ? (
                         <div className="relative">
                           <img src={videoUploadedImage} alt="Uploaded" className="w-full rounded-lg" />
@@ -3516,31 +3516,55 @@ export default function ProStudio() {
                             size="sm"
                             variant="destructive"
                             className="absolute top-2 right-2"
-                            onClick={() => setVideoUploadedImage(null)}
+                            onClick={() => { setVideoUploadedImage(null); setVideoPrompt(''); }}
                           >
                             <FiX className="w-4 h-4" />
                           </Button>
+                          {videoPrompt && (
+                            <div className="mt-2 p-2 bg-gray-800/50 rounded-lg">
+                              <p className="text-xs text-gray-400">Description:</p>
+                              <p className="text-sm text-gray-300 line-clamp-2">{videoPrompt}</p>
+                            </div>
+                          )}
                         </div>
                       ) : (
-                        <label className="block">
-                          <div className="text-center py-6 text-gray-500 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-purple-500 transition-colors">
-                            <FiUpload className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                            <p className="text-sm">Click to upload an image</p>
-                          </div>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={(e) => {
-                              const file = e.target.files[0];
-                              if (file) {
-                                const reader = new FileReader();
-                                reader.onload = (ev) => setVideoUploadedImage(ev.target.result);
-                                reader.readAsDataURL(file);
-                              }
+                        <div className="space-y-2">
+                          {/* Browse from Gallery Button */}
+                          <Button
+                            variant="outline"
+                            className="w-full border-purple-500/50 text-purple-400 hover:bg-purple-500/10"
+                            onClick={() => {
+                              setGalleryPickerMode('video');
+                              setGalleryFilter('images');
+                              setShowGalleryPicker(true);
                             }}
-                          />
-                        </label>
+                          >
+                            <FiFolder className="w-4 h-4 mr-2" /> Browse from Gallery
+                          </Button>
+                          
+                          {/* Or upload */}
+                          <div className="text-center text-gray-500 text-xs">or</div>
+                          
+                          <label className="block">
+                            <div className="text-center py-4 text-gray-500 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-purple-500 transition-colors">
+                              <FiUpload className="w-6 h-6 mx-auto mb-1 opacity-50" />
+                              <p className="text-sm">Upload new image</p>
+                            </div>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files[0];
+                                if (file) {
+                                  const reader = new FileReader();
+                                  reader.onload = (ev) => setVideoUploadedImage(ev.target.result);
+                                  reader.readAsDataURL(file);
+                                }
+                              }}
+                            />
+                          </label>
+                        </div>
                       )}
                     </div>
                   )}
