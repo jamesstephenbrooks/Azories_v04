@@ -36,8 +36,7 @@ BREVO_SENDER_EMAIL = os.environ.get("BREVO_SENDER_EMAIL", "noreply@azories.com")
 APP_NAME = "Azories"
 APP_URL = os.environ.get("APP_URL", "https://azories.com")
 
-# Prefer Resend since Brevo SMTP login is not configured correctly
-# To use Brevo: set BREVO_SMTP_LOGIN to your Brevo SMTP login email (found in SMTP & API settings)
+# Prefer Brevo if properly configured (has SMTP login), fallback to Resend
 BREVO_SMTP_LOGIN = os.environ.get("BREVO_SMTP_LOGIN")  # e.g., xxxxx@smtp-brevo.com
 EMAIL_PROVIDER = "brevo" if (BREVO_API_KEY and BREVO_SMTP_LOGIN) else ("resend" if RESEND_API_KEY else None)
 
