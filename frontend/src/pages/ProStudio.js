@@ -3936,6 +3936,15 @@ export default function ProStudio() {
                               <FiVideo className="text-white w-4 h-4" />
                             </Button>
                           )}
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            className="bg-red-500/20 hover:bg-red-500/40"
+                            onClick={() => deleteFromGallery(item.id, item.source)}
+                            title="Delete"
+                          >
+                            <FiTrash2 className="text-red-400 w-4 h-4" />
+                          </Button>
                         </div>
                         {item.prompt && (
                           <p className="text-white/80 text-xs text-center line-clamp-2 px-1">
