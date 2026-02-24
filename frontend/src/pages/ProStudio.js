@@ -4384,7 +4384,7 @@ export default function ProStudio() {
                   size="sm"
                   variant={galleryFilter === 'images' ? 'default' : 'outline'}
                   onClick={() => setGalleryFilter('images')}
-                  className={galleryFilter === 'images' ? 'bg-purple-600' : 'border-gray-600'}
+                  className={galleryFilter === 'images' ? 'bg-purple-600' : 'border-gray-600 text-gray-300'}
                 >
                   <FiImage className="w-3 h-3 mr-1" /> Images ({gallery.filter(i => i.type === 'image').length})
                 </Button>
@@ -4392,7 +4392,7 @@ export default function ProStudio() {
                   size="sm"
                   variant={galleryFilter === 'videos' ? 'default' : 'outline'}
                   onClick={() => setGalleryFilter('videos')}
-                  className={galleryFilter === 'videos' ? 'bg-purple-600' : 'border-gray-600'}
+                  className={galleryFilter === 'videos' ? 'bg-purple-600' : 'border-gray-600 text-gray-300'}
                 >
                   <FiVideo className="w-3 h-3 mr-1" /> Videos ({gallery.filter(i => i.type === 'video' || i.is_animation).length})
                 </Button>
@@ -4400,7 +4400,7 @@ export default function ProStudio() {
                   size="sm"
                   variant={galleryFilter === 'characters' ? 'default' : 'outline'}
                   onClick={() => setGalleryFilter('characters')}
-                  className={galleryFilter === 'characters' ? 'bg-purple-600' : 'border-gray-600'}
+                  className={galleryFilter === 'characters' ? 'bg-purple-600' : 'border-gray-600 text-gray-300'}
                 >
                   <FiUser className="w-3 h-3 mr-1" /> Characters ({gallery.filter(i => i.source === 'character' || i.source === 'character-gallery').length})
                 </Button>
