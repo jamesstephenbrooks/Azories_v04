@@ -1276,12 +1276,17 @@ export default function ProStudio() {
           setGeneratedVideos(prev => [newVideo, ...prev]);
           setLoadingProgress(100);
           toast.success('Video generated with high face fidelity!');
+          loadCredits(); // Refresh credits
         } else {
           toast.error('No video URL returned');
         }
       } else {
         const error = await response.json();
-        toast.error(error.detail || 'Animation failed');
+        if (response.status === 402) {
+          handleCreditError(error.detail);
+        } else {
+          toast.error(error.detail || 'Animation failed');
+        }
       }
     } catch (error) {
       toast.error('Error animating image');
@@ -1290,6 +1295,7 @@ export default function ProStudio() {
       clearInterval(progressInterval);
       setIsLoading(false);
       setLoadingProgress(0);
+      loadCredits(); // Always refresh credits
     }
   };
 
