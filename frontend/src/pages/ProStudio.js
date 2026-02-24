@@ -301,8 +301,8 @@ export default function ProStudio() {
     }
   };
 
-  // Load a specific character's gallery images
-  const loadCharacterGallery = async (characterId) => {
+  // Load a specific character's gallery images for Shots panel
+  const loadShotsCharacterGallery = async (characterId) => {
     try {
       const token = localStorage.getItem('azories-token');
       const response = await fetch(`${API_URL}/api/pro-studio/characters/${characterId}/gallery`, {
@@ -324,7 +324,7 @@ export default function ProStudio() {
     setShotsCharacterGallery([]); // Clear while loading
     
     // Get all images for this character
-    const galleryImages = await loadCharacterGallery(char.id);
+    const galleryImages = await loadShotsCharacterGallery(char.id);
     
     // Add master thumbnail and reference images
     const allImages = [];
