@@ -123,6 +123,9 @@ export default function ProStudio() {
   const [generatedVideos, setGeneratedVideos] = useState([]);
   const [selectedHeroFrame, setSelectedHeroFrame] = useState(null);
   
+  // Expand/fullscreen state for gallery items
+  const [expandedItem, setExpandedItem] = useState(null); // {type: 'image'|'video', url: string, name: string}
+  
   // Cinema Studio state
   const [selectedCamera, setSelectedCamera] = useState('arri-alexa-35');
   const [selectedLens, setSelectedLens] = useState('panavision-series');
