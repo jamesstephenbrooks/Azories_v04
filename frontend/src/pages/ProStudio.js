@@ -4575,16 +4575,32 @@ export default function ProStudio() {
                     <div key={item.id} className="relative group rounded-lg overflow-hidden bg-gray-800 border border-gray-700 hover:border-purple-500/50 transition-colors">
                       {/* Media Preview */}
                       {item.type === 'video' || item.is_animation ? (
-                        <video 
-                          src={item.image_url || item.url} 
-                          className="w-full aspect-square object-cover" 
-                          muted 
-                          playsInline 
-                          loop
-                          preload="metadata"
-                          onMouseEnter={(e) => e.target.play().catch(() => {})}
-                          onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
-                        />
+                        <div className="relative w-full aspect-square bg-gray-900">
+                          <video 
+                            src={item.image_url || item.url} 
+                            className="w-full h-full object-cover" 
+                            muted 
+                            playsInline 
+                            loop
+                            preload="metadata"
+                            onMouseEnter={(e) => e.target.play().catch(() => {})}
+                            onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
+                            onLoadedData={(e) => { e.target.currentTime = 0.1; }}
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              e.target.parentElement.querySelector('.video-fallback')?.classList.remove('hidden');
+                            }}
+                          />
+                          <div className="video-fallback hidden w-full h-full bg-gray-800 flex flex-col items-center justify-center absolute inset-0">
+                            <FiVideo className="w-10 h-10 text-purple-400 mb-2" />
+                            <span className="text-xs text-gray-400">Video</span>
+                          </div>
+                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <div className="bg-black/50 rounded-full p-2">
+                              <FiPlay className="w-6 h-6 text-white" />
+                            </div>
+                          </div>
+                        </div>
                       ) : (
                         <>
                           <img 
