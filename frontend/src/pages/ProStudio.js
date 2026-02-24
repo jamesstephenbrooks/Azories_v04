@@ -4718,7 +4718,7 @@ export default function ProStudio() {
                       
                       {/* Badges */}
                       <div className="absolute top-1 left-1 flex flex-col gap-1">
-                        {(item.type === 'video' || item.is_animation) && (
+                        {isVideo && (
                           <span className="bg-purple-500 text-white text-[10px] px-1.5 py-0.5 rounded flex items-center gap-0.5">
                             <FiVideo size={10} /> Video
                           </span>
