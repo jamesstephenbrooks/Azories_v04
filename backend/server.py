@@ -7542,6 +7542,53 @@ async def request_book_publish(book_id: str, background_tasks: BackgroundTasks, 
     if email_configured():
         background_tasks.add_task(send_email, admin_email, subject, html_content)
         logging.info(f"Admin notification email sent for book {book_id} (flagged: {moderation_result.flagged})")
+        
+        # Also send confirmation email to the author
+        author_email = current_user.get("email")
+        if author_email:
+            author_subject = f"📚 Your book '{book['title']}' has been submitted for review"
+            author_html = f"""
+            <html>
+            <body style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+                <div style="background: linear-gradient(135deg, #7c3aed, #a855f7); padding: 20px; border-radius: 12px 12px 0 0;">
+                    <h1 style="color: white; margin: 0; font-size: 24px;">📚 Book Submitted!</h1>
+                </div>
+                
+                <div style="background: #ffffff; padding: 20px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+                    <h2 style="color: #1f2937; margin-top: 0;">Hi {current_user.get('name', 'Author')}! 👋</h2>
+                    
+                    <p style="color: #4b5563; line-height: 1.6;">
+                        Great news! Your book <strong>"{book['title']}"</strong> has been successfully submitted for review.
+                    </p>
+                    
+                    <div style="background: #f3f4f6; border-radius: 8px; padding: 15px; margin: 20px 0;">
+                        <h3 style="color: #374151; margin: 0 0 10px 0;">What happens next?</h3>
+                        <ol style="color: #4b5563; margin: 0; padding-left: 20px; line-height: 1.8;">
+                            <li>Our team will review your book for content quality</li>
+                            <li>You'll receive an email once the review is complete</li>
+                            <li>If approved, your book will be published to the library!</li>
+                        </ol>
+                    </div>
+                    
+                    <p style="color: #4b5563; line-height: 1.6;">
+                        Review typically takes <strong>1-2 business days</strong>. We'll notify you as soon as there's an update.
+                    </p>
+                    
+                    <div style="text-align: center; margin: 25px 0;">
+                        <a href="{app_url}/dashboard" style="background: #7c3aed; color: white; padding: 12px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; display: inline-block;">View Your Books</a>
+                    </div>
+                    
+                    <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
+                    <p style="color: #9ca3af; font-size: 12px; text-align: center;">
+                        Questions? Reply to this email or contact us at books@azories.com<br>
+                        © 2026 Azories. Happy storytelling! ✨
+                    </p>
+                </div>
+            </body>
+            </html>
+            """
+            background_tasks.add_task(send_email, author_email, author_subject, author_html)
+            logging.info(f"Author confirmation email sent for book {book_id} to {author_email}")
     else:
         logging.warning(f"Email not configured - admin notification for book {book_id} skipped")
     
