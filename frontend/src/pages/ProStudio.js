@@ -4577,6 +4577,147 @@ export default function ProStudio() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Generation Preview Modal - Shows newly generated image with save options */}
+      <AnimatePresence>
+        {showGenerationPreview && generationPreviewData && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/95 backdrop-blur-sm z-[100] flex items-center justify-center p-4"
+            onClick={() => setShowGenerationPreview(false)}
+          >
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-gray-900 rounded-xl border border-purple-500/30 w-full max-w-4xl max-h-[90vh] overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="p-4 border-b border-gray-800 flex items-center justify-between">
+                <div>
+                  <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                    <FiCheck className="text-green-400" /> Image Generated!
+                  </h3>
+                  <p className="text-sm text-gray-400">
+                    {generationPreviewData.type === 'character' 
+                      ? `For ${generationPreviewData.characterName}` 
+                      : `Scene: ${generationPreviewData.sceneName}`}
+                    {generationPreviewData.method && ` • Using ${generationPreviewData.method}`}
+                  </p>
+                </div>
+                <button 
+                  onClick={() => setShowGenerationPreview(false)} 
+                  className="text-gray-400 hover:text-white p-2"
+                >
+                  <FiX size={24} />
+                </button>
+              </div>
+              
+              {/* Image Preview */}
+              <div className="p-6 flex justify-center bg-black/50">
+                <img 
+                  src={generationPreviewData.image?.url} 
+                  alt={generationPreviewData.prompt || 'Generated image'}
+                  className="max-w-full max-h-[50vh] object-contain rounded-lg shadow-2xl"
+                />
+              </div>
+              
+              {/* Prompt */}
+              {generationPreviewData.prompt && (
+                <div className="px-6 pb-4">
+                  <p className="text-gray-400 text-sm italic">"{generationPreviewData.prompt}"</p>
+                </div>
+              )}
+              
+              {/* Actions */}
+              <div className="p-4 border-t border-gray-800 bg-gray-900/80">
+                <div className="flex flex-wrap gap-3 justify-center">
+                  {/* Save to Character Folder */}
+                  {generationPreviewData.characterId && (
+                    <Button
+                      onClick={async () => {
+                        await saveToCharacterFolder(
+                          generationPreviewData.characterId,
+                          generationPreviewData.image.url,
+                          generationPreviewData.prompt,
+                          generationPreviewData.method || 'generated'
+                        );
+                        toast.success(`Saved to ${generationPreviewData.characterName}'s folder!`);
+                        loadCharacterGallery(generationPreviewData.characterId);
+                      }}
+                      className="bg-purple-600 hover:bg-purple-700"
+                    >
+                      <FiUser className="mr-2" /> Save to {generationPreviewData.characterName}
+                    </Button>
+                  )}
+                  
+                  {/* Save to Scene Folder */}
+                  {generationPreviewData.sceneId && (
+                    <Button
+                      onClick={async () => {
+                        await saveToSceneFolder(
+                          generationPreviewData.sceneId,
+                          generationPreviewData.image.url,
+                          generationPreviewData.prompt,
+                          'generated',
+                          generationPreviewData.characterId
+                        );
+                        toast.success(`Saved to ${generationPreviewData.sceneName}!`);
+                        loadSceneGallery(generationPreviewData.sceneId);
+                      }}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      <FiGrid className="mr-2" /> Save to {generationPreviewData.sceneName}
+                    </Button>
+                  )}
+                  
+                  {/* Save to Main Gallery */}
+                  <Button
+                    variant="outline"
+                    onClick={async () => {
+                      await saveToGallery(
+                        generationPreviewData.image.url,
+                        generationPreviewData.prompt,
+                        generationPreviewData.type
+                      );
+                      toast.success('Saved to Gallery!');
+                      loadGallery();
+                    }}
+                    className="border-green-400/50 text-green-300 hover:bg-green-500/20"
+                  >
+                    <FiSave className="mr-2" /> Save to Gallery
+                  </Button>
+                  
+                  {/* Download */}
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      downloadMedia(generationPreviewData.image.url, `generated-${Date.now()}.png`);
+                    }}
+                    className="border-gray-500 text-gray-300 hover:bg-gray-700"
+                  >
+                    <FiDownload className="mr-2" /> Download
+                  </Button>
+                </div>
+                
+                {/* Close / Dismiss */}
+                <div className="flex justify-center mt-4">
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => setShowGenerationPreview(false)}
+                    className="text-gray-400"
+                  >
+                    Close Preview
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
