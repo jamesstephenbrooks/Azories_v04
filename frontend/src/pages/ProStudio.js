@@ -4735,7 +4735,7 @@ export default function ProStudio() {
                         )}
                       </div>
                     </div>
-                  ))}
+                  )})}
                 </div>
               )}
             </div>
