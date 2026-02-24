@@ -3443,14 +3443,17 @@ export default function ProStudio() {
                                 <div 
                                   key={img.id || idx}
                                   className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
-                                    videoSelectedImage?.url === img.url 
+                                    videoSelectedImage?.url === (img.image_url || img.url)
                                       ? 'border-purple-500 ring-2 ring-purple-500/50' 
                                       : 'border-gray-700 hover:border-purple-500/50'
                                   }`}
-                                  onClick={() => selectVideoImage(img)}
+                                  onClick={() => selectVideoImage({
+                                    ...img,
+                                    url: img.image_url || img.url // Normalize to 'url'
+                                  })}
                                 >
                                   <img 
-                                    src={img.url} 
+                                    src={img.image_url || img.url} 
                                     alt={`Gallery ${idx + 1}`} 
                                     className="w-full aspect-square object-cover"
                                   />
