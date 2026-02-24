@@ -214,8 +214,11 @@ export default function BookEditor() {
     
     try {
       // Fetch Pro Studio characters with their galleries
+      console.log('[BookEditor] Fetching Pro Studio characters...');
       const charRes = await axios.get(`${API}/pro-studio/characters`, { headers });
+      console.log('[BookEditor] Characters API response:', charRes.data);
       const characters = charRes.data?.characters || charRes.data || [];
+      console.log('[BookEditor] Parsed characters count:', characters.length);
       // Get galleries for characters - include characters even without gallery images
       const charsWithGalleries = await Promise.all(
         characters.map(async (char) => {
@@ -238,8 +241,10 @@ export default function BookEditor() {
             galleryImages.forEach(img => {
               allImages.push({ ...img, type: img.type || 'generated' });
             });
+            console.log(`[BookEditor] Character ${char.name}: ${allImages.length} images`);
             return { ...char, gallery: allImages };
-          } catch {
+          } catch (galleryErr) {
+            console.warn(`[BookEditor] Gallery fetch failed for ${char.name}:`, galleryErr.message);
             // Even if gallery fails, include master image
             const fallbackImages = [];
             if (char.thumbnail) {
@@ -251,9 +256,10 @@ export default function BookEditor() {
       );
       // Show characters that have any images (including master)
       // But also include characters without images so users can see them
+      console.log('[BookEditor] Setting proStudioCharacters:', charsWithGalleries.length, 'characters');
       setProStudioCharacters(charsWithGalleries);
     } catch (error) {
-      console.error('Failed to load Pro Studio characters');
+      console.error('[BookEditor] Failed to load Pro Studio characters:', error.message, error.response?.status);
       setProStudioCharacters([]);
     }
     
