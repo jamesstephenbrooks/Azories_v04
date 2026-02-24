@@ -1113,6 +1113,45 @@ export default function ProStudio() {
     });
   };
 
+  // Poll task status helper
+  const pollTaskStatus = async (taskId, onProgress, maxPolls = 120) => {
+    const token = localStorage.getItem('azories-token');
+    let polls = 0;
+    
+    while (polls < maxPolls) {
+      try {
+        const response = await fetch(`${API_URL}/api/tasks/${taskId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.detail || 'Failed to check task status');
+        }
+        
+        const task = await response.json();
+        
+        if (onProgress && task.progress !== undefined) {
+          onProgress(task.progress);
+        }
+        
+        if (task.status === 'completed') {
+          return task.result;
+        } else if (task.status === 'failed') {
+          throw new Error(task.error || 'Task failed');
+        }
+        
+        // Still pending/processing - wait and poll again
+        await new Promise(resolve => setTimeout(resolve, 3000)); // 3 second intervals
+        polls++;
+      } catch (err) {
+        throw err;
+      }
+    }
+    
+    throw new Error('Task timed out after ' + (maxPolls * 3) + ' seconds');
+  };
+
   const generateShots = async () => {
     if (!shotsSourceImage) {
       toast.error('Please upload a source image first');
@@ -1120,7 +1159,8 @@ export default function ProStudio() {
     }
 
     setIsLoading(true);
-    setLoadingMessage('Preparing image and generating 9 angles... (this takes ~2 minutes)');
+    setLoadingMessage('Starting shots generation...');
+    setLoadingProgress(0);
     setShotsResults([]);
 
     try {
@@ -1129,11 +1169,8 @@ export default function ProStudio() {
       // Resize image to reduce payload size (max 1024px)
       const resizedImage = await resizeImageForAPI(shotsSourceImage, 1024);
       
-      // Use AbortController for timeout (3 minutes for 9 shots)
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 180000); // 3 minute timeout
-      
-      const response = await fetch(`${API_URL}/api/pro-studio/generate-shots`, {
+      // Start the task (returns immediately with task_id)
+      const startResponse = await fetch(`${API_URL}/api/pro-studio/generate-shots`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1142,39 +1179,57 @@ export default function ProStudio() {
         body: JSON.stringify({
           source_image: resizedImage,
           character_id: selectedCharacter?.id
-        }),
-        signal: controller.signal
+        })
+      });
+
+      if (!startResponse.ok) {
+        const error = await startResponse.json();
+        if (startResponse.status === 402) {
+          handleCreditError(error.detail);
+          return;
+        }
+        throw new Error(error.detail || 'Failed to start shots generation');
+      }
+      
+      const { task_id } = await startResponse.json();
+      
+      if (!task_id) {
+        throw new Error('No task ID returned from server');
+      }
+      
+      setLoadingMessage('Generating 9 angles... This may take a few minutes.');
+      
+      // Poll for completion
+      const result = await pollTaskStatus(task_id, (progress) => {
+        setLoadingProgress(progress);
+        if (progress < 20) {
+          setLoadingMessage('Analyzing source image...');
+        } else if (progress < 100) {
+          const shotNum = Math.ceil((progress - 20) / 9);
+          setLoadingMessage(`Generating shot ${Math.min(shotNum, 9)} of 9...`);
+        }
       });
       
-      clearTimeout(timeoutId);
-
-      if (response.ok) {
-        const data = await response.json();
-        setShotsResults(data.shots || []);
-        setShowShotsReview(true); // Open review modal
-        toast.success('9 shots generated! Review and save your favorites.');
-        loadCredits(); // Refresh credits
+      if (result && result.shots) {
+        setShotsResults(result.shots);
+        setShowShotsReview(true);
+        toast.success(`${result.total || result.shots.length} shots generated! Review and save your favorites.`);
       } else {
-        const error = await response.json();
-        if (response.status === 402) {
-          handleCreditError(error.detail);
-        } else {
-          toast.error(error.detail || 'Failed to generate shots');
-        }
+        toast.error('No shots were generated');
       }
+      
+      loadCredits();
     } catch (error) {
-      if (error.name === 'AbortError') {
-        toast.error('Request timed out. Shots generation takes ~2 minutes. Please try again.');
-      } else {
-        toast.error('Error generating shots');
-        console.error(error);
-      }
+      console.error('Shots generation error:', error);
+      toast.error(error.message || 'Error generating shots');
     } finally {
       setIsLoading(false);
       setLoadingMessage('');
-      loadCredits(); // Always refresh credits
+      setLoadingProgress(0);
+      loadCredits();
     }
   };
+
 
   // Generate expression variations
   const generateExpression = async () => {
