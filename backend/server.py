@@ -993,13 +993,34 @@ async def get_task_status(task_id: str, current_user: dict = Depends(get_current
         progress=task.get("progress", 0)
     )
 
-async def run_shots_generation_task(task_id: str, user_id: str, source_image: str, character_id: Optional[str]):
-    """Background task to generate 9 shots"""
+async def run_shots_generation_task(task_id: str, user_id: str, source_image: str, character_id: Optional[str], style: str = "realistic", character_style: Optional[str] = None):
+    """Background task to generate 9 shots with specified art style"""
     try:
         from emergentintegrations.llm.openai import LlmChat, UserMessage, ImageContent
         
         TASK_STORE[task_id]["status"] = "processing"
         TASK_STORE[task_id]["progress"] = 5
+        
+        # Build style prompt based on selection
+        style_prompts = {
+            "realistic": "photorealistic, professional photography, natural lighting, high detail",
+            "cinematic": "cinematic, movie still, dramatic lighting, film grain, professional color grading",
+            "cartoon": "cartoon style, animated, bold colors, clean lines, expressive",
+            "anime": "anime style, manga, Japanese animation, vibrant colors, detailed eyes",
+            "pixar": "Pixar style, 3D animated, smooth render, family-friendly, expressive features",
+            "watercolor": "watercolor painting, soft edges, artistic, painterly style, delicate colors",
+            "comic": "comic book style, bold outlines, dynamic shading, graphic novel",
+            "fantasy": "fantasy art style, magical, ethereal, detailed, imaginative",
+            "storybook": "children's book illustration, soft colors, whimsical, gentle, friendly"
+        }
+        
+        # Use character style if "character" is selected and available
+        if style == "character" and character_style:
+            selected_style = f"{character_style} style, consistent with character art style"
+        else:
+            selected_style = style_prompts.get(style, style_prompts["realistic"])
+        
+        logger.info(f"Task {task_id}: Using style: {selected_style[:50]}...")
         
         chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
