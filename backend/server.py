@@ -963,6 +963,148 @@ async def make_admin(current_user: dict = Depends(get_current_user)):
     )
     return {"message": "You are now an admin", "role": "admin"}
 
+# ============ ASYNC TASK ENDPOINTS ============
+
+class TaskStatusResponse(BaseModel):
+    task_id: str
+    status: str  # "pending", "completed", "failed"
+    result: Optional[dict] = None
+    error: Optional[str] = None
+    progress: Optional[int] = None  # 0-100
+
+@api_router.get("/tasks/{task_id}")
+async def get_task_status(task_id: str, current_user: dict = Depends(get_current_user)):
+    """Poll for task status"""
+    task = TASK_STORE.get(task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    # Verify task belongs to user
+    if task.get("user_id") != current_user["id"]:
+        raise HTTPException(status_code=403, detail="Not authorized to view this task")
+    
+    return TaskStatusResponse(
+        task_id=task_id,
+        status=task["status"],
+        result=task.get("result"),
+        error=task.get("error"),
+        progress=task.get("progress", 0)
+    )
+
+async def run_shots_generation_task(task_id: str, user_id: str, source_image: str, character_id: Optional[str]):
+    """Background task to generate 9 shots"""
+    try:
+        from emergentintegrations.llm.openai import LlmChat, UserMessage, ImageContent
+        
+        TASK_STORE[task_id]["status"] = "processing"
+        TASK_STORE[task_id]["progress"] = 5
+        
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"shots-{user_id}-{str(uuid.uuid4())[:8]}",
+            system_message="You are an expert at analyzing images. Describe subjects precisely for regeneration."
+        ).with_model("openai", "gpt-4o")
+        
+        # Handle source image - could be base64 data URI or URL
+        logger.info(f"Task {task_id}: Processing source image...")
+        
+        # If it's a URL, download and convert to base64
+        if source_image.startswith('http://') or source_image.startswith('https://'):
+            try:
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(source_image) as resp:
+                        if resp.status == 200:
+                            image_bytes = await resp.read()
+                            image_base64 = base64.b64encode(image_bytes).decode('utf-8')
+                        else:
+                            raise Exception(f"Failed to download image: HTTP {resp.status}")
+            except Exception as dl_error:
+                logger.error(f"Task {task_id}: Failed to download source image: {dl_error}")
+                TASK_STORE[task_id]["status"] = "failed"
+                TASK_STORE[task_id]["error"] = "Could not access the source image URL"
+                return
+        elif source_image.startswith('data:'):
+            if ',' in source_image:
+                image_base64 = source_image.split(',')[1]
+            else:
+                image_base64 = source_image.replace('data:image/png;base64,', '').replace('data:image/jpeg;base64,', '')
+        else:
+            image_base64 = source_image
+        
+        # Validate the base64
+        try:
+            missing_padding = len(image_base64) % 4
+            if missing_padding:
+                image_base64 += '=' * (4 - missing_padding)
+            decoded = base64.b64decode(image_base64)
+            if len(decoded) < 100:
+                raise ValueError("Image too small")
+            logger.info(f"Task {task_id}: Decoded image successfully, size={len(decoded)} bytes")
+        except Exception as b64_error:
+            logger.error(f"Task {task_id}: Invalid base64 image: {b64_error}")
+            TASK_STORE[task_id]["status"] = "failed"
+            TASK_STORE[task_id]["error"] = "Invalid image format"
+            return
+        
+        TASK_STORE[task_id]["progress"] = 10
+        
+        # Analyze the image
+        user_msg = UserMessage(
+            text="Describe this person/subject in detail for image generation. Include: gender, age, hair, eyes, skin, clothing, setting. Be very specific. Respond in one paragraph.",
+            file_contents=[ImageContent(image_base64=image_base64)]
+        )
+        analysis = await chat.send_message(user_msg)
+        base_description = analysis.strip() if isinstance(analysis, str) else str(analysis)
+        
+        logger.info(f"Task {task_id}: Image analysis complete: {base_description[:100]}...")
+        TASK_STORE[task_id]["progress"] = 20
+        
+        # Generate 9 shots
+        shots = []
+        image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
+        
+        for i, shot_prompt in enumerate(SHOT_TYPE_PROMPTS):
+            full_prompt = f"{base_description}, {shot_prompt}, professional portrait photography, consistent lighting, high quality"
+            logger.info(f"Task {task_id}: Generating shot {i+1}/9...")
+            
+            try:
+                images = await image_gen.generate_images(
+                    prompt=full_prompt,
+                    model="gpt-image-1",
+                    number_of_images=1
+                )
+                
+                if images and len(images) > 0:
+                    img_base64 = base64.b64encode(images[0]).decode('utf-8')
+                    shots.append({
+                        "url": f"data:image/png;base64,{img_base64}",
+                        "type": f"shot_{i+1}"
+                    })
+            except Exception as shot_error:
+                logger.error(f"Task {task_id}: Error generating shot {i+1}: {str(shot_error)}")
+                # Check for budget error
+                if check_budget_error(str(shot_error)):
+                    TASK_STORE[task_id]["status"] = "failed"
+                    TASK_STORE[task_id]["error"] = "AI service budget limit reached. Please add balance to your Universal Key."
+                    return
+                continue
+            
+            TASK_STORE[task_id]["progress"] = 20 + int((i + 1) * 80 / 9)
+        
+        logger.info(f"Task {task_id}: Completed with {len(shots)} shots")
+        TASK_STORE[task_id]["status"] = "completed"
+        TASK_STORE[task_id]["result"] = {"shots": shots, "total": len(shots)}
+        TASK_STORE[task_id]["progress"] = 100
+        
+    except Exception as e:
+        error_msg = str(e)
+        logger.error(f"Task {task_id}: Error: {error_msg}")
+        TASK_STORE[task_id]["status"] = "failed"
+        if check_budget_error(error_msg):
+            TASK_STORE[task_id]["error"] = "AI service budget limit reached. Please add balance to your Universal Key."
+        else:
+            TASK_STORE[task_id]["error"] = f"Error generating shots: {error_msg}"
+
 # ============ HELPER FUNCTIONS ============
 
 def set_book_defaults(book: dict) -> dict:
