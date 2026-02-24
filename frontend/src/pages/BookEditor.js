@@ -2186,26 +2186,43 @@ export default function BookEditor() {
                       <h4 className="font-medium mb-2 flex items-center gap-2">
                         <FiLayers className="text-emerald-500" />
                         {scene.name}
-                        <span className="text-xs text-muted-foreground">({scene.gallery.length} images)</span>
+                        <span className="text-xs text-muted-foreground">
+                          ({scene.gallery?.length || 0} images)
+                        </span>
                       </h4>
-                      <div className="grid grid-cols-4 gap-2">
-                        {scene.gallery.map((img, idx) => (
-                          <button
-                            key={idx}
-                            onClick={() => addGalleryImageToPage(img.image_url, activeImageSlot)}
-                            className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-emerald-500 transition-all"
-                          >
-                            <img 
-                              src={img.image_url} 
-                              alt={`${scene.name} image`}
-                              className="w-full h-full object-cover"
-                            />
-                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                              <span className="text-white text-xs font-medium">Use</span>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
+                      {scene.gallery?.length > 0 ? (
+                        <div className="grid grid-cols-4 gap-2">
+                          {scene.gallery.map((img, idx) => (
+                            <button
+                              key={idx}
+                              onClick={() => addGalleryImageToPage(img.image_url, activeImageSlot)}
+                              className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-emerald-500 transition-all"
+                            >
+                              <img 
+                                src={img.image_url} 
+                                alt={`${scene.name} image`}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  e.target.onerror = null;
+                                  e.target.src = '/placeholder-scene.svg';
+                                }}
+                              />
+                              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <span className="text-white text-xs font-medium">Use</span>
+                              </div>
+                              {img.type === 'preview' && (
+                                <span className="absolute top-1 left-1 bg-emerald-500 text-white text-[10px] px-1.5 py-0.5 rounded">
+                                  Preview
+                                </span>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-xs text-muted-foreground italic">
+                          No images yet. Generate images in Pro Studio.
+                        </p>
+                      )}
                     </div>
                   ))}
                 </ScrollArea>
