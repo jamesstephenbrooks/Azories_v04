@@ -7809,6 +7809,43 @@ async def admin_run_moderation(book_id: str, admin: dict = Depends(get_admin_use
         "message": moderation_result.message
     }
 
+@api_router.get("/admin/books/{book_id}/full")
+async def admin_get_full_book(book_id: str, admin: dict = Depends(get_admin_user)):
+    """Admin endpoint to get complete book with all pages - no user auth required"""
+    book = await db.books.find_one({"id": book_id}, {"_id": 0})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    book = set_book_defaults(book)
+    
+    chapters = await db.chapters.find({"book_id": book_id}, {"_id": 0}).sort("order", 1).to_list(100)
+    
+    full_chapters = []
+    for chapter in chapters:
+        pages = await db.pages.find({"chapter_id": chapter["id"]}, {"_id": 0}).sort("order", 1).to_list(100)
+        for page in pages:
+            page.setdefault("image_url_2", "")
+            page.setdefault("image_url_3", "")
+            page.setdefault("image_url_4", "")
+            page.setdefault("video_url", "")
+            page.setdefault("use_video", False)
+            page.setdefault("layout_type", "single")
+            page.setdefault("image_position_x", 50)
+            page.setdefault("image_position_y", 50)
+            page.setdefault("image_fit", "cover")
+            page.setdefault("font_family", "default")
+            page.setdefault("font_size", "medium")
+            page.setdefault("text_align", "left")
+        full_chapters.append({
+            **chapter,
+            "pages": pages
+        })
+    
+    return {
+        **book,
+        "chapters": full_chapters
+    }
+
 @api_router.post("/admin/generate-missing-covers")
 async def admin_generate_missing_covers(admin: dict = Depends(get_admin_user)):
     """Generate cover images for books that don't have them"""
