@@ -4635,11 +4635,24 @@ export default function ProStudio() {
                             }}
                             style={{ opacity: 0.7, transition: 'opacity 0.3s' }}
                           />
-                          <div className="image-fallback hidden w-full aspect-square bg-gray-700 flex items-center justify-center absolute inset-0">
+                          <div className="image-fallback hidden w-full aspect-square bg-gray-700 flex flex-col items-center justify-center absolute inset-0">
                             <div className="text-center text-gray-500">
                               <FiImage className="w-8 h-8 mx-auto mb-2 opacity-50" />
                               <span className="text-xs">Unavailable</span>
                             </div>
+                            {/* Always visible delete button for broken images */}
+                            <Button 
+                              size="sm" 
+                              variant="ghost" 
+                              className="mt-2 bg-red-500/30 hover:bg-red-500/50"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteFromGallery(item.id, item.source);
+                              }}
+                            >
+                              <FiTrash2 className="text-red-400 w-4 h-4 mr-1" />
+                              <span className="text-red-400 text-xs">Delete</span>
+                            </Button>
                           </div>
                         </>
                       )}
