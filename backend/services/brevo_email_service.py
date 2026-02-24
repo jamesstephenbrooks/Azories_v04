@@ -14,8 +14,8 @@ from typing import Optional, List
 logger = logging.getLogger(__name__)
 
 # Brevo SMTP Configuration
-BREVO_SMTP_KEY = os.environ.get("BREVO_API_KEY")  # This is actually the SMTP key
-BREVO_ACCOUNT_EMAIL = os.environ.get("BREVO_ACCOUNT_EMAIL")  # Login email for SMTP
+BREVO_SMTP_KEY = os.environ.get("BREVO_API_KEY")  # SMTP password (xsmtpsib-...)
+BREVO_SMTP_LOGIN = os.environ.get("BREVO_SMTP_LOGIN")  # SMTP login (xxxxx@smtp-brevo.com)
 BREVO_SMTP_SERVER = "smtp-relay.brevo.com"
 BREVO_SMTP_PORT = 587
 SENDER_EMAIL = os.environ.get("BREVO_SENDER_EMAIL", "noreply@azories.com")
@@ -26,7 +26,7 @@ APP_URL = os.environ.get("APP_URL", "https://azories.com")
 
 def is_configured() -> bool:
     """Check if Brevo SMTP is properly configured"""
-    return bool(BREVO_SMTP_KEY and BREVO_ACCOUNT_EMAIL)
+    return bool(BREVO_SMTP_KEY and BREVO_SMTP_LOGIN)
 
 
 async def send_email(
@@ -42,7 +42,7 @@ async def send_email(
     Returns: {"success": bool, "message_id": str or None, "error": str or None}
     """
     if not is_configured():
-        logger.warning("Brevo SMTP not configured - missing BREVO_API_KEY or BREVO_ACCOUNT_EMAIL")
+        logger.warning("Brevo SMTP not configured - missing BREVO_API_KEY or BREVO_SMTP_LOGIN")
         return {"success": False, "message_id": None, "error": "Brevo SMTP not configured"}
     
     try:
@@ -62,8 +62,8 @@ async def send_email(
         def send_smtp():
             with smtplib.SMTP(BREVO_SMTP_SERVER, BREVO_SMTP_PORT) as server:
                 server.starttls()
-                # Use Brevo account email as username, SMTP key as password
-                server.login(BREVO_ACCOUNT_EMAIL, BREVO_SMTP_KEY)
+                # Use Brevo SMTP login and key
+                server.login(BREVO_SMTP_LOGIN, BREVO_SMTP_KEY)
                 server.send_message(msg)
                 return True
         
