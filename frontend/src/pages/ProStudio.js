@@ -1083,6 +1083,35 @@ export default function ProStudio() {
   };
 
   // Generate shots (9 angles from 1 image)
+  // Helper to resize image to reduce payload size
+  const resizeImageForAPI = async (imageData, maxSize = 1024) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        
+        // Scale down if larger than maxSize
+        if (width > maxSize || height > maxSize) {
+          const ratio = Math.min(maxSize / width, maxSize / height);
+          width = Math.round(width * ratio);
+          height = Math.round(height * ratio);
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Return as base64 with reduced quality
+        resolve(canvas.toDataURL('image/jpeg', 0.85));
+      };
+      img.onerror = () => resolve(imageData); // Return original on error
+      img.src = imageData;
+    });
+  };
+
   const generateShots = async () => {
     if (!shotsSourceImage) {
       toast.error('Please upload a source image first');
@@ -1090,11 +1119,15 @@ export default function ProStudio() {
     }
 
     setIsLoading(true);
-    setLoadingMessage('Generating 9 different angles...');
+    setLoadingMessage('Preparing image and generating 9 angles...');
     setShotsResults([]);
 
     try {
       const token = localStorage.getItem('azories-token');
+      
+      // Resize image to reduce payload size (max 1024px)
+      const resizedImage = await resizeImageForAPI(shotsSourceImage, 1024);
+      
       const response = await fetch(`${API_URL}/api/pro-studio/generate-shots`, {
         method: 'POST',
         headers: {
