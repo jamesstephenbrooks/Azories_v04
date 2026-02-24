@@ -3262,6 +3262,11 @@ async def generate_shots(request: GenerateShotsRequest, current_user: dict = Dep
     if not EMERGENT_LLM_KEY:
         raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
     
+    # Deduct credits first
+    if not await deduct_credits(current_user["id"], "shots_generate"):
+        credits_needed = CREDIT_COSTS.get("shots_generate", 5)
+        raise HTTPException(status_code=402, detail=f"Insufficient credits. Shots generation requires {credits_needed} credits. Please purchase more credits.")
+    
     try:
         # First, analyze the source image to understand the subject
         from emergentintegrations.llm.openai import LlmChat, UserMessage, ImageContent
