@@ -272,7 +272,7 @@ export default function ProStudio() {
   const loadUserBooks = async () => {
     try {
       const tkn = localStorage.getItem('azories-token');
-      const response = await fetch(`${API_URL}/api/my-books`, {
+      const response = await fetch(`${API_URL}/api/books/my`, {
         headers: { Authorization: `Bearer ${tkn}` }
       });
       if (response.ok) {
