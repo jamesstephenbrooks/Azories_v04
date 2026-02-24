@@ -147,8 +147,10 @@ export default function ProStudio() {
   // Expression state
   const [selectedExpression, setSelectedExpression] = useState('neutral');
   
-  // Gallery state
+  // Unified Gallery state - contains ALL Pro Studio content
   const [gallery, setGallery] = useState([]);
+  const [galleryFilter, setGalleryFilter] = useState('all'); // 'all', 'images', 'videos', 'characters'
+  const [galleryPickerCallback, setGalleryPickerCallback] = useState(null); // Function to call when image selected
   
   // Load user's characters on mount
   useEffect(() => {
