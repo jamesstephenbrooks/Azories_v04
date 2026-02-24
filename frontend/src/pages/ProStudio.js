@@ -5010,6 +5010,35 @@ export default function ProStudio() {
                     </Button>
                   )}
                   
+                  {/* Save to Both - when scene uses a character */}
+                  {generationPreviewData.sceneId && generationPreviewData.characterId && (
+                    <Button
+                      onClick={async () => {
+                        // Save to scene folder
+                        await saveToSceneFolder(
+                          generationPreviewData.sceneId,
+                          generationPreviewData.image.url,
+                          generationPreviewData.prompt,
+                          'generated',
+                          generationPreviewData.characterId
+                        );
+                        // Save to character folder
+                        await saveToCharacterFolder(
+                          generationPreviewData.characterId,
+                          generationPreviewData.image.url,
+                          generationPreviewData.prompt,
+                          'scene'
+                        );
+                        toast.success(`Saved to both ${generationPreviewData.sceneName} and ${generationPreviewData.characterName}!`);
+                        loadSceneGallery(generationPreviewData.sceneId);
+                        loadCharacterGallery(generationPreviewData.characterId);
+                      }}
+                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                    >
+                      <FiSave className="mr-2" /> Save to Both
+                    </Button>
+                  )}
+                  
                   {/* Save to Main Gallery */}
                   <Button
                     variant="outline"
