@@ -6733,17 +6733,30 @@ async def art_studio_delete(image_id: str, current_user: dict = Depends(get_curr
     user = current_user
     
     try:
-        from bson import ObjectId
+        # Try both id formats
         result = await db.art_studio_gallery.delete_one({
-            "_id": ObjectId(image_id),
+            "id": image_id,
             "user_id": user["id"]
         })
         
         if result.deleted_count == 0:
+            # Try with MongoDB ObjectId
+            try:
+                from bson import ObjectId
+                result = await db.art_studio_gallery.delete_one({
+                    "_id": ObjectId(image_id),
+                    "user_id": user["id"]
+                })
+            except:
+                pass
+        
+        if result.deleted_count == 0:
             raise HTTPException(status_code=404, detail="Image not found")
         
-        return {"success": True}
+        return {"success": True, "message": "Deleted successfully"}
         
+    except HTTPException:
+        raise
     except Exception as e:
         logging.error(f"Art Studio delete error: {e}")
         raise HTTPException(status_code=500, detail="Failed to delete image")
