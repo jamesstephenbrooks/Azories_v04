@@ -1167,6 +1167,7 @@ export default function ProStudio() {
         };
         setGeneratedImages(prev => [newImage, ...prev]);
         toast.success(`${expressionData.name} expression generated!`);
+        loadCredits(); // Refresh credits
         
         // Auto-save to character folder
         if (data.image_url) {
@@ -1179,7 +1180,11 @@ export default function ProStudio() {
         }
       } else {
         const error = await response.json();
-        toast.error(error.detail || 'Failed to generate expression');
+        if (response.status === 402) {
+          handleCreditError(error.detail);
+        } else {
+          toast.error(error.detail || 'Failed to generate expression');
+        }
       }
     } catch (error) {
       toast.error('Error generating expression');
@@ -1187,6 +1192,7 @@ export default function ProStudio() {
     } finally {
       setIsLoading(false);
       setLoadingMessage('');
+      loadCredits(); // Always refresh credits
     }
   };
 
