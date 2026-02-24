@@ -151,6 +151,10 @@ export default function ProStudio() {
   const [showGenerationPreview, setShowGenerationPreview] = useState(false);
   const [generationPreviewData, setGenerationPreviewData] = useState(null); // { image, type, characterId, sceneId, prompt }
   
+  // Cinema Studio source image - for creating variants
+  const [cinemaSourceImage, setCinemaSourceImage] = useState(null); // { url, name, type: 'character'|'scene'|'gallery' }
+  const [showCinemaSourcePicker, setShowCinemaSourcePicker] = useState(false);
+  
   // Expression state
   const [selectedExpression, setSelectedExpression] = useState('neutral');
   
