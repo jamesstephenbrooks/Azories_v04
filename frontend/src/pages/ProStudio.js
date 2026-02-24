@@ -5155,6 +5155,115 @@ export default function ProStudio() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Crop Modal */}
+      <AnimatePresence>
+        {showCropModal && cropImage && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/95 backdrop-blur-sm z-[100] flex items-center justify-center p-4"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-gray-900 rounded-xl border border-purple-500/30 w-full max-w-4xl max-h-[90vh] overflow-hidden"
+            >
+              {/* Header */}
+              <div className="p-4 border-b border-gray-800 flex items-center justify-between">
+                <div>
+                  <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                    <FiCrop className="text-purple-400" /> Crop Image
+                  </h3>
+                  <p className="text-sm text-gray-400">Drag to position, scroll to zoom</p>
+                </div>
+                <button 
+                  onClick={() => setShowCropModal(false)} 
+                  className="text-gray-400 hover:text-white p-2"
+                >
+                  <FiX size={24} />
+                </button>
+              </div>
+              
+              {/* Crop Area */}
+              <div className="relative h-[50vh] bg-black">
+                <Cropper
+                  image={cropImage.url}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={cropAspect}
+                  onCropChange={setCrop}
+                  onZoomChange={setZoom}
+                  onCropComplete={onCropComplete}
+                />
+              </div>
+              
+              {/* Controls */}
+              <div className="p-4 border-t border-gray-800 space-y-4">
+                {/* Aspect Ratio Selection */}
+                <div>
+                  <label className="text-gray-400 text-xs mb-2 block">Aspect Ratio</label>
+                  <div className="flex gap-2 flex-wrap">
+                    {[
+                      { label: '16:9', value: 16/9 },
+                      { label: '4:3', value: 4/3 },
+                      { label: '1:1', value: 1 },
+                      { label: '3:4', value: 3/4 },
+                      { label: '9:16', value: 9/16 },
+                      { label: 'Free', value: undefined }
+                    ].map((ar) => (
+                      <button
+                        key={ar.label}
+                        onClick={() => setCropAspect(ar.value)}
+                        className={`px-3 py-1 text-sm rounded ${
+                          cropAspect === ar.value
+                            ? 'bg-purple-600 text-white'
+                            : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                        }`}
+                      >
+                        {ar.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Zoom Slider */}
+                <div>
+                  <label className="text-gray-400 text-xs mb-2 block">Zoom: {zoom.toFixed(1)}x</label>
+                  <input
+                    type="range"
+                    min={1}
+                    max={3}
+                    step={0.1}
+                    value={zoom}
+                    onChange={(e) => setZoom(Number(e.target.value))}
+                    className="w-full accent-purple-500"
+                  />
+                </div>
+                
+                {/* Action Buttons */}
+                <div className="flex gap-3 justify-end">
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => setShowCropModal(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={handleSaveCroppedImage}
+                    disabled={isLoading}
+                    className="bg-purple-600 hover:bg-purple-700"
+                  >
+                    <FiSave className="mr-2" /> Save Cropped Image
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
