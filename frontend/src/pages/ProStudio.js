@@ -1111,9 +1111,14 @@ export default function ProStudio() {
         const data = await response.json();
         setShotsResults(data.shots || []);
         toast.success('9 shots generated!');
+        loadCredits(); // Refresh credits
       } else {
         const error = await response.json();
-        toast.error(error.detail || 'Failed to generate shots');
+        if (response.status === 402) {
+          handleCreditError(error.detail);
+        } else {
+          toast.error(error.detail || 'Failed to generate shots');
+        }
       }
     } catch (error) {
       toast.error('Error generating shots');
@@ -1121,6 +1126,7 @@ export default function ProStudio() {
     } finally {
       setIsLoading(false);
       setLoadingMessage('');
+      loadCredits(); // Always refresh credits
     }
   };
 
