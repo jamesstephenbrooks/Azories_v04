@@ -1646,6 +1646,24 @@ export default function ProStudio() {
         setGeneratedVideos(prev => [newVideo, ...prev]);
         setLoadingProgress(100);
         toast.success('Video generated with high face fidelity!');
+        
+        // Save to character folder if using character source
+        if (videoSourceType === 'character' && videoSourceCharacter?.id) {
+          try {
+            await saveToCharacterFolder(
+              videoSourceCharacter.id,
+              result.video_url,
+              `Video - ${enhancedPrompt || 'animation'}`,
+              'video'
+            );
+            toast.success(`Video also saved to ${videoSourceCharacter.name}'s folder`);
+          } catch (saveErr) {
+            console.error('Error saving video to character folder:', saveErr);
+          }
+        }
+        
+        // Also save to general gallery
+        await saveToGallery(result.video_url, enhancedPrompt || 'Generated video', 'video');
       } else {
         toast.error('No video URL returned');
       }
