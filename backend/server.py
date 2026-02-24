@@ -3319,9 +3319,15 @@ async def generate_shots(request: GenerateShotsRequest, current_user: dict = Dep
         
         # Validate the base64
         try:
+            # Fix padding if needed
+            missing_padding = len(image_base64) % 4
+            if missing_padding:
+                image_base64 += '=' * (4 - missing_padding)
+            
             decoded = base64.b64decode(image_base64)
             if len(decoded) < 100:
                 raise ValueError("Image too small")
+            logger.info(f"Shots: Decoded image successfully, size={len(decoded)} bytes")
         except Exception as b64_error:
             logger.error(f"Invalid base64 image: {b64_error}")
             raise HTTPException(status_code=400, detail="Invalid image format. Please provide a valid image.")
