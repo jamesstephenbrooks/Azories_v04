@@ -2617,6 +2617,51 @@ export default function BookEditor() {
           </div>
         </DialogContent>
       </Dialog>
+      
+      {/* Expanded Media Viewer */}
+      {expandedMedia && (
+        <div
+          className="fixed inset-0 bg-black/95 z-[200] flex items-center justify-center p-4"
+          onClick={() => setExpandedMedia(null)}
+        >
+          {/* Close button */}
+          <button
+            onClick={() => setExpandedMedia(null)}
+            className="absolute top-4 right-4 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors z-10"
+          >
+            <FiX className="w-6 h-6" />
+          </button>
+          
+          {/* Media content */}
+          <div
+            className="max-w-[90vw] max-h-[90vh] relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {expandedMedia.type === 'video' ? (
+              <video
+                src={expandedMedia.url}
+                controls
+                autoPlay
+                loop
+                className="max-w-full max-h-[85vh] rounded-lg"
+              />
+            ) : (
+              <img
+                src={expandedMedia.url}
+                alt={expandedMedia.name || 'Image'}
+                className="max-w-full max-h-[85vh] object-contain rounded-lg"
+              />
+            )}
+            
+            {/* Caption */}
+            {expandedMedia.name && (
+              <p className="text-center text-white/70 mt-3 text-sm">
+                {expandedMedia.name}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
