@@ -1824,6 +1824,110 @@ export default function ProStudio() {
     document.body.removeChild(link);
   };
 
+  // Crop handlers
+  const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
+
+  const openCropModal = (imageUrl, type, parentId) => {
+    setCropImage({ url: imageUrl, type, parentId });
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    setCroppedAreaPixels(null);
+    setShowCropModal(true);
+  };
+
+  const createCroppedImage = async () => {
+    if (!cropImage || !croppedAreaPixels) return null;
+    
+    try {
+      const image = new Image();
+      image.crossOrigin = 'anonymous';
+      
+      return new Promise((resolve, reject) => {
+        image.onload = () => {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          
+          canvas.width = croppedAreaPixels.width;
+          canvas.height = croppedAreaPixels.height;
+          
+          ctx.drawImage(
+            image,
+            croppedAreaPixels.x,
+            croppedAreaPixels.y,
+            croppedAreaPixels.width,
+            croppedAreaPixels.height,
+            0,
+            0,
+            croppedAreaPixels.width,
+            croppedAreaPixels.height
+          );
+          
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                resolve(reader.result);
+              };
+              reader.readAsDataURL(blob);
+            } else {
+              reject(new Error('Failed to create blob'));
+            }
+          }, 'image/png', 0.95);
+        };
+        
+        image.onerror = () => reject(new Error('Failed to load image'));
+        image.src = cropImage.url;
+      });
+    } catch (error) {
+      console.error('Error creating cropped image:', error);
+      return null;
+    }
+  };
+
+  const handleSaveCroppedImage = async () => {
+    if (!cropImage || !croppedAreaPixels) {
+      toast.error('Please adjust the crop area first');
+      return;
+    }
+    
+    setIsLoading(true);
+    setLoadingMessage('Creating cropped image...');
+    
+    try {
+      const croppedDataUrl = await createCroppedImage();
+      if (!croppedDataUrl) {
+        toast.error('Failed to create cropped image');
+        return;
+      }
+      
+      // Save to appropriate folder based on type
+      if (cropImage.type === 'scene' && cropImage.parentId) {
+        await saveToSceneFolder(cropImage.parentId, croppedDataUrl, 'Cropped image', 'cropped');
+        loadSceneGallery(cropImage.parentId);
+        toast.success('Cropped image saved to scene folder!');
+      } else if (cropImage.type === 'character' && cropImage.parentId) {
+        await saveToCharacterFolder(cropImage.parentId, croppedDataUrl, 'Cropped image', 'cropped');
+        loadCharacterGallery(cropImage.parentId);
+        toast.success('Cropped image saved to character folder!');
+      } else {
+        // Save to general gallery
+        await saveToGallery(croppedDataUrl, 'Cropped image', 'image');
+        loadGallery();
+        toast.success('Cropped image saved to gallery!');
+      }
+      
+      setShowCropModal(false);
+    } catch (error) {
+      console.error('Error saving cropped image:', error);
+      toast.error('Failed to save cropped image');
+    } finally {
+      setIsLoading(false);
+      setLoadingMessage('');
+    }
+  };
+
   // Load character's generated images (character folder)
   const loadCharacterGallery = async (characterId) => {
     try {
