@@ -1087,8 +1087,9 @@ async def run_shots_generation_task(task_id: str, user_id: str, source_image: st
         image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
         
         for i, shot_prompt in enumerate(SHOT_TYPE_PROMPTS):
-            full_prompt = f"{base_description}, {shot_prompt}, professional portrait photography, consistent lighting, high quality"
-            logger.info(f"Task {task_id}: Generating shot {i+1}/9...")
+            # Include the selected style in the prompt
+            full_prompt = f"{base_description}, {shot_prompt}, {selected_style}, consistent lighting, high quality"
+            logger.info(f"Task {task_id}: Generating shot {i+1}/9 with style...")
             
             try:
                 images = await image_gen.generate_images(
@@ -1101,7 +1102,8 @@ async def run_shots_generation_task(task_id: str, user_id: str, source_image: st
                     img_base64 = base64.b64encode(images[0]).decode('utf-8')
                     shots.append({
                         "url": f"data:image/png;base64,{img_base64}",
-                        "type": f"shot_{i+1}"
+                        "type": f"shot_{i+1}",
+                        "style": style
                     })
             except Exception as shot_error:
                 logger.error(f"Task {task_id}: Error generating shot {i+1}: {str(shot_error)}")
