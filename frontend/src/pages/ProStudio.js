@@ -1250,29 +1250,39 @@ export default function ProStudio() {
   // Helper to resize image to reduce payload size
   const resizeImageForAPI = async (imageData, maxSize = 1024) => {
     return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let width = img.width;
-        let height = img.height;
-        
-        // Scale down if larger than maxSize
-        if (width > maxSize || height > maxSize) {
-          const ratio = Math.min(maxSize / width, maxSize / height);
-          width = Math.round(width * ratio);
-          height = Math.round(height * ratio);
-        }
-        
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height);
-        
-        // Return as base64 with reduced quality
-        resolve(canvas.toDataURL('image/jpeg', 0.85));
-      };
-      img.onerror = () => resolve(imageData); // Return original on error
-      img.src = imageData;
+      // If it's already a base64 data URL, process it directly
+      if (imageData.startsWith('data:')) {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          
+          // Scale down if larger than maxSize
+          if (width > maxSize || height > maxSize) {
+            const ratio = Math.min(maxSize / width, maxSize / height);
+            width = Math.round(width * ratio);
+            height = Math.round(height * ratio);
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Return as base64 with reduced quality
+          resolve(canvas.toDataURL('image/jpeg', 0.85));
+        };
+        img.onerror = () => resolve(imageData);
+        img.src = imageData;
+      } else if (imageData.startsWith('http')) {
+        // For external URLs, we can't resize on client due to CORS
+        // Return the original URL - backend will handle it
+        resolve(imageData);
+      } else {
+        // Unknown format, return as is
+        resolve(imageData);
+      }
     });
   };
 
