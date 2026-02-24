@@ -3289,15 +3289,41 @@ async def generate_shots(request: GenerateShotsRequest, current_user: dict = Dep
             system_message="You are an expert at analyzing images. Describe subjects precisely for regeneration."
         ).with_model("openai", "gpt-4o")
         
-        # Extract base64 from source image
+        # Handle source image - could be base64 data URI or URL
         source_image = request.source_image
-        if source_image.startswith('data:'):
+        
+        # If it's a URL, download and convert to base64
+        if source_image.startswith('http://') or source_image.startswith('https://'):
+            try:
+                import aiohttp
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(source_image) as resp:
+                        if resp.status == 200:
+                            image_bytes = await resp.read()
+                            image_base64 = base64.b64encode(image_bytes).decode('utf-8')
+                        else:
+                            raise Exception(f"Failed to download image: HTTP {resp.status}")
+            except Exception as dl_error:
+                logger.error(f"Failed to download source image: {dl_error}")
+                raise HTTPException(status_code=400, detail="Could not access the source image URL")
+        elif source_image.startswith('data:'):
+            # Extract base64 from data URI
             if ',' in source_image:
                 image_base64 = source_image.split(',')[1]
             else:
-                image_base64 = source_image
+                image_base64 = source_image.replace('data:image/png;base64,', '').replace('data:image/jpeg;base64,', '')
         else:
+            # Assume it's raw base64
             image_base64 = source_image
+        
+        # Validate the base64
+        try:
+            decoded = base64.b64decode(image_base64)
+            if len(decoded) < 100:
+                raise ValueError("Image too small")
+        except Exception as b64_error:
+            logger.error(f"Invalid base64 image: {b64_error}")
+            raise HTTPException(status_code=400, detail="Invalid image format. Please provide a valid image.")
         
         user_msg = UserMessage(
             text="Describe this person/subject in detail for image generation. Include: gender, age, hair, eyes, skin, clothing, setting. Be very specific. Respond in one paragraph.",
