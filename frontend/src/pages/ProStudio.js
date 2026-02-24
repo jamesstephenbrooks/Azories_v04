@@ -147,6 +147,7 @@ export default function ProStudio() {
   const [showShotsReview, setShowShotsReview] = useState(false); // Modal to review generated shots
   const [shotsSelectedCharacter, setShotsSelectedCharacter] = useState(null); // Selected character for shots
   const [shotsCharacterGallery, setShotsCharacterGallery] = useState([]); // Gallery images for selected character
+  const [shotsStyle, setShotsStyle] = useState('realistic'); // Art style for shots generation
   
   // Generation Preview Modal state - shows newly generated images with save options
   const [showGenerationPreview, setShowGenerationPreview] = useState(false);
