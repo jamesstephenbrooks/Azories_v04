@@ -1,37 +1,31 @@
 """
 Brevo (formerly Sendinblue) Email Service for Azories
-Alternative to Resend - for better deliverability
+Using SMTP relay for better deliverability
 """
 
 import os
 import asyncio
 import logging
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from typing import Optional, List
-import sib_api_v3_sdk
-from sib_api_v3_sdk.rest import ApiException
 
 logger = logging.getLogger(__name__)
 
-# Initialize Brevo
-BREVO_API_KEY = os.environ.get("BREVO_API_KEY")
+# Brevo SMTP Configuration
+BREVO_SMTP_KEY = os.environ.get("BREVO_API_KEY")  # This is actually the SMTP key
+BREVO_SMTP_SERVER = "smtp-relay.brevo.com"
+BREVO_SMTP_PORT = 587
 SENDER_EMAIL = os.environ.get("BREVO_SENDER_EMAIL", "noreply@azories.com")
 SENDER_NAME = os.environ.get("BREVO_SENDER_NAME", "Azories")
 APP_NAME = "Azories"
 APP_URL = os.environ.get("APP_URL", "https://azories.com")
 
-# Configure API client
-configuration = None
-api_instance = None
-
-if BREVO_API_KEY:
-    configuration = sib_api_v3_sdk.Configuration()
-    configuration.api_key['api-key'] = BREVO_API_KEY
-    api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
-
 
 def is_configured() -> bool:
-    """Check if Brevo email service is properly configured"""
-    return bool(BREVO_API_KEY)
+    """Check if Brevo SMTP is properly configured"""
+    return bool(BREVO_SMTP_KEY)
 
 
 async def send_email(
@@ -43,50 +37,42 @@ async def send_email(
     tags: Optional[List[str]] = None
 ) -> dict:
     """
-    Send an email using Brevo API
+    Send an email using Brevo SMTP relay
     Returns: {"success": bool, "message_id": str or None, "error": str or None}
     """
     if not is_configured():
-        logger.warning("Brevo email service not configured - BREVO_API_KEY missing")
-        return {"success": False, "message_id": None, "error": "Brevo email service not configured"}
+        logger.warning("Brevo SMTP not configured - BREVO_API_KEY missing")
+        return {"success": False, "message_id": None, "error": "Brevo SMTP not configured"}
     
     try:
-        # Prepare sender
-        sender = sib_api_v3_sdk.SendSmtpEmailSender(
-            name=SENDER_NAME,
-            email=SENDER_EMAIL
-        )
-        
-        # Prepare recipient
-        to = [sib_api_v3_sdk.SendSmtpEmailTo(
-            email=to_email,
-            name=to_name or to_email.split('@')[0]
-        )]
-        
-        # Prepare email
-        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-            sender=sender,
-            to=to,
-            subject=subject,
-            html_content=html_content
-        )
-        
-        # Add optional reply-to
+        # Create message
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = subject
+        msg['From'] = f"{SENDER_NAME} <{SENDER_EMAIL}>"
+        msg['To'] = to_email
         if reply_to:
-            send_smtp_email.reply_to = sib_api_v3_sdk.SendSmtpEmailReplyTo(email=reply_to)
+            msg['Reply-To'] = reply_to
         
-        # Add tags for tracking
-        if tags:
-            send_smtp_email.tags = tags
+        # Attach HTML content
+        html_part = MIMEText(html_content, 'html', 'utf-8')
+        msg.attach(html_part)
         
-        # Send email in thread to avoid blocking
-        response = await asyncio.to_thread(api_instance.send_transac_email, send_smtp_email)
+        # Send via SMTP in thread to avoid blocking
+        def send_smtp():
+            with smtplib.SMTP(BREVO_SMTP_SERVER, BREVO_SMTP_PORT) as server:
+                server.starttls()
+                # Use the SMTP key as password with any username
+                server.login(SENDER_EMAIL, BREVO_SMTP_KEY)
+                server.send_message(msg)
+                return True
         
-        logger.info(f"Brevo email sent to {to_email}: {subject} (ID: {response.message_id})")
-        return {"success": True, "message_id": response.message_id, "error": None}
+        await asyncio.to_thread(send_smtp)
         
-    except ApiException as e:
-        error_msg = f"Brevo API error: {e.status} - {e.body}"
+        logger.info(f"Brevo SMTP email sent to {to_email}: {subject}")
+        return {"success": True, "message_id": "smtp-sent", "error": None}
+        
+    except smtplib.SMTPAuthenticationError as e:
+        error_msg = f"Brevo SMTP auth error: {e}"
         logger.error(f"Failed to send email to {to_email}: {error_msg}")
         return {"success": False, "message_id": None, "error": error_msg}
     except Exception as e:
@@ -96,15 +82,12 @@ async def send_email(
 
 
 async def send_bulk_email(
-    recipients: List[dict],  # List of {"email": str, "name": str}
+    recipients: List[dict],
     subject: str,
     html_content: str,
     tags: Optional[List[str]] = None
 ) -> dict:
-    """
-    Send bulk emails using Brevo API
-    Returns: {"success": bool, "message_ids": list, "errors": list}
-    """
+    """Send bulk emails using Brevo SMTP"""
     if not is_configured():
         return {"success": False, "message_ids": [], "errors": ["Brevo not configured"]}
     
@@ -128,7 +111,6 @@ async def send_bulk_email(
     return results
 
 
-# Admin notification helper
 async def send_admin_notification(
     subject: str,
     html_content: str,
