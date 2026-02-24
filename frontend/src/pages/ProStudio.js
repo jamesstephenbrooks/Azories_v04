@@ -9,12 +9,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Slider } from '../components/ui/slider';
 import { toast } from 'sonner';
+import Cropper from 'react-easy-crop';
 import { 
   FiImage, FiUser, FiVideo, FiCamera, FiGrid, FiSave, FiDownload, 
   FiTrash2, FiPlus, FiZap, FiSliders, FiRefreshCw, FiArrowLeft, 
   FiFolder, FiUpload, FiCheck, FiEye, FiMaximize2, FiSettings, 
   FiX, FiPlay, FiPause, FiFilm, FiStar, FiAperture, FiEdit3, FiLayers,
-  FiSun, FiCloud, FiMoon
+  FiSun, FiCloud, FiMoon, FiCrop
 } from 'react-icons/fi';
 import {
   CAMERA_BODIES,
