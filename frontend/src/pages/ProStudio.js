@@ -3942,6 +3942,37 @@ export default function ProStudio() {
                   <FiFolder className="mr-2" /> Select from Gallery
                 </Button>
 
+                {/* Style Selector */}
+                <div className="mb-4">
+                  <label className="text-gray-400 text-xs mb-2 block">Art Style</label>
+                  <Select value={shotsStyle} onValueChange={setShotsStyle}>
+                    <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-800 border-gray-700">
+                      <SelectItem value="realistic" className="text-white">Realistic / Photographic</SelectItem>
+                      <SelectItem value="cinematic" className="text-white">Cinematic</SelectItem>
+                      <SelectItem value="cartoon" className="text-white">Cartoon / Animated</SelectItem>
+                      <SelectItem value="anime" className="text-white">Anime / Manga</SelectItem>
+                      <SelectItem value="pixar" className="text-white">Pixar / 3D Animation</SelectItem>
+                      <SelectItem value="watercolor" className="text-white">Watercolor / Painterly</SelectItem>
+                      <SelectItem value="comic" className="text-white">Comic Book</SelectItem>
+                      <SelectItem value="fantasy" className="text-white">Fantasy Art</SelectItem>
+                      <SelectItem value="storybook" className="text-white">Children's Storybook</SelectItem>
+                      {shotsSelectedCharacter?.style && (
+                        <SelectItem value="character" className="text-purple-300">
+                          Match Character ({shotsSelectedCharacter.style})
+                        </SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                  {shotsSelectedCharacter?.style && shotsStyle !== 'character' && (
+                    <p className="text-xs text-purple-400 mt-1">
+                      Tip: Select "Match Character" to use {shotsSelectedCharacter.name}'s style
+                    </p>
+                  )}
+                </div>
+
                 <Button 
                   onClick={generateShots}
                   disabled={isLoading || !shotsSourceImage}
