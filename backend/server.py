@@ -7310,6 +7310,61 @@ async def save_animation(request: SaveAnimationRequest, current_user: dict = Dep
 
 
 
+@api_router.get("/pro-studio/videos")
+async def get_all_user_videos(current_user: dict = Depends(get_current_user)):
+    """Get all videos/animations created by the user from all sources"""
+    user = current_user
+    all_videos = []
+    
+    try:
+        # Get videos from art_studio_gallery (type: animation)
+        art_studio_videos = await db.art_studio_gallery.find({
+            "user_id": user["id"],
+            "type": "animation"
+        }).sort("created_at", -1).to_list(100)
+        
+        for video in art_studio_videos:
+            all_videos.append({
+                "id": str(video["_id"]),
+                "video_url": video.get("image_url", ""),
+                "name": video.get("name", "Animation"),
+                "source": "art_studio",
+                "style": video.get("style", ""),
+                "created_at": video.get("created_at", datetime.now(timezone.utc)).isoformat() if video.get("created_at") else None
+            })
+        
+        # Get videos from character galleries (type: video or containing video data)
+        characters = await db.pro_studio_characters.find({"user_id": user["id"]}).to_list(100)
+        for char in characters:
+            char_videos = await db.character_gallery.find({
+                "character_id": str(char["_id"]),
+                "user_id": user["id"],
+                "$or": [
+                    {"type": "video"},
+                    {"image_url": {"$regex": "video|mp4", "$options": "i"}}
+                ]
+            }).sort("created_at", -1).to_list(50)
+            
+            for video in char_videos:
+                all_videos.append({
+                    "id": str(video["_id"]),
+                    "video_url": video.get("image_url", ""),
+                    "name": f"{char.get('name', 'Character')} - Video",
+                    "source": "character",
+                    "character_name": char.get("name", ""),
+                    "character_id": str(char["_id"]),
+                    "created_at": video.get("created_at", datetime.now(timezone.utc)).isoformat() if video.get("created_at") else None
+                })
+        
+        return {"videos": all_videos}
+    
+    except Exception as e:
+        logging.error(f"Error fetching user videos: {e}")
+        return {"videos": []}
+
+
+
+
 # ============================================================================
 # CONTENT MODERATION SYSTEM
 # ============================================================================
