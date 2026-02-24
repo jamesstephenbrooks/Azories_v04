@@ -4652,14 +4652,18 @@ export default function ProStudio() {
                             onClick={(e) => {
                               e.stopPropagation();
                               setExpandedItem({
-                                type: item.type === 'video' || item.is_animation ? 'video' : 'image',
+                                type: isVideo ? 'video' : 'image',
                                 url: item.image_url || item.url,
                                 name: item.prompt || item.name || 'Gallery item'
                               });
                             }}
-                            title="Expand"
+                            title={isVideo ? "Play Video" : "Expand"}
                           >
-                            <FiMaximize2 className="text-white w-4 h-4" />
+                            {isVideo ? (
+                              <FiPlay className="text-white w-4 h-4" />
+                            ) : (
+                              <FiMaximize2 className="text-white w-4 h-4" />
+                            )}
                           </Button>
                           <Button 
                             size="sm" 
