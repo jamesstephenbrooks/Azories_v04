@@ -1,72 +1,104 @@
 """
 Email Service for Azories
 Handles transactional emails: welcome, password reset, notifications
+Supports both Resend and Brevo providers
 """
 
 import os
 import asyncio
 import logging
-import resend
-from datetime import datetime, timedelta
 import secrets
+from datetime import datetime, timedelta
 from typing import Optional
 
 logger = logging.getLogger(__name__)
 
-# Initialize Resend
+# Check which email provider is configured
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
+BREVO_API_KEY = os.environ.get("BREVO_API_KEY")
+
+# Import providers
+resend = None
+brevo_service = None
+
+if RESEND_API_KEY:
+    import resend as resend_module
+    resend = resend_module
+    resend.api_key = RESEND_API_KEY
+    
+if BREVO_API_KEY:
+    from services.brevo_email_service import send_email as brevo_send_email, is_configured as brevo_configured
+    brevo_service = brevo_send_email
+
+# Configuration
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
+BREVO_SENDER_EMAIL = os.environ.get("BREVO_SENDER_EMAIL", "noreply@azories.com")
 APP_NAME = "Azories"
 APP_URL = os.environ.get("APP_URL", "https://azories.com")
 
-if RESEND_API_KEY:
-    resend.api_key = RESEND_API_KEY
+# Prefer Brevo if configured, fallback to Resend
+EMAIL_PROVIDER = "brevo" if BREVO_API_KEY else ("resend" if RESEND_API_KEY else None)
 
 def is_configured() -> bool:
-    """Check if email service is properly configured"""
-    return bool(RESEND_API_KEY)
+    """Check if any email service is properly configured"""
+    return bool(RESEND_API_KEY or BREVO_API_KEY)
+
+def get_provider() -> str:
+    """Get the active email provider name"""
+    return EMAIL_PROVIDER or "none"
 
 async def send_email(to_email: str, subject: str, html_content: str) -> dict:
     """
-    Send an email using Resend API
+    Send an email using configured provider (Brevo preferred, Resend fallback)
     Returns: {"success": bool, "email_id": str or None, "error": str or None}
     """
     if not is_configured():
-        logger.warning("Email service not configured - RESEND_API_KEY missing")
+        logger.warning("Email service not configured - no API keys found")
         return {"success": False, "email_id": None, "error": "Email service not configured"}
     
-    # Fallback email for unverified domains
-    FALLBACK_EMAIL = os.environ.get("FALLBACK_NOTIFY_EMAIL", "jamesstephenbrooks@outlook.com")
+    # Try Brevo first if configured
+    if BREVO_API_KEY and brevo_service:
+        logger.info(f"Sending email via Brevo to {to_email}")
+        result = await brevo_service(to_email, subject, html_content)
+        if result["success"]:
+            return {"success": True, "email_id": result.get("message_id"), "error": None, "provider": "brevo"}
+        else:
+            logger.warning(f"Brevo failed, trying Resend fallback: {result.get('error')}")
     
-    params = {
-        "from": f"{APP_NAME} <{SENDER_EMAIL}>",
-        "to": [to_email],
-        "subject": subject,
-        "html": html_content
-    }
-    
-    try:
-        # Run sync SDK in thread to keep FastAPI non-blocking
-        email = await asyncio.to_thread(resend.Emails.send, params)
-        logger.info(f"Email sent to {to_email}: {subject}")
-        return {"success": True, "email_id": email.get("id"), "error": None}
-    except Exception as e:
-        error_msg = str(e)
-        # If domain not verified, try sending to fallback email
-        if "verify a domain" in error_msg.lower() and to_email != FALLBACK_EMAIL:
-            logger.warning(f"Domain not verified for {to_email}, trying fallback: {FALLBACK_EMAIL}")
-            params["to"] = [FALLBACK_EMAIL]
-            params["subject"] = f"[For: {to_email}] {subject}"
-            try:
-                email = await asyncio.to_thread(resend.Emails.send, params)
-                logger.info(f"Email sent to fallback {FALLBACK_EMAIL}: {subject}")
-                return {"success": True, "email_id": email.get("id"), "error": None}
-            except Exception as e2:
-                logger.error(f"Failed to send to fallback email: {str(e2)}")
-                return {"success": False, "email_id": None, "error": str(e2)}
+    # Fallback to Resend
+    if RESEND_API_KEY and resend:
+        FALLBACK_EMAIL = os.environ.get("FALLBACK_NOTIFY_EMAIL", "jamesstephenbrooks@outlook.com")
         
-        logger.error(f"Failed to send email to {to_email}: {error_msg}")
-        return {"success": False, "email_id": None, "error": error_msg}
+        params = {
+            "from": f"{APP_NAME} <{SENDER_EMAIL}>",
+            "to": [to_email],
+            "subject": subject,
+            "html": html_content
+        }
+        
+        try:
+            email = await asyncio.to_thread(resend.Emails.send, params)
+            logger.info(f"Email sent via Resend to {to_email}: {subject}")
+            return {"success": True, "email_id": email.get("id"), "error": None, "provider": "resend"}
+        except Exception as e:
+            error_msg = str(e)
+            # If domain not verified, try sending to fallback email
+            if "verify a domain" in error_msg.lower() and to_email != FALLBACK_EMAIL:
+                logger.warning(f"Domain not verified for {to_email}, trying fallback: {FALLBACK_EMAIL}")
+                params["to"] = [FALLBACK_EMAIL]
+                params["subject"] = f"[For: {to_email}] {subject}"
+                try:
+                    email = await asyncio.to_thread(resend.Emails.send, params)
+                    logger.info(f"Email sent to fallback {FALLBACK_EMAIL}: {subject}")
+                    return {"success": True, "email_id": email.get("id"), "error": None, "provider": "resend"}
+                except Exception as e2:
+                    logger.error(f"Failed to send to fallback email: {str(e2)}")
+                    return {"success": False, "email_id": None, "error": str(e2)}
+            
+            logger.error(f"Failed to send email to {to_email}: {error_msg}")
+            return {"success": False, "email_id": None, "error": error_msg}
+    
+    return {"success": False, "email_id": None, "error": "No email provider available"}
 
 # Email Templates
 
