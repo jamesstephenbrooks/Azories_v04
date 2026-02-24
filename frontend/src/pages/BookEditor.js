@@ -265,8 +265,11 @@ export default function BookEditor() {
     
     try {
       // Fetch Pro Studio scenes with their galleries
+      console.log('[BookEditor] Fetching Pro Studio scenes...');
       const sceneRes = await axios.get(`${API}/pro-studio/scenes`, { headers });
+      console.log('[BookEditor] Scenes API response:', sceneRes.data);
       const scenes = sceneRes.data?.scenes || sceneRes.data || [];
+      console.log('[BookEditor] Parsed scenes count:', scenes.length);
       // Get galleries for scenes - include scenes even without gallery images
       const scenesWithGalleries = await Promise.all(
         scenes.map(async (scene) => {
@@ -289,8 +292,10 @@ export default function BookEditor() {
             galleryImages.forEach(img => {
               allImages.push({ ...img, type: img.type || 'generated' });
             });
+            console.log(`[BookEditor] Scene ${scene.name}: ${allImages.length} images`);
             return { ...scene, gallery: allImages };
-          } catch {
+          } catch (galleryErr) {
+            console.warn(`[BookEditor] Gallery fetch failed for scene ${scene.name}:`, galleryErr.message);
             // Even if gallery fails, include preview image
             const fallbackImages = [];
             if (scene.preview_url || scene.thumbnail) {
@@ -302,9 +307,10 @@ export default function BookEditor() {
       );
       // Show scenes that have any images (including preview)
       // But also include scenes without images so users can see them
+      console.log('[BookEditor] Setting proStudioScenes:', scenesWithGalleries.length, 'scenes');
       setProStudioScenes(scenesWithGalleries);
     } catch (error) {
-      console.error('Failed to load Pro Studio scenes');
+      console.error('[BookEditor] Failed to load Pro Studio scenes:', error.message, error.response?.status);
       setProStudioScenes([]);
     }
   };
