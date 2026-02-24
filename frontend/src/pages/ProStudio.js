@@ -2684,6 +2684,14 @@ export default function ProStudio() {
                           <Button 
                             size="sm" 
                             variant="ghost"
+                            onClick={(e) => { e.stopPropagation(); openCropModal(img.image_url, 'scene', viewingScene?.id); }}
+                            title="Crop Image"
+                          >
+                            <FiCrop className="text-white" size={14} />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="ghost"
                             onClick={(e) => { e.stopPropagation(); saveToArtStudioGallery(img.image_url, img.prompt, 'scene'); }}
                             title="Save to Gallery"
                           >
