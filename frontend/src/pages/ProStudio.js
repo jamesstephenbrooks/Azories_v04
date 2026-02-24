@@ -4090,7 +4090,10 @@ export default function ProStudio() {
                 </div>
 
                 <Button 
-                  onClick={generateShots}
+                  onClick={() => {
+                    if (!checkCreditsOrRedirect(9, 'Generate 9 Shots')) return;
+                    generateShots();
+                  }}
                   disabled={isLoading || !shotsSourceImage}
                   className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                   data-testid="generate-shots-btn"
