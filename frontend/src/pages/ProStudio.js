@@ -276,6 +276,27 @@ export default function ProStudio() {
     navigate('/credits');
   };
 
+  // Check if user has enough credits, redirect to credits page if not
+  const checkCreditsOrRedirect = (requiredCredits = 1, actionName = 'This feature') => {
+    if (credits < requiredCredits) {
+      toast.error(
+        <div className="flex flex-col gap-2">
+          <span className="font-medium">{actionName} requires {requiredCredits} credit{requiredCredits > 1 ? 's' : ''}</span>
+          <span className="text-sm opacity-80">You have {credits} credits remaining</span>
+          <button 
+            onClick={() => navigate('/credits')}
+            className="mt-1 px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded text-sm font-medium hover:from-purple-600 hover:to-pink-600"
+          >
+            Get Credits →
+          </button>
+        </div>,
+        { duration: 6000 }
+      );
+      return false;
+    }
+    return true;
+  };
+
   // Handle insufficient credits error with toast and buy button
   const handleCreditError = (errorDetail) => {
     toast.error(
