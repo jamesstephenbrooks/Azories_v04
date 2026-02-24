@@ -3444,32 +3444,83 @@ export default function ProStudio() {
                 {/* Use Character Image */}
                 {characters.length > 0 && (
                   <div className="mb-4">
-                    <p className="text-gray-400 text-xs mb-2">Or use a character image:</p>
+                    <p className="text-gray-400 text-xs mb-2">Or select a character:</p>
                     <div className="flex gap-2 flex-wrap">
                       {characters.slice(0, 6).map((char) => (
                         <button
                           key={char.id}
-                          onClick={() => {
-                            const img = char.thumbnail || char.reference_images?.[0];
-                            if (img) {
-                              setShotsSourceImage(img);
-                              toast.success(`Using ${char.name}'s image`);
-                            }
-                          }}
-                          className="relative group"
-                          title={`Use ${char.name}`}
+                          onClick={() => handleShotsCharacterSelect(char)}
+                          className={`relative group ${shotsSelectedCharacter?.id === char.id ? 'ring-2 ring-purple-500' : ''}`}
+                          title={`Select ${char.name}`}
                         >
                           <img 
                             src={char.thumbnail || char.reference_images?.[0]} 
                             alt={char.name}
                             className="w-12 h-12 rounded-full object-cover border-2 border-gray-600 hover:border-purple-500 transition-colors"
                           />
-                          <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <FiPlus className="text-white" size={16} />
-                          </div>
+                          {shotsSelectedCharacter?.id === char.id && (
+                            <div className="absolute -bottom-1 -right-1 bg-purple-500 rounded-full p-0.5">
+                              <FiCheck className="text-white" size={10} />
+                            </div>
+                          )}
                         </button>
                       ))}
                     </div>
+                    
+                    {/* Character Gallery - shown when a character is selected */}
+                    {shotsSelectedCharacter && (
+                      <div className="mt-3 p-3 bg-black/40 rounded-lg border border-purple-500/20">
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-purple-300 text-xs font-medium">
+                            {shotsSelectedCharacter.name}'s Gallery
+                          </p>
+                          <button 
+                            onClick={() => {
+                              setShotsSelectedCharacter(null);
+                              setShotsCharacterGallery([]);
+                            }}
+                            className="text-gray-500 hover:text-gray-300 text-xs"
+                          >
+                            <FiX size={14} />
+                          </button>
+                        </div>
+                        {shotsCharacterGallery.length > 0 ? (
+                          <div className="grid grid-cols-4 gap-2 max-h-40 overflow-y-auto">
+                            {shotsCharacterGallery.map((img, idx) => (
+                              <button
+                                key={idx}
+                                onClick={() => {
+                                  setShotsSourceImage(img.url);
+                                  toast.success(`Using ${img.label || 'selected image'}`);
+                                }}
+                                className={`relative group aspect-square ${
+                                  shotsSourceImage === img.url ? 'ring-2 ring-purple-500' : ''
+                                }`}
+                                title={img.label}
+                              >
+                                <img 
+                                  src={img.url} 
+                                  alt={img.label}
+                                  className="w-full h-full object-cover rounded-lg"
+                                />
+                                <div className="absolute inset-0 bg-black/50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                  <FiPlus className="text-white" size={16} />
+                                </div>
+                                {img.type === 'master' && (
+                                  <div className="absolute top-1 left-1 bg-purple-500 text-white text-[8px] px-1 rounded">
+                                    Master
+                                  </div>
+                                )}
+                              </button>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-gray-500 text-xs text-center py-2">
+                            Loading gallery...
+                          </p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
 
