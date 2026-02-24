@@ -5029,13 +5029,13 @@ export default function ProStudio() {
               <div className="p-4 overflow-y-auto max-h-[70vh]">
                 <Tabs defaultValue="characters" className="w-full">
                   <TabsList className="bg-gray-800/50 mb-4">
-                    <TabsTrigger value="characters" className="data-[state=active]:bg-purple-600">
+                    <TabsTrigger value="characters" className="data-[state=active]:bg-purple-600 text-gray-300">
                       <FiUser className="mr-2" /> Characters
                     </TabsTrigger>
-                    <TabsTrigger value="scenes" className="data-[state=active]:bg-purple-600">
+                    <TabsTrigger value="scenes" className="data-[state=active]:bg-purple-600 text-gray-300">
                       <FiLayers className="mr-2" /> Scenes
                     </TabsTrigger>
-                    <TabsTrigger value="gallery" className="data-[state=active]:bg-purple-600">
+                    <TabsTrigger value="gallery" className="data-[state=active]:bg-purple-600 text-gray-300">
                       <FiGrid className="mr-2" /> Gallery
                     </TabsTrigger>
                   </TabsList>
@@ -5046,6 +5046,7 @@ export default function ProStudio() {
                       <div className="text-center py-8 text-gray-500">
                         <FiUser className="w-12 h-12 mx-auto mb-3 opacity-50" />
                         <p>No characters created yet</p>
+                        <p className="text-xs mt-2">Create characters in the Characters tab first</p>
                       </div>
                     ) : (
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -5053,23 +5054,34 @@ export default function ProStudio() {
                           <button
                             key={char.id}
                             onClick={() => {
-                              setCinemaSourceImage({
-                                url: char.thumbnail || char.reference_images?.[0],
-                                name: char.name,
-                                type: 'Character'
-                              });
-                              setShowCinemaSourcePicker(false);
-                              toast.success(`Selected ${char.name}`);
+                              const imgUrl = char.thumbnail || char.reference_images?.[0];
+                              if (imgUrl) {
+                                setCinemaSourceImage({
+                                  url: imgUrl,
+                                  name: char.name,
+                                  type: 'Character'
+                                });
+                                setShowCinemaSourcePicker(false);
+                                toast.success(`Selected ${char.name}`);
+                              } else {
+                                toast.error('This character has no image');
+                              }
                             }}
                             className="group relative rounded-xl overflow-hidden border-2 border-transparent hover:border-purple-500 transition-all"
                           >
-                            <img 
-                              src={char.thumbnail || char.reference_images?.[0]} 
-                              alt={char.name}
-                              className="w-full aspect-square object-cover"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-3">
-                              <span className="text-white font-medium">{char.name}</span>
+                            {char.thumbnail || char.reference_images?.[0] ? (
+                              <img 
+                                src={char.thumbnail || char.reference_images?.[0]} 
+                                alt={char.name}
+                                className="w-full aspect-square object-cover"
+                              />
+                            ) : (
+                              <div className="w-full aspect-square bg-gray-800 flex items-center justify-center">
+                                <FiUser className="text-gray-600 w-8 h-8" />
+                              </div>
+                            )}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end justify-center pb-3">
+                              <span className="text-white font-medium text-sm">{char.name}</span>
                             </div>
                           </button>
                         ))}
