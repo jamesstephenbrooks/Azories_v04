@@ -4495,7 +4495,10 @@ export default function ProStudio() {
                   />
 
                   <Button 
-                    onClick={animateToVideo}
+                    onClick={() => {
+                      if (!checkCreditsOrRedirect(5, 'Animate with Kling AI')) return;
+                      animateToVideo();
+                    }}
                     disabled={isLoading || (
                       (videoSourceType === 'hero' && !selectedHeroFrame) ||
                       (videoSourceType === 'character' && !videoSelectedImage?.url && !videoSourceCharacter?.thumbnail) ||
