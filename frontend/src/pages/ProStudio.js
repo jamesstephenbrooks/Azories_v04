@@ -1463,7 +1463,12 @@ export default function ProStudio() {
       });
       if (response.ok) {
         const data = await response.json();
-        setVideoCharacterGallery(data.images || []);
+        // Normalize image URLs - API returns 'image_url', we use 'url' internally
+        const normalizedImages = (data.images || []).map(img => ({
+          ...img,
+          url: img.image_url || img.url // Ensure 'url' field exists
+        }));
+        setVideoCharacterGallery(normalizedImages);
       }
     } catch (error) {
       console.error('Error loading video character gallery:', error);
