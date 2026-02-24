@@ -1983,23 +1983,43 @@ export default function BookEditor() {
                               addGalleryImageToPage(mediaUrl, activeImageSlot);
                             }
                           }}
-                          className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-purple-500 transition-all"
+                          className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-purple-500 transition-all bg-muted"
                         >
                           {isAnimation ? (
-                            <video 
-                              src={mediaUrl} 
-                              className="w-full h-full object-cover"
-                              muted
-                              loop
-                              autoPlay
-                              playsInline
-                            />
+                            <>
+                              <video 
+                                src={mediaUrl} 
+                                className="w-full h-full object-cover"
+                                muted
+                                loop
+                                autoPlay
+                                playsInline
+                                onError={(e) => {
+                                  e.target.style.display = 'none';
+                                  e.target.nextElementSibling?.classList.remove('hidden');
+                                }}
+                              />
+                              <div className="hidden w-full h-full bg-muted flex flex-col items-center justify-center">
+                                <FiVideo className="w-8 h-8 text-muted-foreground/50 mb-2" />
+                                <span className="text-xs text-muted-foreground">Video unavailable</span>
+                              </div>
+                            </>
                           ) : (
-                            <img 
-                              src={mediaUrl} 
-                              alt={img.name || 'Gallery image'}
-                              className="w-full h-full object-cover"
-                            />
+                            <>
+                              <img 
+                                src={mediaUrl} 
+                                alt={img.name || 'Gallery image'}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  e.target.style.display = 'none';
+                                  e.target.nextElementSibling?.classList.remove('hidden');
+                                }}
+                              />
+                              <div className="hidden w-full h-full bg-muted flex flex-col items-center justify-center">
+                                <FiImage className="w-8 h-8 text-muted-foreground/50 mb-2" />
+                                <span className="text-xs text-muted-foreground">Image unavailable</span>
+                              </div>
+                            </>
                           )}
                           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                             <span className="text-white text-sm font-medium">
