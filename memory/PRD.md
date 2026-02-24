@@ -28,13 +28,32 @@ Build a full-featured digital book platform ("Azories") with:
 7. ✅ Admin Dashboard with dedicated login
 8. ✅ Content moderation system
 9. ✅ Unified Pro Studio Gallery
-10. ⏳ Character consistency improvements (in progress)
+10. ✅ Async task polling for long-running AI operations
+11. ✅ Character-specific gallery in Shots panel
+12. ⏳ Character consistency improvements (in progress)
 
 ## What's Been Implemented
 
-### Session: Feb 24, 2026 (Current)
+### Session: Feb 24, 2026 (Current Fork)
 
-**Pro Studio Fixes & Enhancements:**
+**Async Task Polling Architecture (MAJOR FIX):**
+1. **Fixed 520 timeout errors** for Shots and Video generation
+   - Backend now returns `task_id` immediately (HTTP 202 Accepted)
+   - New `GET /api/tasks/{task_id}` endpoint for polling status
+   - Frontend polls every 3 seconds with progress updates
+   - Shows progress percentage during generation (0-100%)
+   - In-memory `TASK_STORE` tracks task state
+
+2. **Character Gallery in Shots Panel:**
+   - Clicking a character shows their dedicated gallery
+   - Gallery includes: Master image, Reference images, Generated images
+   - Users can select any image as source for 9-shot generation
+   - "Master" badge on primary character image
+   - Close button (X) to dismiss gallery
+
+3. **Bug Fix:** Fixed `/api/my-books` -> `/api/books/my` endpoint mismatch
+
+**Previous Session (Feb 24, 2026):**
 
 1. **Shots Generation Fix**:
    - Fixed base64/URL handling for source images
@@ -42,34 +61,26 @@ Build a full-featured digital book platform ("Azories") with:
    - Added credit deduction (5 credits per generation)
 
 2. **Video Generation Fix**:
-   - Updated fal.ai API key: `9cc164f3-9355-4cc7-...`
-   - Images now uploaded to fal.ai CDN before processing (fixes download errors)
-   - Kling video generation working with new key
+   - Updated fal.ai API key
+   - Images now uploaded to fal.ai CDN before processing
+   - Kling video generation working
 
 3. **Email System Fixed**:
    - Domain `azories.com` verified in Resend
    - Sender: `notifications@azories.com`
-   - Admin emails to `books@azories.com` now working
 
-4. **LoRA Training Reset**:
-   - Reset Ariza's stuck LoRA training status
-
-5. **Character Consistency Improvements**:
+4. **Character Consistency Improvements**:
    - PuLID now receives character appearance traits automatically
    - Art style enforcement in generation prompts
    - Increased id_weight values for better face preservation
-   - Added `character_appearance` and `art_style` parameters to `generate_with_face_id`
 
-6. **UI Visibility Fixes**:
+5. **UI Visibility Fixes**:
    - Changed dark buttons to colored outlines (purple, blue, amber)
    - Better hover states on action buttons
-   - Improved contrast throughout Pro Studio
 
-7. **Unified Gallery System**:
-   - Gallery aggregates ALL Pro Studio content (characters, images, videos)
+6. **Unified Gallery System**:
+   - Gallery aggregates ALL Pro Studio content
    - Filter by: All, Images, Videos, Characters
-   - Can select from gallery for Video and Shots features
-   - "Browse from Gallery" button in Upload mode
 
 **Credit Costs:**
 - flux_generate: 1 credit
@@ -81,28 +92,23 @@ Build a full-featured digital book platform ("Azories") with:
 - lora_training: 50 credits
 - lora_generate: 2 credits
 
-### Previous Sessions
-- Admin Dashboard with search/filter for books and users
-- Publishing workflow with AI moderation
-- Email notifications on approve/reject
-- Mobile/landscape responsive improvements
-- Book reader page flip with audio narration
-
 ## Prioritized Backlog
 
 ### P0 - Critical
-- [ ] Test Shots and Video generation with real images
-- [ ] Verify character consistency with Ariza after PuLID improvements
+- [x] Fix 520 timeout errors for Shots/Video generation (DONE - async polling)
+- [x] Add character gallery in Shots panel (DONE)
+- [ ] Test full Shots generation flow with actual image output
 
 ### P1 - High Priority
+- [ ] Verify character consistency with Ariza after PuLID improvements
 - [ ] Scene-character linking for book consistency
-- [ ] Character expansion system (more poses, expressions for same character)
-- [ ] Art style lock per character (enforce across all generations)
+- [ ] Character expansion system (more poses, expressions)
+- [ ] Art style lock per character
 
 ### P2 - Medium Priority
-- [ ] Backend refactoring (server.py → routes/)
+- [ ] Backend refactoring (server.py -> routes/)
 - [ ] Frontend component breakdown (ProStudio.js is large)
-- [ ] Similarity scoring after generation
+- [ ] Investigate LoRA training getting stuck root cause
 
 ### P3 - Future
 - [ ] Series consistency (same characters across multiple books)
@@ -111,8 +117,13 @@ Build a full-featured digital book platform ("Azories") with:
 
 ## Technical Notes
 
+### Async Task Polling Architecture
+- `TASK_STORE`: In-memory dict storing task state
+- Task fields: `status` (pending/processing/completed/failed), `progress`, `result`, `error`, `user_id`
+- Cleanup: Tasks older than 1 hour are removed
+- Endpoints: `POST /api/pro-studio/generate-shots`, `POST /api/pro-studio/animate-hero`, `GET /api/tasks/{task_id}`
+
 ### fal.ai Configuration
-- Key: `9cc164f3-9355-4cc7-8286-9f0943b64d94:f9dbbe1ab5957fc43fedf5b9c59fa04f`
 - Models: PuLID (face ID), Kling (video), FLUX (images)
 - Images must be uploaded to fal.ai CDN for reliability
 
