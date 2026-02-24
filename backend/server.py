@@ -3291,6 +3291,7 @@ async def generate_shots(request: GenerateShotsRequest, current_user: dict = Dep
         
         # Handle source image - could be base64 data URI or URL
         source_image = request.source_image
+        logger.info(f"Shots: Received image, length={len(source_image)}, starts_with={source_image[:50] if source_image else 'None'}...")
         
         # If it's a URL, download and convert to base64
         if source_image.startswith('http://') or source_image.startswith('https://'):
