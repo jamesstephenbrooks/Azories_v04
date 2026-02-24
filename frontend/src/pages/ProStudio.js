@@ -301,6 +301,69 @@ export default function ProStudio() {
     }
   };
 
+  // Load a specific character's gallery images
+  const loadCharacterGallery = async (characterId) => {
+    try {
+      const token = localStorage.getItem('azories-token');
+      const response = await fetch(`${API_URL}/api/pro-studio/characters/${characterId}/gallery`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        return data.images || [];
+      }
+    } catch (error) {
+      console.error('Error loading character gallery:', error);
+    }
+    return [];
+  };
+
+  // When a character is selected in Shots, load their gallery
+  const handleShotsCharacterSelect = async (char) => {
+    setShotsSelectedCharacter(char);
+    setShotsCharacterGallery([]); // Clear while loading
+    
+    // Get all images for this character
+    const galleryImages = await loadCharacterGallery(char.id);
+    
+    // Add master thumbnail and reference images
+    const allImages = [];
+    if (char.thumbnail) {
+      allImages.push({ 
+        url: char.thumbnail, 
+        type: 'master',
+        label: 'Master Image'
+      });
+    }
+    if (char.reference_images?.length > 0) {
+      char.reference_images.forEach((img, i) => {
+        if (img !== char.thumbnail) {
+          allImages.push({ 
+            url: img, 
+            type: 'reference',
+            label: `Reference ${i + 1}`
+          });
+        }
+      });
+    }
+    // Add gallery images
+    galleryImages.forEach((img) => {
+      allImages.push({
+        url: img.image_url || img.url,
+        type: 'generated',
+        label: img.prompt?.slice(0, 30) || 'Generated'
+      });
+    });
+    
+    setShotsCharacterGallery(allImages);
+    
+    // Auto-select master image as source
+    if (char.thumbnail) {
+      setShotsSourceImage(char.thumbnail);
+      toast.success(`Selected ${char.name} - choose an image from the gallery`);
+    }
+  };
+
   // Load unified gallery - ALL Pro Studio content
   const loadGallery = async () => {
     try {
