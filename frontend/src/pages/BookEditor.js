@@ -314,6 +314,18 @@ export default function BookEditor() {
       console.error('[BookEditor] Failed to load Pro Studio scenes:', error.message, error.response?.status);
       setProStudioScenes([]);
     }
+    
+    // Fetch all user videos
+    try {
+      console.log('[BookEditor] Fetching Pro Studio videos...');
+      const videosRes = await axios.get(`${API}/pro-studio/videos`, { headers });
+      const videos = videosRes.data?.videos || [];
+      console.log('[BookEditor] Fetched videos count:', videos.length);
+      setProStudioVideos(videos);
+    } catch (error) {
+      console.error('[BookEditor] Failed to load Pro Studio videos:', error.message);
+      setProStudioVideos([]);
+    }
   };
   
   // Use image from Art Studio gallery
