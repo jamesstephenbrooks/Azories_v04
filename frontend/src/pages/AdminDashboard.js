@@ -1115,30 +1115,69 @@ export default function AdminDashboard() {
                 </div>
                 
                 {/* Page Navigation */}
-                <div className="p-4 border-t border-white/10 bg-black/30 flex items-center justify-between">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPreviewPage(p => Math.max(-1, p - 1))}
-                    disabled={currentPreviewPage === -1}
-                    className="border-white/20 text-white"
-                  >
-                    <FiChevronLeft className="w-4 h-4 mr-1" /> Previous
-                  </Button>
+                <div className="p-4 border-t border-white/10 bg-black/30">
+                  {/* Page Thumbnails */}
+                  {previewPages.length > 0 && (
+                    <div className="mb-4 flex items-center gap-2 overflow-x-auto pb-2">
+                      {/* Cover thumbnail */}
+                      <button
+                        onClick={() => setCurrentPreviewPage(-1)}
+                        className={`flex-shrink-0 w-12 h-16 rounded border-2 transition-all flex items-center justify-center text-xs ${
+                          currentPreviewPage === -1 
+                            ? 'border-purple-500 bg-purple-500/20' 
+                            : 'border-white/20 hover:border-white/40'
+                        }`}
+                      >
+                        <span className="text-white/80">Cover</span>
+                      </button>
+                      
+                      {/* Page thumbnails */}
+                      {previewPages.map((page, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setCurrentPreviewPage(idx)}
+                          className={`flex-shrink-0 w-12 h-16 rounded border-2 overflow-hidden transition-all ${
+                            currentPreviewPage === idx 
+                              ? 'border-purple-500 bg-purple-500/20' 
+                              : 'border-white/20 hover:border-white/40'
+                          }`}
+                        >
+                          {page.image_url ? (
+                            <img src={page.image_url} alt={`Page ${idx + 1}`} className="w-full h-full object-cover" />
+                          ) : (
+                            <span className="text-white/60 text-[10px]">{idx + 1}</span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                   
-                  <span className="text-white/60 text-sm">
-                    {currentPreviewPage === -1 ? 'Cover' : `Page ${currentPreviewPage + 1} of ${previewPages.length}`}
-                  </span>
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPreviewPage(p => Math.min(previewPages.length - 1, p + 1))}
-                    disabled={currentPreviewPage >= previewPages.length - 1 || previewPages.length === 0}
-                    className="border-white/20 text-white"
-                  >
-                    Next <FiChevronRight className="w-4 h-4 ml-1" />
-                  </Button>
+                  {/* Navigation buttons */}
+                  <div className="flex items-center justify-between">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPreviewPage(p => Math.max(-1, p - 1))}
+                      disabled={currentPreviewPage === -1}
+                      className="border-white/20 text-white hover:bg-white/10"
+                    >
+                      <FiChevronLeft className="w-4 h-4 mr-1" /> Previous
+                    </Button>
+                    
+                    <span className="text-white/60 text-sm">
+                      {currentPreviewPage === -1 ? 'Cover' : `Page ${currentPreviewPage + 1} of ${previewPages.length}`}
+                    </span>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPreviewPage(p => p + 1)}
+                      disabled={currentPreviewPage >= previewPages.length - 1}
+                      className="border-white/20 text-white hover:bg-white/10"
+                    >
+                      Next <FiChevronRight className="w-4 h-4 ml-1" />
+                    </Button>
+                  </div>
                 </div>
               </>
             )}
