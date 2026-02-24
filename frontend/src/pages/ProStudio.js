@@ -147,6 +147,10 @@ export default function ProStudio() {
   const [shotsSelectedCharacter, setShotsSelectedCharacter] = useState(null); // Selected character for shots
   const [shotsCharacterGallery, setShotsCharacterGallery] = useState([]); // Gallery images for selected character
   
+  // Generation Preview Modal state - shows newly generated images with save options
+  const [showGenerationPreview, setShowGenerationPreview] = useState(false);
+  const [generationPreviewData, setGenerationPreviewData] = useState(null); // { image, type, characterId, sceneId, prompt }
+  
   // Expression state
   const [selectedExpression, setSelectedExpression] = useState('neutral');
   
