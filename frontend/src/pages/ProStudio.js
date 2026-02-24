@@ -4635,7 +4635,7 @@ export default function ProStudio() {
                       )}
                       
                       {/* Video indicator */}
-                      {(item.type === 'video' || item.is_animation) && (
+                      {isVideo && (
                         <div className="absolute top-2 right-2 bg-pink-500 text-white text-xs px-1.5 py-0.5 rounded flex items-center gap-1">
                           <FiVideo className="w-3 h-3" />
                           Video
