@@ -2574,7 +2574,10 @@ export default function ProStudio() {
                               size="sm"
                               variant={selectedCharacter?.id === char.id ? "default" : "outline"}
                               onClick={() => setSelectedCharacter(char)}
-                              className={selectedCharacter?.id === char.id ? "bg-purple-600" : "border-gray-600"}
+                              className={selectedCharacter?.id === char.id 
+                                ? "bg-purple-600 text-white" 
+                                : "border-purple-400/50 text-purple-300 hover:bg-purple-500/20 hover:border-purple-400"
+                              }
                             >
                               {selectedCharacter?.id === char.id ? <FiCheck className="mr-1" /> : null}
                               {selectedCharacter?.id === char.id ? 'Selected' : 'Select'}
