@@ -4032,7 +4032,7 @@ export default function ProStudio() {
                       size="sm"
                       variant={videoSourceType === 'hero' ? 'default' : 'outline'}
                       onClick={() => setVideoSourceType('hero')}
-                      className={videoSourceType === 'hero' ? 'bg-purple-600' : 'border-gray-600'}
+                      className={videoSourceType === 'hero' ? 'bg-purple-600' : 'border-gray-600 text-gray-300'}
                     >
                       Hero Frame
                     </Button>
@@ -4040,7 +4040,7 @@ export default function ProStudio() {
                       size="sm"
                       variant={videoSourceType === 'character' ? 'default' : 'outline'}
                       onClick={() => setVideoSourceType('character')}
-                      className={videoSourceType === 'character' ? 'bg-purple-600' : 'border-gray-600'}
+                      className={videoSourceType === 'character' ? 'bg-purple-600' : 'border-gray-600 text-gray-300'}
                     >
                       Character
                     </Button>
@@ -4048,7 +4048,7 @@ export default function ProStudio() {
                       size="sm"
                       variant={videoSourceType === 'upload' ? 'default' : 'outline'}
                       onClick={() => setVideoSourceType('upload')}
-                      className={videoSourceType === 'upload' ? 'bg-purple-600' : 'border-gray-600'}
+                      className={videoSourceType === 'upload' ? 'bg-purple-600' : 'border-gray-600 text-gray-300'}
                     >
                       Upload
                     </Button>
