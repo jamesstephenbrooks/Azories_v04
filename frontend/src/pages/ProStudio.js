@@ -1190,25 +1190,30 @@ export default function ProStudio() {
           headers: { Authorization: `Bearer ${token}` }
         });
         
+        // Handle non-OK responses
         if (!response.ok) {
           // Handle gateway errors (502, 504) - retry silently
-          if (response.status === 502 || response.status === 504) {
+          if (response.status === 502 || response.status === 504 || response.status === 503) {
             consecutiveErrors++;
-            if (consecutiveErrors >= 5) {
-              throw new Error('Server temporarily unavailable. Please try again later.');
+            console.log(`Task ${taskId}: Gateway error ${response.status}, retry ${consecutiveErrors}/10`);
+            if (consecutiveErrors >= 10) {
+              throw new Error('Server temporarily unavailable. The task may still be processing - please check the Gallery later.');
             }
-            // Wait and retry
+            // Wait longer between retries for gateway errors
             await new Promise(resolve => setTimeout(resolve, 5000));
             polls++;
             continue;
           }
-          // For other errors, try to get error message
+          // For other errors, try to parse error message
           let errorMsg = `Server error: ${response.status}`;
           try {
-            const errorData = await response.json();
-            errorMsg = errorData.detail || errorMsg;
+            const text = await response.text();
+            if (text) {
+              const errorData = JSON.parse(text);
+              errorMsg = errorData.detail || errorMsg;
+            }
           } catch (e) {
-            // Ignore JSON parse errors
+            // Ignore parse errors - use default message
           }
           throw new Error(errorMsg);
         }
@@ -1216,7 +1221,17 @@ export default function ProStudio() {
         // Reset consecutive errors on success
         consecutiveErrors = 0;
         
-        const task = await response.json();
+        // Parse successful response
+        let task;
+        try {
+          task = await response.json();
+        } catch (parseErr) {
+          console.error('Failed to parse task response:', parseErr);
+          // Wait and retry
+          await new Promise(resolve => setTimeout(resolve, 3000));
+          polls++;
+          continue;
+        }
         
         if (onProgress && task.progress !== undefined) {
           onProgress(task.progress);
@@ -1229,9 +1244,18 @@ export default function ProStudio() {
         }
         
         // Still pending/processing - wait and poll again
-        await new Promise(resolve => setTimeout(resolve, 3000)); // 3 second intervals
+        await new Promise(resolve => setTimeout(resolve, 3000));
         polls++;
       } catch (err) {
+        // If it's a network error, retry
+        if (err.name === 'TypeError' && err.message.includes('fetch')) {
+          consecutiveErrors++;
+          if (consecutiveErrors < 10) {
+            await new Promise(resolve => setTimeout(resolve, 5000));
+            polls++;
+            continue;
+          }
+        }
         throw err;
       }
     }
