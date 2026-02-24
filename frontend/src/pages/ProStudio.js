@@ -1018,17 +1018,21 @@ export default function ProStudio() {
           scene: selectedScene.name,
           character: selectedCharacter?.name
         };
-        setGeneratedImages(prev => [newImage, ...prev]);
-        toast.success('Scene image generated!');
         
-        // Auto-save to scene folder
-        await saveToSceneFolder(
-          selectedScene.id,
-          data.image_url,
-          data.prompt,
-          'generated',
-          selectedCharacter?.id
-        );
+        // Show preview modal instead of auto-saving
+        setGenerationPreviewData({
+          image: newImage,
+          type: 'scene',
+          sceneId: selectedScene.id,
+          sceneName: selectedScene.name,
+          characterId: selectedCharacter?.id,
+          characterName: selectedCharacter?.name,
+          prompt: data.prompt
+        });
+        setShowGenerationPreview(true);
+        
+        // Still add to generated images for the session
+        setGeneratedImages(prev => [newImage, ...prev]);
       } else {
         const error = await response.json();
         toast.error(error.detail || 'Generation failed');
