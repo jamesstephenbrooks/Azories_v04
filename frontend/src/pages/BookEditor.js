@@ -2030,21 +2030,25 @@ export default function BookEditor() {
                   <div className="text-center py-12">
                     <FiImage className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
                     <h3 className="font-medium text-lg mb-2">
-                      {galleryTab === 'book' ? 'No images for this book' : 'No images in Art Studio'}
+                      {galleryTab === 'book' ? 'No images in this book yet' : 'No images in Art Studio'}
                     </h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Create images in the Art Studio first.
-                    </p>
-                    <Button
-                      onClick={() => {
-                        setShowGalleryPicker(false);
-                        navigate('/art-studio');
-                      }}
-                      className="rounded-full"
-                    >
-                      <FiZap className="mr-2" />
-                      Go to Art Studio
-                    </Button>
+                    {galleryTab === 'all' && (
+                      <>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Create images in the Art Studio first.
+                        </p>
+                        <Button
+                          onClick={() => {
+                            setShowGalleryPicker(false);
+                            navigate('/art-studio');
+                          }}
+                          className="rounded-full"
+                        >
+                          <FiZap className="mr-2" />
+                          Go to Art Studio
+                        </Button>
+                      </>
+                    )}
                   </div>
                 );
               }
