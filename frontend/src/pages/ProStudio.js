@@ -1265,6 +1265,12 @@ export default function ProStudio() {
 
     setIsLoading(true);
     setLoadingProgress(0);
+    setLoadingMessage(`Preparing image for ${sourceName}...`);
+    
+    // Resize image to reduce payload size (512px is good for video)
+    const resizedImage = await resizeImageForAPI(sourceImageUrl, 512);
+    sourceImageUrl = resizedImage;
+    
     setLoadingMessage(`Animating ${sourceName} with Kling AI (best face fidelity)... This takes 1-2 minutes.`);
     
     // Build enhanced prompt with style for consistency
