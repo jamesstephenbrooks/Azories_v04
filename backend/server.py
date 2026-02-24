@@ -174,6 +174,18 @@ VIP_USERS = [
     "jamesstephenbrooks@outlook.com"
 ]
 
+def check_budget_error(error_msg: str) -> bool:
+    """Check if an error is related to Emergent LLM Key budget"""
+    budget_keywords = ["budget has been exceeded", "budget exceeded", "max budget", "current cost"]
+    return any(keyword in error_msg.lower() for keyword in budget_keywords)
+
+def get_budget_error_response():
+    """Return a helpful error message for budget exceeded"""
+    return HTTPException(
+        status_code=503,
+        detail="AI service budget limit reached. To continue using AI features, please add balance to your Universal Key: Go to Profile > Universal Key > Add Balance. You can also enable auto-top-up to avoid interruptions."
+    )
+
 # Credit packages for purchase (with 50% profit margin)
 CREDIT_PACKAGES = {
     "starter": {
