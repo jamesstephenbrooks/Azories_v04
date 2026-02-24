@@ -325,7 +325,8 @@ export default function AdminDashboard() {
     setCurrentPreviewPage(-1); // Start at cover page
     try {
       console.log('[AdminDashboard] Loading preview for book:', book.id);
-      const res = await axios.get(`${API}/api/books/${book.id}/full`, getAuthHeaders());
+      // Use admin endpoint which doesn't require user auth
+      const res = await axios.get(`${API}/api/admin/books/${book.id}/full`, getAuthHeaders());
       const bookData = res.data;
       console.log('[AdminDashboard] Book data received:', bookData);
       // Update previewBook with full data
