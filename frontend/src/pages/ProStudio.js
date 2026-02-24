@@ -4455,14 +4455,29 @@ export default function ProStudio() {
                           loop 
                           onMouseEnter={(e) => e.target.play()}
                           onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.parentElement.querySelector('.fallback-placeholder')?.classList.remove('hidden');
+                          }}
                         />
                       ) : (
                         <img 
                           src={item.image_url || item.url} 
                           alt={item.prompt || 'Gallery item'} 
                           className="w-full aspect-square object-cover" 
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.parentElement.querySelector('.fallback-placeholder')?.classList.remove('hidden');
+                          }}
                         />
                       )}
+                      {/* Fallback placeholder for broken images */}
+                      <div className="fallback-placeholder hidden w-full aspect-square bg-gray-700 flex items-center justify-center">
+                        <div className="text-center text-gray-500">
+                          <FiImage className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                          <span className="text-xs">Image unavailable</span>
+                        </div>
+                      </div>
                       
                       {/* Hover Actions */}
                       <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 p-2">
