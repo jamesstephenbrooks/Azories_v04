@@ -3800,22 +3800,41 @@ async def generate_consistent_character_image(
             style_desc = character.get('style', 'illustration')
             genre_desc = character.get('genre', 'fantasy')
             
+            # Build character appearance string from stored traits
+            physical_traits = character.get('physical_traits', {})
+            appearance_parts = []
+            if physical_traits.get('hair_color'):
+                appearance_parts.append(f"{physical_traits['hair_color']} hair")
+            if physical_traits.get('hair_style'):
+                appearance_parts.append(f"{physical_traits['hair_style']}")
+            if physical_traits.get('eye_color'):
+                appearance_parts.append(f"{physical_traits['eye_color']} eyes")
+            if physical_traits.get('skin_tone'):
+                appearance_parts.append(f"{physical_traits['skin_tone']} skin")
+            if character.get('special_features'):
+                appearance_parts.append(character['special_features'])
+            
+            # Use stored description if no physical traits
+            if not appearance_parts and character.get('description'):
+                appearance_parts.append(character['description'][:200])
+            
+            character_appearance = ", ".join(appearance_parts) if appearance_parts else None
+            
             # Map id_strength to actual weight values (max is 1.0)
             id_weight_map = {
                 "high": 1.0,    # Maximum face similarity
-                "medium": 0.7,  # Balanced
-                "low": 0.4      # More artistic freedom
+                "medium": 0.8,  # Balanced (increased from 0.7)
+                "low": 0.5      # More artistic freedom (increased from 0.4)
             }
             id_weight = id_weight_map.get(id_strength, 1.0)
             
-            # Build a focused prompt for PuLID - don't include full character description
-            # as that can confuse the face preservation. Focus on action/scene.
+            # Build a focused prompt for PuLID
             if scene_context:
                 # Character in a scene
-                full_prompt = f"A person {prompt}. {scene_context} Rendered in {style_desc} art style, {genre_desc} genre, high quality, detailed"
+                full_prompt = f"A person {prompt}. {scene_context}"
             else:
                 # Character action/pose without specific scene
-                full_prompt = f"A person {prompt}, full body shot showing the scene and environment, {style_desc} art style, {genre_desc} genre, high quality, detailed, NOT a close-up portrait"
+                full_prompt = f"A person {prompt}, full body shot showing the scene and environment"
             
             result = await generate_with_face_id(
                 prompt=full_prompt,
@@ -3823,7 +3842,9 @@ async def generate_consistent_character_image(
                 id_weight=id_weight,
                 image_size=image_size,
                 seed=seed,
-                mode="fidelity" if id_strength == "high" else "style"
+                mode="fidelity" if id_strength == "high" else "style",
+                character_appearance=character_appearance,
+                art_style=f"{style_desc}, {genre_desc} genre"
             )
             return {
                 **result,
@@ -3831,7 +3852,8 @@ async def generate_consistent_character_image(
                 "character_id": character_id,
                 "style_used": style_desc,
                 "scene_id": scene_id,
-                "id_strength": id_strength
+                "id_strength": id_strength,
+                "appearance_enforced": character_appearance
             }
         
         # Method 3: Fallback to OpenAI with character description
