@@ -2264,6 +2264,67 @@ export default function BookEditor() {
                 </ScrollArea>
               )
             )}
+            
+            {/* Videos Tab */}
+            {galleryTab === 'videos' && (
+              proStudioVideos.length === 0 ? (
+                <div className="text-center py-12">
+                  <FiVideo className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
+                  <h3 className="font-medium text-lg mb-2">No Videos Yet</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Create animations in Pro Studio or Art Studio to see them here.
+                  </p>
+                  <Button
+                    onClick={() => {
+                      setShowGalleryPicker(false);
+                      navigate('/pro-studio');
+                    }}
+                    className="rounded-full bg-blue-500 hover:bg-blue-600"
+                  >
+                    <FiZap className="mr-2" />
+                    Go to Pro Studio
+                  </Button>
+                </div>
+              ) : (
+                <ScrollArea className="h-[50vh]">
+                  <div className="grid grid-cols-3 md:grid-cols-4 gap-3 p-1">
+                    {proStudioVideos.map((video) => (
+                      <button
+                        key={video.id}
+                        onClick={() => addGalleryVideoToPage(video.video_url)}
+                        className="group relative aspect-video rounded-lg overflow-hidden border-2 border-transparent hover:border-blue-500 transition-all bg-muted"
+                      >
+                        {/* Video thumbnail - show first frame or placeholder */}
+                        <video 
+                          src={video.video_url}
+                          className="w-full h-full object-cover"
+                          muted
+                          preload="metadata"
+                          onLoadedMetadata={(e) => {
+                            // Seek to first frame for thumbnail
+                            e.target.currentTime = 0.1;
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center">
+                          <FiVideo className="text-white w-8 h-8 mb-1" />
+                          <span className="text-white text-xs font-medium">Use Video</span>
+                        </div>
+                        <div className="absolute bottom-1 left-1 right-1">
+                          <span className="bg-black/70 text-white text-[10px] px-1.5 py-0.5 rounded truncate block">
+                            {video.name || 'Video'}
+                          </span>
+                        </div>
+                        {video.source === 'character' && (
+                          <span className="absolute top-1 left-1 bg-pink-500 text-white text-[10px] px-1.5 py-0.5 rounded">
+                            {video.character_name}
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </ScrollArea>
+              )
+            )}
           </div>
         </DialogContent>
       </Dialog>
