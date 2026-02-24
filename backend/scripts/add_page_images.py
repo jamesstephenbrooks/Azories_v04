@@ -6,7 +6,7 @@ import asyncio
 import aiohttp
 import json
 
-API_URL = 'https://shots-gallery-1.preview.emergentagent.com'
+API_URL = 'https://character-gen-11.preview.emergentagent.com'
 
 # List of book IDs to update with images
 BOOK_IDS = [

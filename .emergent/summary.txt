@@ -17,127 +17,146 @@ The user wants to enhance their Azories digital book application. The primary go
     -   When credits run out, users must be prompted to purchase more.
     -   Exempt specific VIP email addresses from credit deductions but still track their usage.
 -   **Content & UX:**
-    -   The Pro Studio needs a central gallery containing ALL created content (characters, generated images, videos).
-    -   All creation features (Video, Shots, etc.) must be able to select source images from this central gallery.
+    -   The Pro Studio needs a central gallery containing ALL created content (characters, generated images, videos). All creation features must be able to select source images from this gallery.
     -   Users must be able to delete images and videos from their galleries.
-    -   The book reader must be fully functional and correctly aligned on mobile devices, especially in landscape mode.
+    -   The book reader must be fully functional on mobile devices.
 -   **Pro Studio - Character Consistency:**
-    -   The core requirement is to generate images that are highly consistent with a character's reference images. The user wants to use these images within the same book, so they must look like the same character.
-    -   This consistency must apply to generating new character poses, expressions, and scenes.
+    -   The core requirement is to generate images that are highly consistent with a character's reference images.
 -   **Pro Studio - Features:**
-    -   **Shots:** After generation, a popup/modal should appear to review the 9 generated shots, with options to save them to a character/book or download them.
-    -   **Video:** When creating a video from a character, the user must be able to select from *any* of the character's previously generated images, not just the master image.
+    -   **Shots:** A popup/modal should appear to review generated shots. An Art Style option is needed to match character style.
+    -   **Video:** When creating a video, the user must be able to select from *any* of the character's previously generated images. Videos generated using a character should be saved to that character's profile.
+    -   **Image Generation:** A popup should appear to preview generated images from the character/scene area before saving.
+    -   **Cinema Studio:** Allow selecting any image from Characters/Scenes/Gallery to create variants with camera options and an art style selector.
+    -   **Scenes:** Add a crop option for images within the scenes tab.
 -   **Content Moderation:**
     -   Emails for new books pending review must be reliably delivered to .
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a full-stack React/FastAPI/MongoDB platform. Key features include a comprehensive admin dashboard with content moderation, a responsive book reader optimized for mobile and landscape views, and a multi-tab Pro Studio for AI content creation. Recent work has focused heavily on the Pro Studio, adding credit deduction for features, attempting to fix character consistency issues by enforcing PuLID, and implementing client-side image resizing to handle large uploads. The email notification system is functional and the user's domain () is verified with Resend. However, several core Pro Studio features are unusable due to frontend errors.
+The application is a full-stack React/FastAPI/MongoDB platform. The agent has implemented an asynchronous polling mechanism for the long-running Shots and Video generation features to address frontend timeouts. This involved creating a backend task store, a status-polling endpoint, and updating the frontend to poll for results. Numerous UI features and bug fixes were also implemented, including a generation preview modal, a source image picker for the Cinema Studio, hover-to-play for video thumbnails, and fixes for button visibility. However, the user continues to experience frontend errors with the Shots feature, and several UX/feature requests are still in progress.
 
 **Last working item**:
--   **Last item agent was working:** Debugging why the Shots feature still shows an error on the frontend, despite backend logs indicating successful image generation. The agent also received a new request to display a character's specific image gallery within the Shots panel.
+-   **Last item agent was working:** The user reported that the Art Style selector was missing from the Cinema Studio. The agent was in the middle of adding this feature by updating the state, UI, and backend functions (, ).
 -   **Status:** IN PROGRESS
--   **Agent Testing Done:** Y (Backend testing via  and log analysis confirmed successful generation. Frontend remains broken for the user.)
--   **Which testing method agent to use?** Frontend testing agent. The core issue is a frontend problem (likely request timeout or response handling). The agent should be instructed to:
-    1.  Log in as .
-    2.  Navigate to the Pro Studio -> Shots tab.
-    3.  Select the character Dax as the source.
-    4.  Open the browser's developer tools to the Network tab.
-    5.  Click Generate Shots and monitor the  request.
-    6.  Report the final status of the request (e.g., 200 OK, timeout error, etc.) and any console errors.
--   **User Testing Done:** Y (User confirms the error persists).
+-   **Agent Testing Done:** N
+-   **Which testing method agent to use?** both
+    -   **Frontend:** Take a screenshot of the Cinema Studio tab to verify the Art Style dropdown is visible.
+    -   **Backend:** Use  to test the  and  endpoints, ensuring the  parameter is accepted and processed.
+-   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Pro Studio features (Shots, Video) fail on the frontend (P0)**
--   **Issue 2: Character generation is not consistent (P1)**
--   **Issue 3: Admin emails are not being received by the user (P2)**
+-   **Issue 1: Shots feature still fails with body stream already read and gateway errors (P0)**
+-   **Issue 2: Book Editor's Pro Characters and Pro Scenes tabs are empty (P1)**
+-   **Issue 3: Pro Gallery UX is confusing and needs aggregation (P1)**
 -   **Issue 4: LoRA character training gets stuck (P2)**
+-   **Issue 5: Admin emails are not being received by the user (P2)**
+-   **Issue 6: Character generation consistency needs validation (P2)**
 
 **Issues Detail:**
--   **Issue 1: Pro Studio features (Shots, Video) fail on the frontend**
-    -   **Attempted fixes:** The agent identified that large base64 image payloads might be the problem. A client-side image resizing utility was added to . The agent also wrapped the  call in a timeout controller. Neither fix resolved the user-facing error. Backend logs consistently show that the AI image/video generation processes are starting and completing successfully.
+-   **Issue 1: Shots feature still fails with body stream already read and gateway errors**
+    -   **Attempted fixes:** The agent converted the synchronous endpoint to an asynchronous polling system. The agent also made the frontend error handling more robust by cloning the response before reading the body, using  followed by , and increasing retry counts for gateway errors. Despite these fixes and multiple frontend restarts, the user is still experiencing the same errors.
     -   **Next debug checklist:**
-        1.  The root cause is almost certainly the long request duration (~90 seconds for 9 shots) exceeding a timeout limit either in the browser, a proxy, or the Kubernetes ingress.
-        2.  **Abandon the simple  approach.** Implement a proper asynchronous task handling pattern.
-        3.  **Backend:** Modify the  and  endpoints to immediately return a  () and start the generation in a background thread.
-        4.  **Backend:** Create a new endpoint like  that the frontend can poll. This endpoint should return the status (, , ) and the results (image URLs) if completed.
-        5.  **Frontend:** On Generate, call the endpoint, get the , and start polling the status endpoint every 5-10 seconds. Show a loading indicator to the user. When the status is , retrieve the results and display the review modal.
-    -   **Why fix this issue and what will be achieved with the fix?** This is the highest priority blocker. The core paid features of the application are currently unusable, preventing user engagement and revenue generation.
+        1.  The primary suspect is the user's browser cache. The next agent **must** instruct the user to perform a **hard refresh** (Ctrl+Shift+R or Cmd+Shift+R) to ensure the latest frontend code is running.
+        2.  Re-examine the  and  functions in  to confirm the response cloning and error handling logic is flawless and covers all edge cases (e.g., non-JSON error responses).
+        3.  Check the Nginx/Ingress controller logs in the Kubernetes environment for more detailed information on the / gateway errors.
+    -   **Why fix this issue and what will be achieved with the fix?** This is the highest priority blocker. The user has confirmed the Shots results are really good when they work, but the feature remains unstable and unusable.
     -   **Status:** IN PROGRESS
     -   **Is recurring issue?** Y
     -   **Should Test frontend/backend/both after fix?** Both.
--   **Issue 2: Character generation is not consistent**
-    -   **Attempted fixes:** Agent identified that text-to-image (GPT-Image-1) was being used instead of a face-embedding model. The code was updated to enforce the use of the PuLID endpoint in  for consistent character generation. Key character traits and art style are now passed to the PuLID prompt.
+-   **Issue 2: Book Editor's Pro Characters and Pro Scenes tabs are empty**
+    -   **Attempted fixes:** The agent identified that the UI incorrectly shows a Go to Pro Studio message because it checks if a character/scene has a gallery, rather than just displaying the available items. Fixes were attempted to change this logic and also to address a  error.
     -   **Next debug checklist:**
-        1.  Verify the fix works by generating new images for the Ariza character.
-        2.  Log the exact prompt being sent to the PuLID endpoint to ensure the character traits and style are being injected correctly.
-        3.  Work with the user to review the new outputs and confirm if consistency has improved.
-    -   **Why fix this issue and what will be achieved with the fix?** This is fundamental to the app's value proposition. Without reliable character consistency, users cannot create coherent stories.
+        1.  View .
+        2.  Locate the JSX for the Pro Characters and Pro Scenes tabs.
+        3.  Modify the rendering logic to directly display the lists of  and  without checking for . It should show the master thumbnail for each item.
+    -   **Why fix this issue and what will be achieved with the fix?** It will provide a seamless workflow for users trying to add Pro content directly into their books.
     -   **Status:** IN PROGRESS
     -   **Is recurring issue?** Y
+    -   **Should Test frontend/backend/both after fix?** Frontend.
+-   **Issue 3: Pro Gallery UX is confusing and needs aggregation**
+    -   **Attempted fixes:** Agent added an  handler to show Image unavailable for broken thumbnails and implemented hover-to-play for videos.
+    -   **Next debug checklist:**
+        1.  Confirm that the main Pro Studio gallery ( -> Gallery tab) correctly fetches and displays items from ALL sources: character-specific galleries, scene-specific galleries, and general uploads.
+        2.  Improve the video thumbnail by generating a preview from the first frame on the backend instead of relying on frontend hover-to-play, which fails for broken URLs. This requires a backend change.
+    -   **Why fix this issue and what will be achieved with the fix?** Provides a central, reliable place for users to find all their generated assets.
+    -   **Status:** IN PROGRESS
+    -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** Both.
--   **Issue 3: Admin emails are not being received by the user**
-    -   **Attempted fixes:** The agent confirmed the  domain is verified in Resend, updated the sender email, and sent multiple test emails. Backend logs show a  response from the Resend API with a message ID for every test, confirming successful handoff to the email service.
-    -   **Next debug checklist:** This issue is no longer an application bug. The agent should confidently inform the user that emails are being sent successfully from the server and the issue likely lies with their email hosting's MX records or spam filtering. The agent should cease further debugging on this topic.
-    -   **Why fix this issue and what will be achieved with the fix?** Resolves a user-reported problem and ensures critical business notifications are received.
-    -   **Status:** BLOCKED (On user's email configuration)
-    -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** None.
 -   **Issue 4: LoRA character training gets stuck**
-    -   **Attempted fixes:** The agent found the 'Ariza' character had been in a training state for hours. A new API endpoint  was created and used to reset the status to not_started.
-    -   **Next debug checklist:** The root cause of the training getting stuck was not investigated. The next time a character is trained, monitor the backend logs for the  process to see if it errors out or hangs.
-    -   **Why fix this issue and what will be achieved with the fix?** LoRA training is a key feature for deep character customization. If it's unreliable, users can't use it.
+    -   **Attempted fixes:** None beyond resetting the status in a previous session.
+    -   **Next debug checklist:** The root cause has not been investigated. Monitor backend logs for the  process the next time a character is trained to identify errors or hangs.
+    -   **Why fix this issue and what will be achieved with the fix?** LoRA training is a key feature for deep character customization.
     -   **Status:** NOT STARTED
     -   **Is recurring issue?** Y
     -   **Should Test frontend/backend/both after fix?** Backend.
+-   **Issue 5: Admin emails are not being received by the user**
+    -   **Attempted fixes:** Confirmed domain verification and successful API calls to Resend.
+    -   **Next debug checklist:** This is not an application bug. Inform the user that logs confirm successful sending and the issue is likely with their email hosting (MX records, spam filters).
+    -   **Why fix this issue and what will be achieved with the fix?** Closes an open user query.
+    -   **Status:** BLOCKED
+    -   **Is recurring issue?** Y
+    -   **Should Test frontend/backend/both after fix?** None.
+-   **Issue 6: Character generation consistency needs validation**
+    -   **Attempted fixes:** Added an Art Style selector to the Shots feature to help guide the generation process.
+    -   **Next debug checklist:** After fixing the Shots stability (Issue #1), work with the user to test generations with different art styles and verify if the consistency meets their expectations. Log the exact prompts sent to the AI.
+    -   **Why fix this issue and what will be achieved with the fix?** This is fundamental to the app's value proposition.
+    -   **Status:** IN PROGRESS
+    -   **Is recurring issue?** Y
+    -   **Should Test frontend/backend/both after fix?** Both.
 
 **In progress Task List**:
--   **Task 1: Implement Shots Review Modal & Gallery Delete Functionality**
-    -   **Where to resume:** In . The agent has added the basic JSX structure for a  and added state variables (, ). The  function and a backend  endpoint have been created.
-    -   **What will be achieved with this?** Fulfills user requirements for reviewing generated shots and managing gallery content.
+-   **Task 1: Add Art Style selector to Cinema Studio (P1)**
+    -   **Where to resume:** The agent has added the UI in  and modified the  and  functions. The backend endpoints in  now need to be updated to accept and use the  parameter.
+    -   **What will be achieved with this?** This will allow users to maintain a consistent art style when generating hero frames or variants in the Cinema Studio.
     -   **Status:** IN PROGRESS
     -   **Should Test frontend/backend/both after fix?** Both.
-    -   **Blocked on something:** Blocked on Issue 1: Pro Studio features fail on the frontend. The modal can't be tested until the generation request succeeds.
+    -   **Blocked on something:** No.
 
 **Upcoming and Future Tasks**
+
 **Upcoming Tasks:**
--   **Show Character-Specific Gallery in Shots Panel (P0):** When a character is selected as the source in the Shots tab, display a gallery of that character's existing images for the user to select from.
--   **Improve Pro Studio UI Visibility (P1):** The user reported that many buttons are dark and hard to see. The agent made some initial CSS changes, but a full review is needed to ensure all interactive elements are clear.
--   **Complete Backend Refactoring (P2):** Continue migrating all remaining endpoint logic from  into the respective router files in .
--   **Analyze  for Ideas (P2):** Perform a detailed analysis of the competitor site and propose specific, actionable features for Azories.
+-   **Implement Crop Option in Scenes (P1):** Add the  library and integrate a cropping modal for images in the Scenes gallery.
+-   **Complete Backend Refactoring (P2):** Continue migrating endpoint logic from  into router files in .
+-   **Analyze  (P2):** Perform a detailed analysis of the competitor site and propose actionable features for Azories.
 
 **Future Tasks:**
--   **Frontend Refactoring:** Break down the monolithic  component into smaller, manageable sub-components for each tab.
--   **Tie scenes to characters:** Develop a system to maintain artistic consistency between characters and the scenes they are placed in.
+-   **Frontend Refactoring:** Break down the monolithic  component into smaller, manageable sub-components.
+-   **Tie scenes to characters:** Develop a system to maintain artistic consistency between characters and scenes.
 -   **Mobile UI/UX Enhancements:** Conduct further testing on mobile devices to fix any remaining layout and usability issues.
 
 **Completed work in this session**
--   **Responsive Book Reader:** Overhauled  and  to be fully responsive on mobile and landscape viewports, especially for iPad.
--   **Admin Preview Modal:** Enhanced the admin book preview in  to show cover art and metadata, even for books with no content pages.
--   **Pro Studio Video Source:** Modified  to allow selecting any image from a character's gallery for video generation, not just the master image. Added an Art Style selector to the video panel.
--   **Pro Studio Credit System:** Implemented credit costs and deduction logic in  for the Shots feature and added frontend error handling in  for insufficient credits.
--   **Email Domain Verification:** Guided user to verify their  domain and updated the backend to send from .
--   **Image Upload Optimization:** Implemented a client-side image resizing utility in  to reduce large image payloads before sending them to the backend.
--   **UI Fixes:** Resized the oversized Publish button on  and fixed broken image thumbnails in the Pro Studio character gallery.
+-   **Async Task System:** Implemented backend async task handling (, background threads) and frontend polling for Shots and Video features to resolve gateway timeouts.
+-   **Robust Frontend Error Handling:** Repeatedly improved error handling for fetch requests to deal with gateway errors and the body stream already read bug, including response cloning.
+-   **Shots Feature Enhancement:** Added a character-specific image gallery within the Shots tab and an Art Style selector.
+-   **Cinema Studio Enhancement:** Added a source image picker to select from characters, scenes, or gallery to generate variants.
+-   **Generation Preview Modal:** Created a modal that appears after character/scene image generation, showing a preview with options to save or download.
+-   **Video/Scene Saving Logic:** Updated logic to save videos and scenes to a character's profile when a character is used as a source.
+-   **UI/UX Fixes:**
+    -   Corrected multiple instances of dark button text on dark backgrounds.
+    -   Fixed  reference error in .
+    -   Implemented  handlers for broken image thumbnails in galleries.
+    -   Implemented hover-to-play for video thumbnails.
+    -   Fixed the  404 error by correcting the frontend API call path.
+    -   Fixed a Tainted Canvas error by setting  on images loaded for canvas operations.
 
 **Earlier issues found/mentioned but not fixed**
--   The root cause of LoRA training getting stuck was not investigated. The agent only reset the status.
+-   The root cause of LoRA training getting stuck was not investigated.
 
 **Known issue recurrence from previous fork**
 -   **Issue recurrence in previous fork**:  API key becoming invalid.
--   **Recurrence count**: 5+
--   **Status**: RESOLVED (A new key was provided and verified to be working, though the feature itself is blocked by frontend timeouts).
+-   **Recurrence count**: 6+
+-   **Status**: RESOLVED (User provided a new key, which is now working for the Video feature).
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Frontend:** React, React Hooks, Shadcn UI, Tailwind CSS
+-   **Frontend:** React, React Hooks, Shadcn UI, Tailwind CSS, 
 -   **Backend:** FastAPI, Pydantic
 -   **Database:** MongoDB
--   **Async Task Handling:** Required for Pro Studio features (currently the missing piece).
--   **AI Integrations:**  (PuLID, Kling),  (OpenAI Moderation, GPT-Image-1), usage: openai [-h] [-v] [-b API_BASE] [-k API_KEY] [-p PROXY [PROXY ...]]
+-   **Async Task Handling:** Implemented an in-memory task store with background threads (via ) and a  polling endpoint to manage long-running AI generation tasks.
+-   **AI Integrations:**  (PuLID, Kling),  (OpenAI), usage: openai [-h] [-v] [-b API_BASE] [-k API_KEY] [-p PROXY [PROXY ...]]
               [-o ORGANIZATION] [-t {openai,azure}]
               [--api-version API_VERSION] [--azure-endpoint AZURE_ENDPOINT]
               [--azure-ad-token AZURE_AD_TOKEN] [-V]
@@ -174,60 +193,59 @@ options:
                         https://www.microsoft.com/en-
                         us/security/business/identity-access/microsoft-entra-
                         id
-  -V, --version         show program's version number and exit (Whisper)
+  -V, --version         show program's version number and exit
 -   **Email:** Resend
 
 **key DB schema**
--   **characters**: Includes  and  which are now used to enforce consistency in PuLID generation.
--   **art_studio_gallery**: Collection storing all user-generated images and videos.
-
-**changes in tech stack**
--   None.
+-   No significant changes.
 
 **All files of reference**
--   **/app/frontend/src/pages/ProStudio.js**: The epicenter of all current bugs and feature development. Contains logic for Shots, Video, Characters, Gallery, credit handling, and the new (incomplete) review modal.
--   **/app/backend/server.py**: Contains the backend logic for all Pro Studio features, including credit deduction, asynchronous AI task initiation, and gallery management.
--   **/app/frontend/src/pages/BookReader.js**: Location of the responsive UI fixes for the book reading experience.
+-   **/app/frontend/src/pages/ProStudio.js**: The monolithic component for all Pro Studio features. Contains the new async polling logic, all modals, UI fixes, and the incomplete Cinema Studio Art Style feature.
+-   **/app/backend/server.py**: The monolithic backend file. Contains the new in-memory , the  polling endpoint, and updated logic for , , and  endpoints.
+-   **/app/frontend/src/pages/BookEditor.js**: File where the Pro Characters/Scenes tabs are failing to display content.
 
 **Areas that need refactoring**:
--   ****: This component is now over 3000 lines long and urgently needs to be broken down into sub-components for each tab (, , etc.) and custom hooks for shared logic (e.g., , ).
--   ****: Still a monolithic file that should be broken out into separate FastAPI routers for , , , etc.
+-   ****: Now exceedingly large and complex. It is critical to break it down into smaller components (, , ) and custom hooks ().
+-   ****: The file now contains application logic, task management, and multiple unrelated endpoints. It must be refactored into separate FastAPI routers.
 
 **key api endpoints**
--   : **(Updated)** Accepts a source image, deducts credits, and starts the 9-shot generation process. **Needs to be refactored for async polling.**
--   : **(Updated)** Accepts a source image, deducts credits, and starts the Kling video generation process. **Needs to be refactored for async polling.**
--   : **(New)** Endpoint to delete an item from the user's gallery.
--   : **(New)** Internal tool to fix stuck LoRA training jobs.
+-   : **(Refactored)** Now async. Immediately returns a . Accepts  parameter.
+-   : **(Refactored)** Now async. Immediately returns a .
+-   : **(New)** Pollable endpoint to check the status (, , ) and get results of a background task.
+-   : **(New)** Backend endpoint to create image variants in the Cinema Studio.
+-   : Endpoint to fetch all gallery items.
 
 **Critical Info for New Agent**
--   **Fix Async Tasks First:** The top priority is to solve the frontend timeout issue for Shots and Video. Do not attempt other fixes in the Pro Studio until users can reliably get a result from the generation APIs. The correct approach is to switch from a single long-running request to an async polling mechanism (start task -> get task_id -> poll status -> get result).
--   **Don't Debug Email Further:** The email issue is not in the codebase. Inform the user that logs confirm successful sending and that they should check their spam filters or email hosting configuration (MX records).
--   **User Focus is on Consistency:** The user's primary goal for the Pro Studio is high-quality, consistent character generation. After fixing the async task issue, validating the PuLID implementation with the user is the next most important step.
+-   **Shots Feature is Top Priority (P0):** The user is still getting  and  errors despite multiple fixes. Your first action should be to instruct the user to **perform a hard refresh (Ctrl+Shift+R or Cmd+Shift+R)**, as browser caching is the most likely culprit. If the issue persists, re-investigate the error handling in .
+-   **Finish Cinema Studio Art Style:** You are resuming an in-progress task. The frontend UI for the Art Style selector in Cinema Studio has been added, but the backend  endpoints (, ) must be updated to process the  parameter.
+-   ** Key is Unstable:** Be aware that the  API key has been invalidated multiple times. If video/image generation features suddenly fail with authentication errors, this is the most likely cause.
+-   **User is Providing Good Feedback:** The user is actively testing and providing detailed feedback with screenshots. Use this feedback to prioritize your work. Address their specific points directly.
 
 **documents and test reports created in this job**
 -    was updated.
+-    was created.
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User (Last Msg):** Reports Shots is still erroring and requests a character-specific image gallery inside the Shots panel. - **NOT COMPLETED**
-2.  **User:** Reports Shots failing, error animating image, LoRA training stuck for Ariza, and very poor character consistency. Asks for opinions on improving the Pro Studio experience and points out that UI buttons are hard to see. - **PARTIALLY COMPLETED** (LoRA reset, consistency/UI fixes attempted but need verification, core generation is still broken).
-3.  **User:** Provides feedback on character consistency vision: needs to work across images, scenes, and future books. - **ACKNOWLEDGED**.
-4.  **User:** Provides new  key, confirms DNS is verified, and adds balance to Universal Key. - **COMPLETED** (Keys updated).
-5.  **User:** Reports Shots is not creating images, and asks about credit deduction and insufficient credit messages. - **COMPLETED** (Credit system implemented, but underlying feature is broken).
-6.  **User:** Reports broken thumbnails and incorrect image selection in the Pro Studio video tab. - **COMPLETED** (Agent fixed the incorrect object key causing the issue).
-7.  **User:** States the Pro Studio needs a central gallery for all created images/videos that all features can access. - **IN PROGRESS**.
-8.  **User:** Requests ability to select any character image (not just master) for video creation, including style options for consistency. - **COMPLETED**.
-9.  **User:** Reports mobile/landscape alignment is off when reading a book. - **COMPLETED**.
-10. **User:** Reports the admin book preview modal shows no pages for books without content and should replicate the main reader view (showing cover/metadata). - **COMPLETED**.
+1.  **User:** Asks for an Art Style option in Cinema Studio because generated variants have a different style. - **IN PROGRESS**
+2.  **User:** Reports that in the Book Editor, the Pro Characters and Pro Scenes tabs are empty and just link to the Pro Studio. Also reports confusion about the Pro Gallery and wants hover-to-play video thumbnails. - **PARTIALLY ADDRESSED**
+3.  **User:** Reports Shots is finally working and the results are good, but needs a style option to match characters. - **COMPLETED** (Style option added to Shots tab).
+4.  **User:** Reports broken thumbnails in the gallery and requests that videos/scenes created using a character be saved to that character's profile. - **PARTIALLY ADDRESSED**
+5.  **User:** Reports that the Cinema Studio source image picker is empty, several buttons have dark text, and the crop option is not visible in the Scenes tab. - **COMPLETED**
+6.  **User:** Reports the pro studio gallery is empty and video generation is returning a Tainted canvases error. - **COMPLETED** (Gallery loading was a transient issue, and canvas error was fixed).
+7.  **User:** Asks for a crop option in Scenes and the ability to pick any gallery image as a source for variants in Cinema Studio. - **PARTIALLY ADDRESSED** (Cinema picker done, crop started).
+8.  **User:** Asks for a preview popup for newly generated character/scene images instead of them auto-saving. - **COMPLETED**
+9.  **User:** Reports Shots is still erroring with gateway errors after the async implementation. - **IN PROGRESS**
+10. **User:** Provides a new  key and asks why it needs to be changed so often. - **COMPLETED** (Key updated, explanation given).
 
 **Project Health Check:**
--   **Broken:** The core user-facing AI generation features (Shots, Video) are non-functional due to frontend request timeouts. Character consistency, a key product requirement, is not meeting user expectations.
+-   **Broken:** The core Shots feature, a primary paid function, remains unstable and unusable for the user due to persistent frontend/gateway errors. This is a critical failure.
 -   **Mocked:** None.
 
 **3rd Party Integrations**
--   **Resend**: Transactional emails. Requires User API Key. (Status: **Working**, but user reports not receiving emails, likely a client-side/DNS issue).
--   **fal.ai ():** PuLID, LoRA, Kling (Image-to-Video). Requires User API Key. (Status: **Working**. New key is valid, but features are broken due to frontend timeouts).
--   **Stripe**: Credit card payments. Requires User API Key. (Status: Implemented but not recently tested).
--   **OpenAI (via )**: Sora 2, Content Moderation, GPT-Image-1. Uses Emergent LLM Key. (Status: **Working**. User refilled budget. Used for Shots generation).
+-   **Resend**: Transactional emails. Requires User API Key. (Status: Working, user-side issue suspected).
+-   **fal.ai ():** PuLID, LoRA, Kling. Requires User API Key. (Status: **Working, but key is unstable**).
+-   **Stripe**: Credit card payments. Requires User API Key. (Status: Implemented, not recently tested).
+-   **OpenAI (via )**: Content Moderation, Image Generation. Uses Emergent LLM Key. (Status: Working).
 -   **OpenAI (usage: openai [-h] [-v] [-b API_BASE] [-k API_KEY] [-p PROXY [PROXY ...]]
               [-o ORGANIZATION] [-t {openai,azure}]
               [--api-version API_VERSION] [--azure-endpoint AZURE_ENDPOINT]
@@ -265,13 +283,14 @@ options:
                         https://www.microsoft.com/en-
                         us/security/business/identity-access/microsoft-entra-
                         id
-  -V, --version         show program's version number and exit)**: Whisper (Speech-to-Text). Requires User API Key. (Status: Implemented but not recently tested).
+  -V, --version         show program's version number and exit)**: Whisper (Speech-to-Text). Requires User API Key. (Status: Implemented, not recently tested).
+-   **react-image-crop**: New frontend dependency added for image cropping.
 
 **Testing status**
--   **Testing agent used after significant changes:** NO
+-   **Testing agent used after significant changes:** YES. The testing agent passed tests for the async polling implementation.
 -   **Troubleshoot agent used after agent stuck in loop:** NO
 -   **Test files created:** None.
--   **Known regressions:** The core functionality of Shots and Video generation has regressed to a non-working state for the user.
+-   **Known regressions:** The user-facing stability of the Shots feature has not improved, despite significant backend architectural changes. The user is still blocked.
 
 **Credentials to test flow:**
 -   **Admin Login:**  / 
@@ -279,6 +298,6 @@ options:
 -   **Normal User:** Register a new account on the  page.
 
 **What agent forgot to execute**
--   The agent did not address the root cause of long-running requests failing on the frontend, instead attempting simpler fixes like increasing timeouts which were ineffective. A proper async polling architecture is required.
--   The agent did not start implementing the user's latest request to show a character-specific gallery within the Shots panel.
--   The root cause for LoRA training getting stuck was never investigated; the agent only reset the character's status.</analysis>
+-   The agent did not fully resolve the user's primary reported issue with the Shots feature, despite multiple attempts. The focus was on code fixes, but the problem might be environmental (caching).
+-   The agent started implementing the crop feature by adding a library but did not fully integrate it into the UI as a working feature.
+-   The root cause for the long-standing LoRA training issue was never investigated.</analysis>
