@@ -3762,6 +3762,32 @@ export default function ProStudio() {
                   )}
                 </div>
 
+                {/* Art Style Selector */}
+                <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4">
+                  <h3 className="text-white font-medium mb-3 flex items-center gap-2">
+                    <FiSliders className="text-purple-400" /> Art Style
+                  </h3>
+                  <Select value={cinemaArtStyle} onValueChange={setCinemaArtStyle}>
+                    <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-800 border-gray-700">
+                      <SelectItem value="cinematic" className="text-white">Cinematic (Default)</SelectItem>
+                      <SelectItem value="realistic" className="text-white">Realistic / Photographic</SelectItem>
+                      <SelectItem value="cartoon" className="text-white">Cartoon / Animated</SelectItem>
+                      <SelectItem value="anime" className="text-white">Anime / Manga</SelectItem>
+                      <SelectItem value="pixar" className="text-white">Pixar / 3D Animation</SelectItem>
+                      <SelectItem value="watercolor" className="text-white">Watercolor / Painterly</SelectItem>
+                      <SelectItem value="comic" className="text-white">Comic Book</SelectItem>
+                      <SelectItem value="fantasy" className="text-white">Fantasy Art</SelectItem>
+                      <SelectItem value="storybook" className="text-white">Children's Storybook</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-gray-500 mt-2">
+                    This style will be applied to all generated images
+                  </p>
+                </div>
+
                 <div className="bg-black/40 rounded-xl border border-purple-500/20 p-6">
                   <h2 className="text-xl font-bold text-white mb-4">
                     {cinemaSourceImage ? 'Generate Variant' : 'Generate Hero Frame'}
