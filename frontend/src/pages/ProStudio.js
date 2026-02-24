@@ -2460,8 +2460,16 @@ export default function ProStudio() {
                           alt={img.prompt || 'Generated'}
                           className="w-full aspect-square object-cover rounded-lg hover:ring-2 hover:ring-purple-500 transition-all"
                         />
-                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-                          <FiMaximize2 className="text-white" size={24} />
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
+                          <Button 
+                            size="sm" 
+                            variant="ghost"
+                            onClick={(e) => { e.stopPropagation(); openCropModal(img.image_url, 'character', viewingCharacter?.id); }}
+                            title="Crop Image"
+                          >
+                            <FiCrop className="text-white" size={14} />
+                          </Button>
+                          <FiMaximize2 className="text-white" size={18} />
                         </div>
                         {img.type && (
                           <span className="absolute bottom-1 left-1 text-xs bg-purple-500/80 text-white px-1.5 py-0.5 rounded">
