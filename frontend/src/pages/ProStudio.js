@@ -1339,22 +1339,17 @@ export default function ProStudio() {
     const resizedImage = await resizeImageForAPI(sourceImageUrl, 512);
     sourceImageUrl = resizedImage;
     
-    setLoadingMessage(`Animating ${sourceName} with Kling AI (best face fidelity)... This takes 1-2 minutes.`);
-    
     // Build enhanced prompt with style for consistency
     let enhancedPrompt = videoPrompt || 'subtle cinematic movement, breathing, natural motion';
     if (videoArtStyle && videoArtStyle !== 'none') {
       enhancedPrompt = `${videoArtStyle} style, ${enhancedPrompt}`;
     }
-    
-    // Simulate progress for UX
-    const progressInterval = setInterval(() => {
-      setLoadingProgress(prev => Math.min(prev + 2, 90));
-    }, 2000);
 
     try {
       const token = localStorage.getItem('azories-token');
-      const response = await fetch(`${API_URL}/api/pro-studio/animate-hero`, {
+      
+      // Start the video generation task (returns immediately with task_id)
+      const startResponse = await fetch(`${API_URL}/api/pro-studio/animate-hero`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1369,40 +1364,59 @@ export default function ProStudio() {
         })
       });
 
-      clearInterval(progressInterval);
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.video_url) {
-          const newVideo = {
-            id: Date.now(),
-            url: data.video_url,
-            sourceImage: sourceImageUrl,
-            model: 'kling'
-          };
-          setGeneratedVideos(prev => [newVideo, ...prev]);
-          setLoadingProgress(100);
-          toast.success('Video generated with high face fidelity!');
-          loadCredits(); // Refresh credits
-        } else {
-          toast.error('No video URL returned');
-        }
-      } else {
-        const error = await response.json();
-        if (response.status === 402) {
+      if (!startResponse.ok) {
+        const error = await startResponse.json();
+        if (startResponse.status === 402) {
           handleCreditError(error.detail);
-        } else {
-          toast.error(error.detail || 'Animation failed');
+          return;
         }
+        throw new Error(error.detail || 'Failed to start video generation');
       }
+      
+      const { task_id } = await startResponse.json();
+      
+      if (!task_id) {
+        throw new Error('No task ID returned from server');
+      }
+      
+      setLoadingMessage(`Animating ${sourceName} with Kling AI... This may take 1-2 minutes.`);
+      
+      // Poll for completion
+      const result = await pollTaskStatus(task_id, (progress) => {
+        setLoadingProgress(progress);
+        if (progress < 20) {
+          setLoadingMessage('Initializing video generation...');
+        } else if (progress < 50) {
+          setLoadingMessage('Processing image with Kling AI...');
+        } else if (progress < 80) {
+          setLoadingMessage('Rendering video frames...');
+        } else {
+          setLoadingMessage('Finalizing video... almost done!');
+        }
+      });
+      
+      if (result && result.video_url) {
+        const newVideo = {
+          id: Date.now(),
+          url: result.video_url,
+          sourceImage: sourceImageUrl,
+          model: 'kling'
+        };
+        setGeneratedVideos(prev => [newVideo, ...prev]);
+        setLoadingProgress(100);
+        toast.success('Video generated with high face fidelity!');
+      } else {
+        toast.error('No video URL returned');
+      }
+      
+      loadCredits();
     } catch (error) {
-      toast.error('Error animating image');
-      console.error(error);
+      console.error('Video generation error:', error);
+      toast.error(error.message || 'Error animating image');
     } finally {
-      clearInterval(progressInterval);
       setIsLoading(false);
       setLoadingProgress(0);
-      loadCredits(); // Always refresh credits
+      loadCredits();
     }
   };
 
