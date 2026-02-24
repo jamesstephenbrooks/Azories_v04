@@ -2032,24 +2032,20 @@ export default function BookEditor() {
                           className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-purple-500 transition-all bg-muted"
                         >
                           {isAnimation ? (
-                            <>
-                              <video 
-                                src={mediaUrl} 
-                                className="w-full h-full object-cover"
-                                muted
-                                loop
-                                autoPlay
-                                playsInline
-                                onError={(e) => {
-                                  e.target.style.display = 'none';
-                                  e.target.nextElementSibling?.classList.remove('hidden');
-                                }}
-                              />
-                              <div className="hidden w-full h-full bg-muted flex flex-col items-center justify-center">
-                                <FiVideo className="w-8 h-8 text-muted-foreground/50 mb-2" />
-                                <span className="text-xs text-muted-foreground">Video unavailable</span>
-                              </div>
-                            </>
+                            <video 
+                              src={mediaUrl} 
+                              className="w-full h-full object-cover"
+                              muted
+                              loop
+                              playsInline
+                              preload="metadata"
+                              onMouseEnter={(e) => e.target.play().catch(() => {})}
+                              onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
+                              onError={(e) => {
+                                // Try to show first frame or use poster
+                                e.target.poster = mediaUrl.replace('.mp4', '_thumb.jpg');
+                              }}
+                            />
                           ) : (
                             <>
                               <img 
