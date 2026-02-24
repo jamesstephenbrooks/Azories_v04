@@ -93,6 +93,18 @@ security = HTTPBearer(auto_error=False)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+# In-memory task store for long-running operations
+# Maps task_id -> {"status": "pending"|"completed"|"failed", "result": any, "error": str, "created_at": datetime}
+import asyncio
+TASK_STORE: Dict[str, dict] = {}
+
+async def cleanup_old_tasks():
+    """Remove tasks older than 1 hour"""
+    cutoff = datetime.now(timezone.utc) - timedelta(hours=1)
+    expired = [tid for tid, task in TASK_STORE.items() if task.get("created_at", datetime.now(timezone.utc)) < cutoff]
+    for tid in expired:
+        del TASK_STORE[tid]
+
 # Age ratings
 AGE_RATINGS = ["All Ages", "5+", "8+", "12+", "16+"]
 
