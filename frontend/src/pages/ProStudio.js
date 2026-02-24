@@ -1864,6 +1864,14 @@ export default function ProStudio() {
 
   // Delete from gallery
   const deleteFromGallery = async (itemId, source = 'art-studio') => {
+    // Handle character master images specially
+    if (source === 'character' && itemId.startsWith('char-')) {
+      const charId = itemId.replace('char-', '');
+      if (!confirm('This will delete the entire character and all its generated images. Are you sure?')) return;
+      await deleteCharacter(charId);
+      return;
+    }
+    
     if (!confirm('Are you sure you want to delete this item?')) return;
     
     try {
@@ -1873,6 +1881,8 @@ export default function ProStudio() {
       // Use appropriate endpoint based on source
       if (source === 'character-gallery') {
         endpoint = `${API_URL}/api/pro-studio/character-gallery/${itemId}`;
+      } else if (source === 'art-studio-video' || source === 'character-video') {
+        endpoint = `${API_URL}/api/art-studio/gallery/${itemId}`;
       }
       
       const response = await fetch(endpoint, {
