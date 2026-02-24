@@ -3289,12 +3289,13 @@ export default function ProStudio() {
 
                   {/* Character Source */}
                   {videoSourceType === 'character' && (
-                    <div>
+                    <div className="space-y-3">
+                      {/* Character Selector */}
                       <Select 
                         value={videoSourceCharacter?.id || ''} 
-                        onValueChange={(v) => setVideoSourceCharacter(characters.find(c => c.id === v))}
+                        onValueChange={handleVideoCharacterSelect}
                       >
-                        <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white mb-3">
+                        <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
                           <SelectValue placeholder="Select a character" />
                         </SelectTrigger>
                         <SelectContent className="bg-gray-800 border-gray-700">
@@ -3305,17 +3306,101 @@ export default function ProStudio() {
                           ))}
                         </SelectContent>
                       </Select>
-                      {videoSourceCharacter?.thumbnail ? (
-                        <div className="relative">
-                          <img src={videoSourceCharacter.thumbnail} alt={videoSourceCharacter.name} className="w-full rounded-lg" />
-                          <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
-                            {videoSourceCharacter.name}
+                      
+                      {videoSourceCharacter && (
+                        <>
+                          {/* Image Gallery Grid */}
+                          <div className="space-y-2">
+                            <p className="text-xs text-gray-400">Select an image from {videoSourceCharacter.name}'s gallery:</p>
+                            <div className="grid grid-cols-4 gap-2 max-h-48 overflow-y-auto p-1">
+                              {/* Master Image */}
+                              {videoSourceCharacter.thumbnail && (
+                                <div 
+                                  className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
+                                    videoSelectedImage?.type === 'master' 
+                                      ? 'border-purple-500 ring-2 ring-purple-500/50' 
+                                      : 'border-gray-700 hover:border-purple-500/50'
+                                  }`}
+                                  onClick={() => selectVideoImage({
+                                    url: videoSourceCharacter.thumbnail,
+                                    prompt: videoSourceCharacter.description || 'Master character image',
+                                    type: 'master'
+                                  })}
+                                >
+                                  <img 
+                                    src={videoSourceCharacter.thumbnail} 
+                                    alt="Master" 
+                                    className="w-full aspect-square object-cover"
+                                  />
+                                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-1">
+                                    <span className="text-[10px] text-yellow-400 font-medium">★ Master</span>
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {/* Gallery Images */}
+                              {videoCharacterGallery.map((img, idx) => (
+                                <div 
+                                  key={img.id || idx}
+                                  className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
+                                    videoSelectedImage?.url === img.url 
+                                      ? 'border-purple-500 ring-2 ring-purple-500/50' 
+                                      : 'border-gray-700 hover:border-purple-500/50'
+                                  }`}
+                                  onClick={() => selectVideoImage(img)}
+                                >
+                                  <img 
+                                    src={img.url} 
+                                    alt={`Gallery ${idx + 1}`} 
+                                    className="w-full aspect-square object-cover"
+                                  />
+                                  {img.type && (
+                                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-1">
+                                      <span className="text-[10px] text-gray-300 capitalize">{img.type}</span>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                            
+                            {videoCharacterGallery.length === 0 && !videoSourceCharacter.thumbnail && (
+                              <div className="text-center py-4 text-gray-500 border border-dashed border-gray-700 rounded-lg">
+                                <FiImage className="w-6 h-6 mx-auto mb-1 opacity-50" />
+                                <p className="text-xs">No images in gallery</p>
+                              </div>
+                            )}
                           </div>
-                        </div>
-                      ) : (
+                          
+                          {/* Selected Image Preview */}
+                          {videoSelectedImage && (
+                            <div className="bg-gray-800/50 rounded-lg p-3 border border-gray-700">
+                              <div className="flex gap-3">
+                                <img 
+                                  src={videoSelectedImage.url} 
+                                  alt="Selected" 
+                                  className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <span className="text-green-400 text-xs font-medium">✓ Selected</span>
+                                    {videoSelectedImage.type === 'master' && (
+                                      <span className="text-yellow-400 text-xs">★ Master</span>
+                                    )}
+                                  </div>
+                                  <p className="text-gray-300 text-xs line-clamp-3">
+                                    {videoSelectedImage.prompt || 'No description available'}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      )}
+                      
+                      {!videoSourceCharacter && (
                         <div className="text-center py-6 text-gray-500 border-2 border-dashed border-gray-700 rounded-lg">
                           <FiUser className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                          <p className="text-sm">Select a character with a thumbnail</p>
+                          <p className="text-sm">Select a character to see their images</p>
                         </div>
                       )}
                     </div>
