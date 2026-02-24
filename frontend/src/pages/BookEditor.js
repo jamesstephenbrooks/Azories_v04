@@ -215,18 +215,41 @@ export default function BookEditor() {
     try {
       // Fetch Pro Studio characters with their galleries
       const charRes = await axios.get(`${API}/pro-studio/characters`, { headers });
-      const characters = charRes.data || [];
-      // Get galleries for characters with images
+      const characters = charRes.data?.characters || charRes.data || [];
+      // Get galleries for characters - include characters even without gallery images
       const charsWithGalleries = await Promise.all(
         characters.map(async (char) => {
           try {
             const galleryRes = await axios.get(`${API}/pro-studio/characters/${char.id}/gallery`, { headers });
-            return { ...char, gallery: galleryRes.data || [] };
+            const galleryImages = galleryRes.data?.images || galleryRes.data || [];
+            // Always include the master image
+            const allImages = [];
+            if (char.thumbnail) {
+              allImages.push({ image_url: char.thumbnail, type: 'master', name: 'Master' });
+            }
+            if (char.reference_images?.length > 0) {
+              char.reference_images.forEach((img, i) => {
+                if (img !== char.thumbnail) {
+                  allImages.push({ image_url: img, type: 'reference', name: `Ref ${i+1}` });
+                }
+              });
+            }
+            // Add gallery images
+            galleryImages.forEach(img => {
+              allImages.push({ ...img, type: img.type || 'generated' });
+            });
+            return { ...char, gallery: allImages };
           } catch {
-            return { ...char, gallery: [] };
+            // Even if gallery fails, include master image
+            const fallbackImages = [];
+            if (char.thumbnail) {
+              fallbackImages.push({ image_url: char.thumbnail, type: 'master', name: 'Master' });
+            }
+            return { ...char, gallery: fallbackImages };
           }
         })
       );
+      // Show characters that have any images (including master)
       setProStudioCharacters(charsWithGalleries.filter(c => c.gallery.length > 0));
     } catch (error) {
       console.error('Failed to load Pro Studio characters');
@@ -236,18 +259,41 @@ export default function BookEditor() {
     try {
       // Fetch Pro Studio scenes with their galleries
       const sceneRes = await axios.get(`${API}/pro-studio/scenes`, { headers });
-      const scenes = sceneRes.data || [];
-      // Get galleries for scenes with images
+      const scenes = sceneRes.data?.scenes || sceneRes.data || [];
+      // Get galleries for scenes - include scenes even without gallery images
       const scenesWithGalleries = await Promise.all(
         scenes.map(async (scene) => {
           try {
             const galleryRes = await axios.get(`${API}/pro-studio/scenes/${scene.id}/gallery`, { headers });
-            return { ...scene, gallery: galleryRes.data || [] };
+            const galleryImages = galleryRes.data?.images || galleryRes.data || [];
+            // Always include the preview/thumbnail
+            const allImages = [];
+            if (scene.preview_url || scene.thumbnail) {
+              allImages.push({ image_url: scene.preview_url || scene.thumbnail, type: 'preview', name: 'Preview' });
+            }
+            if (scene.reference_images?.length > 0) {
+              scene.reference_images.forEach((img, i) => {
+                if (img !== scene.preview_url && img !== scene.thumbnail) {
+                  allImages.push({ image_url: img, type: 'reference', name: `Ref ${i+1}` });
+                }
+              });
+            }
+            // Add gallery images
+            galleryImages.forEach(img => {
+              allImages.push({ ...img, type: img.type || 'generated' });
+            });
+            return { ...scene, gallery: allImages };
           } catch {
-            return { ...scene, gallery: [] };
+            // Even if gallery fails, include preview image
+            const fallbackImages = [];
+            if (scene.preview_url || scene.thumbnail) {
+              fallbackImages.push({ image_url: scene.preview_url || scene.thumbnail, type: 'preview', name: 'Preview' });
+            }
+            return { ...scene, gallery: fallbackImages };
           }
         })
       );
+      // Show scenes that have any images (including preview)
       setProStudioScenes(scenesWithGalleries.filter(s => s.gallery.length > 0));
     } catch (error) {
       console.error('Failed to load Pro Studio scenes');
