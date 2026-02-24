@@ -1081,12 +1081,17 @@ export default function ProStudio() {
       sourceImageUrl = selectedHeroFrame.url;
       sourceName = 'hero frame';
     } else if (videoSourceType === 'character') {
-      if (!videoSourceCharacter?.thumbnail) {
-        toast.error('Please select a character with a thumbnail');
+      // Use selected gallery image or fall back to master thumbnail
+      if (videoSelectedImage?.url) {
+        sourceImageUrl = videoSelectedImage.url;
+        sourceName = `${videoSourceCharacter?.name || 'character'} image`;
+      } else if (videoSourceCharacter?.thumbnail) {
+        sourceImageUrl = videoSourceCharacter.thumbnail;
+        sourceName = videoSourceCharacter.name;
+      } else {
+        toast.error('Please select an image from the character gallery');
         return;
       }
-      sourceImageUrl = videoSourceCharacter.thumbnail;
-      sourceName = videoSourceCharacter.name;
     } else if (videoSourceType === 'upload') {
       if (!videoUploadedImage) {
         toast.error('Please upload an image to animate');
@@ -1099,6 +1104,12 @@ export default function ProStudio() {
     setIsLoading(true);
     setLoadingProgress(0);
     setLoadingMessage(`Animating ${sourceName} with Kling AI (best face fidelity)... This takes 1-2 minutes.`);
+    
+    // Build enhanced prompt with style for consistency
+    let enhancedPrompt = videoPrompt || 'subtle cinematic movement, breathing, natural motion';
+    if (videoArtStyle && videoArtStyle !== 'none') {
+      enhancedPrompt = `${videoArtStyle} style, ${enhancedPrompt}`;
+    }
     
     // Simulate progress for UX
     const progressInterval = setInterval(() => {
@@ -1115,9 +1126,10 @@ export default function ProStudio() {
         },
         body: JSON.stringify({
           image_url: sourceImageUrl,
-          motion_prompt: videoPrompt || 'subtle cinematic movement, breathing, natural motion',
+          motion_prompt: enhancedPrompt,
           model: 'kling',
-          duration: videoDuration
+          duration: videoDuration,
+          art_style: videoArtStyle
         })
       });
 
