@@ -1128,11 +1128,26 @@ export default function ProStudio() {
       const lightingPreset = LIGHTING_PRESETS.find(l => l.id === selectedLighting);
       const characterPrompt = selectedCharacter ? buildCharacterPrompt(selectedCharacter) : '';
       
+      // Build art style prompt
+      const artStylePrompts = {
+        'realistic': 'photorealistic, professional photography, natural lighting, high detail',
+        'cinematic': 'cinematic, movie still, dramatic lighting, film grain, professional color grading',
+        'cartoon': 'cartoon style, animated, bold colors, clean lines, expressive',
+        'anime': 'anime style, manga, Japanese animation, vibrant colors, detailed eyes',
+        'pixar': 'Pixar style, 3D animated, smooth render, family-friendly, expressive features',
+        'watercolor': 'watercolor painting, soft edges, artistic, painterly style, delicate colors',
+        'comic': 'comic book style, bold outlines, dynamic shading, graphic novel',
+        'fantasy': 'fantasy art style, magical, ethereal, detailed, imaginative',
+        'storybook': 'children\'s book illustration, soft colors, whimsical, gentle, friendly'
+      };
+      const artStylePrompt = artStylePrompts[cinemaArtStyle] || artStylePrompts['cinematic'];
+      
       const fullPrompt = [
         prompt,
         characterPrompt,
         cinemaPrompt,
-        lightingPreset?.prompt || ''
+        lightingPreset?.prompt || '',
+        artStylePrompt
       ].filter(Boolean).join(', ');
 
       const token = localStorage.getItem('azories-token');
@@ -1149,7 +1164,8 @@ export default function ProStudio() {
           lens: selectedLens,
           focal_length: selectedFocalLength,
           lighting: selectedLighting,
-          aspect_ratio: aspectRatio
+          aspect_ratio: aspectRatio,
+          art_style: cinemaArtStyle
         })
       });
 
@@ -1159,7 +1175,7 @@ export default function ProStudio() {
           id: Date.now(),
           url: data.image_url,
           prompt: fullPrompt,
-          settings: { selectedCamera, selectedLens, selectedFocalLength, selectedLighting }
+          settings: { selectedCamera, selectedLens, selectedFocalLength, selectedLighting, cinemaArtStyle }
         };
         setGeneratedImages(prev => [newImage, ...prev]);
         setSelectedHeroFrame(newImage);
