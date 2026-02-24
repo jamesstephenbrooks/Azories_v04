@@ -5513,6 +5513,68 @@ export default function ProStudio() {
           </motion.div>
         )}
       </AnimatePresence>
+      
+      {/* Expanded View Modal for Images/Videos */}
+      <AnimatePresence>
+        {expandedItem && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/95 z-[200] flex items-center justify-center p-4"
+            onClick={() => setExpandedItem(null)}
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setExpandedItem(null)}
+              className="absolute top-4 right-4 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors z-10"
+            >
+              <FiX className="w-6 h-6" />
+            </button>
+            
+            {/* Download button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                downloadMedia(expandedItem.url, `azories-${expandedItem.type}-${Date.now()}.${expandedItem.type === 'video' ? 'mp4' : 'png'}`);
+              }}
+              className="absolute top-4 right-16 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors z-10"
+            >
+              <FiDownload className="w-6 h-6" />
+            </button>
+            
+            {/* Media content */}
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
+              className="max-w-[90vw] max-h-[90vh] relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {expandedItem.type === 'video' ? (
+                <video
+                  src={expandedItem.url}
+                  controls
+                  autoPlay
+                  loop
+                  className="max-w-full max-h-[85vh] rounded-lg"
+                />
+              ) : (
+                <img
+                  src={expandedItem.url}
+                  alt={expandedItem.name}
+                  className="max-w-full max-h-[85vh] object-contain rounded-lg"
+                />
+              )}
+              
+              {/* Caption */}
+              <p className="text-center text-white/70 mt-3 text-sm">
+                {expandedItem.name}
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
