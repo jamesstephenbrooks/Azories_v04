@@ -3419,6 +3419,120 @@ async def pro_studio_generate_image(request: ProStudioImageRequest, current_user
         logger.error(f"Error generating pro studio image: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error generating image: {str(e)}")
 
+class GenerateVariantRequest(BaseModel):
+    source_image: str
+    prompt: str
+    camera: Optional[str] = None
+    lens: Optional[str] = None
+    focal_length: Optional[str] = None
+    lighting: Optional[str] = None
+    aspect_ratio: Optional[str] = "16:9"
+    strength: Optional[float] = 0.7  # How much to keep from original (0-1)
+
+@api_router.post("/pro-studio/generate-variant")
+async def generate_variant(request: GenerateVariantRequest, current_user: dict = Depends(get_current_user)):
+    """Generate a variant of an existing image with new cinema settings"""
+    if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Pro subscription required")
+    
+    if not EMERGENT_LLM_KEY:
+        raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
+    
+    # Deduct credits
+    if not await deduct_credits(current_user["id"], "pulid_generate"):
+        credits_needed = CREDIT_COSTS.get("pulid_generate", 3)
+        raise HTTPException(status_code=402, detail=f"Insufficient credits. Variant generation requires {credits_needed} credits.")
+    
+    try:
+        from emergentintegrations.llm.openai import LlmChat, UserMessage, ImageContent
+        
+        # First, analyze the source image to get a description
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"variant-{current_user['id']}-{str(uuid.uuid4())[:8]}",
+            system_message="You are an expert at analyzing images. Describe subjects precisely for regeneration."
+        ).with_model("openai", "gpt-4o")
+        
+        # Handle source image
+        source_image = request.source_image
+        if source_image.startswith('http://') or source_image.startswith('https://'):
+            async with aiohttp.ClientSession() as session:
+                async with session.get(source_image) as resp:
+                    if resp.status == 200:
+                        image_bytes = await resp.read()
+                        image_base64 = base64.b64encode(image_bytes).decode('utf-8')
+                    else:
+                        raise Exception("Failed to download source image")
+        elif source_image.startswith('data:'):
+            image_base64 = source_image.split(',')[1] if ',' in source_image else source_image
+        else:
+            image_base64 = source_image
+        
+        # Analyze the image
+        user_msg = UserMessage(
+            text="Describe this image in detail. Include: subjects, setting, colors, mood, composition. Be specific and detailed.",
+            file_contents=[ImageContent(image_base64=image_base64)]
+        )
+        analysis = await chat.send_message(user_msg)
+        image_description = analysis.strip() if isinstance(analysis, str) else str(analysis)
+        
+        # Build full prompt with cinema settings
+        prompt_parts = [image_description, request.prompt]
+        
+        # Add camera settings
+        camera_desc = CAMERA_CONFIGS.get(request.camera, "")
+        if camera_desc:
+            prompt_parts.append(camera_desc)
+        
+        # Add lens settings
+        lens_desc = LENS_CONFIGS.get(request.lens, "")
+        if lens_desc:
+            prompt_parts.append(f"{lens_desc}, {request.focal_length}")
+        
+        # Add lighting
+        lighting_desc = LIGHTING_CONFIGS.get(request.lighting, "")
+        if lighting_desc:
+            prompt_parts.append(lighting_desc)
+        
+        # Add quality enhancers
+        prompt_parts.append("professional photography, 8K resolution, masterfully composed")
+        
+        full_prompt = ", ".join(filter(None, prompt_parts))
+        
+        # Determine size based on aspect ratio
+        aspect_sizes = {
+            "1:1": "1024x1024",
+            "16:9": "1536x1024",
+            "9:16": "1024x1536",
+            "4:3": "1024x768",
+            "3:4": "768x1024",
+            "21:9": "1536x640",
+            "2:3": "683x1024"
+        }
+        size = aspect_sizes.get(request.aspect_ratio, "1024x1024")
+        
+        # Generate new image
+        image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
+        images = await image_gen.generate_images(
+            prompt=full_prompt,
+            model="gpt-image-1",
+            number_of_images=1
+        )
+        
+        if images and len(images) > 0:
+            image_base64 = base64.b64encode(images[0]).decode('utf-8')
+            image_url = f"data:image/png;base64,{image_base64}"
+            return {"image_url": image_url, "success": True, "prompt_used": full_prompt}
+        else:
+            raise HTTPException(status_code=500, detail="No image was generated")
+            
+    except Exception as e:
+        error_msg = str(e)
+        logger.error(f"Error generating variant: {error_msg}")
+        if check_budget_error(error_msg):
+            raise get_budget_error_response()
+        raise HTTPException(status_code=500, detail=f"Error generating variant: {error_msg}")
+
 @api_router.post("/pro-studio/generate-shots")
 async def generate_shots(request: GenerateShotsRequest, background_tasks: BackgroundTasks, current_user: dict = Depends(get_current_user)):
     """Generate 9 different angle shots from one source image - returns task_id for polling"""
