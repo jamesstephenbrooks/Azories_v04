@@ -1789,7 +1789,7 @@ export default function ProStudio() {
                         toast.error('Error saving to gallery');
                       }
                     }}
-                    className="border-gray-600"
+                    className="border-purple-400/50 text-purple-300 hover:bg-purple-500/20 hover:border-purple-400"
                   >
                     <FiSave className="mr-1" /> Save to Gallery
                   </Button>
