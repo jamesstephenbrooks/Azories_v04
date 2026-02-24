@@ -3502,7 +3502,10 @@ export default function ProStudio() {
                 </div>
 
                 <Button 
-                  onClick={createScene}
+                  onClick={() => {
+                    if (!checkCreditsOrRedirect(1, 'Create Scene')) return;
+                    createScene();
+                  }}
                   disabled={isCreatingScene || !sceneName.trim() || !sceneDescription.trim()}
                   className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                 >
