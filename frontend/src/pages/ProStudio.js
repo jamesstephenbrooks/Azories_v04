@@ -3493,11 +3493,64 @@ export default function ProStudio() {
 
               {/* Generation Panel */}
               <div className="lg:col-span-2 space-y-4">
+                {/* Source Image Selector for Variants */}
+                <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4">
+                  <h3 className="text-white font-medium mb-3 flex items-center gap-2">
+                    <FiImage className="text-purple-400" /> Source Image (Optional)
+                  </h3>
+                  <p className="text-xs text-gray-400 mb-3">
+                    Select an existing image to create a variant with your cinema settings
+                  </p>
+                  
+                  {cinemaSourceImage ? (
+                    <div className="flex items-center gap-4">
+                      <div className="relative">
+                        <img 
+                          src={cinemaSourceImage.url} 
+                          alt={cinemaSourceImage.name}
+                          className="w-24 h-24 object-cover rounded-lg border-2 border-purple-500"
+                        />
+                        <button
+                          onClick={() => setCinemaSourceImage(null)}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                        >
+                          <FiX size={14} />
+                        </button>
+                      </div>
+                      <div>
+                        <p className="text-white font-medium">{cinemaSourceImage.name}</p>
+                        <p className="text-xs text-gray-400">From: {cinemaSourceImage.type}</p>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setShowCinemaSourcePicker(true)}
+                          className="mt-2 border-purple-500/50 text-purple-300"
+                        >
+                          Change Image
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowCinemaSourcePicker(true)}
+                      className="w-full border-dashed border-gray-600 text-gray-400 hover:border-purple-500 hover:text-purple-300"
+                    >
+                      <FiPlus className="mr-2" /> Select Source Image
+                    </Button>
+                  )}
+                </div>
+
                 <div className="bg-black/40 rounded-xl border border-purple-500/20 p-6">
-                  <h2 className="text-xl font-bold text-white mb-4">Generate Hero Frame</h2>
+                  <h2 className="text-xl font-bold text-white mb-4">
+                    {cinemaSourceImage ? 'Generate Variant' : 'Generate Hero Frame'}
+                  </h2>
                   
                   <Textarea
-                    placeholder="Describe your scene... (e.g., 'A woman stands on a misty beach at sunrise, waves gently rolling in behind her')"
+                    placeholder={cinemaSourceImage 
+                      ? "Describe how to modify the image... (e.g., 'make it more dramatic', 'add sunset lighting')"
+                      : "Describe your scene... (e.g., 'A woman stands on a misty beach at sunrise, waves gently rolling in behind her')"
+                    }
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     className="bg-gray-800/50 border-gray-700 text-white mb-4"
@@ -3506,14 +3559,25 @@ export default function ProStudio() {
                   />
 
                   <div className="flex gap-3 mb-4">
-                    <Button 
-                      onClick={generateHeroFrame}
-                      disabled={isLoading || !prompt.trim()}
-                      className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                      data-testid="generate-hero-btn"
-                    >
-                      <FiZap className="mr-2" /> Generate Hero Frame
-                    </Button>
+                    {cinemaSourceImage ? (
+                      <Button 
+                        onClick={generateCinemaVariant}
+                        disabled={isLoading}
+                        className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                        data-testid="generate-variant-btn"
+                      >
+                        <FiRefreshCw className="mr-2" /> Generate Variant
+                      </Button>
+                    ) : (
+                      <Button 
+                        onClick={generateHeroFrame}
+                        disabled={isLoading || !prompt.trim()}
+                        className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                        data-testid="generate-hero-btn"
+                      >
+                        <FiZap className="mr-2" /> Generate Hero Frame
+                      </Button>
+                    )}
                   </div>
 
                   {/* Cinema settings preview */}
