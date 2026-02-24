@@ -281,19 +281,117 @@ export default function ProStudio() {
     }
   };
 
+  // Load unified gallery - ALL Pro Studio content
   const loadGallery = async () => {
     try {
       const token = localStorage.getItem('azories-token');
-      const response = await fetch(`${API_URL}/api/art-studio/gallery?type_filter=image`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setGallery(data.images || []);
+      
+      // Fetch from multiple sources in parallel
+      const [artStudioRes, charactersRes] = await Promise.all([
+        fetch(`${API_URL}/api/art-studio/gallery`, {
+          headers: { Authorization: `Bearer ${token}` }
+        }),
+        fetch(`${API_URL}/api/pro-studio/characters`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+      ]);
+      
+      let allItems = [];
+      
+      // Add art studio gallery items
+      if (artStudioRes.ok) {
+        const artData = await artStudioRes.json();
+        const artItems = (artData.images || []).map(item => ({
+          ...item,
+          source: 'art-studio',
+          type: item.is_animation ? 'video' : 'image'
+        }));
+        allItems = [...allItems, ...artItems];
       }
+      
+      // Add character thumbnails and their galleries
+      if (charactersRes.ok) {
+        const charData = await charactersRes.json();
+        const chars = charData.characters || [];
+        
+        // Add each character's master image
+        for (const char of chars) {
+          if (char.thumbnail) {
+            allItems.push({
+              id: `char-${char.id}`,
+              image_url: char.thumbnail,
+              prompt: char.description || char.appearance_traits || `${char.name} - Master Image`,
+              source: 'character',
+              type: 'image',
+              character_id: char.id,
+              character_name: char.name,
+              is_master: true,
+              created_at: char.created_at
+            });
+          }
+          
+          // Fetch character's gallery images
+          try {
+            const charGalleryRes = await fetch(`${API_URL}/api/pro-studio/characters/${char.id}/gallery`, {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            if (charGalleryRes.ok) {
+              const charGalleryData = await charGalleryRes.json();
+              const charImages = (charGalleryData.images || []).map(img => ({
+                ...img,
+                source: 'character-gallery',
+                type: img.is_video ? 'video' : 'image',
+                character_id: char.id,
+                character_name: char.name
+              }));
+              allItems = [...allItems, ...charImages];
+            }
+          } catch (e) {
+            console.error(`Error loading gallery for character ${char.name}:`, e);
+          }
+        }
+      }
+      
+      // Add generated videos if stored separately
+      if (generatedVideos.length > 0) {
+        const videoItems = generatedVideos.map(vid => ({
+          id: vid.id,
+          image_url: vid.url,
+          prompt: vid.prompt || 'Generated video',
+          source: 'video-generation',
+          type: 'video',
+          is_animation: true
+        }));
+        allItems = [...allItems, ...videoItems];
+      }
+      
+      // Sort by created_at descending (newest first)
+      allItems.sort((a, b) => {
+        const dateA = new Date(a.created_at || 0);
+        const dateB = new Date(b.created_at || 0);
+        return dateB - dateA;
+      });
+      
+      setGallery(allItems);
     } catch (error) {
       console.error('Error loading gallery:', error);
     }
+  };
+  
+  // Filter gallery items based on current filter
+  const filteredGallery = gallery.filter(item => {
+    if (galleryFilter === 'all') return true;
+    if (galleryFilter === 'images') return item.type === 'image';
+    if (galleryFilter === 'videos') return item.type === 'video' || item.is_animation;
+    if (galleryFilter === 'characters') return item.source === 'character' || item.source === 'character-gallery';
+    return true;
+  });
+  
+  // Open gallery picker with a callback for selection
+  const openGalleryPicker = (mode, callback) => {
+    setGalleryPickerMode(mode);
+    setGalleryPickerCallback(() => callback);
+    setShowGalleryPicker(true);
   };
 
   // File upload handler
