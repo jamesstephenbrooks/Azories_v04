@@ -10,6 +10,7 @@ Build a full-featured digital book platform ("Azories") with:
 - Book creation and reading experience
 - Voice narration (speech-to-text via Whisper)
 - Email notifications (Resend integration)
+- **Character consistency system** for book series
 
 ## User Personas
 - **Authors**: Create illustrated digital books with AI-generated imagery
@@ -26,113 +27,101 @@ Build a full-featured digital book platform ("Azories") with:
 6. ✅ Starter Library - 100 free images for users
 7. ✅ Admin Dashboard with dedicated login
 8. ✅ Content moderation system
-9. ⏳ Backend refactoring (in progress)
+9. ✅ Unified Pro Studio Gallery
+10. ⏳ Character consistency improvements (in progress)
 
 ## What's Been Implemented
 
-### Session: Dec 23, 2026 (Current)
-- **Dedicated Admin Login Implemented**:
-  - Username: `Admin`, Password: `Routetofreedom`
-  - Separate JWT token with `admin: true` claim
-  - All admin endpoints now use `get_admin_user` dependency
-  - Admin token stored in `azories-admin-token` localStorage
-  
-- **Publishing Workflow FULLY FIXED**:
-  - **BLOCKED direct publish**: Removed `is_published` and `publish_status` from `BookUpdate` model
-  - User clicks "Submit for Review" → **AUTO AI moderation runs** → status changes to `pending_review`
-  - Added `/api/books/{id}/unpublish` endpoint for users to withdraw published books
-  - **Email notification** sent with AI verdict (PASSED/FLAGGED) and book details
-  - Dashboard shows status badges: Published (green), Pending Review (amber), Rejected (red), Draft (gray)
-  - Admin sees AI verdict box (green=passed, red=flagged) with moderation message
-  - **Preview opens in new tab** so admin can easily return to review page
-  - **Re-scan button** allows admin to re-run moderation if needed
-  - **Only admin can publish**: via `/api/admin/books/{id}/approve`
-  - Fixed all direct publish code in Dashboard.js and MySeries.js
-  
-- **Email Notifications (Complete System)**:
-  - **On Submit**: Admin receives email with AI verdict (PASSED/FLAGGED)
-  - **On Approve**: Creator receives "🎉 Your book has been approved!" with link to view
-  - **On Reject**: Creator receives "📚 Update on your book" with rejection reason and link to edit
-  - Currently using Resend test domain (`onboarding@resend.dev`)
-  - Emails sent to registered Resend email (`jamesstephenbrooks@outlook.com`)
-  - To send to `book@azories.com`, verify `azories.com` domain in Resend dashboard
-  
-- **COMBINED Admin Dashboard** (at `/admin`):
-  - **Stats Bar**: Pending Review, Flagged, Total Books, Published, Total Users
-  - **Search & Filters**: Search by title/author, filter by Genre, filter by Age Rating
-  - **Generate Missing Covers**: AI-powered cover generation for books without images
-  - **Tabs**:
-    - Pending Reviews: View books awaiting approval, run AI moderation, approve/reject
-    - All Books: Full CMS - publish/unpublish, feature, best-of-week, delete
-    - Users: User management with search - name, email, subscription, credits, join date
-    - Analytics: Total books, published, users, pro users, views, reads
-  - "Seed Test Books" button for testing
-  
-- **Library Thumbnail Fix**:
-  - Fixed book cover positioning in ImmersiveLibrary3D component
-  - Cover now positioned with `left: -140px` instead of `translateX(-85%)`
+### Session: Feb 24, 2026 (Current)
 
-- **Route Updates**:
-  - `/admin` → Combined AdminDashboard (CMS + Content Moderation + Users + Analytics)
-  - `/admin/cms` → Legacy AdminCMS (kept for backwards compatibility)
-  - Onboarding modal skipped on admin pages
+**Pro Studio Fixes & Enhancements:**
+
+1. **Shots Generation Fix**:
+   - Fixed base64/URL handling for source images
+   - Added proper error messages for budget exceeded
+   - Added credit deduction (5 credits per generation)
+
+2. **Video Generation Fix**:
+   - Updated fal.ai API key: `9cc164f3-9355-4cc7-...`
+   - Images now uploaded to fal.ai CDN before processing (fixes download errors)
+   - Kling video generation working with new key
+
+3. **Email System Fixed**:
+   - Domain `azories.com` verified in Resend
+   - Sender: `notifications@azories.com`
+   - Admin emails to `books@azories.com` now working
+
+4. **LoRA Training Reset**:
+   - Reset Ariza's stuck LoRA training status
+
+5. **Character Consistency Improvements**:
+   - PuLID now receives character appearance traits automatically
+   - Art style enforcement in generation prompts
+   - Increased id_weight values for better face preservation
+   - Added `character_appearance` and `art_style` parameters to `generate_with_face_id`
+
+6. **UI Visibility Fixes**:
+   - Changed dark buttons to colored outlines (purple, blue, amber)
+   - Better hover states on action buttons
+   - Improved contrast throughout Pro Studio
+
+7. **Unified Gallery System**:
+   - Gallery aggregates ALL Pro Studio content (characters, images, videos)
+   - Filter by: All, Images, Videos, Characters
+   - Can select from gallery for Video and Shots features
+   - "Browse from Gallery" button in Upload mode
+
+**Credit Costs:**
+- flux_generate: 1 credit
+- flux_pro_generate: 2 credits
+- pulid_generate: 3 credits
+- shots_generate: 5 credits
+- expression_generate: 2 credits
+- video_generate: 10 credits
+- lora_training: 50 credits
+- lora_generate: 2 credits
 
 ### Previous Sessions
-- **UI/UX Overhaul**: Art Studio reorganization, Media tab combined, unsaved changes warning
-- **Starter Library**: 100 images, accessible in Art Studio and Book Editor
-- **Node Editor Fixes**: 2nd Output node working, copy nodes, drag selection
-- **Voice Narration**: Whisper integration
-- **Email System**: Resend integration
-- **Backend Refactoring**: Started migrating to routes/
-
-## Tech Stack
-- **Frontend**: React, Shadcn UI, ReactFlow, Tailwind CSS
-- **Backend**: FastAPI, Pydantic
-- **Database**: MongoDB
-- **AI**: fal.ai (PuLID, LoRA, Kling), emergentintegrations (Sora 2, OpenAI Moderation), OpenAI (Whisper)
-- **Email**: Resend (to `book@azories.com`)
-- **Payments**: Stripe
-
-## Key API Endpoints
-
-### Admin Endpoints (require admin JWT)
-- `POST /api/admin/login` - Admin login (Admin/Routetofreedom)
-- `GET /api/admin/verify` - Verify admin token
-- `GET /api/admin/pending-reviews` - Get books pending review
-- `POST /api/admin/books/{id}/run-moderation` - Run AI moderation
-- `POST /api/admin/books/{id}/approve` - Approve and publish book
-- `POST /api/admin/books/{id}/reject?reason=...` - Reject book
-
-### Publishing Flow
-- `POST /api/books/{id}/request-publish` - Submit book for review (sends email)
+- Admin Dashboard with search/filter for books and users
+- Publishing workflow with AI moderation
+- Email notifications on approve/reject
+- Mobile/landscape responsive improvements
+- Book reader page flip with audio narration
 
 ## Prioritized Backlog
 
-### P0 - Critical (DONE THIS SESSION)
-- [x] Dedicated Admin Login (Admin/Routetofreedom)
-- [x] Publishing workflow with Pending Review status
-- [x] Admin triggers moderation from dashboard
-- [x] Email notification to book@azories.com
-- [x] Library thumbnail fix
+### P0 - Critical
+- [ ] Test Shots and Video generation with real images
+- [ ] Verify character consistency with Ariza after PuLID improvements
 
 ### P1 - High Priority
-- [ ] Test PuLID with new fal.ai API key
-- [ ] Complete backend refactoring (server.py → routes/)
-- [ ] Character consistency improvements
+- [ ] Scene-character linking for book consistency
+- [ ] Character expansion system (more poses, expressions for same character)
+- [ ] Art style lock per character (enforce across all generations)
 
 ### P2 - Medium Priority
-- [ ] Frontend refactoring (ProStudio.js, BookEditor.js)
-- [ ] Mobile UI/UX improvements (iPad)
+- [ ] Backend refactoring (server.py → routes/)
+- [ ] Frontend component breakdown (ProStudio.js is large)
+- [ ] Similarity scoring after generation
 
 ### P3 - Future
-- [ ] Real-time collaboration
-- [ ] Sample book generation
-- [ ] readkids.com competitor analysis
+- [ ] Series consistency (same characters across multiple books)
+- [ ] Style transfer between characters
+- [ ] Batch generation for storyboards
 
-## Admin Credentials
-- **Username**: Admin
-- **Password**: Routetofreedom
-- **Route**: /admin
+## Technical Notes
 
-## Test Credentials
-- **VIP User**: jamesstephenbrooks@outlook.com / test123
+### fal.ai Configuration
+- Key: `9cc164f3-9355-4cc7-8286-9f0943b64d94:f9dbbe1ab5957fc43fedf5b9c59fa04f`
+- Models: PuLID (face ID), Kling (video), FLUX (images)
+- Images must be uploaded to fal.ai CDN for reliability
+
+### Emergent LLM Key
+- Used for: Shots, Expressions, Cover generation
+- Budget tracking enabled
+- Shows error with "Add Balance" link when exceeded
+
+### Database
+- Collection: `test_database`
+- Characters: `pro_studio_characters`
+- Gallery: `character_gallery`
