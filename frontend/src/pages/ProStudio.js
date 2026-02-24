@@ -129,6 +129,7 @@ export default function ProStudio() {
   const [selectedFocalLength, setSelectedFocalLength] = useState('35mm');
   const [selectedLighting, setSelectedLighting] = useState('natural');
   const [aspectRatio, setAspectRatio] = useState('16:9');
+  const [cinemaArtStyle, setCinemaArtStyle] = useState('cinematic'); // Art style for Cinema Studio
   
   // Video state
   const [selectedVideoModel, setSelectedVideoModel] = useState('sora-2');
