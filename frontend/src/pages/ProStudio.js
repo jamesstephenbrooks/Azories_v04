@@ -1120,7 +1120,7 @@ export default function ProStudio() {
     }
 
     setIsLoading(true);
-    setLoadingMessage('Preparing image and generating 9 angles...');
+    setLoadingMessage('Preparing image and generating 9 angles... (this takes ~2 minutes)');
     setShotsResults([]);
 
     try {
@@ -1128,6 +1128,10 @@ export default function ProStudio() {
       
       // Resize image to reduce payload size (max 1024px)
       const resizedImage = await resizeImageForAPI(shotsSourceImage, 1024);
+      
+      // Use AbortController for timeout (3 minutes for 9 shots)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 180000); // 3 minute timeout
       
       const response = await fetch(`${API_URL}/api/pro-studio/generate-shots`, {
         method: 'POST',
@@ -1138,7 +1142,11 @@ export default function ProStudio() {
         body: JSON.stringify({
           source_image: resizedImage,
           character_id: selectedCharacter?.id
-        })
+        }),
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
       });
 
       if (response.ok) {
