@@ -1443,10 +1443,16 @@ export default function ProStudio() {
     }, 600000);
   };
 
-  // Save to gallery
-  const saveToGallery = async (item, type = 'image') => {
+  // Save to gallery - enhanced to handle different input formats
+  const saveToGallery = async (imageUrlOrItem, promptOrName = '', type = 'image') => {
     try {
       const token = localStorage.getItem('azories-token');
+      
+      // Handle both object format {url, name, prompt} and direct URL
+      const imageUrl = typeof imageUrlOrItem === 'string' ? imageUrlOrItem : imageUrlOrItem?.url;
+      const name = typeof imageUrlOrItem === 'object' ? (imageUrlOrItem?.name || imageUrlOrItem?.prompt || promptOrName) : promptOrName;
+      const prompt = typeof imageUrlOrItem === 'object' ? (imageUrlOrItem?.prompt || '') : promptOrName;
+      
       const response = await fetch(`${API_URL}/api/art-studio/gallery`, {
         method: 'POST',
         headers: {
@@ -1454,9 +1460,9 @@ export default function ProStudio() {
           Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
-          image_url: item.url,
-          name: item.name || item.prompt || 'Pro Studio Image',
-          prompt: item.prompt || '',
+          image_url: imageUrl,
+          name: name || 'Pro Studio Image',
+          prompt: prompt,
           style: type,
           type: type === 'video' ? 'animation' : 'image',
           source: 'pro_studio'  // Mark as Pro Studio item
