@@ -92,8 +92,9 @@ export default function BookEditor() {
   const [generalGalleryImages, setGeneralGalleryImages] = useState([]);
   const [proStudioCharacters, setProStudioCharacters] = useState([]);
   const [proStudioScenes, setProStudioScenes] = useState([]);
+  const [proStudioVideos, setProStudioVideos] = useState([]);
   const [starterLibraryImages, setStarterLibraryImages] = useState([]);
-  const [galleryTab, setGalleryTab] = useState('book'); // 'book', 'all', 'characters', 'scenes', 'starter'
+  const [galleryTab, setGalleryTab] = useState('book'); // 'book', 'all', 'characters', 'scenes', 'videos', 'starter'
   
   // Cover Gallery picker
   const [showCoverGalleryPicker, setShowCoverGalleryPicker] = useState(false);
