@@ -3592,7 +3592,9 @@ async def generate_shots(request: GenerateShotsRequest, background_tasks: Backgr
         task_id,
         current_user["id"],
         request.source_image,
-        request.character_id
+        request.character_id,
+        request.style or "realistic",
+        request.character_style
     )
     
     # Return task ID immediately (HTTP 202 Accepted)
