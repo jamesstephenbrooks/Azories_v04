@@ -2407,11 +2407,11 @@ export default function BookEditor() {
                     {starterLibraryImages.map((img, idx) => (
                       <button
                         key={img.id || idx}
-                        onClick={() => addCoverFromGallery(img.image_url)}
+                        onClick={() => addCoverFromGallery(img.url || img.image_url)}
                         className="group relative aspect-[3/4] rounded-lg overflow-hidden border-2 border-transparent hover:border-amber-500 transition-all"
                       >
                         <img 
-                          src={img.image_url} 
+                          src={img.url || img.image_url} 
                           alt={img.name || 'Starter image'}
                           className="w-full h-full object-cover"
                         />
@@ -2434,18 +2434,20 @@ export default function BookEditor() {
                   <div className="text-center py-8">
                     <FiImage className="w-12 h-12 mx-auto text-muted-foreground/50 mb-4" />
                     <p className="text-muted-foreground">
-                      {galleryTab === 'book' ? 'No images for this book' : 'No images in Art Studio'}
+                      {galleryTab === 'book' ? 'No images in this book yet' : 'No images in Art Studio'}
                     </p>
-                    <Button
-                      onClick={() => {
-                        setShowCoverGalleryPicker(false);
-                        navigate('/art-studio');
-                      }}
-                      className="mt-4 rounded-full"
-                    >
-                      <FiZap className="mr-2" />
-                      Go to Art Studio
-                    </Button>
+                    {galleryTab === 'all' && (
+                      <Button
+                        onClick={() => {
+                          setShowCoverGalleryPicker(false);
+                          navigate('/art-studio');
+                        }}
+                        className="mt-4 rounded-full"
+                      >
+                        <FiZap className="mr-2" />
+                        Go to Art Studio
+                      </Button>
+                    )}
                   </div>
                 );
               }
