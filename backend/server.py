@@ -3322,8 +3322,17 @@ async def generate_shots(request: GenerateShotsRequest, current_user: dict = Dep
         return {"shots": shots, "success": True, "total": len(shots)}
         
     except Exception as e:
-        logger.error(f"Error generating shots: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error generating shots: {str(e)}")
+        error_msg = str(e)
+        logger.error(f"Error generating shots: {error_msg}")
+        
+        # Check for budget exceeded error
+        if "Budget has been exceeded" in error_msg or "budget" in error_msg.lower():
+            raise HTTPException(
+                status_code=503, 
+                detail="AI service budget exceeded. Please contact support or try again later. You can add balance via Profile > Universal Key > Add Balance."
+            )
+        
+        raise HTTPException(status_code=500, detail=f"Error generating shots: {error_msg}")
 
 @api_router.post("/pro-studio/generate-expression")
 async def generate_expression(request: GenerateExpressionRequest, current_user: dict = Depends(get_current_user)):
