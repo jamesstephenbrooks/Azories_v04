@@ -1482,6 +1482,39 @@ export default function ProStudio() {
     }
   };
 
+  // Delete from gallery
+  const deleteFromGallery = async (itemId, source = 'art-studio') => {
+    if (!confirm('Are you sure you want to delete this item?')) return;
+    
+    try {
+      const token = localStorage.getItem('azories-token');
+      let endpoint = `${API_URL}/api/art-studio/gallery/${itemId}`;
+      
+      // Use appropriate endpoint based on source
+      if (source === 'character-gallery') {
+        endpoint = `${API_URL}/api/pro-studio/character-gallery/${itemId}`;
+      }
+      
+      const response = await fetch(endpoint, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        toast.success('Deleted successfully');
+        loadGallery();
+      } else {
+        const err = await response.json().catch(() => ({}));
+        toast.error(err.detail || 'Failed to delete');
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+      toast.error('Failed to delete');
+    }
+  };
+
   // Download image/video
   const downloadMedia = (url, filename) => {
     const link = document.createElement('a');
