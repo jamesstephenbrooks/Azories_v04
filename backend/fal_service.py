@@ -421,9 +421,27 @@ async def generate_video_from_image(
     if not FAL_KEY:
         raise Exception("FAL_KEY not configured")
     
-    # Handle base64 images - upload first
+    # ALL images need to be uploaded to fal.ai CDN for reliable access
+    # fal.ai servers can't always access external URLs due to firewall/auth issues
     if image_url.startswith('data:'):
+        # Base64 data URI - upload directly
         image_url = await upload_image_to_fal(image_url)
+    elif image_url.startswith('http://') or image_url.startswith('https://'):
+        # External URL - download and re-upload to fal.ai CDN for reliability
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(image_url, timeout=aiohttp.ClientTimeout(total=30)) as resp:
+                    if resp.status == 200:
+                        image_bytes = await resp.read()
+                        # Upload to fal.ai
+                        fal_url = await fal_client.upload_async(image_bytes, content_type="image/png")
+                        image_url = fal_url
+                        logger.info(f"Re-uploaded external image to fal.ai CDN")
+                    else:
+                        logger.warning(f"Failed to download image for re-upload: HTTP {resp.status}")
+                        # Try using original URL anyway
+        except Exception as e:
+            logger.warning(f"Could not re-upload image to fal.ai: {e}, trying original URL")
     
     # Model configurations
     model_configs = {
