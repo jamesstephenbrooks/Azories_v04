@@ -4638,7 +4638,8 @@ export default function ProStudio() {
                           <div className="image-fallback hidden w-full aspect-square bg-gray-700 flex flex-col items-center justify-center absolute inset-0">
                             <div className="text-center text-gray-500">
                               <FiImage className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                              <span className="text-xs">Unavailable</span>
+                              <span className="text-xs block">Unavailable</span>
+                              <span className="text-[10px] opacity-50 block mt-1">{item.name || item.character_name || 'Unknown'}</span>
                             </div>
                             {/* Always visible delete button for broken images */}
                             <Button 
