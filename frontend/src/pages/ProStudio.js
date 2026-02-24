@@ -750,18 +750,24 @@ export default function ProStudio() {
             method: data.method,
             character: selectedCharacter.name
           };
+          
+          // Show preview modal instead of auto-saving
+          setGenerationPreviewData({
+            image: newImage,
+            type: 'character',
+            characterId: selectedCharacter.id,
+            characterName: selectedCharacter.name,
+            sceneId: selectedSceneForGeneration?.id,
+            sceneName: selectedSceneForGeneration?.name,
+            prompt: prompt,
+            method: data.method
+          });
+          setShowGenerationPreview(true);
+          
+          // Still add to generated images for the session
           setGeneratedImages(prev => [newImage, ...prev]);
           setSelectedHeroFrame(newImage);
-          toast.success(`Generated using ${data.method}!`);
-          loadCredits(); // Refresh credits
-          
-          // Auto-save to character folder
-          await saveToCharacterFolder(
-            selectedCharacter.id,
-            imageUrl,
-            prompt,
-            'consistent'
-          );
+          loadCredits();
         }
       } else {
         const error = await response.json();
