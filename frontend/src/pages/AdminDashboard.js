@@ -324,14 +324,18 @@ export default function AdminDashboard() {
     setPreviewLoading(true);
     setCurrentPreviewPage(-1); // Start at cover page
     try {
+      console.log('[AdminDashboard] Loading preview for book:', book.id);
       const res = await axios.get(`${API}/api/books/${book.id}/full`, getAuthHeaders());
       const bookData = res.data;
+      console.log('[AdminDashboard] Book data received:', bookData);
       // Update previewBook with full data
       setPreviewBook(bookData);
       // Flatten all pages from all chapters
       const allPages = [];
       if (bookData.chapters) {
+        console.log('[AdminDashboard] Chapters found:', bookData.chapters.length);
         for (const chapter of bookData.chapters) {
+          console.log(`[AdminDashboard] Chapter "${chapter.title}" has ${chapter.pages?.length || 0} pages`);
           if (chapter.pages) {
             for (const page of chapter.pages) {
               allPages.push({
@@ -342,6 +346,7 @@ export default function AdminDashboard() {
           }
         }
       }
+      console.log('[AdminDashboard] Total pages loaded:', allPages.length);
       setPreviewPages(allPages);
     } catch (error) {
       console.error('Failed to load book preview:', error);
