@@ -4401,7 +4401,7 @@ export default function ProStudio() {
                   size="sm"
                   variant={galleryFilter === 'all' ? 'default' : 'outline'}
                   onClick={() => setGalleryFilter('all')}
-                  className={galleryFilter === 'all' ? 'bg-purple-600' : 'border-gray-600'}
+                  className={galleryFilter === 'all' ? 'bg-purple-600' : 'border-gray-600 text-gray-300'}
                 >
                   All ({gallery.length})
                 </Button>
