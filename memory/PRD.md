@@ -124,8 +124,10 @@ Build a full-featured digital book platform ("Azories") with:
 - Endpoints: `POST /api/pro-studio/generate-shots`, `POST /api/pro-studio/animate-hero`, `GET /api/tasks/{task_id}`
 
 ### fal.ai Configuration
+- Key: `bffc941b-be4e-4c55-a680-3bfd5ebfc38f:cea578ad19f7a978fde8ad387e661de9` (Feb 24, 2026)
 - Models: PuLID (face ID), Kling (video), FLUX (images)
 - Images must be uploaded to fal.ai CDN for reliability
+- Video generation takes 2-4 minutes with Kling
 
 ### Emergent LLM Key
 - Used for: Shots, Expressions, Cover generation
