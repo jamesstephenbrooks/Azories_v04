@@ -73,6 +73,23 @@ except ImportError as e:
     FAL_AVAILABLE = False
     is_fal_configured = lambda: False
 
+# Import Cloudinary service for permanent video storage
+try:
+    from cloudinary_service import (
+        upload_video_to_cloudinary,
+        migrate_video_from_fal_to_cloudinary,
+        is_cloudinary_configured
+    )
+    CLOUDINARY_AVAILABLE = is_cloudinary_configured()
+    if CLOUDINARY_AVAILABLE:
+        logging.info("Cloudinary service initialized for permanent video storage")
+    else:
+        logging.warning("Cloudinary service available but not configured")
+except ImportError as e:
+    logging.warning(f"Cloudinary service not available: {e}")
+    CLOUDINARY_AVAILABLE = False
+    is_cloudinary_configured = lambda: False
+
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
