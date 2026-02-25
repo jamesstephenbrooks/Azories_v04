@@ -54,6 +54,7 @@ try:
         check_training_status,
         generate_with_lora,
         upload_image_to_fal,
+        upload_video_to_fal,
         generate_video_from_image,
         get_available_models as get_fal_models,
         is_fal_configured
