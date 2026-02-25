@@ -1844,7 +1844,7 @@ async def create_series(series_data: SeriesCreate, current_user: dict = Depends(
     }
     await db.series.insert_one(series)
     # Return without _id
-    del series["_id"]
+    series.pop("_id", None)
     return series
 
 @api_router.get("/series")
