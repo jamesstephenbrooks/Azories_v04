@@ -10,8 +10,10 @@ import os
 import asyncio
 import logging
 import base64
-from typing import Optional, List, Dict, Any
+import io
+from typing import Optional, List, Dict, Any, Tuple
 import aiohttp
+from PIL import Image
 
 # Import fal_client classes explicitly - do NOT use module-level default clients
 import fal_client
