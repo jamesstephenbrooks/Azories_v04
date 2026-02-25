@@ -4714,7 +4714,8 @@ export default function ProStudio() {
                               e.stopPropagation();
                               setExpandedItem({
                                 type: isVideo ? 'video' : 'image',
-                                url: item.image_url || item.url,
+                                url: item.medium_url || item.image_url || item.url,
+                                fullUrl: item.image_url || item.url,
                                 name: item.prompt || item.name || 'Gallery item'
                               });
                             }}
