@@ -611,9 +611,7 @@ class AdminResponse(BaseModel):
     token_type: str = "bearer"
     admin_name: str
 
-# Admin credentials - dedicated admin login
-ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'Admin')
-ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'Routetofreedom')
+# Note: ADMIN_USERNAME and ADMIN_PASSWORD are defined at the top of the file
 
 # ============ AUTH HELPERS ============
 
