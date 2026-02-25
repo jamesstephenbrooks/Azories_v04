@@ -989,9 +989,12 @@ export default function ArtStudioExpert() {
   const loadGalleryImages = async (type = 'art') => {
     try {
       let endpoint;
-      if (type === 'pro') {
-        // Pro Studio: Use unified endpoint but filter to only show character-related items
-        endpoint = '/api/pro-studio/gallery/unified?filter_type=characters';
+      if (type === 'starter') {
+        // Starter Library: Stock images
+        endpoint = '/api/starter-library';
+      } else if (type === 'pro') {
+        // Pro Studio: Use unified endpoint for all Pro Studio content
+        endpoint = '/api/pro-studio/gallery/unified';
       } else {
         // Art Studio: Use art-studio gallery directly
         endpoint = '/api/art-studio/gallery';
@@ -1005,10 +1008,15 @@ export default function ArtStudioExpert() {
         // Handle both array response and object with images property
         let images = Array.isArray(data) ? data : (data.images || data.items || []);
         
-        // For Pro Studio, filter out art-studio source items to only show character-related content
-        if (type === 'pro') {
+        // Filter based on gallery type
+        if (type === 'art') {
+          // Art Studio: Only show art_studio source items (exclude pro_studio images)
+          images = images.filter(img => img.source !== 'pro_studio');
+        } else if (type === 'pro') {
+          // Pro Studio: Only show character-related and pro_studio source items (exclude art-studio)
           images = images.filter(img => img.source !== 'art-studio');
         }
+        // Starter library doesn't need filtering
         
         setGalleryImages(images);
       }
