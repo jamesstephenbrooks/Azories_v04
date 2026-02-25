@@ -4539,7 +4539,7 @@ export default function ProStudio() {
                   onClick={() => setGalleryFilter('all')}
                   className={galleryFilter === 'all' ? 'bg-purple-600' : 'border-gray-600 text-gray-300'}
                 >
-                  All ({gallery.length})
+                  All {galleryFilter === 'all' && `(${galleryTotal})`}
                 </Button>
                 <Button
                   size="sm"
@@ -4547,7 +4547,7 @@ export default function ProStudio() {
                   onClick={() => setGalleryFilter('images')}
                   className={galleryFilter === 'images' ? 'bg-purple-600' : 'border-gray-600 text-gray-300'}
                 >
-                  <FiImage className="w-3 h-3 mr-1" /> Images ({gallery.filter(i => i.type === 'image').length})
+                  <FiImage className="w-3 h-3 mr-1" /> Images {galleryFilter === 'images' && `(${galleryTotal})`}
                 </Button>
                 <Button
                   size="sm"
@@ -4555,7 +4555,7 @@ export default function ProStudio() {
                   onClick={() => setGalleryFilter('videos')}
                   className={galleryFilter === 'videos' ? 'bg-purple-600' : 'border-gray-600 text-gray-300'}
                 >
-                  <FiVideo className="w-3 h-3 mr-1" /> Videos ({gallery.filter(i => i.type === 'video' || i.is_animation).length})
+                  <FiVideo className="w-3 h-3 mr-1" /> Videos {galleryFilter === 'videos' && `(${galleryTotal})`}
                 </Button>
                 <Button
                   size="sm"
@@ -4563,18 +4563,18 @@ export default function ProStudio() {
                   onClick={() => setGalleryFilter('characters')}
                   className={galleryFilter === 'characters' ? 'bg-purple-600' : 'border-gray-600 text-gray-300'}
                 >
-                  <FiUser className="w-3 h-3 mr-1" /> Characters ({gallery.filter(i => i.source === 'character' || i.source === 'character-gallery').length})
+                  <FiUser className="w-3 h-3 mr-1" /> Characters {galleryFilter === 'characters' && `(${galleryTotal})`}
                 </Button>
               </div>
               
-              {filteredGallery.length === 0 ? (
+              {filteredGallery.length === 0 && !galleryLoading ? (
                 <div className="text-center py-16 text-gray-500">
                   <FiFolder className="w-16 h-16 mx-auto mb-4 opacity-50" />
                   <p className="text-lg">
-                    {gallery.length === 0 ? 'Your gallery is empty' : 'No items match this filter'}
+                    {galleryTotal === 0 ? 'Your gallery is empty' : 'No items match this filter'}
                   </p>
                   <p className="text-sm mt-2">
-                    {gallery.length === 0 ? 'Create characters, generate images, and make videos to fill it up!' : 'Try a different filter'}
+                    {galleryTotal === 0 ? 'Create characters, generate images, and make videos to fill it up!' : 'Try a different filter'}
                   </p>
                 </div>
               ) : (
