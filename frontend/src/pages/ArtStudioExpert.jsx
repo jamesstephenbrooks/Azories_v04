@@ -1061,14 +1061,16 @@ export default function ArtStudioExpert() {
     setShowGalleryPicker(true);
   }, [updateNodeData]);
   
-  // Initialize nodes with onChange handlers
+  // Initialize nodes with all handlers (onChange, onDelete, onCopyNode, etc.)
   useEffect(() => {
     setNodes(nds => nds.map(node => ({
       ...node,
       data: {
         ...node.data,
         onChange: (k, v) => updateNodeData(node.id, k, v),
-        onSelectFromGallery: node.type === 'image' ? () => openGalleryPicker(node.id) : undefined,
+        onDelete: () => deleteNodeById(node.id),
+        onCopyNode: () => copyNode(node.id),
+        onSelectFromGallery: (node.type === 'image' || node.type === 'reference') ? () => openGalleryPicker(node.id) : undefined,
         // Use ref wrapper for runOutputNode to avoid circular dependency
         onRunNode: node.type === 'output' ? () => {
           if (runOutputNodeRef.current) {
