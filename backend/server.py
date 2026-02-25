@@ -7443,6 +7443,16 @@ async def get_unified_gallery(
     all_items = []
     skip = (page - 1) * limit
     
+    def safe_isoformat(val):
+        """Safely convert datetime to ISO string, handling already-string values."""
+        if val is None:
+            return None
+        if isinstance(val, str):
+            return val
+        if hasattr(val, 'isoformat'):
+            return val.isoformat()
+        return str(val)
+    
     try:
         # 1. Get art studio gallery items
         if filter_type in (None, 'images', 'videos'):
@@ -7456,15 +7466,16 @@ async def get_unified_gallery(
             
             for item in art_items:
                 is_video = item.get("type") == "animation"
+                prompt_text = item.get("prompt", item.get("name", ""))
                 all_items.append({
                     "id": str(item["_id"]),
                     "image_url": item.get("image_url", ""),
-                    "prompt": item.get("prompt", item.get("name", ""))[:100],
+                    "prompt": prompt_text[:100] if prompt_text else "",
                     "name": item.get("name", ""),
                     "source": "art-studio",
                     "type": "video" if is_video else "image",
                     "is_animation": is_video,
-                    "created_at": item.get("created_at", datetime.now(timezone.utc)).isoformat() if item.get("created_at") else None
+                    "created_at": safe_isoformat(item.get("created_at"))
                 })
         
         # 2. Get characters and their galleries in one batch
@@ -7476,17 +7487,18 @@ async def get_unified_gallery(
             # Add character master images
             for char in characters:
                 if char.get("thumbnail"):
+                    desc_text = char.get("description", char.get("appearance_traits", ""))
                     all_items.append({
                         "id": f"char-{char['_id']}",
                         "image_url": char.get("thumbnail", ""),
-                        "prompt": char.get("description", char.get("appearance_traits", ""))[:100],
+                        "prompt": desc_text[:100] if desc_text else "",
                         "name": char.get("name", ""),
                         "source": "character",
                         "type": "image",
                         "is_master": True,
                         "character_id": str(char["_id"]),
                         "character_name": char.get("name", ""),
-                        "created_at": char.get("created_at", datetime.now(timezone.utc)).isoformat() if char.get("created_at") else None
+                        "created_at": safe_isoformat(char.get("created_at"))
                     })
             
             # Batch fetch all character gallery images
@@ -7504,17 +7516,18 @@ async def get_unified_gallery(
                         continue
                     
                     char_id = img.get("character_id", "")
+                    prompt_text = img.get("prompt", "")
                     all_items.append({
                         "id": str(img["_id"]),
                         "image_url": img.get("image_url", ""),
-                        "prompt": img.get("prompt", "")[:100],
+                        "prompt": prompt_text[:100] if prompt_text else "",
                         "name": img.get("name", ""),
                         "source": "character-gallery",
                         "type": "video" if is_video else "image",
                         "is_animation": is_video,
                         "character_id": char_id,
                         "character_name": char_map.get(char_id, ""),
-                        "created_at": img.get("created_at", datetime.now(timezone.utc)).isoformat() if img.get("created_at") else None
+                        "created_at": safe_isoformat(img.get("created_at"))
                     })
         
         # Sort all items by created_at (newest first)
