@@ -16,8 +16,8 @@ import ReactFlow, {
   Handle,
   Position,
   Panel
-} from 'reactflow';
-import 'reactflow/dist/style.css';
+} from '@xyflow/react';
+import '@xyflow/react/dist/style.css';
 import { 
   FiUser, FiImage, FiLayers, FiType, FiZap, FiGrid, 
   FiSave, FiDownload, FiPlus, FiTrash2, FiPlay,
