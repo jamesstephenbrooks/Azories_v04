@@ -166,7 +166,10 @@ export default function Dashboard() {
   
   const removeBookFromSeries = async (book) => {
     try {
-      await axios.delete(`${API}/series/${book.series_id}/books/${book.id}`);
+      const token = localStorage.getItem('azories-token');
+      await axios.delete(`${API}/series/${book.series_id}/books/${book.id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       toast.success('Book removed from series');
       fetchMyBooks();
       fetchSeries();
@@ -177,8 +180,11 @@ export default function Dashboard() {
   
   const reorderBookInSeries = async (seriesId, bookId, currentIndex, newIndex) => {
     try {
+      const token = localStorage.getItem('azories-token');
       await axios.put(`${API}/series/${seriesId}/books/${bookId}/order`, {
         new_order: newIndex + 1  // API expects 1-based order
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
       });
       fetchSeries();
     } catch (error) {
@@ -189,13 +195,16 @@ export default function Dashboard() {
   const publishAllInSeries = async (seriesId) => {
     if (!window.confirm('Submit all books in this series for review?')) return;
     try {
+      const token = localStorage.getItem('azories-token');
       const seriesData = series.find(s => s.id === seriesId);
       if (!seriesData?.books) return;
       
       let submitted = 0;
       for (const book of seriesData.books) {
         if (!book.is_published && book.publish_status !== 'pending_review') {
-          await axios.post(`${API}/books/${book.id}/request-publish`);
+          await axios.post(`${API}/books/${book.id}/request-publish`, {}, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
           submitted++;
         }
       }
