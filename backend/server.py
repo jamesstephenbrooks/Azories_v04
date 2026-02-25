@@ -7113,16 +7113,13 @@ async def get_book_gallery(book_id: str, current_user: dict = Depends(get_curren
         logging.error(f"Book gallery error: {e}")
         raise HTTPException(status_code=500, detail="Failed to load book gallery")
 
-# Starter Library Images - Pre-made images for new users (100+ diverse images)
-STARTER_LIBRARY_IMAGES = [
-    # Fantasy Characters
-    {"id": "starter_1", "url": "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800", "name": "Fantasy Princess", "category": "character", "tags": ["fantasy", "princess", "female", "portrait"]},
-    {"id": "starter_2", "url": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800", "name": "Young Heroine", "category": "character", "tags": ["portrait", "female", "young", "hero"]},
-    {"id": "starter_3", "url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800", "name": "Noble Knight", "category": "character", "tags": ["fantasy", "knight", "male", "portrait"]},
-    {"id": "starter_4", "url": "https://images.unsplash.com/photo-1552058544-f2b08422138a?w=800", "name": "Wise Elder", "category": "character", "tags": ["elder", "wizard", "male", "portrait"]},
-    {"id": "starter_5", "url": "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800", "name": "Mystical Maiden", "category": "character", "tags": ["fantasy", "mystical", "female", "portrait"]},
-    # Children Characters
-    {"id": "starter_6", "url": "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=800", "name": "Curious Child", "category": "character", "tags": ["child", "curious", "adventure"]},
+# Starter Library Images - AI-Illustrated images for children's books
+# Batch 1: 50 Character images (Watercolour, Realistic, Comic, Sketch styles)
+# Stock photos archived - Feb 25, 2026
+from data.starter_library_batch1 import BATCH_1_CHARACTERS
+
+# Current library contains Batch 1 characters (more batches to be added)
+STARTER_LIBRARY_IMAGES = BATCH_1_CHARACTERS
     {"id": "starter_7", "url": "https://images.unsplash.com/photo-1516627145497-ae6968895b74?w=800", "name": "Happy Boy", "category": "character", "tags": ["child", "boy", "happy", "young"]},
     {"id": "starter_8", "url": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=800", "name": "Confident Teen", "category": "character", "tags": ["teen", "confident", "male"]},
     {"id": "starter_9", "url": "https://images.unsplash.com/photo-1765635648081-73f1e9e2189a?w=800", "name": "Superhero Kid", "category": "character", "tags": ["child", "superhero", "costume", "adventure"]},
