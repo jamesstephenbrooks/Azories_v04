@@ -2340,22 +2340,24 @@ export default function ArtStudioExpert() {
                         key={item._id || item.id}
                         onClick={() => {
                           if (galleryPickerCallback) {
-                            galleryPickerCallback(item.image_url);
+                            // Handle different URL field names (image_url for galleries, url for starter library)
+                            const imageUrl = item.image_url || item.url;
+                            galleryPickerCallback(imageUrl);
                           }
                         }}
                         className="relative rounded-lg overflow-hidden border-2 border-transparent hover:border-yellow-500 transition-all group aspect-square"
                       >
                         <img 
-                          src={item.image_url} 
-                          alt={item.name || 'Gallery image'} 
+                          src={item.image_url || item.url} 
+                          alt={item.name || item.category || 'Gallery image'} 
                           className="w-full h-full object-cover"
                         />
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
                           <FiCheck className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
-                        {item.name && (
+                        {(item.name || item.category) && (
                           <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-2 py-1">
-                            <p className="text-white text-xs truncate">{item.name}</p>
+                            <p className="text-white text-xs truncate">{item.name || item.category}</p>
                           </div>
                         )}
                       </button>
