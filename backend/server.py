@@ -7388,6 +7388,8 @@ async def get_unified_gallery(
                 all_items.append({
                     "id": str(item["_id"]),
                     "image_url": item.get("image_url", ""),
+                    "thumbnail_url": item.get("thumbnail_url"),
+                    "medium_url": item.get("medium_url"),
                     "prompt": prompt_text[:100] if prompt_text else "",
                     "name": item.get("name", ""),
                     "source": "art-studio",
