@@ -323,7 +323,10 @@ export default function Dashboard() {
 
   const handleUpgrade = async () => {
     try {
-      await axios.post(`${API}/auth/upgrade`, { subscription: 'pro' });
+      const token = localStorage.getItem('azories-token');
+      await axios.post(`${API}/auth/upgrade`, { subscription: 'pro' }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setSubscription('pro');
       toast.success('Upgraded to Pro! You can now create books.');
       setIsUpgradeOpen(false);
@@ -335,9 +338,12 @@ export default function Dashboard() {
 
   const togglePublish = async (book) => {
     try {
+      const token = localStorage.getItem('azories-token');
       // If book is published, use unpublish endpoint
       if (book.is_published || book.publish_status === 'published') {
-        await axios.post(`${API}/books/${book.id}/unpublish`);
+        await axios.post(`${API}/books/${book.id}/unpublish`, {}, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         toast.success('Book unpublished');
         fetchMyBooks();
         return;
@@ -350,7 +356,9 @@ export default function Dashboard() {
       }
       
       // Otherwise, request publish (sends to admin for review)
-      const response = await axios.post(`${API}/books/${book.id}/request-publish`);
+      const response = await axios.post(`${API}/books/${book.id}/request-publish`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       toast.success(response.data.message || 'Book submitted for review!');
       fetchMyBooks();
     } catch (error) {
@@ -375,7 +383,10 @@ export default function Dashboard() {
     if (!window.confirm('Are you sure you want to delete this book?')) return;
     
     try {
-      await axios.delete(`${API}/books/${bookId}`);
+      const token = localStorage.getItem('azories-token');
+      await axios.delete(`${API}/books/${bookId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       toast.success('Book deleted');
       fetchMyBooks();
     } catch (error) {
