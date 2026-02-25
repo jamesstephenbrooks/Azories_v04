@@ -3137,7 +3137,7 @@ async def update_scene(scene_id: str, request: SceneUpdate, current_user: dict =
     if not scene:
         raise HTTPException(status_code=404, detail="Scene not found")
     
-    update_data = {k: v for k, v in request.dict().items() if v is not None and k != 'add_reference_images'}
+    update_data = {k: v for k, v in request.model_dump().items() if v is not None and k != 'add_reference_images'}
     
     if request.add_reference_images:
         existing = scene.get("reference_images", [])
