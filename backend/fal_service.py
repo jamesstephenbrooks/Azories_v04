@@ -588,6 +588,43 @@ async def upload_image_to_fal(base64_image: str) -> str:
         raise Exception(f"Failed to upload image to fal.ai: {str(e)}")
 
 
+async def upload_video_to_fal(base64_video: str) -> str:
+    """
+    Upload a base64 video to fal.ai storage and get a URL.
+    Note: fal.ai storage is temporary (7 days retention).
+    """
+    client = _get_client()
+
+    # Detect content type from data URI
+    content_type = "video/mp4"
+    if base64_video.startswith('data:'):
+        if 'video/webm' in base64_video:
+            content_type = "video/webm"
+        elif 'video/quicktime' in base64_video or 'video/mov' in base64_video:
+            content_type = "video/quicktime"
+        if ',' in base64_video:
+            base64_video = base64_video.split(',')[1]
+
+    try:
+        video_bytes = base64.b64decode(base64_video)
+    except Exception as e:
+        raise Exception(f"Invalid base64 video data: {e}")
+
+    try:
+        url = await client.upload(video_bytes, content_type=content_type)
+        logger.info(f"Uploaded video to fal.ai CDN: {url[:60]}...")
+        return url
+    except Exception as e:
+        error_str = str(e).lower()
+        if '401' in error_str or 'unauthorized' in error_str:
+            raise Exception(
+                "fal.ai authentication failed (401 Unauthorized). "
+                "Your FAL_KEY may be invalid or expired."
+            )
+        logger.error(f"Video upload error: {str(e)}")
+        raise Exception(f"Failed to upload video to fal.ai: {str(e)}")
+
+
 def get_available_models() -> List[Dict[str, str]]:
     """Get list of available fal.ai models"""
     return [
