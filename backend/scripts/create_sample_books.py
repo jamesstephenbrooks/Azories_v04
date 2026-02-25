@@ -12,7 +12,7 @@ import sys
 # Add parent directory to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-API_URL = os.environ.get('API_URL', 'https://story-creator-86.preview.emergentagent.com')
+API_URL = os.environ.get('API_URL', 'https://ai-characters-lab.preview.emergentagent.com')
 
 # Sample book ideas for different genres
 BOOK_IDEAS = [
