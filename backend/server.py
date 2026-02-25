@@ -6922,7 +6922,7 @@ async def migrate_gallery_sources(current_user: dict = Depends(get_current_user)
 
 @api_router.post("/art-studio/gallery")
 async def add_to_art_studio_gallery(request: dict, current_user: dict = Depends(get_current_user)):
-    """Save an image to the Art Studio gallery"""
+    """Save an image to the Art Studio gallery with thumbnails"""
     user = current_user
     
     image_url = request.get("image_url")
@@ -6932,27 +6932,49 @@ async def add_to_art_studio_gallery(request: dict, current_user: dict = Depends(
     try:
         now = datetime.now(timezone.utc)
         
-        # If image is base64, upload it to fal.ai CDN for better performance
+        # Initialize URLs
         final_url = image_url
-        if image_url.startswith('data:image'):
+        thumbnail_url = None
+        medium_url = None
+        
+        # If image is base64, upload it to fal.ai CDN with thumbnails
+        if image_url.startswith('data:image') and FAL_AVAILABLE:
             try:
-                logging.info("Uploading base64 image to fal.ai CDN...")
-                final_url = await upload_image_to_fal(image_url)
-                logging.info(f"Image uploaded to: {final_url}")
+                logging.info("Uploading base64 image to fal.ai CDN with thumbnails...")
+                result = await upload_image_with_thumbnails(image_url)
+                final_url = result['image_url']
+                thumbnail_url = result['thumbnail_url']
+                medium_url = result['medium_url']
+                logging.info(f"Image uploaded with thumbnails: {final_url[:50]}...")
             except Exception as upload_error:
-                logging.warning(f"Failed to upload to CDN, using base64: {upload_error}")
-                final_url = image_url
+                logging.warning(f"Failed to upload with thumbnails: {upload_error}")
+                # Fallback: try simple upload
+                try:
+                    final_url = await upload_image_to_fal(image_url)
+                except:
+                    final_url = image_url
+        # If already a CDN URL, generate thumbnails
+        elif image_url.startswith('https://') and FAL_AVAILABLE:
+            try:
+                logging.info("Generating thumbnails for existing CDN image...")
+                thumbs = await generate_thumbnails(image_url)
+                thumbnail_url = thumbs['thumbnail_url']
+                medium_url = thumbs['medium_url']
+            except Exception as thumb_error:
+                logging.warning(f"Failed to generate thumbnails: {thumb_error}")
         
         gallery_item = {
             "user_id": user["id"],
             "image_url": final_url,
+            "thumbnail_url": thumbnail_url,
+            "medium_url": medium_url,
             "name": request.get("name", request.get("prompt", "Untitled")),
             "prompt": request.get("prompt", ""),
             "type": request.get("type", "image"),
             "style": request.get("style", ""),
             "model": request.get("model", ""),
             "book_id": request.get("book_id"),
-            "source": request.get("source", "art_studio"),  # art_studio or pro_studio
+            "source": request.get("source", "art_studio"),
             "created_at": now
         }
         
@@ -6962,7 +6984,9 @@ async def add_to_art_studio_gallery(request: dict, current_user: dict = Depends(
             "success": True,
             "id": str(result.inserted_id),
             "message": "Image saved to gallery",
-            "image_url": final_url
+            "image_url": final_url,
+            "thumbnail_url": thumbnail_url,
+            "medium_url": medium_url
         }
         
     except Exception as e:
