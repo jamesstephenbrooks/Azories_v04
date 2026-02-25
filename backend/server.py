@@ -824,7 +824,7 @@ async def reset_password(request: ResetPasswordRequest, background_tasks: Backgr
     
     # Check if token has expired
     expiry = datetime.fromisoformat(reset_record["expires_at"])
-    if datetime.utcnow() > expiry:
+    if datetime.now(timezone.utc) > expiry:
         await db.password_resets.delete_one({"token": request.token})
         raise HTTPException(status_code=400, detail="Reset token has expired")
     
