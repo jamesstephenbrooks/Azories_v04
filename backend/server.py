@@ -330,6 +330,7 @@ class BookResponse(BaseModel):
     is_best_of_week: bool
     layout_mode: str
     narrator_voice_id: str
+    narrator_voice_locked: Optional[bool] = False  # Added - was missing from response
     age_rating: str
     publish_status: str = "draft"  # draft, pending_review, published, rejected
     moderation_flags: Optional[List[str]] = []
