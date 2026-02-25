@@ -3,8 +3,19 @@
 
 from fastapi import APIRouter
 
-# Create main router
-api_router = APIRouter()
+# Import routers from modules
+from .admin import router as admin_router
 
-# Import and include sub-routers
-# These will be added as the refactoring progresses
+# List of all routers to be included
+routers = [
+    admin_router,
+]
+
+def setup_routes(app, db):
+    """Setup all routes with database dependency"""
+    from . import admin
+    admin.set_db(db)
+    
+    # Include all routers
+    for router in routers:
+        app.include_router(router, prefix="/api")
