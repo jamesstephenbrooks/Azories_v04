@@ -8128,6 +8128,4 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    client.close()
+# Note: Shutdown handler moved to lifespan context manager above
