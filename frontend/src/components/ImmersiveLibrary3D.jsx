@@ -233,8 +233,8 @@ const matchesAgeFilter = (bookAgeRating, filterValue) => {
   return allowedFilters.includes(filterValue);
 };
 
-// Interactive 3D Book Model URL - served from public folder to avoid CORS issues
-const ANIMATED_BOOK_GLB_URL = '/animated_book.glb';
+// Interactive 3D Book Model - Optimized (reduced from 627KB to 241KB)
+const ANIMATED_BOOK_GLB_URL = '/models/animated_book_optimized.glb';
 
 // Detect mobile/tablet device - includes iPad detection
 const isMobile = () => {
