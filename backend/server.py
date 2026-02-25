@@ -80,8 +80,11 @@ except Exception as e:
 # Emergent LLM Key for AI features
 EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY')
 
-# JWT settings
-JWT_SECRET = os.environ.get('JWT_SECRET', 'default_secret_key')
+# JWT settings - REQUIRED, no defaults for security
+JWT_SECRET = os.environ.get('JWT_SECRET')
+if not JWT_SECRET:
+    raise RuntimeError("JWT_SECRET environment variable is required")
+
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_HOURS = 24
 
@@ -89,7 +92,7 @@ JWT_EXPIRATION_HOURS = 24
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD")
 if not ADMIN_USERNAME or not ADMIN_PASSWORD:
-    logging.warning("ADMIN_USERNAME and ADMIN_PASSWORD should be set in environment variables")
+    raise RuntimeError("ADMIN_USERNAME and ADMIN_PASSWORD environment variables are required")
     ADMIN_USERNAME = ADMIN_USERNAME or "Admin"
     ADMIN_PASSWORD = ADMIN_PASSWORD or "change_me_in_production"
 
