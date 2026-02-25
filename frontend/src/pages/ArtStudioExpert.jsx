@@ -2301,7 +2301,7 @@ export default function ArtStudioExpert() {
                   </div>
                 ) : (
                   <div className="grid grid-cols-4 gap-3">
-                    {galleryImages.filter(g => g.type !== 'animation').map((item) => (
+                    {(galleryImages || []).filter(g => g.type !== 'animation').map((item) => (
                       <button
                         key={item._id || item.id}
                         onClick={() => {
