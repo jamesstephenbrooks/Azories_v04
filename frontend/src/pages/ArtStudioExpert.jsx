@@ -1013,8 +1013,8 @@ export default function ArtStudioExpert() {
           // Art Studio: Only show art_studio source items (exclude pro_studio images)
           images = images.filter(img => img.source !== 'pro_studio');
         } else if (type === 'pro') {
-          // Pro Studio: Only show character-related and pro_studio source items (exclude art-studio)
-          images = images.filter(img => img.source !== 'art-studio');
+          // Pro Studio: Only show pro_studio source items and character-related content
+          images = images.filter(img => img.source === 'pro_studio' || img.source === 'character' || img.source === 'character-gallery');
         }
         // Starter library doesn't need filtering
         
