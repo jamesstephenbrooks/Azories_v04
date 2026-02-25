@@ -4616,24 +4616,31 @@ export default function ProStudio() {
                         </div>
                       ) : (
                         <>
+                          {/* Placeholder skeleton */}
+                          <div className="img-placeholder absolute inset-0 bg-gradient-to-br from-gray-700 to-gray-800 animate-pulse" />
                           <img 
                             src={item.image_url || item.url} 
                             alt={item.prompt || 'Gallery item'} 
-                            className="w-full aspect-square object-cover"
+                            className="w-full aspect-square object-cover relative z-10"
                             loading="lazy"
+                            decoding="async"
                             onLoad={(e) => {
-                              // Successfully loaded
+                              // Successfully loaded - hide placeholder
                               e.target.style.opacity = '1';
+                              const placeholder = e.target.parentElement.querySelector('.img-placeholder');
+                              if (placeholder) placeholder.style.display = 'none';
                             }}
                             onError={(e) => {
                               // Failed to load - show fallback
                               e.target.style.display = 'none';
+                              const placeholder = e.target.parentElement.querySelector('.img-placeholder');
+                              if (placeholder) placeholder.style.display = 'none';
                               const fallback = e.target.parentElement.querySelector('.image-fallback');
                               if (fallback) fallback.classList.remove('hidden');
                             }}
-                            style={{ opacity: 0.7, transition: 'opacity 0.3s' }}
+                            style={{ opacity: 0, transition: 'opacity 0.2s ease-out' }}
                           />
-                          <div className="image-fallback hidden w-full aspect-square bg-gray-700 flex flex-col items-center justify-center absolute inset-0">
+                          <div className="image-fallback hidden w-full aspect-square bg-gray-700 flex flex-col items-center justify-center absolute inset-0 z-20">
                             <div className="text-center text-gray-500">
                               <FiImage className="w-8 h-8 mx-auto mb-2 opacity-50" />
                               <span className="text-xs block">Unavailable</span>
