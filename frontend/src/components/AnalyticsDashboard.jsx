@@ -1,14 +1,12 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import axios from 'axios';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
   FiEye, FiBook, FiUsers, FiTrendingUp, FiBarChart2, FiCalendar,
   FiArrowUp, FiArrowDown, FiMinus
 } from 'react-icons/fi';
-
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+import { booksAPI, getErrorMessage } from '../services/api';
 
 export default function AnalyticsDashboard({ books = [] }) {
   const [selectedBook, setSelectedBook] = useState(null);
@@ -35,7 +33,7 @@ export default function AnalyticsDashboard({ books = [] }) {
   const fetchBookAnalytics = async (bookId) => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API}/books/${bookId}/analytics`);
+      const res = await booksAPI.getAnalytics(bookId);
       setBookAnalytics(res.data);
     } catch (error) {
       console.error('Failed to fetch analytics');

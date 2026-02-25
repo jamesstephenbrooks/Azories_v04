@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiAward, FiZap, FiBook, FiStar, FiHeart, FiTrendingUp, FiClock, FiTarget } from 'react-icons/fi';
-import axios from 'axios';
-
-const API = process.env.REACT_APP_BACKEND_URL;
+import { Button } from '@/components/ui/button';
+import { userAPI, getErrorMessage } from '../services/api';
 
 // Badge definitions
 export const BADGES = {
@@ -296,7 +295,7 @@ export function useStreaksAndBadges() {
 
   const fetchStats = async () => {
     try {
-      const res = await axios.get(`${API}/api/user/reading-stats`);
+      const res = await userAPI.getReadingStats();
       setStreak(res.data.streak || 0);
       setBadges(res.data.badges || []);
     } catch (error) {
@@ -308,7 +307,7 @@ export function useStreaksAndBadges() {
 
   const recordReading = async (bookId, timeSpent = 0) => {
     try {
-      const res = await axios.post(`${API}/api/user/record-reading`, {
+      const res = await userAPI.recordReading({
         book_id: bookId,
         time_spent: timeSpent
       });
@@ -342,6 +341,3 @@ export function useStreaksAndBadges() {
     refreshStats: fetchStats
   };
 }
-
-// Import Button for the NewBadgePopup
-import { Button } from '@/components/ui/button';

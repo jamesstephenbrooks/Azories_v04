@@ -2,10 +2,8 @@ import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { FiMic, FiUpload, FiTrash2, FiPlay, FiPause, FiCheck, FiX } from 'react-icons/fi';
-import axios from 'axios';
 import { toast } from 'sonner';
-
-const API = process.env.REACT_APP_BACKEND_URL;
+import { voicesAPI, getErrorMessage } from '../services/api';
 
 export default function VoiceNarrationUpload({ bookId, pages = [], onNarrationUpdate }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -100,17 +98,7 @@ export default function VoiceNarrationUpload({ bookId, pages = [], onNarrationUp
     try {
       setUploadProgress(prev => ({ ...prev, [pageIndex]: 0 }));
       
-      const response = await axios.post(
-        `${API}/api/books/${bookId}/narration/${pageIndex}`,
-        formData,
-        {
-          headers: { 'Content-Type': 'multipart/form-data' },
-          onUploadProgress: (progressEvent) => {
-            const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            setUploadProgress(prev => ({ ...prev, [pageIndex]: percent }));
-          }
-        }
-      );
+      const response = await voicesAPI.uploadNarration(bookId, formData);
 
       setRecordings(prev => ({
         ...prev,
@@ -120,7 +108,7 @@ export default function VoiceNarrationUpload({ bookId, pages = [], onNarrationUp
       toast.success(`Narration for page ${pageIndex + 1} uploaded!`);
       if (onNarrationUpdate) onNarrationUpdate();
     } catch (error) {
-      toast.error('Failed to upload narration');
+      toast.error(getErrorMessage(error));
     } finally {
       setUploadProgress(prev => {
         const newProgress = { ...prev };

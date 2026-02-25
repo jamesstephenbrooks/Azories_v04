@@ -6,10 +6,8 @@ import {
   FiUsers, FiUserPlus, FiX, FiCheck, FiCopy, FiMail, 
   FiEdit3, FiEye, FiStar, FiTrash2 
 } from 'react-icons/fi';
-import axios from 'axios';
 import { toast } from 'sonner';
-
-const API = process.env.REACT_APP_BACKEND_URL;
+import { booksAPI, getErrorMessage } from '../services/api';
 
 // Role definitions
 const ROLES = {
@@ -33,13 +31,11 @@ export default function CollaborativeWriting({ bookId, isOwner, currentCollabora
   const generateInviteLink = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.post(`${API}/api/books/${bookId}/invite-link`, {
-        role: inviteRole
-      });
+      const response = await booksAPI.getInviteLink(bookId, inviteRole);
       setInviteLink(response.data.invite_link);
       toast.success('Invite link generated!');
     } catch (error) {
-      toast.error('Failed to generate invite link');
+      toast.error(getErrorMessage(error));
     } finally {
       setIsLoading(false);
     }
@@ -50,7 +46,7 @@ export default function CollaborativeWriting({ bookId, isOwner, currentCollabora
 
     try {
       setIsLoading(true);
-      await axios.post(`${API}/api/books/${bookId}/collaborators/invite`, {
+      await booksAPI.inviteCollaborator(bookId, {
         email: inviteEmail.trim(),
         role: inviteRole
       });
@@ -58,7 +54,7 @@ export default function CollaborativeWriting({ bookId, isOwner, currentCollabora
       setInviteEmail('');
       fetchCollaborators();
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Failed to send invitation');
+      toast.error(getErrorMessage(error));
     } finally {
       setIsLoading(false);
     }
@@ -66,7 +62,7 @@ export default function CollaborativeWriting({ bookId, isOwner, currentCollabora
 
   const fetchCollaborators = async () => {
     try {
-      const response = await axios.get(`${API}/api/books/${bookId}/collaborators`);
+      const response = await booksAPI.getCollaborators(bookId);
       setCollaborators(response.data.collaborators || []);
       if (onUpdate) onUpdate(response.data.collaborators);
     } catch (error) {
@@ -76,13 +72,11 @@ export default function CollaborativeWriting({ bookId, isOwner, currentCollabora
 
   const updateRole = async (userId, newRole) => {
     try {
-      await axios.put(`${API}/api/books/${bookId}/collaborators/${userId}`, {
-        role: newRole
-      });
+      await booksAPI.updateCollaborator(bookId, userId, { role: newRole });
       toast.success('Role updated');
       fetchCollaborators();
     } catch (error) {
-      toast.error('Failed to update role');
+      toast.error(getErrorMessage(error));
     }
   };
 
@@ -90,11 +84,11 @@ export default function CollaborativeWriting({ bookId, isOwner, currentCollabora
     if (!confirm('Remove this collaborator?')) return;
 
     try {
-      await axios.delete(`${API}/api/books/${bookId}/collaborators/${userId}`);
+      await booksAPI.removeCollaborator(bookId, userId);
       toast.success('Collaborator removed');
       fetchCollaborators();
     } catch (error) {
-      toast.error('Failed to remove collaborator');
+      toast.error(getErrorMessage(error));
     }
   };
 
