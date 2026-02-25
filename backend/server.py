@@ -1282,13 +1282,18 @@ async def create_book(book_data: BookCreate, current_user: dict = Depends(get_cu
     
     book_id = str(uuid.uuid4())
     now = datetime.now(timezone.utc).isoformat()
+    
+    # Convert base64 images to CDN URLs for better performance
+    cover_image = await convert_base64_to_cdn(book_data.cover_image or "")
+    back_cover_image = await convert_base64_to_cdn(book_data.back_cover_image or "")
+    
     book = {
         "id": book_id,
         "title": book_data.title,
         "description": book_data.description or "",
         "genre": book_data.genre or "General",
-        "cover_image": book_data.cover_image or "",
-        "back_cover_image": book_data.back_cover_image or "",
+        "cover_image": cover_image,
+        "back_cover_image": back_cover_image,
         "cover_title": book_data.cover_title or book_data.title,
         "cover_subtitle": book_data.cover_subtitle or "",
         "back_cover_text": book_data.back_cover_text or "",
