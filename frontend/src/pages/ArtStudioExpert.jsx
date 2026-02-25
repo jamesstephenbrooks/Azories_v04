@@ -2294,7 +2294,7 @@ export default function ArtStudioExpert() {
               
               {/* Gallery Grid */}
               <div className="flex-1 overflow-y-auto">
-                {galleryImages.length === 0 ? (
+                {(!galleryImages || galleryImages.length === 0) ? (
                   <div className="text-center py-12">
                     <FiImage className="w-12 h-12 mx-auto text-white/20 mb-3" />
                     <p className="text-white/40 text-sm">No images in {galleryTab === 'art' ? 'Art' : 'Pro'} Studio gallery</p>
