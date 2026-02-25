@@ -4578,6 +4578,7 @@ export default function ProStudio() {
                   </p>
                 </div>
               ) : (
+                <>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                   {filteredGallery.map((item) => {
                     // Determine if this is a video/animation
