@@ -864,7 +864,7 @@ async def verify_reset_token(token: str):
         return {"valid": False, "message": "Invalid token"}
     
     expiry = datetime.fromisoformat(reset_record["expires_at"])
-    if datetime.utcnow() > expiry:
+    if datetime.now(timezone.utc) > expiry:
         return {"valid": False, "message": "Token has expired"}
     
     return {"valid": True, "message": "Token is valid"}
