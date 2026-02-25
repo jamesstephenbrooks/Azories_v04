@@ -4589,24 +4589,50 @@ export default function ProStudio() {
                       {/* Media Preview */}
                       {isVideo ? (
                         <div className="relative w-full aspect-square bg-gray-900">
+                          {/* Video thumbnail placeholder - shown by default on mobile */}
+                          <div className="video-thumbnail absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 flex flex-col items-center justify-center">
+                            <FiFilm className="w-10 h-10 text-purple-400 mb-2" />
+                            <span className="text-xs text-gray-400">Tap to play</span>
+                          </div>
                           <video 
                             src={item.image_url || item.url} 
-                            className="w-full h-full object-cover" 
+                            className="w-full h-full object-cover absolute inset-0" 
                             muted 
                             playsInline 
                             loop
-                            preload="metadata"
-                            onMouseEnter={(e) => e.target.play().catch(() => {})}
-                            onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
-                            onLoadedData={(e) => { e.target.currentTime = 0.1; }}
+                            preload="none"
+                            onMouseEnter={(e) => {
+                              // Only auto-play on non-touch devices
+                              if (!('ontouchstart' in window)) {
+                                e.target.play().catch(() => {});
+                              }
+                            }}
+                            onMouseLeave={(e) => { 
+                              e.target.pause(); 
+                              e.target.currentTime = 0; 
+                            }}
+                            onClick={(e) => {
+                              // Toggle play/pause on click for mobile
+                              if (e.target.paused) {
+                                e.target.play().catch(() => {});
+                                e.target.parentElement.querySelector('.video-thumbnail')?.classList.add('hidden');
+                              } else {
+                                e.target.pause();
+                              }
+                            }}
+                            onLoadedData={(e) => { 
+                              e.target.currentTime = 0.1; 
+                              e.target.parentElement.querySelector('.video-thumbnail')?.classList.add('hidden');
+                            }}
                             onError={(e) => {
                               e.target.style.display = 'none';
                               e.target.parentElement.querySelector('.video-fallback')?.classList.remove('hidden');
+                              e.target.parentElement.querySelector('.video-thumbnail')?.classList.add('hidden');
                             }}
                           />
                           <div className="video-fallback hidden w-full h-full bg-gray-800 flex flex-col items-center justify-center absolute inset-0">
                             <FiVideo className="w-10 h-10 text-purple-400 mb-2" />
-                            <span className="text-xs text-gray-400">Video</span>
+                            <span className="text-xs text-gray-400">Video unavailable</span>
                           </div>
                           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                             <div className="bg-black/50 rounded-full p-2">
