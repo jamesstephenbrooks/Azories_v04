@@ -886,7 +886,7 @@ export default function ArtStudioExpert() {
   const [showGalleryPicker, setShowGalleryPicker] = useState(false);
   const [galleryImages, setGalleryImages] = useState([]);
   const [galleryPickerCallback, setGalleryPickerCallback] = useState(null);
-  const [galleryTab, setGalleryTab] = useState('art'); // 'art' or 'pro'
+  const [galleryTab, setGalleryTab] = useState('art'); // 'art', 'pro', or 'starter'
   
   // Load user's books
   useEffect(() => {
