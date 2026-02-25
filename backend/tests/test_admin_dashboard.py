@@ -13,7 +13,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://azories-pro-studio.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://story-creator-86.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 ADMIN_USERNAME = "Admin"

@@ -86,7 +86,7 @@ Azories is a full-stack digital book creation platform with AI-powered features 
 ### Backend (.env)
 ```
 MONGO_URL, DB_NAME, JWT_SECRET
-FAL_KEY=c999ecb8-2b84-40c3-9920-ff3b293498de:1acb251c84bd25d64197c8996d28b1da
+FAL_KEY=story-creator-86:1acb251c84bd25d64197c8996d28b1da
 RESEND_API_KEY, SENDER_EMAIL
 BREVO_API_KEY, BREVO_SENDER_EMAIL, BREVO_ACCOUNT_EMAIL
 EMERGENT_LLM_KEY, OPENAI_API_KEY
