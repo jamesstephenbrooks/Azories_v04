@@ -988,7 +988,7 @@ export default function ArtStudioExpert() {
   // Load gallery images for the image node picker
   const loadGalleryImages = async (type = 'art') => {
     try {
-      const endpoint = type === 'pro' ? '/api/pro-studio/gallery' : '/api/art-studio/gallery';
+      const endpoint = type === 'pro' ? '/api/pro-studio/gallery/unified' : '/api/art-studio/gallery';
       const response = await fetch(`${API_URL}${endpoint}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
