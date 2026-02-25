@@ -9,7 +9,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://ai-characters-lab.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://azories-pro-1.preview.emergentagent.com')
 
 # VIP Test credentials
 VIP_EMAIL = "jamesstephenbrooks@outlook.com"

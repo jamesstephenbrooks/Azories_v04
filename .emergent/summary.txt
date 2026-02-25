@@ -31,222 +31,14 @@ The user wants to enhance their Azories digital book application. The primary go
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a full-stack React/FastAPI/MongoDB platform. In this session, a massive number of critical security vulnerabilities, performance bottlenecks, and code quality issues were fixed based on a provided code review. Key improvements include:
--   **Mobile Performance:** The Pro Studio gallery performance was drastically improved by implementing a new unified, paginated backend endpoint, lazy-loading images, and skeleton placeholders.
--   **Security:** Hardcoded secrets (passwords, JWT keys, VIP emails) were removed from the codebase and moved to environment variables. A critical privilege escalation endpoint was removed, and rate limiting was added to the admin login.
--   **Performance:** Numerous N+1 database query issues in the admin panel were resolved using MongoDB aggregation pipelines, and analytics queries now run in parallel.
--   **Code Quality & Dependencies:** The backend  was cleaned, reducing bloat and fixing a critical missing dependency. Frontend dependencies were cleaned up, and the main  was refactored to use lazy loading, protected routes, an error boundary, and a 404 page.
--   **AI Generation:** The  file, which was causing AI generation failures, has been completely replaced with a robust version that includes timeouts, retry logic, and other critical bug fixes.
+The application is a full-stack React/FastAPI/MongoDB platform. The previous session focused on massive security, performance, and code quality improvements based on a code review. In this session, a major frontend refactoring was completed based on the user's request. A centralized API service file () was created using . This service automatically handles the base URL and attaches the authentication token from  to all outgoing requests. Subsequently, **31 frontend files** (components, pages, hooks, and contexts) were updated to use this new centralized service, removing direct  and  calls.
 
 **Last working item**:
--   **Last item agent was working:** The agent replaced the entire  file with a corrected version provided by the user. This was done to fix numerous critical bugs causing AI generation features (like PuLID, LoRA, and video) to fail or hang.
--   **Status:** IN PROGRESS
--   **Agent Testing Done:** N
+-   **Last item agent was working:** Centralizing all frontend API calls into a new service file at  and refactoring all components to use it. This was a large-scale refactoring effort touching 31 files.
+-   **Status:** USER VERIFICATION PENDING
+-   **Agent Testing Done:** Y (Partial - The agent ran  and restarted the frontend service to confirm the application builds and runs without syntax errors. However, no functional testing was performed.)
 -   **Which testing method agent to use?** both
-    -   **Backend:** Restart the backend and check logs (==> /var/log/supervisor/backend.err.log <==
-INFO:     Waiting for application shutdown.
-2026-02-25 18:44:40,458 - server - INFO - Database connection closed
-INFO:     Application shutdown complete.
-INFO:     Finished server process [4951]
-INFO:     Started server process [5049]
-INFO:     Waiting for application startup.
-2026-02-25 18:44:42,702 - server - INFO - Started periodic task cleanup
-INFO:     Application startup complete.
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-2026-02-25 18:44:46,110 - server - INFO - Database connection closed
-INFO:     Application shutdown complete.
-INFO:     Finished server process [5049]
-INFO:     Stopping reloader process [4131]
-INFO:     Will watch for changes in these directories: ['/app/backend']
-INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
-INFO:     Started reloader process [5054] using WatchFiles
-INFO:     Started server process [5056]
-INFO:     Waiting for application startup.
-2026-02-25 18:44:48,429 - server - INFO - Started periodic task cleanup
-INFO:     Application startup complete.
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-2026-02-25 18:48:11,621 - server - INFO - Database connection closed
-INFO:     Application shutdown complete.
-INFO:     Finished server process [5056]
-INFO:     Stopping reloader process [5054]
-INFO:     Will watch for changes in these directories: ['/app/backend']
-INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
-INFO:     Started reloader process [5510] using WatchFiles
-INFO:     Started server process [5512]
-INFO:     Waiting for application startup.
-2026-02-25 18:48:16,798 - server - INFO - Started periodic task cleanup
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'routes/admin.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-2026-02-25 19:14:27,672 - server - INFO - Database connection closed
-INFO:     Application shutdown complete.
-INFO:     Finished server process [5512]
-INFO:     Started server process [6604]
-INFO:     Waiting for application startup.
-2026-02-25 19:14:33,182 - server - INFO - Started periodic task cleanup
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-2026-02-25 19:14:45,913 - server - INFO - Database connection closed
-INFO:     Application shutdown complete.
-INFO:     Finished server process [6604]
-INFO:     Started server process [6702]
-INFO:     Waiting for application startup.
-2026-02-25 19:14:48,547 - server - INFO - Started periodic task cleanup
-INFO:     Application startup complete.
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-2026-02-25 19:15:04,882 - server - INFO - Database connection closed
-INFO:     Application shutdown complete.
-INFO:     Finished server process [6702]
-INFO:     Stopping reloader process [5510]
-INFO:     Will watch for changes in these directories: ['/app/backend']
-INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
-INFO:     Started reloader process [6758] using WatchFiles
-INFO:     Started server process [6760]
-INFO:     Waiting for application startup.
-2026-02-25 19:15:07,356 - server - INFO - Started periodic task cleanup
-INFO:     Application startup complete.
-2026-02-25 19:15:31,616 - routes.admin - INFO - ADMIN_ACTION: Admin Admin logged in from IP 10.227.20.2
-2026-02-25 19:15:40,167 - routes.admin - WARNING - ADMIN_SECURITY: Failed login attempt from IP 10.227.20.2
-2026-02-25 19:15:40,498 - routes.admin - WARNING - ADMIN_SECURITY: Failed login attempt from IP 10.227.25.143
-2026-02-25 19:15:40,833 - routes.admin - WARNING - ADMIN_SECURITY: Failed login attempt from IP 10.227.25.143
-2026-02-25 19:15:40,968 - routes.admin - WARNING - ADMIN_SECURITY: Failed login attempt from IP 10.227.20.2
-2026-02-25 19:15:41,112 - routes.admin - WARNING - ADMIN_SECURITY: Failed login attempt from IP 10.227.20.2
-2026-02-25 19:15:41,257 - routes.admin - WARNING - ADMIN_SECURITY: Failed login attempt from IP 10.227.20.2
-WARNING:  WatchFiles detected changes in 'fal_service.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-2026-02-25 19:21:34,023 - server - INFO - Database connection closed
-INFO:     Application shutdown complete.
-INFO:     Finished server process [6760]
-INFO:     Started server process [7023]
-INFO:     Waiting for application startup.
-2026-02-25 19:21:39,016 - server - INFO - Started periodic task cleanup
-INFO:     Application startup complete.
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-2026-02-25 19:23:19,914 - server - INFO - Database connection closed
-INFO:     Application shutdown complete.
-INFO:     Finished server process [7023]
-INFO:     Stopping reloader process [6758]
-INFO:     Will watch for changes in these directories: ['/app/backend']
-INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
-INFO:     Started reloader process [7105] using WatchFiles
-INFO:     Started server process [7107]
-INFO:     Waiting for application startup.
-2026-02-25 19:23:22,747 - server - INFO - Started periodic task cleanup
-INFO:     Application startup complete.
-INFO:     Will watch for changes in these directories: ['/app/backend']
-INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
-INFO:     Started reloader process [48] using WatchFiles
-
-==> /var/log/supervisor/backend.out.log <==
-INFO:     10.227.25.143:54986 - "GET /api/books/my HTTP/1.1" 200 OK
-INFO:     10.227.20.2:45284 - "GET /api/genres HTTP/1.1" 200 OK
-INFO:     10.227.20.2:45284 - "GET /api/age-ratings HTTP/1.1" 200 OK
-INFO:     10.227.25.143:54986 - "GET /api/series HTTP/1.1" 200 OK
-INFO:     10.227.25.143:54986 - "GET /api/books/my HTTP/1.1" 200 OK
-INFO:     10.227.25.143:54986 - "GET /api/genres HTTP/1.1" 200 OK
-INFO:     10.227.20.2:52322 - "POST /api/books/8d816af4-acc2-463a-a16c-84f9bd1742f0/request-publish HTTP/1.1" 200 OK
-INFO:     10.227.20.2:52322 - "GET /api/books/my HTTP/1.1" 200 OK
-INFO:     10.227.25.143:41562 - "GET /api/starter-library HTTP/1.1" 200 OK
-INFO:     10.227.25.143:41570 - "GET /api/art-studio/gallery HTTP/1.1" 200 OK
-INFO:     10.227.25.143:41562 - "GET /api/art-studio/character-profiles HTTP/1.1" 200 OK
-INFO:     10.227.25.143:41584 - "GET /api/books/my HTTP/1.1" 200 OK
-INFO:     10.227.20.2:36930 - "GET /api/art-studio/prompt-history HTTP/1.1" 200 OK
-INFO:     10.227.20.2:36930 - "GET /api/starter-library HTTP/1.1" 200 OK
-INFO:     10.227.20.2:36930 - "GET /api/art-studio/gallery HTTP/1.1" 200 OK
-INFO:     10.227.25.143:41584 - "GET /api/art-studio/prompt-history HTTP/1.1" 200 OK
-INFO:     10.227.25.143:41584 - "GET /api/books/my HTTP/1.1" 200 OK
-INFO:     10.227.20.2:36946 - "GET /api/art-studio/character-profiles HTTP/1.1" 200 OK
-INFO:     10.227.25.143:53902 - "GET /api/fal/models HTTP/1.1" 200 OK
-INFO:     10.227.25.143:53928 - "GET /api/pro-studio/character-styles HTTP/1.1" 200 OK
-INFO:     10.227.20.2:39666 - "GET /api/credits/balance HTTP/1.1" 200 OK
-INFO:     10.227.20.2:39648 - "GET /api/books/my HTTP/1.1" 200 OK
-INFO:     10.227.20.2:39664 - "GET /api/pro-studio/characters HTTP/1.1" 200 OK
-INFO:     10.227.25.143:53912 - "GET /api/pro-studio/gallery/unified?page=1&limit=30 HTTP/1.1" 200 OK
-INFO:     10.227.25.143:41684 - "GET /api/pro-studio/character-genres HTTP/1.1" 200 OK
-INFO:     10.227.20.2:45000 - "GET /api/pro-studio/scenes HTTP/1.1" 200 OK
-INFO:     10.227.25.143:41684 - "GET /api/pro-studio/scene-options HTTP/1.1" 200 OK
-INFO:     10.227.20.2:44694 - "GET /api/genres HTTP/1.1" 200 OK
-INFO:     10.227.25.143:34748 - "GET /api/starter-library HTTP/1.1" 200 OK
-INFO:     10.227.20.2:44694 - "GET /api/art-studio/prompt-history HTTP/1.1" 200 OK
-INFO:     10.227.25.143:34760 - "GET /api/books?published_only=true&limit=24 HTTP/1.1" 200 OK
-INFO:     10.227.25.143:34748 - "GET /api/art-studio/character-profiles HTTP/1.1" 200 OK
-INFO:     10.227.20.2:44710 - "GET /api/art-studio/gallery HTTP/1.1" 200 OK
-INFO:     10.227.25.143:34762 - "GET /api/user/recommendations HTTP/1.1" 200 OK
-INFO:     10.227.20.2:44694 - "GET /api/books/my HTTP/1.1" 200 OK
-INFO:     10.227.25.143:34762 - "GET /api/books/featured HTTP/1.1" 200 OK
-INFO:     10.227.25.143:34762 - "POST /api/auth/login HTTP/1.1" 200 OK
-INFO:     10.227.25.143:34748 - "GET /api/genres HTTP/1.1" 200 OK
-INFO:     10.227.20.2:44710 - "GET /api/starter-library HTTP/1.1" 200 OK
-INFO:     10.227.25.143:34776 - "GET /api/art-studio/prompt-history HTTP/1.1" 200 OK
-INFO:     10.227.20.2:44710 - "GET /api/books?published_only=true&limit=24 HTTP/1.1" 200 OK
-INFO:     10.227.25.143:34748 - "GET /api/art-studio/character-profiles HTTP/1.1" 200 OK
-INFO:     10.227.25.143:34762 - "GET /api/user/recommendations HTTP/1.1" 200 OK
-INFO:     10.227.25.143:51316 - "GET /api/art-studio/gallery HTTP/1.1" 200 OK
-INFO:     10.227.25.143:34762 - "GET /api/books/my HTTP/1.1" 200 OK
-INFO:     10.227.20.2:44710 - "GET /api/books/featured HTTP/1.1" 200 OK
-INFO:     10.227.25.143:34748 - "GET /api/auth/me HTTP/1.1" 200 OK
-INFO:     10.227.25.143:34762 - "GET /api/books?published_only=true&limit=24 HTTP/1.1" 200 OK
-INFO:     10.227.25.143:34762 - "GET /api/genres HTTP/1.1" 200 OK
-INFO:     10.227.25.143:34762 - "GET /api/user/recommendations HTTP/1.1" 200 OK
-INFO:     10.227.20.2:56994 - "GET /api/books/featured HTTP/1.1" 200 OK
-INFO:     10.227.20.2:56994 - "GET /api/books?published_only=true&limit=24 HTTP/1.1" 200 OK
-INFO:     10.227.25.143:34762 - "GET /api/genres HTTP/1.1" 200 OK
-INFO:     10.227.25.143:34762 - "GET /api/user/recommendations HTTP/1.1" 200 OK
-INFO:     10.227.25.143:34762 - "GET /api/books/featured HTTP/1.1" 200 OK
-INFO:     10.227.25.143:34762 - "GET /api/books?published_only=true&limit=24 HTTP/1.1" 200 OK
-INFO:     10.227.20.2:51988 - "GET /api/books?published_only=true&limit=24 HTTP/1.1" 200 OK
-INFO:     10.227.25.143:40804 - "GET /api/books?published_only=true&limit=24 HTTP/1.1" 200 OK
-INFO:     10.227.20.2:36960 - "GET /api/books?published_only=true&limit=24 HTTP/1.1" 200 OK
-INFO:     10.227.25.143:42376 - "GET /api/art-studio/gallery HTTP/1.1" 200 OK
-INFO:     10.227.25.143:42390 - "GET /api/starter-library HTTP/1.1" 200 OK
-INFO:     10.227.25.143:42386 - "GET /api/art-studio/prompt-history HTTP/1.1" 200 OK
-INFO:     10.227.20.2:51854 - "GET /api/art-studio/character-profiles HTTP/1.1" 200 OK
-INFO:     10.227.20.2:51866 - "GET /api/books/my HTTP/1.1" 200 OK
-INFO:     10.227.25.143:42386 - "GET /api/starter-library HTTP/1.1" 200 OK
-INFO:     10.227.20.2:51866 - "GET /api/art-studio/gallery HTTP/1.1" 200 OK
-INFO:     10.227.25.143:42386 - "GET /api/art-studio/character-profiles HTTP/1.1" 200 OK
-INFO:     10.227.25.143:42386 - "GET /api/art-studio/prompt-history HTTP/1.1" 200 OK
-INFO:     10.227.20.2:51870 - "GET /api/books/my HTTP/1.1" 200 OK
-INFO:     10.227.25.143:40122 - "POST /api/admin/login HTTP/1.1" 200 OK
-INFO:     10.227.25.143:40122 - "POST /api/auth/login HTTP/1.1" 200 OK
-INFO:     10.227.20.2:50302 - "POST /api/auth/login HTTP/1.1" 200 OK
-INFO:     10.227.25.143:40122 - "POST /api/auth/make-admin HTTP/1.1" 404 Not Found
-INFO:     10.227.25.143:49356 - "POST /api/admin/login HTTP/1.1" 200 OK
-INFO:     10.227.25.143:49356 - "POST /api/auth/login HTTP/1.1" 200 OK
-INFO:     10.227.20.2:60552 - "GET /api/invites/invalid-token HTTP/1.1" 404 Not Found
-INFO:     10.227.25.143:52074 - "POST /api/auth/login HTTP/1.1" 200 OK
-INFO:     10.227.20.2:41590 - "POST /api/auth/login HTTP/1.1" 200 OK
-INFO:     10.227.25.143:50970 - "GET /api/auth/me HTTP/1.1" 200 OK
-INFO:     10.227.20.2:41610 - "GET /api/genres HTTP/1.1" 200 OK
-INFO:     10.227.25.143:50970 - "GET /api/user/recommendations HTTP/1.1" 200 OK
-INFO:     10.227.20.2:41590 - "GET /api/books/featured HTTP/1.1" 200 OK
-INFO:     10.227.20.2:41596 - "GET /api/books?published_only=true&limit=24 HTTP/1.1" 200 OK
-INFO:     10.227.25.143:50970 - "GET /api/genres HTTP/1.1" 200 OK
-INFO:     10.227.20.2:41590 - "GET /api/user/recommendations HTTP/1.1" 200 OK
-INFO:     10.227.20.2:41590 - "GET /api/books/featured HTTP/1.1" 200 OK
-INFO:     10.227.25.143:50970 - "GET /api/books?published_only=true&limit=24 HTTP/1.1" 200 OK
-INFO:     10.227.20.2:56624 - "GET /api/books?published_only=true&limit=24 HTTP/1.1" 200 OK
-INFO:     10.227.20.2:55540 - "GET /api/books?published_only=true&limit=24 HTTP/1.1" 200 OK
-INFO:     10.227.20.2:46802 - "POST /api/admin/login HTTP/1.1" 200 OK
-INFO:     10.227.25.143:52736 - "GET /api/admin/books HTTP/1.1" 200 OK
-INFO:     10.227.20.2:46802 - "GET /api/admin/analytics HTTP/1.1" 200 OK
-INFO:     10.227.20.2:48296 - "POST /api/admin/login HTTP/1.1" 401 Unauthorized
-INFO:     10.227.25.143:55630 - "POST /api/admin/login HTTP/1.1" 401 Unauthorized
-INFO:     10.227.25.143:55630 - "POST /api/admin/login HTTP/1.1" 401 Unauthorized
-INFO:     10.227.20.2:48296 - "POST /api/admin/login HTTP/1.1" 401 Unauthorized
-INFO:     10.227.20.2:48296 - "POST /api/admin/login HTTP/1.1" 401 Unauthorized
-INFO:     10.227.20.2:48296 - "POST /api/admin/login HTTP/1.1" 401 Unauthorized
-INFO:     10.227.20.2:40030 - "GET /api/auth/me HTTP/1.1" 200 OK
-INFO:     10.227.25.143:50922 - "GET /api/auth/me HTTP/1.1" 200 OK) for any startup errors, especially the  warning.
-    -   **Frontend:** Log in as a user and attempt to use the AI generation features in the Pro Studio (e.g., Generate 9 Shots, Create Character) to confirm they now work without errors or hangs.
+    -   Given the large number of files changed, a full regression test is required. The  should be used to test both frontend and backend functionality to ensure no regressions were introduced.
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
@@ -258,44 +50,39 @@ INFO:     10.227.25.143:50922 - "GET /api/auth/me HTTP/1.1" 200 OK) for any star
 
 **Issues Detail:**
 -   **Issue 1: Gallery images load very slowly on mobile devices (iPad/iPhone)**
-    -   **Attempted fixes:** A new paginated backend endpoint () was created. The frontend () was refactored to use this endpoint with infinite scroll, lazy-loading images (, ), and skeleton placeholders.
-    -   **Next debug checklist:** The fix is implemented and passed initial agent testing. It now requires user verification on their devices with their production data to confirm the performance improvement is adequate.
-    -   **Why fix this issue and what will be achieved with the fix?** A fast, usable gallery is critical for the app's core functionality on mobile devices.
+    -   **Attempted fixes:** A paginated backend endpoint () was created and the frontend () was refactored to use it with infinite scroll and lazy loading.
+    -   **Next debug checklist:** The fix is implemented and needs user verification on their target devices to confirm if the performance improvement is sufficient.
     -   **Status:** USER VERIFICATION PENDING
     -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** Frontend.
 -   **Issue 2:  Pulid generation errors / LoRA training gets stuck**
-    -   **Attempted fixes:** The entire  was replaced with a robust version that includes proper error handling, timeouts, retry logic, and corrected function implementations.
-    -   **Next debug checklist:** Test the various AI generation features in the Pro Studio that rely on  (PuLID, LoRA training, video generation) to confirm they now complete successfully. Check backend logs for any errors from the new service file.
-    -   **Why fix this issue and what will be achieved with the fix?** This is a core feature of the Pro Studio. Fixing it is essential for the product's value proposition.
+    -   **Attempted fixes:** The  file was completely replaced with a more robust version containing timeouts and retry logic.
+    -   **Next debug checklist:** Test AI generation features (PuLID, LoRA, video) in the Pro Studio to confirm they complete successfully. Check backend logs for errors.
     -   **Status:** TESTING PENDING
     -   **Is recurring issue?** Y
     -   **Should Test frontend/backend/both after fix?** Both.
 -   **Issue 3: Video playback in the gallery is broken**
-    -   **Attempted fixes:** The video element in  was updated to include  and . The  fixes might also affect video generation/retrieval.
-    -   **Next debug checklist:** Requires testing with actual video data in the gallery. Generate a video using the Pro Studio, then attempt to play it from the gallery on both desktop and mobile. Check the browser's developer console for errors.
-    -   **Why fix this issue and what will be achieved with the fix?** Users cannot view their generated video content, a key Pro feature.
+    -   **Attempted fixes:** The video element in  was updated. Fixes to  may also be relevant.
+    -   **Next debug checklist:** Generate a new video and test playback in the gallery on desktop and mobile. Check the browser console for errors.
     -   **Status:** USER VERIFICATION PENDING
     -   **Is recurring issue?** Y
     -   **Should Test frontend/backend/both after fix?** Frontend.
 -   **Issue 4: Book Editor's Pro Characters and Pro Scenes tabs are empty**
-    -   **Attempted fixes:** No direct fixes were applied in this session. However, the overall stability improvements might have indirectly affected this.
-    -   **Next debug checklist:** This issue could not be reproduced in the empty preview environment. It needs to be tested in an environment with existing Pro Studio character/scene data. The first step is to check the browser's developer console for any network or JavaScript errors on the Book Editor page.
-    -   **Why fix this issue and what will be achieved with the fix?** Critical blocker preventing users from using their paid Pro assets in books.
+    -   **Attempted fixes:** None directly.
+    -   **Next debug checklist:** Needs testing in an environment with existing Pro Studio data. Check the browser's developer console for network or JavaScript errors on the Book Editor page.
     -   **Status:** USER VERIFICATION PENDING
     -   **Is recurring issue?** Y
     -   **Should Test frontend/backend/both after fix?** Frontend.
 -   **Issue 5: Credit check redirect for Pro features needs verification**
-    -   **Attempted fixes:** Logic was implemented in  to wrap Pro feature buttons and redirect to  if the user's balance is zero.
-    -   **Next debug checklist:** Test this by logging in as a user with 0 credits and clicking a Pro Studio button (e.g., Create Character). Verify it redirects to the  page.
-    -   **Why fix this issue and what will be achieved with the fix?** Enforces the credit-based business model.
+    -   **Attempted fixes:** Logic was added to  to redirect users with 0 credits.
+    -   **Next debug checklist:** Log in as a user with 0 credits, click a Pro feature button, and verify the redirect to .
     -   **Status:** TESTING PENDING
     -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** Frontend.
 
 **In progress Task List**:
--   **Task 1: Code Refactoring**
-    -   **Where to resume:** The backend refactoring has started by extracting all admin-related endpoints from  into a new . The next step is to continue this process for other logical groups (e.g., , , ). The frontend refactoring started with creating a shared hooks file, but the large components (, ) still need to be broken down.
+-   **Task 1: Code Refactoring (P1)**
+    -   **Where to resume:** The frontend API calls have been centralized. The next steps are to break down large components like  and . On the backend, continue extracting logic from  into dedicated router files (e.g., for , ).
     -   **What will be achieved with this?** Improved code maintainability, scalability, and developer velocity.
     -   **Status:** IN PROGRESS
     -   **Should Test frontend/backend/both after fix?** Both.
@@ -303,121 +90,95 @@ INFO:     10.227.25.143:50922 - "GET /api/auth/me HTTP/1.1" 200 OK) for any star
 **Upcoming and Future Tasks**
 
 **Upcoming Tasks:**
--   **Implement Crop Option in Scenes (P1):** Integrate the  library with a cropping modal for images in the Scenes gallery ().
--   **Complete Backend Refactoring (P2):** Continue migrating endpoint logic from  into router files in .
--   **Analyze  (P2):** Perform a detailed analysis of the competitor site and propose actionable features for Azories.
--   **Add Invite Accept Endpoint (P2):** A placeholder endpoint () was added to  but needs full implementation to allow users to accept book collaboration invites.
+-   **Implement Crop Option in Scenes (P1):** Integrate  into the Scenes gallery.
+-   **Complete Backend Refactoring (P2):** Continue migrating endpoint logic from  into router files.
+-   **Analyze  (P2):** Perform a competitor analysis and propose features.
+-   **Add Invite Accept Endpoint (P2):** Implement the logic for the  endpoint.
 
 **Future Tasks:**
--   **Frontend Refactoring:** Fully decompose the monolithic  and  components into smaller, manageable sub-components.
+-   **Frontend Component Refactoring:** Fully decompose the monolithic  and  components.
 -   **Performance Optimizations (from Code Review):**
     -   Fix N+1 query pattern in  in .
     -   Fix N+1 queries in  /  in .
-    -   Consistently apply the pattern of uploading images to a CDN *before* database insertion to avoid storing large base64 strings in MongoDB.
+    -   Ensure all image uploads use a CDN instead of storing base64 strings in MongoDB.
 
 **Completed work in this session**
--   **Mobile Performance Overhaul:** Optimized the Pro Studio gallery with a new paginated API, lazy loading, and infinite scroll.
--   **Critical Security Fixes:**
-    -   Removed hardcoded secrets (, , ) from  and , making them required environment variables.
-    -   Removed the critical  privilege escalation vulnerability.
-    -   Added rate limiting to the admin login endpoint to prevent brute-force attacks.
-    -   Fixed password reset tokens to be stored as hashes instead of plaintext.
--   **Performance & Bug Fixes (from Code Review):**
-    -   Fixed multiple N+1 query performance issues in  using MongoDB aggregation pipelines.
-    -   Parallelized database queries on the admin analytics dashboard for faster loading.
-    -   Replaced deprecated  with  and  with .
-    -   Replaced FastAPI's deprecated  with the modern  manager and added periodic cleanup for in-memory task stores.
--   **AI Generation Service ():** Replaced the entire file with a corrected, robust version that adds timeouts, retry logic, and fixes for broken functions.
--   **Frontend Architecture ():**
-    -   Completely replaced  to implement lazy loading for all pages, reducing initial bundle size.
-    -   Added  for user/admin routes, an  to prevent blank screens, and a  page for 404 errors.
--   **Dependency Management:**
-    -   Cleaned , removing over 50 unused/dev packages and fixing a missing  dependency.
-    -   Cleaned , removing conflicting/unused packages and updating .
--   **Deployment Configuration:** Updated  files to use the correct production  () and ensure all required keys are present.
+- **Centralized API Service:** Created  to manage all frontend API requests using , centralizing token handling, base URL configuration, and error handling.
+- **Massive Frontend Refactoring:** Updated **31** different frontend files (pages, components, hooks, contexts) to use the new  service, improving code consistency and maintainability.
+
+- **Recently completed (in previous session):**
+  - Mobile Performance Overhaul (DONE)
+  - Critical Security Fixes (Removed hardcoded secrets, fixed privilege escalation) (DONE)
+  - Backend Performance Fixes (N+1 queries in admin panel) (DONE)
+  - AI Generation Service () Replacement (DONE)
+  - Frontend Architecture Overhaul ( with lazy loading, protected routes) (DONE)
+  - Dependency Cleanup (backend & frontend) (DONE)
 
 **Earlier issues found/mentioned but not fixed**
--   The following performance issues identified in the code review were recorded in  but not fixed due to time constraints:
+-   The following performance issues were identified and tracked in  but not yet fixed:
     -   **Issue 1:** N+1 query pattern in  in .
-    -   **Issue 2:** Some workflows may still be storing large base64 images directly in MongoDB instead of uploading to a CDN first.
-    -   **Issue 3:** N+1 queries in  /  in .
+    -   **Issue 2:** N+1 queries in  /  in .
+    -   **Issue 3:** Inconsistent use of CDN for image uploads, with some workflows potentially still storing base64 in MongoDB.
 
 **Known issue recurrence from previous fork**
 -   **Issue recurrence in previous fork**:  API key becoming invalid or service being unreliable.
 -   **Recurrence count**: 7+
--   **Status**: RESOLVED (The entire  has been replaced with a much more robust implementation including retries and timeouts, which should mitigate these issues. Awaiting testing.)
+-   **Status**: RESOLVED (Awaiting testing of the new ).
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Frontend:** React, React Router, Lazy Loading, Shadcn UI, Tailwind CSS
+-   **Frontend:** React, React Router, Axios, Lazy Loading, Shadcn UI, Tailwind CSS
 -   **Backend:** FastAPI, Pydantic, FastAPI Lifespan Manager
--   **Database:** MongoDB (with Aggregation Pipelines for performance)
+-   **Database:** MongoDB
 -   **Security:** JWT, bcrypt, Environment-based secrets, Rate Limiting
 -   **AI Integrations:**  ()
--   **Deployment:** Docker, Supervisor
 
 **key DB schema**
 -   No schema changes were made in this session.
 
 **All files of reference**
--   **/app/backend/server.py**: Core backend file, significantly refactored for security. Still a monolith needing more work.
--   **/app/backend/routes/admin.py**: New home for all admin endpoints, with major performance and security fixes applied.
--   **/app/backend/fal_service.py**: Completely replaced file that is critical for all AI generation features.
--   **/app/frontend/src/App.js**: Completely replaced file, now the central point for routing, auth protection, and lazy loading.
--   **/app/frontend/src/pages/ProStudio.js**: Contains the mobile gallery performance fixes.
--   **/app/backend/requirements.txt**: Cleaned and corrected list of production dependencies.
--   **/app/frontend/package.json**: Cleaned and corrected list of frontend dependencies.
--   **/app/memory/TECHNICAL_DEBT.md**: Contains a list of known issues from the code review that were deferred.
+-   **/app/frontend/src/services/api.js**: **(New)** Critical new file that now handles all frontend API requests.
+-   **31 frontend files**: Numerous files within  (in , , ,  directories) were modified to use .
+-   **/app/backend/server.py**: Core backend file, still a monolith needing more refactoring.
+-   **/app/backend/fal_service.py**: Critical for AI generation features, pending testing.
+-   **/app/frontend/src/App.js**: Central point for routing, auth, and lazy loading.
+-   **/app/memory/TECHNICAL_DEBT.md**: Tracks deferred technical debt.
 
 **Areas that need refactoring**:
--   ****: Although the admin routes were extracted, this file remains a large monolith. The next step is to extract other logical domains like , , and  into their own router files.
--   ** / **: These are still massive React components. They need to be broken down into smaller, single-responsibility components to improve performance and maintainability.
+-   ****: Remains a large monolith. Logic for , , and  should be extracted into their own router files.
+-   ** / **: These are still massive React components that need to be broken down into smaller, single-responsibility components.
 
 **key api endpoints**
--   : **(New)** A paginated, unified endpoint to efficiently fetch all gallery items for the Pro Studio.
--   : **(Updated)** Now includes brute-force protection via rate limiting.
--   : **(Updated)** Now uses parallel  calls for a ~70% performance improvement.
--   : **(Updated)** Now uses a single aggregation query, fixing a major N+1 performance issue.
+-   No new API endpoints were created. The work was a frontend refactor.
 
 **Critical Info for New Agent**
--   **Test AI Generation First:** The last action was replacing . The top priority is to test if AI features in the Pro Studio (character/scene/video generation) now work correctly.
--   **Verify User-Facing Fixes:** The mobile gallery performance, video playback, and empty Book Editor tabs were all major user complaints. These fixes need to be verified with the user, ideally in an environment with production-like data.
--   **Code Review Fixes:** A massive code review was just implemented, fixing dozens of critical security and performance bugs. Be aware that many functions in  and  have changed significantly.
--   **Check Deferred Tasks:** Review  for a list of known issues (like remaining N+1 queries in ) that were intentionally deferred. Do not re-investigate these unless asked.
--   **Environment is Key:** All secrets are now loaded strictly from environment variables. The application will fail to start if  or  are missing.
+-   **Test Everything:** A massive frontend refactoring was just completed, affecting 31 files. The immediate priority is to run comprehensive functional tests using the  to check for regressions across the entire application before starting any new work.
+-   **Test AI Generation:** The  file was replaced in the previous session but still hasn't been tested. This is the second-highest priority.
+-   **Continue Refactoring:** Once testing is complete, the planned refactoring of backend routes () and frontend components (, ) can resume.
 
 **documents and test reports created in this job**
--   /app/memory/TECHNICAL_DEBT.md
+-   None. The  file from the previous session is still relevant.
 
 **Last 10 User Messages and any pending HUMAN messages**
--   **User:** Asks to replace  with a corrected version. - **COMPLETED**
--   **User:** Asks if there are any outstanding questions after the fixes. - **ACTIONED** (Agent provided a summary of completed and pending items)
--   **User:** Provides a list of 16 fixes for  from a code review. - **COMPLETED**
--   **User:** Provides a list of 6 fixes for  from a code review, including creating two new files. - **COMPLETED**
--   **User:** Asks to replace  with a cleaned version and create . - **COMPLETED**
--   **User:** Asks to resume work on remaining items from the code review. - **ACTIONED**
--   **User:** Provides a list of 24 fixes for  from a code review. - **COMPLETED (CRITICAL & HIGH PRIORITY ITEMS)**
--   **User:** Asks to update deployment configuration ( variables). - **COMPLETED**
--   **User:** Asks to fix dependency conflicts in  and . - **COMPLETED**
--   **User:** Asks to resume work on code cleanup and organization. - **ACTIONED**
+-   **User:** Requested the creation of a centralized  service file and the refactoring of all components to use it. - **COMPLETED**
+-   **User:** Asked for the location of . - **ACTIONED** (Agent informed the user it didn't exist and proposed creating it).
 
 **Project Health Check:**
--   **Broken:** None actively broken, but several items are pending verification.
+-   **Broken:** Potentially. The large-scale refactoring of 31 files without comprehensive testing creates a high risk of functional regressions.
 -   **Mocked:** None.
 -   **Pending Verification:**
+    -   **Full Application Functionality:** Needs regression testing after the API service refactor.
     -   **Mobile Gallery Performance:** User needs to confirm the fix is adequate.
     -   **AI Generation ():** Needs testing to confirm the new  works.
-    -   **Video Playback:** Needs testing with real video data.
-    -   **Book Editor Empty Tabs:** Needs testing in a data-rich environment.
-    -   **Credit Check Redirect:** Needs functional testing.
+    -   **Video Playback, Book Editor Tabs, Credit Check Redirect.**
 
 **3rd Party Integrations**
--   **Brevo**: Transactional emails (SMTP). Requires User API Key. **(Working)**
--   **fal.ai ()**: PuLID, LoRA, Kling, Image CDN. Requires User API Key. **(Fixed, TESTING PENDING)**
--   **Stripe**: Credit card payments. Requires User API Keys. **(Working)**
--   **OpenAI (via )**: Content Moderation, Image Generation. Uses Emergent LLM Key. **(Working)**
+-   **Brevo**: Transactional emails.
+-   **fal.ai ()**: AI generation. **(TESTING PENDING)**
+-   **Stripe**: Payments.
+-   **OpenAI (via )**: Content Moderation.
 -   **OpenAI (usage: openai [-h] [-v] [-b API_BASE] [-k API_KEY] [-p PROXY [PROXY ...]]
               [-o ORGANIZATION] [-t {openai,azure}]
               [--api-version API_VERSION] [--azure-endpoint AZURE_ENDPOINT]
@@ -455,21 +216,20 @@ options:
                         https://www.microsoft.com/en-
                         us/security/business/identity-access/microsoft-entra-
                         id
-  -V, --version         show program's version number and exit)**: Whisper (Speech-to-Text). Requires User API Key. **(Working)**
--   **react-image-crop**: Frontend dependency for image cropping. **(Installed, Not Yet Implemented)**
+  -V, --version         show program's version number and exit)**: Speech-to-Text.
+-   **axios**: HTTP client for frontend.
+-   **react-image-crop**: Installed, not implemented.
 
 **Testing status**
 -   **Testing agent used after significant changes:** NO
 -   **Troubleshoot agent used after agent stuck in loop:** NO
 -   **Test files created:** None
--   **Known regressions:** None from this session. Many long-standing issues were addressed.
+-   **Known regressions:** Unknown. High risk due to recent large-scale refactoring.
 
 **Credentials to test flow:**
--   **Admin Login:**  /  (Note: Password should be set via  env var in production).
--   **VIP User:**  /  (Note: VIP users should be set via  env var).
+-   **Admin Login:**  /  (via  env var).
+-   **VIP User:**  /  (via  env var).
 
 **What agent forgot to execute**
--   The agent created a file, , to explicitly track lower-priority issues from the user-provided code review that were not addressed. These include:
-    -   Fixing the N+1 query in  within .
-    -   Fixing the N+1 query in / within .
-    -   Ensuring all image uploads are consistently sent to a CDN rather than stored as base64 in the database.</analysis>
+-   The previous agent did not perform any functional testing after refactoring 31 frontend files. It only ran a lint check and restarted the service. This is a significant oversight, and thorough testing is now the top priority.
+-   The agent mentioned it would update  in its final thoughts but failed to include the action in the  tool call. The PRD is now out of sync.</analysis>
