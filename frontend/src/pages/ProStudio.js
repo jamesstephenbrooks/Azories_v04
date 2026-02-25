@@ -4827,6 +4827,7 @@ export default function ProStudio() {
                     <p className="text-gray-400">Loading gallery...</p>
                   </div>
                 )}
+              </>
               )}
             </div>
           </TabsContent>
