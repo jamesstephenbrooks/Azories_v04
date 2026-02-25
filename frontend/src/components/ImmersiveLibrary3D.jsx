@@ -9,9 +9,9 @@ import { FiX, FiBook, FiBookOpen, FiMaximize2, FiMinimize2, FiVolume2, FiVolumeX
 import { useAuth } from '@/context/AuthContext';
 import AILibrarian from './AILibrarian';
 
-// Gothic Library Model URL - Optimized local version (Draco compressed, WebP textures)
-// Reduced from 81MB to 8MB for faster loading
-const LIBRARY_MODEL_URL = '/models/gothic_library_optimized.glb';
+// Gothic Library Model URL - Using proxy to bypass CORS (v16 with collisions)
+const ORIGINAL_GLB_URL = 'https://customer-assets.emergentagent.com/job_c72cb56a-2d89-4690-9629-ade6d46638c8/artifacts/n1oyaa5l_gothic_library_16_cycles-compressed.glb';
+const LIBRARY_MODEL_URL = `${process.env.REACT_APP_BACKEND_URL}/api/proxy/glb?url=${encodeURIComponent(ORIGINAL_GLB_URL)}`;
 
 // Library boundaries (will be set after model loads)
 const DEFAULT_BOUNDS = {
