@@ -7440,6 +7440,8 @@ async def get_unified_gallery(
                     all_items.append({
                         "id": str(img["_id"]),
                         "image_url": img.get("image_url", ""),
+                        "thumbnail_url": img.get("thumbnail_url"),
+                        "medium_url": img.get("medium_url"),
                         "prompt": prompt_text[:100] if prompt_text else "",
                         "name": img.get("name", ""),
                         "source": "character-gallery",
