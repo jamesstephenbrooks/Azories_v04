@@ -1117,7 +1117,7 @@ export default function ArtStudioExpert() {
     setNodes(nds => [...nds, newNode]);
     console.log(`Copied node ${nodeId} to ${newNodeId}`);
     return newNodeId;
-  }, [nodes, setNodes, updateNodeData, deleteNodeById]);
+  }, [nodes, setNodes, updateNodeData, deleteNodeById, openGalleryPicker]);
   
   // Continue workflow from an output image - creates an ImageNode for further branching
   const continueWorkflow = useCallback((imageUrl, sourceNodeId) => {
