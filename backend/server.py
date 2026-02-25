@@ -7230,9 +7230,21 @@ async def save_animation(request: SaveAnimationRequest, current_user: dict = Dep
     user = current_user
     
     try:
+        video_url = request.video_url
+        
+        # Convert base64 video to CDN URL if possible
+        if video_url.startswith('data:video') and FAL_AVAILABLE:
+            try:
+                logging.info("Uploading base64 video to fal.ai CDN...")
+                video_url = await upload_video_to_fal(video_url)
+                logging.info(f"Video uploaded to: {video_url[:60]}...")
+            except Exception as upload_error:
+                logging.warning(f"Failed to upload video to CDN, keeping base64: {upload_error}")
+                video_url = request.video_url
+        
         gallery_item = {
             "user_id": user["id"],
-            "image_url": request.video_url,  # Store video URL in image_url field for compatibility
+            "image_url": video_url,  # Store video URL in image_url field for compatibility
             "name": request.name,
             "type": "animation",  # New field to distinguish animations
             "style": request.style,
@@ -7244,7 +7256,8 @@ async def save_animation(request: SaveAnimationRequest, current_user: dict = Dep
         
         return {
             "success": True,
-            "id": str(result.inserted_id)
+            "id": str(result.inserted_id),
+            "video_url": video_url
         }
         
     except Exception as e:
