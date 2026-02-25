@@ -1391,6 +1391,12 @@ async def update_book(book_id: str, book_data: BookUpdate, current_user: dict = 
     update_data = {k: v for k, v in book_data.model_dump().items() if v is not None}
     update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
     
+    # Convert base64 images to CDN URLs for better performance
+    if "cover_image" in update_data:
+        update_data["cover_image"] = await convert_base64_to_cdn(update_data["cover_image"])
+    if "back_cover_image" in update_data:
+        update_data["back_cover_image"] = await convert_base64_to_cdn(update_data["back_cover_image"])
+    
     await db.books.update_one({"id": book_id}, {"$set": update_data})
     updated = await db.books.find_one({"id": book_id}, {"_id": 0})
     updated = await get_book_with_counts(updated)
