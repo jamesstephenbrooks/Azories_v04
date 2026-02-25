@@ -2,9 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { FiMessageCircle, FiX, FiSend, FiBook, FiLoader } from 'react-icons/fi';
-import axios from 'axios';
-
-const API = process.env.REACT_APP_BACKEND_URL;
+import { aiAPI, getErrorMessage } from '../services/api';
 
 // Azora - AI Librarian for the 3D Library - helps users find books
 export default function AILibrarian({ books = [], isVisible = true, onCallAzora }) {
@@ -70,7 +68,7 @@ Rules:
 - Never give inappropriate content
 - Encourage reading and imagination`;
 
-      const response = await axios.post(`${API}/api/ai/azora`, {
+      const response = await aiAPI.azora({
         message: userMessage,
         system_prompt: systemPrompt,
         context: `User is exploring the 3D library. Previous conversation: ${messages.slice(-4).map(m => `${m.role}: ${m.content}`).join(' | ')}`

@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { FiBook, FiRefreshCw, FiArrowRight } from 'react-icons/fi';
 import { Button } from '@/components/ui/button';
 import AnimatedBookCard from './AnimatedBookCard';
-
-const API = process.env.REACT_APP_BACKEND_URL;
+import { userAPI, booksAPI, getErrorMessage } from '../services/api';
 
 export default function BookRecommendations({ userId }) {
   const [recommendations, setRecommendations] = useState([]);
@@ -17,17 +15,14 @@ export default function BookRecommendations({ userId }) {
   const fetchRecommendations = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API}/api/user/recommendations`);
+      const res = await userAPI.getRecommendations();
       setRecommendations(res.data.recommendations || []);
       setBasedOn(res.data.based_on || []);
     } catch (error) {
       console.error('Failed to fetch recommendations:', error);
-      // Fallback to popular books - API returns array directly
+      // Fallback to popular books
       try {
-        const fallback = await axios.get(`${API}/api/books`, {
-          params: { limit: 6, published_only: 'true' }
-        });
-        // API returns array directly, not {books: [...]}
+        const fallback = await booksAPI.getAll({ limit: 6, published_only: 'true' });
         const books = Array.isArray(fallback.data) ? fallback.data : (fallback.data.books || []);
         setRecommendations(books.slice(0, 6));
         setBasedOn(['Popular in Azories']);

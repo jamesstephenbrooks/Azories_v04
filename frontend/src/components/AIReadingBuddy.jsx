@@ -2,9 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { FiMessageCircle, FiX, FiSend, FiBook, FiHelpCircle, FiZap } from 'react-icons/fi';
-import axios from 'axios';
-
-const API = process.env.REACT_APP_BACKEND_URL;
+import { aiAPI, getErrorMessage } from '../services/api';
 
 // Suggested questions based on reading context
 const SUGGESTED_QUESTIONS = [
@@ -75,7 +73,7 @@ export default function AIReadingBuddy({ book, currentPage, isOpen, onToggle }) 
     try {
       const bookContext = getBookContext();
       
-      const response = await axios.post(`${API}/api/ai/reading-buddy`, {
+      const response = await aiAPI.readingBuddy({
         book_id: book.id,
         book_title: book.title,
         book_genre: book.genre,
