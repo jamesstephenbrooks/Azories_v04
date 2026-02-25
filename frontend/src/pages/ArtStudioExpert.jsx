@@ -439,13 +439,21 @@ const ReferenceNode = ({ data, selected }) => {
             </button>
           </div>
         ) : (
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="w-full h-full border-2 border-dashed border-cyan-500/30 rounded-lg flex flex-col items-center justify-center hover:border-cyan-400 transition-colors"
-          >
-            <FiUpload className="w-5 h-5 text-cyan-400 mb-1" />
-            <span className="text-[10px] text-cyan-300">Upload</span>
-          </button>
+          <div className="flex flex-col gap-1.5 h-full">
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="flex-1 border-2 border-dashed border-cyan-500/30 rounded-lg flex flex-col items-center justify-center hover:border-cyan-400 transition-colors"
+            >
+              <FiUpload className="w-4 h-4 text-cyan-400 mb-0.5" />
+              <span className="text-[9px] text-cyan-300">Upload</span>
+            </button>
+            <button
+              onClick={() => data.onSelectFromGallery?.()}
+              className="py-1.5 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 text-[9px] font-medium rounded-lg border border-cyan-500/30 transition-colors"
+            >
+              From Gallery
+            </button>
+          </div>
         )}
         <input
           ref={fileInputRef}
