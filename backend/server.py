@@ -107,6 +107,30 @@ logger = logging.getLogger(__name__)
 import asyncio
 TASK_STORE: Dict[str, dict] = {}
 
+
+async def convert_base64_to_cdn(image_data: str) -> str:
+    """
+    Convert a base64 image to a CDN URL.
+    If already a URL or empty, returns as-is.
+    """
+    if not image_data:
+        return image_data
+    
+    if image_data.startswith('data:image'):
+        if FAL_AVAILABLE:
+            try:
+                cdn_url = await upload_image_to_fal(image_data)
+                logger.info(f"Converted base64 to CDN: {cdn_url[:60]}...")
+                return cdn_url
+            except Exception as e:
+                logger.warning(f"Failed to upload to CDN, keeping base64: {e}")
+                return image_data
+        else:
+            logger.warning("FAL_KEY not available, cannot convert base64 to CDN")
+            return image_data
+    
+    return image_data
+
 # Cleanup task reference
 _cleanup_task = None
 
