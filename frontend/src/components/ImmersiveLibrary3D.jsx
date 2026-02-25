@@ -1982,41 +1982,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
           </div>
           
           {/* Genre navigation */}
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 pointer-events-auto">
-            <Button
-              variant="ghost"
-              className="bg-black/50 hover:bg-black/70 text-white rounded-full px-4"
-              onClick={() => setShowGenreMenu(!showGenreMenu)}
-            >
-              <FiMapPin className="w-4 h-4 mr-2" />
-              Jump to Section
-            </Button>
-            
-            <AnimatePresence>
-              {showGenreMenu && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-black/90 rounded-xl p-2 min-w-[200px]"
-                >
-                  {GENRE_SECTIONS.map((section) => (
-                    <button
-                      key={section.name}
-                      onClick={() => teleportToGenre(section)}
-                      className="w-full px-4 py-2 text-left text-white hover:bg-white/10 rounded-lg flex items-center gap-3 transition-colors"
-                    >
-                      <div 
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: section.color }}
-                      />
-                      {section.name}
-                    </button>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+          {/* Jump to Section button - hidden for production */}
           
           {/* Bottom controls hint - only on desktop */}
           {!isMobileDevice && (
