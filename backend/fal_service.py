@@ -593,7 +593,14 @@ async def upload_image_to_fal(base64_image: str) -> str:
 async def upload_video_to_fal(base64_video: str) -> str:
     """
     Upload a base64 video to fal.ai storage and get a URL.
-    Note: fal.ai storage is temporary (7 days retention).
+    
+    ⚠️ WARNING: FAL.AI HAS 7-DAY RETENTION FOR UPLOADED FILES ⚠️
+    Videos uploaded here will expire after 7 days.
+    
+    For permanent video storage, use cloudinary_service.upload_video_to_cloudinary() instead.
+    This function should only be used for temporary/preview videos.
+    
+    TODO: Before going live, migrate all video storage to Cloudinary for permanent hosting.
     """
     client = _get_client()
 
