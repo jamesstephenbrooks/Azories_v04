@@ -118,7 +118,10 @@ export default function Dashboard() {
     }
     setCreatingSeries(true);
     try {
-      await axios.post(`${API}/series`, newSeries);
+      const token = localStorage.getItem('azories-token');
+      await axios.post(`${API}/series`, newSeries, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       toast.success('Series created!');
       setNewSeries({ name: '', description: '' });
       fetchSeries();
@@ -132,7 +135,10 @@ export default function Dashboard() {
   const deleteSeries = async (seriesId) => {
     if (!window.confirm('Delete this series? Books will be unlinked but not deleted.')) return;
     try {
-      await axios.delete(`${API}/series/${seriesId}`);
+      const token = localStorage.getItem('azories-token');
+      await axios.delete(`${API}/series/${seriesId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       toast.success('Series deleted');
       fetchSeries();
     } catch (error) {
@@ -144,7 +150,10 @@ export default function Dashboard() {
     const bookId = bookIdOverride || selectedBookForSeries?.id;
     if (!bookId) return;
     try {
-      await axios.post(`${API}/series/${seriesId}/books/${bookId}`);
+      const token = localStorage.getItem('azories-token');
+      await axios.post(`${API}/series/${seriesId}/books/${bookId}`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       toast.success('Book added to series!');
       setIsAddToSeriesOpen(false);
       setSelectedBookForSeries(null);
