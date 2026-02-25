@@ -826,6 +826,8 @@ async def get_me(current_user: dict = Depends(get_current_user)):
 @api_router.post("/auth/forgot-password")
 async def forgot_password(request: ForgotPasswordRequest, background_tasks: BackgroundTasks):
     """Request a password reset email"""
+    import hashlib
+    
     user = await db.users.find_one({"email": request.email.lower()}, {"_id": 0})
     
     # Always return success to prevent email enumeration attacks
@@ -836,12 +838,15 @@ async def forgot_password(request: ForgotPasswordRequest, background_tasks: Back
     reset_token = generate_reset_token()
     expiry = get_token_expiry()
     
-    # Store reset token in database
+    # Hash token before storing (security: if DB is compromised, tokens can't be used)
+    token_hash = hashlib.sha256(reset_token.encode()).hexdigest()
+    
+    # Store hashed reset token in database
     await db.password_resets.delete_many({"user_id": user["id"]})  # Remove old tokens
     await db.password_resets.insert_one({
         "id": str(uuid.uuid4()),
         "user_id": user["id"],
-        "token": reset_token,
+        "token_hash": token_hash,  # Store hash, not plaintext
         "expires_at": expiry.isoformat(),
         "created_at": datetime.now(timezone.utc).isoformat()
     })
@@ -850,7 +855,7 @@ async def forgot_password(request: ForgotPasswordRequest, background_tasks: Back
     app_url = os.environ.get("APP_URL", "https://azories.com")
     reset_url = f"{app_url}/reset-password?token={reset_token}"
     
-    # Send reset email
+    # Send reset email (with unhashed token)
     if email_configured():
         reset_html = get_password_reset_email_html(user["name"], reset_token, reset_url)
         background_tasks.add_task(send_email, request.email, "Reset Your Azories Password", reset_html)
@@ -863,8 +868,17 @@ async def forgot_password(request: ForgotPasswordRequest, background_tasks: Back
 @api_router.post("/auth/reset-password")
 async def reset_password(request: ResetPasswordRequest, background_tasks: BackgroundTasks):
     """Reset password using a valid token"""
-    # Find the reset token
-    reset_record = await db.password_resets.find_one({"token": request.token}, {"_id": 0})
+    import hashlib
+    
+    # Hash the incoming token to compare with stored hash
+    token_hash = hashlib.sha256(request.token.encode()).hexdigest()
+    
+    # Find the reset token by hash
+    reset_record = await db.password_resets.find_one({"token_hash": token_hash}, {"_id": 0})
+    
+    # Fallback: check for old plaintext tokens (migration compatibility)
+    if not reset_record:
+        reset_record = await db.password_resets.find_one({"token": request.token}, {"_id": 0})
     
     if not reset_record:
         raise HTTPException(status_code=400, detail="Invalid or expired reset token")
@@ -872,7 +886,8 @@ async def reset_password(request: ResetPasswordRequest, background_tasks: Backgr
     # Check if token has expired
     expiry = datetime.fromisoformat(reset_record["expires_at"])
     if datetime.now(timezone.utc) > expiry:
-        await db.password_resets.delete_one({"token": request.token})
+        # Delete by either hash or plaintext token
+        await db.password_resets.delete_one({"$or": [{"token_hash": token_hash}, {"token": request.token}]})
         raise HTTPException(status_code=400, detail="Reset token has expired")
     
     # Get user
