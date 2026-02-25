@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiArrowLeft, FiMail, FiUser, FiMessageSquare, FiSend } from 'react-icons/fi';
 import { toast } from 'sonner';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+import { contactAPI, getErrorMessage } from '../services/api';
 
 const Contact = () => {
   const navigate = useNavigate();
@@ -29,27 +28,12 @@ const Contact = () => {
     setSending(true);
 
     try {
-      const formDataObj = new FormData();
-      formDataObj.append('name', formData.name);
-      formDataObj.append('email', formData.email);
-      formDataObj.append('subject', formData.subject);
-      formDataObj.append('message', formData.message);
-
-      const response = await fetch(`${API_URL}/api/contact`, {
-        method: 'POST',
-        body: formDataObj
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to send message');
-      }
-
-      const data = await response.json();
-      toast.success(data.message);
+      const response = await contactAPI.send(formData);
+      toast.success(response.data.message || 'Message sent!');
       setSent(true);
     } catch (error) {
       console.error('Error sending message:', error);
-      toast.error('Failed to send message. Please try again.');
+      toast.error(getErrorMessage(error));
     } finally {
       setSending(false);
     }
