@@ -1242,6 +1242,11 @@ export default function ArtStudioExpert() {
     newNode.data.onDelete = () => deleteNodeById(nodeId);
     newNode.data.onCopyNode = () => copyNode(nodeId);
     
+    // Add onSelectFromGallery callback for image nodes
+    if (type === 'image') {
+      newNode.data.onSelectFromGallery = () => openGalleryPicker(nodeId);
+    }
+    
     // Add onRunNode callback for output nodes
     if (type === 'output') {
       newNode.data.onRunNode = () => {
