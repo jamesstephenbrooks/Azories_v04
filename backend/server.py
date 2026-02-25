@@ -2256,14 +2256,20 @@ async def create_page(chapter_id: str, page_data: PageCreate, current_user: dict
         max_order = await db.pages.find_one({"chapter_id": chapter_id}, sort=[("order", -1)])
         page_data.order = (max_order["order"] + 1) if max_order else 1
     
+    # Convert base64 images to CDN URLs for better performance
+    image_url = await convert_base64_to_cdn(page_data.image_url or "")
+    image_url_2 = await convert_base64_to_cdn(page_data.image_url_2 or "")
+    image_url_3 = await convert_base64_to_cdn(page_data.image_url_3 or "")
+    image_url_4 = await convert_base64_to_cdn(page_data.image_url_4 or "")
+    
     page = {
         "id": page_id,
         "chapter_id": chapter_id,
         "text_content": page_data.text_content,
-        "image_url": page_data.image_url or "",
-        "image_url_2": page_data.image_url_2 or "",
-        "image_url_3": page_data.image_url_3 or "",
-        "image_url_4": page_data.image_url_4 or "",
+        "image_url": image_url,
+        "image_url_2": image_url_2,
+        "image_url_3": image_url_3,
+        "image_url_4": image_url_4,
         "video_url": page_data.video_url or "",
         "audio_url": page_data.audio_url or "",
         "order": page_data.order,
