@@ -43,12 +43,15 @@ Azories is a full-stack digital book creation platform with AI-powered features 
 ### Frontend (React)
 - `/app/frontend/src/pages/`
   - BookEditor.js - Book creation/editing
-  - ProStudio.js - AI generation tools (5700+ lines)
+  - ProStudio.js - AI generation tools
   - AdminDashboard.js - Content moderation
   - Dashboard.js - User dashboard
+- `/app/frontend/src/components/pro-studio/`
+  - hooks.js - Shared hooks (useGallery, useCreditCheck, useExpandedMedia)
 
 ### Backend (FastAPI)
-- `/app/backend/server.py` - Main API routes (8000+ lines)
+- `/app/backend/server.py` - Main API routes (~8150 lines)
+- `/app/backend/routes/admin.py` - Admin routes (418 lines) ✅ EXTRACTED
 - Key endpoints:
   - `/api/pro-studio/gallery/unified` - Optimized paginated gallery endpoint
 
@@ -58,18 +61,27 @@ Azories is a full-stack digital book creation platform with AI-powered features 
 ## Recent Updates (Feb 25, 2026)
 
 ### Session Completed:
-- **Mobile Gallery Optimization (P0)**: 
-  - Created new `/api/pro-studio/gallery/unified` endpoint for single API call with pagination
-  - Implemented lazy loading for gallery images with skeleton placeholders
-  - Added `decoding="async"` and `loading="lazy"` to images
-  - Optimized video elements to not preload on mobile (`preload="none"`)
-  - Added "Load More" pagination (30 items per page)
-  - Filter buttons now show current count only when active
-- **Video Playback Improvements**:
-  - Added `playsInline` attribute for mobile compatibility
-  - Added error handling for base64 videos with incorrect MIME types
-  - Videos show thumbnail placeholder on mobile until tapped
-- **Credit Check Redirects**: Implemented and ready for testing
+
+**Mobile Gallery Optimization (P0):**
+- Created new `/api/pro-studio/gallery/unified` endpoint - single API call with pagination
+- Implemented lazy loading for gallery images with skeleton placeholders
+- Added `decoding="async"` and `loading="lazy"` to images
+- Optimized video elements: `preload="none"` on mobile, shows thumbnail until tapped
+- Added "Load More" pagination (30 items per page)
+- Filter buttons now show current count only when active
+
+**Video Playback Improvements:**
+- Added `playsInline` attribute for mobile compatibility
+- Added error handling for base64 videos with incorrect MIME types
+- Videos show thumbnail placeholder on mobile until tapped
+
+**Code Refactoring Started:**
+- Extracted Admin routes to `/app/backend/routes/admin.py` (418 lines)
+  - Admin authentication, CMS, analytics, moderation
+- Created Pro Studio hooks module at `/app/frontend/src/components/pro-studio/hooks.js`
+  - useGallery(), useCreditCheck(), useExpandedMedia() hooks
+- Reduced server.py by ~250 lines
+- Created REFACTORING.md to track progress
 
 ### Previous Session Work:
 - FAL_KEY restored for PuLID/image generation
@@ -83,14 +95,29 @@ Azories is a full-stack digital book creation platform with AI-powered features 
 - Book Editor "Pro Characters" and "Pro Scenes" tabs may be empty (need user data to test)
 - fal.ai Pulid generation errors reported (need error details)
 - LoRA character training gets stuck (need monitoring)
+- Credit check redirect logic implemented but not tested
 
 ### Pending Tasks:
 1. **P1**: Test credit check redirect functionality
 2. **P1**: Debug Book Editor Pro Characters/Scenes tabs with real data
-3. **P2**: Implement Crop Option in Scenes
-4. **P2**: Backend refactoring (split server.py into routers)
-5. **P2**: Frontend refactoring (break down ProStudio.js, BookEditor.js)
+3. **P2**: Continue backend refactoring (payments, pro_studio routes)
+4. **P2**: Continue frontend refactoring (extract Pro Studio components)
+5. **P2**: Implement Crop Option in Scenes
 6. **P2**: Analyze readkids.com competitor
+
+## Refactoring Status
+
+### Backend
+- **Extracted**: Admin routes (418 lines)
+- **server.py**: 8150 lines (target: <2000)
+- **Remaining**: auth, books, pro_studio, payments, ai routes
+
+### Frontend  
+- **Created**: `/components/pro-studio/hooks.js`
+- **ProStudio.js**: 5712 lines (target: <500)
+- **Remaining**: Extract Gallery, Character, Scenes, Cinema, Shots, Video tabs
+
+See `/app/memory/REFACTORING.md` for detailed progress.
 
 ## Environment Variables
 
