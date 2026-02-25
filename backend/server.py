@@ -42,6 +42,9 @@ from services.email_service import (
     get_password_changed_email_html, generate_reset_token, get_token_expiry
 )
 
+# Import routes package
+from routes import setup_routes
+
 # Import fal.ai service AFTER dotenv loads
 try:
     from fal_service import (
