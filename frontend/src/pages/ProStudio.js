@@ -5663,7 +5663,7 @@ export default function ProStudio() {
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                downloadMedia(expandedItem.url, `azories-${expandedItem.type}-${Date.now()}.${expandedItem.type === 'video' ? 'mp4' : 'png'}`);
+                downloadMedia(expandedItem.fullUrl || expandedItem.url, `azories-${expandedItem.type}-${Date.now()}.${expandedItem.type === 'video' ? 'mp4' : 'png'}`);
               }}
               className="absolute top-4 right-16 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors z-10"
             >
