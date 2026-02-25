@@ -5678,7 +5678,18 @@ export default function ProStudio() {
                   controls
                   autoPlay
                   loop
+                  playsInline
                   className="max-w-full max-h-[85vh] rounded-lg"
+                  onError={(e) => {
+                    console.error('Video load error:', e);
+                    // Try to handle base64 video URLs
+                    const url = expandedItem.url;
+                    if (url && url.startsWith('data:') && !url.includes('video/')) {
+                      // Fix incorrect MIME type for base64 videos
+                      const correctedUrl = url.replace(/^data:[^;]+/, 'data:video/mp4');
+                      e.target.src = correctedUrl;
+                    }
+                  }}
                 />
               ) : (
                 <img
