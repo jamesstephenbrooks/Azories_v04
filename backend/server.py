@@ -4251,7 +4251,10 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
             "is_best_of_week": False,
             "layout_mode": "standard",
             "narrator_voice_id": "21m00Tcm4TlvDq8ikWAM",
+            "narrator_voice_locked": False,  # Added - was missing
             "age_rating": request.age_rating,
+            "publish_status": "draft",  # Added - was missing
+            "moderation_flags": [],  # Added - was missing
             "view_count": 0,
             "read_count": 0,
             "created_at": now,
