@@ -2329,7 +2329,9 @@ export default function ArtStudioExpert() {
                 {(!galleryImages || galleryImages.length === 0) ? (
                   <div className="text-center py-12">
                     <FiImage className="w-12 h-12 mx-auto text-white/20 mb-3" />
-                    <p className="text-white/40 text-sm">No images in {galleryTab === 'art' ? 'Art' : 'Pro'} Studio gallery</p>
+                    <p className="text-white/40 text-sm">
+                      No images in {galleryTab === 'art' ? 'Art Studio' : galleryTab === 'pro' ? 'Pro Studio' : 'Starter Library'} gallery
+                    </p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-4 gap-3">
