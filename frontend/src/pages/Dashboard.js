@@ -87,7 +87,10 @@ export default function Dashboard() {
 
   const fetchMyBooks = async () => {
     try {
-      const res = await axios.get(`${API}/books/my`);
+      const token = localStorage.getItem('azories-token');
+      const res = await axios.get(`${API}/books/my`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setBooks(res.data);
     } catch (error) {
       toast.error('Failed to load books');
@@ -98,7 +101,10 @@ export default function Dashboard() {
   
   const fetchSeries = async () => {
     try {
-      const res = await axios.get(`${API}/series`);
+      const token = localStorage.getItem('azories-token');
+      const res = await axios.get(`${API}/series`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setSeries(res.data);
     } catch (error) {
       console.error('Failed to load series');
