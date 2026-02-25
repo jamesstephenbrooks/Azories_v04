@@ -820,40 +820,47 @@ const defaultNodes = [
   {
     id: 'character-1',
     type: 'character',
-    position: { x: 50, y: 50 },
+    position: { x: 50, y: 30 },
     data: { name: '', gender: 'Female', age: 'Adult', appearance: '', transparentBg: false }
+  },
+  {
+    id: 'prompt-1',
+    type: 'prompt',
+    position: { x: 50, y: 200 },
+    data: { text: '' }
   },
   {
     id: 'style-1',
     type: 'style',
-    position: { x: 50, y: 320 },
+    position: { x: 50, y: 330 },
     data: { style: 'fantasy' }
   },
   {
     id: 'reference-1',
     type: 'reference',
-    position: { x: 50, y: 450 },
+    position: { x: 50, y: 460 },
     data: { image: null }
   },
   {
     id: 'combine-1',
     type: 'combine',
-    position: { x: 350, y: 180 },
+    position: { x: 350, y: 200 },
     data: {}
   },
   {
     id: 'output-1',
     type: 'output',
-    position: { x: 550, y: 130 },
+    position: { x: 550, y: 150 },
     data: { image: null, generating: false }
   }
 ];
 
 const defaultEdges = [
   { id: 'e1', source: 'character-1', target: 'combine-1', targetHandle: 'a', animated: true },
-  { id: 'e2', source: 'style-1', target: 'combine-1', targetHandle: 'b', animated: true },
-  { id: 'e3', source: 'reference-1', target: 'combine-1', targetHandle: 'c', animated: true },
-  { id: 'e4', source: 'combine-1', target: 'output-1', animated: true }
+  { id: 'e2', source: 'prompt-1', target: 'combine-1', targetHandle: 'b', animated: true },
+  { id: 'e3', source: 'style-1', target: 'combine-1', targetHandle: 'c', animated: true },
+  { id: 'e4', source: 'reference-1', target: 'combine-1', targetHandle: 'd', animated: true },
+  { id: 'e5', source: 'combine-1', target: 'output-1', animated: true }
 ];
 
 export default function ArtStudioExpert() {
