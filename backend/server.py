@@ -55,15 +55,20 @@ try:
         generate_with_lora,
         upload_image_to_fal,
         generate_video_from_image,
-        get_available_models as get_fal_models
+        get_available_models as get_fal_models,
+        is_fal_configured
     )
-    FAL_KEY = os.environ.get('FAL_KEY')
-    FAL_AVAILABLE = bool(FAL_KEY)
+    FAL_AVAILABLE = is_fal_configured()
     if FAL_AVAILABLE:
-        os.environ["FAL_KEY"] = FAL_KEY  # Ensure fal_client can see it
+        fal_key = os.environ.get('FAL_KEY', '')
+        masked_key = f"{fal_key[:10]}...{fal_key[-4:]}" if len(fal_key) > 20 else "***"
+        logging.info(f"fal.ai service initialized with key: {masked_key}")
+    else:
+        logging.warning("fal.ai service available but FAL_KEY not configured")
 except ImportError as e:
     logging.warning(f"fal.ai service not available: {e}")
     FAL_AVAILABLE = False
+    is_fal_configured = lambda: False
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
