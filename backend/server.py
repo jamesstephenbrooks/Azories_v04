@@ -56,6 +56,8 @@ try:
         upload_image_to_fal,
         upload_video_to_fal,
         generate_video_from_image,
+        generate_thumbnails,
+        upload_image_with_thumbnails,
         get_available_models as get_fal_models,
         is_fal_configured
     )
