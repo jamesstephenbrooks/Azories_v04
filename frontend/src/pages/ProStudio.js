@@ -407,113 +407,78 @@ export default function ProStudio() {
     }
   };
 
-  // Load unified gallery - ALL Pro Studio content
-  const loadGallery = async () => {
+  // Pagination state for gallery
+  const [galleryPage, setGalleryPage] = useState(1);
+  const [galleryHasMore, setGalleryHasMore] = useState(true);
+  const [galleryLoading, setGalleryLoading] = useState(false);
+  const [galleryTotal, setGalleryTotal] = useState(0);
+  const galleryObserverRef = useRef(null);
+  const GALLERY_PAGE_SIZE = 30;
+
+  // Load unified gallery - optimized single API call with pagination
+  const loadGallery = async (page = 1, append = false) => {
+    if (galleryLoading) return;
+    
     try {
+      setGalleryLoading(true);
       const token = localStorage.getItem('azories-token');
       
-      // Fetch from multiple sources in parallel
-      const [artStudioRes, charactersRes] = await Promise.all([
-        fetch(`${API_URL}/api/art-studio/gallery`, {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        fetch(`${API_URL}/api/pro-studio/characters`, {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-      ]);
+      // Map filter to API filter type
+      const filterMap = {
+        'all': null,
+        'images': 'images',
+        'videos': 'videos',
+        'characters': 'characters'
+      };
+      const filterParam = filterMap[galleryFilter] || null;
       
-      let allItems = [];
+      // Use optimized unified endpoint with pagination
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: GALLERY_PAGE_SIZE.toString()
+      });
+      if (filterParam) params.append('filter_type', filterParam);
       
-      // Add art studio gallery items
-      if (artStudioRes.ok) {
-        const artData = await artStudioRes.json();
-        const artItems = (artData.images || []).map(item => ({
-          ...item,
-          source: 'art-studio',
-          type: item.is_animation ? 'video' : 'image'
-        }));
-        allItems = [...allItems, ...artItems];
-      }
-      
-      // Add character thumbnails and their galleries
-      if (charactersRes.ok) {
-        const charData = await charactersRes.json();
-        const chars = charData.characters || [];
-        
-        // Add each character's master image
-        for (const char of chars) {
-          if (char.thumbnail) {
-            allItems.push({
-              id: `char-${char.id}`,
-              image_url: char.thumbnail,
-              prompt: char.description || char.appearance_traits || `${char.name} - Master Image`,
-              source: 'character',
-              type: 'image',
-              character_id: char.id,
-              character_name: char.name,
-              is_master: true,
-              created_at: char.created_at
-            });
-          }
-          
-          // Fetch character's gallery images
-          try {
-            const charGalleryRes = await fetch(`${API_URL}/api/pro-studio/characters/${char.id}/gallery`, {
-              headers: { Authorization: `Bearer ${token}` }
-            });
-            if (charGalleryRes.ok) {
-              const charGalleryData = await charGalleryRes.json();
-              const charImages = (charGalleryData.images || []).map(img => ({
-                ...img,
-                source: 'character-gallery',
-                type: img.is_video ? 'video' : 'image',
-                character_id: char.id,
-                character_name: char.name
-              }));
-              allItems = [...allItems, ...charImages];
-            }
-          } catch (e) {
-            console.error(`Error loading gallery for character ${char.name}:`, e);
-          }
-        }
-      }
-      
-      // Fetch all videos from the videos endpoint
-      try {
-        const videosRes = await fetch(`${API_URL}/api/pro-studio/videos`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (videosRes.ok) {
-          const videosData = await videosRes.json();
-          const videoItems = (videosData.videos || []).map(vid => ({
-            id: vid.id,
-            image_url: vid.video_url,
-            name: vid.name,
-            prompt: vid.name || 'Video',
-            source: vid.source === 'character' ? 'character-video' : 'art-studio-video',
-            type: 'video',
-            is_animation: true,
-            character_name: vid.character_name,
-            created_at: vid.created_at
-          }));
-          allItems = [...allItems, ...videoItems];
-        }
-      } catch (e) {
-        console.error('Error loading videos:', e);
-      }
-      
-      // Sort by created_at descending (newest first)
-      allItems.sort((a, b) => {
-        const dateA = new Date(a.created_at || 0);
-        const dateB = new Date(b.created_at || 0);
-        return dateB - dateA;
+      const response = await fetch(`${API_URL}/api/pro-studio/gallery/unified?${params}`, {
+        headers: { Authorization: `Bearer ${token}` }
       });
       
-      setGallery(allItems);
+      if (response.ok) {
+        const data = await response.json();
+        const newItems = data.items || [];
+        
+        if (append) {
+          setGallery(prev => [...prev, ...newItems]);
+        } else {
+          setGallery(newItems);
+        }
+        
+        setGalleryTotal(data.total || 0);
+        setGalleryHasMore(data.has_more || false);
+        setGalleryPage(page);
+      }
     } catch (error) {
       console.error('Error loading gallery:', error);
+    } finally {
+      setGalleryLoading(false);
     }
   };
+  
+  // Load more items when scrolling (infinite scroll)
+  const loadMoreGallery = useCallback(() => {
+    if (galleryHasMore && !galleryLoading) {
+      loadGallery(galleryPage + 1, true);
+    }
+  }, [galleryPage, galleryHasMore, galleryLoading]);
+  
+  // Reset and reload gallery when filter changes
+  useEffect(() => {
+    if (isAuthenticated && activeTab === 'gallery') {
+      setGalleryPage(1);
+      setGalleryHasMore(true);
+      loadGallery(1, false);
+    }
+  }, [galleryFilter, isAuthenticated, activeTab]);
   
   // Filter gallery items based on current filter
   const filteredGallery = gallery.filter(item => {
