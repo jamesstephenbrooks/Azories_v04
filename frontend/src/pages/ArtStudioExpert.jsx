@@ -1109,6 +1109,11 @@ export default function ArtStudioExpert() {
     newNode.data.onDelete = () => deleteNodeById(newNodeId);
     newNode.data.onCopyNode = () => copyNode(newNodeId);
     
+    // Add onSelectFromGallery for image nodes
+    if (nodeToCopy.type === 'image') {
+      newNode.data.onSelectFromGallery = () => openGalleryPicker(newNodeId);
+    }
+    
     setNodes(nds => [...nds, newNode]);
     console.log(`Copied node ${nodeId} to ${newNodeId}`);
     return newNodeId;
