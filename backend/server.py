@@ -96,42 +96,70 @@ if not ADMIN_USERNAME or not ADMIN_PASSWORD:
 # VIP users - loaded from environment variable for security
 VIP_USERS = [e.strip() for e in os.environ.get("VIP_USERS", "").split(",") if e.strip()]
 
-# Create the main app
-app = FastAPI(title="Azories API", description="Digital Book Creation Platform")
-
-# Setup modular routes (admin, etc.)
-setup_routes(app, db)
-
-# Create a router with the /api prefix (for remaining routes)
-api_router = APIRouter(prefix="/api")
-security = HTTPBearer(auto_error=False)
-
-# Admin authentication helper (used by remaining admin endpoints)
-async def get_admin_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    """Verify admin JWT token"""
-    try:
-        payload = jwt.decode(credentials.credentials, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        if not payload.get("admin"):
-            raise HTTPException(status_code=403, detail="Admin access required")
-        return payload
-    except Exception:
-        raise HTTPException(status_code=401, detail="Invalid admin token")
-
-# Configure logging
+# Configure logging first
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# In-memory task store for long-running operations
-# Maps task_id -> {"status": "pending"|"completed"|"failed", "result": any, "error": str, "created_at": datetime}
+# In-memory task stores
 import asyncio
 TASK_STORE: Dict[str, dict] = {}
 
+# Cleanup task reference
+_cleanup_task = None
+
 async def cleanup_old_tasks():
-    """Remove tasks older than 1 hour"""
+    """Remove tasks older than 1 hour from both TASK_STORE and animation_jobs"""
     cutoff = datetime.now(timezone.utc) - timedelta(hours=1)
-    expired = [tid for tid, task in TASK_STORE.items() if task.get("created_at", datetime.now(timezone.utc)) < cutoff]
+    
+    # Clean TASK_STORE
+    expired = [tid for tid, task in TASK_STORE.items() 
+               if task.get("created_at", datetime.now(timezone.utc)) < cutoff]
     for tid in expired:
-        del TASK_STORE[tid]
+        TASK_STORE.pop(tid, None)
+    
+    # Clean animation_jobs (defined later in file, but accessible globally)
+    try:
+        global animation_jobs
+        if 'animation_jobs' in globals():
+            expired_jobs = [jid for jid, job in animation_jobs.items() 
+                          if job.get("created_at", datetime.now(timezone.utc)) < cutoff]
+            for jid in expired_jobs:
+                animation_jobs.pop(jid, None)
+    except:
+        pass
+    
+    if expired:
+        logger.info(f"Cleaned up {len(expired)} expired tasks")
+
+async def periodic_cleanup():
+    """Run cleanup every hour"""
+    while True:
+        await asyncio.sleep(3600)  # 1 hour
+        await cleanup_old_tasks()
+
+# Lifespan context manager (modern FastAPI approach)
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Handle startup and shutdown events"""
+    global _cleanup_task
+    # Startup: start periodic cleanup
+    _cleanup_task = asyncio.create_task(periodic_cleanup())
+    logger.info("Started periodic task cleanup")
+    yield
+    # Shutdown: cancel cleanup task and close DB
+    if _cleanup_task:
+        _cleanup_task.cancel()
+    client.close()
+    logger.info("Database connection closed")
+
+# Create the main app with lifespan
+app = FastAPI(
+    title="Azories API", 
+    description="Digital Book Creation Platform",
+    lifespan=lifespan
+)
 
 # Age ratings
 AGE_RATINGS = ["All Ages", "5+", "8+", "12+", "16+"]
