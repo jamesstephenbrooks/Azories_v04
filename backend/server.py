@@ -161,6 +161,24 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# Setup modular routes (admin, etc.)
+setup_routes(app, db)
+
+# Create a router with the /api prefix (for remaining routes)
+api_router = APIRouter(prefix="/api")
+security = HTTPBearer(auto_error=False)
+
+# Admin authentication helper (used by remaining admin endpoints)
+async def get_admin_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Verify admin JWT token"""
+    try:
+        payload = jwt.decode(credentials.credentials, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        if not payload.get("admin"):
+            raise HTTPException(status_code=403, detail="Admin access required")
+        return payload
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid admin token")
+
 # Age ratings
 AGE_RATINGS = ["All Ages", "5+", "8+", "12+", "16+"]
 
