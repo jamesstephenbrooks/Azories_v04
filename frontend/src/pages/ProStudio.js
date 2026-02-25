@@ -4763,6 +4763,37 @@ export default function ProStudio() {
                     </div>
                   )})}
                 </div>
+                
+                {/* Infinite scroll loader */}
+                {galleryHasMore && (
+                  <div className="flex justify-center py-6">
+                    <Button
+                      variant="outline"
+                      onClick={loadMoreGallery}
+                      disabled={galleryLoading}
+                      className="border-purple-500/50 text-purple-300 hover:bg-purple-500/20"
+                    >
+                      {galleryLoading ? (
+                        <>
+                          <FiRefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                          Loading...
+                        </>
+                      ) : (
+                        <>
+                          Load More ({galleryTotal - gallery.length} remaining)
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                )}
+                
+                {/* Loading overlay for initial load */}
+                {galleryLoading && gallery.length === 0 && (
+                  <div className="flex flex-col items-center justify-center py-16">
+                    <FiRefreshCw className="w-8 h-8 text-purple-400 animate-spin mb-4" />
+                    <p className="text-gray-400">Loading gallery...</p>
+                  </div>
+                )}
               )}
             </div>
           </TabsContent>
