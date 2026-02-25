@@ -1,9 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import api, { authAPI, getErrorMessage } from '../services/api';
 
 const AuthContext = createContext();
-
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -14,13 +12,13 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setToken(null);
     localStorage.removeItem('azories-token');
-    delete axios.defaults.headers.common['Authorization'];
+    delete api.defaults.headers.common['Authorization'];
   }, []);
 
   const refreshUser = useCallback(async () => {
     if (token) {
       try {
-        const res = await axios.get(`${API}/auth/me`);
+        const res = await authAPI.me();
         setUser(res.data);
       } catch {
         logout();
@@ -30,9 +28,9 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       // Verify token and get user
-      axios.get(`${API}/auth/me`)
+      authAPI.me()
         .then(res => {
           setUser(res.data);
           setLoading(false);
@@ -47,22 +45,22 @@ export const AuthProvider = ({ children }) => {
   }, [token, logout]);
 
   const login = async (email, password) => {
-    const res = await axios.post(`${API}/auth/login`, { email, password });
+    const res = await authAPI.login(email, password);
     const { access_token, user: userData } = res.data;
     setToken(access_token);
     setUser(userData);
     localStorage.setItem('azories-token', access_token);
-    axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+    api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
     return userData;
   };
 
   const register = async (email, password, name) => {
-    const res = await axios.post(`${API}/auth/register`, { email, password, name });
+    const res = await authAPI.register(email, password, name);
     const { access_token, user: userData } = res.data;
     setToken(access_token);
     setUser(userData);
     localStorage.setItem('azories-token', access_token);
-    axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+    api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
     return userData;
   };
 
