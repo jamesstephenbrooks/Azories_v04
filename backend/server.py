@@ -979,14 +979,7 @@ async def upgrade_subscription(request: UpgradeRequest, current_user: dict = Dep
     )
     return {"message": f"Subscription updated to {request.subscription}", "subscription": request.subscription}
 
-@api_router.post("/auth/make-admin")
-async def make_admin(current_user: dict = Depends(get_current_user)):
-    """Make current user an admin (for testing)"""
-    await db.users.update_one(
-        {"id": current_user["id"]},
-        {"$set": {"role": "admin"}}
-    )
-    return {"message": "You are now an admin", "role": "admin"}
+# SECURITY: /auth/make-admin endpoint removed - was a privilege escalation vulnerability
 
 # ============ ASYNC TASK ENDPOINTS ============
 
