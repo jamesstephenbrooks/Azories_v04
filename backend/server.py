@@ -7427,6 +7427,114 @@ async def get_all_user_videos(current_user: dict = Depends(get_current_user)):
         return {"videos": []}
 
 
+@api_router.get("/pro-studio/gallery/unified")
+async def get_unified_gallery(
+    page: int = 1,
+    limit: int = 50,
+    filter_type: Optional[str] = None,  # 'images', 'videos', 'characters'
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Get all Pro Studio gallery items in a single optimized call.
+    Combines art_studio_gallery, character galleries, and videos.
+    Returns paginated results with minimal data for thumbnails.
+    """
+    user = current_user
+    all_items = []
+    skip = (page - 1) * limit
+    
+    try:
+        # 1. Get art studio gallery items
+        if filter_type in (None, 'images', 'videos'):
+            art_query = {"user_id": user["id"]}
+            if filter_type == 'videos':
+                art_query["type"] = "animation"
+            elif filter_type == 'images':
+                art_query["type"] = {"$ne": "animation"}
+            
+            art_items = await db.art_studio_gallery.find(art_query).sort("created_at", -1).to_list(200)
+            
+            for item in art_items:
+                is_video = item.get("type") == "animation"
+                all_items.append({
+                    "id": str(item["_id"]),
+                    "image_url": item.get("image_url", ""),
+                    "prompt": item.get("prompt", item.get("name", ""))[:100],
+                    "name": item.get("name", ""),
+                    "source": "art-studio",
+                    "type": "video" if is_video else "image",
+                    "is_animation": is_video,
+                    "created_at": item.get("created_at", datetime.now(timezone.utc)).isoformat() if item.get("created_at") else None
+                })
+        
+        # 2. Get characters and their galleries in one batch
+        if filter_type in (None, 'images', 'characters'):
+            characters = await db.pro_studio_characters.find({"user_id": user["id"]}).to_list(100)
+            char_ids = [str(char["_id"]) for char in characters]
+            char_map = {str(char["_id"]): char.get("name", "Character") for char in characters}
+            
+            # Add character master images
+            for char in characters:
+                if char.get("thumbnail"):
+                    all_items.append({
+                        "id": f"char-{char['_id']}",
+                        "image_url": char.get("thumbnail", ""),
+                        "prompt": char.get("description", char.get("appearance_traits", ""))[:100],
+                        "name": char.get("name", ""),
+                        "source": "character",
+                        "type": "image",
+                        "is_master": True,
+                        "character_id": str(char["_id"]),
+                        "character_name": char.get("name", ""),
+                        "created_at": char.get("created_at", datetime.now(timezone.utc)).isoformat() if char.get("created_at") else None
+                    })
+            
+            # Batch fetch all character gallery images
+            if char_ids:
+                char_gallery_items = await db.character_gallery.find({
+                    "character_id": {"$in": char_ids},
+                    "user_id": user["id"]
+                }).sort("created_at", -1).to_list(500)
+                
+                for img in char_gallery_items:
+                    is_video = img.get("type") == "video" or "video" in str(img.get("image_url", "")).lower()
+                    if filter_type == 'videos' and not is_video:
+                        continue
+                    if filter_type == 'images' and is_video:
+                        continue
+                    
+                    char_id = img.get("character_id", "")
+                    all_items.append({
+                        "id": str(img["_id"]),
+                        "image_url": img.get("image_url", ""),
+                        "prompt": img.get("prompt", "")[:100],
+                        "name": img.get("name", ""),
+                        "source": "character-gallery",
+                        "type": "video" if is_video else "image",
+                        "is_animation": is_video,
+                        "character_id": char_id,
+                        "character_name": char_map.get(char_id, ""),
+                        "created_at": img.get("created_at", datetime.now(timezone.utc)).isoformat() if img.get("created_at") else None
+                    })
+        
+        # Sort all items by created_at (newest first)
+        all_items.sort(key=lambda x: x.get("created_at") or "", reverse=True)
+        
+        # Get total count and paginate
+        total = len(all_items)
+        paginated_items = all_items[skip:skip + limit]
+        
+        return {
+            "items": paginated_items,
+            "total": total,
+            "page": page,
+            "limit": limit,
+            "has_more": skip + limit < total
+        }
+    
+    except Exception as e:
+        logging.error(f"Unified gallery error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to load gallery")
 
 
 # ============================================================================
