@@ -796,7 +796,7 @@ async def forgot_password(request: ForgotPasswordRequest, background_tasks: Back
         "user_id": user["id"],
         "token": reset_token,
         "expires_at": expiry.isoformat(),
-        "created_at": datetime.utcnow().isoformat()
+        "created_at": datetime.now(timezone.utc).isoformat()
     })
     
     # Get app URL for reset link
