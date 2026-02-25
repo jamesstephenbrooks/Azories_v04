@@ -7269,29 +7269,49 @@ class SaveAnimationRequest(BaseModel):
 
 @api_router.post("/art-studio/save-animation")
 async def save_animation(request: SaveAnimationRequest, current_user: dict = Depends(get_current_user)):
-    """Save an animation to user's gallery"""
+    """
+    Save an animation to user's gallery.
+    
+    Videos are uploaded to Cloudinary for PERMANENT storage.
+    Falls back to fal.ai if Cloudinary is not available (⚠️ 7-day retention only).
+    """
     user = current_user
     
     try:
         video_url = request.video_url
+        storage_provider = "original"  # Track where video is stored
         
-        # Convert base64 video to CDN URL if possible
+        # Priority 1: Upload to Cloudinary for permanent storage
+        if video_url.startswith('data:video') and CLOUDINARY_AVAILABLE:
+            try:
+                logging.info("Uploading video to Cloudinary (permanent storage)...")
+                result = await upload_video_to_cloudinary(video_url, folder="azories/animations")
+                video_url = result['url']
+                storage_provider = "cloudinary"
+                logging.info(f"Video uploaded to Cloudinary: {video_url[:60]}...")
+            except Exception as cloudinary_error:
+                logging.warning(f"Cloudinary upload failed: {cloudinary_error}")
+                # Fall through to fal.ai fallback
+        
+        # Priority 2: Fallback to fal.ai (⚠️ 7-day retention only)
         if video_url.startswith('data:video') and FAL_AVAILABLE:
             try:
-                logging.info("Uploading base64 video to fal.ai CDN...")
+                logging.warning("⚠️ Using fal.ai for video storage (7-day retention only)")
                 video_url = await upload_video_to_fal(video_url)
-                logging.info(f"Video uploaded to: {video_url[:60]}...")
-            except Exception as upload_error:
-                logging.warning(f"Failed to upload video to CDN, keeping base64: {upload_error}")
-                video_url = request.video_url
+                storage_provider = "fal"
+                logging.info(f"Video uploaded to fal.ai: {video_url[:60]}...")
+            except Exception as fal_error:
+                logging.warning(f"fal.ai upload failed: {fal_error}")
+                # Keep original base64 as last resort
         
         gallery_item = {
             "user_id": user["id"],
             "image_url": video_url,  # Store video URL in image_url field for compatibility
             "name": request.name,
-            "type": "animation",  # New field to distinguish animations
+            "type": "animation",
             "style": request.style,
             "motion_prompt": request.motion_prompt,
+            "storage_provider": storage_provider,  # Track storage location
             "created_at": datetime.now(timezone.utc)
         }
         
@@ -7300,7 +7320,8 @@ async def save_animation(request: SaveAnimationRequest, current_user: dict = Dep
         return {
             "success": True,
             "id": str(result.inserted_id),
-            "video_url": video_url
+            "video_url": video_url,
+            "storage_provider": storage_provider
         }
         
     except Exception as e:
