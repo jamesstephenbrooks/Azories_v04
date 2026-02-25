@@ -1447,10 +1447,91 @@ async def generate_invite_link(book_id: str, request: InviteLinkRequest, current
     await db.invites.insert_one(invite_data)
     
     # Generate the link (frontend will handle this route)
-    base_url = os.environ.get('FRONTEND_URL', 'https://story-creator-86.preview.emergentagent.com')
+    base_url = os.environ.get('FRONTEND_URL', 'https://azories.com')
     invite_link = f"{base_url}/invite/{invite_token}"
     
     return {"invite_link": invite_link, "token": invite_token}
+
+
+@api_router.post("/invites/{token}/accept")
+async def accept_invite(token: str, current_user: dict = Depends(get_current_user)):
+    """Accept a book collaboration invite"""
+    # Find the invite
+    invite = await db.invites.find_one({"id": token}, {"_id": 0})
+    
+    if not invite:
+        raise HTTPException(status_code=404, detail="Invalid invite link")
+    
+    if invite.get("used"):
+        raise HTTPException(status_code=400, detail="This invite has already been used")
+    
+    # Get the book
+    book = await db.books.find_one({"id": invite["book_id"]}, {"_id": 0})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    # Check if user is already a collaborator or owner
+    if book["author_id"] == current_user["id"]:
+        raise HTTPException(status_code=400, detail="You are already the owner of this book")
+    
+    existing_collaborators = book.get("collaborators", [])
+    if any(c["user_id"] == current_user["id"] for c in existing_collaborators):
+        raise HTTPException(status_code=400, detail="You are already a collaborator on this book")
+    
+    # Add user as collaborator
+    new_collaborator = {
+        "user_id": current_user["id"],
+        "email": current_user.get("email", ""),
+        "name": current_user.get("name", ""),
+        "role": invite.get("role", "editor"),
+        "added_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.books.update_one(
+        {"id": invite["book_id"]},
+        {"$push": {"collaborators": new_collaborator}}
+    )
+    
+    # Mark invite as used
+    await db.invites.update_one(
+        {"id": token},
+        {"$set": {
+            "used": True,
+            "used_by": current_user["id"],
+            "used_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    return {
+        "message": "Successfully joined as collaborator",
+        "book_id": invite["book_id"],
+        "book_title": book.get("title", "Untitled"),
+        "role": invite.get("role", "editor")
+    }
+
+
+@api_router.get("/invites/{token}")
+async def get_invite_details(token: str):
+    """Get invite details (public - no auth required)"""
+    invite = await db.invites.find_one({"id": token}, {"_id": 0})
+    
+    if not invite:
+        raise HTTPException(status_code=404, detail="Invalid invite link")
+    
+    if invite.get("used"):
+        raise HTTPException(status_code=400, detail="This invite has already been used")
+    
+    # Get book details
+    book = await db.books.find_one({"id": invite["book_id"]}, {"_id": 0, "title": 1, "author_name": 1, "cover_image": 1})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    return {
+        "book_title": book.get("title", "Untitled"),
+        "author_name": book.get("author_name", "Unknown"),
+        "cover_image": book.get("cover_image", ""),
+        "role": invite.get("role", "editor")
+    }
 
 
 @api_router.get("/books/{book_id}/collaborators")
