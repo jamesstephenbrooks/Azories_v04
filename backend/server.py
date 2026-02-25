@@ -208,11 +208,7 @@ ACTUAL_COSTS = {
     "expression_generate": 0.05, # $0.05 per expression
 }
 
-# VIP users who get unlimited free credits (but we track usage)
-VIP_USERS = [
-    "arianamillb@icloud.com",
-    "jamesstephenbrooks@outlook.com"
-]
+# Note: VIP_USERS is now defined at the top of the file from environment variable
 
 def check_budget_error(error_msg: str) -> bool:
     """Check if an error is related to Emergent LLM Key budget"""
