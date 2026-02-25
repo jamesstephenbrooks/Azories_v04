@@ -994,10 +994,13 @@ export default function ArtStudioExpert() {
       });
       if (response.ok) {
         const data = await response.json();
-        setGalleryImages(data || []);
+        // Handle both array response and object with images property
+        const images = Array.isArray(data) ? data : (data.images || data.items || []);
+        setGalleryImages(images);
       }
     } catch (error) {
       console.error('Failed to load gallery:', error);
+      setGalleryImages([]);
     }
   };
   
