@@ -4646,7 +4646,7 @@ export default function ProStudio() {
                           {/* Placeholder skeleton */}
                           <div className="img-placeholder absolute inset-0 bg-gradient-to-br from-gray-700 to-gray-800 animate-pulse" />
                           <img 
-                            src={item.image_url || item.url} 
+                            src={item.thumbnail_url || item.image_url || item.url} 
                             alt={item.prompt || 'Gallery item'} 
                             className="w-full aspect-square object-cover relative z-10"
                             loading="lazy"
@@ -4658,6 +4658,11 @@ export default function ProStudio() {
                               if (placeholder) placeholder.style.display = 'none';
                             }}
                             onError={(e) => {
+                              // Failed to load thumbnail - try full image as fallback
+                              if (item.thumbnail_url && e.target.src === item.thumbnail_url) {
+                                e.target.src = item.image_url || item.url;
+                                return;
+                              }
                               // Failed to load - show fallback
                               e.target.style.display = 'none';
                               const placeholder = e.target.parentElement.querySelector('.img-placeholder');
