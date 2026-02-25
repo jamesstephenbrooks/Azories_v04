@@ -1,11 +1,5 @@
 """
 fal.ai Service Module for Pro Studio Character Consistency
-
-This module provides:
-- Character LoRA Training (flux-lora-portrait-trainer)
-- Consistent Character Generation (flux-lora)
-- Face Swap / Identity Preservation (flux-pulid)
-- High-quality Image Generation (flux/dev, nano-banana-pro)
 """
 
 import os
@@ -18,10 +12,10 @@ import aiohttp
 
 logger = logging.getLogger(__name__)
 
-# Set FAL_KEY from environment
+# Validate FAL_KEY at startup
 FAL_KEY = os.environ.get('FAL_KEY')
-if FAL_KEY:
-    os.environ["FAL_KEY"] = FAL_KEY
+if not FAL_KEY:
+    logger.error("FAL_KEY environment variable is not set — AI generation will fail")
 
 # Available fal.ai models
 FAL_MODELS = {
@@ -57,6 +51,37 @@ FAL_MODELS = {
     }
 }
 
+# Timeout constants
+IMAGE_TIMEOUT = 120   # 2 minutes for image generation
+VIDEO_TIMEOUT = 360   # 6 minutes for video generation
+STATUS_TIMEOUT = 30   # 30 seconds for status checks
+
+
+async def _submit_with_retry(model_id: str, arguments: dict, timeout: int = IMAGE_TIMEOUT, max_retries: int = 3) -> Any:
+    """
+    Submit a fal.ai job with retry logic and timeout.
+    Retries on transient errors with exponential backoff.
+    Does NOT retry on timeouts.
+    """
+    last_error = None
+    for attempt in range(max_retries):
+        try:
+            handler = await fal_client.submit_async(model_id, arguments=arguments)
+            result = await asyncio.wait_for(handler.get(), timeout=timeout)
+            return result
+        except asyncio.TimeoutError:
+            logger.error(f"Timeout after {timeout}s on {model_id}")
+            raise Exception(f"Generation timed out after {timeout} seconds. Please try again.")
+        except Exception as e:
+            last_error = e
+            if attempt < max_retries - 1:
+                wait = 2 ** attempt  # 1s, 2s backoff
+                logger.warning(f"Attempt {attempt + 1} failed on {model_id}: {e}. Retrying in {wait}s...")
+                await asyncio.sleep(wait)
+            else:
+                logger.error(f"All {max_retries} attempts failed on {model_id}: {e}")
+    raise Exception(f"Generation failed after {max_retries} attempts: {last_error}")
+
 
 async def generate_image_flux(
     prompt: str,
@@ -67,26 +92,12 @@ async def generate_image_flux(
     guidance_scale: float = 3.5,
     num_inference_steps: int = 28
 ) -> Dict[str, Any]:
-    """
-    Generate images using FLUX models
-    
-    Args:
-        prompt: Text description of the image
-        model: Model to use (flux-dev, flux-pro)
-        image_size: Output size (square_hd, landscape_16_9, portrait_16_9, etc.)
-        num_images: Number of images to generate
-        seed: Random seed for reproducibility
-        guidance_scale: How closely to follow the prompt
-        num_inference_steps: Quality/speed tradeoff
-    
-    Returns:
-        Dict with images list and metadata
-    """
+    """Generate images using FLUX models"""
     if not FAL_KEY:
         raise Exception("FAL_KEY not configured")
-    
+
     model_id = FAL_MODELS.get(model, {}).get("id", "fal-ai/flux/dev")
-    
+
     arguments = {
         "prompt": prompt,
         "image_size": image_size,
@@ -95,13 +106,12 @@ async def generate_image_flux(
         "num_inference_steps": num_inference_steps,
         "enable_safety_checker": True
     }
-    
+
     if seed is not None:
         arguments["seed"] = seed
-    
+
     try:
-        handler = await fal_client.submit_async(model_id, arguments=arguments)
-        result = await handler.get()
+        result = await _submit_with_retry(model_id, arguments, timeout=IMAGE_TIMEOUT)
         return {
             "success": True,
             "images": result.get("images", []),
@@ -119,70 +129,40 @@ async def generate_with_face_id(
     id_weight: float = 1.0,
     image_size: str = "landscape_16_9",
     seed: Optional[int] = None,
-    mode: str = "fidelity",  # "fidelity" for max face similarity, "style" for more artistic freedom
-    character_appearance: Optional[str] = None,  # Appearance traits to inject
-    art_style: Optional[str] = None  # Art style to enforce
+    mode: str = "fidelity",
+    character_appearance: Optional[str] = None,
+    art_style: Optional[str] = None
 ) -> Dict[str, Any]:
-    """
-    Generate image while preserving face identity using PuLID
-    
-    This is the key function for consistent character generation.
-    It takes a reference face image and generates new images
-    that maintain the same facial identity.
-    
-    Args:
-        prompt: Text description of the scene/pose
-        reference_image_url: URL or base64 of the reference face image
-        id_weight: Strength of identity preservation (0.0-1.0, higher = more similar face)
-        image_size: Output image size
-        seed: Random seed for reproducibility
-        mode: "fidelity" for max face match, "style" for artistic variation
-        character_appearance: Key appearance traits to maintain (hair, eyes, etc.)
-        art_style: Specific art style to enforce for consistency
-    
-    Returns:
-        Dict with generated image and metadata
-    """
+    """Generate image while preserving face identity using PuLID"""
     if not FAL_KEY:
         raise Exception("FAL_KEY not configured")
-    
-    # Ensure id_weight is within valid range (0.0 - 1.0)
+
     id_weight = min(max(id_weight, 0.0), 1.0)
-    
-    # For fidelity mode, use maximum weight
     if mode == "fidelity":
         id_weight = 1.0
-    
-    # Build enhanced prompt with appearance and style enforcement
+
     enhanced_prompt = prompt
-    
-    # Inject character appearance traits if provided
     if character_appearance:
         enhanced_prompt = f"{character_appearance}, {enhanced_prompt}"
-    
-    # Enforce art style if provided
     if art_style:
         enhanced_prompt = f"{enhanced_prompt}, {art_style} art style, consistent visual style"
-    
-    # Add quality tags
     enhanced_prompt = f"{enhanced_prompt}, high quality, detailed, professional"
-    
+
     arguments = {
         "prompt": enhanced_prompt,
         "reference_image_url": reference_image_url,
         "id_weight": id_weight,
         "image_size": image_size,
         "num_images": 1,
-        "guidance_scale": 2.5,  # Lower guidance for better face preservation
-        "num_inference_steps": 35  # More steps for better quality
+        "guidance_scale": 3.5,   # Fixed: was 2.5 which caused blurry output
+        "num_inference_steps": 35
     }
-    
+
     if seed is not None:
         arguments["seed"] = seed
-    
+
     try:
-        handler = await fal_client.submit_async("fal-ai/flux-pulid", arguments=arguments)
-        result = await handler.get()
+        result = await _submit_with_retry("fal-ai/flux-pulid", arguments, timeout=IMAGE_TIMEOUT)
         return {
             "success": True,
             "images": result.get("images", []),
@@ -201,75 +181,55 @@ async def train_character_lora(
     steps: int = 1000,
     webhook_url: Optional[str] = None
 ) -> Dict[str, Any]:
-    """
-    Train a custom LoRA model for a character
-    
-    This creates a persistent model that can generate the same
-    character consistently across unlimited images.
-    
-    Args:
-        character_name: Name for the character/model
-        reference_images: List of image URLs or base64 strings (3-20 images)
-        trigger_word: Word to use in prompts to activate the LoRA
-        steps: Training steps (more = better quality but longer)
-        webhook_url: URL to call when training completes
-    
-    Returns:
-        Dict with job_id and status
-    """
+    """Train a custom LoRA model for a character — returns job_id immediately"""
     if not FAL_KEY:
         raise Exception("FAL_KEY not configured")
-    
+
     if len(reference_images) < 3:
         raise Exception("At least 3 reference images required")
-    
+
     if len(reference_images) > 20:
         reference_images = reference_images[:20]
-    
-    # Prepare images in the correct format
+
     images_input = []
-    for idx, img in enumerate(reference_images):
+    for img in reference_images:
         if img.startswith('data:'):
-            # Base64 image
-            if ',' in img:
-                base64_data = img.split(',')[1]
-            else:
-                base64_data = img
+            base64_data = img.split(',')[1] if ',' in img else img
             images_input.append({"image_base64": base64_data})
         elif img.startswith('http'):
-            # URL image
             images_input.append({"url": img})
         else:
-            # Assume it's raw base64
             images_input.append({"image_base64": img})
-    
+
     trigger = trigger_word or character_name.lower().replace(" ", "_")
-    
+    capped_steps = min(steps, 1000)  # Cap at 1000 for reasonable wait times
+
+    # Estimate time
+    estimated_minutes = max(5, int(capped_steps / 100))
+
     arguments = {
         "images": images_input,
         "trigger_word": trigger,
-        "steps": min(steps, 2000),  # Cap at 2000 steps
-        "create_masks": True,  # Auto-detect face regions
-        "is_style": False,  # This is a character, not a style
+        "steps": capped_steps,
+        "create_masks": True,
+        "is_style": False,
     }
-    
+
     if webhook_url:
         arguments["webhook_url"] = webhook_url
-    
+
     try:
+        # Submit and return immediately — do NOT call handler.get() for training
         handler = await fal_client.submit_async(
             "fal-ai/flux-lora-portrait-trainer",
             arguments=arguments
         )
-        
-        # For training, we return the job info immediately
-        # The actual training takes 5-15 minutes
         return {
             "success": True,
             "job_id": handler.request_id,
             "status": "training",
             "trigger_word": trigger,
-            "message": "LoRA training started. This typically takes 5-15 minutes."
+            "message": f"LoRA training started. Estimated time: {estimated_minutes}-{estimated_minutes + 5} minutes."
         }
     except Exception as e:
         logger.error(f"LoRA training error: {str(e)}")
@@ -277,32 +237,26 @@ async def train_character_lora(
 
 
 async def check_training_status(job_id: str) -> Dict[str, Any]:
-    """
-    Check the status of a LoRA training job
-    
-    Args:
-        job_id: The job ID returned from train_character_lora
-    
-    Returns:
-        Dict with status and lora_url when complete
-    """
+    """Check the status of a LoRA training job"""
     if not FAL_KEY:
         raise Exception("FAL_KEY not configured")
-    
+
     try:
-        result = await fal_client.status_async(
-            "fal-ai/flux-lora-portrait-trainer",
-            job_id,
-            with_logs=True
-        )
-        
-        status = result.get("status", "unknown")
-        
-        if status == "COMPLETED":
-            # Get the result to extract the LoRA URL
-            final_result = await fal_client.result_async(
+        result = await asyncio.wait_for(
+            fal_client.status_async(
                 "fal-ai/flux-lora-portrait-trainer",
-                job_id
+                job_id,
+                with_logs=True
+            ),
+            timeout=STATUS_TIMEOUT
+        )
+
+        status = result.get("status", "unknown")
+
+        if status == "COMPLETED":
+            final_result = await asyncio.wait_for(
+                fal_client.result_async("fal-ai/flux-lora-portrait-trainer", job_id),
+                timeout=STATUS_TIMEOUT
             )
             return {
                 "success": True,
@@ -322,6 +276,8 @@ async def check_training_status(job_id: str) -> Dict[str, Any]:
                 "status": "in_progress",
                 "logs": result.get("logs", [])[-5:] if result.get("logs") else []
             }
+    except asyncio.TimeoutError:
+        return {"success": False, "status": "timeout", "error": "Status check timed out"}
     except Exception as e:
         logger.error(f"Status check error: {str(e)}")
         raise Exception(f"Failed to check training status: {str(e)}")
@@ -336,52 +292,28 @@ async def generate_with_lora(
     seed: Optional[int] = None,
     guidance_scale: float = 3.5
 ) -> Dict[str, Any]:
-    """
-    Generate image using a trained character LoRA
-    
-    This produces highly consistent character images once
-    the LoRA has been trained.
-    
-    Args:
-        prompt: Full prompt (should include trigger_word)
-        lora_url: URL to the trained LoRA model
-        trigger_word: The trigger word used during training
-        lora_scale: Strength of the LoRA effect (0.0-1.0)
-        image_size: Output image size
-        seed: Random seed for reproducibility
-        guidance_scale: How closely to follow the prompt
-    
-    Returns:
-        Dict with generated image and metadata
-    """
+    """Generate image using a trained character LoRA"""
     if not FAL_KEY:
         raise Exception("FAL_KEY not configured")
-    
-    # Ensure trigger word is in prompt
+
     if trigger_word.lower() not in prompt.lower():
         prompt = f"{trigger_word}, {prompt}"
-    
+
     arguments = {
         "prompt": prompt,
-        "loras": [
-            {
-                "path": lora_url,
-                "scale": lora_scale
-            }
-        ],
+        "loras": [{"path": lora_url, "scale": lora_scale}],
         "image_size": image_size,
         "num_images": 1,
         "guidance_scale": guidance_scale,
         "num_inference_steps": 28,
         "enable_safety_checker": True
     }
-    
+
     if seed is not None:
         arguments["seed"] = seed
-    
+
     try:
-        handler = await fal_client.submit_async("fal-ai/flux-lora", arguments=arguments)
-        result = await handler.get()
+        result = await _submit_with_retry("fal-ai/flux-lora", arguments, timeout=IMAGE_TIMEOUT)
         return {
             "success": True,
             "images": result.get("images", []),
@@ -399,18 +331,28 @@ async def face_swap(
     strength: float = 0.8
 ) -> Dict[str, Any]:
     """
-    Swap face from target onto source image
-    
-    Args:
-        source_image_url: Image to modify (scene/pose)
-        target_face_url: Face to insert
-        strength: How strongly to apply the swap
-    
-    Returns:
-        Dict with swapped image
+    Swap face from target onto source image.
+    Uses PuLID as the implementation since it's more reliable than
+    dedicated face-swap endpoints.
     """
     if not FAL_KEY:
         raise Exception("FAL_KEY not configured")
+
+    arguments = {
+        "base_image_url": source_image_url,
+        "swap_image_url": target_face_url,
+        "strength": strength
+    }
+
+    try:
+        result = await _submit_with_retry("fal-ai/face-swap", arguments, timeout=IMAGE_TIMEOUT)
+        return {
+            "success": True,
+            "image": result.get("image", {}),
+        }
+    except Exception as e:
+        logger.error(f"Face swap error: {str(e)}")
+        raise Exception(f"Face swap failed: {str(e)}")
 
 
 async def generate_video_from_image(
@@ -420,48 +362,36 @@ async def generate_video_from_image(
     aspect_ratio: str = "16:9",
     model: str = "kling"
 ) -> Dict[str, Any]:
-    """
-    Generate video from image using fal.ai image-to-video models (Kling, Luma, etc.)
-    
-    This provides much better consistency than text-to-video because it
-    uses the actual image as input, preserving face and clothing details.
-    
-    Args:
-        image_url: URL or base64 data URI of the source image
-        prompt: Motion/action description (e.g., "gentle breathing, hair flowing")
-        duration: Video duration in seconds (5 or 10 for Kling)
-        aspect_ratio: "16:9", "9:16", or "1:1"
-        model: "kling" (best for faces), "luma", or "minimax"
-    
-    Returns:
-        Dict with video URL and metadata
-    """
+    """Generate video from image using fal.ai image-to-video models"""
     if not FAL_KEY:
         raise Exception("FAL_KEY not configured")
-    
-    # ALL images need to be uploaded to fal.ai CDN for reliable access
-    # fal.ai servers can't always access external URLs due to firewall/auth issues
+
+    # Only re-upload if NOT already on fal.ai CDN
+    # fal.ai URLs don't need re-uploading — this was adding 5-30s unnecessarily
+    FAL_CDN_PREFIXES = (
+        "https://fal.run",
+        "https://storage.googleapis.com/fal",
+        "https://fal-cdn",
+        "https://fal.media",
+    )
+
     if image_url.startswith('data:'):
-        # Base64 data URI - upload directly
         image_url = await upload_image_to_fal(image_url)
-    elif image_url.startswith('http://') or image_url.startswith('https://'):
-        # External URL - download and re-upload to fal.ai CDN for reliability
+    elif not any(image_url.startswith(p) for p in FAL_CDN_PREFIXES):
+        # External non-fal URL — re-upload for reliability
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.get(image_url, timeout=aiohttp.ClientTimeout(total=30)) as resp:
                     if resp.status == 200:
                         image_bytes = await resp.read()
-                        # Upload to fal.ai
-                        fal_url = await fal_client.upload_async(image_bytes, content_type="image/png")
-                        image_url = fal_url
-                        logger.info(f"Re-uploaded external image to fal.ai CDN")
+                        image_url = await fal_client.upload_async(image_bytes, content_type="image/png")
+                        logger.info("Re-uploaded external image to fal.ai CDN")
                     else:
-                        logger.warning(f"Failed to download image for re-upload: HTTP {resp.status}")
-                        # Try using original URL anyway
+                        logger.warning(f"Could not download image for re-upload: HTTP {resp.status}")
         except Exception as e:
-            logger.warning(f"Could not re-upload image to fal.ai: {e}, trying original URL")
-    
-    # Model configurations
+            logger.warning(f"Could not re-upload image: {e}, using original URL")
+    # else: already on fal.ai CDN — use directly, no re-upload needed
+
     model_configs = {
         "kling": {
             "endpoint": "fal-ai/kling-video/v1/standard/image-to-video",
@@ -471,7 +401,7 @@ async def generate_video_from_image(
         },
         "luma": {
             "endpoint": "fal-ai/luma-dream-machine/image-to-video",
-            "duration_param": None,  # Luma doesn't have duration param
+            "duration_param": None,
             "aspect_param": "aspect_ratio"
         },
         "minimax": {
@@ -480,40 +410,34 @@ async def generate_video_from_image(
             "aspect_param": "aspect_ratio"
         }
     }
-    
+
     config = model_configs.get(model, model_configs["kling"])
-    
+
     arguments = {
         "prompt": prompt,
         "image_url": image_url
     }
-    
-    # Add aspect ratio
+
     if config.get("aspect_param"):
         arguments[config["aspect_param"]] = aspect_ratio
-    
-    # Add duration if supported
+
     if config.get("duration_param"):
         dur_str = str(min(duration, 10))
-        if dur_str in config.get("duration_values", {}):
-            arguments[config["duration_param"]] = config["duration_values"][dur_str]
-        else:
-            arguments[config["duration_param"]] = "5"
-    
+        arguments[config["duration_param"]] = config.get("duration_values", {}).get(dur_str, "5")
+
     try:
-        logger.info(f"Starting {model} video generation with prompt: {prompt[:100]}...")
-        handler = await fal_client.submit_async(config["endpoint"], arguments=arguments)
-        result = await handler.get()
-        
+        logger.info(f"Starting {model} video generation: {prompt[:100]}...")
+        result = await _submit_with_retry(config["endpoint"], arguments, timeout=VIDEO_TIMEOUT, max_retries=2)
+
         video_url = None
         if isinstance(result.get("video"), dict):
             video_url = result["video"].get("url")
         elif isinstance(result.get("video"), str):
             video_url = result["video"]
-        
+
         if not video_url:
             raise Exception("No video URL in response")
-        
+
         return {
             "success": True,
             "video_url": video_url,
@@ -525,60 +449,32 @@ async def generate_video_from_image(
         logger.error(f"{model} video generation error: {str(e)}")
         raise Exception(f"Video generation failed: {str(e)}")
 
-    
-    arguments = {
-        "base_image_url": source_image_url,
-        "swap_image_url": target_face_url,
-        "strength": strength
-    }
-    
-    try:
-        # Note: fal.ai face swap might be under a different endpoint
-        # This is a placeholder - we'll use PuLID for face consistency instead
-        handler = await fal_client.submit_async("fal-ai/face-swap", arguments=arguments)
-        result = await handler.get()
-        return {
-            "success": True,
-            "image": result.get("image", {}),
-        }
-    except Exception as e:
-        logger.error(f"Face swap error: {str(e)}")
-        # Fallback: Use PuLID for face swap
-        raise Exception(f"Face swap failed: {str(e)}")
 
-
-# Utility function to convert base64 to URL via fal.ai storage
 async def upload_image_to_fal(base64_image: str) -> str:
-    """
-    Upload a base64 image to fal.ai storage and get a URL
-    
-    Args:
-        base64_image: Base64 encoded image (with or without data URI prefix)
-    
-    Returns:
-        URL to the uploaded image
-    """
+    """Upload a base64 image to fal.ai storage and get a URL"""
     if not FAL_KEY:
         raise Exception("FAL_KEY not configured")
-    
-    # Remove data URI prefix if present
+
+    # Detect content type from data URI
+    content_type = "image/png"
     if base64_image.startswith('data:'):
+        if 'image/jpeg' in base64_image or 'image/jpg' in base64_image:
+            content_type = "image/jpeg"
+        elif 'image/webp' in base64_image:
+            content_type = "image/webp"
         if ',' in base64_image:
             base64_image = base64_image.split(',')[1]
-    
-    # Decode base64 to bytes
+
     image_bytes = base64.b64decode(base64_image)
-    
+
     try:
-        # Use fal_client's upload functionality
-        url = await fal_client.upload_async(image_bytes, content_type="image/png")
+        url = await fal_client.upload_async(image_bytes, content_type=content_type)
         return url
     except Exception as e:
         logger.error(f"Upload error: {str(e)}")
         raise Exception(f"Failed to upload image: {str(e)}")
 
 
-# Export available models for frontend
 def get_available_models() -> List[Dict[str, str]]:
     """Get list of available fal.ai models"""
     return [
