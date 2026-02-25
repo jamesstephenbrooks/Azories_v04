@@ -44,6 +44,7 @@ from services.email_service import (
 
 # Import routes package
 from routes import setup_routes
+from routes.admin import get_admin_user  # Import admin auth helper for remaining admin endpoints
 
 # Import fal.ai service AFTER dotenv loads
 try:
