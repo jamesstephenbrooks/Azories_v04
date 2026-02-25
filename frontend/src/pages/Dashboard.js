@@ -256,7 +256,10 @@ export default function Dashboard() {
 
   const fetchAnalytics = async (bookId) => {
     try {
-      const res = await axios.get(`${API}/books/${bookId}/analytics`);
+      const token = localStorage.getItem('azories-token');
+      const res = await axios.get(`${API}/books/${bookId}/analytics`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setAnalyticsData(res.data);
       setAnalyticsDialog(bookId);
     } catch (error) {
@@ -273,7 +276,10 @@ export default function Dashboard() {
     
     setCreating(true);
     try {
-      const res = await axios.post(`${API}/books`, newBook);
+      const token = localStorage.getItem('azories-token');
+      const res = await axios.post(`${API}/books`, newBook, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       toast.success('Book created!');
       setIsCreateOpen(false);
       setNewBook({ title: '', description: '', genre: 'General', layout_mode: 'standard', age_rating: 'All Ages' });
@@ -300,7 +306,10 @@ export default function Dashboard() {
     toast.info('Generating your story... This may take a minute.');
     
     try {
-      const res = await axios.post(`${API}/ai/generate-story`, aiStory);
+      const token = localStorage.getItem('azories-token');
+      const res = await axios.post(`${API}/ai/generate-story`, aiStory, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       toast.success(`Story "${res.data.title}" created with ${res.data.pages_created} pages!`);
       setIsAIStoryOpen(false);
       setAIStory({ idea: '', genre: 'Adventure', age_rating: 'All Ages', num_pages: 5 });
