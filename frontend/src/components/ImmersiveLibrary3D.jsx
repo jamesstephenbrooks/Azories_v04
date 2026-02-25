@@ -2435,61 +2435,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
             <AILibrarian books={books} isVisible={!showAzoraChat} onCallAzora={() => setShowAzoraChat(true)} />
           )}
           
-          {/* Debug Mode Panel - for coordinate discovery */}
-          <div className="absolute top-16 right-4 pointer-events-auto">
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`${debugMode ? 'bg-green-600 hover:bg-green-700' : 'bg-black/50 hover:bg-black/70'} text-white rounded-full px-3 text-xs`}
-              onClick={() => {
-                setDebugMode(!debugMode);
-                setDebugCoords(null);
-              }}
-            >
-              {debugMode ? '🎯 DEBUG ON' : '🔧 Debug'}
-            </Button>
-          </div>
-          
-          {/* Debug Coordinates Display */}
-          {debugMode && (
-            <div className="absolute top-28 right-4 pointer-events-auto bg-black/90 rounded-xl p-4 text-sm font-mono max-w-xs">
-              <div className="text-green-400 mb-2 font-bold">📍 Debug Mode Active</div>
-              <div className="text-white/70 text-xs mb-3">Click anywhere in the 3D scene to get coordinates</div>
-              
-              {debugCoords ? (
-                <div className="space-y-1">
-                  <div className="text-yellow-300">Last Click:</div>
-                  <div className="text-white">X: <span className="text-cyan-400">{debugCoords.x}</span></div>
-                  <div className="text-white">Y: <span className="text-cyan-400">{debugCoords.y}</span></div>
-                  <div className="text-white">Z: <span className="text-cyan-400">{debugCoords.z}</span></div>
-                  <div className="text-white/60 text-xs mt-2">Mesh: {debugCoords.meshName}</div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="mt-2 w-full bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 text-xs"
-                    onClick={() => {
-                      const text = `x: ${debugCoords.x}, y: ${debugCoords.y}, z: ${debugCoords.z}`;
-                      navigator.clipboard.writeText(text);
-                    }}
-                  >
-                    📋 Copy Coordinates
-                  </Button>
-                </div>
-              ) : (
-                <div className="text-white/50 italic">No clicks recorded yet</div>
-              )}
-              
-              {/* Current camera position */}
-              <div className="mt-4 pt-3 border-t border-white/20">
-                <div className="text-purple-300 text-xs mb-1">Camera Position:</div>
-                <div className="text-white/70 text-xs">
-                  {cameraRef.current ? (
-                    <>X: {cameraRef.current.position.x.toFixed(2)}, Y: {cameraRef.current.position.y.toFixed(2)}, Z: {cameraRef.current.position.z.toFixed(2)}</>
-                  ) : 'Loading...'}
-                </div>
-              </div>
-            </div>
-          )}
+          {/* Debug Mode Panel - hidden for production */}
         </>
       )}
     </div>
