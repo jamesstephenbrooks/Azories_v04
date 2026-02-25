@@ -1136,13 +1136,14 @@ export default function ArtStudioExpert() {
         label: 'Workflow Output',
         onChange: (k, v) => updateNodeData(newNodeId, k, v),
         onDelete: () => deleteNodeById(newNodeId),
-        onCopyNode: () => copyNode(newNodeId)
+        onCopyNode: () => copyNode(newNodeId),
+        onSelectFromGallery: () => openGalleryPicker(newNodeId)
       }
     };
     
     setNodes(nds => [...nds, newNode]);
     console.log(`Created continuation node from ${sourceNodeId}`);
-  }, [nodes, setNodes, updateNodeData, deleteNodeById]);
+  }, [nodes, setNodes, updateNodeData, deleteNodeById, openGalleryPicker]);
   
   // Save image to Art Studio gallery (useCallback for proper dependency handling)
   const saveToGallery = useCallback(async (imageUrl) => {
