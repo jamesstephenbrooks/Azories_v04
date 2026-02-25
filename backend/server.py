@@ -125,8 +125,8 @@ async def cleanup_old_tasks():
                           if job.get("created_at", datetime.now(timezone.utc)) < cutoff]
             for jid in expired_jobs:
                 animation_jobs.pop(jid, None)
-    except:
-        pass
+    except Exception:
+        pass  # animation_jobs may not be defined yet at startup
     
     if expired:
         logger.info(f"Cleaned up {len(expired)} expired tasks")
