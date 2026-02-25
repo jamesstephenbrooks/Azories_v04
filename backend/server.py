@@ -1489,7 +1489,7 @@ async def save_image_to_book(book_id: str, request: Request, current_user: dict 
         "type": image_type,
         "style": style,
         "metadata": metadata,
-        "created_at": datetime.utcnow().isoformat()
+        "created_at": datetime.now(timezone.utc).isoformat()
     }
     
     await db.book_images.insert_one(book_image)
