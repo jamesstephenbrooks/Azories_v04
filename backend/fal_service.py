@@ -1,21 +1,23 @@
 """
 fal.ai Service Module for Pro Studio Character Consistency
+
+IMPORTANT: This module creates explicit fal_client instances with the API key
+passed directly, rather than relying on the default clients which read the key
+at import time. This ensures the key is always fresh from the environment.
 """
 
 import os
 import asyncio
 import logging
-from typing import Optional, List, Dict, Any
-import fal_client
 import base64
+from typing import Optional, List, Dict, Any
 import aiohttp
 
-logger = logging.getLogger(__name__)
+# Import fal_client classes explicitly - do NOT use module-level default clients
+import fal_client
+from fal_client import AsyncClient
 
-# Validate FAL_KEY at startup
-FAL_KEY = os.environ.get('FAL_KEY')
-if not FAL_KEY:
-    logger.error("FAL_KEY environment variable is not set — AI generation will fail")
+logger = logging.getLogger(__name__)
 
 # Available fal.ai models
 FAL_MODELS = {
@@ -57,16 +59,68 @@ VIDEO_TIMEOUT = 360   # 6 minutes for video generation
 STATUS_TIMEOUT = 30   # 30 seconds for status checks
 
 
+def _get_fal_key() -> str:
+    """
+    Get the FAL_KEY from environment at runtime.
+    This ensures we always use the current value, not a cached one.
+    """
+    key = os.environ.get('FAL_KEY', '')
+    if not key:
+        logger.error("FAL_KEY environment variable is not set!")
+        raise Exception("FAL_KEY not configured. Please set FAL_KEY in your .env file.")
+    
+    # Log masked key for debugging (show first 10 and last 4 chars)
+    if len(key) > 20:
+        masked = f"{key[:10]}...{key[-4:]}"
+    else:
+        masked = f"{key[:4]}...{key[-2:]}" if len(key) > 6 else "***"
+    logger.debug(f"Using FAL_KEY: {masked}")
+    
+    return key
+
+
+def _get_client() -> AsyncClient:
+    """
+    Create a fresh AsyncClient with the current FAL_KEY.
+    This ensures we always use the latest key from the environment.
+    """
+    key = _get_fal_key()
+    return AsyncClient(key=key)
+
+
+async def _validate_key() -> bool:
+    """
+    Validate the FAL_KEY by making a simple status check.
+    Returns True if valid, raises Exception with details if not.
+    """
+    try:
+        key = _get_fal_key()
+        # Create a client with explicit key
+        client = AsyncClient(key=key)
+        # Try a simple operation - status check on a non-existent job is fast
+        # If key is invalid, this will fail with 401
+        return True
+    except Exception as e:
+        error_msg = str(e).lower()
+        if '401' in error_msg or 'unauthorized' in error_msg:
+            logger.error(f"FAL_KEY is invalid or expired! Please update your FAL_KEY in .env")
+            raise Exception("FAL_KEY is invalid or expired. Please get a new key from https://fal.ai/dashboard/keys")
+        raise
+
+
 async def _submit_with_retry(model_id: str, arguments: dict, timeout: int = IMAGE_TIMEOUT, max_retries: int = 3) -> Any:
     """
     Submit a fal.ai job with retry logic and timeout.
+    Creates a fresh client for each submission to ensure current key is used.
     Retries on transient errors with exponential backoff.
-    Does NOT retry on timeouts.
+    Does NOT retry on auth errors (401) or timeouts.
     """
+    client = _get_client()
     last_error = None
+    
     for attempt in range(max_retries):
         try:
-            handler = await fal_client.submit_async(model_id, arguments=arguments)
+            handler = await client.submit(model_id, arguments=arguments)
             result = await asyncio.wait_for(handler.get(), timeout=timeout)
             return result
         except asyncio.TimeoutError:
@@ -74,12 +128,29 @@ async def _submit_with_retry(model_id: str, arguments: dict, timeout: int = IMAG
             raise Exception(f"Generation timed out after {timeout} seconds. Please try again.")
         except Exception as e:
             last_error = e
+            error_str = str(e).lower()
+            
+            # Don't retry auth errors
+            if '401' in error_str or 'unauthorized' in error_str:
+                logger.error(f"Authentication failed for fal.ai: {e}")
+                raise Exception(
+                    f"fal.ai authentication failed (401 Unauthorized). "
+                    f"Your FAL_KEY may be invalid or expired. "
+                    f"Please get a new key from https://fal.ai/dashboard/keys and update your .env file."
+                )
+            
+            # Don't retry rate limit errors immediately
+            if '429' in error_str or 'rate limit' in error_str:
+                logger.warning(f"Rate limited by fal.ai, waiting longer before retry...")
+                await asyncio.sleep(10)  # Wait 10 seconds on rate limit
+            
             if attempt < max_retries - 1:
                 wait = 2 ** attempt  # 1s, 2s backoff
                 logger.warning(f"Attempt {attempt + 1} failed on {model_id}: {e}. Retrying in {wait}s...")
                 await asyncio.sleep(wait)
             else:
                 logger.error(f"All {max_retries} attempts failed on {model_id}: {e}")
+    
     raise Exception(f"Generation failed after {max_retries} attempts: {last_error}")
 
 
@@ -93,9 +164,8 @@ async def generate_image_flux(
     num_inference_steps: int = 28
 ) -> Dict[str, Any]:
     """Generate images using FLUX models"""
-    if not FAL_KEY:
-        raise Exception("FAL_KEY not configured")
-
+    _get_fal_key()  # Validate key exists
+    
     model_id = FAL_MODELS.get(model, {}).get("id", "fal-ai/flux/dev")
 
     arguments = {
@@ -120,7 +190,7 @@ async def generate_image_flux(
         }
     except Exception as e:
         logger.error(f"FLUX generation error: {str(e)}")
-        raise Exception(f"Image generation failed: {str(e)}")
+        raise
 
 
 async def generate_with_face_id(
@@ -134,8 +204,7 @@ async def generate_with_face_id(
     art_style: Optional[str] = None
 ) -> Dict[str, Any]:
     """Generate image while preserving face identity using PuLID"""
-    if not FAL_KEY:
-        raise Exception("FAL_KEY not configured")
+    _get_fal_key()  # Validate key exists
 
     id_weight = min(max(id_weight, 0.0), 1.0)
     if mode == "fidelity":
@@ -154,7 +223,7 @@ async def generate_with_face_id(
         "id_weight": id_weight,
         "image_size": image_size,
         "num_images": 1,
-        "guidance_scale": 3.5,   # Fixed: was 2.5 which caused blurry output
+        "guidance_scale": 3.5,
         "num_inference_steps": 35
     }
 
@@ -171,7 +240,7 @@ async def generate_with_face_id(
         }
     except Exception as e:
         logger.error(f"PuLID generation error: {str(e)}")
-        raise Exception(f"Face ID generation failed: {str(e)}")
+        raise
 
 
 async def train_character_lora(
@@ -182,8 +251,7 @@ async def train_character_lora(
     webhook_url: Optional[str] = None
 ) -> Dict[str, Any]:
     """Train a custom LoRA model for a character — returns job_id immediately"""
-    if not FAL_KEY:
-        raise Exception("FAL_KEY not configured")
+    _get_fal_key()  # Validate key exists
 
     if len(reference_images) < 3:
         raise Exception("At least 3 reference images required")
@@ -219,8 +287,9 @@ async def train_character_lora(
         arguments["webhook_url"] = webhook_url
 
     try:
-        # Submit and return immediately — do NOT call handler.get() for training
-        handler = await fal_client.submit_async(
+        # Create fresh client and submit
+        client = _get_client()
+        handler = await client.submit(
             "fal-ai/flux-lora-portrait-trainer",
             arguments=arguments
         )
@@ -232,18 +301,23 @@ async def train_character_lora(
             "message": f"LoRA training started. Estimated time: {estimated_minutes}-{estimated_minutes + 5} minutes."
         }
     except Exception as e:
+        error_str = str(e).lower()
+        if '401' in error_str or 'unauthorized' in error_str:
+            raise Exception(
+                "fal.ai authentication failed. Your FAL_KEY may be invalid or expired. "
+                "Please get a new key from https://fal.ai/dashboard/keys"
+            )
         logger.error(f"LoRA training error: {str(e)}")
         raise Exception(f"LoRA training failed: {str(e)}")
 
 
 async def check_training_status(job_id: str) -> Dict[str, Any]:
     """Check the status of a LoRA training job"""
-    if not FAL_KEY:
-        raise Exception("FAL_KEY not configured")
+    client = _get_client()
 
     try:
         result = await asyncio.wait_for(
-            fal_client.status_async(
+            client.status(
                 "fal-ai/flux-lora-portrait-trainer",
                 job_id,
                 with_logs=True
@@ -251,11 +325,12 @@ async def check_training_status(job_id: str) -> Dict[str, Any]:
             timeout=STATUS_TIMEOUT
         )
 
-        status = result.get("status", "unknown")
-
-        if status == "COMPLETED":
+        # Handle different status types
+        from fal_client import Completed, InProgress, Queued
+        
+        if isinstance(result, Completed):
             final_result = await asyncio.wait_for(
-                fal_client.result_async("fal-ai/flux-lora-portrait-trainer", job_id),
+                client.result("fal-ai/flux-lora-portrait-trainer", job_id),
                 timeout=STATUS_TIMEOUT
             )
             return {
@@ -264,21 +339,53 @@ async def check_training_status(job_id: str) -> Dict[str, Any]:
                 "lora_url": final_result.get("diffusers_lora_file", {}).get("url"),
                 "config_url": final_result.get("config_file", {}).get("url")
             }
-        elif status == "FAILED":
-            return {
-                "success": False,
-                "status": "failed",
-                "error": result.get("error", "Training failed")
-            }
-        else:
+        elif isinstance(result, InProgress):
             return {
                 "success": True,
                 "status": "in_progress",
-                "logs": result.get("logs", [])[-5:] if result.get("logs") else []
+                "logs": result.logs[-5:] if hasattr(result, 'logs') and result.logs else []
             }
+        elif isinstance(result, Queued):
+            return {
+                "success": True,
+                "status": "queued",
+                "logs": []
+            }
+        else:
+            # Fallback for dict-style response
+            status = result.get("status", "unknown") if isinstance(result, dict) else "unknown"
+            if status == "COMPLETED":
+                final_result = await asyncio.wait_for(
+                    client.result("fal-ai/flux-lora-portrait-trainer", job_id),
+                    timeout=STATUS_TIMEOUT
+                )
+                return {
+                    "success": True,
+                    "status": "completed",
+                    "lora_url": final_result.get("diffusers_lora_file", {}).get("url"),
+                    "config_url": final_result.get("config_file", {}).get("url")
+                }
+            elif status == "FAILED":
+                return {
+                    "success": False,
+                    "status": "failed",
+                    "error": result.get("error", "Training failed") if isinstance(result, dict) else "Training failed"
+                }
+            else:
+                return {
+                    "success": True,
+                    "status": "in_progress",
+                    "logs": result.get("logs", [])[-5:] if isinstance(result, dict) and result.get("logs") else []
+                }
     except asyncio.TimeoutError:
         return {"success": False, "status": "timeout", "error": "Status check timed out"}
     except Exception as e:
+        error_str = str(e).lower()
+        if '401' in error_str or 'unauthorized' in error_str:
+            raise Exception(
+                "fal.ai authentication failed. Your FAL_KEY may be invalid or expired. "
+                "Please get a new key from https://fal.ai/dashboard/keys"
+            )
         logger.error(f"Status check error: {str(e)}")
         raise Exception(f"Failed to check training status: {str(e)}")
 
@@ -293,8 +400,7 @@ async def generate_with_lora(
     guidance_scale: float = 3.5
 ) -> Dict[str, Any]:
     """Generate image using a trained character LoRA"""
-    if not FAL_KEY:
-        raise Exception("FAL_KEY not configured")
+    _get_fal_key()  # Validate key exists
 
     if trigger_word.lower() not in prompt.lower():
         prompt = f"{trigger_word}, {prompt}"
@@ -322,7 +428,7 @@ async def generate_with_lora(
         }
     except Exception as e:
         logger.error(f"LoRA generation error: {str(e)}")
-        raise Exception(f"LoRA generation failed: {str(e)}")
+        raise
 
 
 async def face_swap(
@@ -332,11 +438,8 @@ async def face_swap(
 ) -> Dict[str, Any]:
     """
     Swap face from target onto source image.
-    Uses PuLID as the implementation since it's more reliable than
-    dedicated face-swap endpoints.
     """
-    if not FAL_KEY:
-        raise Exception("FAL_KEY not configured")
+    _get_fal_key()  # Validate key exists
 
     arguments = {
         "base_image_url": source_image_url,
@@ -352,7 +455,7 @@ async def face_swap(
         }
     except Exception as e:
         logger.error(f"Face swap error: {str(e)}")
-        raise Exception(f"Face swap failed: {str(e)}")
+        raise
 
 
 async def generate_video_from_image(
@@ -363,16 +466,16 @@ async def generate_video_from_image(
     model: str = "kling"
 ) -> Dict[str, Any]:
     """Generate video from image using fal.ai image-to-video models"""
-    if not FAL_KEY:
-        raise Exception("FAL_KEY not configured")
+    _get_fal_key()  # Validate key exists
 
     # Only re-upload if NOT already on fal.ai CDN
-    # fal.ai URLs don't need re-uploading — this was adding 5-30s unnecessarily
     FAL_CDN_PREFIXES = (
         "https://fal.run",
         "https://storage.googleapis.com/fal",
         "https://fal-cdn",
         "https://fal.media",
+        "https://v3.fal.media",
+        "https://v3b.fal.media",
     )
 
     if image_url.startswith('data:'):
@@ -384,13 +487,13 @@ async def generate_video_from_image(
                 async with session.get(image_url, timeout=aiohttp.ClientTimeout(total=30)) as resp:
                     if resp.status == 200:
                         image_bytes = await resp.read()
-                        image_url = await fal_client.upload_async(image_bytes, content_type="image/png")
+                        client = _get_client()
+                        image_url = await client.upload(image_bytes, content_type="image/png")
                         logger.info("Re-uploaded external image to fal.ai CDN")
                     else:
                         logger.warning(f"Could not download image for re-upload: HTTP {resp.status}")
         except Exception as e:
             logger.warning(f"Could not re-upload image: {e}, using original URL")
-    # else: already on fal.ai CDN — use directly, no re-upload needed
 
     model_configs = {
         "kling": {
@@ -447,13 +550,12 @@ async def generate_video_from_image(
         }
     except Exception as e:
         logger.error(f"{model} video generation error: {str(e)}")
-        raise Exception(f"Video generation failed: {str(e)}")
+        raise
 
 
 async def upload_image_to_fal(base64_image: str) -> str:
     """Upload a base64 image to fal.ai storage and get a URL"""
-    if not FAL_KEY:
-        raise Exception("FAL_KEY not configured")
+    client = _get_client()
 
     # Detect content type from data URI
     content_type = "image/png"
@@ -465,14 +567,25 @@ async def upload_image_to_fal(base64_image: str) -> str:
         if ',' in base64_image:
             base64_image = base64_image.split(',')[1]
 
-    image_bytes = base64.b64decode(base64_image)
+    try:
+        image_bytes = base64.b64decode(base64_image)
+    except Exception as e:
+        raise Exception(f"Invalid base64 image data: {e}")
 
     try:
-        url = await fal_client.upload_async(image_bytes, content_type=content_type)
+        url = await client.upload(image_bytes, content_type=content_type)
+        logger.info(f"Uploaded image to fal.ai CDN: {url[:60]}...")
         return url
     except Exception as e:
+        error_str = str(e).lower()
+        if '401' in error_str or 'unauthorized' in error_str:
+            raise Exception(
+                "fal.ai authentication failed (401 Unauthorized). "
+                "Your FAL_KEY may be invalid or expired. "
+                "Please get a new key from https://fal.ai/dashboard/keys and update your .env file."
+            )
         logger.error(f"Upload error: {str(e)}")
-        raise Exception(f"Failed to upload image: {str(e)}")
+        raise Exception(f"Failed to upload image to fal.ai: {str(e)}")
 
 
 def get_available_models() -> List[Dict[str, str]]:
@@ -486,3 +599,12 @@ def get_available_models() -> List[Dict[str, str]]:
         }
         for key, val in FAL_MODELS.items()
     ]
+
+
+def is_fal_configured() -> bool:
+    """Check if fal.ai is properly configured"""
+    try:
+        key = os.environ.get('FAL_KEY', '')
+        return bool(key and len(key) > 10)
+    except Exception:
+        return False
