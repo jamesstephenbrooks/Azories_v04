@@ -988,14 +988,28 @@ export default function ArtStudioExpert() {
   // Load gallery images for the image node picker
   const loadGalleryImages = async (type = 'art') => {
     try {
-      const endpoint = type === 'pro' ? '/api/pro-studio/gallery/unified' : '/api/art-studio/gallery';
+      let endpoint;
+      if (type === 'pro') {
+        // Pro Studio: Use unified endpoint but filter to only show character-related items
+        endpoint = '/api/pro-studio/gallery/unified?filter_type=characters';
+      } else {
+        // Art Studio: Use art-studio gallery directly
+        endpoint = '/api/art-studio/gallery';
+      }
+      
       const response = await fetch(`${API_URL}${endpoint}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
         const data = await response.json();
         // Handle both array response and object with images property
-        const images = Array.isArray(data) ? data : (data.images || data.items || []);
+        let images = Array.isArray(data) ? data : (data.images || data.items || []);
+        
+        // For Pro Studio, filter out art-studio source items to only show character-related content
+        if (type === 'pro') {
+          images = images.filter(img => img.source !== 'art-studio');
+        }
+        
         setGalleryImages(images);
       }
     } catch (error) {
