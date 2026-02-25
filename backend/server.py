@@ -88,7 +88,10 @@ JWT_EXPIRATION_HOURS = 24
 # Create the main app
 app = FastAPI(title="Azories API", description="Digital Book Creation Platform")
 
-# Create a router with the /api prefix
+# Setup modular routes (admin, etc.)
+setup_routes(app, db)
+
+# Create a router with the /api prefix (for remaining routes)
 api_router = APIRouter(prefix="/api")
 security = HTTPBearer(auto_error=False)
 
