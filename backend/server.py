@@ -7423,6 +7423,8 @@ async def get_unified_gallery(
             for item in art_items:
                 is_video = item.get("type") == "animation"
                 prompt_text = item.get("prompt", item.get("name", ""))
+                # Preserve original source field, default to 'art-studio' if not set
+                item_source = item.get("source", "art-studio")
                 all_items.append({
                     "id": str(item["_id"]),
                     "image_url": item.get("image_url", ""),
@@ -7430,7 +7432,7 @@ async def get_unified_gallery(
                     "medium_url": item.get("medium_url"),
                     "prompt": prompt_text[:100] if prompt_text else "",
                     "name": item.get("name", ""),
-                    "source": "art-studio",
+                    "source": item_source,
                     "type": "video" if is_video else "image",
                     "is_animation": is_video,
                     "created_at": safe_isoformat(item.get("created_at"))
