@@ -480,14 +480,8 @@ export default function ProStudio() {
     }
   }, [galleryFilter, isAuthenticated, activeTab]);
   
-  // Filter gallery items based on current filter
-  const filteredGallery = gallery.filter(item => {
-    if (galleryFilter === 'all') return true;
-    if (galleryFilter === 'images') return item.type === 'image';
-    if (galleryFilter === 'videos') return item.type === 'video' || item.is_animation;
-    if (galleryFilter === 'characters') return item.source === 'character' || item.source === 'character-gallery';
-    return true;
-  });
+  // Gallery items are now pre-filtered from API, just use directly
+  const filteredGallery = gallery;
   
   // Open gallery picker with a callback for selection
   const openGalleryPicker = (mode, callback) => {
