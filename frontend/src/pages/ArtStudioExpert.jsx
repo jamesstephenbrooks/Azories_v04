@@ -2312,6 +2312,16 @@ export default function ArtStudioExpert() {
                 >
                   Pro Studio
                 </button>
+                <button
+                  onClick={() => { setGalleryTab('starter'); loadGalleryImages('starter'); }}
+                  className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    galleryTab === 'starter' 
+                      ? 'bg-yellow-500/30 text-yellow-300 border border-yellow-500/50' 
+                      : 'bg-white/5 text-white/60 hover:text-white'
+                  }`}
+                >
+                  Starter Library
+                </button>
               </div>
               
               {/* Gallery Grid */}
