@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+import { creditsAPI, getErrorMessage } from '../services/api';
 
 export const useCredits = () => {
   const [credits, setCredits] = useState(0);
@@ -12,14 +11,9 @@ export const useCredits = () => {
     if (!token) return;
 
     try {
-      const response = await fetch(`${API_URL}/api/credits/balance`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setCredits(data.credits || 0);
-        setCreditCosts(data.costs || {});
-      }
+      const response = await creditsAPI.getBalance();
+      setCredits(response.data.credits || 0);
+      setCreditCosts(response.data.costs || {});
     } catch (error) {
       console.error('Error fetching credits:', error);
     }

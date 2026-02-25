@@ -3,9 +3,8 @@
  * Extracted from ProStudio.js for reusability
  */
 
-import { useState, useCallback, useRef } from 'react';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+import { useState, useCallback } from 'react';
+import { proStudioAPI, creditsAPI, getErrorMessage } from '../../services/api';
 
 /**
  * Hook for managing gallery state with pagination
@@ -24,7 +23,6 @@ export function useGallery() {
     
     try {
       setGalleryLoading(true);
-      const token = localStorage.getItem('azories-token');
       
       const filterMap = {
         'all': null,
@@ -34,30 +32,25 @@ export function useGallery() {
       };
       const filterParam = filterMap[galleryFilter] || null;
       
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: GALLERY_PAGE_SIZE.toString()
-      });
-      if (filterParam) params.append('filter_type', filterParam);
+      const params = {
+        page: page,
+        limit: GALLERY_PAGE_SIZE
+      };
+      if (filterParam) params.filter_type = filterParam;
       
-      const response = await fetch(`${API_URL}/api/pro-studio/gallery/unified?${params}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await proStudioAPI.getGalleryUnified(params);
+      const data = response.data;
+      const newItems = data.items || [];
       
-      if (response.ok) {
-        const data = await response.json();
-        const newItems = data.items || [];
-        
-        if (append) {
-          setGallery(prev => [...prev, ...newItems]);
-        } else {
-          setGallery(newItems);
-        }
-        
-        setGalleryTotal(data.total || 0);
-        setGalleryHasMore(data.has_more || false);
-        setGalleryPage(page);
+      if (append) {
+        setGallery(prev => [...prev, ...newItems]);
+      } else {
+        setGallery(newItems);
       }
+      
+      setGalleryTotal(data.total || 0);
+      setGalleryHasMore(data.has_more || false);
+      setGalleryPage(page);
     } catch (error) {
       console.error('Error loading gallery:', error);
     } finally {
@@ -98,21 +91,16 @@ export function useCreditCheck() {
       const token = localStorage.getItem('azories-token');
       if (!token) return { hasCredits: false, credits: 0 };
       
-      const response = await fetch(`${API_URL}/api/credits/balance`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await creditsAPI.getBalance();
+      const data = response.data;
       
-      if (response.ok) {
-        const data = await response.json();
-        setUserCredits(data.credits || 0);
-        setIsVip(data.is_vip || false);
-        return { 
-          hasCredits: data.is_vip || data.credits > 0, 
-          credits: data.credits,
-          isVip: data.is_vip 
-        };
-      }
-      return { hasCredits: false, credits: 0, isVip: false };
+      setUserCredits(data.credits || 0);
+      setIsVip(data.is_vip || false);
+      return { 
+        hasCredits: data.is_vip || data.credits > 0, 
+        credits: data.credits,
+        isVip: data.is_vip 
+      };
     } catch (error) {
       console.error('Error checking credits:', error);
       return { hasCredits: false, credits: 0, isVip: false };

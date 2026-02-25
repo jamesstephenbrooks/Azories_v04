@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+import { proStudioAPI, getErrorMessage } from '../services/api';
 
 export const useCharacters = () => {
   const [characters, setCharacters] = useState([]);
@@ -25,13 +24,8 @@ export const useCharacters = () => {
     if (!token) return;
 
     try {
-      const response = await fetch(`${API_URL}/api/pro-studio/characters`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setCharacters(data.characters || []);
-      }
+      const response = await proStudioAPI.getCharacters();
+      setCharacters(response.data.characters || []);
     } catch (error) {
       console.error('Error fetching characters:', error);
     }
@@ -40,18 +34,12 @@ export const useCharacters = () => {
   const fetchCharacterOptions = useCallback(async () => {
     try {
       const [stylesRes, genresRes] = await Promise.all([
-        fetch(`${API_URL}/api/pro-studio/character-styles`),
-        fetch(`${API_URL}/api/pro-studio/character-genres`)
+        proStudioAPI.getCharacterStyles(),
+        proStudioAPI.getCharacterGenres()
       ]);
       
-      if (stylesRes.ok) {
-        const data = await stylesRes.json();
-        setCharacterStyles(data.styles || []);
-      }
-      if (genresRes.ok) {
-        const data = await genresRes.json();
-        setCharacterGenres(data.genres || []);
-      }
+      setCharacterStyles(stylesRes.data.styles || []);
+      setCharacterGenres(genresRes.data.genres || []);
     } catch (error) {
       console.error('Error fetching character options:', error);
     }
@@ -64,37 +52,22 @@ export const useCharacters = () => {
     }
 
     setIsCreatingCharacter(true);
-    const token = localStorage.getItem('azories-token');
 
     try {
-      const response = await fetch(`${API_URL}/api/pro-studio/characters`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          name: characterName,
-          description_prompt: characterDescription,
-          style: characterStyle,
-          genre: characterGenre,
-          reference_images: characterImages
-        })
+      const response = await proStudioAPI.createCharacter({
+        name: characterName,
+        description_prompt: characterDescription,
+        style: characterStyle,
+        genre: characterGenre,
+        reference_images: characterImages
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        toast.success(`Character "${data.character.name}" created!`);
-        await fetchCharacters();
-        resetForm();
-        return data.character;
-      } else {
-        const error = await response.json();
-        toast.error(error.detail || 'Failed to create character');
-      }
+      toast.success(`Character "${response.data.character.name}" created!`);
+      await fetchCharacters();
+      resetForm();
+      return response.data.character;
     } catch (error) {
-      toast.error('Error creating character');
-      console.error(error);
+      toast.error(getErrorMessage(error));
     } finally {
       setIsCreatingCharacter(false);
     }
@@ -102,44 +75,27 @@ export const useCharacters = () => {
   };
 
   const deleteCharacter = async (characterId) => {
-    const token = localStorage.getItem('azories-token');
-
     try {
-      const response = await fetch(`${API_URL}/api/pro-studio/characters/${characterId}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      if (response.ok) {
-        toast.success('Character deleted');
-        await fetchCharacters();
-        if (viewingCharacter?.id === characterId) {
-          setViewingCharacter(null);
-        }
-        if (selectedCharacter?.id === characterId) {
-          setSelectedCharacter(null);
-        }
+      await proStudioAPI.deleteCharacter(characterId);
+      toast.success('Character deleted');
+      await fetchCharacters();
+      if (viewingCharacter?.id === characterId) {
+        setViewingCharacter(null);
+      }
+      if (selectedCharacter?.id === characterId) {
+        setSelectedCharacter(null);
       }
     } catch (error) {
-      toast.error('Error deleting character');
-      console.error(error);
+      toast.error(getErrorMessage(error));
     }
   };
 
   const openCharacterView = async (character) => {
     setViewingCharacter(character);
     
-    // Fetch gallery for this character
-    const token = localStorage.getItem('azories-token');
     try {
-      const response = await fetch(
-        `${API_URL}/api/pro-studio/characters/${character.id}/gallery`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        setCharacterGallery(data.images || []);
-      }
+      const response = await proStudioAPI.getCharacterGallery(character.id);
+      setCharacterGallery(response.data.images || []);
     } catch (error) {
       console.error('Error fetching character gallery:', error);
     }

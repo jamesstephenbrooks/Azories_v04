@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+import { proStudioAPI, getErrorMessage } from '../services/api';
 
 export const useScenes = () => {
   const [scenes, setScenes] = useState([]);
@@ -31,13 +30,8 @@ export const useScenes = () => {
     if (!token) return;
 
     try {
-      const response = await fetch(`${API_URL}/api/pro-studio/scenes`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setScenes(data.scenes || []);
-      }
+      const response = await proStudioAPI.getScenes();
+      setScenes(response.data.scenes || []);
     } catch (error) {
       console.error('Error fetching scenes:', error);
     }
@@ -45,11 +39,8 @@ export const useScenes = () => {
 
   const fetchSceneOptions = useCallback(async () => {
     try {
-      const response = await fetch(`${API_URL}/api/pro-studio/scene-options`);
-      if (response.ok) {
-        const data = await response.json();
-        setSceneOptions(data);
-      }
+      const response = await proStudioAPI.getSceneOptions();
+      setSceneOptions(response.data);
     } catch (error) {
       console.error('Error fetching scene options:', error);
     }
@@ -62,41 +53,26 @@ export const useScenes = () => {
     }
 
     setIsCreatingScene(true);
-    const token = localStorage.getItem('azories-token');
 
     try {
-      const response = await fetch(`${API_URL}/api/pro-studio/scenes`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          name: sceneName,
-          description: sceneDescription,
-          style: sceneStyle,
-          genre: sceneGenre,
-          location_type: sceneLocationType,
-          lighting: sceneLighting,
-          mood: sceneMood,
-          time_of_day: sceneTimeOfDay,
-          weather: sceneWeather
-        })
+      const response = await proStudioAPI.createScene({
+        name: sceneName,
+        description: sceneDescription,
+        style: sceneStyle,
+        genre: sceneGenre,
+        location_type: sceneLocationType,
+        lighting: sceneLighting,
+        mood: sceneMood,
+        time_of_day: sceneTimeOfDay,
+        weather: sceneWeather
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        toast.success(`Scene "${data.scene.name}" created!`);
-        await fetchScenes();
-        resetForm();
-        return data.scene;
-      } else {
-        const error = await response.json();
-        toast.error(error.detail || 'Failed to create scene');
-      }
+      toast.success(`Scene "${response.data.scene.name}" created!`);
+      await fetchScenes();
+      resetForm();
+      return response.data.scene;
     } catch (error) {
-      toast.error('Error creating scene');
-      console.error(error);
+      toast.error(getErrorMessage(error));
     } finally {
       setIsCreatingScene(false);
     }
@@ -104,44 +80,27 @@ export const useScenes = () => {
   };
 
   const deleteScene = async (sceneId) => {
-    const token = localStorage.getItem('azories-token');
-
     try {
-      const response = await fetch(`${API_URL}/api/pro-studio/scenes/${sceneId}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      if (response.ok) {
-        toast.success('Scene deleted');
-        await fetchScenes();
-        if (viewingScene?.id === sceneId) {
-          setViewingScene(null);
-        }
-        if (selectedScene?.id === sceneId) {
-          setSelectedScene(null);
-        }
+      await proStudioAPI.deleteScene(sceneId);
+      toast.success('Scene deleted');
+      await fetchScenes();
+      if (viewingScene?.id === sceneId) {
+        setViewingScene(null);
+      }
+      if (selectedScene?.id === sceneId) {
+        setSelectedScene(null);
       }
     } catch (error) {
-      toast.error('Error deleting scene');
-      console.error(error);
+      toast.error(getErrorMessage(error));
     }
   };
 
   const openSceneView = async (scene) => {
     setViewingScene(scene);
     
-    // Fetch gallery for this scene
-    const token = localStorage.getItem('azories-token');
     try {
-      const response = await fetch(
-        `${API_URL}/api/pro-studio/scenes/${scene.id}/gallery`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        setSceneGallery(data.images || []);
-      }
+      const response = await proStudioAPI.getSceneGallery(scene.id);
+      setSceneGallery(response.data.images || []);
     } catch (error) {
       console.error('Error fetching scene gallery:', error);
     }
