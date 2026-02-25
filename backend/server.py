@@ -2296,6 +2296,13 @@ async def update_page(page_id: str, page_data: PageUpdate, current_user: dict = 
         raise HTTPException(status_code=403, detail="Not authorized")
     
     update_data = {k: v for k, v in page_data.model_dump().items() if v is not None}
+    
+    # Convert base64 images to CDN URLs for better performance
+    image_fields = ["image_url", "image_url_2", "image_url_3", "image_url_4"]
+    for field in image_fields:
+        if field in update_data:
+            update_data[field] = await convert_base64_to_cdn(update_data[field])
+    
     await db.pages.update_one({"id": page_id}, {"$set": update_data})
     updated = await db.pages.find_one({"id": page_id}, {"_id": 0})
     updated.setdefault("image_url_2", "")
