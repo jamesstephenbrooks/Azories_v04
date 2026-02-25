@@ -627,6 +627,111 @@ async def upload_video_to_fal(base64_video: str) -> str:
         raise Exception(f"Failed to upload video to fal.ai: {str(e)}")
 
 
+async def generate_thumbnails(image_url: str) -> Dict[str, str]:
+    """
+    Generate thumbnail (300x300) and medium (800px wide) versions of an image.
+    Downloads the original, resizes using PIL, and uploads both to fal.ai CDN.
+    
+    Args:
+        image_url: URL of the original full-size image
+        
+    Returns:
+        Dict with 'thumbnail_url' (300x300) and 'medium_url' (800px wide)
+    """
+    client = _get_client()
+    
+    # Skip if not a valid URL
+    if not image_url or not image_url.startswith('https://'):
+        raise Exception("Invalid image URL - must be HTTPS")
+    
+    try:
+        # Download original image
+        async with aiohttp.ClientSession() as session:
+            async with session.get(image_url, timeout=aiohttp.ClientTimeout(total=30)) as resp:
+                if resp.status != 200:
+                    raise Exception(f"Failed to download image: HTTP {resp.status}")
+                image_data = await resp.read()
+        
+        # Open with PIL
+        original = Image.open(io.BytesIO(image_data))
+        
+        # Convert to RGB if necessary (for PNG with transparency)
+        if original.mode in ('RGBA', 'LA', 'P'):
+            background = Image.new('RGB', original.size, (255, 255, 255))
+            if original.mode == 'P':
+                original = original.convert('RGBA')
+            background.paste(original, mask=original.split()[-1] if original.mode == 'RGBA' else None)
+            original = background
+        elif original.mode != 'RGB':
+            original = original.convert('RGB')
+        
+        results = {}
+        
+        # Generate thumbnail (300x300 square crop)
+        thumb = original.copy()
+        # Crop to square from center
+        width, height = thumb.size
+        min_dim = min(width, height)
+        left = (width - min_dim) // 2
+        top = (height - min_dim) // 2
+        thumb = thumb.crop((left, top, left + min_dim, top + min_dim))
+        thumb = thumb.resize((300, 300), Image.Resampling.LANCZOS)
+        
+        # Save thumbnail to bytes with JPEG compression
+        thumb_buffer = io.BytesIO()
+        thumb.save(thumb_buffer, format='JPEG', quality=80, optimize=True)
+        thumb_bytes = thumb_buffer.getvalue()
+        
+        # Upload thumbnail
+        results['thumbnail_url'] = await client.upload(thumb_bytes, content_type='image/jpeg')
+        logger.info(f"Generated thumbnail: {results['thumbnail_url'][:50]}...")
+        
+        # Generate medium version (800px wide, maintain aspect ratio)
+        medium = original.copy()
+        width, height = medium.size
+        if width > 800:
+            new_height = int((800 / width) * height)
+            medium = medium.resize((800, new_height), Image.Resampling.LANCZOS)
+        
+        # Save medium to bytes with JPEG compression
+        medium_buffer = io.BytesIO()
+        medium.save(medium_buffer, format='JPEG', quality=85, optimize=True)
+        medium_bytes = medium_buffer.getvalue()
+        
+        # Upload medium
+        results['medium_url'] = await client.upload(medium_bytes, content_type='image/jpeg')
+        logger.info(f"Generated medium: {results['medium_url'][:50]}...")
+        
+        return results
+        
+    except Exception as e:
+        error_str = str(e).lower()
+        if '401' in error_str or 'unauthorized' in error_str:
+            raise Exception("fal.ai authentication failed")
+        logger.error(f"Thumbnail generation error: {str(e)}")
+        raise Exception(f"Failed to generate thumbnails: {str(e)}")
+
+
+async def upload_image_with_thumbnails(base64_image: str) -> Dict[str, str]:
+    """
+    Upload a base64 image and generate thumbnails in one operation.
+    
+    Returns:
+        Dict with 'image_url' (full size), 'thumbnail_url' (300x300), 'medium_url' (800px)
+    """
+    # First upload the full-size image
+    full_url = await upload_image_to_fal(base64_image)
+    
+    # Then generate thumbnails
+    thumbnails = await generate_thumbnails(full_url)
+    
+    return {
+        'image_url': full_url,
+        'thumbnail_url': thumbnails['thumbnail_url'],
+        'medium_url': thumbnails['medium_url']
+    }
+
+
 def get_available_models() -> List[Dict[str, str]]:
     """Get list of available fal.ai models"""
     return [
