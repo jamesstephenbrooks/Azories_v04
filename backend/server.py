@@ -906,8 +906,8 @@ async def reset_password(request: ResetPasswordRequest, background_tasks: Backgr
         {"$set": {"password": new_hash}}
     )
     
-    # Delete used token
-    await db.password_resets.delete_one({"token": request.token})
+    # Delete used token (by hash or plaintext)
+    await db.password_resets.delete_one({"$or": [{"token_hash": token_hash}, {"token": request.token}]})
     
     # Send confirmation email
     if email_configured():
@@ -920,7 +920,14 @@ async def reset_password(request: ResetPasswordRequest, background_tasks: Backgr
 @api_router.get("/auth/verify-reset-token/{token}")
 async def verify_reset_token(token: str):
     """Verify if a password reset token is valid"""
-    reset_record = await db.password_resets.find_one({"token": token}, {"_id": 0})
+    import hashlib
+    
+    token_hash = hashlib.sha256(token.encode()).hexdigest()
+    
+    # Check hashed token first, then fallback to plaintext
+    reset_record = await db.password_resets.find_one({"token_hash": token_hash}, {"_id": 0})
+    if not reset_record:
+        reset_record = await db.password_resets.find_one({"token": token}, {"_id": 0})
     
     if not reset_record:
         return {"valid": False, "message": "Invalid token"}
