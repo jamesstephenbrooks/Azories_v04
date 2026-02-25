@@ -85,9 +85,16 @@ JWT_SECRET = os.environ.get('JWT_SECRET', 'default_secret_key')
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_HOURS = 24
 
-# Admin credentials
-ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "Admin")
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "Routetofreedom")
+# Admin credentials - REQUIRED, no defaults for security
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD")
+if not ADMIN_USERNAME or not ADMIN_PASSWORD:
+    logging.warning("ADMIN_USERNAME and ADMIN_PASSWORD should be set in environment variables")
+    ADMIN_USERNAME = ADMIN_USERNAME or "Admin"
+    ADMIN_PASSWORD = ADMIN_PASSWORD or "change_me_in_production"
+
+# VIP users - loaded from environment variable for security
+VIP_USERS = [e.strip() for e in os.environ.get("VIP_USERS", "").split(",") if e.strip()]
 
 # Create the main app
 app = FastAPI(title="Azories API", description="Digital Book Creation Platform")
