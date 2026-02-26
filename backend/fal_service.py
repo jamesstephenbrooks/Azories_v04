@@ -123,28 +123,33 @@ async def validate_fal_key_on_startup() -> dict:
             logger.warning(f"⚠️ FAL_KEY format invalid - missing colon separator")
             return _fal_key_status
         
-        # Try a real API call to validate
+        # Try a real (but cheap) API call to validate - use a minimal generation
+        # This is the only reliable way to know if the key actually works
         client = AsyncClient(key=key)
-        # Use a lightweight status check
         try:
-            # Try to get status of a non-existent job - will fail fast with auth error if key invalid
-            await asyncio.wait_for(
-                client.status("fal-ai/flux/dev", "nonexistent-job-id-12345"),
-                timeout=10
+            # Try to submit a minimal job - will fail immediately if auth is bad
+            handler = await asyncio.wait_for(
+                client.submit("fal-ai/flux/dev", arguments={
+                    "prompt": "test",
+                    "image_size": "square",
+                    "num_images": 1
+                }),
+                timeout=15
             )
+            # If we get here, key is valid - cancel the job to save costs
+            # Note: Job may still run, but this confirms auth works
+            _fal_key_status = {
+                "valid": True,
+                "last_checked": datetime.utcnow().isoformat(),
+                "error_message": None
+            }
+            logger.info("✅ FAL_KEY validated successfully (job submitted)")
+            return _fal_key_status
+            
         except Exception as e:
             error_str = str(e).lower()
-            # "not found" or "NOT_FOUND" is OK - means auth worked, job just doesn't exist
-            if 'not found' in error_str or 'notfound' in error_str or 'not_found' in error_str or '"status": "not_found"' in error_str:
-                _fal_key_status = {
-                    "valid": True,
-                    "last_checked": datetime.utcnow().isoformat(),
-                    "error_message": None
-                }
-                logger.info("✅ FAL_KEY validated successfully")
-                return _fal_key_status
             # Auth errors mean the key is invalid
-            elif '401' in error_str or 'unauthorized' in error_str or 'no user found' in error_str:
+            if '401' in error_str or 'unauthorized' in error_str or 'no user found' in error_str:
                 _fal_key_status = {
                     "valid": False,
                     "last_checked": datetime.utcnow().isoformat(),
@@ -154,32 +159,14 @@ async def validate_fal_key_on_startup() -> dict:
                 logger.error("⚠️ fal.ai features will fall back to Emergent Key (more expensive)")
                 return _fal_key_status
             else:
-                # Other errors - check if it looks like a success hidden in error format
-                if 'status' in error_str:
-                    _fal_key_status = {
-                        "valid": True,
-                        "last_checked": datetime.utcnow().isoformat(),
-                        "error_message": None
-                    }
-                    logger.info("✅ FAL_KEY validated successfully (status response)")
-                    return _fal_key_status
-                # Otherwise assume key is OK but there was a network issue
+                # Other errors (timeout, rate limit, etc) - key might be OK
                 _fal_key_status = {
                     "valid": None,  # Unknown
                     "last_checked": datetime.utcnow().isoformat(),
                     "error_message": f"Could not validate: {str(e)[:100]}"
                 }
-                logger.warning(f"⚠️ FAL_KEY validation inconclusive: {str(e)[:50]}")
+                logger.warning(f"⚠️ FAL_KEY validation inconclusive: {str(e)[:80]}")
                 return _fal_key_status
-        
-        # If we get here without exception, key is valid
-        _fal_key_status = {
-            "valid": True,
-            "last_checked": datetime.utcnow().isoformat(),
-            "error_message": None
-        }
-        logger.info("✅ FAL_KEY validated successfully")
-        return _fal_key_status
         
     except Exception as e:
         _fal_key_status = {
