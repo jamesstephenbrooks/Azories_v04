@@ -3147,9 +3147,13 @@ export default function ProStudio() {
                             <Button
                               size="sm"
                               variant="ghost"
-                              onClick={() => deleteCharacter(char.id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteCharacter(char.id);
+                              }}
                               className="text-red-400 hover:text-red-300 hover:bg-red-500/20 p-1.5"
                               title="Delete character"
+                              data-testid={`delete-char-${char.id}`}
                             >
                               <FiTrash2 size={14} />
                             </Button>
