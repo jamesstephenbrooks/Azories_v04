@@ -180,10 +180,14 @@ async def generate_book_images(book_data: dict):
             )
             
             if result.get("success") and result.get("images"):
+                # Get the URL from the image dict
+                image_info = result["images"][0]
+                image_url = image_info["url"] if isinstance(image_info, dict) else image_info
+                
                 # Download and save image
                 import aiohttp
                 async with aiohttp.ClientSession() as session:
-                    async with session.get(result["images"][0]) as resp:
+                    async with session.get(image_url) as resp:
                         if resp.status == 200:
                             image_bytes = await resp.read()
                             with open(filepath, 'wb') as f:
@@ -191,10 +195,10 @@ async def generate_book_images(book_data: dict):
                             print(f"    Saved: {filepath.name}")
                             results.append({"id": img_id, "status": "success", "path": str(filepath)})
                         else:
-                            print(f"    ERROR: Failed to download")
-                            results.append({"id": img_id, "status": "error", "error": "Download failed"})
+                            print(f"    ERROR: Failed to download (HTTP {resp.status})")
+                            results.append({"id": img_id, "status": "error", "error": f"Download failed: {resp.status}"})
             else:
-                print(f"    ERROR: Generation failed")
+                print(f"    ERROR: Generation failed - {result}")
                 results.append({"id": img_id, "status": "error", "error": str(result)})
                 
         except Exception as e:
