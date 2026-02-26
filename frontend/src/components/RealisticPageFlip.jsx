@@ -633,15 +633,18 @@ const RealisticPageFlip = forwardRef(({
   const shouldClipRight = isOnBackCover && !isOnFrontCover;
   
   // Calculate shift amount - need extra shift to center with controls below
-  const coverShift = (width / 2) + 80; // Extra 80px to align with center of controls
+  // In mobile portrait mode, no shift needed since it's single page
+  const coverShift = isMobilePortrait ? 0 : (width / 2) + 80;
 
   return (
     <div className={`realistic-page-flip relative ${className}`} style={{ 
       transform: isFullscreen 
         ? 'scale(1.4)' 
-        : width < 350 
-          ? 'scale(1.15)' // Smaller scale on mobile
-          : 'scale(1.35)', 
+        : isMobilePortrait
+          ? 'scale(1)' // No scale on mobile portrait - let it fill naturally
+          : width < 350 
+            ? 'scale(1.15)' 
+            : 'scale(1.35)', 
       transformOrigin: 'center center' 
     }}>
       {/* Book container with 3D perspective */}
