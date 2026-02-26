@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-globals */
 
-const CACHE_NAME = 'azories-v1';
+const CACHE_NAME = 'azories-v2';
 const OFFLINE_URL = '/offline.html';
 
 // Assets to cache on install
