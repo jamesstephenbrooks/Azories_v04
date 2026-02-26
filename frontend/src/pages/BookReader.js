@@ -129,9 +129,10 @@ export default function BookReader() {
         const bookWidth = Math.min(bookHeight * 0.7, vw * 0.35);
         return { width: bookWidth, height: bookHeight };
       } else {
-        // Mobile portrait
-        const bookWidth = Math.min(vw * 0.42, 280);
-        const bookHeight = Math.min(vh * 0.45, 400);
+        // Mobile portrait - SINGLE PAGE MODE - fill more of the screen
+        const availableHeight = vh - 160; // Header (56px) + bottom controls (100px) + padding
+        const bookHeight = Math.min(availableHeight * 0.85, 550);
+        const bookWidth = Math.min(vw * 0.88, bookHeight * 0.75, 380);
         return { width: bookWidth, height: bookHeight };
       }
     }
@@ -155,6 +156,9 @@ export default function BookReader() {
   };
   
   const bookDimensions = getBookDimensions();
+  
+  // Determine if we should use single-page (portrait) mode
+  const isMobilePortrait = windowSize.width < 768 && windowSize.width < windowSize.height;
   
   const isCover = currentPage === -1;
   const totalPages = allPages.length;
