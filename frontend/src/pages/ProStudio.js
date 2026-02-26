@@ -2817,26 +2817,29 @@ export default function ProStudio() {
         )}
       </AnimatePresence>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-6">
-        {/* Pro Studio Explanation Banner */}
-        <div className="bg-gradient-to-r from-purple-900/40 to-pink-900/40 rounded-xl border border-purple-500/30 p-4 mb-6">
-          <div className="flex items-start gap-4">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
-              <FiStar className="text-white" />
+      {/* Main Content - pb-24 for floating button clearance on mobile */}
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 pb-24 sm:pb-6 overflow-x-hidden">
+        {/* Pro Studio Explanation Banner - Compact on mobile */}
+        <div className="bg-gradient-to-r from-purple-900/40 to-pink-900/40 rounded-xl border border-purple-500/30 p-3 sm:p-4 mb-4 sm:mb-6">
+          <div className="flex items-start gap-3 sm:gap-4">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+              <FiStar className="text-white text-sm sm:text-base" />
             </div>
-            <div className="flex-1">
-              <h3 className="text-white font-semibold mb-1">Pro Studio - Premium Character Consistency</h3>
-              <p className="text-gray-300 text-sm">
+            <div className="flex-1 min-w-0">
+              <h3 className="text-white font-semibold mb-1 text-sm sm:text-base">Pro Studio</h3>
+              <p className="text-gray-300 text-xs sm:text-sm hidden sm:block">
                 Create characters with <span className="text-purple-300 font-medium">AI-powered consistency</span> across all your book illustrations. 
                 Train custom LoRA models for 100% accurate character recreation, or use PuLID for face consistency.
                 <span className="text-amber-300 ml-1">Credits required for advanced features.</span>
               </p>
+              <p className="text-gray-300 text-xs sm:hidden">
+                AI-powered character consistency for your illustrations.
+              </p>
             </div>
             <div className="text-right flex-shrink-0">
-              <div className="text-xs text-gray-400 mb-1">Your Balance</div>
-              <div className="flex items-center gap-1 text-amber-400 font-bold">
-                <FiZap size={14} />
+              <div className="text-[10px] sm:text-xs text-gray-400 mb-0.5 sm:mb-1">Balance</div>
+              <div className="flex items-center gap-1 text-amber-400 font-bold text-sm sm:text-base">
+                <FiZap size={12} className="sm:w-[14px] sm:h-[14px]" />
                 <span>{credits}</span>
               </div>
             </div>
