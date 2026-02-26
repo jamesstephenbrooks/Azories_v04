@@ -79,11 +79,12 @@ function AppContent() {
   const { shouldShow, completeOnboarding } = useOnboarding();
   const location = useLocation();
   const isAdminPage = location.pathname.startsWith("/admin");
+  const isBookReaderPage = location.pathname.startsWith("/read/");
 
   return (
     <ErrorBoundary>
       <OfflineIndicator />
-      {shouldShow && !isAdminPage && (
+      {shouldShow && !isAdminPage && !isBookReaderPage && (
         <OnboardingTutorial onComplete={completeOnboarding} />
       )}
       <Suspense fallback={<PageLoader />}>
