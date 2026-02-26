@@ -1,14 +1,17 @@
-import { useState, useEffect } from 'react';
-import { FiX, FiShare, FiPlusSquare } from 'react-icons/fi';
+import { useState, useEffect, useRef } from 'react';
+import { FiX, FiShare, FiPlusSquare, FiDownload } from 'react-icons/fi';
 
 /**
  * PWA Home Screen Prompt
  * Shows a one-time banner prompting mobile users to add the app to their home screen
- * for a full-screen reading experience without browser UI
+ * - Chrome/Android: Uses native beforeinstallprompt for automatic install dialog
+ * - iOS Safari: Shows manual instructions (Apple doesn't allow auto-prompts)
  */
 export default function PWAPrompt() {
   const [showPrompt, setShowPrompt] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
+  const [canInstall, setCanInstall] = useState(false);
+  const deferredPromptRef = useRef(null);
   
   useEffect(() => {
     // Only show on mobile devices
@@ -19,11 +22,9 @@ export default function PWAPrompt() {
     const dismissed = localStorage.getItem('azories-pwa-prompt-dismissed');
     
     // Check if already installed as PWA (standalone mode)
-    // navigator.standalone is Safari-specific, window.matchMedia works cross-browser
     let isStandalone = false;
     try {
       isStandalone = window.matchMedia?.('(display-mode: standalone)')?.matches || false;
-      // Safari-specific check (won't exist in other browsers)
       if (typeof navigator !== 'undefined' && 'standalone' in navigator) {
         isStandalone = isStandalone || navigator.standalone === true;
       }
@@ -35,22 +36,74 @@ export default function PWAPrompt() {
     let iOS = false;
     try {
       const userAgent = typeof navigator !== 'undefined' ? navigator.userAgent || '' : '';
-      iOS = /iPad|iPhone|iPod/.test(userAgent);
+      iOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
     } catch (e) {
       // Ignore
     }
     setIsIOS(iOS);
     
+    // Listen for Chrome's beforeinstallprompt event
+    const handleBeforeInstallPrompt = (e) => {
+      // Prevent Chrome's default mini-infobar
+      e.preventDefault();
+      // Store the event for triggering later
+      deferredPromptRef.current = e;
+      setCanInstall(true);
+      console.log('[PWAPrompt] beforeinstallprompt captured');
+    };
+    
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    
+    // Listen for successful installation
+    window.addEventListener('appinstalled', () => {
+      console.log('[PWAPrompt] App installed successfully');
+      setShowPrompt(false);
+      deferredPromptRef.current = null;
+      setCanInstall(false);
+    });
+    
     // Show prompt after a short delay if conditions are met
     if (isMobile && !dismissed && !isStandalone) {
       const timer = setTimeout(() => setShowPrompt(true), 2000);
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+        window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      };
     }
+    
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
   }, []);
   
   const handleDismiss = () => {
     setShowPrompt(false);
     localStorage.setItem('azories-pwa-prompt-dismissed', 'true');
+  };
+  
+  const handleInstall = async () => {
+    // Chrome/Android: Use the native install prompt
+    if (deferredPromptRef.current) {
+      try {
+        // Show the native install prompt
+        deferredPromptRef.current.prompt();
+        
+        // Wait for user choice
+        const { outcome } = await deferredPromptRef.current.userChoice;
+        console.log('[PWAPrompt] User choice:', outcome);
+        
+        if (outcome === 'accepted') {
+          setShowPrompt(false);
+          localStorage.setItem('azories-pwa-prompt-dismissed', 'true');
+        }
+        
+        // Clear the deferred prompt
+        deferredPromptRef.current = null;
+        setCanInstall(false);
+      } catch (error) {
+        console.error('[PWAPrompt] Install error:', error);
+      }
+    }
   };
   
   if (!showPrompt) return null;
@@ -63,25 +116,46 @@ export default function PWAPrompt() {
       <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl shadow-2xl p-4 text-white">
         <div className="flex items-start gap-3">
           <div className="flex-shrink-0 w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-            <FiPlusSquare className="w-5 h-5" />
+            {canInstall ? <FiDownload className="w-5 h-5" /> : <FiPlusSquare className="w-5 h-5" />}
           </div>
           
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-sm mb-1">
               Get the Full Screen Experience
             </h3>
-            <p className="text-xs text-white/80 leading-relaxed">
+            <p className="text-xs text-white/80 leading-relaxed mb-3">
               {isIOS ? (
-                <>Tap <FiShare className="inline w-3 h-3 mx-0.5" /> then "Add to Home Screen" for the best reading experience without browser bars.</>
+                <>Tap <FiShare className="inline w-3 h-3 mx-0.5" /> then "Add to Home Screen" for the best reading experience.</>
+              ) : canInstall ? (
+                <>Install Azories for immersive reading without browser UI.</>
               ) : (
-                <>Add Azories to your home screen for immersive reading without browser UI.</>
+                <>Add Azories to your home screen for the best reading experience.</>
               )}
             </p>
+            
+            {/* Action buttons */}
+            <div className="flex gap-2">
+              {canInstall && !isIOS && (
+                <button
+                  onClick={handleInstall}
+                  className="flex-1 py-2 px-4 bg-white text-purple-600 font-semibold text-sm rounded-lg hover:bg-white/90 transition-colors flex items-center justify-center gap-2"
+                >
+                  <FiDownload className="w-4 h-4" />
+                  Install App
+                </button>
+              )}
+              <button
+                onClick={handleDismiss}
+                className={`${canInstall && !isIOS ? 'px-4' : 'flex-1 px-4'} py-2 bg-white/20 text-white text-sm rounded-lg hover:bg-white/30 transition-colors`}
+              >
+                {canInstall && !isIOS ? 'Later' : 'Dismiss'}
+              </button>
+            </div>
           </div>
           
           <button
             onClick={handleDismiss}
-            className="flex-shrink-0 w-8 h-8 flex items-center justify-center hover:bg-white/20 rounded-full transition-colors"
+            className="flex-shrink-0 w-6 h-6 flex items-center justify-center hover:bg-white/20 rounded-full transition-colors"
             aria-label="Dismiss"
           >
             <FiX className="w-4 h-4" />
