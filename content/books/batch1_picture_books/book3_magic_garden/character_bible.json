@@ -1,0 +1,46 @@
+{
+  "book_info": {
+    "title": "The Magic Garden",
+    "subtitle": "Where Wonders Grow",
+    "age_range": "3-6 years",
+    "page_count": 12,
+    "theme": "Nature, discovery, patience, growth",
+    "moral": "With care and patience, wonderful things can grow"
+  },
+  "art_style": {
+    "style": "lush watercolour with botanical detail",
+    "mood": "whimsical, colorful, full of wonder",
+    "color_palette": ["leaf green", "sunny yellow", "sky blue", "rose pink", "lavender purple", "warm brown", "bright orange"],
+    "lighting": "warm golden sunlight filtering through leaves, dappled light",
+    "texture": "rich watercolor with detailed botanical elements, soft edges, nature textures"
+  },
+  "characters": {
+    "maya": {
+      "name": "Maya",
+      "age": "4 years old",
+      "description": "A cheerful little girl with curly black hair in two puffs with colorful hair ties, warm brown skin, bright curious dark brown eyes, and a wide happy smile showing a small gap in her front teeth. Round cheeks.",
+      "clothing": {
+        "gardening_outfit": "Yellow sundress with green leaf pattern, small green rubber boots, and a floppy straw sun hat with a pink ribbon"
+      },
+      "personality": "curious, nurturing, patient, full of wonder",
+      "accessories": "A small red watering can she carries everywhere"
+    },
+    "grandma_rose": {
+      "name": "Grandma Rose",
+      "description": "A warm, plump elderly woman with silver-grey hair in a bun, warm brown skin with smile wrinkles, kind dark eyes behind round glasses, and a gentle smile. She wears a floral apron over a soft blue dress.",
+      "personality": "wise, patient, loving, knows all about plants"
+    },
+    "flutter": {
+      "name": "Flutter",
+      "type": "magical butterfly",
+      "description": "A large, beautiful butterfly with iridescent wings that shimmer between purple, blue, and pink. Leaves tiny sparkles wherever it flies. Has friendly antenna that curl playfully.",
+      "personality": "playful, magical guide"
+    }
+  },
+  "settings": {
+    "magic_garden": "A lush, colorful garden overflowing with flowers of every color, winding stone paths, tall sunflowers, rose bushes, vegetable patches, and a small wooden bench. Butterflies and bees everywhere.",
+    "greenhouse": "A small glass greenhouse filled with seedlings in pots, gardening tools, and shelves of plants",
+    "vegetable_patch": "Rows of vegetables - tomatoes, carrots, pumpkins - with stakes and string, rich brown soil"
+  },
+  "prompt_template": "Lush watercolour children's book illustration, whimsical and colorful mood, {scene_description}. Character: Maya, a 4-year-old girl with curly black hair in two puffs with colorful hair ties, warm brown skin, bright dark brown eyes, gap-toothed smile, wearing a yellow sundress with green leaf pattern, green rubber boots, and a floppy straw sun hat with pink ribbon, carrying a small red watering can. Art style: rich botanical watercolors, warm golden sunlight, vibrant garden colors, professional children's book quality."
+}
