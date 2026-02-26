@@ -376,12 +376,16 @@ export default function BookReader() {
     }
     
     if (currentPage === -1) {
-      // Just flip to first page - no auto-read
-      if (realisticFlipRef.current) {
+      // Transition from cover to first page
+      if (isMobilePortrait) {
+        // In split view mode, directly set the page
+        setCurrentPage(0);
+      } else if (realisticFlipRef.current) {
+        // In flipbook mode, flip the page
         realisticFlipRef.current.nextPage();
       }
     }
-  }, [currentPage, audioElement]);
+  }, [currentPage, audioElement, isMobilePortrait]);
 
   // startListening is defined after playAudio below
 
