@@ -2926,21 +2926,21 @@ export default function ProStudio() {
                 </div>
 
                 {/* Description - always shown */}
-                <div className="space-y-3 mb-4">
+                <div className="space-y-2 sm:space-y-3 mb-4">
                   <label className="text-gray-300 text-sm font-medium">Character Description</label>
                   <Textarea
                     placeholder="Describe your character in detail... (e.g., 'A young elven princess with silver hair that flows like moonlight, bright violet eyes, pointed ears adorned with crystal earrings')"
                     value={characterDescription}
                     onChange={(e) => setCharacterDescription(e.target.value)}
-                    className="bg-gray-800/50 border-gray-700 text-white"
+                    className="bg-gray-800/50 border-gray-700 text-white min-h-[100px] text-base"
                     rows={3}
                   />
                 </div>
 
                 {/* Reference Images - always shown */}
-                <div className="space-y-3 mb-4">
+                <div className="space-y-2 sm:space-y-3 mb-4">
                   <label className="text-gray-300 text-sm font-medium">Reference Images (optional)</label>
-                  <div className="border-2 border-dashed border-purple-500/30 rounded-lg p-4 text-center">
+                  <div className="border-2 border-dashed border-purple-500/30 rounded-lg p-4 text-center min-h-[80px] flex flex-col items-center justify-center">
                     <input
                       type="file"
                       multiple
@@ -2950,9 +2950,9 @@ export default function ProStudio() {
                       id="character-upload"
                       data-testid="character-image-upload"
                     />
-                    <label htmlFor="character-upload" className="cursor-pointer">
-                      <FiUpload className="w-6 h-6 text-purple-400 mx-auto mb-1" />
-                      <p className="text-gray-400 text-sm">Click to upload reference images</p>
+                    <label htmlFor="character-upload" className="cursor-pointer min-h-[44px] flex flex-col items-center justify-center">
+                      <FiUpload className="w-6 h-6 text-purple-400 mb-1" />
+                      <p className="text-gray-400 text-sm">Tap to upload reference images</p>
                     </label>
                   </div>
                   
