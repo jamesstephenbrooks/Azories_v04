@@ -190,17 +190,31 @@ export default function OnboardingTutorial({ onComplete }) {
 
 // Hook to check if onboarding should be shown
 export function useOnboarding() {
-  const [shouldShow, setShouldShow] = useState(false);
+  // Initialize from localStorage synchronously to prevent flash
+  const [shouldShow, setShouldShow] = useState(() => {
+    // Check localStorage immediately during initial render
+    if (typeof window !== 'undefined') {
+      const completed = localStorage.getItem('azories-onboarding-complete');
+      return !completed;
+    }
+    return false;
+  });
 
+  // Also verify on mount (for SSR compatibility)
   useEffect(() => {
     const completed = localStorage.getItem('azories-onboarding-complete');
     setShouldShow(!completed);
   }, []);
+
+  const completeOnboarding = () => {
+    localStorage.setItem('azories-onboarding-complete', 'true');
+    setShouldShow(false);
+  };
 
   const resetOnboarding = () => {
     localStorage.removeItem('azories-onboarding-complete');
     setShouldShow(true);
   };
 
-  return { shouldShow, setShouldShow, resetOnboarding };
+  return { shouldShow, setShouldShow, completeOnboarding, resetOnboarding };
 }
