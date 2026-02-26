@@ -173,7 +173,11 @@ One copy of each duplicate pair was kept and completed:
     4. Middle Grade last
 
 ### P1 - High Priority
-1. **Fix FAL_KEY** - Get valid key from user to reduce image generation costs
+1. **Fix FAL_KEY permanently** - This has been a recurring issue (8+ times):
+   - Investigate root cause: Is it hardcoded? Environment variable resetting? Key expiring on fal.ai side?
+   - Set up permanent solution: Secure storage that persists between sessions
+   - Add auto-detection: Warn early if FAL_KEY becomes invalid instead of silently falling back to expensive Emergent Key
+   - Current status: Key shows "No user found for Key ID and Secret" error
 2. **Complete server.py refactoring** - Remove duplicate auth routes from server.py
 
 ### P2 - Medium Priority
