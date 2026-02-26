@@ -193,3 +193,4 @@ frontend/node_modules/.cache/default-development/4.pack_
 *.env
 *.env.*
 glb_optimization/gothic_library_14_cycles.glb
+frontend/node_modules/.cache/default-development/23.pack
