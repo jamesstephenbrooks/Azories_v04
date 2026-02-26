@@ -56,7 +56,7 @@ export default function Auth() {
     
     try {
       if (isLogin) {
-        await login(formData.email, formData.password);
+        await login(formData.email, formData.password, formData.rememberMe);
         toast.success('Welcome back!');
       } else {
         if (!formData.name.trim()) {
