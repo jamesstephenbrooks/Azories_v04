@@ -1133,11 +1133,10 @@ export default function BookReader() {
                 </div>
               </div>
             ) : isMobileLandscape && !isCover && currentPage >= 0 ? (
-              /* Mobile Landscape Two-Page Spread - Full screen with tap navigation */
+              /* Mobile Landscape Two-Page Spread - Full screen with invisible tap zones */
               <div className="relative w-full h-screen">
-                {/* Invisible Tap Zones for Navigation */}
-                {/* Left tap zone - Previous */}
-                <button
+                {/* Invisible Tap Zone - Left (Previous) - NO STYLING AT ALL */}
+                <div
                   onClick={() => {
                     if (currentPage > 0) {
                       setCurrentPage(currentPage - 1);
@@ -1146,31 +1145,23 @@ export default function BookReader() {
                       setCurrentPage(-1);
                     }
                   }}
-                  disabled={currentPage <= -1}
-                  className="fixed left-0 top-0 bottom-0 w-16 z-50 flex items-center justify-start pl-1 opacity-0 hover:opacity-100 active:opacity-100 transition-opacity disabled:pointer-events-none"
+                  className="fixed left-0 top-0 bottom-0 w-20 z-50 cursor-pointer"
+                  style={{ background: 'transparent', border: 'none', outline: 'none' }}
                   data-testid="landscape-prev-btn"
-                >
-                  <div className="w-8 h-12 flex items-center justify-center bg-black/30 rounded-r-full">
-                    <FiChevronLeft className="w-5 h-5 text-white" />
-                  </div>
-                </button>
+                />
                 
-                {/* Right tap zone - Next */}
-                <button
+                {/* Invisible Tap Zone - Right (Next) - NO STYLING AT ALL */}
+                <div
                   onClick={() => {
                     if (currentPage < allPages.length - 1) {
                       setCurrentPage(currentPage + 1);
                       saveReadingProgress();
                     }
                   }}
-                  disabled={currentPage >= allPages.length - 1}
-                  className="fixed right-0 top-0 bottom-0 w-16 z-50 flex items-center justify-end pr-1 opacity-0 hover:opacity-100 active:opacity-100 transition-opacity disabled:pointer-events-none"
+                  className="fixed right-0 top-0 bottom-0 w-20 z-50 cursor-pointer"
+                  style={{ background: 'transparent', border: 'none', outline: 'none' }}
                   data-testid="landscape-next-btn"
-                >
-                  <div className="w-8 h-12 flex items-center justify-center bg-black/30 rounded-l-full">
-                    <FiChevronRight className="w-5 h-5 text-white" />
-                  </div>
-                </button>
+                />
                 
                 {/* Two-Page Spread - Takes almost full screen */}
                 <div 
