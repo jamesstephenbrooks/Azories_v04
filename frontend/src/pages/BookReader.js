@@ -17,6 +17,7 @@ import AmbientSound from '@/components/AmbientSound';
 import AIReadingBuddy from '@/components/AIReadingBuddy';
 import { useSwipeGestures } from '@/hooks/useSwipeGestures';
 import RealisticPageFlip from '@/components/RealisticPageFlip';
+import PWAPrompt from '@/components/PWAPrompt';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
