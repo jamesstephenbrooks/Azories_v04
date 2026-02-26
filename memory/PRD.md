@@ -153,9 +153,9 @@ Bedtime in the Animal World, Colors of the World, Cooking Adventures with Chef C
 One copy of each duplicate pair was kept and completed:
 - Robot Best Friend (completed)
 - The Case of the Missing Cookies (completed)  
-- Super Silly Superhero (still empty)
-- Colors of the World (still empty)
-- Guardians of Tomorrow (still empty - 2 copies remain)
+- Super Silly Superhero (still empty - priority for next session)
+- Colors of the World (still empty - priority for next session)
+- Guardians of Tomorrow (1 duplicate deleted, 1 remains empty)
 
 ### Starter Library Usage
 - **3 images** from the 200-image starter library used (only in "The Unicorn's Rainbow Bridge")
