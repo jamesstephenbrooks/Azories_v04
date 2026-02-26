@@ -86,15 +86,17 @@ export default function BookReader() {
   // Dedicated orientation state using proper APIs for real device detection
   const [isLandscapeOrientation, setIsLandscapeOrientation] = useState(() => {
     if (typeof window === 'undefined') return false;
-    // Check screen.orientation API first (most reliable)
-    if (screen.orientation) {
-      return screen.orientation.type.includes('landscape');
-    }
-    // Fallback to matchMedia
+    // PRIORITY 1: matchMedia - works correctly in DevTools and most browsers
+    // This checks CSS media query which respects viewport dimensions
     if (window.matchMedia) {
       return window.matchMedia('(orientation: landscape)').matches;
     }
-    // Final fallback to dimensions
+    // PRIORITY 2: screen.orientation API (for real devices)
+    // Note: This may report 'landscape-primary' in headless browsers regardless of viewport
+    if (screen.orientation) {
+      return screen.orientation.type.includes('landscape');
+    }
+    // PRIORITY 3: Final fallback to dimensions
     return window.innerWidth > window.innerHeight;
   });
   
@@ -107,18 +109,18 @@ export default function BookReader() {
       });
     };
     
-    // Proper orientation change handler using multiple APIs
+    // Proper orientation change handler - prioritizes matchMedia for browser compatibility
     const handleOrientationChange = () => {
-      // Use screen.orientation API if available (most reliable on real devices)
-      if (screen.orientation) {
-        const isLandscape = screen.orientation.type.includes('landscape');
-        setIsLandscapeOrientation(isLandscape);
-      } else if (window.matchMedia) {
-        // Fallback to matchMedia
+      // PRIORITY 1: matchMedia - most reliable across browsers and DevTools
+      if (window.matchMedia) {
         const isLandscape = window.matchMedia('(orientation: landscape)').matches;
         setIsLandscapeOrientation(isLandscape);
+      } else if (screen.orientation) {
+        // PRIORITY 2: screen.orientation API for real devices
+        const isLandscape = screen.orientation.type.includes('landscape');
+        setIsLandscapeOrientation(isLandscape);
       } else {
-        // Final fallback
+        // PRIORITY 3: Fallback to dimensions
         setIsLandscapeOrientation(window.innerWidth > window.innerHeight);
       }
       // Also update dimensions after a delay (screen dimensions update after rotation)
