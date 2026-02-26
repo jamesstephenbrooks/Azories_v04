@@ -724,16 +724,22 @@ export default function BookReader() {
     autoReadRef.current = true; // Sync update for immediate checks
     
     if (currentPage === -1) {
-      // On cover - flip to first page
-      // The auto-read useEffect will handle playing audio when page changes
-      if (realisticFlipRef.current) {
+      // On cover - go to first page
+      // For mobile portrait/landscape, we use direct state update (no pageflip library)
+      if (isMobilePortrait || isMobileLandscape) {
+        setCurrentPage(0);
+        // Audio will play via the auto-read effect when page changes
+      } else if (realisticFlipRef.current) {
         realisticFlipRef.current.nextPage();
+      } else {
+        // Fallback: directly set page
+        setCurrentPage(0);
       }
     } else {
       // Already on a content page - start playing immediately
       playAudio();
     }
-  }, [currentPage, playAudio]);
+  }, [currentPage, playAudio, isMobilePortrait, isMobileLandscape]);
 
   // Track when flip ends to trigger audio playback
   const prevIsFlippingRef = useRef(isFlipping);
