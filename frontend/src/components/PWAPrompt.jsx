@@ -20,11 +20,11 @@ export default function PWAPrompt() {
     
     // Check if already installed as PWA (standalone mode)
     const isStandalone = window.matchMedia?.('(display-mode: standalone)')?.matches ||
-                         (navigator as any).standalone === true;
+                         navigator.standalone === true;
     
     // Detect iOS for specific instructions
     const userAgent = typeof navigator !== 'undefined' ? navigator.userAgent || '' : '';
-    const iOS = /iPad|iPhone|iPod/.test(userAgent) && !(window as any).MSStream;
+    const iOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
     setIsIOS(iOS);
     
     // Show prompt after a short delay if conditions are met
