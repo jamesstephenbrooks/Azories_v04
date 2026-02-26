@@ -1343,7 +1343,7 @@ export default function ArtStudio() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-6">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-6 pb-28 lg:pb-6">
         {/* Tab Navigation - All FREE features */}
         <div className="flex gap-1 sm:gap-2 mb-4 sm:mb-6 flex-wrap items-center overflow-x-auto pb-2">
           {/* Main Creation Modes */}
