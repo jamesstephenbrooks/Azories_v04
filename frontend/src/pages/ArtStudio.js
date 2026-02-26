@@ -702,6 +702,7 @@ export default function ArtStudio() {
   // Starter Library state
   const [starterLibrary, setStarterLibrary] = useState([]);
   const [showStarterInGallery, setShowStarterInGallery] = useState(true);
+  const [expandedStarterImage, setExpandedStarterImage] = useState(null); // For lightbox preview
   
   // Load gallery and books on mount
   useEffect(() => {
