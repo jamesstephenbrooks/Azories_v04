@@ -240,15 +240,21 @@ const ANIMATED_BOOK_GLB_URL = '/models/animated_book_optimized.glb';
 const isMobile = () => {
   if (typeof window === 'undefined') return false;
   
+  // Defensive navigator access
+  const nav = typeof navigator !== 'undefined' ? navigator : {};
+  const userAgent = nav.userAgent || '';
+  const platform = nav.platform || '';
+  const maxTouchPoints = nav.maxTouchPoints || 0;
+  
   // Check for touch capability first (covers most tablets)
-  const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  const hasTouch = 'ontouchstart' in window || maxTouchPoints > 0;
   
   // User agent check for mobile devices
-  const mobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const mobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
   
   // iPad-specific detection (iPadOS 13+ reports as desktop Safari)
-  const isIPad = (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) || 
-                 /iPad/i.test(navigator.userAgent);
+  const isIPad = (platform === 'MacIntel' && maxTouchPoints > 1) || 
+                 /iPad/i.test(userAgent);
   
   // Screen size check for tablets
   const isTabletSize = window.innerWidth >= 768 && window.innerWidth <= 1366 && hasTouch;
