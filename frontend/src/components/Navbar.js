@@ -120,11 +120,11 @@ export const Navbar = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden rounded-full"
+            className="md:hidden rounded-full min-w-[44px] min-h-[44px]"
             onClick={() => setMobileOpen(!mobileOpen)}
             data-testid="mobile-menu-toggle"
           >
-            {mobileOpen ? <FiX className="w-5 h-5" /> : <FiMenu className="w-5 h-5" />}
+            {mobileOpen ? <FiX className="w-6 h-6" /> : <FiMenu className="w-6 h-6" />}
           </Button>
         </div>
       </div>
