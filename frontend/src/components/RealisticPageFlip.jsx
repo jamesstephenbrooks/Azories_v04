@@ -161,6 +161,7 @@ const Page = forwardRef(({ pageNumber, children, isLeft, isCover, isBackCover },
 Page.displayName = 'Page';
 
 // Cover page component - simple cover without hover overlay (buttons are external)
+// Enhanced with lazy loading for cover image
 const CoverPage = forwardRef(({ book }, ref) => {
   return (
     <div 
@@ -177,12 +178,13 @@ const CoverPage = forwardRef(({ book }, ref) => {
           boxShadow: '5px 0 15px rgba(0,0,0,0.3)',
         }}
       >
-        {/* Cover image */}
+        {/* Cover image with lazy loading */}
         {book?.cover_image && (
-          <img 
-            src={book.cover_image} 
+          <LazyImage 
+            src={book.cover_image}
             alt={book.title}
             className="absolute inset-0 w-full h-full object-cover opacity-90"
+            priority={true}
           />
         )}
         
