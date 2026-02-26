@@ -1000,11 +1000,17 @@ export default function BookReader() {
               variant="outline"
               size="default"
               onClick={() => {
-                if (realisticFlipRef.current) {
+                if (isMobilePortrait && !isCover) {
+                  // In split view, navigate directly
+                  if (currentPage < allPages.length - 1) {
+                    setCurrentPage(currentPage + 1);
+                    saveReadingProgress();
+                  }
+                } else if (realisticFlipRef.current) {
                   realisticFlipRef.current.nextPage();
                 }
               }}
-              disabled={currentPage === -2 || isFlipping}
+              disabled={currentPage === -2 || currentPage >= allPages.length - 1 || isFlipping}
               className={`rounded-full ${isMobileLandscape ? 'min-w-[36px] min-h-[36px] px-3' : 'min-w-[44px] min-h-[44px] px-4 sm:px-6'} text-sm sm:text-base`}
             >
               <span className="hidden sm:inline">Next</span>
