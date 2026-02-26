@@ -5030,14 +5030,75 @@ async def get_full_book(book_id: str, current_user: dict = Depends(get_optional_
             "message": "Sign in to read this book"
         }
     
-    # PRIORITY 1: Check for chapters in the separate chapters collection (BookEditor-created books)
-    chapters = await db.chapters.find({"book_id": book_id}, {"_id": 0}).sort("order", 1).to_list(100)
-    
     full_chapters = []
     
-    if chapters and len(chapters) > 0:
-        # Use chapters from the separate collection
-        for chapter in chapters:
+    # Check BOTH sources and pick the one with actual images
+    
+    # Source 1: Chapters from separate collection (BookEditor-created books)
+    chapters_from_db = await db.chapters.find({"book_id": book_id}, {"_id": 0}).sort("order", 1).to_list(100)
+    chapters_have_images = False
+    
+    if chapters_from_db and len(chapters_from_db) > 0:
+        for chapter in chapters_from_db:
+            pages = await db.pages.find({"chapter_id": chapter["id"]}, {"_id": 0}).sort("order", 1).to_list(100)
+            # Check if any page has an image
+            for page in pages:
+                if page.get("image_url") and len(page.get("image_url", "")) > 0:
+                    chapters_have_images = True
+                    break
+            if chapters_have_images:
+                break
+    
+    # Source 2: Embedded pages array (generated library books)
+    embedded_pages = book.get("pages", [])
+    embedded_have_images = False
+    
+    if embedded_pages and len(embedded_pages) > 0:
+        for page in embedded_pages:
+            if page.get("image_url") and len(page.get("image_url", "")) > 0:
+                embedded_have_images = True
+                break
+    
+    # Decision: Use embedded pages if they have images, otherwise try chapters
+    # This prioritizes the data source that actually has content
+    
+    if embedded_have_images:
+        # Use embedded pages - convert to chapter format
+        normalized_pages = []
+        for page in embedded_pages:
+            normalized_page = {
+                "id": page.get("id", f"page-{page.get('page_number', 0)}"),
+                "chapter_id": "embedded-chapter",
+                "order": page.get("page_number", 0),
+                "text": page.get("text", ""),
+                "text_content": page.get("text", ""),  # Also provide text_content for compatibility
+                "image_url": page.get("image_url", ""),
+                "image_url_2": page.get("image_url_2", ""),
+                "image_url_3": page.get("image_url_3", ""),
+                "image_url_4": page.get("image_url_4", ""),
+                "video_url": page.get("video_url", ""),
+                "use_video": page.get("use_video", False),
+                "layout_type": page.get("layout", "single"),
+                "image_position_x": page.get("image_position_x", 50),
+                "image_position_y": page.get("image_position_y", 50),
+                "image_fit": page.get("image_fit", "cover"),
+                "font_family": page.get("font_family", "default"),
+                "font_size": page.get("font_size", "medium"),
+                "text_align": page.get("text_align", "left"),
+            }
+            normalized_pages.append(normalized_page)
+        
+        full_chapters.append({
+            "id": "embedded-chapter",
+            "book_id": book_id,
+            "title": book.get("title", "Story"),
+            "order": 0,
+            "pages": normalized_pages
+        })
+    
+    elif chapters_have_images or (chapters_from_db and len(chapters_from_db) > 0):
+        # Use chapters from separate collection
+        for chapter in chapters_from_db:
             pages = await db.pages.find({"chapter_id": chapter["id"]}, {"_id": 0}).sort("order", 1).to_list(100)
             for page in pages:
                 page.setdefault("image_url_2", "")
@@ -5057,12 +5118,8 @@ async def get_full_book(book_id: str, current_user: dict = Depends(get_optional_
                 "pages": pages
             })
     
-    # PRIORITY 2: Check for embedded pages array in the book document (generated library books)
-    elif book.get("pages") and len(book.get("pages", [])) > 0:
-        # Convert embedded pages to chapter format for frontend compatibility
-        embedded_pages = book.get("pages", [])
-        
-        # Normalize each page to have all expected fields
+    elif embedded_pages and len(embedded_pages) > 0:
+        # Fallback: use embedded pages even without images (better than nothing)
         normalized_pages = []
         for page in embedded_pages:
             normalized_page = {
@@ -5070,23 +5127,23 @@ async def get_full_book(book_id: str, current_user: dict = Depends(get_optional_
                 "chapter_id": "embedded-chapter",
                 "order": page.get("page_number", 0),
                 "text": page.get("text", ""),
+                "text_content": page.get("text", ""),
                 "image_url": page.get("image_url", ""),
-                "image_url_2": page.get("image_url_2", ""),
-                "image_url_3": page.get("image_url_3", ""),
-                "image_url_4": page.get("image_url_4", ""),
-                "video_url": page.get("video_url", ""),
-                "use_video": page.get("use_video", False),
+                "image_url_2": "",
+                "image_url_3": "",
+                "image_url_4": "",
+                "video_url": "",
+                "use_video": False,
                 "layout_type": page.get("layout", "single"),
-                "image_position_x": page.get("image_position_x", 50),
-                "image_position_y": page.get("image_position_y", 50),
-                "image_fit": page.get("image_fit", "cover"),
-                "font_family": page.get("font_family", "default"),
-                "font_size": page.get("font_size", "medium"),
-                "text_align": page.get("text_align", "left"),
+                "image_position_x": 50,
+                "image_position_y": 50,
+                "image_fit": "cover",
+                "font_family": "default",
+                "font_size": "medium",
+                "text_align": "left",
             }
             normalized_pages.append(normalized_page)
         
-        # Create a virtual chapter containing all embedded pages
         full_chapters.append({
             "id": "embedded-chapter",
             "book_id": book_id,
