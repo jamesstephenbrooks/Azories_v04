@@ -875,9 +875,9 @@ export default function BookReader() {
                   className="flex-1 bg-[#fdfbf7] dark:bg-[#2a2a30] rounded-b-2xl shadow-lg overflow-hidden"
                 >
                   <div className="h-full overflow-y-auto px-5 py-4">
-                    {currentPageData?.text_content ? (
+                    {(currentPageData?.text_content || currentPageData?.text || currentPageData?.content) ? (
                       <p className="font-reader text-base leading-relaxed text-foreground/90 whitespace-pre-wrap">
-                        {currentPageData.text_content}
+                        {currentPageData.text_content || currentPageData.text || currentPageData.content}
                       </p>
                     ) : currentPageData?.isChapterTitle ? (
                       <div className="text-center py-4">
