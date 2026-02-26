@@ -2867,6 +2867,15 @@ async def create_character(request: CharacterCreate, current_user: dict = Depend
         char_id = str(uuid.uuid4())
         now = datetime.now(timezone.utc).isoformat()
         
+        # Convert any base64 reference images to CDN URLs for better performance
+        converted_reference_images = []
+        for img in (request.reference_images[:20] if request.reference_images else []):
+            converted_url = await convert_base64_to_cdn(img)
+            converted_reference_images.append(converted_url)
+        
+        # Also convert thumbnail if it's base64
+        converted_thumbnail = await convert_base64_to_cdn(thumbnail) if thumbnail else None
+        
         character = {
             "id": char_id,
             "user_id": current_user["id"],
@@ -2879,8 +2888,8 @@ async def create_character(request: CharacterCreate, current_user: dict = Depend
             "personality": request.personality,
             "backstory": request.backstory,
             "special_features": request.special_features,
-            "reference_images": request.reference_images[:20] if request.reference_images else [],
-            "thumbnail": thumbnail,
+            "reference_images": converted_reference_images,
+            "thumbnail": converted_thumbnail,
             "created_at": now,
             "updated_at": now
         }
