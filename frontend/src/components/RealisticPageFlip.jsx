@@ -408,7 +408,8 @@ const TextPage = forwardRef(({ page, pageNumber, isFirstOfChapter }, ref) => {
 TextPage.displayName = 'TextPage';
 
 // Legacy content page for single-page view (image above text)
-const ContentPage = forwardRef(({ page, pageNumber, isLeft }, ref) => {
+// Enhanced with lazy loading
+const ContentPage = forwardRef(({ page, pageNumber, isLeft, isCurrentPage = false }, ref) => {
   const hasImage = page?.image_url && page.image_url.trim() !== '';
   const hasText = page?.text_content && page.text_content.trim() !== '';
   
@@ -417,18 +418,19 @@ const ContentPage = forwardRef(({ page, pageNumber, isLeft }, ref) => {
       <div className="h-full flex flex-col">
         {/* Image section - always show container for layout consistency */}
         <div 
-          className={`mb-4 rounded-lg overflow-hidden flex-shrink-0 ${!hasImage ? 'bg-muted/20 border border-dashed border-muted-foreground/20' : ''}`} 
+          className={`mb-4 rounded-lg overflow-hidden flex-shrink-0 relative ${!hasImage ? 'bg-muted/20 border border-dashed border-muted-foreground/20' : ''}`} 
           style={{ height: hasImage || !hasText ? '45%' : '0%', minHeight: hasImage ? '120px' : hasText ? '0' : '120px' }}
         >
           {hasImage ? (
-            <img 
-              src={page.image_url} 
+            <LazyImage 
+              src={page.image_url}
               alt=""
               className="w-full h-full object-cover"
               style={{
                 objectFit: page.image_fit || 'cover',
                 objectPosition: `${page.image_position_x || 50}% ${page.image_position_y || 50}%`
               }}
+              priority={isCurrentPage}
             />
           ) : !hasText ? (
             <div className="w-full h-full flex items-center justify-center text-muted-foreground/40">
