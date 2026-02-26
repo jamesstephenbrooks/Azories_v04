@@ -349,7 +349,7 @@ export default function Library() {
                   onClick={() => setViewMode('immersive')}
                   data-testid="grand-library-promo"
                 >
-                  <div className="relative h-48 md:h-64 overflow-hidden">
+                  <div className="relative h-40 sm:h-48 md:h-64 overflow-hidden">
                     {/* Background Image */}
                     <img 
                       src="https://customer-assets.emergentagent.com/job_99cdf25d-3424-4245-a1d4-fa1604524917/artifacts/63nngm8v_art-fantasy.png"
@@ -360,24 +360,25 @@ export default function Library() {
                     <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
                     
                     {/* Content */}
-                    <div className="absolute inset-0 flex items-center p-8 md:p-12">
+                    <div className="absolute inset-0 flex items-center p-4 sm:p-8 md:p-12">
                       <div className="max-w-lg">
-                        <div className="flex items-center gap-2 mb-3">
-                          <span className="px-3 py-1 bg-purple-500/30 backdrop-blur-sm rounded-full text-purple-300 text-xs font-medium">
-                            IMMERSIVE EXPERIENCE
+                        <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                          <span className="px-2 sm:px-3 py-1 bg-purple-500/30 backdrop-blur-sm rounded-full text-purple-300 text-[10px] sm:text-xs font-medium">
+                            IMMERSIVE
                           </span>
                         </div>
-                        <h3 className="text-2xl md:text-4xl font-serif font-bold text-white mb-3">
+                        <h3 className="text-lg sm:text-2xl md:text-4xl font-serif font-bold text-white mb-1 sm:mb-3">
                           Enter the Grand Library
                         </h3>
-                        <p className="text-white/70 text-sm md:text-base mb-4 max-w-md">
-                          Walk through towering bookshelves in our magical 3D library. Explore genres, discover new stories, and experience reading like never before.
+                        <p className="text-white/70 text-xs sm:text-sm md:text-base mb-2 sm:mb-4 max-w-md line-clamp-2 sm:line-clamp-none">
+                          Walk through towering bookshelves in our magical 3D library.
                         </p>
                         <Button 
-                          className="rounded-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-lg shadow-purple-500/30 group-hover:scale-105 transition-transform"
+                          size="sm"
+                          className="rounded-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-lg shadow-purple-500/30 group-hover:scale-105 transition-transform text-xs sm:text-sm"
                         >
-                          <FiBook className="mr-2 w-4 h-4" />
-                          Explore Now
+                          <FiBook className="mr-1 sm:mr-2 w-3 h-3 sm:w-4 sm:h-4" />
+                          Explore
                         </Button>
                       </div>
                     </div>
