@@ -470,6 +470,7 @@ export default function ArtStudio() {
   const [styleSearchQuery, setStyleSearchQuery] = useState('');
   const [collapsedCategories, setCollapsedCategories] = useState({}); // All expanded by default
   const [selectedTemplate, setSelectedTemplate] = useState(null); // Quick template selection
+  const [showMobileStyles, setShowMobileStyles] = useState(false); // Mobile art styles toggle
   
   // Animation state
   const [showAnimateModal, setShowAnimateModal] = useState(false);
