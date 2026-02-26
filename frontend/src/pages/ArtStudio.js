@@ -1196,24 +1196,53 @@ export default function ArtStudio() {
   // Download generated image
   const downloadImage = async (imageUrl, filename) => {
     try {
-      // Fetch the image as blob to bypass CORS issues
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+      // Handle relative URLs (starter library)
+      const fullUrl = imageUrl.startsWith('/') 
+        ? `${window.location.origin}${imageUrl}` 
+        : imageUrl;
       
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = filename || `azories-art-${Date.now()}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      // Cleanup
-      window.URL.revokeObjectURL(url);
+      // For fal.ai and other CDN URLs, we need to handle CORS properly
+      if (fullUrl.includes('fal.ai') || fullUrl.includes('cloudinary') || fullUrl.includes('v3.fal.media')) {
+        // Use proxy or direct download with no-cors mode
+        const response = await fetch(fullUrl, {
+          mode: 'cors',
+          credentials: 'omit'
+        });
+        
+        if (!response.ok) {
+          throw new Error('Fetch failed');
+        }
+        
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename || `azories-art-${Date.now()}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        window.URL.revokeObjectURL(url);
+      } else {
+        // For local or same-origin URLs
+        const response = await fetch(fullUrl);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename || `azories-art-${Date.now()}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        window.URL.revokeObjectURL(url);
+      }
     } catch (error) {
       console.error('Download failed:', error);
-      // Fallback: open in new tab
-      window.open(imageUrl, '_blank');
+      // Fallback: open image in new tab for manual save
+      window.open(imageUrl.startsWith('/') ? `${window.location.origin}${imageUrl}` : imageUrl, '_blank');
     }
   };
   
