@@ -331,9 +331,15 @@ export default function BookReader() {
         axios.post(`${API}/books/${bookId}/track-read`).catch(() => {});
         
         // Show rotate prompt on mobile portrait (once per book, not per session)
+        // Use proper orientation detection
         const promptKey = `azories-rotate-prompt-${bookId}`;
         const hasSeenPromptForThisBook = sessionStorage.getItem(promptKey);
-        if (!hasSeenPromptForThisBook && window.innerWidth < 768 && window.innerWidth <= window.innerHeight) {
+        const isMobileDevice = window.innerWidth < 768 || window.innerHeight < 500;
+        const isPortraitOrientation = screen.orientation 
+          ? screen.orientation.type.includes('portrait')
+          : window.matchMedia?.('(orientation: portrait)')?.matches ?? (window.innerWidth <= window.innerHeight);
+        
+        if (!hasSeenPromptForThisBook && isMobileDevice && isPortraitOrientation) {
           setShowRotatePrompt(true);
           sessionStorage.setItem(promptKey, 'true');
           // Auto-hide after 4 seconds
