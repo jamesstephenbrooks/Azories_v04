@@ -84,82 +84,101 @@ export default function BookReader() {
   });
   
   // Dedicated orientation state using proper APIs for real device detection
+  // This is a critical state that determines if we show split view vs two-page spread
   const [isLandscapeOrientation, setIsLandscapeOrientation] = useState(() => {
     if (typeof window === 'undefined') return false;
-    // PRIORITY 1: matchMedia - works correctly in DevTools and most browsers
-    // This checks CSS media query which respects viewport dimensions
-    if (window.matchMedia) {
-      return window.matchMedia('(orientation: landscape)').matches;
-    }
-    // PRIORITY 2: screen.orientation API (for real devices)
-    // Note: This may report 'landscape-primary' in headless browsers regardless of viewport
-    if (screen.orientation) {
-      return screen.orientation.type.includes('landscape');
-    }
-    // PRIORITY 3: Final fallback to dimensions
-    return window.innerWidth > window.innerHeight;
+    // Use multiple detection methods and prefer dimension-based for reliability
+    const matchMediaResult = window.matchMedia?.('(orientation: landscape)')?.matches;
+    const dimensionResult = window.innerWidth > window.innerHeight;
+    // On real devices, dimension check is most reliable after rotation completes
+    console.log('[BookReader] Initial orientation:', { matchMediaResult, dimensionResult, width: window.innerWidth, height: window.innerHeight });
+    return matchMediaResult ?? dimensionResult;
   });
+  
+  // Unique key to force re-render of page flip component on orientation change
+  const [orientationKey, setOrientationKey] = useState(0);
   
   // Listen to window resize for responsive book sizing
   useEffect(() => {
-    const handleResize = () => {
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight
+    const updateOrientation = () => {
+      const newWidth = window.innerWidth;
+      const newHeight = window.innerHeight;
+      const matchMediaLandscape = window.matchMedia?.('(orientation: landscape)')?.matches ?? false;
+      const dimensionLandscape = newWidth > newHeight;
+      
+      // Use dimension-based detection as primary (more reliable on real devices after rotation)
+      // matchMedia can sometimes lag behind the actual viewport dimensions
+      const isLandscape = dimensionLandscape;
+      
+      console.log('[BookReader] Orientation update:', { 
+        matchMediaLandscape, 
+        dimensionLandscape, 
+        width: newWidth, 
+        height: newHeight,
+        finalIsLandscape: isLandscape 
       });
-      // Also check orientation on resize (important for some browsers/environments)
-      if (window.matchMedia) {
-        const isLandscape = window.matchMedia('(orientation: landscape)').matches;
-        setIsLandscapeOrientation(isLandscape);
-      }
+      
+      setWindowSize({ width: newWidth, height: newHeight });
+      setIsLandscapeOrientation(isLandscape);
+      // Force re-render of pageflip component to recalculate dimensions
+      setOrientationKey(prev => prev + 1);
     };
     
-    // Proper orientation change handler - prioritizes matchMedia for browser compatibility
+    // Debounced resize handler to avoid rapid updates during rotation
+    let resizeTimeout;
+    const handleResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(updateOrientation, 100);
+    };
+    
+    // Orientation change handler for real mobile devices
+    // This fires when the device is physically rotated
     const handleOrientationChange = () => {
-      // PRIORITY 1: matchMedia - most reliable across browsers and DevTools
-      if (window.matchMedia) {
-        const isLandscape = window.matchMedia('(orientation: landscape)').matches;
-        setIsLandscapeOrientation(isLandscape);
-      } else if (screen.orientation) {
-        // PRIORITY 2: screen.orientation API for real devices
-        const isLandscape = screen.orientation.type.includes('landscape');
-        setIsLandscapeOrientation(isLandscape);
-      } else {
-        // PRIORITY 3: Fallback to dimensions
-        setIsLandscapeOrientation(window.innerWidth > window.innerHeight);
-      }
-      // Also update dimensions after a delay (screen dimensions update after rotation)
-      setTimeout(handleResize, 150);
+      console.log('[BookReader] orientationchange event fired');
+      // On real devices, dimensions may not be updated immediately after orientationchange
+      // Wait for the browser to complete the rotation animation
+      setTimeout(updateOrientation, 150);
+      // Also check again after a longer delay for slower devices
+      setTimeout(updateOrientation, 350);
     };
     
-    window.addEventListener('resize', handleResize);
+    // Screen orientation API handler (modern browsers)
+    const handleScreenOrientationChange = () => {
+      console.log('[BookReader] screen.orientation change event fired:', screen.orientation?.type);
+      setTimeout(updateOrientation, 150);
+      setTimeout(updateOrientation, 350);
+    };
     
-    // Listen to screen.orientation change event (works on real devices)
-    if (screen.orientation) {
-      screen.orientation.addEventListener('change', handleOrientationChange);
-    }
-    
-    // Also listen for the deprecated orientationchange event as backup
-    window.addEventListener('orientationchange', handleOrientationChange);
-    
-    // Listen to matchMedia for orientation changes (works in DevTools)
+    // matchMedia change handler (for DevTools and some browsers)
     const mediaQuery = window.matchMedia?.('(orientation: landscape)');
     const handleMediaChange = (e) => {
-      setIsLandscapeOrientation(e.matches);
-      setTimeout(handleResize, 150);
+      console.log('[BookReader] matchMedia orientation change:', e.matches);
+      updateOrientation();
     };
+    
+    // Add all event listeners
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleOrientationChange);
+    
+    if (screen.orientation) {
+      screen.orientation.addEventListener('change', handleScreenOrientationChange);
+    }
+    
     if (mediaQuery?.addEventListener) {
       mediaQuery.addEventListener('change', handleMediaChange);
     } else if (mediaQuery?.addListener) {
-      // Legacy Safari support
       mediaQuery.addListener(handleMediaChange);
     }
     
+    // Initial check after mount (in case orientation changed during hydration)
+    updateOrientation();
+    
     return () => {
+      clearTimeout(resizeTimeout);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('orientationchange', handleOrientationChange);
       if (screen.orientation) {
-        screen.orientation.removeEventListener('change', handleOrientationChange);
+        screen.orientation.removeEventListener('change', handleScreenOrientationChange);
       }
       if (mediaQuery?.removeEventListener) {
         mediaQuery.removeEventListener('change', handleMediaChange);
