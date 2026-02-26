@@ -6,7 +6,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://studio-v2-preview.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://azories-books.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 TEST_EMAIL = "artstudio3@test.com"
