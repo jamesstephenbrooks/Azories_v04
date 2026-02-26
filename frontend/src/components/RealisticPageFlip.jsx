@@ -127,8 +127,8 @@ const Page = forwardRef(({ pageNumber, children, isLeft, isCover, isBackCover },
           <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-black/10 to-transparent pointer-events-none z-10" />
         )}
         
-        {/* Content */}
-        <div className="relative h-full w-full p-6 md:p-10">
+        {/* Content - reduced bottom padding to fit more text */}
+        <div className="relative h-full w-full p-4 md:p-6 pb-8">
           {children}
         </div>
         
