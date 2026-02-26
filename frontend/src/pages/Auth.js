@@ -249,6 +249,23 @@ export default function Auth() {
                 </div>
               </div>
               
+              {/* Remember Me checkbox - only show for login */}
+              {isLogin && (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="rememberMe"
+                    checked={formData.rememberMe}
+                    onChange={(e) => setFormData({ ...formData, rememberMe: e.target.checked })}
+                    className="w-4 h-4 rounded border-2 text-primary focus:ring-primary"
+                    data-testid="remember-me-checkbox"
+                  />
+                  <Label htmlFor="rememberMe" className="font-ui text-sm text-muted-foreground cursor-pointer">
+                    Keep me signed in for 30 days
+                  </Label>
+                </div>
+              )}
+              
               <Button 
                 type="submit" 
                 className="w-full rounded-full h-12 font-ui text-lg"
