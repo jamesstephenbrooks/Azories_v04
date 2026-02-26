@@ -371,7 +371,7 @@ export default function Dashboard() {
       return <span className="text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-500">Published</span>;
     }
     if (book.publish_status === 'pending_review') {
-      return <span className="text-xs px-2 py-1 rounded-full bg-amber-500/20 text-amber-500">Awaiting Approval</span>;
+      return <span className="text-xs px-2 py-1 rounded-full bg-amber-500/20 text-amber-500">Coming Soon ✨</span>;
     }
     if (book.publish_status === 'rejected') {
       return <span className="text-xs px-2 py-1 rounded-full bg-red-500/20 text-red-500">Rejected</span>;
