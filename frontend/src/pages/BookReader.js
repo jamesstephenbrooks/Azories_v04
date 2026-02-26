@@ -461,8 +461,13 @@ export default function BookReader() {
 
   const toggleFullscreen = () => {
     // Check if we're on iPad/mobile where native fullscreen might not work
-    const isIpad = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
-                   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    // Use defensive checks for navigator properties (some browsers may not support them)
+    const userAgent = typeof navigator !== 'undefined' ? navigator.userAgent || '' : '';
+    const platform = typeof navigator !== 'undefined' ? navigator.platform || '' : '';
+    const maxTouchPoints = typeof navigator !== 'undefined' ? navigator.maxTouchPoints || 0 : 0;
+    
+    const isIpad = /iPad|iPhone|iPod/.test(userAgent) || 
+                   (platform === 'MacIntel' && maxTouchPoints > 1);
     
     if (isIpad) {
       // Use CSS-based fullscreen for iPad
