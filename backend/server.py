@@ -59,7 +59,9 @@ try:
         generate_thumbnails,
         upload_image_with_thumbnails,
         get_available_models as get_fal_models,
-        is_fal_configured
+        is_fal_configured,
+        validate_fal_key_on_startup,
+        get_fal_key_status
     )
     FAL_AVAILABLE = is_fal_configured()
     if FAL_AVAILABLE:
@@ -72,6 +74,8 @@ except ImportError as e:
     logging.warning(f"fal.ai service not available: {e}")
     FAL_AVAILABLE = False
     is_fal_configured = lambda: False
+    validate_fal_key_on_startup = None
+    get_fal_key_status = lambda: {"valid": None, "error_message": "fal_service not loaded"}
 
 # Import Cloudinary service for permanent video storage
 try:
