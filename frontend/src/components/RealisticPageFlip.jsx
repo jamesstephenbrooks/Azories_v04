@@ -481,6 +481,25 @@ const RealisticPageFlip = forwardRef(({
   // Build the page mapping once so we can track which flipbook page = which content page
   // This map tracks: flipbookPageIndex -> contentPageIndex (from pages array)
   const pageMapping = useRef([]);
+  
+  // Preload images for upcoming pages when current page changes
+  useEffect(() => {
+    if (pages.length === 0) return;
+    
+    // Calculate which content pages to preload (current + next 2-3 pages)
+    const contentPageIndex = pageMapping.current[currentPage] ?? -1;
+    
+    // Preload current page and next 3 content pages
+    for (let i = 0; i <= 3; i++) {
+      const pageIdx = contentPageIndex + i;
+      if (pageIdx >= 0 && pageIdx < pages.length) {
+        const page = pages[pageIdx];
+        if (page?.image_url) {
+          preloadImage(page.image_url);
+        }
+      }
+    }
+  }, [currentPage, pages]);
 
   // Expose methods via ref
   useImperativeHandle(ref, () => ({
