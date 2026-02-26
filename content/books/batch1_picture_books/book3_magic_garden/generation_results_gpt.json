@@ -1,0 +1,48 @@
+{
+  "book_id": "book3_magic_garden",
+  "title": "The Magic Garden",
+  "generated_at": "2026-02-26T08:04:14.244861",
+  "model": "gpt-image-1",
+  "results": [
+    {
+      "id": "page_01",
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book3_magic_garden/pages/page_01.png"
+    },
+    {
+      "id": "page_02",
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book3_magic_garden/pages/page_02.png"
+    },
+    {
+      "id": "page_03",
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book3_magic_garden/pages/page_03.png"
+    },
+    {
+      "id": "page_04",
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book3_magic_garden/pages/page_04.png"
+    },
+    {
+      "id": "page_05",
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book3_magic_garden/pages/page_05.png"
+    },
+    {
+      "id": "page_06",
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book3_magic_garden/pages/page_06.png"
+    },
+    {
+      "id": "page_07",
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book3_magic_garden/pages/page_07.png"
+    },
+    {
+      "id": "page_08",
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book3_magic_garden/pages/page_08.png"
+    }
+  ]
+}
