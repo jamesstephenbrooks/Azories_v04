@@ -107,6 +107,11 @@ export default function BookReader() {
         width: window.innerWidth,
         height: window.innerHeight
       });
+      // Also check orientation on resize (important for some browsers/environments)
+      if (window.matchMedia) {
+        const isLandscape = window.matchMedia('(orientation: landscape)').matches;
+        setIsLandscapeOrientation(isLandscape);
+      }
     };
     
     // Proper orientation change handler - prioritizes matchMedia for browser compatibility
