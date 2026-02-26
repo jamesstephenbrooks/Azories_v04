@@ -5030,27 +5030,69 @@ async def get_full_book(book_id: str, current_user: dict = Depends(get_optional_
             "message": "Sign in to read this book"
         }
     
+    # PRIORITY 1: Check for chapters in the separate chapters collection (BookEditor-created books)
     chapters = await db.chapters.find({"book_id": book_id}, {"_id": 0}).sort("order", 1).to_list(100)
     
     full_chapters = []
-    for chapter in chapters:
-        pages = await db.pages.find({"chapter_id": chapter["id"]}, {"_id": 0}).sort("order", 1).to_list(100)
-        for page in pages:
-            page.setdefault("image_url_2", "")
-            page.setdefault("image_url_3", "")
-            page.setdefault("image_url_4", "")
-            page.setdefault("video_url", "")
-            page.setdefault("use_video", False)
-            page.setdefault("layout_type", "single")
-            page.setdefault("image_position_x", 50)
-            page.setdefault("image_position_y", 50)
-            page.setdefault("image_fit", "cover")
-            page.setdefault("font_family", "default")
-            page.setdefault("font_size", "medium")
-            page.setdefault("text_align", "left")
+    
+    if chapters and len(chapters) > 0:
+        # Use chapters from the separate collection
+        for chapter in chapters:
+            pages = await db.pages.find({"chapter_id": chapter["id"]}, {"_id": 0}).sort("order", 1).to_list(100)
+            for page in pages:
+                page.setdefault("image_url_2", "")
+                page.setdefault("image_url_3", "")
+                page.setdefault("image_url_4", "")
+                page.setdefault("video_url", "")
+                page.setdefault("use_video", False)
+                page.setdefault("layout_type", "single")
+                page.setdefault("image_position_x", 50)
+                page.setdefault("image_position_y", 50)
+                page.setdefault("image_fit", "cover")
+                page.setdefault("font_family", "default")
+                page.setdefault("font_size", "medium")
+                page.setdefault("text_align", "left")
+            full_chapters.append({
+                **chapter,
+                "pages": pages
+            })
+    
+    # PRIORITY 2: Check for embedded pages array in the book document (generated library books)
+    elif book.get("pages") and len(book.get("pages", [])) > 0:
+        # Convert embedded pages to chapter format for frontend compatibility
+        embedded_pages = book.get("pages", [])
+        
+        # Normalize each page to have all expected fields
+        normalized_pages = []
+        for page in embedded_pages:
+            normalized_page = {
+                "id": page.get("id", f"page-{page.get('page_number', 0)}"),
+                "chapter_id": "embedded-chapter",
+                "order": page.get("page_number", 0),
+                "text": page.get("text", ""),
+                "image_url": page.get("image_url", ""),
+                "image_url_2": page.get("image_url_2", ""),
+                "image_url_3": page.get("image_url_3", ""),
+                "image_url_4": page.get("image_url_4", ""),
+                "video_url": page.get("video_url", ""),
+                "use_video": page.get("use_video", False),
+                "layout_type": page.get("layout", "single"),
+                "image_position_x": page.get("image_position_x", 50),
+                "image_position_y": page.get("image_position_y", 50),
+                "image_fit": page.get("image_fit", "cover"),
+                "font_family": page.get("font_family", "default"),
+                "font_size": page.get("font_size", "medium"),
+                "text_align": page.get("text_align", "left"),
+            }
+            normalized_pages.append(normalized_page)
+        
+        # Create a virtual chapter containing all embedded pages
         full_chapters.append({
-            **chapter,
-            "pages": pages
+            "id": "embedded-chapter",
+            "book_id": book_id,
+            "title": book.get("title", "Story"),
+            "order": 0,
+            "pages": normalized_pages
         })
     
     return {
