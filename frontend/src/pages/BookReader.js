@@ -262,12 +262,18 @@ export default function BookReader() {
     
     // Desktop - Large immersive experience (fill 80% of screen height)
     if (isLandscape) {
-      const bookHeight = vh * 0.80;  // 80% of viewport height
-      const bookWidth = Math.min(bookHeight * 0.72, vw * 0.40);  // Maintain aspect ratio
+      // Desktop landscape: book should be very large
+      const maxH = vh * 0.82;  // 82% of viewport height
+      const maxW = vw * 0.38;  // 38% of viewport width per page (two pages = 76%)
+      const bookHeight = Math.max(maxH, 600);
+      const bookWidth = Math.min(maxW, bookHeight * 0.72);
       return { width: bookWidth, height: bookHeight };
     } else {
-      const bookHeight = vh * 0.80;  // 80% of viewport height
-      const bookWidth = Math.min(bookHeight * 0.75, vw * 0.45);
+      // Desktop portrait
+      const maxH = vh * 0.80;
+      const maxW = vw * 0.42;
+      const bookHeight = Math.max(maxH, 550);
+      const bookWidth = Math.min(maxW, bookHeight * 0.75);
       return { width: bookWidth, height: bookHeight };
     }
   };
