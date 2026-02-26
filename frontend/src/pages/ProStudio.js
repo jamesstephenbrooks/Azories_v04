@@ -2870,39 +2870,39 @@ export default function ProStudio() {
           </TabsList>
 
           {/* Characters Tab */}
-          <TabsContent value="characters" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <TabsContent value="characters" className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               {/* Create Character Panel - UNIFIED FORM */}
-              <div className="bg-black/40 rounded-xl border border-purple-500/20 p-6">
-                <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+              <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4 sm:p-6">
+                <h2 className="text-lg sm:text-xl font-bold text-white mb-2 flex items-center gap-2">
                   <FiPlus className="text-purple-400" /> Create Character
                 </h2>
-                <p className="text-gray-400 text-sm mb-4">
+                <p className="text-gray-400 text-xs sm:text-sm mb-4">
                   Describe your character AND/OR upload reference images to create a consistent character.
                 </p>
                 
-                {/* Character Name */}
+                {/* Character Name - Mobile optimized: min 48px height, 16px font */}
                 <Input
                   placeholder="Character name (e.g., Luna, Captain Rex)"
                   value={characterName}
                   onChange={(e) => setCharacterName(e.target.value)}
-                  className="bg-gray-800/50 border-gray-700 text-white mb-4"
+                  className="bg-gray-800/50 border-gray-700 text-white mb-4 min-h-[48px] text-base"
                   data-testid="character-name-input"
                 />
 
-                {/* Style & Genre Selection */}
-                <div className="grid grid-cols-2 gap-3 mb-4">
+                {/* Style & Genre Selection - Stacked on mobile */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                   <div>
                     <label className="text-gray-400 text-xs mb-1 block">Visual Style</label>
                     <Select value={characterStyle} onValueChange={setCharacterStyle}>
-                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
+                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white min-h-[48px] text-base">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-gray-800 border-gray-700 max-h-60">
                         {characterStyles.map((style) => (
-                          <SelectItem key={style.id} value={style.id} className="text-white">
+                          <SelectItem key={style.id} value={style.id} className="text-white min-h-[44px]">
                             <span className="font-medium">{style.name}</span>
-                            <span className="text-gray-400 text-xs ml-2">{style.description}</span>
+                            <span className="text-gray-400 text-xs ml-2 hidden sm:inline">{style.description}</span>
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -2911,12 +2911,12 @@ export default function ProStudio() {
                   <div>
                     <label className="text-gray-400 text-xs mb-1 block">Genre</label>
                     <Select value={characterGenre} onValueChange={setCharacterGenre}>
-                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
+                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white min-h-[48px] text-base">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-gray-800 border-gray-700 max-h-60">
                         {characterGenres.map((genre) => (
-                          <SelectItem key={genre.id} value={genre.id} className="text-white">
+                          <SelectItem key={genre.id} value={genre.id} className="text-white min-h-[44px]">
                             <span className="font-medium">{genre.name}</span>
                           </SelectItem>
                         ))}
