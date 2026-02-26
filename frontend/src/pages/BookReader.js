@@ -691,9 +691,9 @@ export default function BookReader() {
 
   return (
     <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#1a1a2e]' : 'bg-[#f8f5f0]'}`}>
-      {/* Header - Compact on mobile */}
+      {/* Header - Ultra compact on mobile */}
       <div className="fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 py-2 sm:py-3 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 py-1.5 sm:py-3 flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
             <Button
               variant="ghost"
@@ -705,7 +705,7 @@ export default function BookReader() {
             </Button>
             <div className="min-w-0">
               <h1 className="font-heading font-bold text-sm sm:text-lg line-clamp-1 truncate">{book?.title}</h1>
-              <p className="font-ui text-xs text-muted-foreground truncate">
+              <p className="font-ui text-[10px] sm:text-xs text-muted-foreground truncate">
                 {isCover ? 'Cover' : currentPage === -2 ? 'Back' : currentPageData?.isChapterTitle ? currentPageData?.chapterTitle : `Page ${currentPage + 1}`}
               </p>
             </div>
