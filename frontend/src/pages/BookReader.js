@@ -951,14 +951,89 @@ export default function BookReader() {
         </motion.div>
       )}
       
-      {/* Book Display - with swipe support */}
+      {/* LANDSCAPE TAP ZONES - Must be OUTSIDE book-container to avoid swipe handler interference */}
+      {isMobileLandscape && !isCover && currentPage >= 0 && (
+        <>
+          {/* Left Tap Zone (Previous) */}
+          <div
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (currentPage > 0) {
+                setCurrentPage(currentPage - 1);
+                saveReadingProgress();
+              } else if (currentPage === 0) {
+                setCurrentPage(-1);
+              }
+            }}
+            onClick={() => {
+              if (currentPage > 0) {
+                setCurrentPage(currentPage - 1);
+                saveReadingProgress();
+              } else if (currentPage === 0) {
+                setCurrentPage(-1);
+              }
+            }}
+            data-testid="landscape-prev-btn"
+            style={{
+              position: 'fixed',
+              left: 0,
+              top: 0,
+              bottom: 0,
+              width: '80px',
+              zIndex: 99999,
+              pointerEvents: 'auto',
+              touchAction: 'manipulation',
+              WebkitTapHighlightColor: 'transparent',
+              // DEBUG: Red border
+              outline: '3px solid red',
+              background: 'rgba(255,0,0,0.15)'
+            }}
+          />
+          
+          {/* Right Tap Zone (Next) */}
+          <div
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (currentPage < allPages.length - 1) {
+                setCurrentPage(currentPage + 1);
+                saveReadingProgress();
+              }
+            }}
+            onClick={() => {
+              if (currentPage < allPages.length - 1) {
+                setCurrentPage(currentPage + 1);
+                saveReadingProgress();
+              }
+            }}
+            data-testid="landscape-next-btn"
+            style={{
+              position: 'fixed',
+              right: 0,
+              top: 0,
+              bottom: 0,
+              width: '80px',
+              zIndex: 99999,
+              pointerEvents: 'auto',
+              touchAction: 'manipulation',
+              WebkitTapHighlightColor: 'transparent',
+              // DEBUG: Blue border
+              outline: '3px solid blue',
+              background: 'rgba(0,0,255,0.15)'
+            }}
+          />
+        </>
+      )}
+      
+      {/* Book Display - with swipe support (disabled in landscape to allow tap zones) */}
       <div 
         id="book-container"
         className={`${isMobileLandscape ? 'pt-8 pb-2' : 'pt-12 sm:pt-20 pb-24 sm:pb-48'} px-1 sm:px-4 flex items-center justify-center min-h-screen transition-all duration-300 ${
           isFullscreen ? 'bg-black/95 fixed inset-0 z-50 pt-4 sm:pt-8 pb-4 sm:pb-8' : ''
         }`}
-        {...swipeHandlers}
-        style={{ touchAction: 'pan-y pinch-zoom' }}
+        {...(isMobileLandscape ? {} : swipeHandlers)}
+        style={{ touchAction: isMobileLandscape ? 'auto' : 'pan-y pinch-zoom' }}
         data-testid="book-container"
       >
         {/* Swipe hint indicators */}
