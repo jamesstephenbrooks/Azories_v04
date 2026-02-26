@@ -1133,9 +1133,10 @@ export default function BookReader() {
                 </div>
               </div>
             ) : isMobileLandscape && !isCover && currentPage >= 0 ? (
-              /* Mobile Landscape Two-Page Spread - Full screen with edge navigation */
+              /* Mobile Landscape Two-Page Spread - Full screen with tap navigation */
               <div className="relative w-full h-screen">
-                {/* Edge Navigation - Left Arrow (Previous) */}
+                {/* Invisible Tap Zones for Navigation */}
+                {/* Left tap zone - Previous */}
                 <button
                   onClick={() => {
                     if (currentPage > 0) {
@@ -1146,13 +1147,15 @@ export default function BookReader() {
                     }
                   }}
                   disabled={currentPage <= -1}
-                  className="fixed left-1 top-1/2 -translate-y-1/2 z-50 w-10 h-20 flex items-center justify-center bg-black/40 hover:bg-black/60 disabled:opacity-30 rounded-r-lg transition-all"
+                  className="fixed left-0 top-0 bottom-0 w-16 z-50 flex items-center justify-start pl-1 opacity-0 hover:opacity-100 active:opacity-100 transition-opacity disabled:pointer-events-none"
                   data-testid="landscape-prev-btn"
                 >
-                  <FiChevronLeft className="w-6 h-6 text-white" />
+                  <div className="w-8 h-12 flex items-center justify-center bg-black/30 rounded-r-full">
+                    <FiChevronLeft className="w-5 h-5 text-white" />
+                  </div>
                 </button>
                 
-                {/* Edge Navigation - Right Arrow (Next) */}
+                {/* Right tap zone - Next */}
                 <button
                   onClick={() => {
                     if (currentPage < allPages.length - 1) {
@@ -1161,22 +1164,24 @@ export default function BookReader() {
                     }
                   }}
                   disabled={currentPage >= allPages.length - 1}
-                  className="fixed right-1 top-1/2 -translate-y-1/2 z-50 w-10 h-20 flex items-center justify-center bg-black/40 hover:bg-black/60 disabled:opacity-30 rounded-l-lg transition-all"
+                  className="fixed right-0 top-0 bottom-0 w-16 z-50 flex items-center justify-end pr-1 opacity-0 hover:opacity-100 active:opacity-100 transition-opacity disabled:pointer-events-none"
                   data-testid="landscape-next-btn"
                 >
-                  <FiChevronRight className="w-6 h-6 text-white" />
+                  <div className="w-8 h-12 flex items-center justify-center bg-black/30 rounded-l-full">
+                    <FiChevronRight className="w-5 h-5 text-white" />
+                  </div>
                 </button>
                 
                 {/* Two-Page Spread - Takes almost full screen */}
                 <div 
-                  className="flex w-full gap-1 px-12 pt-10 pb-2"
+                  className="flex w-full gap-0.5 px-2 pt-9 pb-1"
                   style={{ height: '100vh' }}
                 >
                   {/* Left Page: Illustration */}
                   <div 
-                    className="relative flex-1 rounded-l-lg overflow-hidden bg-[#fdfbf7] shadow-xl"
+                    className="relative flex-1 rounded-l-lg overflow-hidden bg-[#fdfbf7]"
                     style={{ 
-                      boxShadow: 'inset -4px 0 20px -4px rgba(0,0,0,0.15), 4px 4px 20px rgba(0,0,0,0.2)'
+                      boxShadow: '4px 0 15px -5px rgba(0,0,0,0.2)'
                     }}
                   >
                     {currentPageData?.image_url ? (
@@ -1189,42 +1194,60 @@ export default function BookReader() {
                         }}
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-muted/20">
-                        <span className="text-muted-foreground text-sm">No illustration</span>
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-100 to-blue-50">
+                        <span className="text-purple-300 text-sm">No illustration</span>
                       </div>
                     )}
                   </div>
                   
-                  {/* Right Page: Text */}
+                  {/* Right Page: Text with vertical centering */}
                   <div 
-                    className="flex-1 bg-[#fdfbf7] dark:bg-[#2a2a30] rounded-r-lg shadow-xl overflow-hidden flex flex-col"
+                    className="flex-1 bg-[#fdfbf7] dark:bg-[#2a2a30] rounded-r-lg overflow-hidden flex flex-col"
                     style={{ 
-                      boxShadow: 'inset 4px 0 20px -4px rgba(0,0,0,0.1), 4px 4px 20px rgba(0,0,0,0.2)'
+                      boxShadow: '-4px 0 15px -5px rgba(0,0,0,0.1)'
                     }}
                   >
-                    {/* Chapter header if present */}
-                    {currentPageData?.chapterTitle && (
-                      <div className="px-3 pt-2 pb-1 border-b border-muted/30">
-                        <p className="text-[9px] uppercase tracking-wider text-muted-foreground">
-                          Chapter {currentPageData.chapterNumber || ''}
-                        </p>
-                        <h3 className="font-heading text-xs font-bold text-foreground">
-                          {currentPageData.chapterTitle}
-                        </h3>
-                      </div>
-                    )}
+                    {/* Book/Chapter header - subtle */}
+                    <div className="px-4 pt-2 pb-1 flex items-center justify-between">
+                      <span className="text-[9px] uppercase tracking-widest text-muted-foreground/60 font-medium">
+                        {currentPageData?.chapterTitle || book?.title}
+                      </span>
+                      <span className="text-[9px] text-muted-foreground/50">
+                        {currentPage + 1}
+                      </span>
+                    </div>
                     
-                    {/* Text content - fills available space */}
-                    <div className="flex-1 overflow-y-auto px-3 py-2">
+                    {/* Text content - vertically centered with larger font */}
+                    <div className="flex-1 flex flex-col justify-center px-5 py-2">
                       {(currentPageData?.text_content || currentPageData?.text || currentPageData?.content) ? (
-                        <p className="font-reader text-xs leading-relaxed text-foreground/90 whitespace-pre-wrap">
+                        <p className="font-reader text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap text-center">
                           {currentPageData.text_content || currentPageData.text || currentPageData.content}
                         </p>
+                      ) : currentPageData?.isChapterTitle ? (
+                        <div className="text-center">
+                          <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
+                            Chapter {currentPageData.chapterNumber || ''}
+                          </p>
+                          <h3 className="font-heading text-base font-bold text-foreground">
+                            {currentPageData.chapterTitle}
+                          </h3>
+                        </div>
                       ) : (
-                        <p className="text-muted-foreground text-xs italic text-center py-4">
-                          Tap edge arrows to navigate
+                        <p className="text-muted-foreground/60 text-xs italic text-center">
+                          Tap edges to navigate
                         </p>
                       )}
+                    </div>
+                    
+                    {/* Decorative footer element */}
+                    <div className="px-4 pb-2 flex justify-center">
+                      <div className="flex items-center gap-2 text-muted-foreground/30">
+                        <div className="w-8 h-px bg-current" />
+                        <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                        </svg>
+                        <div className="w-8 h-px bg-current" />
+                      </div>
                     </div>
                   </div>
                 </div>
