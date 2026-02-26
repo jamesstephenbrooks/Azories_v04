@@ -883,9 +883,9 @@ export default function BookReader() {
       
       {/* Bottom Controls */}
       <div className={`fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-xl border-t border-border z-40 transition-transform duration-300 ${hideControls ? 'translate-y-full' : ''}`}>
-        <div className="max-w-4xl mx-auto px-2 sm:px-4 py-3 sm:py-4">
-          {/* Navigation - Larger touch targets on mobile */}
-          <div className="flex items-center justify-center gap-3 sm:gap-4 mb-2 sm:mb-4">
+        <div className={`max-w-4xl mx-auto px-2 sm:px-4 ${isMobileLandscape ? 'py-1.5' : 'py-3 sm:py-4'}`}>
+          {/* Navigation - Larger touch targets on mobile, compact in landscape */}
+          <div className={`flex items-center justify-center ${isMobileLandscape ? 'gap-2' : 'gap-3 sm:gap-4'} ${isMobileLandscape ? '' : 'mb-2 sm:mb-4'}`}>
             <Button
               variant="outline"
               size="default"
@@ -895,9 +895,9 @@ export default function BookReader() {
                 }
               }}
               disabled={currentPage <= -1 || isFlipping}
-              className="rounded-full min-w-[44px] min-h-[44px] px-4 sm:px-6 text-sm sm:text-base"
+              className={`rounded-full ${isMobileLandscape ? 'min-w-[36px] min-h-[36px] px-3' : 'min-w-[44px] min-h-[44px] px-4 sm:px-6'} text-sm sm:text-base`}
             >
-              <FiChevronLeft className="w-5 h-5 sm:w-5 sm:h-5 sm:mr-1" />
+              <FiChevronLeft className={isMobileLandscape ? 'w-4 h-4' : 'w-5 h-5 sm:w-5 sm:h-5 sm:mr-1'} />
               <span className="hidden sm:inline">Previous</span>
             </Button>
             
@@ -907,10 +907,10 @@ export default function BookReader() {
                 variant="default"
                 size="default"
                 onClick={startListening}
-                className="rounded-full min-h-[44px] px-5 sm:px-8 bg-purple-600 hover:bg-purple-500 text-sm sm:text-base"
+                className={`rounded-full ${isMobileLandscape ? 'min-h-[36px] px-4' : 'min-h-[44px] px-5 sm:px-8'} bg-purple-600 hover:bg-purple-500 text-sm sm:text-base`}
                 data-testid="cover-start-listening-btn"
               >
-                <FiPlay className="w-5 h-5 sm:w-5 sm:h-5 mr-2" />
+                <FiPlay className={isMobileLandscape ? 'w-4 h-4 mr-1' : 'w-5 h-5 sm:w-5 sm:h-5 mr-2'} />
                 Listen
               </Button>
             ) : (
@@ -919,15 +919,15 @@ export default function BookReader() {
                 size="default"
                 onClick={isPlaying || autoRead ? handleAutoReadToggle : toggleAudio}
                 disabled={audioLoading}
-                className="rounded-full min-h-[44px] px-5 sm:px-8 text-sm sm:text-base"
+                className={`rounded-full ${isMobileLandscape ? 'min-h-[36px] px-4' : 'min-h-[44px] px-5 sm:px-8'} text-sm sm:text-base`}
                 data-testid="read-aloud-btn"
               >
                 {audioLoading ? (
                   <><div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" /> Loading</>
                 ) : (isPlaying || autoRead) ? (
-                  <><FiPause className="w-5 h-5 mr-2" /> Pause</>
+                  <><FiPause className={isMobileLandscape ? 'w-4 h-4 mr-1' : 'w-5 h-5 mr-2'} /> Pause</>
                 ) : (
-                  <><FiPlay className="w-5 h-5 mr-2" /> Aloud</>
+                  <><FiPlay className={isMobileLandscape ? 'w-4 h-4 mr-1' : 'w-5 h-5 mr-2'} /> Aloud</>
                 )}
               </Button>
             )}
@@ -941,10 +941,10 @@ export default function BookReader() {
                 }
               }}
               disabled={currentPage === -2 || isFlipping}
-              className="rounded-full min-w-[44px] min-h-[44px] px-4 sm:px-6 text-sm sm:text-base"
+              className={`rounded-full ${isMobileLandscape ? 'min-w-[36px] min-h-[36px] px-3' : 'min-w-[44px] min-h-[44px] px-4 sm:px-6'} text-sm sm:text-base`}
             >
               <span className="hidden sm:inline">Next</span>
-              <FiChevronRight className="w-5 h-5 sm:w-5 sm:h-5 sm:ml-1" />
+              <FiChevronRight className={isMobileLandscape ? 'w-4 h-4' : 'w-5 h-5 sm:w-5 sm:h-5 sm:ml-1'} />
             </Button>
           </div>
           
