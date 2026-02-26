@@ -2989,42 +2989,42 @@ export default function ProStudio() {
                   </Button>
                 </div>
                 
-                {/* Physical Traits (Collapsible) */}
+                {/* Physical Traits (Collapsible) - closed by default */}
                 <details className="group mb-3">
-                  <summary className="text-purple-400 text-sm cursor-pointer hover:text-purple-300">
+                  <summary className="text-purple-400 text-sm cursor-pointer hover:text-purple-300 min-h-[44px] flex items-center">
                     + Add Physical Details (optional)
                   </summary>
-                  <div className="grid grid-cols-2 gap-2 mt-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
                     <Input
                       placeholder="Age (e.g., young adult)"
                       value={physicalTraits.age}
                       onChange={(e) => setPhysicalTraits(p => ({...p, age: e.target.value}))}
-                      className="bg-gray-800/50 border-gray-700 text-white text-sm"
+                      className="bg-gray-800/50 border-gray-700 text-white min-h-[48px] text-base"
                     />
                     <Input
                       placeholder="Gender"
                       value={physicalTraits.gender}
                       onChange={(e) => setPhysicalTraits(p => ({...p, gender: e.target.value}))}
-                      className="bg-gray-800/50 border-gray-700 text-white text-sm"
+                      className="bg-gray-800/50 border-gray-700 text-white min-h-[48px] text-base"
                     />
                     <Input
                       placeholder="Hair Color"
                       value={physicalTraits.hairColor}
                       onChange={(e) => setPhysicalTraits(p => ({...p, hairColor: e.target.value}))}
-                      className="bg-gray-800/50 border-gray-700 text-white text-sm"
+                      className="bg-gray-800/50 border-gray-700 text-white min-h-[48px] text-base"
                     />
                     <Input
                       placeholder="Eye Color"
                       value={physicalTraits.eyeColor}
                       onChange={(e) => setPhysicalTraits(p => ({...p, eyeColor: e.target.value}))}
-                      className="bg-gray-800/50 border-gray-700 text-white text-sm"
+                      className="bg-gray-800/50 border-gray-700 text-white min-h-[48px] text-base"
                     />
                   </div>
                 </details>
 
                 {/* Special Features & Personality */}
                 <details className="group mb-4">
-                  <summary className="text-purple-400 text-sm cursor-pointer hover:text-purple-300">
+                  <summary className="text-purple-400 text-sm cursor-pointer hover:text-purple-300 min-h-[44px] flex items-center">
                     + Add Special Features & Personality (optional)
                   </summary>
                   <div className="space-y-2 mt-3">
@@ -3032,24 +3032,25 @@ export default function ProStudio() {
                       placeholder="Special features (e.g., scar on cheek, glowing tattoos)"
                       value={specialFeatures}
                       onChange={(e) => setSpecialFeatures(e.target.value)}
-                      className="bg-gray-800/50 border-gray-700 text-white text-sm"
+                      className="bg-gray-800/50 border-gray-700 text-white min-h-[48px] text-base"
                     />
                     <Input
                       placeholder="Personality (e.g., brave and curious)"
                       value={personality}
                       onChange={(e) => setPersonality(e.target.value)}
-                      className="bg-gray-800/50 border-gray-700 text-white text-sm"
+                      className="bg-gray-800/50 border-gray-700 text-white min-h-[48px] text-base"
                     />
                   </div>
                 </details>
 
+                {/* Create Button - Hidden on mobile (floating button used instead) */}
                 <Button 
                   onClick={() => {
                     if (!checkCreditsOrRedirect(1, 'Create Character')) return;
                     createCharacter();
                   }}
                   disabled={isCreatingCharacter || !characterName.trim() || (!characterDescription.trim() && characterImages.length < 1)}
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 min-h-[48px] text-base hidden sm:flex"
                   data-testid="create-character-btn"
                 >
                   {isCreatingCharacter ? 'Creating...' : 'Create Character'}
