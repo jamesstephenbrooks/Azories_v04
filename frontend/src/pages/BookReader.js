@@ -960,8 +960,8 @@ export default function BookReader() {
           <div className={`relative h-full ${isFullscreen ? 'flex items-center justify-center' : ''}`}>
             
             {/* Overlay buttons positioned over the cover - these work because they're outside react-pageflip */}
-            {/* Cover is displayed on RIGHT side only (single page), so position buttons there */}
-            {isCover && (
+            {/* Only show overlay buttons for desktop/tablet covers - mobile has inline buttons */}
+            {isCover && !isMobilePortrait && !isMobileLandscape && (
               <div 
                 className="absolute z-[70] flex flex-col items-center gap-2"
                 style={{
@@ -993,7 +993,57 @@ export default function BookReader() {
               </div>
             )}
             
-            {/* Mobile Portrait Split View - Show illustration + text together */}
+            {/* Mobile Cover - Pure CSS for both portrait and landscape */}
+            {isCover && (isMobilePortrait || isMobileLandscape) ? (
+              <div 
+                className={`flex ${isMobileLandscape ? 'flex-row gap-4 px-4' : 'flex-col'} items-center justify-center w-full mx-auto`}
+                style={{ height: isMobileLandscape ? 'calc(100vh - 100px)' : 'calc(100vh - 160px)' }}
+              >
+                {/* Cover Image */}
+                <div 
+                  className={`relative ${isMobileLandscape ? 'h-full w-auto aspect-[3/4]' : 'w-full max-w-xs aspect-[3/4]'} rounded-xl overflow-hidden shadow-2xl`}
+                  style={{
+                    background: `linear-gradient(135deg, ${book?.cover_gradient_start || '#667eea'} 0%, ${book?.cover_gradient_end || '#764ba2'} 100%)`,
+                    maxHeight: isMobileLandscape ? '100%' : '60vh'
+                  }}
+                >
+                  {book?.cover_image && (
+                    <img 
+                      src={book.cover_image}
+                      alt={book.title}
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-4">
+                    <h1 className={`font-heading ${isMobileLandscape ? 'text-xl' : 'text-2xl'} font-bold text-center mb-2 drop-shadow-lg`}>
+                      {book?.title}
+                    </h1>
+                    <p className="text-sm opacity-80 drop-shadow">{book?.author_name}</p>
+                  </div>
+                </div>
+                
+                {/* Buttons - below cover in portrait, beside in landscape */}
+                <div className={`flex ${isMobileLandscape ? 'flex-col' : 'flex-row'} gap-3 ${isMobileLandscape ? '' : 'mt-6'}`}>
+                  <button
+                    onClick={startReading}
+                    className={`${isMobileLandscape ? 'px-6 py-3' : 'px-5 py-2.5'} rounded-full bg-white/90 hover:bg-white text-gray-800 font-medium flex items-center gap-2 transition-colors shadow-lg text-sm`}
+                    data-testid="cover-read-overlay-btn"
+                  >
+                    <FiBook className="w-4 h-4" />
+                    Read
+                  </button>
+                  <button
+                    onClick={startListening}
+                    className={`${isMobileLandscape ? 'px-6 py-3' : 'px-5 py-2.5'} rounded-full bg-purple-600 hover:bg-purple-500 text-white font-medium flex items-center gap-2 transition-colors shadow-lg text-sm`}
+                    data-testid="cover-listen-overlay-btn"
+                  >
+                    <FiPlay className="w-4 h-4" />
+                    Listen
+                  </button>
+                </div>
+              </div>
+            ) :
             {isMobilePortrait && !isCover && currentPage >= 0 ? (
               <div className="flex flex-col w-full max-w-md mx-auto" style={{ height: `calc(100vh - 140px)` }}>
                 {/* Top: Illustration - 55% of available height */}
