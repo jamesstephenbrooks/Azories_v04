@@ -2354,31 +2354,51 @@ export default function ArtStudioExpert() {
                 ) : (
                   <div className="grid grid-cols-4 gap-3">
                     {(galleryImages || []).filter(g => g.type !== 'animation').map((item) => (
-                      <button
+                      <div
                         key={item._id || item.id}
-                        onClick={() => {
-                          if (galleryPickerCallback) {
-                            // Handle different URL field names (image_url for galleries, url for starter library)
-                            const imageUrl = item.image_url || item.url;
-                            galleryPickerCallback(imageUrl);
-                          }
-                        }}
                         className="relative rounded-lg overflow-hidden border-2 border-transparent hover:border-yellow-500 transition-all group aspect-square"
                       >
                         <img 
                           src={item.image_url || item.url} 
                           alt={item.name || item.category || 'Gallery image'} 
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover cursor-pointer"
+                          onClick={() => setExpandedImage(item)}
                         />
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
-                          <FiCheck className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors pointer-events-none" />
+                        {/* Action buttons overlay */}
+                        <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setExpandedImage(item);
+                            }}
+                            className="p-1.5 rounded-md bg-black/60 hover:bg-black/80 text-white/80 hover:text-white transition-colors"
+                            title="Expand image"
+                          >
+                            <FiMaximize2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                        {/* Select button at bottom */}
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2 pt-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={() => {
+                              if (galleryPickerCallback) {
+                                const imageUrl = item.image_url || item.url;
+                                galleryPickerCallback(imageUrl);
+                              }
+                            }}
+                            className="w-full py-1.5 rounded-md bg-yellow-500/90 hover:bg-yellow-500 text-black text-xs font-medium flex items-center justify-center gap-1 transition-colors"
+                          >
+                            <FiCheck className="w-3.5 h-3.5" />
+                            Select
+                          </button>
                         </div>
                         {(item.name || item.category) && (
-                          <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-2 py-1">
+                          <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-2 py-1 group-hover:opacity-0 transition-opacity">
                             <p className="text-white text-xs truncate">{item.name || item.category}</p>
                           </div>
                         )}
-                      </button>
+                      </div>
                     ))}
                   </div>
                 )}
