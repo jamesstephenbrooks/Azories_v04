@@ -165,10 +165,15 @@ One copy of each duplicate pair was kept and completed:
 ## Pending Tasks (P0-P2)
 
 ### P0 - Critical
-- **Complete remaining 28 books** - Create templates and generate content
+- **Complete remaining 27 books** (was 28, deleted 1 duplicate)
+  - Priority order:
+    1. Super Silly Superhero, Colors of the World (duplicate survivors)
+    2. Remaining Picture Books
+    3. Early Readers
+    4. Middle Grade last
 
 ### P1 - High Priority
-1. **Fix FAL_KEY** - Current key is invalid, affecting Pro Studio features
+1. **Fix FAL_KEY** - Get valid key from user to reduce image generation costs
 2. **Complete server.py refactoring** - Remove duplicate auth routes from server.py
 
 ### P2 - Medium Priority
