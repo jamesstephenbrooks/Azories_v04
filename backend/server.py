@@ -7117,13 +7117,15 @@ async def get_book_gallery(book_id: str, current_user: dict = Depends(get_curren
 # Batch 1: 50 Character images (Watercolour, Realistic, Comic, Sketch styles)
 # Batch 2: 50 Settings & Backgrounds images
 # Batch 3: 50 Objects & Props images
+# Batch 4: 50 Action & Emotion Scenes
 # Stock photos archived - Feb 25, 2026
 from data.starter_library_batch1 import BATCH_1_CHARACTERS
 from data.starter_library_batch2 import BATCH_2_SETTINGS
 from data.starter_library_batch3 import BATCH_3_OBJECTS
+from data.starter_library_batch4 import BATCH_4_ACTIONS
 
-# Current library contains 150 images total
-STARTER_LIBRARY_IMAGES = BATCH_1_CHARACTERS + BATCH_2_SETTINGS + BATCH_3_OBJECTS
+# Complete library contains 200 images total
+STARTER_LIBRARY_IMAGES = BATCH_1_CHARACTERS + BATCH_2_SETTINGS + BATCH_3_OBJECTS + BATCH_4_ACTIONS
 @api_router.get("/starter-library")
 async def get_starter_library(category: Optional[str] = None):
     """Get starter library images for new users - no auth required"""
