@@ -1343,59 +1343,64 @@ export default function ArtStudio() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-6">
         {/* Tab Navigation - All FREE features */}
-        <div className="flex gap-2 mb-6 flex-wrap items-center">
+        <div className="flex gap-1 sm:gap-2 mb-4 sm:mb-6 flex-wrap items-center overflow-x-auto pb-2">
           {/* Main Creation Modes */}
           <div className="flex bg-black/30 rounded-lg p-1 border border-white/10">
             <Button
               variant="ghost"
+              size="sm"
               onClick={() => setActiveTab('character')}
-              className={activeTab === 'character' 
+              className={`text-xs sm:text-sm ${activeTab === 'character' 
                 ? 'bg-purple-600 text-white hover:bg-purple-600' 
-                : 'text-white/70 hover:text-white hover:bg-white/10'}
+                : 'text-white/70 hover:text-white hover:bg-white/10'}`}
               data-testid="character-builder-tab"
             >
-              <FiUser className="w-4 h-4 mr-2" />
-              Character Builder
+              <FiUser className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Character</span>
             </Button>
             <Button
               variant="ghost"
+              size="sm"
               onClick={() => navigate('/art-studio/expert')}
-              className="text-amber-300 hover:text-amber-200 hover:bg-amber-500/20"
+              className="text-xs sm:text-sm text-amber-300 hover:text-amber-200 hover:bg-amber-500/20"
               data-testid="node-workflow-tab"
             >
-              <FiStar className="w-4 h-4 mr-2" />
-              Node Workflow
+              <FiStar className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Workflow</span>
             </Button>
           </div>
           
-          <div className="w-px h-8 bg-white/20" />
+          <div className="hidden sm:block w-px h-8 bg-white/20" />
           
           <Button
             variant={activeTab === 'scene' ? 'default' : 'outline'}
+            size="sm"
             onClick={() => setActiveTab('scene')}
-            className={activeTab === 'scene' ? 'bg-purple-600' : 'border-white/20 text-white/70'}
+            className={`text-xs sm:text-sm ${activeTab === 'scene' ? 'bg-purple-600' : 'border-white/20 text-white/70'}`}
           >
-            <FiLayers className="w-4 h-4 mr-2" />
-            Scene Creator
+            <FiLayers className="w-4 h-4 sm:mr-2" />
+            <span className="hidden sm:inline">Scene</span>
           </Button>
           <Button
             variant={activeTab === 'animate' ? 'default' : 'outline'}
+            size="sm"
             onClick={() => setActiveTab('animate')}
-            className={activeTab === 'animate' ? 'bg-gradient-to-r from-pink-600 to-purple-600' : 'border-pink-500/50 text-pink-300 hover:bg-pink-500/20'}
+            className={`text-xs sm:text-sm ${activeTab === 'animate' ? 'bg-gradient-to-r from-pink-600 to-purple-600' : 'border-pink-500/50 text-pink-300 hover:bg-pink-500/20'}`}
             data-testid="animate-tab-btn"
           >
-            <FiVideo className="w-4 h-4 mr-2" />
-            Animate
+            <FiVideo className="w-4 h-4 sm:mr-2" />
+            <span className="hidden sm:inline">Animate</span>
           </Button>
           <Button
             variant={activeTab === 'gallery' ? 'default' : 'outline'}
+            size="sm"
             onClick={() => setActiveTab('gallery')}
-            className={activeTab === 'gallery' ? 'bg-purple-600' : 'border-white/20 text-white/70'}
+            className={`text-xs sm:text-sm ${activeTab === 'gallery' ? 'bg-purple-600' : 'border-white/20 text-white/70'}`}
           >
-            <FiGrid className="w-4 h-4 mr-2" />
-            Gallery
+            <FiGrid className="w-4 h-4 sm:mr-2" />
+            <span className="hidden sm:inline">Gallery</span>
           </Button>
         </div>
 
