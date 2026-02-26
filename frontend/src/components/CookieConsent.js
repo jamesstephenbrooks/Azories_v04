@@ -64,7 +64,7 @@ const CookieConsent = () => {
               </button>
             </div>
 
-            <p className="text-gray-600 mb-4">
+            <p className="text-gray-600 mb-3 sm:mb-4 text-sm sm:text-base">
               We use cookies to improve your experience on our site. By clicking "Accept All", you consent to our use of cookies. 
               You can manage your preferences or learn more in our{' '}
               <Link to="/privacy" className="text-purple-600 hover:underline">Privacy Policy</Link>.
