@@ -5722,6 +5722,80 @@ export default function ProStudio() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Mobile Floating Action Button - Fixed at bottom, 56px tall */}
+      <div className="fixed bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/95 via-black/90 to-transparent sm:hidden z-40 safe-area-pb">
+        {activeTab === 'characters' && (
+          <Button 
+            onClick={() => {
+              if (!checkCreditsOrRedirect(1, 'Create Character')) return;
+              createCharacter();
+            }}
+            disabled={isCreatingCharacter || !characterName.trim() || (!characterDescription.trim() && characterImages.length < 1)}
+            className="w-full h-14 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-base font-semibold rounded-xl shadow-lg shadow-purple-500/30"
+            data-testid="mobile-create-character-btn"
+          >
+            <FiPlus className="w-5 h-5 mr-2" />
+            {isCreatingCharacter ? 'Creating...' : 'Create Character'}
+          </Button>
+        )}
+        {activeTab === 'scenes' && (
+          <Button 
+            onClick={() => {
+              if (!checkCreditsOrRedirect(1, 'Create Scene')) return;
+              createScene();
+            }}
+            disabled={isCreatingScene || !sceneName.trim() || !sceneDescription.trim()}
+            className="w-full h-14 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-base font-semibold rounded-xl shadow-lg shadow-purple-500/30"
+            data-testid="mobile-create-scene-btn"
+          >
+            <FiPlus className="w-5 h-5 mr-2" />
+            {isCreatingScene ? 'Creating...' : 'Create Scene'}
+          </Button>
+        )}
+        {activeTab === 'cinema' && (
+          <Button 
+            onClick={() => {
+              if (!checkCreditsOrRedirect(2, 'Cinema Generation')) return;
+              generateCinemaImage();
+            }}
+            disabled={isLoading || !prompt.trim()}
+            className="w-full h-14 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-base font-semibold rounded-xl shadow-lg shadow-purple-500/30"
+            data-testid="mobile-cinema-generate-btn"
+          >
+            <FiZap className="w-5 h-5 mr-2" />
+            {isLoading ? 'Generating...' : 'Generate Cinema Shot'}
+          </Button>
+        )}
+        {activeTab === 'shots' && (
+          <Button 
+            onClick={() => {
+              if (!checkCreditsOrRedirect(5, 'Generate Shots')) return;
+              generateShots();
+            }}
+            disabled={isLoading || !shotsSourceImage}
+            className="w-full h-14 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-base font-semibold rounded-xl shadow-lg shadow-purple-500/30"
+            data-testid="mobile-generate-shots-btn"
+          >
+            <FiGrid className="w-5 h-5 mr-2" />
+            {isLoading ? 'Generating...' : 'Generate Shots'}
+          </Button>
+        )}
+        {activeTab === 'video' && (
+          <Button 
+            onClick={() => {
+              if (!checkCreditsOrRedirect(10, 'Video Generation')) return;
+              generateVideo();
+            }}
+            disabled={isLoading || !videoPrompt.trim()}
+            className="w-full h-14 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-base font-semibold rounded-xl shadow-lg shadow-purple-500/30"
+            data-testid="mobile-generate-video-btn"
+          >
+            <FiVideo className="w-5 h-5 mr-2" />
+            {isLoading ? 'Generating...' : 'Generate Video'}
+          </Button>
+        )}
+      </div>
     </div>
   );
 }
