@@ -122,36 +122,36 @@ const CookieConsent = () => {
               </motion.div>
             )}
 
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-2 sm:gap-3">
               <button
                 onClick={() => setShowDetails(!showDetails)}
-                className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg transition-colors"
+                className="flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg transition-colors"
               >
-                <FiSettings className="mr-2" />
-                {showDetails ? 'Hide Details' : 'Manage Preferences'}
+                <FiSettings className="mr-1 sm:mr-2" />
+                {showDetails ? 'Hide' : 'Manage'}
               </button>
               
               {showDetails ? (
                 <button
                   onClick={handleAcceptSelected}
-                  className="flex items-center px-6 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors"
+                  className="flex items-center px-4 sm:px-6 py-2 text-sm sm:text-base bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors"
                 >
-                  <FiCheck className="mr-2" />
-                  Save Preferences
+                  <FiCheck className="mr-1 sm:mr-2" />
+                  Save
                 </button>
               ) : (
                 <>
                   <button
                     onClick={handleRejectAll}
-                    className="px-4 py-2 text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg transition-colors"
+                    className="px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg transition-colors"
                   >
                     Reject All
                   </button>
                   <button
                     onClick={handleAcceptAll}
-                    className="flex items-center px-6 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors"
+                    className="flex items-center px-4 sm:px-6 py-2 text-sm sm:text-base bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors"
                   >
-                    <FiCheck className="mr-2" />
+                    <FiCheck className="mr-1 sm:mr-2" />
                     Accept All
                   </button>
                 </>
