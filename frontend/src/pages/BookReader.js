@@ -83,6 +83,21 @@ export default function BookReader() {
     height: typeof window !== 'undefined' ? window.innerHeight : 800
   });
   
+  // Dedicated orientation state using proper APIs for real device detection
+  const [isLandscapeOrientation, setIsLandscapeOrientation] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    // Check screen.orientation API first (most reliable)
+    if (screen.orientation) {
+      return screen.orientation.type.includes('landscape');
+    }
+    // Fallback to matchMedia
+    if (window.matchMedia) {
+      return window.matchMedia('(orientation: landscape)').matches;
+    }
+    // Final fallback to dimensions
+    return window.innerWidth > window.innerHeight;
+  });
+  
   // Listen to window resize for responsive book sizing
   useEffect(() => {
     const handleResize = () => {
@@ -91,14 +106,59 @@ export default function BookReader() {
         height: window.innerHeight
       });
     };
+    
+    // Proper orientation change handler using multiple APIs
+    const handleOrientationChange = () => {
+      // Use screen.orientation API if available (most reliable on real devices)
+      if (screen.orientation) {
+        const isLandscape = screen.orientation.type.includes('landscape');
+        setIsLandscapeOrientation(isLandscape);
+      } else if (window.matchMedia) {
+        // Fallback to matchMedia
+        const isLandscape = window.matchMedia('(orientation: landscape)').matches;
+        setIsLandscapeOrientation(isLandscape);
+      } else {
+        // Final fallback
+        setIsLandscapeOrientation(window.innerWidth > window.innerHeight);
+      }
+      // Also update dimensions after a delay (screen dimensions update after rotation)
+      setTimeout(handleResize, 150);
+    };
+    
     window.addEventListener('resize', handleResize);
-    // Also listen for orientation change on mobile
-    window.addEventListener('orientationchange', () => {
-      setTimeout(handleResize, 100); // Delay to get accurate dimensions
-    });
+    
+    // Listen to screen.orientation change event (works on real devices)
+    if (screen.orientation) {
+      screen.orientation.addEventListener('change', handleOrientationChange);
+    }
+    
+    // Also listen for the deprecated orientationchange event as backup
+    window.addEventListener('orientationchange', handleOrientationChange);
+    
+    // Listen to matchMedia for orientation changes (works in DevTools)
+    const mediaQuery = window.matchMedia?.('(orientation: landscape)');
+    const handleMediaChange = (e) => {
+      setIsLandscapeOrientation(e.matches);
+      setTimeout(handleResize, 150);
+    };
+    if (mediaQuery?.addEventListener) {
+      mediaQuery.addEventListener('change', handleMediaChange);
+    } else if (mediaQuery?.addListener) {
+      // Legacy Safari support
+      mediaQuery.addListener(handleMediaChange);
+    }
+    
     return () => {
       window.removeEventListener('resize', handleResize);
-      window.removeEventListener('orientationchange', handleResize);
+      window.removeEventListener('orientationchange', handleOrientationChange);
+      if (screen.orientation) {
+        screen.orientation.removeEventListener('change', handleOrientationChange);
+      }
+      if (mediaQuery?.removeEventListener) {
+        mediaQuery.removeEventListener('change', handleMediaChange);
+      } else if (mediaQuery?.removeListener) {
+        mediaQuery.removeListener(handleMediaChange);
+      }
     };
   }, []);
   
