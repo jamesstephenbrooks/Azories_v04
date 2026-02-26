@@ -1291,82 +1291,72 @@ export default function BookReader() {
       {!isMobileLandscape && (
         <div className={`fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-xl border-t border-border z-40 transition-transform duration-300 ${hideControls ? 'translate-y-full' : ''}`}>
           <div className={`max-w-4xl mx-auto px-2 sm:px-4 py-3 sm:py-4`}>
-            {/* Navigation - Larger touch targets on mobile */}
-            <div className={`flex items-center justify-center gap-3 sm:gap-4 mb-2 sm:mb-4`}>
-              <Button
-                variant="outline"
-                size="default"
+            {/* Navigation - LARGE touch targets for mobile, instant response */}
+            <div className={`flex items-center justify-center gap-4 sm:gap-4 mb-2 sm:mb-4`}>
+              <button
                 onClick={() => {
-                  if (isMobilePortrait && !isCover) {
-                    // In split view, navigate directly
-                    if (currentPage > 0) {
-                      setCurrentPage(currentPage - 1);
-                      saveReadingProgress();
-                    } else if (currentPage === 0) {
-                      setCurrentPage(-1); // Go to cover
-                    }
-                  } else if (realisticFlipRef.current) {
-                    realisticFlipRef.current.prevPage();
+                  // Instant state change - no blocking
+                  if (currentPage > 0) {
+                    setCurrentPage(currentPage - 1);
+                    // Fire and forget - don't wait
+                    saveReadingProgress();
+                  } else if (currentPage === 0) {
+                    setCurrentPage(-1);
                   }
                 }}
-                disabled={currentPage <= -1 || isFlipping}
-                className={`rounded-full min-w-[44px] min-h-[44px] px-4 sm:px-6 text-sm sm:text-base`}
+                disabled={currentPage <= -1}
+                className="min-w-[56px] min-h-[56px] px-5 rounded-full border-2 border-border bg-background hover:bg-muted active:bg-muted/80 flex items-center justify-center touch-manipulation"
+                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                data-testid="portrait-prev-btn"
               >
-                <FiChevronLeft className="w-5 h-5 sm:w-5 sm:h-5 sm:mr-1" />
-                <span className="hidden sm:inline">Previous</span>
-              </Button>
+                <FiChevronLeft className="w-6 h-6" />
+              </button>
               
               {/* Show Start Listening on cover, Read Aloud on other pages */}
               {isCover ? (
-                <Button
-                  variant="default"
-                  size="default"
+                <button
                   onClick={startListening}
-                  className={`rounded-full min-h-[44px] px-5 sm:px-8 bg-purple-600 hover:bg-purple-500 text-sm sm:text-base`}
+                  className="min-h-[56px] px-6 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white font-medium flex items-center justify-center gap-2 touch-manipulation"
+                  style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                   data-testid="cover-start-listening-btn"
                 >
-                  <FiPlay className="w-5 h-5 sm:w-5 sm:h-5 mr-2" />
+                  <FiPlay className="w-5 h-5" />
                   Listen
-                </Button>
+                </button>
               ) : (
-                <Button
-                  variant={(isPlaying || autoRead) ? "default" : "outline"}
-                  size="default"
+                <button
                   onClick={isPlaying || autoRead ? handleAutoReadToggle : toggleAudio}
                   disabled={audioLoading}
-                  className={`rounded-full min-h-[44px] px-5 sm:px-8 text-sm sm:text-base`}
+                  className={`min-h-[56px] px-6 rounded-full border-2 ${(isPlaying || autoRead) ? 'bg-primary text-primary-foreground border-primary' : 'border-border bg-background'} font-medium flex items-center justify-center gap-2 touch-manipulation`}
+                  style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                   data-testid="read-aloud-btn"
                 >
                   {audioLoading ? (
-                    <><div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" /> Loading</>
+                    <><div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" /> Loading</>
                   ) : (isPlaying || autoRead) ? (
-                    <><FiPause className="w-5 h-5 mr-2" /> Pause</>
+                    <><FiPause className="w-5 h-5" /> Pause</>
                   ) : (
-                    <><FiPlay className="w-5 h-5 mr-2" /> Aloud</>
+                    <><FiPlay className="w-5 h-5" /> Aloud</>
                   )}
-                </Button>
+                </button>
               )}
               
-              <Button
-                variant="outline"
-                size="default"
+              <button
                 onClick={() => {
-                  if (isMobilePortrait && !isCover) {
-                    // In split view, navigate directly
-                    if (currentPage < allPages.length - 1) {
-                      setCurrentPage(currentPage + 1);
-                      saveReadingProgress();
-                    }
-                  } else if (realisticFlipRef.current) {
-                    realisticFlipRef.current.nextPage();
+                  // Instant state change - no blocking
+                  if (currentPage < allPages.length - 1) {
+                    setCurrentPage(currentPage + 1);
+                    // Fire and forget - don't wait
+                    saveReadingProgress();
                   }
                 }}
-                disabled={currentPage >= allPages.length - 1 || isFlipping}
-                className={`rounded-full min-w-[44px] min-h-[44px] px-4 sm:px-6 text-sm sm:text-base`}
+                disabled={currentPage >= allPages.length - 1}
+                className="min-w-[56px] min-h-[56px] px-5 rounded-full border-2 border-border bg-background hover:bg-muted active:bg-muted/80 flex items-center justify-center touch-manipulation"
+                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                data-testid="portrait-next-btn"
               >
-                <span className="hidden sm:inline">Next</span>
-                <FiChevronRight className="w-5 h-5 sm:w-5 sm:h-5 sm:ml-1" />
-              </Button>
+                <FiChevronRight className="w-6 h-6" />
+              </button>
             </div>
           
           {/* Audio Controls - Enhanced - Hidden on very small screens */}
