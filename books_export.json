@@ -1,0 +1,1925 @@
+{
+  "export_date": "2026-02-26T18:09:37.959756",
+  "total_books": 64,
+  "books": [
+    {
+      "id": "fb341971-71be-4c8a-b764-a7cac7fb9a71",
+      "title": "The Dragon's Secret Garden",
+      "author": "",
+      "description": "A young girl discovers a hidden garden where friendly dragons tend magical flowers that grant wishes.",
+      "genre": "Fantasy",
+      "age_range": "3-6",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1a/292qwAgUPvXuO5Y8EiSBk.jpg",
+      "status": "published",
+      "chapters": [
+        {
+          "id": "8b38cb86-f9c6-4d00-ba1d-13618c653585",
+          "title": "Story",
+          "order": 1,
+          "pages": [
+            {
+              "id": "b9ecb039-08e8-4a23-b372-dde461d30bb5",
+              "page_number": 0,
+              "text_content": "In the small village of Willowbrook, there lived a curious girl named Lily. She had bright eyes that sparkled with wonder and hair the color of autumn leaves. Every day after her chores, she would explore the forest behind her cottage, discovering new secrets hidden among the ancient trees.",
+              "text_word_count": 49,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "98444d00-18d4-4fe6-b2b4-2592aec841ad",
+              "page_number": 0,
+              "text_content": "One sunny afternoon, Lily found something extraordinary. Behind a curtain of ivy, there was a door she had never seen before. It was made of twisted vines and decorated with flowers that seemed to glow from within. Her heart pounded with excitement as she reached for the handle.",
+              "text_word_count": 48,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "9948475e-6d9d-419e-99ee-3c7d8bd31102",
+              "page_number": 0,
+              "text_content": "The door creaked open to reveal the most beautiful garden Lily had ever seen. Flowers of every color imaginable bloomed in neat rows. Butterflies with wings like stained glass danced through the air. And there, in the middle of it all, was a small dragon!",
+              "text_word_count": 45,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "928f1941-7962-479c-8074-6267b7d41166",
+              "page_number": 0,
+              "text_content": "'Don't be afraid,' said the dragon in a voice like wind chimes. 'My name is Ember, and I've been waiting for someone like you.' The little dragon had scales that shimmered like opals and eyes as warm as a summer sunset.",
+              "text_word_count": 41,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "a0785373-83a9-4806-bdf6-ec8e23c24efa",
+              "page_number": 0,
+              "text_content": "Ember explained that this was no ordinary garden. 'These are wish flowers,' he said, gesturing with his tiny wing. 'When someone with a pure heart tends them with love, they bloom with magic that can make dreams come true.'",
+              "text_word_count": 39,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "48d4fcd4-7d0f-4936-acd5-3734c2dc3616",
+              "page_number": 0,
+              "text_content": "Day after day, Lily returned to help Ember care for the garden. She learned to water the moonpetal roses at night and sing to the sunshine daisies at dawn. The dragon taught her the ancient songs that made the magic flowers grow tall and strong.",
+              "text_word_count": 45,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "5492ce3a-471b-445f-9ddd-0ecc12477d59",
+              "page_number": 0,
+              "text_content": "As the seasons changed, Lily noticed something wonderful. The more love she put into the garden, the more it flourished. New flowers appeared - ones that sparkled like stars and hummed gentle melodies. Even Ember seemed to glow brighter.",
+              "text_word_count": 39,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "711a9566-e3d6-4373-bc6e-63ea5ae0771b",
+              "page_number": 0,
+              "text_content": "One evening, a single golden flower bloomed at the garden's center. It was the rarest of all - a Heart Wish flower. 'This is special,' whispered Ember. 'It only blooms for those who give without expecting anything in return.'",
+              "text_word_count": 39,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "8427f823-1966-416f-bac8-3f2090410f13",
+              "page_number": 0,
+              "text_content": "Lily closed her eyes and made her wish - not for toys or treasures, but for the garden to be safe forever, so others could discover its magic too. The flower burst into a shower of golden sparkles that spread throughout the garden.",
+              "text_word_count": 43,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "78fb293c-715e-484b-80e3-20cd84600457",
+              "page_number": 0,
+              "text_content": "From that day forward, the garden was protected by the most powerful magic of all - the magic of a selfless heart. And whenever Lily visited her dear friend Ember, they would tend the flowers together, sharing stories and laughter in their secret paradise.",
+              "text_word_count": 44,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "5f9644c8-04f0-4f93-bfb7-2dfd5b21d629",
+              "page_number": 0,
+              "text_content": "Years passed, and Lily grew up, but she never forgot the secret garden or her dragon friend. She became known throughout the land as someone who helped others, always remembering what Ember had taught her about the power of kindness.",
+              "text_word_count": 40,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "36a49671-fe05-4980-a721-e28ead1ba74c",
+              "page_number": 0,
+              "text_content": "And so, if you ever find yourself in the forest behind Willowbrook, look carefully for a door hidden behind the ivy. Perhaps the garden is waiting for you too, ready to share its magic with another pure heart. THE END",
+              "text_word_count": 40,
+              "image_url": "",
+              "image_prompt": ""
+            }
+          ]
+        }
+      ],
+      "total_pages": 12
+    },
+    {
+      "id": "918ccc65-b41e-4df5-9f0a-9a6428eb50f8",
+      "title": "Robot Best Friend",
+      "author": "",
+      "description": "When Zoe builds a robot for the science fair, she never expected it to become her best friend.",
+      "genre": "Science Fiction",
+      "age_range": "4-7",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1a/mPjdeaz2OumkcWsT8bfnv.jpg",
+      "status": "published",
+      "chapters": [
+        {
+          "id": "4450576a-af2d-4da7-bf18-ff76b5fe4360",
+          "title": "Story",
+          "order": 1,
+          "pages": [
+            {
+              "id": "511a7b4c-f120-43eb-ad08-d25464dfd498",
+              "page_number": 0,
+              "text_content": "Zoe loved building things. Her room was filled with gears, wires, and half-finished inventions. While other kids played video games, Zoe dreamed of creating something that could think and feel.",
+              "text_word_count": 30,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "27a01826-d3a6-4132-a505-b5cf0a512f52",
+              "page_number": 0,
+              "text_content": "For the science fair, Zoe decided to build a robot. Not just any robot - one that could be a real friend. She worked day and night, carefully connecting circuits and programming feelings into its digital brain.",
+              "text_word_count": 37,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "0874fa0b-a43b-4873-b38d-e01be7cb5ff0",
+              "page_number": 0,
+              "text_content": "She named him Bolt. He had big blue optical sensors for eyes, a speaker that sounded like a friendly beep, and wheels that let him zoom around. When Zoe first turned him on, Bolt said, 'Hello, friend!'",
+              "text_word_count": 37,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "4d5fd2e5-670e-4e9c-a66f-786e2c2de2c4",
+              "page_number": 0,
+              "text_content": "At the science fair, everyone crowded around Bolt. He told jokes, answered questions, and even did a little dance. But some kids laughed at him. 'Robots can't be real friends,' they said.",
+              "text_word_count": 32,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "9eb1500b-ceb4-4577-a475-d6ad2381edcf",
+              "page_number": 0,
+              "text_content": "Zoe felt sad, but Bolt rolled over and gently held her hand with his gripper. 'Don't be sad, Zoe. I think we are real friends.' And somehow, his electronic voice made her feel better.",
+              "text_word_count": 34,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "fcaf42bb-2fc2-47e3-b2f8-e2b95f00c85b",
+              "page_number": 0,
+              "text_content": "The judges were amazed. They'd never seen a robot show kindness before. Bolt won first place, but more importantly, he had proven that friendship isn't about being made of flesh or metal - it's about caring.",
+              "text_word_count": 36,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "0503f44e-110b-4f7b-b850-d4769e4da02d",
+              "page_number": 0,
+              "text_content": "From then on, Bolt and Zoe were inseparable. He helped her with homework (though his math jokes were terrible). She made sure his batteries were always charged. Together, they faced every day.",
+              "text_word_count": 32,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "1ebff1b2-14d2-413d-9355-34aacf7ff0c1",
+              "page_number": 0,
+              "text_content": "One day, Bolt's systems started failing. Zoe was terrified. She worked all night, replacing parts and updating software. 'Please don't go,' she whispered. 'You're my best friend.'",
+              "text_word_count": 27,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "a083076a-1439-4dea-864b-d4ea174149e6",
+              "page_number": 0,
+              "text_content": "When morning came, Bolt's eyes flickered back on. 'Did you stay up all night for me?' he asked. When Zoe nodded, Bolt's speaker made a sound she'd never heard before - the robot equivalent of happy tears.",
+              "text_word_count": 37,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "9e08c4b1-eec1-4398-add5-ac96cd94d09a",
+              "page_number": 0,
+              "text_content": "Years later, Zoe became a famous inventor who built robots that helped people all over the world. And by her side, always, was Bolt - still making terrible jokes, still being her very best friend. THE END",
+              "text_word_count": 37,
+              "image_url": "",
+              "image_prompt": ""
+            }
+          ]
+        }
+      ],
+      "total_pages": 10
+    },
+    {
+      "id": "985bafe3-a3d6-4dce-a350-d45efff3c98e",
+      "title": "The Case of the Missing Cookies",
+      "author": "",
+      "description": "When cookies keep disappearing from the school cafeteria, detective duo Sam and Jo investigate.",
+      "genre": "Mystery",
+      "age_range": "6-8",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1a/8FsxTyHNyk0D7iZJbSlNu.jpg",
+      "status": "published",
+      "chapters": [
+        {
+          "id": "94c2e300-1e22-49f3-84db-8be1a7aeab0f",
+          "title": "Story",
+          "order": 1,
+          "pages": [
+            {
+              "id": "e9d8f3b9-cb76-4ab5-b96a-0ea8ca63ec75",
+              "page_number": 0,
+              "text_content": "Something strange was happening at Sunny Hills Elementary. Every day, Mrs. Baker's famous chocolate chip cookies would disappear from the cafeteria - all 50 of them! The students were upset. Those cookies were legendary!",
+              "text_word_count": 34,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "4c5f5d25-71ff-4d30-bf47-33dc7081f657",
+              "page_number": 0,
+              "text_content": "Sam and Jo, the school's self-appointed detectives, took the case. Sam wore a detective cap everywhere, and Jo carried a magnifying glass in her pocket. They'd solved the Case of the Missing Homework and the Mystery of the Library Ghost.",
+              "text_word_count": 40,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "3c86a81b-7f15-4ae8-801f-0396c475793f",
+              "page_number": 0,
+              "text_content": "'First, we examine the crime scene,' Sam declared. In the cafeteria kitchen, they found something interesting: chocolate chip crumbs leading to the back door. The thief had been sloppy!",
+              "text_word_count": 29,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "27b08ed4-5c84-4ed2-9799-502bde2e4cbf",
+              "page_number": 0,
+              "text_content": "The trail led outside to the playground. 'Look!' Jo pointed to more crumbs near the slide. But then the trail went cold. It was like the cookies had vanished into thin air. Or had they?",
+              "text_word_count": 35,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "7a6ee1df-1c90-4894-8e05-2f34e48b09ea",
+              "page_number": 0,
+              "text_content": "Sam noticed something else: tiny pawprints in the sandbox! 'Jo, I don't think our thief is a student.' They followed the pawprints behind the school, where the janitor's shed stood.",
+              "text_word_count": 30,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "77208b07-e5f9-4e79-9f9c-69c76a497439",
+              "page_number": 0,
+              "text_content": "Behind the shed, they found... a family of raccoons! A mother and three babies, surrounded by cookie crumbs. They looked up with big eyes, not looking guilty at all - just very full and happy.",
+              "text_word_count": 35,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "ffcbe89b-8e8c-42af-8cd0-7826f93ee8ff",
+              "page_number": 0,
+              "text_content": "'Mystery solved!' Jo giggled. But Sam looked thoughtful. 'The raccoons are hungry. We should tell someone so they can find proper food.' Even detectives have big hearts.",
+              "text_word_count": 27,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "a9a7c687-c9ae-48ee-9439-66183ec33af2",
+              "page_number": 0,
+              "text_content": "They told Principal Green, who called the wildlife center. The raccoons were moved to a forest preserve where they could find natural food. And Mrs. Baker started keeping the cookies in a raccoon-proof container.",
+              "text_word_count": 34,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "7ccce4fd-7f26-4a6c-96ad-dd4b4073a242",
+              "page_number": 0,
+              "text_content": "As a reward for solving the case AND helping the animals, Sam and Jo got to be first in line for cookies all week. Mrs. Baker even made them special detective-shaped cookies!",
+              "text_word_count": 32,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "8bad50c5-9bdf-401e-8a9c-009898ec2128",
+              "page_number": 0,
+              "text_content": "Case closed! But Sam and Jo kept their detective gear ready. In a school full of mysteries, there was always another case waiting around the corner. THE END",
+              "text_word_count": 28,
+              "image_url": "",
+              "image_prompt": ""
+            }
+          ]
+        }
+      ],
+      "total_pages": 10
+    },
+    {
+      "id": "ba53b445-c96f-4d4e-bd6a-c92828e99fe6",
+      "title": "Super Silly Superhero",
+      "author": "",
+      "description": "Every superpower Max gains has a silly twist, but he saves the day anyway!",
+      "genre": "Comic",
+      "age_range": "3-6",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1a/gl1HiSfh1_lvZxMHTMCr-.jpg",
+      "status": "published",
+      "chapters": [
+        {
+          "id": "55106416-0de1-4650-9ac9-5e6e2d33047a",
+          "title": "Story",
+          "order": 1,
+          "pages": [
+            {
+              "id": "e66d5118-1644-4a6d-a371-5250d335525f",
+              "page_number": 0,
+              "text_content": "Max wanted to be a superhero more than anything. When a magical meteor landed in his backyard, he made a wish: 'Please give me superpowers!' The meteor glowed, and Max felt tingly all over.",
+              "text_word_count": 34,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "2d31e669-da53-41e8-924c-8cde354b8d1d",
+              "page_number": 0,
+              "text_content": "The next morning, Max discovered he could fly! But there was a problem. He could only fly... sideways. No matter how hard he tried, he zoomed left or right, never up or down. 'This is ridiculous!' he laughed.",
+              "text_word_count": 38,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "bebf9664-57c7-467a-9bb2-31e5d64570ee",
+              "page_number": 0,
+              "text_content": "He also got super strength! But only in his pinky finger. Still, one pinky flick could send a soccer ball into orbit. His P.E. teacher was very confused.",
+              "text_word_count": 28,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "9c4d76bc-f41e-4b05-ba47-01bba442a97b",
+              "page_number": 0,
+              "text_content": "Then came the super sneeze. Every time Max sneezed, ice shot out of his nose. Great for making snow cones, not so great during allergy season.",
+              "text_word_count": 26,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "6b15f945-a713-4f34-9781-47b9ec88cb6c",
+              "page_number": 0,
+              "text_content": "And the invisible hiccups? Whenever Max hiccuped, he turned invisible - but only his ears disappeared. He looked VERY strange.",
+              "text_word_count": 20,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "80c8b5da-0a2a-4ab5-a1d8-caf8be10da79",
+              "page_number": 0,
+              "text_content": "Max was about to give up when trouble struck. The school bully, Big Boris, had accidentally trapped himself and other kids in the gym supply closet. The door was jammed, and no one could get out!",
+              "text_word_count": 36,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "b407a2f8-1b9c-4fe2-bc6a-c9f394c6950c",
+              "page_number": 0,
+              "text_content": "Max had an idea! He flew sideways at top speed, whooshing past the door. The wind from his flight rattled the hinges. Then he flicked the doorknob with his super-pinky, and POP! The door swung open!",
+              "text_word_count": 36,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "4d915f24-f9c7-46ba-b857-87c4c952e7a2",
+              "page_number": 0,
+              "text_content": "The kids cheered! Even Big Boris thanked him. 'My powers are silly,' Max said, 'but they still work!' He did a victory sneeze, creating celebratory snowflakes.",
+              "text_word_count": 26,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "ff1015d2-2533-4e25-8ec0-a04c5cd0f376",
+              "page_number": 0,
+              "text_content": "From that day on, Max became known as Super Silly, the hero whose powers always made people laugh AND saved the day. Sometimes being different is what makes you special. THE END",
+              "text_word_count": 32,
+              "image_url": "",
+              "image_prompt": ""
+            }
+          ]
+        }
+      ],
+      "total_pages": 9
+    },
+    {
+      "id": "bf096619-76a3-4f8a-b653-d864236551b0",
+      "title": "Colors of the World",
+      "author": "",
+      "description": "Follow Rainbow as she discovers where all the colors in the world come from.",
+      "genre": "General",
+      "age_range": "3-6",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1a/QP9oogJ521a-ZyeJX0cF7.jpg",
+      "status": "published",
+      "chapters": [
+        {
+          "id": "d85ca92d-38ba-428a-b837-cb67be39f153",
+          "title": "Story",
+          "order": 1,
+          "pages": [
+            {
+              "id": "949c7f6c-d84f-4b82-a37b-d77b2b153ad3",
+              "page_number": 0,
+              "text_content": "In a world that was only gray, there lived a girl named Rainbow. She had always wondered why everything was the same dull color. One day, she decided to find the missing colors.",
+              "text_word_count": 33,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "686bbd3b-e7a3-46fe-a964-8df4f463769b",
+              "page_number": 0,
+              "text_content": "An old owl told her of the Color Caves, where all the world's colors were locked away. 'Long ago, someone hid them,' the owl said, 'but a pure heart can set them free.'",
+              "text_word_count": 33,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "022d111a-2953-4580-bb3c-1d924a6a73fa",
+              "page_number": 0,
+              "text_content": "Rainbow journeyed far until she found the first cave, glowing with warm light. Inside was Red, trapped in a crystal! 'Help me!' Red cried. Rainbow touched the crystal with love in her heart, and Red burst free!",
+              "text_word_count": 37,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "615e0596-88c6-4fe3-9f5f-b9d6d111e286",
+              "page_number": 0,
+              "text_content": "Red painted the roses, the apples, and the ladybugs. Rainbow watched in amazement as warmth and energy returned to part of the world. But there were more colors to find!",
+              "text_word_count": 30,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "c28ad85d-f18a-4e26-b572-27a5f41c981f",
+              "page_number": 0,
+              "text_content": "In the next cave was Blue, cool and calm. When freed, Blue raced to the sky and the ocean, filling them with depth and peace. Rainbow had never seen anything so beautiful!",
+              "text_word_count": 32,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "728b4de9-3c29-4ddc-bb10-37eba581942b",
+              "page_number": 0,
+              "text_content": "Yellow was trapped in the highest cave, on a mountaintop. When Rainbow freed the sunshine color, it zoomed straight to the sky and became the sun! The world grew warm for the first time.",
+              "text_word_count": 34,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "6755ebbb-0069-4473-a9ea-3f2d0431fcea",
+              "page_number": 0,
+              "text_content": "Green was hiding in a valley. When released, it painted all the plants, trees, and grass. The world finally had places for animals to live and play.",
+              "text_word_count": 27,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "768e8509-5480-4747-852e-30fb9cb6914e",
+              "page_number": 0,
+              "text_content": "Purple sunset, orange autumn leaves, pink cherry blossoms - Rainbow found them all, each color more wonderful than the last. She couldn't believe how beautiful the world could be!",
+              "text_word_count": 29,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "6ca19c9d-0629-4089-90ba-a1f84e55bd2f",
+              "page_number": 0,
+              "text_content": "With all colors free, they rose into the sky and created the very first rainbow - an arc of every color, celebrating their freedom. And they named it after the brave girl who saved them.",
+              "text_word_count": 35,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "8f51fc1c-91ac-42f7-a5cc-a8e9a1a1668b",
+              "page_number": 0,
+              "text_content": "From that day on, whenever rain and sun meet, the colors create a rainbow to remember their hero. And if you look closely at a rainbow, you might just see Rainbow herself, waving hello. THE END",
+              "text_word_count": 36,
+              "image_url": "",
+              "image_prompt": ""
+            }
+          ]
+        }
+      ],
+      "total_pages": 10
+    },
+    {
+      "id": "b5b1797f-1899-4641-9f6c-fdc9a75cc248",
+      "title": "Numbers Come Alive",
+      "author": "",
+      "description": "Numbers jump off the page and teach Maya about math through exciting adventures.",
+      "genre": "General",
+      "age_range": "3-6",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1b/g8t-PUpfsM_HBPs-agQxi.jpg",
+      "status": "published",
+      "chapters": [
+        {
+          "id": "c0ef106c-2e2c-403b-886f-42c543afc313",
+          "title": "Story",
+          "order": 1,
+          "pages": [
+            {
+              "id": "18bfdc5a-de19-4a79-b558-ed95e635d311",
+              "page_number": 0,
+              "text_content": "Maya didn't like math. Numbers were confusing and boring. One night, while struggling with homework, she wished numbers were more fun. Suddenly, her worksheet began to glow!",
+              "text_word_count": 27,
+              "image_url": "https://v3b.fal.media/files/b/0a8fef26/0C2Ucz2BR6czJI5J-IaWy.png",
+              "image_prompt": ""
+            },
+            {
+              "id": "f85ef91e-8760-44d4-a89a-44970eef0c42",
+              "page_number": 0,
+              "text_content": "The number 1 hopped right off the page! He was tall and proud, wearing a tiny gold crown. 'I am One, the beginning of everything!' he announced. 'Follow me, and you'll see numbers can be amazing!'",
+              "text_word_count": 36,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "ed6ebd99-106d-45a1-bdd7-78e6882ee917",
+              "page_number": 0,
+              "text_content": "One led her to meet Two, who was always dancing with a partner. 'I'm about pairs!' Two explained. 'Shoes, twins, wings on birds - we make duos!' Maya giggled as they showed her matching things.",
+              "text_word_count": 35,
+              "image_url": "https://v3b.fal.media/files/b/0a8fef26/o-5blibLx9A0EVOD-z2g1.png",
+              "image_prompt": ""
+            },
+            {
+              "id": "0cf5840c-a53b-46f4-9801-442ebe63d324",
+              "page_number": 0,
+              "text_content": "Three was juggling triangles. 'I have the power of shape!' she said. 'Three points make a triangle, three primary colors make all colors, three little pigs built houses!' Suddenly math seemed everywhere!",
+              "text_word_count": 32,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "10288eba-c5f9-4a0e-bcae-fc95b573cc42",
+              "page_number": 0,
+              "text_content": "They slid down Four's square shape like a playground slide, bounced on Five's friendly hands, and played musical chairs with Six through Ten. Each number had a special talent!",
+              "text_word_count": 29,
+              "image_url": "https://v3b.fal.media/files/b/0a8fef26/5aXnMCBcnfOTM9R_Jfw_e.png",
+              "image_prompt": ""
+            },
+            {
+              "id": "f3fe9410-e9fa-4278-be58-4236a5eb8aa2",
+              "page_number": 0,
+              "text_content": "'Now let's do Addition Adventure!' One declared. He and Two held hands and glowed, transforming into Three! 'See? One plus two equals three!' It was like watching magic.",
+              "text_word_count": 28,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "e375730c-d884-4b74-8b5d-8572ec3509ac",
+              "page_number": 0,
+              "text_content": "Subtraction was a slide - you started at Ten and slid down to any number below. 'Ten minus four equals... whee!' Maya landed on Six, who caught her with a bow.",
+              "text_word_count": 31,
+              "image_url": "https://v3b.fal.media/files/b/0a8fef27/_mPrLDDmPtD-ighJJ4xb3.png",
+              "image_prompt": ""
+            },
+            {
+              "id": "5d16b7a0-812f-4665-b97d-3e3899617e05",
+              "page_number": 0,
+              "text_content": "Multiplication was a copy machine. Put in Three, press the button twice, and out came nine little Threes! 'Three times three equals nine!' they chorused.",
+              "text_word_count": 25,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "9fef8474-0a2c-41a1-9709-2bff9cb3e317",
+              "page_number": 0,
+              "text_content": "Finally, Division was a sharing party. 'If Twelve wants to share cookies with Four friends, everyone gets...' Maya did the math in her head. 'Three cookies each!' She'd never thought of it that way before.",
+              "text_word_count": 35,
+              "image_url": "https://v3b.fal.media/files/b/0a8fef27/JT5hcrC2ChVi7jRkd6H02.png",
+              "image_prompt": ""
+            },
+            {
+              "id": "983dabb1-ca70-4820-8473-6e8005323195",
+              "page_number": 0,
+              "text_content": "Maya woke up at her desk, homework done perfectly. She'd been dreaming? But there, in the margin, was a tiny note: 'Great job! - Your friends, 1-10.' Maya smiled. Math was actually... fun!",
+              "text_word_count": 33,
+              "image_url": "",
+              "image_prompt": ""
+            }
+          ]
+        }
+      ],
+      "total_pages": 10
+    },
+    {
+      "id": "92a762e4-3719-4c1d-bfbb-76aa21eceb92",
+      "title": "Guardians of Tomorrow",
+      "author": "",
+      "description": "",
+      "genre": "Adventure",
+      "age_range": "6-8",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1b/ArWbvJRehqVw43COe5XY6.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "1775efaf-de18-4bc9-a3e5-635f788cdba2",
+      "title": "The Journey to Merlden",
+      "author": "",
+      "description": "Join Ariza and Dax as they discover a mysterious map and embark on a thrilling adventure to find their parents in the enchanted land of Merlden.",
+      "genre": "Fantasy",
+      "age_range": "6-8",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1b/voSzv11KZ_ETKa0pWUTvr.jpg",
+      "status": "published",
+      "chapters": [
+        {
+          "id": "220a9fb2-744d-46c4-b8eb-92ab216dfc57",
+          "title": "Chapter 1",
+          "order": 1,
+          "pages": [
+            {
+              "id": "4401256f-b1a0-4d4e-8a03-8683af940b0d",
+              "page_number": 0,
+              "text_content": "Ariza and Dax lived in a cozy village nestled between rolling green hills and a silver-threaded river. The wooden houses there leaned gently toward one another, as if sharing secrets, their chimneys puffing soft clouds into the morning sky. Life in the village was peaceful—predictable even—but beyond the hills stretched a world neither of them had seen.\n\nAnd their hearts longed for it.\n\nAriza was the dreamer. She would sit by the river and imagine distant cities carved from crystal cliffs or forests glowing under moonlight. Dax, practical but equally curious, preferred climbing the tallest oak near their cottage to scan the horizon, wondering what lay beyond the blue outline of faraway mountains.",
+              "text_word_count": 113,
+              "image_url": "https://v3b.fal.media/files/b/0a8fef28/3O8S9q-d7ULn5VCWPnScG.png",
+              "image_prompt": "A quaint village with small wooden houses amidst lush greenery. Two children excitedly examining an old map in a quaint attic filled with interesting trinkets."
+            },
+            {
+              "id": "176dd768-bbb1-451f-8f75-bef4715bf146",
+              "page_number": 0,
+              "text_content": "One rainy afternoon, when thunder rolled lazily overhead, the two friends decided to explore Ariza’s attic. It was a place of forgotten trunks, dusty lanterns, and cobwebbed memories. They were searching for nothing in particular—only for something different.\n\nThat’s when Dax found it.\n\nHidden inside a carved wooden chest beneath a stack of faded quilts lay a rolled parchment tied with a deep red ribbon. The paper was thick and warm to the touch, as if it had been waiting for them.\n\nAriza untied the ribbon.\n\nThe map shimmered faintly in the dim light. It showed places neither of them had ever heard of: The Whispering Marsh, The Ember Peaks, The Forest of Glass Leaves—and at the very center, written in elegant, curling ink:\n\nMerlden.",
+              "text_word_count": 125,
+              "image_url": "https://v3b.fal.media/files/b/0a8fef28/ncOf17AzdUHHJ1NLhJStJ.png",
+              "image_prompt": ""
+            },
+            {
+              "id": "2c477e8e-4a28-48bb-a682-a492c9189816",
+              "page_number": 0,
+              "text_content": "",
+              "text_word_count": 0,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "34f27f30-7a7d-453d-b443-51c147276580",
+              "page_number": 0,
+              "text_content": "A small compass rose in the corner glowed softly, and when Ariza tilted the map, tiny golden flecks drifted across its surface like stardust.\n\n“Do you think it’s real?” Dax whispered.\n\n“There’s only one way to find out,” Ariza replied, her eyes bright.\n\nBy dawn the next day, they packed bread, dried apples, a coil of rope, and Dax’s sturdy walking staff. The village still slept as they slipped past the wooden houses and crossed the stone bridge over the river. The world beyond the hills greeted them with crisp air and endless possibility.\n\nTheir first destination was the Whispering Marsh.\n\nThe marsh was unlike anything they had imagined. Mist curled above dark waters, and reeds swayed though no wind stirred them. As they stepped carefully along a narrow path of stones, they began to hear it—soft murmurs drifting through the fog.\n\nVoices.\n\n“Turn back…”\n“Keep walking…”\n“Choose wisely…”\n\nDax gripped his staff tighter. “It’s trying to confuse us.”",
+              "text_word_count": 159,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "f2ad4939-4e71-4483-a465-abb664c8bcf1",
+              "page_number": 0,
+              "text_content": "",
+              "text_word_count": 0,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "5e4346db-af78-4c91-a2d8-41e4c29d7c70",
+              "page_number": 0,
+              "text_content": "",
+              "text_word_count": 0,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "8ecbe22b-49ce-4258-ab22-3ced7e855011",
+              "page_number": 0,
+              "text_content": "It was not a city of towering spires or glittering palaces. Instead, it was a wide valley filled with travelers—people from distant lands sharing stories, laughter, inventions, and songs. Gardens flourished beside workshops. Bridges arched over sparkling streams. Everywhere they looked, there was curiosity.\n\nAn old woman seated by the archway smiled as they approached.\n\n“You’ve come far,” she said. “What did you expect to find?”\n\n“Something extraordinary,” Ariza answered.\n\nThe woman’s eyes twinkled. “And what did you find?”\n\nDax glanced at Ariza. “Each other,” he said. “And courage we didn’t know we had.”\n\nThe woman nodded, satisfied.\n\nThey stayed in Merlden for many days, learning from travelers and sharing tales of their own village. But eventually, as all journeys do, theirs turned homeward.\n\nWhen they returned, the wooden houses seemed warmer, the river brighter. The village had not changed—but they had.\n\nThe map, now resting on Ariza’s desk, no longer shimmered. Its golden flecks had faded, as though its magic had been fulfilled.\n\nYet sometimes, when the wind rustled the trees just right, Ariza and Dax would look toward the hills and smile.\n\nBecause they knew Merlden was not just a place on a map.\n\nIt was the courage to step beyond the familiar.\n\nAnd that journey, they realized, could begin again at any time.",
+              "text_word_count": 216,
+              "image_url": "",
+              "image_prompt": ""
+            }
+          ]
+        }
+      ],
+      "total_pages": 7
+    },
+    {
+      "id": "5ebe3908-18f9-4947-b049-7248c2700fa4",
+      "title": "The Unicorn's Rainbow Bridge",
+      "author": "",
+      "description": "A unicorn helps children cross a magical rainbow bridge to dreamland.",
+      "genre": "Fantasy",
+      "age_range": "3-6",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1b/q8HgRjEmyG9in34Edq_TL.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "995e0963-3ebe-472b-9db6-8a8f43794f4d",
+      "title": "Princess Penny's Pet Dragon",
+      "author": "",
+      "description": "A princess befriends a tiny dragon who causes adorable chaos in the castle.",
+      "genre": "Fantasy",
+      "age_range": "3-6",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1c/zmdeUqXQplRn9da27Kn_J.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "67b40688-b6cb-431b-a0c6-8baa1c28542c",
+      "title": "The Wizard's Apprentice",
+      "author": "",
+      "description": "A young boy learns magic from a forgetful but kind wizard.",
+      "genre": "Fantasy",
+      "age_range": "3-6",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1c/VgHGkRKtzNlx9OYIcWPMW.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "3a413305-8f24-41b0-adec-02164007e1d9",
+      "title": "Fairies of Moonlight Meadow",
+      "author": "",
+      "description": "Tiny fairies work together to save their meadow from a grumpy troll.",
+      "genre": "Fantasy",
+      "age_range": "3-6",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1c/NmthmadCAycb_0NZWRYGz.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "3227bed7-9788-46b2-a27a-50326905ad22",
+      "title": "The Mermaid's Lost Pearl",
+      "author": "",
+      "description": "A mermaid princess searches the ocean depths for her grandmother's pearl.",
+      "genre": "Fantasy",
+      "age_range": "3-6",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1c/jC0qO232pHLt_xz-Jz6vp.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "c83e67ba-2fa4-421a-85a4-1f9e1f7384de",
+      "title": "Elves and the Magic Tree",
+      "author": "",
+      "description": "Forest elves protect a tree that grants wishes to kind-hearted children.",
+      "genre": "Fantasy",
+      "age_range": "3-6",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1c/MH-ur7aHZWZKInuXYaDFv.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "51c242bc-99a4-4456-b4dc-1821c2a75138",
+      "title": "The Giant's Gentle Heart",
+      "author": "",
+      "description": "A misunderstood giant just wants to make friends with the village children.",
+      "genre": "Fantasy",
+      "age_range": "3-6",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1c/ps1-_JGuNUY5j1SS-61vq.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "56c45425-ba3b-421d-b17f-f13321c32f65",
+      "title": "Pixie Dust Adventures",
+      "author": "",
+      "description": "A pixie shares her magical dust to help children believe in themselves.",
+      "genre": "Fantasy",
+      "age_range": "3-6",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1d/HB98bM3YL9RyZPYw478j5.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "efdc724b-18b0-4901-a22f-e211836d76c2",
+      "title": "The Enchanted Carousel",
+      "author": "",
+      "description": "A carousel comes alive at midnight, taking children on magical adventures.",
+      "genre": "Fantasy",
+      "age_range": "3-6",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1d/Cq3vACN-TfLXYFVWiE-u9.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "ed34dc96-9c78-4eb7-8707-90245371bea4",
+      "title": "Captain Compass and the Treasure Map",
+      "author": "",
+      "description": "A young pirate captain follows an ancient map to find friendship, not gold.",
+      "genre": "Adventure",
+      "age_range": "6-8",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1d/q7WKw9TCGFx4Y6rGIyk1S.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "730f7b9b-d2bb-47f4-a797-1337bc0d6980",
+      "title": "The Jungle Explorers Club",
+      "author": "",
+      "description": "Three friends explore a backyard jungle and discover amazing creatures.",
+      "genre": "Adventure",
+      "age_range": "6-8",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1d/PiOVcANKjoDUR6Nwi4s4T.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "f6e35965-f823-4ed5-8b96-658a832daedd",
+      "title": "Mountain Climbing Mice",
+      "author": "",
+      "description": "Brave mice climb the tallest mountain to see the sunrise.",
+      "genre": "Adventure",
+      "age_range": "6-8",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1d/GllZ2ND-NryaaOV-rnYUj.jpg",
+      "status": "pending_regeneration",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "61dced03-0e50-4d76-826a-640b9ffa0f19",
+      "title": "The Underground City",
+      "author": "",
+      "description": "Children discover a hidden city beneath their school playground.",
+      "genre": "Adventure",
+      "age_range": "",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1d/GQwecd4ct_cyis4ynRdFG.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "af46591e-445e-4190-9e02-b68e895c6403",
+      "title": "Sky Pirates of Cloudland",
+      "author": "",
+      "description": "Flying ships and brave children protect the cloud kingdoms.",
+      "genre": "Adventure",
+      "age_range": "6-8",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1e/tQrRGIhr7sOttyNgpzIEY.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "185b7566-d59e-42fa-90ab-55a8ea5f169f",
+      "title": "Safari Sam's Big Day",
+      "author": "",
+      "description": "A young photographer goes on his first safari adventure.",
+      "genre": "Adventure",
+      "age_range": "",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1e/Fj4qrOqrDO_qWXbEa5vTH.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "f10ecfac-d2e8-4725-b28e-fee429e5c8ab",
+      "title": "The Lighthouse Keeper's Secret",
+      "author": "",
+      "description": "A girl discovers her grandfather's lighthouse hides a wonderful secret.",
+      "genre": "Adventure",
+      "age_range": "6-8",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1e/8S-T5ASHLpx8DZ4C9lCA5.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "f0a6f967-0b03-4a5e-b9a5-fa7141dc8a25",
+      "title": "Desert Treasure Hunt",
+      "author": "",
+      "description": "Siblings search for ancient treasure in the sandy dunes.",
+      "genre": "Adventure",
+      "age_range": "6-8",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1e/qtzgPiwXE-1lyNoDrDFtS.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "e619937d-d90e-4c64-9cb4-795a00c4696b",
+      "title": "River Rafting Raccoons",
+      "author": "",
+      "description": "Raccoon friends build a raft and explore down the river.",
+      "genre": "Adventure",
+      "age_range": "3-6",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1e/IqkqHQSYKMLC_Co_-4ISR.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "875cb08c-5634-4304-ae34-07fb0c446afe",
+      "title": "The Arctic Expedition",
+      "author": "",
+      "description": "Young scientists travel to the Arctic to study polar bears.",
+      "genre": "Adventure",
+      "age_range": "",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1e/pYRXgVFuqCrAVcZs3W1EU.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "ab0fe05e-1e98-4106-9334-66577fead8c3",
+      "title": "Aliens at My School",
+      "author": "",
+      "description": "A new student turns out to be from another planet!",
+      "genre": "Science Fiction",
+      "age_range": "3-6",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1e/DUuOmn_KuQZtjADlQOe3C.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "134d15cb-7824-4e33-a5d8-31f81e8b185f",
+      "title": "The Time Machine Treehouse",
+      "author": "",
+      "description": "A treehouse that travels through time teaches history lessons.",
+      "genre": "Science Fiction",
+      "age_range": "6-8",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1f/IAWzBB_3uTnJDiXoSZ9MY.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "10b82c6e-6ccb-4466-a97a-ed0fa997196e",
+      "title": "Space Station School",
+      "author": "",
+      "description": "What's it like to go to school floating in space?",
+      "genre": "Science Fiction",
+      "age_range": "6-8",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1f/1YpSj_C1kduE8HDBRBX8u.jpg",
+      "status": "pending_regeneration",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "d76924a2-eb27-4f7f-b9ae-5a7f9c922dad",
+      "title": "The Friendly Martians",
+      "author": "",
+      "description": "Green Martians visit Earth and learn about human customs.",
+      "genre": "Science Fiction",
+      "age_range": "3-6",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1f/vohB9ZCz0nETSV6Yb8-H3.jpg",
+      "status": "pending_regeneration",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "967761b8-0efe-4b06-b80b-56102fe02255",
+      "title": "Gadget Girl and the Invention Fair",
+      "author": "",
+      "description": "A young inventor creates a machine that solves everyone's problems.",
+      "genre": "Science Fiction",
+      "age_range": "6-8",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1f/WCFXui9ibsedWoZw799_h.jpg",
+      "status": "pending_regeneration",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "32c78d01-b21c-4496-9bf5-476bfb92818b",
+      "title": "Astronaut Alex's Moon Mission",
+      "author": "",
+      "description": "A brave young astronaut plants the first flower on the moon.",
+      "genre": "Science Fiction",
+      "age_range": "",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1f/PVjJJip3xxVTGiibuPa4i.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "57ddb1d3-1d67-496a-a50b-b6b3cc95dc26",
+      "title": "Mystery at the Zoo",
+      "author": "",
+      "description": "Animals keep disappearing, but where do they go?",
+      "genre": "Mystery",
+      "age_range": "6-8",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef1f/HZFAPpjNxZZhB-C2aYc_U.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "bc4794ea-f46f-4e15-8d13-4f64ad413f93",
+      "title": "The Secret Code Club",
+      "author": "",
+      "description": "Friends decode secret messages to find hidden treasure.",
+      "genre": "Mystery",
+      "age_range": "6-8",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef20/kTiwcOfFAbzKwF8tS5Ewq.jpg",
+      "status": "pending_regeneration",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "4603101f-bfff-4254-ac0a-8c80a6bcd11f",
+      "title": "Detective Daisy's First Case",
+      "author": "",
+      "description": "A girl with a magnifying glass solves neighborhood mysteries.",
+      "genre": "Mystery",
+      "age_range": "6-8",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef20/dgV1HoZMD-fkr7byFEmrU.jpg",
+      "status": "pending_regeneration",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "6473383d-3ddd-448e-92fc-10823f824a2f",
+      "title": "The Haunted Library Book",
+      "author": "",
+      "description": "A spooky library book leads to a not-so-scary ghost.",
+      "genre": "Mystery",
+      "age_range": "6-8",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef20/i_AAcpRYRlzcjRiuj5X8N.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "f7d9d8d6-20aa-495d-be23-382ac11a0927",
+      "title": "Puzzle Palace Adventures",
+      "author": "",
+      "description": "A palace filled with puzzles tests young minds.",
+      "genre": "Mystery",
+      "age_range": "6-8",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef20/n68XzZWZ_nkK4pVtll315.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "861a8415-637a-4ea3-a678-0ae1b61283a1",
+      "title": "The Missing Birthday Present",
+      "author": "",
+      "description": "Who took the birthday present? Follow the clues!",
+      "genre": "Mystery",
+      "age_range": "6-8",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef20/hvHT0QXD5VmL_R8ZOjNCh.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "b5cf1707-7930-4e72-a01c-8d21d052b693",
+      "title": "The Burping Dragon",
+      "author": "",
+      "description": "A dragon who can only burp instead of breathe fire.",
+      "genre": "Humour",
+      "age_range": "",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef21/t15l1BSBxt531-tJjFkFp.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "cf359d5f-473d-44de-8b7b-db2ccaba95a1",
+      "title": "The Backwards Day",
+      "author": "",
+      "description": "Everything happens backwards in this topsy-turvy tale!",
+      "genre": "Humour",
+      "age_range": "4-7",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef21/8DIgCGjZZsSWsuNdqZL1-.jpg",
+      "status": "pending_regeneration",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "02f5b64a-4eed-4c69-8f48-f2e7b11e4c6a",
+      "title": "Pirate Pete's Bad Hair Day",
+      "author": "",
+      "description": "A pirate tries everything to fix his crazy hair.",
+      "genre": "Humour",
+      "age_range": "4-7",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef21/JNEG6L5F34tQfhR3fA6TC.jpg",
+      "status": "pending_regeneration",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "2b6ea28c-9dba-477d-b3d5-a5cecef19ece",
+      "title": "The Monster Who Was Scared of Kids",
+      "author": "",
+      "description": "A monster under the bed is actually terrified of children!",
+      "genre": "Humour",
+      "age_range": "3-6",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef21/JT67vi-1YfDm21cu_Iipg.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "d7bf28c1-dbe9-4579-8d83-2faa0ed1ad8f",
+      "title": "Dinosaur Dentist",
+      "author": "",
+      "description": "A T-Rex tries to brush all 60 of his teeth!",
+      "genre": "Humour",
+      "age_range": "3-6",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef22/B6Rc8YXfspigwWtA3joEe.jpg",
+      "status": "pending_regeneration",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "1eb994a4-e00c-4ac6-a47f-d22544493608",
+      "title": "The Alphabet Zoo",
+      "author": "",
+      "description": "Animals teach the alphabet from A to Z.",
+      "genre": "General",
+      "age_range": "",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef22/MziEjNY6Mzf2Aing8K0tH.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "02207156-79bc-4089-9512-86ec8cd43a78",
+      "title": "Seasons of the Magic Forest",
+      "author": "",
+      "description": "A forest changes through all four seasons.",
+      "genre": "General",
+      "age_range": "3-6",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef22/s1_YzKHCTn8WxJw4grGuN.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "5826db64-5029-4729-9eed-8da4fae959d3",
+      "title": "Kindness Kingdom",
+      "author": "",
+      "description": "A kingdom where kindness is the most powerful magic.",
+      "genre": "General",
+      "age_range": "",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef22/anqng23n2WrYDPw8hceNh.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "e448e6d7-7c88-457e-80f4-01439d2b416f",
+      "title": "Shapes in the City",
+      "author": "",
+      "description": "Discover shapes hiding everywhere in the city.",
+      "genre": "General",
+      "age_range": "3-6",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef22/s8tVz3EDTigwCblDNy-EB.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "40fde406-1757-4185-ab62-eb97264784e9",
+      "title": "The Feelings Garden",
+      "author": "",
+      "description": "Flowers represent different emotions children can learn about.",
+      "genre": "General",
+      "age_range": "",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef22/dmxXIaAZ8f_hrqJw3XBcK.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "1feebc6d-6bb7-4e35-9602-8fccdc5a918b",
+      "title": "Bedtime in the Animal World",
+      "author": "",
+      "description": "How do different animals say goodnight?",
+      "genre": "General",
+      "age_range": "3-6",
+      "cover_image": "https://v3b.fal.media/files/b/0a8fef22/ezjiKXbd4RhU5fpIApPdb.jpg",
+      "status": "published",
+      "chapters": [],
+      "total_pages": 0
+    },
+    {
+      "id": "cbc823c2-7507-44bb-8c82-8422e8ba512a",
+      "title": "Flame's Courageous Journey",
+      "author": "",
+      "description": "An enchanting tale about a small dragon named Flame who learns to conquer his fear of fire with the help of a wise owl.",
+      "genre": "Fantasy",
+      "age_range": "6-8",
+      "cover_image": "",
+      "status": "published",
+      "chapters": [
+        {
+          "id": "daa2f65e-12e8-4e89-bbc6-3337e3c8e66d",
+          "title": "Chapter 1",
+          "order": 1,
+          "pages": [
+            {
+              "id": "9e9b57db-7d61-400e-ba30-0207d8ca092d",
+              "page_number": 0,
+              "text_content": "In a lush green forest far, far away lived a tiny dragon named Flame. Although brave in many ways, Flame was afraid of fire, which was quite unusual for a dragon! His friends often played with sparks and smoke, while Flame watched from afar.",
+              "text_word_count": 44,
+              "image_url": "",
+              "image_prompt": "A colorful forest with a small, friendly dragon looking timidly at other dragons playing with tiny sparks. The scene is lively and soothing, with trees and small animals in the background."
+            },
+            {
+              "id": "e618c913-44b8-41ac-b9e3-3806486a5970",
+              "page_number": 0,
+              "text_content": "One day, Flame met Ollie, a wise old owl perched on a grand oak tree. Seeing Flame's worried expression, Ollie asked, 'Why do you look so glum, my young friend?' Flame replied with a sigh, 'I am afraid of fire, Ollie, yet I am a dragon.'",
+              "text_word_count": 46,
+              "image_url": "",
+              "image_prompt": "An old oak tree with a wise-looking owl, Ollie, speaking to a small dragon named Flame. The scene captures the warmth of their conversation with softly glowing leaves and a gentle sunset in the background."
+            },
+            {
+              "id": "d97ef39f-b99f-4fcf-b7bd-7cd306e98a2b",
+              "page_number": 0,
+              "text_content": "'Fear is only as big as we allow it to be,' hooted Ollie kindly. He continued, 'Let me teach you how to make friends with fire.' Together, they ventured into the heart of the forest where the air was filled with the gentle crackling of tiny flames.",
+              "text_word_count": 47,
+              "image_url": "",
+              "image_prompt": "Ollie the owl guiding Flame into the deeper part of the forest. Small, gentle flames light their path, creating a magical and safe atmosphere with twinkling lights and friendly critters watching curiously."
+            },
+            {
+              "id": "0e1ad834-6a89-44fc-aa0b-b5b34b4fdc38",
+              "page_number": 0,
+              "text_content": "Ollie showed Flame how to blow small flames that danced softly and flickered like fireflies. Flame tried and, to his surprise, found the flames to be warm and friendly. 'You've done it, Flame!' Ollie cheered, as Flame's eyes sparkled with delight.",
+              "text_word_count": 41,
+              "image_url": "",
+              "image_prompt": "Flame blowing gentle, flickering flames amidst a backdrop of a starry night. Ollie the owl watches proudly. The scene is filled with stars and a sense of wonder and accomplishment."
+            },
+            {
+              "id": "ffdcf275-f9a9-405b-8a94-d17b7d91f451",
+              "page_number": 0,
+              "text_content": "From that day on, Flame no longer feared fire. He realized that true bravery was not the absence of fear, but facing it with a kind heart. And with Ollie's wise words, Flame learned to embrace his dragon heritage with pride and joy.",
+              "text_word_count": 43,
+              "image_url": "",
+              "image_prompt": "Flame, now confident, playing with small flames in a cheerful, open meadow. Ollie sits on a nearby branch, looking content. The scene is bright and full of life, symbolizing newfound courage."
+            }
+          ]
+        }
+      ],
+      "total_pages": 5
+    },
+    {
+      "id": "e407351d-6474-4917-935f-df4c009de967",
+      "title": "Luna's Rainbow Adventure",
+      "author": "",
+      "description": "Join young astronaut Luna as she discovers a moon of rainbow crystals and meets a civilization of friendly aliens, embarking on a delightful journey of friendship and wonder.",
+      "genre": "Sci-Fi",
+      "age_range": "3-6",
+      "cover_image": "https://v3b.fal.media/files/b/0a8f9f89/jCZyQSc5dwW5MXC6T4qGy.jpg",
+      "status": "published",
+      "chapters": [
+        {
+          "id": "30d0e100-eb67-467e-b34f-4a9d426fcba1",
+          "title": "Chapter 1",
+          "order": 1,
+          "pages": [
+            {
+              "id": "18ce4ba9-6951-4504-8585-bd366f668ec1",
+              "page_number": 0,
+              "text_content": "Luna was an astronaut with a big, curious heart. One day, her spaceship took her to a moon that glimmered like a thousand rainbows.",
+              "text_word_count": 24,
+              "image_url": "https://v3b.fal.media/files/b/0a8f9fad/3ydbA35oHafW2GMZIJuVT.jpg",
+              "image_prompt": "An adventurous young girl in an astronaut suit, standing next to a small spaceship on a dazzling moon covered in colorful rainbow crystals, with stars twinkling in the dark sky above."
+            },
+            {
+              "id": "25967874-3860-4578-afad-e2ef8cfbf871",
+              "page_number": 0,
+              "text_content": "As Luna stepped out, her eyes widened! Everywhere she looked, she saw sparkling crystals shining like the colors of a rainbow.",
+              "text_word_count": 21,
+              "image_url": "https://v3b.fal.media/files/b/0a8f9fad/EI-YJ8NgSuAMiIBOUWFa4.jpg",
+              "image_prompt": "Wide-eyed Luna looking around in awe at a landscape full of sparkling, multicolored crystals reflecting light beautifully."
+            },
+            {
+              "id": "9a129223-bb7a-4655-b191-0cba5f5d60b6",
+              "page_number": 0,
+              "text_content": "Suddenly, Luna heard giggles. She turned around to see a group of friendly aliens with big smiles and bright eyes.",
+              "text_word_count": 20,
+              "image_url": "https://v3b.fal.media/files/b/0a8f9fae/GCl_AHljagQF_vTXNCaRM.jpg",
+              "image_prompt": "A group of cheerful, colorful aliens with big smiles and bright eyes approaching Luna, surrounded by glowing crystals."
+            },
+            {
+              "id": "118dbc23-7155-4806-a5cf-6ddd561659f1",
+              "page_number": 0,
+              "text_content": "The aliens introduced themselves as the Crystal Friends. They welcomed Luna and offered to show her their magical moon.",
+              "text_word_count": 19,
+              "image_url": "https://v3b.fal.media/files/b/0a8f9fae/hJSoRBP9PGjQWDi-D6npG.jpg",
+              "image_prompt": "The Crystal Friends, small and colorful alien figures, happily showing Luna around the crystal-clear paths on the moon."
+            },
+            {
+              "id": "3ca7145f-57dc-4544-9727-40c205cdb7d4",
+              "page_number": 0,
+              "text_content": "Luna learned how the crystals sang in the breeze and how their colors changed with every giggle of the Crystal Friends.",
+              "text_word_count": 21,
+              "image_url": "https://v3b.fal.media/files/b/0a8f9fae/GKfsKznldOEFZEOVZ_-er.jpg",
+              "image_prompt": "A scene with Luna and the Crystal Friends listening to the gentle, musical notes of the crystals with changing colors."
+            },
+            {
+              "id": "ca67c890-aad9-4a85-8687-186ec9a4bb64",
+              "page_number": 0,
+              "text_content": "As the sun began to set, Luna knew it was time to go, but promised to return. She waved goodbye to her new friends, with her heart full of joy.",
+              "text_word_count": 30,
+              "image_url": "https://v3b.fal.media/files/b/0a8f9fae/_p57eXe7R3WCeKi91DRWn.jpg",
+              "image_prompt": "Luna waving goodbye to the Crystal Friends as the sun sets, casting a golden glow over the rainbow crystal landscape."
+            }
+          ]
+        }
+      ],
+      "total_pages": 6
+    },
+    {
+      "id": "a0b23e67-5b1a-4ec7-9098-9c7a2aa397be",
+      "title": "Lila and the Whispering Blossoms",
+      "author": "",
+      "description": "Lila, a shy forest fairy, finds her special gift and learns the beauty of friendship with woodland creatures.",
+      "genre": "Fantasy",
+      "age_range": "3-6",
+      "cover_image": "https://v3b.fal.media/files/b/0a8f9f8c/Gc04sjgnoqY8f3DM-hsU4.jpg",
+      "status": "published",
+      "chapters": [
+        {
+          "id": "7109db29-dd62-44b0-ab17-327429deaa7e",
+          "title": "Chapter 1",
+          "order": 1,
+          "pages": [
+            {
+              "id": "137a4ca3-b463-41f4-8c7a-8b272c074813",
+              "page_number": 0,
+              "text_content": "Deep in the heart of the Glimmering Woodlands, lived a shy fairy named Lila. She loved the peace of the forest, but she often felt lonely and unsure when meeting new woodland friends.",
+              "text_word_count": 33,
+              "image_url": "https://v3b.fal.media/files/b/0a8f9faf/voOmsHLuZoIiGSzgG758D.jpg",
+              "image_prompt": "Illustration of a small, enchanted forest with trees and sunlight streaming through the branches. Lila, a delicate fairy with translucent wings, peeks shyly from behind a vibrant flower."
+            },
+            {
+              "id": "19a9fafb-b697-4eeb-a805-84435a2314eb",
+              "page_number": 0,
+              "text_content": "One sunny morning, Lila heard a tiny voice saying, 'Hello!' Startled, she looked around and realized it was a flower speaking. Her eyes sparkled with surprise.",
+              "text_word_count": 26,
+              "image_url": "https://v3b.fal.media/files/b/0a8f9faf/ZJkY2jTK2mm8M4-undLuK.jpg",
+              "image_prompt": "Illustration of Lila surrounded by colorful flowers, with one particularly bright flower smiling at her and tiny musical notes floating in the air."
+            },
+            {
+              "id": "12b6846a-563b-48ec-ba2a-a6ff95482c4f",
+              "page_number": 0,
+              "text_content": "'I can talk to flowers?' Lila wondered aloud. As she listened, the flowers shared stories of the forest, revealing secrets only they knew. Lila was amazed!",
+              "text_word_count": 26,
+              "image_url": "https://v3b.fal.media/files/b/0a8f9faf/9AR4MyfOhesmQYlHbyAfv.jpg",
+              "image_prompt": "Illustration of Lila touching a flower while other flowers around join in, each flower has a small face, and they seem animated and chatty."
+            },
+            {
+              "id": "8600e430-4f2a-4c15-b601-1464b5a7d62d",
+              "page_number": 0,
+              "text_content": "Excited to share her gift, Lila decided to invite the woodland animals to meet the talking flowers. One by one, the creatures gathered around, eyes wide with wonder.",
+              "text_word_count": 28,
+              "image_url": "https://v3b.fal.media/files/b/0a8f9faf/thB2RkwpjIzXjR0k3l2SX.jpg",
+              "image_prompt": "Illustration of a gathering of woodland creatures—bunnies, squirrels, and birds surrounding Lila and the chattering flowers, everybody intrigued and smiling."
+            },
+            {
+              "id": "8457058e-4709-413b-9bc4-237efdcaabfa",
+              "page_number": 0,
+              "text_content": "Lila felt happy and confident as she introduced her new friends. Together, they realized that sometimes, the most magical gift is the ability to bring others together.",
+              "text_word_count": 27,
+              "image_url": "https://v3b.fal.media/files/b/0a8f9fb0/0i0OSAP_tpH0SL0x76axc.jpg",
+              "image_prompt": "Illustration of a warm, happy scene with Lila laughing with her new friends, both flowers and animals, under the golden glow of the setting sun."
+            }
+          ]
+        }
+      ],
+      "total_pages": 5
+    },
+    {
+      "id": "cb1254c5-63fa-479d-9b29-db771ddde5ba",
+      "title": "The Midnight Brush",
+      "author": "",
+      "description": "A magical tale of a young artist whose paintings come alive each night, leading to a colorful and enchanting adventure.",
+      "genre": "Fantasy",
+      "age_range": "6-8",
+      "cover_image": "https://v3b.fal.media/files/b/0a8f9f96/rGU9hgn9NvybgvckgnBBg.jpg",
+      "status": "published",
+      "chapters": [
+        {
+          "id": "66cb46f4-1e44-4c37-8370-57d47ef285b6",
+          "title": "Chapter 1",
+          "order": 1,
+          "pages": [
+            {
+              "id": "2c22e7be-5d27-40dc-893d-d44f060ce649",
+              "page_number": 0,
+              "text_content": "Emma had a special talent for painting with colors that seemed to dance on the canvas. Every night, her little art studio would sparkle with hues of blue, green, and pink. But one night, something wonderful happened—her paintings came to life!",
+              "text_word_count": 41,
+              "image_url": "https://v3b.fal.media/files/b/0a8f9fb3/kOLQmPvdsXARYv7obBF_L.jpg",
+              "image_prompt": "Illustration of a young girl sitting in her colorful art studio at night, surrounded by bright, vivid paintings that glow softly in the moonlight."
+            },
+            {
+              "id": "63d734c8-17f4-4ca6-9d9f-c3b0720ec7ce",
+              "page_number": 0,
+              "text_content": "As the clock struck midnight, Emma heard gentle whispers. The soaring bird in her painting swooped down, and the majestic lion padded out, both asking for her help. 'We can't find our way home,' the bird chirped.",
+              "text_word_count": 37,
+              "image_url": "https://v3b.fal.media/files/b/0a8f9fb3/mbmRhYdqpCdo7BOi1Qu7Y.jpg",
+              "image_prompt": "A lively bird and a friendly lion stepping out of their canvases in a glowing art studio, with Emma looking on in amazement."
+            },
+            {
+              "id": "03968d0d-adb4-47de-9d52-7cb94420292b",
+              "page_number": 0,
+              "text_content": "Emma knew she had to help her newfound friends. She dipped her brush in the brightest colors and painted a path that shimmered like a rainbow. 'Follow these colors, and they will lead you home,' she smiled.",
+              "text_word_count": 37,
+              "image_url": "https://v3b.fal.media/files/b/0a8f9fb3/VKbe926Bv9Sc9U85WHLVi.jpg",
+              "image_prompt": "Emma painting a vibrant, swirling path of colors on the floor, with the bird and the lion watching eagerly."
+            },
+            {
+              "id": "1cf8123e-a989-4d81-8d03-9213a97fd742",
+              "page_number": 0,
+              "text_content": "On their journey, they met the wise old tree from another painting. 'Ah, I was wondering if I'd see you,' it said warmly. The tree pointed its branches toward the glowing horizon where each creature belonged.",
+              "text_word_count": 36,
+              "image_url": "https://v3b.fal.media/files/b/0a8f9fb4/kcvfTej1FNRgX_uPEbOhY.jpg",
+              "image_prompt": "A wise old tree with a gentle face, guiding the bird and lion while Emma watches, surrounded by twinkling stars in the backdrop."
+            },
+            {
+              "id": "7155d507-2b30-4784-aaad-dad9b13ac28e",
+              "page_number": 0,
+              "text_content": "As dawn approached, Emma bid farewell to her friends. The bird and the lion thanked her before stepping back into their canvases. Emma knew that this magic might happen again, and she loved the thought of new adventures.",
+              "text_word_count": 38,
+              "image_url": "https://v3b.fal.media/files/b/0a8f9fb4/8aEOA1Lv6nSAVtv5fQYrx.jpg",
+              "image_prompt": "Emma waving goodbye to the bird and lion as they return to their canvases, with the sunrise just beginning to peek through the window."
+            }
+          ]
+        }
+      ],
+      "total_pages": 5
+    },
+    {
+      "id": "2844ed0e-1440-4be6-b7a8-8b48046ea96c",
+      "title": "The Emotion Squad: Power of Unity",
+      "author": "",
+      "description": "Join the adventure of the Emotion Squad, a group of young superheroes who discover the true power of friendship and teamwork through their emotion-based abilities.",
+      "genre": "Adventure",
+      "age_range": "6-8",
+      "cover_image": "https://v3b.fal.media/files/b/0a8f9f99/s5YvH5fioLJHL7LMbotJZ.jpg",
+      "status": "published",
+      "chapters": [
+        {
+          "id": "92581629-c125-4a4d-9f7e-66e9e2bc7c4f",
+          "title": "Chapter 1",
+          "order": 1,
+          "pages": [
+            {
+              "id": "a5394c20-75b6-4664-9d59-a49c93b3c049",
+              "page_number": 0,
+              "text_content": "Once in the vibrant town of Cheerstone, lived a group of young superheroes known as the Emotion Squad. Each member's power came from a unique emotion. Joy could make things grow with her laughter, while Calm could soothe any storm.",
+              "text_word_count": 40,
+              "image_url": "https://v3b.fal.media/files/b/0a8f9fb4/UjLuYrUhpiOQLWctoWxCW.jpg",
+              "image_prompt": "An energetic and colorful town filled with children playing in the park. The Emotion Squad, diverse kids in vibrant superhero outfits, stands in the center, each connecting with their surroundings symbolizing their powers."
+            },
+            {
+              "id": "d9c43a93-71fc-44cb-afba-8aa2b51376c3",
+              "page_number": 0,
+              "text_content": "One day, a mysterious cloud loomed over Cheerstone, casting sad shadows. Joy and Calm gathered the rest of the squad—Brave, Kind, and Creative. They knew they had to act quickly to help the town.",
+              "text_word_count": 34,
+              "image_url": "https://v3b.fal.media/files/b/0a8f9fb4/hiXTzk4Mvq2tsUPrQIm93.jpg",
+              "image_prompt": "A slightly darkened scene of Cheerstone with a big, gray cloud floating above. The Squad is shown conferring, with looks of determination on their faces, demonstrating their readiness to help."
+            },
+            {
+              "id": "8fe1b507-fb5c-424f-be65-28dfc8f8ad96",
+              "page_number": 0,
+              "text_content": "As they approached the cloud, each tried using their power alone. Joy's laughter brought brief sunshine, and Brave's courage dispelled shadows momentarily. Yet, the cloud remained. They needed something more.",
+              "text_word_count": 30,
+              "image_url": "https://v3b.fal.media/files/b/0a8f9fb5/l9eb5-28PswuCy0BfD_s1.jpg",
+              "image_prompt": "The grey cloud still large overhead, a series of small, colorful bursts below show each member's attempt to vanquish it. Joy with her bright smile, Brave with his heroic stance, each surrounded by effects of their power."
+            },
+            {
+              "id": "940fdced-58c7-4b6b-a0f1-564eb9208215",
+              "page_number": 0,
+              "text_content": "Creative had an idea. She suggested combining their powers to create something extraordinary. They stood in a circle, holding hands and focusing their unique feelings, letting their hearts guide them.",
+              "text_word_count": 30,
+              "image_url": "https://v3b.fal.media/files/b/0a8f9fb5/9pB5s03y61hRinuwVyoVs.jpg",
+              "image_prompt": "The Squad stands in a circle, vibrant energy flowing between them. Colors swirl in the air above as their powers merge into a bright, shimmering light aimed at the cloud."
+            },
+            {
+              "id": "0ee92428-c971-4650-9f84-6733128f25ad",
+              "page_number": 0,
+              "text_content": "As the light connected with the cloud, it began to break apart, revealing a sunny sky. Their combined strength was greater than any one power. The town cheered, grateful to the united Emotion Squad.",
+              "text_word_count": 34,
+              "image_url": "https://v3b.fal.media/files/b/0a8f9fb5/nPLUZg0CDf15BZSHgfSDi.jpg",
+              "image_prompt": "Cheerstone basked in sunshine, townspeople waving and smiling at the Squad. The superheroes, now relaxed and happy, embrace each other with relief and joy at their success."
+            },
+            {
+              "id": "d07becd7-0c2a-4430-a6e0-065c0788a82a",
+              "page_number": 0,
+              "text_content": "From then on, whenever a challenge arose, the Emotion Squad remembered the power of their friendship. Together, they could overcome anything. They beamed with pride, knowing they were not just superheroes, but the best of friends.",
+              "text_word_count": 36,
+              "image_url": "https://v3b.fal.media/files/b/0a8f9fb5/SbyTCEVrgjaosnbQkjjxE.jpg",
+              "image_prompt": "The team walks together, laughing and sharing in their victory. Around them, Cheerstone blossoms with lively colors and happy people, embodying the spirit of the Squad's unity and friendship."
+            }
+          ]
+        }
+      ],
+      "total_pages": 6
+    },
+    {
+      "id": "4f09ecbf-fc70-404a-838d-c1c547c73450",
+      "title": "Friendship Island",
+      "author": "",
+      "description": "Five friends get stranded on an island and learn about teamwork.",
+      "genre": "Adventure",
+      "age_range": "6-8",
+      "cover_image": "https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?w=400",
+      "status": "published",
+      "chapters": [
+        {
+          "id": "7b323cad-55d3-4112-a91e-d248a39f6105",
+          "title": "Chapter 1: The Beginning",
+          "order": 1,
+          "pages": [
+            {
+              "id": "3326c731-18d2-4114-b557-cae30f876bbc",
+              "page_number": 0,
+              "text_content": "Once upon a time, in a world not so different from ours, an adventure was about to begin...",
+              "text_word_count": 18,
+              "image_url": "https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?w=400",
+              "image_prompt": ""
+            },
+            {
+              "id": "35283530-0909-4a15-8047-02a00ebc70e1",
+              "page_number": 0,
+              "text_content": "Our hero looked around nervously. Something amazing was about to happen.",
+              "text_word_count": 11,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "934084f4-e2eb-490a-99e9-99d0d3d155ab",
+              "page_number": 0,
+              "text_content": "And that's when everything changed forever. The End.",
+              "text_word_count": 8,
+              "image_url": "",
+              "image_prompt": ""
+            }
+          ]
+        }
+      ],
+      "total_pages": 3
+    },
+    {
+      "id": "cb920fd3-c0bd-4be7-a40a-4ae2caeb8618",
+      "title": "The Robot Who Wanted Friends",
+      "author": "",
+      "description": "A lonely robot learns what it means to have friends.",
+      "genre": "Science Fiction",
+      "age_range": "6-8",
+      "cover_image": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400",
+      "status": "published",
+      "chapters": [
+        {
+          "id": "51d30950-1a0f-41ab-94b0-205c78b19a51",
+          "title": "Chapter 1: The Beginning",
+          "order": 1,
+          "pages": [
+            {
+              "id": "88501d03-ded8-4615-a8fd-6d68a72d9780",
+              "page_number": 0,
+              "text_content": "Once upon a time, in a world not so different from ours, an adventure was about to begin...",
+              "text_word_count": 18,
+              "image_url": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400",
+              "image_prompt": ""
+            },
+            {
+              "id": "30adb7a5-6255-40aa-b039-48457ec800b5",
+              "page_number": 0,
+              "text_content": "Our hero looked around nervously. Something amazing was about to happen.",
+              "text_word_count": 11,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "b5b85478-7340-45ed-93cd-e0c6732dcb5f",
+              "page_number": 0,
+              "text_content": "And that's when everything changed forever. The End.",
+              "text_word_count": 8,
+              "image_url": "",
+              "image_prompt": ""
+            }
+          ]
+        }
+      ],
+      "total_pages": 3
+    },
+    {
+      "id": "1cb453f2-65f3-40c5-ab32-d3d96fb17f80",
+      "title": "Princess and the Enchanted Forest",
+      "author": "",
+      "description": "Princess Luna discovers a magical forest full of talking animals.",
+      "genre": "Fairy Tales",
+      "age_range": "3-6",
+      "cover_image": "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400",
+      "status": "published",
+      "chapters": [
+        {
+          "id": "19378a72-cb74-4315-b01b-16823a9edd7b",
+          "title": "Chapter 1: The Beginning",
+          "order": 1,
+          "pages": [
+            {
+              "id": "a1bdaab9-2132-4f6b-ade1-c6994ac6f6ba",
+              "page_number": 0,
+              "text_content": "Once upon a time, in a world not so different from ours, an adventure was about to begin...",
+              "text_word_count": 18,
+              "image_url": "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400",
+              "image_prompt": ""
+            },
+            {
+              "id": "936c89cc-79da-4093-bf3e-9a64c46cc260",
+              "page_number": 0,
+              "text_content": "Our hero looked around nervously. Something amazing was about to happen.",
+              "text_word_count": 11,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "083bb2f9-e5ba-45c4-afa3-1481d997e0d7",
+              "page_number": 0,
+              "text_content": "And that's when everything changed forever. The End.",
+              "text_word_count": 8,
+              "image_url": "",
+              "image_prompt": ""
+            }
+          ]
+        }
+      ],
+      "total_pages": 3
+    },
+    {
+      "id": "2d44ad4f-61ce-439f-9fbf-f7bdc441ae59",
+      "title": "The Dinosaur Time Machine",
+      "author": "",
+      "description": "Two siblings accidentally travel back to the age of dinosaurs.",
+      "genre": "Adventure",
+      "age_range": "6-8",
+      "cover_image": "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400",
+      "status": "published",
+      "chapters": [
+        {
+          "id": "64376632-14b8-4ac6-8f02-28fcfc42f335",
+          "title": "Chapter 1: The Beginning",
+          "order": 1,
+          "pages": [
+            {
+              "id": "74d00bca-94e7-4abe-892a-7a550c738947",
+              "page_number": 0,
+              "text_content": "Once upon a time, in a world not so different from ours, an adventure was about to begin...",
+              "text_word_count": 18,
+              "image_url": "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400",
+              "image_prompt": ""
+            },
+            {
+              "id": "b022be41-b984-40b4-b383-04c80927ed1d",
+              "page_number": 0,
+              "text_content": "Our hero looked around nervously. Something amazing was about to happen.",
+              "text_word_count": 11,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "bf060e0a-5c0a-44b7-b6b8-cea1c6cd1765",
+              "page_number": 0,
+              "text_content": "And that's when everything changed forever. The End.",
+              "text_word_count": 8,
+              "image_url": "",
+              "image_prompt": ""
+            }
+          ]
+        }
+      ],
+      "total_pages": 3
+    },
+    {
+      "id": "da7a01a5-cd8f-4aed-a0ad-4e5d667355e7",
+      "title": "Ocean Wonders",
+      "author": "",
+      "description": "Explore the magical world beneath the waves.",
+      "genre": "Educational",
+      "age_range": "3-6",
+      "cover_image": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400",
+      "status": "published",
+      "chapters": [
+        {
+          "id": "8f1b1b28-4f95-4bc5-a701-38cca0d14912",
+          "title": "Chapter 1: The Beginning",
+          "order": 1,
+          "pages": [
+            {
+              "id": "2bc8ba13-2800-4508-abdd-4feeaafdff69",
+              "page_number": 0,
+              "text_content": "Once upon a time, in a world not so different from ours, an adventure was about to begin...",
+              "text_word_count": 18,
+              "image_url": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400",
+              "image_prompt": ""
+            },
+            {
+              "id": "c31af39a-a89e-4873-ac35-c3fbfbcbf570",
+              "page_number": 0,
+              "text_content": "Our hero looked around nervously. Something amazing was about to happen.",
+              "text_word_count": 11,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "337a34d7-c983-4680-9e1c-97bed7e2e4dd",
+              "page_number": 0,
+              "text_content": "And that's when everything changed forever. The End.",
+              "text_word_count": 8,
+              "image_url": "",
+              "image_prompt": ""
+            }
+          ]
+        }
+      ],
+      "total_pages": 3
+    },
+    {
+      "id": "28e741d7-daf3-4c5c-b482-ac0f5dcde7be",
+      "title": "The Superhero School",
+      "author": "",
+      "description": "A regular kid discovers they have superpowers on their first day at a new school.",
+      "genre": "Superhero",
+      "age_range": "6-8",
+      "cover_image": "https://images.unsplash.com/photo-1531259683007-016a7b628fc3?w=400",
+      "status": "published",
+      "chapters": [
+        {
+          "id": "2f0c8727-1344-4c09-87be-588004f74381",
+          "title": "Chapter 1: The Beginning",
+          "order": 1,
+          "pages": [
+            {
+              "id": "5e67f159-0c54-4ec5-ac37-b192137879db",
+              "page_number": 0,
+              "text_content": "Once upon a time, in a world not so different from ours, an adventure was about to begin...",
+              "text_word_count": 18,
+              "image_url": "https://images.unsplash.com/photo-1531259683007-016a7b628fc3?w=400",
+              "image_prompt": ""
+            },
+            {
+              "id": "3b56089c-6fb3-41dd-9b7a-138b48534d84",
+              "page_number": 0,
+              "text_content": "Our hero looked around nervously. Something amazing was about to happen.",
+              "text_word_count": 11,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "1ed9b03f-ae66-4036-9c91-b9b7c39004ce",
+              "page_number": 0,
+              "text_content": "And that's when everything changed forever. The End.",
+              "text_word_count": 8,
+              "image_url": "",
+              "image_prompt": ""
+            }
+          ]
+        }
+      ],
+      "total_pages": 3
+    },
+    {
+      "id": "a81c3db4-5aaf-4afc-8834-9c6566de5d7e",
+      "title": "Cooking Adventures with Chef Cat",
+      "author": "",
+      "description": "Chef Cat teaches kids fun and easy recipes.",
+      "genre": "Educational",
+      "age_range": "3-6",
+      "cover_image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400",
+      "status": "published",
+      "chapters": [
+        {
+          "id": "ed65c591-c9b7-485c-a880-566a31e9800c",
+          "title": "Chapter 1: The Beginning",
+          "order": 1,
+          "pages": [
+            {
+              "id": "360f0a71-106e-4324-b3bb-0a7018b5b2c3",
+              "page_number": 0,
+              "text_content": "Once upon a time, in a world not so different from ours, an adventure was about to begin...",
+              "text_word_count": 18,
+              "image_url": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400",
+              "image_prompt": ""
+            },
+            {
+              "id": "8d78a919-63ae-446a-a968-9040c0610dce",
+              "page_number": 0,
+              "text_content": "Our hero looked around nervously. Something amazing was about to happen.",
+              "text_word_count": 11,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "651387c7-481d-4654-9f66-277173cded93",
+              "page_number": 0,
+              "text_content": "And that's when everything changed forever. The End.",
+              "text_word_count": 8,
+              "image_url": "",
+              "image_prompt": ""
+            }
+          ]
+        }
+      ],
+      "total_pages": 3
+    },
+    {
+      "id": "795336e6-3622-4342-968d-bec1098ebd1b",
+      "title": "The Haunted Treehouse",
+      "author": "",
+      "description": "Three friends investigate strange sounds coming from an old treehouse.",
+      "genre": "Mystery",
+      "age_range": "6-8",
+      "cover_image": "https://images.unsplash.com/photo-1520637836993-a071674a76e7?w=400",
+      "status": "published",
+      "chapters": [
+        {
+          "id": "f2ff1ba7-d6ad-4588-a7c6-ded0394d0152",
+          "title": "Chapter 1: The Beginning",
+          "order": 1,
+          "pages": [
+            {
+              "id": "448ba3d5-ce6c-4b40-aac7-22dc266a04bb",
+              "page_number": 0,
+              "text_content": "Once upon a time, in a world not so different from ours, an adventure was about to begin...",
+              "text_word_count": 18,
+              "image_url": "https://images.unsplash.com/photo-1520637836993-a071674a76e7?w=400",
+              "image_prompt": ""
+            },
+            {
+              "id": "be64493c-a35e-4825-be6a-67597652b576",
+              "page_number": 0,
+              "text_content": "Our hero looked around nervously. Something amazing was about to happen.",
+              "text_word_count": 11,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "f817b4d4-087b-4fd7-9f73-035f9f00fb97",
+              "page_number": 0,
+              "text_content": "And that's when everything changed forever. The End.",
+              "text_word_count": 8,
+              "image_url": "",
+              "image_prompt": ""
+            }
+          ]
+        }
+      ],
+      "total_pages": 3
+    },
+    {
+      "id": "770f4835-06db-44cd-9fcf-2c29d979fa22",
+      "title": "Galaxy Racers",
+      "author": "",
+      "description": "Kids from different planets compete in the ultimate space race.",
+      "genre": "Science Fiction",
+      "age_range": "6-8",
+      "cover_image": "https://images.unsplash.com/photo-1454789548928-9efd52dc4031?w=400",
+      "status": "published",
+      "chapters": [
+        {
+          "id": "22df3371-e652-46c8-baf6-25274924c836",
+          "title": "Chapter 1: The Beginning",
+          "order": 1,
+          "pages": [
+            {
+              "id": "c4aac66a-5989-4879-b445-c1aa38f1915e",
+              "page_number": 0,
+              "text_content": "Once upon a time, in a world not so different from ours, an adventure was about to begin...",
+              "text_word_count": 18,
+              "image_url": "https://images.unsplash.com/photo-1454789548928-9efd52dc4031?w=400",
+              "image_prompt": ""
+            },
+            {
+              "id": "6b325926-06f8-432a-a4ad-f16a494c902c",
+              "page_number": 0,
+              "text_content": "Our hero looked around nervously. Something amazing was about to happen.",
+              "text_word_count": 11,
+              "image_url": "",
+              "image_prompt": ""
+            },
+            {
+              "id": "88d93821-9100-4aa5-bc1f-5712924a3e98",
+              "page_number": 0,
+              "text_content": "And that's when everything changed forever. The End.",
+              "text_word_count": 8,
+              "image_url": "",
+              "image_prompt": ""
+            }
+          ]
+        }
+      ],
+      "total_pages": 3
+    }
+  ],
+  "total_pages": 122,
+  "stats": {
+    "total_pages": 122,
+    "avg_words_per_page": 32.2,
+    "min_words_per_page": 0,
+    "max_words_per_page": 216
+  }
+}
