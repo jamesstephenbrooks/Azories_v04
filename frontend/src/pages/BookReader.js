@@ -260,8 +260,16 @@ export default function BookReader() {
       }
     }
     
-    // Desktop
-    return { width: 500, height: 680 };
+    // Desktop - Large immersive experience
+    if (isLandscape) {
+      const bookWidth = Math.min(vw * 0.35, 550);
+      const bookHeight = Math.min(vh * 0.78, 750);
+      return { width: bookWidth, height: bookHeight };
+    } else {
+      const bookWidth = Math.min(vw * 0.38, 520);
+      const bookHeight = Math.min(vh * 0.72, 700);
+      return { width: bookWidth, height: bookHeight };
+    }
   };
   
   const bookDimensions = getBookDimensions();
