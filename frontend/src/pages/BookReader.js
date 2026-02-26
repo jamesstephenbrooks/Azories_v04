@@ -503,15 +503,18 @@ export default function BookReader() {
     
     if (currentPage === -1) {
       // Transition from cover to first page
-      if (isMobilePortrait) {
-        // In split view mode, directly set the page
+      if (isMobilePortrait || isMobileLandscape) {
+        // In mobile mode (split view or landscape), directly set the page
         setCurrentPage(0);
       } else if (realisticFlipRef.current) {
         // In flipbook mode, flip the page
         realisticFlipRef.current.nextPage();
+      } else {
+        // Fallback
+        setCurrentPage(0);
       }
     }
-  }, [currentPage, audioElement, isMobilePortrait]);
+  }, [currentPage, audioElement, isMobilePortrait, isMobileLandscape]);
 
   // startListening is defined after playAudio below
 
