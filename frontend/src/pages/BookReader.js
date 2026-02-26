@@ -168,9 +168,10 @@ export default function BookReader() {
   // Determine if we should use single-page (portrait) mode
   // Mobile portrait = single page, Mobile landscape = two-page spread
   // Consider both width and height to detect rotated phones
-  const isMobileLandscape = (windowSize.width < 900 && windowSize.height < 500) || 
+  // forceLandscapeTest overrides for testing purposes
+  const isMobileLandscape = forceLandscapeTest || (windowSize.width < 900 && windowSize.height < 500) || 
                             (windowSize.width < 768 && windowSize.width > windowSize.height);
-  const isMobilePortrait = windowSize.width < 768 && windowSize.width <= windowSize.height;
+  const isMobilePortrait = !forceLandscapeTest && windowSize.width < 768 && windowSize.width <= windowSize.height;
   
   const isCover = currentPage === -1;
   const totalPages = allPages.length;
