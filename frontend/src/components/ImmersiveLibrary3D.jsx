@@ -958,7 +958,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
 
     // Check if mobile/tablet for performance optimizations
     const isMobileDevice = isMobile();
-    const isLowPowerDevice = isMobileDevice || window.navigator.hardwareConcurrency <= 4;
+    const hardwareConcurrency = typeof navigator !== 'undefined' ? navigator.hardwareConcurrency || 4 : 4;
+    const isLowPowerDevice = isMobileDevice || hardwareConcurrency <= 4;
 
     // Create renderer with mobile-optimized settings
     const renderer = new THREE.WebGLRenderer({
