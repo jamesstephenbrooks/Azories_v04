@@ -4249,6 +4249,16 @@ async def generate_consistent_character_image(
             # Get first reference image (should be best quality face shot)
             ref_image = character["reference_images"][0]
             
+            # If reference image is base64, convert to CDN URL for PuLID
+            if ref_image.startswith('data:image'):
+                logger.info("Converting base64 reference image to CDN URL for PuLID...")
+                ref_image = await convert_base64_to_cdn(ref_image)
+                # Update character with CDN URL to avoid future conversions
+                await db.pro_studio_characters.update_one(
+                    {"id": character_id},
+                    {"$set": {"reference_images.0": ref_image}}
+                )
+            
             # Get character attributes for the prompt
             char_name = character.get('name', 'character')
             style_desc = character.get('style', 'illustration')
