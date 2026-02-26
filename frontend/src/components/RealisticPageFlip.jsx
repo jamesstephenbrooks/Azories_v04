@@ -817,6 +817,26 @@ const RealisticPageFlip = forwardRef(({
           transform: translate(10px, 10px) rotate(0deg);
           transition: all 0.3s ease;
         }
+        
+        /* Shimmer animation for image loading placeholders */
+        @keyframes shimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+        
+        @keyframes shimmer-slide {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(200%); }
+        }
+        
+        .animate-shimmer {
+          background-size: 200% 100%;
+          animation: shimmer 1.5s infinite linear;
+        }
+        
+        .animate-shimmer-slide {
+          animation: shimmer-slide 1.5s infinite ease-in-out;
+        }
       `}</style>
     </div>
   );
