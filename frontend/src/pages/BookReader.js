@@ -260,14 +260,14 @@ export default function BookReader() {
       }
     }
     
-    // Desktop - Large immersive experience
+    // Desktop - Large immersive experience (fill 80% of screen height)
     if (isLandscape) {
-      const bookWidth = Math.min(vw * 0.35, 550);
-      const bookHeight = Math.min(vh * 0.78, 750);
+      const bookHeight = vh * 0.80;  // 80% of viewport height
+      const bookWidth = Math.min(bookHeight * 0.72, vw * 0.40);  // Maintain aspect ratio
       return { width: bookWidth, height: bookHeight };
     } else {
-      const bookWidth = Math.min(vw * 0.38, 520);
-      const bookHeight = Math.min(vh * 0.72, 700);
+      const bookHeight = vh * 0.80;  // 80% of viewport height
+      const bookWidth = Math.min(bookHeight * 0.75, vw * 0.45);
       return { width: bookWidth, height: bookHeight };
     }
   };
