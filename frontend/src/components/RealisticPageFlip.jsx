@@ -677,32 +677,32 @@ const RealisticPageFlip = forwardRef(({
           />
         
         <HTMLFlipBook
-          key={`flipbook-${pages.length}`}
+          key={`flipbook-${pages.length}-${isMobilePortrait ? 'portrait' : 'landscape'}`}
           ref={flipBookRef}
           width={width}
           height={height}
           size="stretch"
-          minWidth={300}
+          minWidth={isMobilePortrait ? 200 : 300}
           maxWidth={1200}
-          minHeight={400}
+          minHeight={isMobilePortrait ? 300 : 400}
           maxHeight={1400}
           showCover={true}
           mobileScrollSupport={true}
           onFlip={handleFlip}
           onChangeState={handleFlipStart}
-          className={`book-flipbook ${currentPage === 0 ? 'cover-view' : ''}`}
+          className={`book-flipbook ${currentPage === 0 ? 'cover-view' : ''} ${isMobilePortrait ? 'mobile-portrait' : ''}`}
           style={{}}
           startPage={initialPage}
           startZIndex={0}
           autoSize={true}
-          maxShadowOpacity={0.5}
+          maxShadowOpacity={isMobilePortrait ? 0.3 : 0.5}
           drawShadow={true}
-          flippingTime={650}
-          usePortrait={false}
+          flippingTime={isMobilePortrait ? 400 : 650}
+          usePortrait={isMobilePortrait}
           disableFlipByClick={false}
           useMouseEvents={true}
-          swipeDistance={30}
-          showPageCorners={true}
+          swipeDistance={isMobilePortrait ? 20 : 30}
+          showPageCorners={!isMobilePortrait}
           clickEventForward={true}
         >
           {allBookPages}
