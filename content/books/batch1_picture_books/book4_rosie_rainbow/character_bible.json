@@ -1,0 +1,45 @@
+{
+  "book_info": {
+    "title": "Rosie's Rainbow Day",
+    "subtitle": "A Story About Feelings",
+    "age_range": "3-6 years",
+    "page_count": 14,
+    "theme": "Emotions, self-expression, it's okay to feel",
+    "moral": "All feelings are okay, and after rain comes rainbows"
+  },
+  "art_style": {
+    "style": "expressive watercolour with color emotion",
+    "mood": "emotionally warm, validating, colorful",
+    "color_palette": ["red (angry)", "blue (sad)", "yellow (happy)", "green (calm)", "orange (excited)", "purple (proud)", "rainbow spectrum"],
+    "lighting": "varies with emotion - grey for sad, bright for happy, warm throughout",
+    "texture": "expressive watercolor washes that blend and flow, colors that reflect emotions"
+  },
+  "characters": {
+    "rosie": {
+      "name": "Rosie",
+      "age": "5 years old",
+      "description": "A spirited little girl with straight red hair in a bob cut with bangs, fair freckled skin across her nose and cheeks, big expressive green eyes, and a small upturned nose. Very expressive face that shows emotions clearly.",
+      "clothing": {
+        "main_outfit": "A soft grey t-shirt dress with rainbow stripes at the bottom, white leggings, and red sneakers with white laces"
+      },
+      "personality": "sensitive, creative, learns to express feelings",
+      "accessories": "A small rainbow-colored backpack"
+    },
+    "mama": {
+      "name": "Mama",
+      "description": "A loving mother with wavy auburn hair to her shoulders, fair skin with light freckles, warm green eyes, and a patient smile. Wears a cozy cream sweater and jeans.",
+      "personality": "patient, understanding, teaches about emotions"
+    },
+    "feelings_cloud": {
+      "name": "The Feelings Cloud",
+      "type": "visual metaphor",
+      "description": "A small cloud that follows Rosie, changing colors based on her emotions - grey when sad, red when angry, bright yellow when happy, soft pink when loved"
+    }
+  },
+  "settings": {
+    "rosies_house": "A warm, cozy home with colorful artwork on walls, comfortable furniture, big windows letting in light",
+    "rainy_window": "Rain streaming down a window, grey sky outside, cozy interior",
+    "sunny_park": "A bright green park with a playground, blue sky, sunshine, other children playing"
+  },
+  "prompt_template": "Expressive watercolour children's book illustration, emotionally warm mood, {scene_description}. Character: Rosie, a 5-year-old girl with straight red bob haircut with bangs, fair freckled skin, big expressive green eyes, wearing a soft grey t-shirt dress with rainbow stripes at bottom, white leggings, and red sneakers. Art style: expressive watercolor washes with colors reflecting emotions, warm and validating atmosphere, professional children's book quality."
+}
