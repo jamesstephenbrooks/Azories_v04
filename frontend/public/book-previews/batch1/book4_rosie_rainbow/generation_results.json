@@ -1,0 +1,57 @@
+{
+  "book_id": "book4_rosie_rainbow",
+  "title": "Rosie's Rainbow Day",
+  "generated_at": "2026-02-26T07:58:28.501771",
+  "results": [
+    {
+      "id": "cover_front",
+      "status": "error",
+      "error": "Generation failed after 3 attempts: User is locked. Reason: Exhausted balance. Top up your balance a"
+    },
+    {
+      "id": "cover_back",
+      "status": "error",
+      "error": "Generation failed after 3 attempts: User is locked. Reason: Exhausted balance. Top up your balance a"
+    },
+    {
+      "id": "page_01",
+      "status": "error",
+      "error": "Generation failed after 3 attempts: User is locked. Reason: Exhausted balance. Top up your balance a"
+    },
+    {
+      "id": "page_02",
+      "status": "error",
+      "error": "Generation failed after 3 attempts: User is locked. Reason: Exhausted balance. Top up your balance a"
+    },
+    {
+      "id": "page_03",
+      "status": "error",
+      "error": "Generation failed after 3 attempts: User is locked. Reason: Exhausted balance. Top up your balance a"
+    },
+    {
+      "id": "page_04",
+      "status": "error",
+      "error": "Generation failed after 3 attempts: User is locked. Reason: Exhausted balance. Top up your balance a"
+    },
+    {
+      "id": "page_05",
+      "status": "error",
+      "error": "Generation failed after 3 attempts: User is locked. Reason: Exhausted balance. Top up your balance a"
+    },
+    {
+      "id": "page_06",
+      "status": "error",
+      "error": "Generation failed after 3 attempts: User is locked. Reason: Exhausted balance. Top up your balance a"
+    },
+    {
+      "id": "page_07",
+      "status": "error",
+      "error": "Generation failed after 3 attempts: User is locked. Reason: Exhausted balance. Top up your balance a"
+    },
+    {
+      "id": "page_08",
+      "status": "error",
+      "error": "Generation failed after 3 attempts: User is locked. Reason: Exhausted balance. Top up your balance a"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "book_info": {
+    "title": "Oliver the Curious Owl",
+    "subtitle": "Questions and Discoveries",
+    "age_range": "3-6 years",
+    "page_count": 12,
+    "theme": "Curiosity, learning, asking questions",
+    "moral": "Asking questions is how we learn and grow"
+  },
+  "art_style": {
+    "style": "rich watercolour with forest atmosphere",
+    "mood": "curious, wise, warm woodland",
+    "color_palette": ["forest green", "warm brown", "golden amber", "soft cream", "twilight purple", "autumn orange"],
+    "lighting": "warm dappled forest light, cozy twilight glow",
+    "texture": "detailed watercolor with rich wood and feather textures, soft atmospheric backgrounds"
+  },
+  "characters": {
+    "oliver": {
+      "name": "Oliver",
+      "age": "young owl (child equivalent)",
+      "description": "A small, fluffy barn owl with a distinctive heart-shaped white face, large round amber-golden eyes full of curiosity, speckled brown and cream feathers on body, small ear tufts, and tiny talons. Tilts head when curious (a lot!).",
+      "personality": "endlessly curious, asks lots of questions, enthusiastic learner",
+      "distinguishing_features": "Always tilting head to one side, eyes wide with wonder"
+    },
+    "grandpa_oak": {
+      "name": "Grandpa Oak",
+      "type": "wise old owl",
+      "description": "A large, dignified great horned owl with tufted ears, wise golden eyes behind tiny round spectacles, grey-brown feathers with distinguished markings. Perches on a gnarled branch.",
+      "personality": "patient, wise, loves answering questions"
+    },
+    "woodland_friends": {
+      "bee": "A friendly bumblebee with yellow and black stripes, small transparent wings, cheerful expression",
+      "squirrel": "A busy red squirrel with a fluffy tail, bright eyes, holding an acorn",
+      "firefly": "A gentle firefly with a soft glowing bottom, tiny wings"
+    }
+  },
+  "settings": {
+    "ancient_oak_tree": "A massive, gnarled oak tree with a cozy hollow for the owls, surrounded by forest, leaves and branches everywhere",
+    "forest_floor": "Mossy ground, mushrooms, fallen leaves, ferns, dappled sunlight",
+    "twilight_forest": "Forest at dusk with purple-orange sky, fireflies beginning to glow, magical atmosphere"
+  },
+  "prompt_template": "Rich watercolour children's book illustration, curious woodland mood, {scene_description}. Character: Oliver, a small fluffy barn owl with heart-shaped white face, large round amber-golden eyes, speckled brown and cream feathers, small ear tufts, head tilted curiously. Art style: detailed forest watercolors, warm dappled light, rich greens and browns, cozy woodland atmosphere, professional children's book quality."
+}

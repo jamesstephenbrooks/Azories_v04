@@ -1,0 +1,58 @@
+{
+  "book_id": "book4_rosie_rainbow",
+  "title": "Rosie's Rainbow Day",
+  "generated_at": "2026-02-26T08:08:09.346977",
+  "model": "gpt-image-1",
+  "results": [
+    {
+      "id": "cover_front",
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book4_rosie_rainbow/covers/cover_front.png"
+    },
+    {
+      "id": "cover_back",
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book4_rosie_rainbow/covers/cover_back.png"
+    },
+    {
+      "id": "page_01",
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book4_rosie_rainbow/pages/page_01.png"
+    },
+    {
+      "id": "page_02",
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book4_rosie_rainbow/pages/page_02.png"
+    },
+    {
+      "id": "page_03",
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book4_rosie_rainbow/pages/page_03.png"
+    },
+    {
+      "id": "page_04",
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book4_rosie_rainbow/pages/page_04.png"
+    },
+    {
+      "id": "page_05",
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book4_rosie_rainbow/pages/page_05.png"
+    },
+    {
+      "id": "page_06",
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book4_rosie_rainbow/pages/page_06.png"
+    },
+    {
+      "id": "page_07",
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book4_rosie_rainbow/pages/page_07.png"
+    },
+    {
+      "id": "page_08",
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book4_rosie_rainbow/pages/page_08.png"
+    }
+  ]
+}
