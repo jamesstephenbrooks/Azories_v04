@@ -2344,7 +2344,11 @@ async def create_page(chapter_id: str, page_data: PageCreate, current_user: dict
     return PageResponse(**page)
 
 @api_router.get("/chapters/{chapter_id}/pages", response_model=List[PageResponse])
-async def get_pages(chapter_id: str):
+async def get_pages(chapter_id: str, response: Response):
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    
     pages = await db.pages.find({"chapter_id": chapter_id}, {"_id": 0}).sort("order", 1).to_list(100)
     for page in pages:
         page.setdefault("image_url_2", "")
