@@ -93,8 +93,19 @@ export default function CollaborativeWriting({ bookId, isOwner, currentCollabora
   };
 
   const copyInviteLink = () => {
-    navigator.clipboard.writeText(inviteLink);
-    toast.success('Link copied to clipboard!');
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(inviteLink);
+      toast.success('Link copied to clipboard!');
+    } else {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = inviteLink;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      toast.success('Link copied to clipboard!');
+    }
   };
 
   if (!isOwner) return null;
