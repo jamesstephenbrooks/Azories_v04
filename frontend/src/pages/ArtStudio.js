@@ -3624,6 +3624,81 @@ export default function ArtStudio() {
           </motion.div>
         )}
       </AnimatePresence>
+      
+      {/* Starter Library Image Lightbox */}
+      <AnimatePresence>
+        {expandedStarterImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] bg-black/90 flex items-center justify-center p-4"
+            onClick={() => setExpandedStarterImage(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className="relative max-w-4xl max-h-[90vh] flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setExpandedStarterImage(null)}
+                className="absolute -top-10 right-0 p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
+              >
+                <FiX className="w-5 h-5" />
+              </button>
+              
+              {/* Image */}
+              <img
+                src={expandedStarterImage.url}
+                alt={expandedStarterImage.name || 'Starter library image'}
+                className="max-w-full max-h-[70vh] object-contain rounded-lg shadow-2xl"
+              />
+              
+              {/* Image info and actions */}
+              <div className="mt-4 flex items-center justify-between bg-white/5 rounded-lg p-4">
+                <div>
+                  <h3 className="text-white text-lg font-semibold">{expandedStarterImage.name}</h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-amber-400 text-sm capitalize">{expandedStarterImage.category}</span>
+                    {expandedStarterImage.art_style && (
+                      <span className="text-white/40 text-sm">• {expandedStarterImage.art_style}</span>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Action buttons */}
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => {
+                      setStyleReferenceImage(expandedStarterImage.url);
+                      toast.success(`${expandedStarterImage.name} set as style reference!`);
+                      setExpandedStarterImage(null);
+                    }}
+                    className="bg-purple-600 hover:bg-purple-700"
+                  >
+                    <FiImage className="w-4 h-4 mr-2" />
+                    Use as Style
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setCharacterReferenceImage(expandedStarterImage.url);
+                      toast.success(`${expandedStarterImage.name} set as character reference!`);
+                      setExpandedStarterImage(null);
+                    }}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    <FiUser className="w-4 h-4 mr-2" />
+                    Use as Character
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
