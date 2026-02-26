@@ -446,16 +446,24 @@ export default function BookReader() {
     // Reset the last played page so new page can play fresh
     lastPlayedPageRef.current = -999;
     
-    // Use the ref to control the page flip component
-    if (realisticFlipRef.current) {
+    // For mobile portrait/landscape, directly set the page (no pageflip library)
+    if (isMobilePortrait || isMobileLandscape) {
+      setCurrentPage(newPage);
+      saveReadingProgress();
+    } else if (realisticFlipRef.current) {
+      // Use the ref to control the page flip component
       if (direction === 'next') {
         realisticFlipRef.current.nextPage();
       } else {
         realisticFlipRef.current.prevPage();
       }
       // The onPageChange callback will update currentPage
+    } else {
+      // Fallback - direct page set
+      setCurrentPage(newPage);
+      saveReadingProgress();
     }
-  }, [allPages.length, isFlipping, audioElement]);
+  }, [allPages.length, isFlipping, audioElement, isMobilePortrait, isMobileLandscape, saveReadingProgress]);
 
   const nextPage = useCallback(() => goToPage(currentPage + 1, 'next'), [currentPage, goToPage]);
   const prevPage = useCallback(() => goToPage(currentPage - 1, 'prev'), [currentPage, goToPage]);
