@@ -638,13 +638,8 @@ const RealisticPageFlip = forwardRef(({
 
   return (
     <div className={`realistic-page-flip relative ${className}`} style={{ 
-      transform: isFullscreen 
-        ? 'scale(1.4)' 
-        : isMobilePortrait
-          ? 'scale(1)' // No scale on mobile portrait - let it fill naturally
-          : width < 350 
-            ? 'scale(1.15)' 
-            : 'scale(1.35)', 
+      // REMOVED fixed scale transforms - these cause zoom instead of reflow on real device rotation
+      // Instead, let the component naturally fill its container using the passed width/height
       transformOrigin: 'center center' 
     }}>
       {/* Book container with 3D perspective */}
