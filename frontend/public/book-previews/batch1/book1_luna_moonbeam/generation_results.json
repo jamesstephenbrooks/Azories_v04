@@ -1,0 +1,52 @@
+{
+  "book_id": "book1_luna_moonbeam",
+  "title": "Luna and the Moonbeam",
+  "generated_at": "2026-02-26T07:56:33.381426",
+  "results": [
+    {
+      "id": "cover_front",
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book1_luna_moonbeam/covers/cover_front.png"
+    },
+    {
+      "id": "cover_back",
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book1_luna_moonbeam/covers/cover_back.png"
+    },
+    {
+      "id": "page_01",
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book1_luna_moonbeam/pages/page_01.png"
+    },
+    {
+      "id": "page_02",
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book1_luna_moonbeam/pages/page_02.png"
+    },
+    {
+      "id": "page_03",
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book1_luna_moonbeam/pages/page_03.png"
+    },
+    {
+      "id": "page_04",
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book1_luna_moonbeam/pages/page_04.png"
+    },
+    {
+      "id": "page_05",
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book1_luna_moonbeam/pages/page_05.png"
+    },
+    {
+      "id": "page_06",
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book1_luna_moonbeam/pages/page_06.png"
+    },
+    {
+      "id": "page_07",
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book1_luna_moonbeam/pages/page_07.png"
+    }
+  ]
+}

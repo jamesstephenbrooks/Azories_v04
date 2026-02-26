@@ -1,0 +1,44 @@
+{
+  "book_info": {
+    "title": "Pip the Brave Little Penguin",
+    "subtitle": "An Antarctic Adventure",
+    "age_range": "3-6 years",
+    "page_count": 14,
+    "theme": "Courage, friendship, believing in yourself",
+    "moral": "Being brave doesn't mean not being scared—it means trying anyway"
+  },
+  "art_style": {
+    "style": "soft watercolour with gentle textures",
+    "mood": "adventurous yet warm, encouraging",
+    "color_palette": ["icy blue", "soft white", "warm orange", "pale turquoise", "golden yellow", "soft grey"],
+    "lighting": "bright Antarctic daylight, warm golden sunrise/sunset",
+    "texture": "soft watercolor washes, snowy textures, gentle ice sparkles"
+  },
+  "characters": {
+    "pip": {
+      "name": "Pip",
+      "age": "young penguin (child equivalent)",
+      "description": "A small, fluffy Emperor penguin chick with soft grey downy feathers on the body, a white belly, and a black head with distinctive yellow-orange patches on the sides of the neck. Big round dark eyes full of expression, small flippers, and little webbed feet. Noticeably smaller than the other penguins.",
+      "personality": "nervous but determined, kind-hearted, wants to be brave",
+      "distinguishing_features": "A small tuft of fluffy down that sticks up on top of head, making Pip easy to identify"
+    },
+    "mama_penguin": {
+      "name": "Mama",
+      "type": "adult Emperor penguin",
+      "description": "A tall, elegant adult Emperor penguin with sleek black and white feathers and bright golden-yellow patches on the sides of her neck. Kind, warm eyes. She looks protective and loving."
+    },
+    "otto": {
+      "name": "Otto",
+      "type": "sea otter friend",
+      "description": "A friendly brown sea otter with a round face, whiskers, small ears, and a lighter brown chest. Playful expression, often floating on his back.",
+      "personality": "cheerful, encouraging, adventurous"
+    }
+  },
+  "settings": {
+    "penguin_colony": "A large group of Emperor penguins on Antarctic ice, with snowy mountains in the background, clear blue sky",
+    "ice_cliff": "A tall ice cliff overlooking the deep blue Antarctic ocean, with smaller ice formations around",
+    "underwater": "Crystal clear blue Antarctic water with shafts of light, fish swimming, ice formations visible above",
+    "sunset_ice": "Golden and orange sunset light reflecting off ice and snow, creating warm glows"
+  },
+  "prompt_template": "Soft watercolour children's book illustration, adventurous and warm mood, {scene_description}. Character: Pip, a small fluffy Emperor penguin chick with grey down feathers, white belly, black head with yellow-orange neck patches, big expressive dark eyes, small tuft of down on top of head. Art style: gentle watercolor washes, icy blues and warm oranges, snowy Antarctic setting, professional children's book quality."
+}

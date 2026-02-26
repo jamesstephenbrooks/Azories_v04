@@ -1,0 +1,47 @@
+{
+  "book_info": {
+    "title": "Luna and the Moonbeam",
+    "subtitle": "A Bedtime Adventure",
+    "age_range": "3-6 years",
+    "page_count": 12,
+    "theme": "Bedtime, dreams, comfort, wonder",
+    "moral": "The magic of nighttime and peaceful sleep"
+  },
+  "art_style": {
+    "style": "soft watercolour",
+    "mood": "dreamy, gentle, calming",
+    "color_palette": ["soft lavender", "pale silver", "midnight blue", "warm cream", "soft pink", "pale gold"],
+    "lighting": "soft moonlit glow, warm bedroom light",
+    "texture": "soft watercolor washes, gentle brushstrokes, slightly blurred edges"
+  },
+  "characters": {
+    "luna": {
+      "name": "Luna",
+      "age": "5 years old",
+      "description": "A sweet little girl with long wavy dark brown hair, big round hazel eyes with long eyelashes, rosy cheeks, and a gentle smile. She has light olive skin.",
+      "clothing": {
+        "pajamas": "soft lavender pajamas with tiny silver stars, bare feet",
+        "accessories": "a small stuffed bunny named Mr. Hops that she carries everywhere"
+      },
+      "personality": "curious, gentle, imaginative, slightly sleepy",
+      "pose_notes": "Often shown yawning, rubbing eyes, or gazing up in wonder"
+    },
+    "moonbeam": {
+      "name": "Moonbeam",
+      "type": "magical light creature",
+      "description": "A small, friendly glowing orb of soft golden-silver light with a gentle face (two kind eyes and a warm smile visible in the glow). About the size of a tennis ball. Leaves a trail of sparkles when moving.",
+      "personality": "playful, kind, protective, giggly"
+    },
+    "mr_hops": {
+      "name": "Mr. Hops",
+      "type": "stuffed toy",
+      "description": "A well-loved cream-colored stuffed bunny with floppy ears, a pink nose, and button eyes. Slightly worn and soft from years of cuddles."
+    }
+  },
+  "settings": {
+    "lunas_bedroom": "A cozy bedroom with pale pink walls, a white wooden bed with a lavender quilt covered in moon and star patterns, a window showing the night sky, fairy lights strung above the bed, and soft toys on shelves",
+    "dream_clouds": "Fluffy, soft clouds in shades of lavender and silver, with stars twinkling around them",
+    "starlit_sky": "Deep midnight blue sky filled with twinkling stars and a large, friendly crescent moon"
+  },
+  "prompt_template": "Soft watercolour children's book illustration, dreamy and calming mood, {scene_description}. Character: Luna, a 5-year-old girl with long wavy dark brown hair, big round hazel eyes, rosy cheeks, light olive skin, wearing soft lavender pajamas with tiny silver stars, holding a cream stuffed bunny. Art style: gentle watercolor washes, soft moonlit glow, pale lavender and midnight blue color palette, warm and cozy atmosphere. Professional children's book quality."
+}
