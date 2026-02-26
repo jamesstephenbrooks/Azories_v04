@@ -1863,8 +1863,9 @@ export default function ArtStudio() {
                         onValueChange={(value) => setCharacter({ ...character, [trait]: value })}
                       >
                         <SelectTrigger 
-                          className="w-full bg-black/30 border-white/20 text-white text-sm rounded-lg h-10"
+                          className="w-full bg-black/30 border-white/20 text-white text-base rounded-lg h-12"
                           data-testid={`character-trait-${trait}`}
+                          style={{ fontSize: '16px' }}
                         >
                           <SelectValue placeholder={`Select ${trait}`} />
                         </SelectTrigger>
