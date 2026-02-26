@@ -4258,47 +4258,52 @@ export default function ProStudio() {
           </TabsContent>
 
           {/* Video Tab */}
-          <TabsContent value="video" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Video Controls */}
-              <div className="lg:col-span-1 space-y-4">
+          <TabsContent value="video" className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+              {/* Video Controls - Collapsible on mobile */}
+              <div className="lg:col-span-1 space-y-3 sm:space-y-4">
                 {/* Model Selection */}
-                <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4">
-                  <h3 className="text-white font-medium mb-3 flex items-center gap-2">
-                    <FiVideo className="text-purple-400" /> Video Model
-                  </h3>
-                  <Select value={selectedVideoModel} onValueChange={setSelectedVideoModel}>
-                    <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white" data-testid="video-model-select">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-700">
-                      {VIDEO_MODELS.map((model) => (
-                        <SelectItem key={model.id} value={model.id} className="text-white hover:bg-gray-700">
-                          <div className="flex items-center justify-between w-full">
-                            <span>{model.name}</span>
-                            {!model.available && (
-                              <span className="text-xs text-amber-400 ml-2">(Coming Soon)</span>
-                            )}
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  
-                  {/* Model info */}
-                  <div className="mt-3 text-xs text-gray-400">
-                    <p className="text-purple-400">{VIDEO_MODELS.find(m => m.id === selectedVideoModel)?.provider}</p>
-                    <p className="mt-1">{VIDEO_MODELS.find(m => m.id === selectedVideoModel)?.description}</p>
-                    <div className="mt-2 flex flex-wrap gap-1">
-                      {VIDEO_MODELS.find(m => m.id === selectedVideoModel)?.strengths.map((s, i) => (
-                        <span key={i} className="bg-purple-900/30 px-2 py-0.5 rounded">{s}</span>
-                      ))}
+                <details className="bg-black/40 rounded-xl border border-purple-500/20 group" open>
+                  <summary className="p-3 sm:p-4 cursor-pointer flex items-center justify-between">
+                    <h3 className="text-white font-medium flex items-center gap-2">
+                      <FiVideo className="text-purple-400" /> Video Model
+                    </h3>
+                    <span className="text-gray-500 text-xs lg:hidden">tap to expand</span>
+                  </summary>
+                  <div className="px-3 sm:px-4 pb-3 sm:pb-4">
+                    <Select value={selectedVideoModel} onValueChange={setSelectedVideoModel}>
+                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white min-h-[48px] text-base" data-testid="video-model-select">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-700">
+                        {VIDEO_MODELS.map((model) => (
+                          <SelectItem key={model.id} value={model.id} className="text-white hover:bg-gray-700 min-h-[44px]">
+                            <div className="flex items-center justify-between w-full">
+                              <span>{model.name}</span>
+                              {!model.available && (
+                                <span className="text-xs text-amber-400 ml-2">(Coming Soon)</span>
+                              )}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    
+                    {/* Model info - Hidden on mobile */}
+                    <div className="mt-3 text-xs text-gray-400 hidden sm:block">
+                      <p className="text-purple-400">{VIDEO_MODELS.find(m => m.id === selectedVideoModel)?.provider}</p>
+                      <p className="mt-1">{VIDEO_MODELS.find(m => m.id === selectedVideoModel)?.description}</p>
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {VIDEO_MODELS.find(m => m.id === selectedVideoModel)?.strengths.map((s, i) => (
+                          <span key={i} className="bg-purple-900/30 px-2 py-0.5 rounded">{s}</span>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
+                </details>
 
                 {/* Duration */}
-                <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4">
+                <div className="bg-black/40 rounded-xl border border-purple-500/20 p-3 sm:p-4">
                   <h3 className="text-white font-medium mb-3">Duration: {videoDuration}s</h3>
                   <Slider
                     value={[videoDuration]}
@@ -4311,16 +4316,16 @@ export default function ProStudio() {
                 </div>
 
                 {/* Selected Source - Hero Frame, Character, Scene, or Upload */}
-                <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4">
+                <div className="bg-black/40 rounded-xl border border-purple-500/20 p-3 sm:p-4">
                   <h3 className="text-white font-medium mb-3">Source Image</h3>
                   
-                  {/* Source type selector */}
-                  <div className="flex gap-2 mb-3">
+                  {/* Source type selector - Larger touch targets */}
+                  <div className="flex gap-2 mb-3 flex-wrap">
                     <Button
                       size="sm"
                       variant={videoSourceType === 'hero' ? 'default' : 'outline'}
                       onClick={() => setVideoSourceType('hero')}
-                      className={videoSourceType === 'hero' ? 'bg-purple-600' : 'border-gray-600 text-gray-300'}
+                      className={`min-h-[44px] flex-1 sm:flex-none ${videoSourceType === 'hero' ? 'bg-purple-600' : 'border-gray-600 text-gray-300'}`}
                     >
                       Hero Frame
                     </Button>
@@ -4328,7 +4333,7 @@ export default function ProStudio() {
                       size="sm"
                       variant={videoSourceType === 'character' ? 'default' : 'outline'}
                       onClick={() => setVideoSourceType('character')}
-                      className={videoSourceType === 'character' ? 'bg-purple-600' : 'border-gray-600 text-gray-300'}
+                      className={`min-h-[44px] flex-1 sm:flex-none ${videoSourceType === 'character' ? 'bg-purple-600' : 'border-gray-600 text-gray-300'}`}
                     >
                       Character
                     </Button>
@@ -4336,7 +4341,7 @@ export default function ProStudio() {
                       size="sm"
                       variant={videoSourceType === 'upload' ? 'default' : 'outline'}
                       onClick={() => setVideoSourceType('upload')}
-                      className={videoSourceType === 'upload' ? 'bg-purple-600' : 'border-gray-600 text-gray-300'}
+                      className={`min-h-[44px] flex-1 sm:flex-none ${videoSourceType === 'upload' ? 'bg-purple-600' : 'border-gray-600 text-gray-300'}`}
                     >
                       Upload
                     </Button>
