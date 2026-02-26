@@ -7,15 +7,16 @@ import { toast } from 'sonner';
 // Hook for managing offline books
 export function useOfflineBooks() {
   const [cachedBooks, setCachedBooks] = useState([]);
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
   const [isSupported, setIsSupported] = useState(false);
 
   useEffect(() => {
     // Check if service worker is supported
-    setIsSupported('serviceWorker' in navigator);
+    const swSupported = typeof navigator !== 'undefined' && 'serviceWorker' in navigator;
+    setIsSupported(swSupported);
     
     // Register service worker
-    if ('serviceWorker' in navigator) {
+    if (swSupported) {
       navigator.serviceWorker.register('/service-worker.js').catch(console.error);
       
       // Listen for messages from service worker
@@ -54,13 +55,13 @@ export function useOfflineBooks() {
   }, []);
 
   const getCachedBooks = useCallback(() => {
-    if (navigator.serviceWorker.controller) {
+    if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator && navigator.serviceWorker.controller) {
       navigator.serviceWorker.controller.postMessage({ type: 'GET_CACHED_BOOKS' });
     }
   }, []);
 
   const cacheBook = useCallback((book) => {
-    if (!navigator.serviceWorker.controller) {
+    if (typeof navigator === 'undefined' || !('serviceWorker' in navigator) || !navigator.serviceWorker.controller) {
       toast.error('Offline reading not available');
       return;
     }
@@ -73,7 +74,7 @@ export function useOfflineBooks() {
   }, []);
 
   const removeCachedBook = useCallback((bookId) => {
-    if (!navigator.serviceWorker.controller) return;
+    if (typeof navigator === 'undefined' || !('serviceWorker' in navigator) || !navigator.serviceWorker.controller) return;
     
     navigator.serviceWorker.controller.postMessage({
       type: 'REMOVE_CACHED_BOOK',
