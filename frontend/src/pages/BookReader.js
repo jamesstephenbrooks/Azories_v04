@@ -123,10 +123,13 @@ export default function BookReader() {
     // Normal mode - account for header and controls
     if (isMobile) {
       if (isLandscape) {
-        // Mobile landscape - wider but shorter
-        const availableHeight = vh - 180; // Header + controls
-        const bookHeight = Math.min(availableHeight * 0.85, 400);
-        const bookWidth = Math.min(bookHeight * 0.7, vw * 0.35);
+        // Mobile landscape - TWO PAGE SPREAD like a real book
+        // Reserve minimal space for compact controls
+        const reservedHeight = 100; // Compact header + controls
+        const availableHeight = vh - reservedHeight;
+        const bookHeight = Math.min(availableHeight * 0.92, 380);
+        // Each page is roughly 0.7 aspect ratio, two pages side by side
+        const bookWidth = Math.min(bookHeight * 0.72, vw * 0.42);
         return { width: bookWidth, height: bookHeight };
       } else {
         // Mobile portrait - SINGLE PAGE MODE - maximum immersion
@@ -161,7 +164,9 @@ export default function BookReader() {
   const bookDimensions = getBookDimensions();
   
   // Determine if we should use single-page (portrait) mode
-  const isMobilePortrait = windowSize.width < 768 && windowSize.width < windowSize.height;
+  // Mobile portrait = single page, Mobile landscape = two-page spread
+  const isMobileLandscape = windowSize.width < 768 && windowSize.width > windowSize.height;
+  const isMobilePortrait = windowSize.width < 768 && windowSize.width <= windowSize.height;
   
   const isCover = currentPage === -1;
   const totalPages = allPages.length;
