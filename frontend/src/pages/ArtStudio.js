@@ -1846,7 +1846,8 @@ export default function ArtStudio() {
                         value={character.name}
                         onChange={(e) => setCharacter({ ...character, name: e.target.value })}
                         placeholder="Enter character name..."
-                        className="bg-black/30 border-white/20 text-white"
+                        className="bg-black/30 border-white/20 text-white h-12 text-base"
+                        style={{ fontSize: '16px' }}
                       />
                 </div>
                 
