@@ -973,7 +973,7 @@ export default function BookReader() {
       {/* Book Display - with swipe support */}
       <div 
         id="book-container"
-        className={`${isMobileLandscape ? 'pt-6 pb-0' : 'pt-12 sm:pt-20 pb-24 sm:pb-48'} px-1 sm:px-4 flex items-center justify-center min-h-screen transition-all duration-300 ${
+        className={`${isMobileLandscape ? 'pt-6 pb-0' : 'pt-8 sm:pt-12 pb-16 sm:pb-24'} px-1 sm:px-2 flex items-center justify-center min-h-screen transition-all duration-300 ${
           isFullscreen ? 'bg-black/95 fixed inset-0 z-50 pt-4 sm:pt-8 pb-4 sm:pb-8' : ''
         }`}
         {...swipeHandlers}
