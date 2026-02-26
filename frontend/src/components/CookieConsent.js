@@ -13,11 +13,11 @@ const CookieConsent = () => {
   });
 
   useEffect(() => {
-    // Check if user has already made a choice
+    // Check if user has already made a choice (persisted in localStorage)
     const consent = localStorage.getItem('azories-cookie-consent');
     if (!consent) {
-      // Show banner after a short delay
-      setTimeout(() => setVisible(true), 1000);
+      // Show banner after a short delay for new users only
+      setTimeout(() => setVisible(true), 1500);
     }
   }, []);
 
@@ -47,10 +47,41 @@ const CookieConsent = () => {
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 100, opacity: 0 }}
-        className="fixed bottom-0 left-0 right-0 z-50 p-2 sm:p-4"
+        className="fixed bottom-0 left-0 right-0 z-50 p-2"
       >
-        <div className="max-w-4xl mx-auto bg-white rounded-xl sm:rounded-2xl shadow-2xl border border-gray-200 overflow-hidden max-h-[50vh] sm:max-h-none overflow-y-auto">
-          <div className="p-4 sm:p-6">
+        <div className="max-w-2xl mx-auto bg-white/95 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+          <div className="p-3 sm:p-4">
+            {!showDetails ? (
+              /* Compact view */
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-gray-700 text-xs sm:text-sm flex-1 min-w-[200px]">
+                  We use cookies to improve your experience.{' '}
+                  <Link to="/privacy" className="text-purple-600 hover:underline">Learn more</Link>
+                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setShowDetails(true)}
+                    className="px-3 py-1.5 text-xs text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg"
+                  >
+                    <FiSettings className="inline mr-1 w-3 h-3" />
+                    Manage
+                  </button>
+                  <button
+                    onClick={handleRejectAll}
+                    className="px-3 py-1.5 text-xs text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg"
+                  >
+                    Reject
+                  </button>
+                  <button
+                    onClick={handleAcceptAll}
+                    className="px-4 py-1.5 text-xs bg-purple-600 hover:bg-purple-500 text-white rounded-lg"
+                  >
+                    <FiCheck className="inline mr-1 w-3 h-3" />
+                    Accept
+                  </button>
+                </div>
+              </div>
+            ) : (
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center">
                 <span className="text-2xl mr-3">🍪</span>
