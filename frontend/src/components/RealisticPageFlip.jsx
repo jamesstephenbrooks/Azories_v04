@@ -660,16 +660,17 @@ const RealisticPageFlip = forwardRef(({
           style={{
             // Shift LEFT to center when showing front cover (clip left, visible part moves to center)
             // Shift RIGHT to center when showing back cover (clip right, visible part moves to center)
-            marginLeft: shouldClipLeft ? `-${coverShift}px` : shouldClipRight ? `${coverShift}px` : '0',
+            // In mobile portrait mode, no shifting needed
+            marginLeft: isMobilePortrait ? '0' : (shouldClipLeft ? `-${coverShift}px` : shouldClipRight ? `${coverShift}px` : '0'),
             transition: 'margin 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
           }}
         >
-          {/* Clip the appropriate side when showing covers */}
+          {/* Clip the appropriate side when showing covers - not needed in portrait mode */}
           <div 
             style={{
-              overflow: (shouldClipLeft || shouldClipRight) ? 'hidden' : 'visible',
-              // Clip left half for front cover, right half for back cover
-              clipPath: shouldClipLeft ? 'inset(0 0 0 50%)' : shouldClipRight ? 'inset(0 50% 0 0)' : 'none',
+              overflow: (!isMobilePortrait && (shouldClipLeft || shouldClipRight)) ? 'hidden' : 'visible',
+              // Clip left half for front cover, right half for back cover (only in landscape/spread mode)
+              clipPath: isMobilePortrait ? 'none' : (shouldClipLeft ? 'inset(0 0 0 50%)' : shouldClipRight ? 'inset(0 50% 0 0)' : 'none'),
               transition: 'clip-path 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
             }}
           >
