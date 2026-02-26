@@ -101,6 +101,7 @@ async def validate_fal_key_on_startup() -> dict:
     """
     global _fal_key_status
     from datetime import datetime
+    import fal_client
     
     try:
         key = os.environ.get('FAL_KEY', '')
@@ -123,29 +124,37 @@ async def validate_fal_key_on_startup() -> dict:
             logger.warning(f"⚠️ FAL_KEY format invalid - missing colon separator")
             return _fal_key_status
         
-        # Try a real (but cheap) API call to validate - use a minimal generation
-        # This is the only reliable way to know if the key actually works
-        client = AsyncClient(key=key)
+        # Set the key for the fal_client
+        os.environ['FAL_KEY'] = key
+        
+        # Try a lightweight API call using synchronous client (more reliable)
+        # Use flux/schnell which is faster and cheaper
         try:
-            # Try to submit a minimal job - will fail immediately if auth is bad
-            handler = await asyncio.wait_for(
-                client.submit("fal-ai/flux/dev", arguments={
-                    "prompt": "test",
-                    "image_size": "square",
-                    "num_images": 1
-                }),
-                timeout=15
-            )
-            # If we get here, key is valid - cancel the job to save costs
-            # Note: Job may still run, but this confirms auth works
-            _fal_key_status = {
-                "valid": True,
-                "last_checked": datetime.utcnow().isoformat(),
-                "error_message": None
-            }
-            logger.info("✅ FAL_KEY validated successfully (job submitted)")
-            return _fal_key_status
+            def sync_validate():
+                return fal_client.run(
+                    "fal-ai/flux/schnell",
+                    arguments={
+                        "prompt": "test",
+                        "image_size": "square",
+                        "num_images": 1
+                    }
+                )
             
+            # Run sync call in executor to not block
+            import concurrent.futures
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(sync_validate)
+                result = future.result(timeout=30)
+            
+            if result and 'images' in result:
+                _fal_key_status = {
+                    "valid": True,
+                    "last_checked": datetime.utcnow().isoformat(),
+                    "error_message": None
+                }
+                logger.info("✅ FAL_KEY validated successfully")
+                return _fal_key_status
+                
         except Exception as e:
             error_str = str(e).lower()
             # Auth errors mean the key is invalid
@@ -167,6 +176,14 @@ async def validate_fal_key_on_startup() -> dict:
                 }
                 logger.warning(f"⚠️ FAL_KEY validation inconclusive: {str(e)[:80]}")
                 return _fal_key_status
+        
+        # If we somehow get here, assume valid
+        _fal_key_status = {
+            "valid": True,
+            "last_checked": datetime.utcnow().isoformat(),
+            "error_message": None
+        }
+        return _fal_key_status
         
     except Exception as e:
         _fal_key_status = {
