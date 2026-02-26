@@ -252,29 +252,29 @@ export default function Library() {
       <div className="px-6 md:px-12 pb-20">
         <div className="max-w-7xl mx-auto">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="mb-8 bg-muted/50 p-1 rounded-full inline-flex">
+            <TabsList className="mb-8 bg-muted/50 p-1 rounded-full inline-flex flex-wrap sm:flex-nowrap gap-1">
               <TabsTrigger 
                 value="all" 
-                className="rounded-full px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                className="rounded-full px-3 sm:px-6 text-sm sm:text-base data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                 data-testid="tab-all-books"
               >
                 All Books
               </TabsTrigger>
               <TabsTrigger 
                 value="featured" 
-                className="rounded-full px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                className="rounded-full px-3 sm:px-6 text-sm sm:text-base data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                 data-testid="tab-featured"
               >
-                <FiStar className="mr-2 w-4 h-4" />
+                <FiStar className="mr-1 sm:mr-2 w-3 h-3 sm:w-4 sm:h-4" />
                 Featured
               </TabsTrigger>
               <TabsTrigger 
                 value="best" 
-                className="rounded-full px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                className="rounded-full px-3 sm:px-6 text-sm sm:text-base data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap"
                 data-testid="tab-best-week"
               >
-                <FiAward className="mr-2 w-4 h-4" />
-                Best of Week
+                <FiAward className="mr-1 sm:mr-2 w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden xs:inline">Best of </span>Week
               </TabsTrigger>
             </TabsList>
             
