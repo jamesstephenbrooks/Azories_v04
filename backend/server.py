@@ -2283,7 +2283,11 @@ async def create_chapter(book_id: str, chapter_data: ChapterCreate, current_user
     return ChapterResponse(**chapter)
 
 @api_router.get("/books/{book_id}/chapters", response_model=List[ChapterResponse])
-async def get_chapters(book_id: str):
+async def get_chapters(book_id: str, response: Response):
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    
     chapters = await db.chapters.find({"book_id": book_id}, {"_id": 0}).sort("order", 1).to_list(100)
     return [ChapterResponse(**c) for c in chapters]
 
