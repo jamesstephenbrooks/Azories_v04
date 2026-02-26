@@ -3719,6 +3719,22 @@ export default function ArtStudio() {
           </motion.div>
         )}
       </AnimatePresence>
+      
+      {/* Floating Generate Button for Mobile - Always visible at bottom */}
+      {(activeTab === 'character' || activeTab === 'scene') && (
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 p-4 bg-gradient-to-t from-[#0a0a15] via-[#0a0a15] to-transparent">
+          <Button
+            onClick={generateImage}
+            disabled={isGenerating}
+            className="w-full py-4 text-base font-semibold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-xl shadow-lg shadow-purple-500/30"
+            data-testid="mobile-generate-btn"
+            style={{ minHeight: '56px' }}
+          >
+            <FiZap className="w-5 h-5 mr-2" />
+            {isGenerating ? 'Generating...' : 'Generate Image'}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
