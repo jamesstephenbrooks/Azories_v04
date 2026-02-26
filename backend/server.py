@@ -115,7 +115,8 @@ if not JWT_SECRET:
     raise RuntimeError("JWT_SECRET environment variable is required")
 
 JWT_ALGORITHM = "HS256"
-JWT_EXPIRATION_HOURS = 24
+JWT_EXPIRATION_HOURS = 24  # Default session: 24 hours
+JWT_REMEMBER_ME_DAYS = 30  # Remember me: 30 days
 
 # Admin credentials - REQUIRED, no defaults for security
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME")
