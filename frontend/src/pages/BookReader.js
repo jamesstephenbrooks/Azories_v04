@@ -1133,75 +1133,99 @@ export default function BookReader() {
                 </div>
               </div>
             ) : isMobileLandscape && !isCover && currentPage >= 0 ? (
-              /* Mobile Landscape Two-Page Spread - Pure CSS, no react-pageflip */
-              <div 
-                className="flex w-full mx-auto gap-1 px-2"
-                style={{ height: `calc(100vh - 100px)`, maxWidth: '100vw' }}
-              >
-                {/* Left Page: Illustration */}
-                <div 
-                  className="relative flex-1 rounded-l-xl overflow-hidden bg-[#fdfbf7] shadow-lg"
-                  style={{ 
-                    boxShadow: 'inset -4px 0 20px -4px rgba(0,0,0,0.15), 4px 4px 20px rgba(0,0,0,0.2)'
+              /* Mobile Landscape Two-Page Spread - Full screen with edge navigation */
+              <div className="relative w-full h-screen">
+                {/* Edge Navigation - Left Arrow (Previous) */}
+                <button
+                  onClick={() => {
+                    if (currentPage > 0) {
+                      setCurrentPage(currentPage - 1);
+                      saveReadingProgress();
+                    } else if (currentPage === 0) {
+                      setCurrentPage(-1);
+                    }
                   }}
+                  disabled={currentPage <= -1}
+                  className="fixed left-1 top-1/2 -translate-y-1/2 z-50 w-10 h-20 flex items-center justify-center bg-black/40 hover:bg-black/60 disabled:opacity-30 rounded-r-lg transition-all"
+                  data-testid="landscape-prev-btn"
                 >
-                  {currentPageData?.image_url ? (
-                    <img 
-                      src={currentPageData.image_url}
-                      alt=""
-                      className="w-full h-full object-cover"
-                      style={{
-                        objectPosition: `${currentPageData.image_position_x || 50}% ${currentPageData.image_position_y || 50}%`
-                      }}
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-muted/20">
-                      <span className="text-muted-foreground text-sm">No illustration</span>
-                    </div>
-                  )}
-                  {/* Page number on image */}
-                  <div className="absolute bottom-2 left-2 px-2 py-1 rounded-full bg-black/50 text-white text-xs">
-                    {currentPage + 1}
-                  </div>
-                </div>
+                  <FiChevronLeft className="w-6 h-6 text-white" />
+                </button>
                 
-                {/* Right Page: Text */}
-                <div 
-                  className="flex-1 bg-[#fdfbf7] dark:bg-[#2a2a30] rounded-r-xl shadow-lg overflow-hidden flex flex-col"
-                  style={{ 
-                    boxShadow: 'inset 4px 0 20px -4px rgba(0,0,0,0.1), 4px 4px 20px rgba(0,0,0,0.2)'
+                {/* Edge Navigation - Right Arrow (Next) */}
+                <button
+                  onClick={() => {
+                    if (currentPage < allPages.length - 1) {
+                      setCurrentPage(currentPage + 1);
+                      saveReadingProgress();
+                    }
                   }}
+                  disabled={currentPage >= allPages.length - 1}
+                  className="fixed right-1 top-1/2 -translate-y-1/2 z-50 w-10 h-20 flex items-center justify-center bg-black/40 hover:bg-black/60 disabled:opacity-30 rounded-l-lg transition-all"
+                  data-testid="landscape-next-btn"
                 >
-                  {/* Chapter header if first page of chapter */}
-                  {currentPageData?.chapterTitle && (
-                    <div className="px-4 pt-3 pb-2 border-b border-muted/30">
-                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                        Chapter {currentPageData.chapterNumber || ''}
-                      </p>
-                      <h3 className="font-heading text-sm font-bold text-foreground">
-                        {currentPageData.chapterTitle}
-                      </h3>
-                    </div>
-                  )}
-                  
-                  {/* Text content */}
-                  <div className="flex-1 overflow-y-auto px-4 py-3">
-                    {(currentPageData?.text_content || currentPageData?.text || currentPageData?.content) ? (
-                      <p className="font-reader text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap">
-                        {currentPageData.text_content || currentPageData.text || currentPageData.content}
-                      </p>
+                  <FiChevronRight className="w-6 h-6 text-white" />
+                </button>
+                
+                {/* Two-Page Spread - Takes almost full screen */}
+                <div 
+                  className="flex w-full gap-1 px-12 pt-10 pb-2"
+                  style={{ height: '100vh' }}
+                >
+                  {/* Left Page: Illustration */}
+                  <div 
+                    className="relative flex-1 rounded-l-lg overflow-hidden bg-[#fdfbf7] shadow-xl"
+                    style={{ 
+                      boxShadow: 'inset -4px 0 20px -4px rgba(0,0,0,0.15), 4px 4px 20px rgba(0,0,0,0.2)'
+                    }}
+                  >
+                    {currentPageData?.image_url ? (
+                      <img 
+                        src={currentPageData.image_url}
+                        alt=""
+                        className="w-full h-full object-cover"
+                        style={{
+                          objectPosition: `${currentPageData.image_position_x || 50}% ${currentPageData.image_position_y || 50}%`
+                        }}
+                      />
                     ) : (
-                      <p className="text-muted-foreground text-xs italic text-center py-4">
-                        Tap arrows to continue...
-                      </p>
+                      <div className="w-full h-full flex items-center justify-center bg-muted/20">
+                        <span className="text-muted-foreground text-sm">No illustration</span>
+                      </div>
                     )}
                   </div>
                   
-                  {/* Page indicator */}
-                  <div className="px-4 py-2 text-center border-t border-muted/30">
-                    <span className="text-xs text-muted-foreground">
-                      Page {currentPage + 1} of {allPages.length}
-                    </span>
+                  {/* Right Page: Text */}
+                  <div 
+                    className="flex-1 bg-[#fdfbf7] dark:bg-[#2a2a30] rounded-r-lg shadow-xl overflow-hidden flex flex-col"
+                    style={{ 
+                      boxShadow: 'inset 4px 0 20px -4px rgba(0,0,0,0.1), 4px 4px 20px rgba(0,0,0,0.2)'
+                    }}
+                  >
+                    {/* Chapter header if present */}
+                    {currentPageData?.chapterTitle && (
+                      <div className="px-3 pt-2 pb-1 border-b border-muted/30">
+                        <p className="text-[9px] uppercase tracking-wider text-muted-foreground">
+                          Chapter {currentPageData.chapterNumber || ''}
+                        </p>
+                        <h3 className="font-heading text-xs font-bold text-foreground">
+                          {currentPageData.chapterTitle}
+                        </h3>
+                      </div>
+                    )}
+                    
+                    {/* Text content - fills available space */}
+                    <div className="flex-1 overflow-y-auto px-3 py-2">
+                      {(currentPageData?.text_content || currentPageData?.text || currentPageData?.content) ? (
+                        <p className="font-reader text-xs leading-relaxed text-foreground/90 whitespace-pre-wrap">
+                          {currentPageData.text_content || currentPageData.text || currentPageData.content}
+                        </p>
+                      ) : (
+                        <p className="text-muted-foreground text-xs italic text-center py-4">
+                          Tap edge arrows to navigate
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
