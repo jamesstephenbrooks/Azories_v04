@@ -97,6 +97,7 @@ export default function BookEditor() {
   const [proStudioScenes, setProStudioScenes] = useState([]);
   const [proStudioVideos, setProStudioVideos] = useState([]);
   const [starterLibraryImages, setStarterLibraryImages] = useState([]);
+  const [expandedStarterImage, setExpandedStarterImage] = useState(null); // For lightbox preview
   const [galleryTab, setGalleryTab] = useState('book'); // 'book', 'all', 'characters', 'scenes', 'videos', 'starter'
   
   // Cover Gallery picker
