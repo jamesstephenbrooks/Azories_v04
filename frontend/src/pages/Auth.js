@@ -22,7 +22,8 @@ export default function Auth() {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    name: ''
+    name: '',
+    rememberMe: true  // Default to true for better UX
   });
   
   const { login, register } = useAuth();
