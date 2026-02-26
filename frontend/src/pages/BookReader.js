@@ -1049,6 +1049,7 @@ export default function BookReader() {
               /* Realistic Page Flip Mode - for landscape and cover */
               <div className={`flex justify-center items-center ${isFullscreen ? 'h-full w-full' : ''}`}>
                 <RealisticPageFlip
+                  key={`pageflip-${orientationKey}-${isMobileLandscape ? 'landscape' : 'portrait'}`}
                   ref={realisticFlipRef}
                   book={book}
                   pages={allPages}
