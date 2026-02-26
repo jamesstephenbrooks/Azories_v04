@@ -873,9 +873,9 @@ export default function BookReader() {
       
       {/* Bottom Controls */}
       <div className={`fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-xl border-t border-border z-40 transition-transform duration-300 ${hideControls ? 'translate-y-full' : ''}`}>
-        <div className="max-w-4xl mx-auto px-2 sm:px-4 py-2 sm:py-4">
-          {/* Navigation */}
-          <div className="flex items-center justify-center gap-2 sm:gap-4 mb-2 sm:mb-4">
+        <div className="max-w-4xl mx-auto px-2 sm:px-4 py-3 sm:py-4">
+          {/* Navigation - Larger touch targets on mobile */}
+          <div className="flex items-center justify-center gap-3 sm:gap-4 mb-2 sm:mb-4">
             <Button
               variant="outline"
               size="default"
@@ -885,9 +885,9 @@ export default function BookReader() {
                 }
               }}
               disabled={currentPage <= -1 || isFlipping}
-              className="rounded-full px-3 sm:px-6 text-xs sm:text-sm"
+              className="rounded-full min-w-[44px] min-h-[44px] px-4 sm:px-6 text-sm sm:text-base"
             >
-              <FiChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 sm:mr-1" />
+              <FiChevronLeft className="w-5 h-5 sm:w-5 sm:h-5 sm:mr-1" />
               <span className="hidden sm:inline">Previous</span>
             </Button>
             
@@ -897,11 +897,11 @@ export default function BookReader() {
                 variant="default"
                 size="default"
                 onClick={startListening}
-                className="rounded-full px-4 sm:px-8 bg-purple-600 hover:bg-purple-500 text-xs sm:text-sm"
+                className="rounded-full min-h-[44px] px-5 sm:px-8 bg-purple-600 hover:bg-purple-500 text-sm sm:text-base"
                 data-testid="cover-start-listening-btn"
               >
-                <FiPlay className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
-                <span className="hidden xs:inline">Start</span> Listen
+                <FiPlay className="w-5 h-5 sm:w-5 sm:h-5 mr-2" />
+                Listen
               </Button>
             ) : (
               <Button
@@ -909,15 +909,15 @@ export default function BookReader() {
                 size="default"
                 onClick={isPlaying || autoRead ? handleAutoReadToggle : toggleAudio}
                 disabled={audioLoading}
-                className="rounded-full px-4 sm:px-8 text-xs sm:text-sm"
+                className="rounded-full min-h-[44px] px-5 sm:px-8 text-sm sm:text-base"
                 data-testid="read-aloud-btn"
               >
                 {audioLoading ? (
-                  <><div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-1 sm:mr-2" /> <span className="hidden sm:inline">Loading...</span></>
+                  <><div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" /> Loading</>
                 ) : (isPlaying || autoRead) ? (
-                  <><FiPause className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" /> Pause</>
+                  <><FiPause className="w-5 h-5 mr-2" /> Pause</>
                 ) : (
-                  <><FiPlay className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" /> <span className="hidden sm:inline">Read</span> Aloud</>
+                  <><FiPlay className="w-5 h-5 mr-2" /> Aloud</>
                 )}
               </Button>
             )}
@@ -931,10 +931,10 @@ export default function BookReader() {
                 }
               }}
               disabled={currentPage === -2 || isFlipping}
-              className="rounded-full px-3 sm:px-6 text-xs sm:text-sm"
+              className="rounded-full min-w-[44px] min-h-[44px] px-4 sm:px-6 text-sm sm:text-base"
             >
               <span className="hidden sm:inline">Next</span>
-              <FiChevronRight className="w-4 h-4 sm:w-5 sm:h-5 sm:ml-1" />
+              <FiChevronRight className="w-5 h-5 sm:w-5 sm:h-5 sm:ml-1" />
             </Button>
           </div>
           
