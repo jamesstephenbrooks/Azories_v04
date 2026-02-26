@@ -1,57 +1,57 @@
 {
   "book_id": "book2_pip_penguin",
   "title": "Pip the Brave Little Penguin",
-  "generated_at": "2026-02-26T07:53:52.141110",
+  "generated_at": "2026-02-26T07:57:08.331734",
   "results": [
     {
       "id": "cover_front",
-      "status": "error",
-      "error": "Constructor parameter should be str"
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book2_pip_penguin/covers/cover_front.png"
     },
     {
       "id": "cover_back",
-      "status": "error",
-      "error": "Constructor parameter should be str"
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book2_pip_penguin/covers/cover_back.png"
     },
     {
       "id": "page_01",
-      "status": "error",
-      "error": "Constructor parameter should be str"
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book2_pip_penguin/pages/page_01.png"
     },
     {
       "id": "page_02",
-      "status": "error",
-      "error": "Constructor parameter should be str"
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book2_pip_penguin/pages/page_02.png"
     },
     {
       "id": "page_03",
-      "status": "error",
-      "error": "Constructor parameter should be str"
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book2_pip_penguin/pages/page_03.png"
     },
     {
       "id": "page_04",
-      "status": "error",
-      "error": "Constructor parameter should be str"
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book2_pip_penguin/pages/page_04.png"
     },
     {
       "id": "page_05",
-      "status": "error",
-      "error": "Constructor parameter should be str"
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book2_pip_penguin/pages/page_05.png"
     },
     {
       "id": "page_06",
-      "status": "error",
-      "error": "Constructor parameter should be str"
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book2_pip_penguin/pages/page_06.png"
     },
     {
       "id": "page_07",
-      "status": "error",
-      "error": "Constructor parameter should be str"
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book2_pip_penguin/pages/page_07.png"
     },
     {
       "id": "page_08",
-      "status": "error",
-      "error": "Constructor parameter should be str"
+      "status": "success",
+      "path": "/app/content/books/batch1_picture_books/book2_pip_penguin/pages/page_08.png"
     }
   ]
 }

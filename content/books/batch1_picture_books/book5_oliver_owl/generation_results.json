@@ -1,52 +1,52 @@
 {
   "book_id": "book5_oliver_owl",
   "title": "Oliver the Curious Owl",
-  "generated_at": "2026-02-26T07:55:25.111903",
+  "generated_at": "2026-02-26T07:59:05.537080",
   "results": [
     {
       "id": "cover_front",
       "status": "error",
-      "error": "Constructor parameter should be str"
+      "error": "Generation failed after 3 attempts: User is locked. Reason: Exhausted balance. Top up your balance a"
     },
     {
       "id": "cover_back",
       "status": "error",
-      "error": "Constructor parameter should be str"
+      "error": "Generation failed after 3 attempts: User is locked. Reason: Exhausted balance. Top up your balance a"
     },
     {
       "id": "page_01",
       "status": "error",
-      "error": "Constructor parameter should be str"
+      "error": "Generation failed after 3 attempts: User is locked. Reason: Exhausted balance. Top up your balance a"
     },
     {
       "id": "page_02",
       "status": "error",
-      "error": "Constructor parameter should be str"
+      "error": "Generation failed after 3 attempts: User is locked. Reason: Exhausted balance. Top up your balance a"
     },
     {
       "id": "page_03",
       "status": "error",
-      "error": "Constructor parameter should be str"
+      "error": "Generation failed after 3 attempts: User is locked. Reason: Exhausted balance. Top up your balance a"
     },
     {
       "id": "page_04",
       "status": "error",
-      "error": "Constructor parameter should be str"
+      "error": "Generation failed after 3 attempts: User is locked. Reason: Exhausted balance. Top up your balance a"
     },
     {
       "id": "page_05",
       "status": "error",
-      "error": "Constructor parameter should be str"
+      "error": "Generation failed after 3 attempts: User is locked. Reason: Exhausted balance. Top up your balance a"
     },
     {
       "id": "page_06",
       "status": "error",
-      "error": "Constructor parameter should be str"
+      "error": "Generation failed after 3 attempts: User is locked. Reason: Exhausted balance. Top up your balance a"
     },
     {
       "id": "page_07",
       "status": "error",
-      "error": "Constructor parameter should be str"
+      "error": "Generation failed after 3 attempts: User is locked. Reason: Exhausted balance. Top up your balance a"
     }
   ]
 }
