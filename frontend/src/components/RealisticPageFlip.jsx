@@ -269,7 +269,8 @@ ChapterTitlePage.displayName = 'ChapterTitlePage';
 
 // Image-only page (for left side of spread) - now supports video too
 // Images and videos fill the entire page and are centered
-const ImagePage = forwardRef(({ page, pageNumber }, ref) => {
+// Enhanced with lazy loading, shimmer placeholders, and preloading
+const ImagePage = forwardRef(({ page, pageNumber, isCurrentPage = false, onImageLoad }, ref) => {
   const hasImage = page?.image_url && page.image_url.trim() !== '';
   const hasVideo = page?.video_url && page.video_url.trim() !== '';
   const useVideo = page?.use_video && hasVideo;
@@ -279,6 +280,7 @@ const ImagePage = forwardRef(({ page, pageNumber }, ref) => {
       ref={ref}
       className="demoPage page-wrapper relative w-full h-full"
       data-density="soft"
+      data-page-number={pageNumber}
     >
       {/* Full-page media container - no padding, fills entire page */}
       <div 
@@ -305,14 +307,16 @@ const ImagePage = forwardRef(({ page, pageNumber }, ref) => {
             }}
           />
         ) : hasImage ? (
-          <img 
-            src={page.image_url} 
+          <LazyImage 
+            src={page.image_url}
             alt=""
             className="absolute inset-0 w-full h-full"
             style={{
               objectFit: 'cover',
               objectPosition: `${page.image_position_x || 50}% ${page.image_position_y || 50}%`
             }}
+            priority={isCurrentPage}
+            onLoad={onImageLoad}
           />
         ) : (
           <div className="absolute inset-0 bg-muted/10 flex items-center justify-center">
