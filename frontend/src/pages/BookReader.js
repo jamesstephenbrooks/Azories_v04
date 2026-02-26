@@ -266,6 +266,15 @@ export default function BookReader() {
         
         // Track read
         axios.post(`${API}/books/${bookId}/track-read`).catch(() => {});
+        
+        // Show rotate prompt on mobile portrait (only once per session)
+        const hasSeenPrompt = sessionStorage.getItem('azories-rotate-prompt-seen');
+        if (!hasSeenPrompt && window.innerWidth < 768 && window.innerWidth <= window.innerHeight) {
+          setShowRotatePrompt(true);
+          sessionStorage.setItem('azories-rotate-prompt-seen', 'true');
+          // Auto-hide after 4 seconds
+          setTimeout(() => setShowRotatePrompt(false), 4000);
+        }
       }
     } catch (error) {
       toast.error('Failed to load book');
