@@ -2847,24 +2847,25 @@ export default function ProStudio() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="bg-black/40 border border-purple-500/20 p-1 mb-4 sm:mb-6 flex justify-start sm:justify-center overflow-x-auto">
-            <TabsTrigger value="characters" className="data-[state=active]:bg-purple-600 min-w-[44px] min-h-[44px] px-2 sm:px-3">
-              <FiUser className="sm:mr-2" /><span className="hidden sm:inline"> Characters</span>
+          {/* Mobile-optimized tabs - icon only on mobile, with text on larger screens */}
+          <TabsList className="bg-black/40 border border-purple-500/20 p-1 mb-4 sm:mb-6 flex justify-between sm:justify-center gap-0.5 sm:gap-1 w-full">
+            <TabsTrigger value="characters" className="data-[state=active]:bg-purple-600 flex-1 sm:flex-initial min-w-[44px] min-h-[48px] px-2 sm:px-3 text-xs sm:text-sm">
+              <FiUser className="w-5 h-5 sm:w-4 sm:h-4 sm:mr-2" /><span className="hidden sm:inline"> Characters</span>
             </TabsTrigger>
-            <TabsTrigger value="scenes" className="data-[state=active]:bg-purple-600 min-w-[44px] min-h-[44px] px-2 sm:px-3">
-              <FiLayers className="sm:mr-2" /><span className="hidden sm:inline"> Scenes</span>
+            <TabsTrigger value="scenes" className="data-[state=active]:bg-purple-600 flex-1 sm:flex-initial min-w-[44px] min-h-[48px] px-2 sm:px-3 text-xs sm:text-sm">
+              <FiLayers className="w-5 h-5 sm:w-4 sm:h-4 sm:mr-2" /><span className="hidden sm:inline"> Scenes</span>
             </TabsTrigger>
-            <TabsTrigger value="cinema" className="data-[state=active]:bg-purple-600 min-w-[44px] min-h-[44px] px-2 sm:px-3">
-              <FiCamera className="sm:mr-2" /><span className="hidden sm:inline"> Cinema</span>
+            <TabsTrigger value="cinema" className="data-[state=active]:bg-purple-600 flex-1 sm:flex-initial min-w-[44px] min-h-[48px] px-2 sm:px-3 text-xs sm:text-sm">
+              <FiCamera className="w-5 h-5 sm:w-4 sm:h-4 sm:mr-2" /><span className="hidden sm:inline"> Cinema</span>
             </TabsTrigger>
-            <TabsTrigger value="shots" className="data-[state=active]:bg-purple-600 min-w-[44px] min-h-[44px] px-2 sm:px-3">
-              <FiGrid className="sm:mr-2" /><span className="hidden sm:inline"> Shots</span>
+            <TabsTrigger value="shots" className="data-[state=active]:bg-purple-600 flex-1 sm:flex-initial min-w-[44px] min-h-[48px] px-2 sm:px-3 text-xs sm:text-sm">
+              <FiGrid className="w-5 h-5 sm:w-4 sm:h-4 sm:mr-2" /><span className="hidden sm:inline"> Shots</span>
             </TabsTrigger>
-            <TabsTrigger value="video" className="data-[state=active]:bg-purple-600 min-w-[44px] min-h-[44px] px-2 sm:px-3">
-              <FiVideo className="sm:mr-2" /><span className="hidden sm:inline"> Video</span>
+            <TabsTrigger value="video" className="data-[state=active]:bg-purple-600 flex-1 sm:flex-initial min-w-[44px] min-h-[48px] px-2 sm:px-3 text-xs sm:text-sm">
+              <FiVideo className="w-5 h-5 sm:w-4 sm:h-4 sm:mr-2" /><span className="hidden sm:inline"> Video</span>
             </TabsTrigger>
-            <TabsTrigger value="gallery" className="data-[state=active]:bg-purple-600 min-w-[44px] min-h-[44px] px-2 sm:px-3">
-              <FiFolder className="sm:mr-2" /><span className="hidden sm:inline"> Gallery</span>
+            <TabsTrigger value="gallery" className="data-[state=active]:bg-purple-600 flex-1 sm:flex-initial min-w-[44px] min-h-[48px] px-2 sm:px-3 text-xs sm:text-sm">
+              <FiFolder className="w-5 h-5 sm:w-4 sm:h-4 sm:mr-2" /><span className="hidden sm:inline"> Gallery</span>
             </TabsTrigger>
           </TabsList>
 
