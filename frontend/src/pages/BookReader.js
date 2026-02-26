@@ -966,14 +966,14 @@ export default function BookReader() {
         </motion.div>
       )}
       
-      {/* Book Display - with swipe support (disabled in landscape) */}
+      {/* Book Display - with swipe support */}
       <div 
         id="book-container"
         className={`${isMobileLandscape ? 'pt-6 pb-0' : 'pt-12 sm:pt-20 pb-24 sm:pb-48'} px-1 sm:px-4 flex items-center justify-center min-h-screen transition-all duration-300 ${
           isFullscreen ? 'bg-black/95 fixed inset-0 z-50 pt-4 sm:pt-8 pb-4 sm:pb-8' : ''
         }`}
-        {...(isMobileLandscape ? {} : swipeHandlers)}
-        style={{ touchAction: isMobileLandscape ? 'auto' : 'pan-y pinch-zoom' }}
+        {...swipeHandlers}
+        style={{ touchAction: 'pan-y pinch-zoom' }}
         data-testid="book-container"
       >
         {/* Swipe hint indicators */}
