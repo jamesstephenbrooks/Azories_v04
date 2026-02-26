@@ -7919,6 +7919,71 @@ async def admin_get_full_book(book_id: str, admin: dict = Depends(get_admin_user
 
 
 # ==========================================================================================
+# SYSTEM STATUS ENDPOINTS
+# ==========================================================================================
+
+@api_router.get("/admin/system-status")
+async def get_system_status(admin: dict = Depends(get_admin_user)):
+    """Get system status including API key validation (admin only)"""
+    
+    # Get FAL_KEY status
+    fal_status = get_fal_key_status() if get_fal_key_status else {"valid": None, "error_message": "Not available"}
+    
+    # Check Emergent Key
+    emergent_key = os.environ.get('EMERGENT_LLM_KEY', '')
+    emergent_status = {
+        "configured": bool(emergent_key and len(emergent_key) > 10),
+        "masked_key": f"{emergent_key[:15]}..." if emergent_key else None
+    }
+    
+    # Get FAL_KEY masked
+    fal_key = os.environ.get('FAL_KEY', '')
+    fal_masked = f"{fal_key[:15]}...{fal_key[-6:]}" if len(fal_key) > 21 else "Not set"
+    
+    return {
+        "fal_ai": {
+            **fal_status,
+            "masked_key": fal_masked,
+            "help_url": "https://fal.ai/dashboard/keys"
+        },
+        "emergent_key": emergent_status,
+        "stripe": {
+            "configured": bool(os.environ.get('STRIPE_API_KEY')),
+            "mode": "live" if os.environ.get('STRIPE_API_KEY', '').startswith('sk_live') else "test"
+        },
+        "brevo_email": {
+            "configured": bool(os.environ.get('BREVO_API_KEY'))
+        },
+        "cloudinary": {
+            "configured": bool(os.environ.get('CLOUDINARY_API_KEY'))
+        },
+        "database": {
+            "connected": True,  # If we got here, DB is connected
+            "name": os.environ.get('DB_NAME', 'unknown')
+        }
+    }
+
+
+@api_router.post("/admin/validate-fal-key")
+async def admin_validate_fal_key(admin: dict = Depends(get_admin_user)):
+    """Force re-validation of FAL_KEY (admin only)"""
+    if not validate_fal_key_on_startup:
+        return {"success": False, "error": "FAL validation not available"}
+    
+    try:
+        status = await validate_fal_key_on_startup()
+        return {
+            "success": True,
+            "status": status
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e)
+        }
+
+
+# ==========================================================================================
 # CONTACT FORM
 # ==========================================================================================
 
