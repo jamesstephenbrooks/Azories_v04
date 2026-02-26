@@ -11,16 +11,26 @@ import sys
 from pathlib import Path
 from datetime import datetime
 
-sys.path.insert(0, str(Path(__file__).parent))
+# Set up paths
+APP_DIR = Path(__file__).parent
+BACKEND_DIR = APP_DIR / 'backend'
 
+# Load environment variables from backend .env
 from dotenv import load_dotenv
-load_dotenv(Path(__file__).parent / 'backend/.env')
+load_dotenv(BACKEND_DIR / '.env')
 
-# Import fal.ai service
-sys.path.insert(0, str(Path(__file__).parent / 'backend'))
+# Verify FAL_KEY is loaded
+fal_key = os.environ.get('FAL_KEY', '')
+if not fal_key:
+    print("ERROR: FAL_KEY not found in environment")
+    sys.exit(1)
+print(f"FAL_KEY loaded: {fal_key[:15]}...{fal_key[-4:]}")
+
+# Add backend to path for imports
+sys.path.insert(0, str(BACKEND_DIR))
 from fal_service import generate_image_flux
 
-OUTPUT_BASE = Path(__file__).parent / 'content/books/batch1_picture_books'
+OUTPUT_BASE = APP_DIR / 'content/books/batch1_picture_books'
 
 # Book 1: Luna and the Moonbeam
 BOOK1_PROMPTS = {
