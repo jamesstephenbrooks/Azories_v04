@@ -144,7 +144,11 @@ export default function BookReader() {
     
     // Screen orientation API handler (modern browsers)
     const handleScreenOrientationChange = () => {
-      console.log('[BookReader] screen.orientation change event fired:', screen.orientation?.type);
+      try {
+        console.log('[BookReader] screen.orientation change event fired:', screen?.orientation?.type);
+      } catch (e) {
+        console.log('[BookReader] screen.orientation change event fired');
+      }
       setTimeout(updateOrientation, 150);
       setTimeout(updateOrientation, 350);
     };
@@ -160,8 +164,13 @@ export default function BookReader() {
     window.addEventListener('resize', handleResize);
     window.addEventListener('orientationchange', handleOrientationChange);
     
-    if (screen.orientation) {
-      screen.orientation.addEventListener('change', handleScreenOrientationChange);
+    // Safely check for screen.orientation API
+    try {
+      if (typeof screen !== 'undefined' && screen.orientation && screen.orientation.addEventListener) {
+        screen.orientation.addEventListener('change', handleScreenOrientationChange);
+      }
+    } catch (e) {
+      // screen.orientation not available or throws
     }
     
     if (mediaQuery?.addEventListener) {
@@ -177,8 +186,12 @@ export default function BookReader() {
       clearTimeout(resizeTimeout);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('orientationchange', handleOrientationChange);
-      if (screen.orientation) {
-        screen.orientation.removeEventListener('change', handleScreenOrientationChange);
+      try {
+        if (typeof screen !== 'undefined' && screen.orientation && screen.orientation.removeEventListener) {
+          screen.orientation.removeEventListener('change', handleScreenOrientationChange);
+        }
+      } catch (e) {
+        // Ignore cleanup errors
       }
       if (mediaQuery?.removeEventListener) {
         mediaQuery.removeEventListener('change', handleMediaChange);
