@@ -776,6 +776,35 @@ export default function BookReader() {
         )}
       </div>
       
+      {/* Rotate phone prompt - only on mobile portrait */}
+      {showRotatePrompt && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="fixed top-16 left-4 right-4 z-50 md:hidden"
+        >
+          <div className="bg-purple-600 text-white rounded-xl px-4 py-3 shadow-lg flex items-center gap-3">
+            <div className="flex-shrink-0">
+              <svg className="w-6 h-6 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="4" y="2" width="16" height="20" rx="2" />
+                <path d="M12 18h.01" />
+                <path d="M2 12l2-2m0 0l2 2m-2-2v4" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <p className="text-sm font-medium flex-1">
+              Rotate your phone for the best reading experience
+            </p>
+            <button 
+              onClick={() => setShowRotatePrompt(false)}
+              className="flex-shrink-0 p-1 hover:bg-white/20 rounded-full"
+            >
+              <FiX className="w-4 h-4" />
+            </button>
+          </div>
+        </motion.div>
+      )}
+      
       {/* Book Display - with swipe support */}
       <div 
         id="book-container"
