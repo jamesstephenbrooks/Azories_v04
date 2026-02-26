@@ -106,25 +106,58 @@ Files:
 
 **Status:** FUNCTIONAL - loads without crashing, just slow
 
+## Book Library Generation (Feb 26, 2026)
+
+### Progress Summary
+| Category | Completed | Remaining |
+|----------|-----------|-----------|
+| Total Books | 37 | 28 |
+| Picture Books (3-6) | ~15 | ~10 |
+| Early Readers (6-8) | ~12 | ~8 |
+| Middle Grade (8-12) | ~10 | ~10 |
+
+### Completed Books (37 total)
+Fantasy: Dragon's Secret Garden, Unicorn's Rainbow Bridge, Princess Penny's Pet Dragon, Wizard's Apprentice, Fairies of Moonlight Meadow, Mermaid's Lost Pearl, Elves & Magic Tree, Giant's Gentle Heart, Pixie Dust Adventures, Enchanted Carousel
+
+Adventure: Captain Compass, Jungle Explorers Club, Mountain Climbing Mice, Underground City, Sky Pirates of Cloudland, Safari Sam's Big Day, River Rafting Raccoons, Arctic Expedition
+
+Sci-Fi: Aliens at My School, Space Station School, Friendly Martians, Gadget Girl, Astronaut Alex's Moon Mission
+
+Mystery: Secret Code Club, Detective Daisy's First Case
+
+Humour: Burping Dragon, Backwards Day, Pirate Pete's Bad Hair Day, Monster Who Was Scared of Kids, Dinosaur Dentist
+
+General: Alphabet Zoo, Seasons of Magic Forest, Kindness Kingdom, Feelings Garden, Robot Best Friend, Superhero School, Case of Missing Cookies
+
+### Books Still Empty (28)
+Bedtime in the Animal World, Colors of the World, Cooking Adventures with Chef Cat, Desert Treasure Hunt, Flame's Courageous Journey, Friendship Island, Galaxy Racers, Guardians of Tomorrow (x2), Lila and the Whispering Blossoms, Luna's Rainbow Adventure, Mystery at the Zoo, Numbers Come Alive, Ocean Wonders, Princess and the Enchanted Forest, Puzzle Palace Adventures, Shapes in the City, The Dinosaur Time Machine, The Emotion Squad, The Haunted Library Book, The Haunted Treehouse, The Journey to Merlden, The Lighthouse Keeper's Secret, The Midnight Brush, The Missing Birthday Present, The Robot Who Wanted Friends, The Time Machine Treehouse
+
+### Generation Script
+- `/app/generate_books_v2.py` - Using OpenAI GPT-Image-1 via Emergent Key
+- Images stored in: `/app/frontend/public/book-assets/[book-slug]/`
+
 ## Pending Tasks (P0-P2)
 
 ### P0 - Critical
-- None (pre-deployment checks passed)
+- **Complete remaining 28 books** - Create templates and generate content
 
 ### P1 - High Priority
-1. **Complete server.py refactoring** - Remove duplicate auth routes from server.py
-2. **Grand Library performance optimization** - Implement LOD, asset compression
+1. **Fix FAL_KEY** - Current key is invalid, affecting Pro Studio features
+2. **Complete server.py refactoring** - Remove duplicate auth routes from server.py
+3. **Grand Library performance optimization** - Implement LOD, asset compression
 
 ### P2 - Medium Priority
 1. Debug Book Editor Pro Characters/Scenes tabs with real data
-2. Implement Crop Option in Scenes
-3. Analyze readkids.com competitor
-4. Continue frontend refactoring (ProStudio.js, BookEditor.js)
+2. Test fal.ai LoRA training (may be fixed by image URL conversion)
+3. Implement Crop Option in Scenes
+4. Analyze readkids.com competitor
+5. Continue frontend refactoring (ProStudio.js, BookEditor.js)
 
 ### Future Tasks
 - Frontend component decomposition
 - N+1 query optimization in get_books(), get_user_followers()
 - Mobile-specific performance tuning
+- Permanent image storage (migrate from fal.ai 7-day retention)
 
 ## Environment Variables
 
