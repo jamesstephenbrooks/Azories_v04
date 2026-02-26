@@ -1,34 +1,101 @@
 {
   "book_id": "699adbe6176ebca750087f15",
   "title": "The Unicorn's Rainbow Bridge",
-  "status": "in_progress",
+  "status": "completed",
   "last_updated": "2026-02-26T08:42:00Z",
   "progress": {
     "total_pages": 14,
-    "completed_pages": 7,
-    "remaining_pages": 7,
+    "completed_pages": 14,
+    "remaining_pages": 0,
     "cover_generated": true,
-    "back_cover_generated": false
+    "back_cover_generated": true
   },
   "completed_images": [
-    {"file": "cover.png", "type": "cover", "status": "done"},
-    {"file": "page_01.png", "page": 1, "status": "done"},
-    {"file": "page_02.png", "page": 2, "status": "done"},
-    {"file": "page_03.png", "page": 3, "status": "done"},
-    {"file": "page_04.png", "page": 4, "status": "skipped", "note": "Using starter library: Rainbow After Rain"},
-    {"file": "page_05.png", "page": 5, "status": "done"},
-    {"file": "page_06.png", "page": 6, "status": "done"},
-    {"file": "page_07.png", "page": 7, "status": "done"}
+    {
+      "file": "cover.png",
+      "type": "cover",
+      "status": "done"
+    },
+    {
+      "file": "page_01.png",
+      "page": 1,
+      "status": "done"
+    },
+    {
+      "file": "page_02.png",
+      "page": 2,
+      "status": "done"
+    },
+    {
+      "file": "page_03.png",
+      "page": 3,
+      "status": "done"
+    },
+    {
+      "file": "page_04.png",
+      "page": 4,
+      "status": "skipped",
+      "note": "Using starter library: Rainbow After Rain"
+    },
+    {
+      "file": "page_05.png",
+      "page": 5,
+      "status": "done"
+    },
+    {
+      "file": "page_06.png",
+      "page": 6,
+      "status": "done"
+    },
+    {
+      "file": "page_07.png",
+      "page": 7,
+      "status": "done"
+    }
   ],
   "remaining_images": [
-    {"file": "page_08.png", "page": 8, "prompt": "Stardust and Lily continuing across green, blue and purple sections of rainbow bridge, dreamy clouds below, stars above, peaceful sleepy expressions"},
-    {"file": "page_09.png", "page": 9, "prompt": "Lily and Stardust arriving in Dreamland, fluffy pink cotton candy clouds, silver castle made of moonbeams in distance, floating stars, magical landscape", "starter_match": "Fairy Tale Castle"},
-    {"file": "page_10.png", "page": 10, "prompt": "Lily with eyes closed peacefully on Stardust's back, dream clouds forming showing Lily flying through colorful flower fields, magical and whimsical", "starter_match": "Peaceful Meadow"},
-    {"file": "page_11.png", "page": 11, "prompt": "Stardust carrying sleepy Lily back across the rainbow bridge, Lily's eyes half-closed, gentle peaceful journey, soft moonlight"},
-    {"file": "page_12.png", "page": 12, "prompt": "Stardust nuzzling sleepy Lily goodbye near her window, soft tender moment, unicorn and child connection, starlight around them"},
-    {"file": "page_13.png", "page": 13, "prompt": "Lily back in her cozy bed, snuggled under blankets, content peaceful smile, moonlight through window, safe and loved feeling"},
-    {"file": "page_14.png", "page": 14, "prompt": "Final scene showing sleeping Lily in foreground, window showing Stardust the unicorn dancing on rainbow bridge in starry sky, magical farewell, dreamy ending"},
-    {"file": "back_cover.png", "type": "back_cover", "prompt": "Back cover for children's book. Stardust and Lily together on rainbow bridge looking at distant Dreamland castle, peaceful magical scene"}
+    {
+      "file": "page_08.png",
+      "page": 8,
+      "prompt": "Stardust and Lily continuing across green, blue and purple sections of rainbow bridge, dreamy clouds below, stars above, peaceful sleepy expressions"
+    },
+    {
+      "file": "page_09.png",
+      "page": 9,
+      "prompt": "Lily and Stardust arriving in Dreamland, fluffy pink cotton candy clouds, silver castle made of moonbeams in distance, floating stars, magical landscape",
+      "starter_match": "Fairy Tale Castle"
+    },
+    {
+      "file": "page_10.png",
+      "page": 10,
+      "prompt": "Lily with eyes closed peacefully on Stardust's back, dream clouds forming showing Lily flying through colorful flower fields, magical and whimsical",
+      "starter_match": "Peaceful Meadow"
+    },
+    {
+      "file": "page_11.png",
+      "page": 11,
+      "prompt": "Stardust carrying sleepy Lily back across the rainbow bridge, Lily's eyes half-closed, gentle peaceful journey, soft moonlight"
+    },
+    {
+      "file": "page_12.png",
+      "page": 12,
+      "prompt": "Stardust nuzzling sleepy Lily goodbye near her window, soft tender moment, unicorn and child connection, starlight around them"
+    },
+    {
+      "file": "page_13.png",
+      "page": 13,
+      "prompt": "Lily back in her cozy bed, snuggled under blankets, content peaceful smile, moonlight through window, safe and loved feeling"
+    },
+    {
+      "file": "page_14.png",
+      "page": 14,
+      "prompt": "Final scene showing sleeping Lily in foreground, window showing Stardust the unicorn dancing on rainbow bridge in starry sky, magical farewell, dreamy ending"
+    },
+    {
+      "file": "back_cover.png",
+      "type": "back_cover",
+      "prompt": "Back cover for children's book. Stardust and Lily together on rainbow bridge looking at distant Dreamland castle, peaceful magical scene"
+    }
   ],
   "character_bible": {
     "stardust": {
@@ -36,7 +103,7 @@
       "description": "A graceful white unicorn with a flowing silver mane that sparkles like starlight, a spiral golden horn on her forehead, large gentle violet eyes with long lashes, a soft pink nose, and a tail that shimmers with all the colors of the rainbow."
     },
     "lily": {
-      "name": "Lily", 
+      "name": "Lily",
       "age": "5 years old",
       "description": "A sweet little girl with curly golden-blonde hair tied with a purple ribbon, big blue eyes full of wonder, rosy cheeks, fair skin, wearing a soft lavender nightgown with tiny stars on it and fluffy bunny slippers"
     }
@@ -48,12 +115,13 @@
   },
   "story_text": {
     "page_8": "Green felt soft like grass. Blue was cool like a gentle breeze. And purple... purple felt like the coziest hug.",
-    "page_9": "At the end of the bridge, they found Dreamland—a magical place where cotton candy clouds floated past castles made of moonbeams.",
+    "page_9": "At the end of the bridge, they found Dreamland\u2014a magical place where cotton candy clouds floated past castles made of moonbeams.",
     "page_10": "\"You can dream of anything here,\" Stardust whispered. Lily closed her eyes and dreamed of flying through fields of flowers.",
     "page_11": "When it was time to go home, Stardust carried Lily gently back across the Rainbow Bridge. The colors now shimmered with sleepy magic.",
     "page_12": "\"Will you come back tomorrow?\" Lily yawned. \"I'll be here whenever you need me,\" Stardust promised. \"Just look for the rainbow.\"",
     "page_13": "Lily climbed back into her cozy bed, feeling warm and safe. She hugged her pillow and smiled.",
     "page_14": "And as she drifted off to sleep, she could still see the soft glow of the Rainbow Bridge... and a unicorn dancing among the stars.\n\nThe End"
   },
-  "resume_instructions": "Run resume_unicorn_book.py to continue from page 8"
+  "resume_instructions": "Run resume_unicorn_book.py to continue from page 8",
+  "completed_at": "2026-02-26T08:53:55.113270"
 }
