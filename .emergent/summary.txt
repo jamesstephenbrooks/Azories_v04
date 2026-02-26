@@ -1,0 +1,217 @@
+<analysis>**original_problem_statement:**
+The user wants to enhance their Azories digital book application. The primary goals are:
+1.  Finalize and deploy the Pro Studio for AI character/scene generation.
+2.  Implement a full-featured, production-ready business model with a credits-based system and Stripe integration.
+3.  Add professional site elements like legal pages, a contact form, and a cookie consent banner.
+4.  Generate a high-quality library of sample books. This involves completing an existing list of ~65 empty book shells in the database and then generating new ones.
+5.  Address numerous bugs related to the gallery, Pro Studio, mobile experience, and book display.
+6.  Refactor the monolithic backend () and large frontend components for scalability.
+7.  Implement performance improvements for the book reader, including lazy loading and preloading.
+8.  Investigate and create a permanent solution for the recurring  API key invalidation issue.
+
+**PRODUCT REQUIREMENTS:**
+-   **Book Reader Mobile Experience (P0):** The core reading experience must be fully optimized for mobile devices (iOS and Android sizes).
+    -   **Portrait Mode:** Must show a single page at a time with both the illustration and story text visible simultaneously.
+    -   **Landscape Mode:** Must show a two-page spread, mimicking a physical book (left page = illustration, right page = text).
+    -   **Usability:** Buttons and navigation must be large and easily tappable (min 44px). No elements should overlap the reading content.
+-   **General Mobile Optimization (P0):** The entire application, including Navigation, Menus, Art Studio, and Pro Studio, must have clean, functional mobile layouts.
+-   **UX & Bug Fixes (P0):**
+    -   User sessions should be persistent. A Remember Me option should provide a long-lived session (e.g., 30 days).
+    -   The cookie consent banner must not block UI elements and should remember the user's choice.
+-   **Book Generation (Backlog):** Complete the generation of the remaining 19 empty books (deprioritized by user).
+
+**User's preferred language**: English
+
+**what currently exists?**
+The application's core reading experience () has been significantly overhauled for mobile devices. It now features a portrait mode with a split view (illustration on top, text on the bottom) and a landscape mode with a two-page spread. A Rotate your phone prompt was added to guide users. Performance improvements like lazy loading with shimmer effects are also implemented. Major UX blockers have been resolved, including a frustratingly short session timeout (fixed with a 30-day Remember Me option) and an intrusive cookie banner. The agent has just begun mobile optimization for the  page, implementing a collapsible sidebar and icon-only tabs to create a usable single-column layout.
+
+**Last working item**:
+-   **Last item agent was working:** The agent was working on making the  mobile-friendly. The user reported issues with session expiry and a persistent cookie banner, which were blocking usage. The agent implemented a Remember Me feature to extend session duration to 30 days and made the cookie banner smaller and less intrusive. This was a prerequisite to continue with the Art Studio fixes.
+-   **Status:** IN PROGRESS
+-   **Agent Testing Done:** Y (via screenshots for the session/cookie fixes)
+-   **Which testing method agent to use?** Screenshot tool for each incremental fix, as per the user's explicit instructions.
+-   **User Testing Done:** N (for the session/cookie fixes)
+
+**All Pending/In progress Issue list**:
+-   **Issue 1: Complete Art Studio Mobile Optimization (P0)**
+-   **Issue 2: Complete Pro Studio Mobile Optimization (P0)**
+-   **Issue 3: Fix Numbers Come Alive layout bug (P1)**
+-   **Issue 4: Refactor  into modular route files (P2)**
+-   **Issue 5:  LoRA training gets stuck (P2)**
+-   **Issue 6: Book Editor Pro Characters and Pro Scenes tabs are empty (P3)**
+
+**Issues Detail:**
+-   **Issue 1: Complete Art Studio Mobile Optimization**
+    -   **Attempted fixes:** The initial layout has been refactored from a cramped two-column view to a stacked single-column view with a collapsible Art Styles section and icon-only tabs.
+    -   **Next debug checklist:**
+        1.  Ensure form input fields are large enough and easy to use on mobile.
+        2.  Verify the on-screen keyboard doesn't hide critical buttons like Generate.
+        3.  Make the Generate button full-width and sticky or prominent at the bottom of the form.
+        4.  Provide screenshots for user approval after each change.
+    -   **Why fix this issue and what will be achieved with the fix?** To make the core content creation tool fully functional and user-friendly on mobile devices.
+    -   **Status:** IN PROGRESS
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Frontend
+    -   **Blocked on other issue:** None
+
+-   **Issue 2: Complete Pro Studio Mobile Optimization**
+    -   **Attempted fixes:** None.
+    -   **Next debug checklist:** Apply the same mobile optimization principles as the Art Studio: create a stacked, single-column layout, ensure controls are tappable, and make it usable on small screens.
+    -   **Why fix this issue and what will be achieved with the fix?** To make the advanced content creation tools accessible on mobile.
+    -   **Status:** NOT STARTED
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Frontend
+    -   **Blocked on other issue:** Art Studio Mobile Optimization
+
+-   **Issue 3: Numbers Come Alive has a page layout bug.**
+    -   **Attempted fixes:** None.
+    -   **Next debug checklist:** Inspect  and its CSS to see why this specific book renders pages incorrectly.
+    -   **Why fix this issue and what will be achieved with the fix?** Ensures all books display correctly.
+    -   **Status:** NOT STARTED
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Frontend
+    -   **Blocked on other issue:** None
+
+-   **Issue 4: Refactor  into modular route files.**
+    -   **Status:** NOT STARTED
+    -   **Why fix this issue and what will be achieved with the fix?** To improve backend maintainability and scalability.
+
+-   **Issue 5:  LoRA training gets stuck.**
+    -   **Status:** TESTING PENDING
+    -   **Why fix this issue and what will be achieved with the fix?** To restore a core Pro Studio feature.
+
+-   **Issue 6: Book Editor's Pro Characters and Pro Scenes tabs are empty.**
+    -   **Status:** USER VERIFICATION PENDING
+    -   **Why fix this issue and what will be achieved with the fix?** To connect Pro Studio content with the Book Editor.
+
+**In progress Task List**:
+-   **Task 1: Mobile Optimization (P0)**
+    -   **Where to resume:** Continue with the Art Studio mobile optimization. The next step is to fix the form fields and the Generate button, as per the user's request.
+    -   **What will be achieved with this?** A fully mobile-responsive application, meeting launch criteria.
+    -   **Status:** IN PROGRESS (BookReader and Navigation/Menus are complete; Art Studio is in progress).
+    -   **Should Test frontend/backend/both after fix?** Frontend
+    -   **Blocked on something:** None.
+
+**Upcoming and Future Tasks**
+
+**Upcoming Tasks:**
+-   **Art Studio Mobile Fixes (P0):**
+    -   Ensure form fields are easy to use on mobile.
+    -   Make the Generate button full-width and prominent.
+-   **Pro Studio Mobile Optimization (P0):** Begin and complete the mobile layout for the Pro Studio page.
+
+**Future Tasks:**
+-   Remove the temporary Test Landscape button from  before launch.
+-   Complete generation of the remaining 19 library books (moved to backlog by user).
+-   Refactor large frontend components (, ).
+-   Refactor monolithic backend .
+-   Migrate starter library image data from hardcoded Python files into the database.
+-   Implement permanent image storage to move away from 's 7-day retention.
+
+**Completed work in this session**
+-   **P0 Mobile Optimization - BookReader:**
+    -   Implemented a split-view (image/text) for portrait mode.
+    -   Implemented a two-page spread for landscape mode.
+    -   Added a Rotate your phone prompt that appears once per book.
+    -   Added a temporary Test Landscape button for user verification.
+    -   Significantly increased the book size on mobile to be more immersive (70-80% of screen height).
+    -   Hid the overlapping floating chat button in the reader.
+-   **P0 Mobile Optimization - Navigation & General UX:**
+    -   Fixed mobile hamburger menu with larger touch targets and more links.
+    -   Fixed dashboard tabs with larger touch targets.
+    -   Fixed text overflow on the Grand Library card and library tabs (Best of Week -> Top).
+-   **P0 Critical Bug Fixes:**
+    -   **Session Expiry:** Implemented a Remember Me checkbox on login that extends the JWT token lifetime to 30 days, resolving user complaints about being logged out too quickly.
+    -   **Cookie Consent Banner:** Fixed the banner to be less intrusive and to not block UI elements during login and testing.
+    -   **Onboarding Persistence:** Ensured the onboarding tutorial only appears once for new users and does not reappear on every session.
+-   **P0 Mobile Optimization - Art Studio (In Progress):**
+    -   Converted the cramped two-column layout into a functional single-column, stacked layout for mobile.
+    -   Made the Art Styles section a collapsible dropdown.
+    -   Converted tabs to space-saving icons for mobile.
+
+**Earlier issues found/mentioned but not fixed**
+-   **Issue 1:** N+1 query pattern in  in .
+-   **Issue 2:** N+1 queries in  /  in .
+
+**Known issue recurrence from previous fork**
+-   **Issue recurrence in previous fork**:  API key becoming invalid.
+-   **Recurrence count**: 9+
+-   **Status**: RESOLVED (A robust auto-detection system is in place and has not triggered this session).
+
+**Code Architecture**
+
+
+**Key Technical Concepts**
+-   **Responsive Design:** Extensive use of TailwindCSS (, , ) and custom hooks () to create adaptive layouts for mobile portrait, landscape, and desktop.
+-   **Conditional Rendering:** Architected  to render a completely different component tree for mobile portrait (split view) vs. landscape/desktop (page flip library).
+-   **Component State Management:** Used React hooks (, ) to manage UI state for mobile detection, collapsible sections, and the temporary Test Landscape mode.
+-   **Browser Storage:** Used  (onboarding, cookie consent) and  (rotate prompt) to create persistent and semi-persistent user experiences.
+-   **JWT Authentication:** Modified the FastAPI backend and React frontend to support a long-lived (30-day) JWT for a Remember Me feature, improving user retention.
+
+**key DB schema**
+-   No changes made to the database schema in this session.
+
+**All files of reference**
+-   : Heavily modified for mobile portrait/landscape views.
+-   : Heavily modified to create a responsive mobile layout.
+-   : Modified to add the Remember Me checkbox.
+-   : Modified to handle the  flag and issue a 30-day JWT.
+-   : Modified to handle  prop.
+-   : Modified for a more compact mobile view.
+-   : Modified to correctly handle persistence logic.
+
+**Areas that need refactoring**
+-   ****: This file is over 3,700 lines long. The mobile optimizations have started, but the component is a prime candidate for being broken down into smaller, manageable sub-components (e.g., , , ).
+-   ****: Still a monolithic file over 5,000 lines long. Needs to be broken down into modular route files under .
+
+**key api endpoints**
+-   : **MODIFIED**. Now accepts an optional  in the request body to issue a 30-day token instead of the default 24-hour token.
+
+**Critical Info for New Agent**
+-   **Follow the User's Workflow:** The user has a strict, established workflow: fix one thing, share a screenshot, wait for approval, then move to the next. DO NOT bundle changes.
+-   **Mobile Optimization is P0:** All mobile-related tasks are the highest priority and critical for launch.
+-   **Session Expiry is Fixed:** The Remember Me feature has been implemented. Any session loss during testing is likely due to the test environment creating new browser contexts, not a bug in the application logic.
+-   **Test Landscape Button:** A temporary button exists in the  header. The user is aware of it for testing. It should be removed before final deployment.
+-   **Book Generation is Deprioritized:** Do not work on generating new books. The user moved this task to the backlog to focus on the mobile experience.
+
+**documents and test reports created in this job**
+-   None.
+
+**Last 10 User Messages and any pending HUMAN messages**
+1.  **User:** Requests split view for portrait mode (image top, text bottom) and a rotate phone prompt. (COMPLETE)
+2.  **User:** Reports text overflow on a promotional card on the home page. (COMPLETE)
+3.  **User:** Asks to verify several other navigation areas and questions the Pending Review status text. (COMPLETE)
+4.  **User:** Approves the BookReader fixes and requests a friendlier text for Awaiting Approval (e.g., Coming Soon). Then asks to proceed to Art Studio mobile optimization. (COMPLETE)
+5.  **User:** Notes the rotate prompt should show once per book, not once per session. Asks for a way to test the landscape mode in the preview environment. (COMPLETE)
+6.  **User:** Acknowledges Art Studio progress but raises two critical blockers: session expiry and the intrusive cookie consent banner. Asks to fix these before continuing with Art Studio mobile fixes. (COMPLETE)
+7.  **User:** Acknowledges the BookReader looks fantastic and fully approves all fixes (split view, rotate prompt, landscape mode, etc.). Asks to change Awaiting Approval to Coming Soon or Being Reviewed. Then re-confirms to proceed to Art Studio mobile. (COMPLETE)
+8.  **User:** Approves Art Studio fixes (collapsible sidebar, icon tabs). Raises the session expiry and cookie banner issues again as blockers. Asks to fix them, then continue with Art Studio (forms, generate button). (COMPLETE - This message triggered the session/cookie fixes)
+9.  **User:** Acknowledges the rotate prompt/landscape testing fix. Asks for  fixes again (split-view/rotate prompt), likely due to context loss, then asks to check other navigation areas and the 'Pending Review' status. (COMPLETE - Agent re-verified the completed work).
+10. **User:** Approves all fixes and provides final feedback on the book reader. Requests that Awaiting Approval be changed to something friendlier like Coming Soon or Being Reviewed. Asks the agent to proceed to the Art Studio mobile optimization. (COMPLETE)
+
+**Project Health Check:**
+-   **Broken:**
+    -   Art Studio and Pro Studio are not fully usable on mobile (work in progress).
+    -   The Numbers Come Alive book has a visual layout bug.
+-   **Mocked:**
+    -   A Test Landscape button is present in the  for verification purposes. It should be removed before launch.
+
+**3rd Party Integrations**
+-   **Cloudinary**: Video storage.
+-   **Brevo**: Transactional emails.
+-   **fal.ai ()**: Primary service for cost-effective image generation (FLUX).
+-   **OpenAI GPT-Image-1 (via Emergent Universal Key)**: Fallback for image generation.
+-   **Stripe**: Payments.
+
+**Testing status**
+-   **Testing agent used after significant changes:** NO
+-   **Troubleshoot agent used after agent stuck in loop:** NO
+-   **Test files created:** None.
+-   **Known regressions:** None.
+
+**Credentials to test flow:**
+-   **Admin Login:**  / 
+-   **VIP User:**  / 
+
+**What agent forgot to execute**
+-   The user asked to investigate the default node layout in  in a previous fork, which is still in the future tasks backlog. No other requested tasks were forgotten in this session. The agent did repeat work on the  split-view due to a user message that seemed to have lost context, but the feature was already correctly implemented.</analysis>

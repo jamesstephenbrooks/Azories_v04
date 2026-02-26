@@ -6,7 +6,7 @@ import asyncio
 import aiohttp
 import json
 
-API_URL = 'https://character-forge-158.preview.emergentagent.com'
+API_URL = 'https://azories-mobile.preview.emergentagent.com'
 
 # List of book IDs to update with images
 BOOK_IDS = [
