@@ -203,6 +203,23 @@ async def lifespan(app: FastAPI):
     # Startup: start periodic cleanup
     _cleanup_task = asyncio.create_task(periodic_cleanup())
     logger.info("Started periodic task cleanup")
+    
+    # Validate FAL_KEY on startup
+    if validate_fal_key_on_startup:
+        try:
+            fal_status = await validate_fal_key_on_startup()
+            if fal_status.get("valid") == False:
+                logger.warning("=" * 60)
+                logger.warning("⚠️  FAL_KEY VALIDATION FAILED")
+                logger.warning(f"   Error: {fal_status.get('error_message', 'Unknown')}")
+                logger.warning("   Pro Studio image generation will use Emergent Key (more expensive)")
+                logger.warning("   To fix: Get a new key from https://fal.ai/dashboard/keys")
+                logger.warning("=" * 60)
+            elif fal_status.get("valid") == True:
+                logger.info("✅ FAL_KEY validated - fal.ai features ready")
+        except Exception as e:
+            logger.warning(f"⚠️ FAL_KEY validation error: {str(e)[:100]}")
+    
     yield
     # Shutdown: cancel cleanup task and close DB
     if _cleanup_task:
