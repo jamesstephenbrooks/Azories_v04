@@ -131,19 +131,21 @@ export const Navbar = () => {
       
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden glass mt-2 rounded-2xl p-4 space-y-2">
+        <div className="md:hidden glass mt-2 rounded-2xl p-4 space-y-1">
           <Link 
             to="/library" 
-            className="block px-4 py-2 font-ui rounded-full hover:bg-muted"
+            className="block px-4 py-3 font-ui rounded-xl hover:bg-muted min-h-[44px] flex items-center"
             onClick={() => setMobileOpen(false)}
+            data-testid="mobile-nav-library"
           >
             Library
           </Link>
           {user && (
             <Link 
               to="/dashboard" 
-              className="block px-4 py-2 font-ui rounded-full hover:bg-muted"
+              className="block px-4 py-3 font-ui rounded-xl hover:bg-muted min-h-[44px] flex items-center"
               onClick={() => setMobileOpen(false)}
+              data-testid="mobile-nav-dashboard"
             >
               My Books
             </Link>
@@ -151,11 +153,23 @@ export const Navbar = () => {
           {user && (
             <Link 
               to="/art-studio" 
-              className="block px-4 py-2 font-ui rounded-full hover:bg-muted flex items-center gap-2"
+              className="block px-4 py-3 font-ui rounded-xl hover:bg-muted min-h-[44px] flex items-center gap-2"
               onClick={() => setMobileOpen(false)}
+              data-testid="mobile-nav-art-studio"
             >
               <FiDroplet className="w-4 h-4 text-purple-500" />
               Art Studio
+            </Link>
+          )}
+          {user && (
+            <Link 
+              to="/pro-studio" 
+              className="block px-4 py-3 font-ui rounded-xl hover:bg-muted min-h-[44px] flex items-center gap-2"
+              onClick={() => setMobileOpen(false)}
+              data-testid="mobile-nav-pro-studio"
+            >
+              <FiZap className="w-4 h-4 text-amber-500" />
+              Pro Studio
             </Link>
           )}
         </div>
