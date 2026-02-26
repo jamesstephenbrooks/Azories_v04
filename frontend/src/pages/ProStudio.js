@@ -3352,14 +3352,14 @@ export default function ProStudio() {
           </TabsContent>
 
           {/* Scenes Tab */}
-          <TabsContent value="scenes" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <TabsContent value="scenes" className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               {/* Create Scene Panel */}
-              <div className="bg-black/40 rounded-xl border border-purple-500/20 p-6">
-                <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+              <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4 sm:p-6">
+                <h2 className="text-lg sm:text-xl font-bold text-white mb-2 flex items-center gap-2">
                   <FiLayers className="text-purple-400" /> Create Scene
                 </h2>
-                <p className="text-gray-400 text-sm mb-4">
+                <p className="text-gray-400 text-xs sm:text-sm mb-4">
                   Create consistent scenes/environments for your book illustrations.
                 </p>
 
@@ -3368,7 +3368,7 @@ export default function ProStudio() {
                   placeholder="Scene name (e.g., Enchanted Forest, Cyber City)"
                   value={sceneName}
                   onChange={(e) => setSceneName(e.target.value)}
-                  className="bg-gray-800/50 border-gray-700 text-white mb-4"
+                  className="bg-gray-800/50 border-gray-700 text-white mb-4 min-h-[48px] text-base"
                 />
 
                 {/* Scene Description */}
@@ -3376,21 +3376,21 @@ export default function ProStudio() {
                   placeholder="Describe the scene in detail... (e.g., 'A mystical forest with glowing mushrooms, ancient trees with faces, soft mist floating between the roots')"
                   value={sceneDescription}
                   onChange={(e) => setSceneDescription(e.target.value)}
-                  className="bg-gray-800/50 border-gray-700 text-white mb-4"
+                  className="bg-gray-800/50 border-gray-700 text-white mb-4 min-h-[100px] text-base"
                   rows={3}
                 />
 
-                {/* Style & Genre */}
-                <div className="grid grid-cols-2 gap-3 mb-4">
+                {/* Style & Genre - Stacked on mobile */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                   <div>
                     <label className="text-gray-400 text-xs mb-1 block">Visual Style</label>
                     <Select value={sceneStyle} onValueChange={setSceneStyle}>
-                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
+                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white min-h-[48px] text-base">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-gray-800 border-gray-700 max-h-60">
                         {characterStyles.map((style) => (
-                          <SelectItem key={style.id} value={style.id} className="text-white">{style.name}</SelectItem>
+                          <SelectItem key={style.id} value={style.id} className="text-white min-h-[44px]">{style.name}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -3398,20 +3398,80 @@ export default function ProStudio() {
                   <div>
                     <label className="text-gray-400 text-xs mb-1 block">Genre</label>
                     <Select value={sceneGenre} onValueChange={setSceneGenre}>
-                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
+                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white min-h-[48px] text-base">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-gray-800 border-gray-700 max-h-60">
                         {characterGenres.map((genre) => (
-                          <SelectItem key={genre.id} value={genre.id} className="text-white">{genre.name}</SelectItem>
+                          <SelectItem key={genre.id} value={genre.id} className="text-white min-h-[44px]">{genre.name}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
 
-                {/* Location, Lighting, Mood */}
-                <div className="grid grid-cols-3 gap-3 mb-4">
+                {/* Location, Lighting, Mood - Collapsible on mobile */}
+                <details className="group mb-4 sm:hidden">
+                  <summary className="text-purple-400 text-sm cursor-pointer hover:text-purple-300 min-h-[44px] flex items-center">
+                    + Location, Lighting & Mood (optional)
+                  </summary>
+                  <div className="space-y-3 mt-3">
+                    <div>
+                      <label className="text-gray-400 text-xs mb-1 block">Location</label>
+                      <Select value={sceneLocationType} onValueChange={setSceneLocationType}>
+                        <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white min-h-[48px] text-base">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-800 border-gray-700">
+                          {sceneOptions.location_types?.map((loc) => (
+                            <SelectItem key={loc.id} value={loc.id} className="text-white min-h-[44px]">{loc.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <label className="text-gray-400 text-xs mb-1 block">Lighting</label>
+                      <Select value={sceneLighting} onValueChange={setSceneLighting}>
+                        <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white min-h-[48px] text-base">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-800 border-gray-700">
+                          {sceneOptions.lighting?.map((light) => (
+                            <SelectItem key={light.id} value={light.id} className="text-white min-h-[44px]">{light.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <label className="text-gray-400 text-xs mb-1 block">Mood</label>
+                      <Select value={sceneMood} onValueChange={setSceneMood}>
+                        <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white min-h-[48px] text-base">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-800 border-gray-700">
+                          {sceneOptions.moods?.map((mood) => (
+                            <SelectItem key={mood.id} value={mood.id} className="text-white min-h-[44px]">{mood.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <Input
+                      placeholder="Time of day (e.g., sunset)"
+                      value={sceneTimeOfDay}
+                      onChange={(e) => setSceneTimeOfDay(e.target.value)}
+                      className="bg-gray-800/50 border-gray-700 text-white min-h-[48px] text-base"
+                    />
+                    <Input
+                      placeholder="Weather (e.g., light rain)"
+                      value={sceneWeather}
+                      onChange={(e) => setSceneWeather(e.target.value)}
+                      className="bg-gray-800/50 border-gray-700 text-white min-h-[48px] text-base"
+                    />
+                  </div>
+                </details>
+
+                {/* Desktop Location, Lighting, Mood */}
+                <div className="hidden sm:grid grid-cols-3 gap-3 mb-4">
                   <div>
                     <label className="text-gray-400 text-xs mb-1 block">Location</label>
                     <Select value={sceneLocationType} onValueChange={setSceneLocationType}>
@@ -3453,8 +3513,8 @@ export default function ProStudio() {
                   </div>
                 </div>
 
-                {/* Time of Day & Weather (optional) */}
-                <div className="grid grid-cols-2 gap-3 mb-4">
+                {/* Time of Day & Weather - Desktop only */}
+                <div className="hidden sm:grid grid-cols-2 gap-3 mb-4">
                   <Input
                     placeholder="Time of day (e.g., sunset)"
                     value={sceneTimeOfDay}
@@ -3469,13 +3529,14 @@ export default function ProStudio() {
                   />
                 </div>
 
+                {/* Create Button - Hidden on mobile (floating button used instead) */}
                 <Button 
                   onClick={() => {
                     if (!checkCreditsOrRedirect(1, 'Create Scene')) return;
                     createScene();
                   }}
                   disabled={isCreatingScene || !sceneName.trim() || !sceneDescription.trim()}
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 min-h-[48px] text-base hidden sm:flex"
                 >
                   {isCreatingScene ? 'Creating...' : 'Create Scene'}
                 </Button>
