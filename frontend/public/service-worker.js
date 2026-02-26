@@ -45,10 +45,10 @@ self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (request.method !== 'GET') return;
 
-  // Skip API requests (let them fail naturally if offline)
+  // API requests - ALWAYS fetch from network, never cache book content
   if (url.pathname.startsWith('/api')) {
     event.respondWith(
-      fetch(request).catch(() => {
+      fetch(request, { cache: 'no-store' }).catch(() => {
         return new Response(
           JSON.stringify({ error: 'You are offline', offline: true }),
           { headers: { 'Content-Type': 'application/json' } }
