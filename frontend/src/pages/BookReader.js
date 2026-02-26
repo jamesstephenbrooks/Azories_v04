@@ -1208,79 +1208,8 @@ export default function BookReader() {
                 </div>
               </div>
             ) : isMobileLandscape && !isCover && currentPage >= 0 ? (
-              /* Mobile Landscape Two-Page Spread - Full screen with tap zones */
+              /* Mobile Landscape Two-Page Spread - Tap zones are now OUTSIDE book-container */
               <div className="relative w-full h-screen">
-                {/* DEBUG: Tap Zone - Left (Previous) */}
-                {/* Using onTouchEnd for Safari iOS + onClick for desktop */}
-                <div
-                  onTouchEnd={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (currentPage > 0) {
-                      setCurrentPage(currentPage - 1);
-                      saveReadingProgress();
-                    } else if (currentPage === 0) {
-                      setCurrentPage(-1);
-                    }
-                  }}
-                  onClick={() => {
-                    if (currentPage > 0) {
-                      setCurrentPage(currentPage - 1);
-                      saveReadingProgress();
-                    } else if (currentPage === 0) {
-                      setCurrentPage(-1);
-                    }
-                  }}
-                  data-testid="landscape-prev-btn"
-                  style={{
-                    position: 'fixed',
-                    left: 0,
-                    top: 0,
-                    bottom: 0,
-                    width: '80px',
-                    zIndex: 9999,
-                    pointerEvents: 'auto',
-                    touchAction: 'manipulation',
-                    WebkitTapHighlightColor: 'transparent',
-                    // DEBUG: Red border to see tap zone position
-                    outline: '3px solid red',
-                    background: 'rgba(255,0,0,0.1)'
-                  }}
-                />
-                
-                {/* DEBUG: Tap Zone - Right (Next) */}
-                <div
-                  onTouchEnd={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (currentPage < allPages.length - 1) {
-                      setCurrentPage(currentPage + 1);
-                      saveReadingProgress();
-                    }
-                  }}
-                  onClick={() => {
-                    if (currentPage < allPages.length - 1) {
-                      setCurrentPage(currentPage + 1);
-                      saveReadingProgress();
-                    }
-                  }}
-                  data-testid="landscape-next-btn"
-                  style={{
-                    position: 'fixed',
-                    right: 0,
-                    top: 0,
-                    bottom: 0,
-                    width: '80px',
-                    zIndex: 9999,
-                    pointerEvents: 'auto',
-                    touchAction: 'manipulation',
-                    WebkitTapHighlightColor: 'transparent',
-                    // DEBUG: Blue border to see tap zone position
-                    outline: '3px solid blue',
-                    background: 'rgba(0,0,255,0.1)'
-                  }}
-                />
-                
                 {/* Two-Page Spread - Takes almost full screen */}
                 <div 
                   className="flex w-full gap-0.5 px-2 pt-9 pb-1"
