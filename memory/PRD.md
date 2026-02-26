@@ -136,6 +136,32 @@ Bedtime in the Animal World, Colors of the World, Cooking Adventures with Chef C
 - `/app/generate_books_v2.py` - Using OpenAI GPT-Image-1 via Emergent Key
 - Images stored in: `/app/frontend/public/book-assets/[book-slug]/`
 
+## Book Library Audit (Final Status)
+
+### Original State → Current State
+- **Started with:** 80 empty book shells (titles only, no content)
+- **After cleanup:** 65 books (15 deleted)
+- **Now completed:** 37 books with full content
+- **Still empty:** 28 books
+
+### Deletions (15 books removed)
+**Test books (4):** PDF Test Book, Font Size Test Book, Node Test Book, Jamie The City Hero
+
+**Overlapping titles (11):** Grandma's Wacky Inventions, The Great Golden Cookie Caper, The Mystery of the Missing Cookies, The Dragon's Secret, Journey to Planet Sparkle, Space Explorers: Mission to Mars, Captain Clara and the Kindness Quest
+
+### Duplicates Handled
+One copy of each duplicate pair was kept and completed:
+- Robot Best Friend (completed)
+- The Case of the Missing Cookies (completed)  
+- Super Silly Superhero (still empty)
+- Colors of the World (still empty)
+- Guardians of Tomorrow (still empty - 2 copies remain)
+
+### Starter Library Usage
+- **3 images** from the 200-image starter library used (only in "The Unicorn's Rainbow Bridge")
+- **371 images** freshly generated using GPT-Image-1 and fal.ai
+- Note: Starter library is designed for the Book Editor gallery picker, not for pre-populating library books
+
 ## Pending Tasks (P0-P2)
 
 ### P0 - Critical
