@@ -2408,15 +2408,15 @@ export default function ArtStudioExpert() {
         )}
       </AnimatePresence>
       
-      {/* Image Expand/Lightbox Modal */}
+      {/* Gallery Image Expand/Lightbox Modal */}
       <AnimatePresence>
-        {expandedImage && (
+        {galleryExpandedImage && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[60] bg-black/90 flex items-center justify-center p-4"
-            onClick={() => setExpandedImage(null)}
+            onClick={() => setGalleryExpandedImage(null)}
           >
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
@@ -2427,7 +2427,7 @@ export default function ArtStudioExpert() {
             >
               {/* Close button */}
               <button
-                onClick={() => setExpandedImage(null)}
+                onClick={() => setGalleryExpandedImage(null)}
                 className="absolute -top-10 right-0 p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
               >
                 <FiX className="w-5 h-5" />
@@ -2435,22 +2435,22 @@ export default function ArtStudioExpert() {
               
               {/* Image */}
               <img
-                src={expandedImage.image_url || expandedImage.url}
-                alt={expandedImage.name || expandedImage.category || 'Expanded image'}
+                src={galleryExpandedImage.image_url || galleryExpandedImage.url}
+                alt={galleryExpandedImage.name || galleryExpandedImage.category || 'Expanded image'}
                 className="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl"
               />
               
               {/* Image info */}
               <div className="mt-4 flex items-center justify-between">
                 <div>
-                  {expandedImage.name && (
-                    <h3 className="text-white text-lg font-semibold">{expandedImage.name}</h3>
+                  {galleryExpandedImage.name && (
+                    <h3 className="text-white text-lg font-semibold">{galleryExpandedImage.name}</h3>
                   )}
-                  {expandedImage.category && (
-                    <p className="text-white/60 text-sm capitalize">{expandedImage.category}</p>
+                  {galleryExpandedImage.category && (
+                    <p className="text-white/60 text-sm capitalize">{galleryExpandedImage.category}</p>
                   )}
-                  {expandedImage.art_style && (
-                    <p className="text-white/40 text-xs mt-1 capitalize">Style: {expandedImage.art_style}</p>
+                  {galleryExpandedImage.art_style && (
+                    <p className="text-white/40 text-xs mt-1 capitalize">Style: {galleryExpandedImage.art_style}</p>
                   )}
                 </div>
                 
@@ -2459,9 +2459,9 @@ export default function ArtStudioExpert() {
                   <button
                     onClick={() => {
                       if (galleryPickerCallback) {
-                        const imageUrl = expandedImage.image_url || expandedImage.url;
+                        const imageUrl = galleryExpandedImage.image_url || galleryExpandedImage.url;
                         galleryPickerCallback(imageUrl);
-                        setExpandedImage(null);
+                        setGalleryExpandedImage(null);
                       }
                     }}
                     className="px-4 py-2 rounded-lg bg-yellow-500 hover:bg-yellow-400 text-black font-medium flex items-center gap-2 transition-colors"
