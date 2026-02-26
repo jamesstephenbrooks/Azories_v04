@@ -5,7 +5,7 @@ from datetime import datetime
 import time
 
 class AzoriesAPITester:
-    def __init__(self, base_url="https://azories-payments.preview.emergentagent.com/api"):
+    def __init__(self, base_url="https://studio-v2-preview.preview.emergentagent.com/api"):
         self.base_url = base_url
         self.token = None
         self.test_user_id = None
