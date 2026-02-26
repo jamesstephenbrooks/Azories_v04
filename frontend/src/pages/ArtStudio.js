@@ -3252,9 +3252,10 @@ export default function ArtStudio() {
                       onClick={() => selectGalleryAsReference(selectedGalleryItem.image_url)}
                       variant="outline"
                       className="w-full border-blue-500/50 text-blue-400 hover:bg-blue-500/20"
+                      title="Use this image's style when generating new art"
                     >
                       <FiImage className="w-4 h-4 mr-2" />
-                      Use as Reference
+                      Match This Style
                     </Button>
                   )}
                   {selectedGalleryItem.type !== 'animation' && (
