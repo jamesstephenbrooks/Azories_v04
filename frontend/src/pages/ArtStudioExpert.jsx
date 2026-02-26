@@ -2362,7 +2362,7 @@ export default function ArtStudioExpert() {
                           src={item.image_url || item.url} 
                           alt={item.name || item.category || 'Gallery image'} 
                           className="w-full h-full object-cover cursor-pointer"
-                          onClick={() => setExpandedImage(item)}
+                          onClick={() => setGalleryExpandedImage(item)}
                         />
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors pointer-events-none" />
                         {/* Action buttons overlay */}
@@ -2370,7 +2370,7 @@ export default function ArtStudioExpert() {
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              setExpandedImage(item);
+                              setGalleryExpandedImage(item);
                             }}
                             className="p-1.5 rounded-md bg-black/60 hover:bg-black/80 text-white/80 hover:text-white transition-colors"
                             title="Expand image"
