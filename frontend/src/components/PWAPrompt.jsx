@@ -19,12 +19,26 @@ export default function PWAPrompt() {
     const dismissed = localStorage.getItem('azories-pwa-prompt-dismissed');
     
     // Check if already installed as PWA (standalone mode)
-    const isStandalone = window.matchMedia?.('(display-mode: standalone)')?.matches ||
-                         navigator.standalone === true;
+    // navigator.standalone is Safari-specific, window.matchMedia works cross-browser
+    let isStandalone = false;
+    try {
+      isStandalone = window.matchMedia?.('(display-mode: standalone)')?.matches || false;
+      // Safari-specific check (won't exist in other browsers)
+      if (typeof navigator !== 'undefined' && 'standalone' in navigator) {
+        isStandalone = isStandalone || navigator.standalone === true;
+      }
+    } catch (e) {
+      // Ignore errors from unsupported APIs
+    }
     
     // Detect iOS for specific instructions
-    const userAgent = typeof navigator !== 'undefined' ? navigator.userAgent || '' : '';
-    const iOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+    let iOS = false;
+    try {
+      const userAgent = typeof navigator !== 'undefined' ? navigator.userAgent || '' : '';
+      iOS = /iPad|iPhone|iPod/.test(userAgent);
+    } catch (e) {
+      // Ignore
+    }
     setIsIOS(iOS);
     
     // Show prompt after a short delay if conditions are met
