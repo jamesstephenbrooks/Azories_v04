@@ -76,7 +76,7 @@ class ErrorBoundary extends React.Component {
 }
 
 function AppContent() {
-  const { shouldShow, setShouldShow } = useOnboarding();
+  const { shouldShow, completeOnboarding } = useOnboarding();
   const location = useLocation();
   const isAdminPage = location.pathname.startsWith("/admin");
 
@@ -84,7 +84,7 @@ function AppContent() {
     <ErrorBoundary>
       <OfflineIndicator />
       {shouldShow && !isAdminPage && (
-        <OnboardingTutorial onComplete={() => setShouldShow(false)} />
+        <OnboardingTutorial onComplete={completeOnboarding} />
       )}
       <Suspense fallback={<PageLoader />}>
         <Routes>
