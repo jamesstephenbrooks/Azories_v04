@@ -842,32 +842,86 @@ export default function BookReader() {
               </div>
             )}
             
-            {/* Realistic Page Flip Mode */}
-            <div className={`flex justify-center items-center ${isFullscreen ? 'h-full w-full' : ''}`}>
-              <RealisticPageFlip
-                ref={realisticFlipRef}
-                book={book}
-                pages={allPages}
-                onPageChange={(flipPage, contentPageIndex) => {
-                  // contentPageIndex is the actual index in allPages array
-                  // -1 = front cover, -2 = back cover, 0+ = content page
-                  setCurrentPage(contentPageIndex);
-                  if (contentPageIndex >= 0) {
-                    saveReadingProgress();
-                  }
-                }}
-                onFlipStart={() => setIsFlipping(true)}
-                onFlipEnd={() => setIsFlipping(false)}
-                onStartReading={startReading}
-                onStartListening={startListening}
-                initialPage={currentPage >= 0 ? currentPage + 1 : 0}
-                width={bookDimensions.width}
-                height={bookDimensions.height}
-                showControls={false}
-                isFullscreen={isFullscreen}
-                isMobilePortrait={isMobilePortrait}
-              />
-            </div>
+            {/* Mobile Portrait Split View - Show illustration + text together */}
+            {isMobilePortrait && !isCover && currentPage >= 0 ? (
+              <div className="flex flex-col w-full max-w-md mx-auto" style={{ height: `calc(100vh - 140px)` }}>
+                {/* Top: Illustration - 55% of available height */}
+                <div 
+                  className="relative flex-shrink-0 rounded-t-2xl overflow-hidden bg-[#fdfbf7] shadow-lg"
+                  style={{ height: '55%' }}
+                >
+                  {currentPageData?.image_url ? (
+                    <img 
+                      src={currentPageData.image_url}
+                      alt=""
+                      className="w-full h-full object-cover"
+                      style={{
+                        objectPosition: `${currentPageData.image_position_x || 50}% ${currentPageData.image_position_y || 30}%`
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-muted/20">
+                      <span className="text-muted-foreground text-sm">No illustration</span>
+                    </div>
+                  )}
+                  {/* Page number badge */}
+                  <div className="absolute bottom-2 right-2 px-2 py-1 rounded-full bg-black/50 text-white text-xs">
+                    {currentPage + 1} / {allPages.length}
+                  </div>
+                </div>
+                
+                {/* Bottom: Text content - 45% of available height */}
+                <div 
+                  className="flex-1 bg-[#fdfbf7] dark:bg-[#2a2a30] rounded-b-2xl shadow-lg overflow-hidden"
+                >
+                  <div className="h-full overflow-y-auto px-5 py-4">
+                    {currentPageData?.text_content ? (
+                      <p className="font-reader text-base leading-relaxed text-foreground/90 whitespace-pre-wrap">
+                        {currentPageData.text_content}
+                      </p>
+                    ) : currentPageData?.isChapterTitle ? (
+                      <div className="text-center py-4">
+                        <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+                          {currentPageData.chapterNumber ? `Chapter ${currentPageData.chapterNumber}` : 'Chapter'}
+                        </p>
+                        <h2 className="font-heading text-xl font-bold">{currentPageData.chapterTitle}</h2>
+                      </div>
+                    ) : (
+                      <p className="text-muted-foreground text-sm italic text-center py-8">
+                        Swipe or tap arrows to continue...
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* Realistic Page Flip Mode - for landscape and cover */
+              <div className={`flex justify-center items-center ${isFullscreen ? 'h-full w-full' : ''}`}>
+                <RealisticPageFlip
+                  ref={realisticFlipRef}
+                  book={book}
+                  pages={allPages}
+                  onPageChange={(flipPage, contentPageIndex) => {
+                    // contentPageIndex is the actual index in allPages array
+                    // -1 = front cover, -2 = back cover, 0+ = content page
+                    setCurrentPage(contentPageIndex);
+                    if (contentPageIndex >= 0) {
+                      saveReadingProgress();
+                    }
+                  }}
+                  onFlipStart={() => setIsFlipping(true)}
+                  onFlipEnd={() => setIsFlipping(false)}
+                  onStartReading={startReading}
+                  onStartListening={startListening}
+                  initialPage={currentPage >= 0 ? currentPage + 1 : 0}
+                  width={bookDimensions.width}
+                  height={bookDimensions.height}
+                  showControls={false}
+                  isFullscreen={isFullscreen}
+                  isMobilePortrait={isMobilePortrait}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
