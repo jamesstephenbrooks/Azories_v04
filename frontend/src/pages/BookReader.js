@@ -946,7 +946,15 @@ export default function BookReader() {
               variant="outline"
               size="default"
               onClick={() => {
-                if (realisticFlipRef.current) {
+                if (isMobilePortrait && !isCover) {
+                  // In split view, navigate directly
+                  if (currentPage > 0) {
+                    setCurrentPage(currentPage - 1);
+                    saveReadingProgress();
+                  } else if (currentPage === 0) {
+                    setCurrentPage(-1); // Go to cover
+                  }
+                } else if (realisticFlipRef.current) {
                   realisticFlipRef.current.prevPage();
                 }
               }}
