@@ -819,18 +819,18 @@ export default function Dashboard() {
               setActiveTab(value);
             }
           }} className="w-full">
-            <TabsList className="grid w-full max-w-lg grid-cols-3 mb-6">
-              <TabsTrigger value="books" className="rounded-full" data-testid="tab-my-books">
-                <FiBook className="w-4 h-4 mr-2" />
-                My Books
+            <TabsList className="grid w-full max-w-lg grid-cols-3 mb-6 h-auto">
+              <TabsTrigger value="books" className="rounded-full py-2.5 min-h-[44px]" data-testid="tab-my-books">
+                <FiBook className="w-4 h-4 mr-1 sm:mr-2" />
+                <span className="text-xs sm:text-sm">My Books</span>
               </TabsTrigger>
-              <TabsTrigger value="analytics" className="rounded-full" data-testid="tab-analytics">
-                <FiBarChart2 className="w-4 h-4 mr-2" />
-                Analytics
+              <TabsTrigger value="analytics" className="rounded-full py-2.5 min-h-[44px]" data-testid="tab-analytics">
+                <FiBarChart2 className="w-4 h-4 mr-1 sm:mr-2" />
+                <span className="text-xs sm:text-sm">Analytics</span>
               </TabsTrigger>
-              <TabsTrigger value="series" className="rounded-full" data-testid="tab-my-series">
-                <FiLayers className="w-4 h-4 mr-2" />
-                My Series
+              <TabsTrigger value="series" className="rounded-full py-2.5 min-h-[44px]" data-testid="tab-my-series">
+                <FiLayers className="w-4 h-4 mr-1 sm:mr-2" />
+                <span className="text-xs sm:text-sm">My Series</span>
               </TabsTrigger>
             </TabsList>
             
