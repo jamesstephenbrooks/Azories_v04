@@ -3683,193 +3683,218 @@ export default function ProStudio() {
           </TabsContent>
 
           {/* Cinema Studio Tab */}
-          <TabsContent value="cinema" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Controls Panel */}
-              <div className="lg:col-span-1 space-y-4">
+          <TabsContent value="cinema" className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+              {/* Controls Panel - Collapsible on mobile */}
+              <div className="lg:col-span-1 space-y-3 sm:space-y-4">
                 {/* Camera Selection */}
-                <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4">
-                  <h3 className="text-white font-medium mb-3 flex items-center gap-2">
-                    <FiCamera className="text-purple-400" /> Camera Body
-                  </h3>
-                  <Select value={selectedCamera} onValueChange={setSelectedCamera}>
-                    <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white" data-testid="camera-select">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-700">
-                      {CAMERA_BODIES.map((camera) => (
-                        <SelectItem key={camera.id} value={camera.id} className="text-white hover:bg-gray-700">
-                          <div className="flex items-center gap-2">
-                            <span>{camera.icon}</span>
-                            <span>{camera.name}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-gray-500 mt-2">
-                    {CAMERA_BODIES.find(c => c.id === selectedCamera)?.characteristics}
-                  </p>
-                </div>
+                <details className="bg-black/40 rounded-xl border border-purple-500/20 group" open>
+                  <summary className="p-3 sm:p-4 cursor-pointer flex items-center justify-between">
+                    <h3 className="text-white font-medium flex items-center gap-2">
+                      <FiCamera className="text-purple-400" /> Camera Body
+                    </h3>
+                    <span className="text-gray-500 text-xs lg:hidden">tap to expand</span>
+                  </summary>
+                  <div className="px-3 sm:px-4 pb-3 sm:pb-4">
+                    <Select value={selectedCamera} onValueChange={setSelectedCamera}>
+                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white min-h-[48px] text-base" data-testid="camera-select">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-700">
+                        {CAMERA_BODIES.map((camera) => (
+                          <SelectItem key={camera.id} value={camera.id} className="text-white hover:bg-gray-700 min-h-[44px]">
+                            <div className="flex items-center gap-2">
+                              <span>{camera.icon}</span>
+                              <span>{camera.name}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-gray-500 mt-2 hidden sm:block">
+                      {CAMERA_BODIES.find(c => c.id === selectedCamera)?.characteristics}
+                    </p>
+                  </div>
+                </details>
 
                 {/* Lens Selection */}
-                <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4">
-                  <h3 className="text-white font-medium mb-3 flex items-center gap-2">
-                    <FiAperture className="text-purple-400" /> Lens
-                  </h3>
-                  <Select value={selectedLens} onValueChange={setSelectedLens}>
-                    <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white" data-testid="lens-select">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-700">
-                      {CINEMA_LENSES.map((lens) => (
-                        <SelectItem key={lens.id} value={lens.id} className="text-white hover:bg-gray-700">
-                          {lens.name} ({lens.brand})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  
-                  {/* Focal Length */}
-                  <div className="mt-3">
-                    <label className="text-xs text-gray-400 mb-1 block">Focal Length</label>
-                    <div className="flex flex-wrap gap-1">
-                      {CINEMA_LENSES.find(l => l.id === selectedLens)?.focalLengths.map((fl) => (
+                <details className="bg-black/40 rounded-xl border border-purple-500/20 group">
+                  <summary className="p-3 sm:p-4 cursor-pointer flex items-center justify-between">
+                    <h3 className="text-white font-medium flex items-center gap-2">
+                      <FiAperture className="text-purple-400" /> Lens
+                    </h3>
+                    <span className="text-gray-500 text-xs lg:hidden">tap to expand</span>
+                  </summary>
+                  <div className="px-3 sm:px-4 pb-3 sm:pb-4">
+                    <Select value={selectedLens} onValueChange={setSelectedLens}>
+                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white min-h-[48px] text-base" data-testid="lens-select">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-700">
+                        {CINEMA_LENSES.map((lens) => (
+                          <SelectItem key={lens.id} value={lens.id} className="text-white hover:bg-gray-700 min-h-[44px]">
+                            {lens.name} ({lens.brand})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    
+                    {/* Focal Length */}
+                    <div className="mt-3">
+                      <label className="text-xs text-gray-400 mb-1 block">Focal Length</label>
+                      <div className="flex flex-wrap gap-1">
+                        {CINEMA_LENSES.find(l => l.id === selectedLens)?.focalLengths.map((fl) => (
+                          <button
+                            key={fl}
+                            onClick={() => setSelectedFocalLength(fl)}
+                            className={`px-3 py-2 min-h-[44px] text-sm rounded ${
+                              selectedFocalLength === fl
+                                ? 'bg-purple-600 text-white'
+                                : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                            }`}
+                          >
+                            {fl}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-2 hidden sm:block">
+                      {CINEMA_LENSES.find(l => l.id === selectedLens)?.characteristics}
+                    </p>
+                  </div>
+                </details>
+
+                {/* Lighting */}
+                <details className="bg-black/40 rounded-xl border border-purple-500/20 group">
+                  <summary className="p-3 sm:p-4 cursor-pointer flex items-center justify-between">
+                    <h3 className="text-white font-medium">Lighting</h3>
+                    <span className="text-gray-500 text-xs lg:hidden">tap to expand</span>
+                  </summary>
+                  <div className="px-3 sm:px-4 pb-3 sm:pb-4">
+                    <div className="grid grid-cols-2 gap-2">
+                      {LIGHTING_PRESETS.slice(0, 6).map((light) => (
                         <button
-                          key={fl}
-                          onClick={() => setSelectedFocalLength(fl)}
-                          className={`px-2 py-1 text-xs rounded ${
-                            selectedFocalLength === fl
+                          key={light.id}
+                          onClick={() => setSelectedLighting(light.id)}
+                          className={`p-3 min-h-[48px] text-sm rounded-lg transition-all ${
+                            selectedLighting === light.id
                               ? 'bg-purple-600 text-white'
-                              : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                              : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
                           }`}
                         >
-                          {fl}
+                          {light.name}
                         </button>
                       ))}
                     </div>
                   </div>
-                  <p className="text-xs text-gray-500 mt-2">
-                    {CINEMA_LENSES.find(l => l.id === selectedLens)?.characteristics}
-                  </p>
-                </div>
-
-                {/* Lighting */}
-                <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4">
-                  <h3 className="text-white font-medium mb-3">Lighting</h3>
-                  <div className="grid grid-cols-2 gap-2">
-                    {LIGHTING_PRESETS.slice(0, 6).map((light) => (
-                      <button
-                        key={light.id}
-                        onClick={() => setSelectedLighting(light.id)}
-                        className={`p-2 text-xs rounded-lg transition-all ${
-                          selectedLighting === light.id
-                            ? 'bg-purple-600 text-white'
-                            : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-                        }`}
-                      >
-                        {light.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                </details>
 
                 {/* Aspect Ratio */}
-                <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4">
-                  <h3 className="text-white font-medium mb-3">Aspect Ratio</h3>
-                  <Select value={aspectRatio} onValueChange={setAspectRatio}>
-                    <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-700">
-                      {ASPECT_RATIOS.map((ar) => (
-                        <SelectItem key={ar.id} value={ar.id} className="text-white hover:bg-gray-700">
-                          {ar.name} - {ar.description}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                <details className="bg-black/40 rounded-xl border border-purple-500/20 group">
+                  <summary className="p-3 sm:p-4 cursor-pointer flex items-center justify-between">
+                    <h3 className="text-white font-medium">Aspect Ratio</h3>
+                    <span className="text-gray-500 text-xs lg:hidden">tap to expand</span>
+                  </summary>
+                  <div className="px-3 sm:px-4 pb-3 sm:pb-4">
+                    <Select value={aspectRatio} onValueChange={setAspectRatio}>
+                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white min-h-[48px] text-base">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-700">
+                        {ASPECT_RATIOS.map((ar) => (
+                          <SelectItem key={ar.id} value={ar.id} className="text-white hover:bg-gray-700 min-h-[44px]">
+                            {ar.name} - {ar.description}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </details>
               </div>
 
               {/* Generation Panel */}
               <div className="lg:col-span-2 space-y-4">
                 {/* Source Image Selector for Variants */}
-                <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4">
-                  <h3 className="text-white font-medium mb-3 flex items-center gap-2">
-                    <FiImage className="text-purple-400" /> Source Image (Optional)
-                  </h3>
-                  <p className="text-xs text-gray-400 mb-3">
-                    Select an existing image to create a variant with your cinema settings
-                  </p>
-                  
-                  {cinemaSourceImage ? (
-                    <div className="flex items-center gap-4">
-                      <div className="relative">
-                        <img 
-                          src={cinemaSourceImage.url} 
-                          alt={cinemaSourceImage.name}
-                          className="w-24 h-24 object-cover rounded-lg border-2 border-purple-500"
-                        />
-                        <button
-                          onClick={() => setCinemaSourceImage(null)}
-                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                        >
-                          <FiX size={14} />
-                        </button>
+                <details className="bg-black/40 rounded-xl border border-purple-500/20 group">
+                  <summary className="p-3 sm:p-4 cursor-pointer flex items-center justify-between">
+                    <h3 className="text-white font-medium flex items-center gap-2">
+                      <FiImage className="text-purple-400" /> Source Image (Optional)
+                    </h3>
+                    <span className="text-gray-500 text-xs">tap to expand</span>
+                  </summary>
+                  <div className="px-3 sm:px-4 pb-3 sm:pb-4">
+                    <p className="text-xs text-gray-400 mb-3">
+                      Select an existing image to create a variant with your cinema settings
+                    </p>
+                    
+                    {cinemaSourceImage ? (
+                      <div className="flex items-center gap-4">
+                        <div className="relative">
+                          <img 
+                            src={cinemaSourceImage.url} 
+                            alt={cinemaSourceImage.name}
+                            className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg border-2 border-purple-500"
+                          />
+                          <button
+                            onClick={() => setCinemaSourceImage(null)}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 min-w-[32px] min-h-[32px] flex items-center justify-center"
+                          >
+                            <FiX size={14} />
+                          </button>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-white font-medium truncate">{cinemaSourceImage.name}</p>
+                          <p className="text-xs text-gray-400">From: {cinemaSourceImage.type}</p>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setShowCinemaSourcePicker(true)}
+                            className="mt-2 border-purple-500/50 text-purple-300 min-h-[44px]"
+                          >
+                            Change Image
+                          </Button>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-white font-medium">{cinemaSourceImage.name}</p>
-                        <p className="text-xs text-gray-400">From: {cinemaSourceImage.type}</p>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setShowCinemaSourcePicker(true)}
-                          className="mt-2 border-purple-500/50 text-purple-300"
-                        >
-                          Change Image
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowCinemaSourcePicker(true)}
-                      className="w-full border-dashed border-gray-600 text-gray-400 hover:border-purple-500 hover:text-purple-300"
-                    >
-                      <FiPlus className="mr-2" /> Select Source Image
-                    </Button>
-                  )}
-                </div>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        onClick={() => setShowCinemaSourcePicker(true)}
+                        className="w-full border-dashed border-gray-600 text-gray-400 hover:border-purple-500 hover:text-purple-300 min-h-[48px]"
+                      >
+                        <FiPlus className="mr-2" /> Select Source Image
+                      </Button>
+                    )}
+                  </div>
+                </details>
 
                 {/* Art Style Selector */}
-                <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4">
+                <div className="bg-black/40 rounded-xl border border-purple-500/20 p-3 sm:p-4">
                   <h3 className="text-white font-medium mb-3 flex items-center gap-2">
                     <FiSliders className="text-purple-400" /> Art Style
                   </h3>
                   <Select value={cinemaArtStyle} onValueChange={setCinemaArtStyle}>
-                    <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
+                    <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white min-h-[48px] text-base">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-gray-800 border-gray-700">
-                      <SelectItem value="cinematic" className="text-white">Cinematic (Default)</SelectItem>
-                      <SelectItem value="realistic" className="text-white">Realistic / Photographic</SelectItem>
-                      <SelectItem value="cartoon" className="text-white">Cartoon / Animated</SelectItem>
-                      <SelectItem value="anime" className="text-white">Anime / Manga</SelectItem>
-                      <SelectItem value="pixar" className="text-white">Pixar / 3D Animation</SelectItem>
-                      <SelectItem value="watercolor" className="text-white">Watercolor / Painterly</SelectItem>
-                      <SelectItem value="comic" className="text-white">Comic Book</SelectItem>
-                      <SelectItem value="fantasy" className="text-white">Fantasy Art</SelectItem>
-                      <SelectItem value="storybook" className="text-white">Children's Storybook</SelectItem>
+                      <SelectItem value="cinematic" className="text-white min-h-[44px]">Cinematic (Default)</SelectItem>
+                      <SelectItem value="realistic" className="text-white min-h-[44px]">Realistic / Photographic</SelectItem>
+                      <SelectItem value="cartoon" className="text-white min-h-[44px]">Cartoon / Animated</SelectItem>
+                      <SelectItem value="anime" className="text-white min-h-[44px]">Anime / Manga</SelectItem>
+                      <SelectItem value="pixar" className="text-white min-h-[44px]">Pixar / 3D Animation</SelectItem>
+                      <SelectItem value="watercolor" className="text-white min-h-[44px]">Watercolor / Painterly</SelectItem>
+                      <SelectItem value="comic" className="text-white min-h-[44px]">Comic Book</SelectItem>
+                      <SelectItem value="fantasy" className="text-white min-h-[44px]">Fantasy Art</SelectItem>
+                      <SelectItem value="storybook" className="text-white min-h-[44px]">Children's Storybook</SelectItem>
                     </SelectContent>
                   </Select>
-                  <p className="text-xs text-gray-500 mt-2">
+                  <p className="text-xs text-gray-500 mt-2 hidden sm:block">
                     This style will be applied to all generated images
                   </p>
                 </div>
 
-                <div className="bg-black/40 rounded-xl border border-purple-500/20 p-6">
-                  <h2 className="text-xl font-bold text-white mb-4">
+                <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4 sm:p-6">
+                  <h2 className="text-lg sm:text-xl font-bold text-white mb-4">
                     {cinemaSourceImage ? 'Generate Variant' : 'Generate Hero Frame'}
                   </h2>
                   
@@ -3880,12 +3905,13 @@ export default function ProStudio() {
                     }
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
-                    className="bg-gray-800/50 border-gray-700 text-white mb-4"
+                    className="bg-gray-800/50 border-gray-700 text-white mb-4 min-h-[100px] text-base"
                     rows={3}
                     data-testid="cinema-prompt-input"
                   />
 
-                  <div className="flex gap-3 mb-4">
+                  {/* Generate Button - Hidden on mobile (floating button used instead) */}
+                  <div className="hidden sm:flex gap-3 mb-4">
                     {cinemaSourceImage ? (
                       <Button 
                         onClick={() => {
@@ -3893,7 +3919,7 @@ export default function ProStudio() {
                           generateCinemaVariant();
                         }}
                         disabled={isLoading}
-                        className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                        className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 min-h-[48px]"
                         data-testid="generate-variant-btn"
                       >
                         <FiRefreshCw className="mr-2" /> Generate Variant
@@ -3905,7 +3931,7 @@ export default function ProStudio() {
                           generateHeroFrame();
                         }}
                         disabled={isLoading || !prompt.trim()}
-                        className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                        className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 min-h-[48px]"
                         data-testid="generate-hero-btn"
                       >
                         <FiZap className="mr-2" /> Generate Hero Frame
@@ -3914,7 +3940,7 @@ export default function ProStudio() {
                   </div>
 
                   {/* Cinema settings preview */}
-                  <div className="bg-gray-900/50 rounded-lg p-3 text-xs text-gray-400">
+                  <div className="bg-gray-900/50 rounded-lg p-3 text-xs text-gray-400 overflow-x-auto">
                     <span className="text-purple-400">Camera:</span> {CAMERA_BODIES.find(c => c.id === selectedCamera)?.name} | 
                     <span className="text-purple-400 ml-2">Lens:</span> {CINEMA_LENSES.find(l => l.id === selectedLens)?.name} {selectedFocalLength} | 
                     <span className="text-purple-400 ml-2">Light:</span> {LIGHTING_PRESETS.find(l => l.id === selectedLighting)?.name}
@@ -3922,15 +3948,15 @@ export default function ProStudio() {
                 </div>
 
                 {/* Generated Images Grid */}
-                <div className="bg-black/40 rounded-xl border border-purple-500/20 p-6">
+                <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4 sm:p-6">
                   <h3 className="text-white font-medium mb-4">Generated Hero Frames</h3>
                   {generatedImages.length === 0 ? (
-                    <div className="text-center py-12 text-gray-500">
-                      <FiImage className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <div className="text-center py-8 sm:py-12 text-gray-500">
+                      <FiImage className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 opacity-50" />
                       <p>No images generated yet</p>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
                       {generatedImages.map((img) => (
                         <div 
                           key={img.id} 
@@ -3941,10 +3967,10 @@ export default function ProStudio() {
                         >
                           <img src={img.url} alt="Generated" className="w-full aspect-video object-cover" />
                           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                            <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); saveToGallery(img); }}>
+                            <Button size="sm" variant="ghost" className="min-w-[44px] min-h-[44px]" onClick={(e) => { e.stopPropagation(); saveToGallery(img); }}>
                               <FiSave className="text-white" />
                             </Button>
-                            <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); downloadMedia(img.url, `hero-${img.id}.png`); }}>
+                            <Button size="sm" variant="ghost" className="min-w-[44px] min-h-[44px]" onClick={(e) => { e.stopPropagation(); downloadMedia(img.url, `hero-${img.id}.png`); }}>
                               <FiDownload className="text-white" />
                             </Button>
                           </div>
