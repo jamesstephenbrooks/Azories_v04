@@ -5039,8 +5039,13 @@ async def upload_video(file: UploadFile = File(...), current_user: dict = Depend
 # ============ BOOK READING ============
 
 @api_router.get("/books/{book_id}/full")
-async def get_full_book(book_id: str, current_user: dict = Depends(get_optional_user)):
+async def get_full_book(book_id: str, response: Response, current_user: dict = Depends(get_optional_user)):
     """Get complete book - requires auth for full content"""
+    # Prevent caching so text updates appear immediately
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    
     book = await db.books.find_one({"id": book_id}, {"_id": 0})
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
