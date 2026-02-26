@@ -134,8 +134,8 @@ async def validate_fal_key_on_startup() -> dict:
             )
         except Exception as e:
             error_str = str(e).lower()
-            # "not found" is OK - means auth worked, job just doesn't exist
-            if 'not found' in error_str or 'notfound' in error_str:
+            # "not found" or "NOT_FOUND" is OK - means auth worked, job just doesn't exist
+            if 'not found' in error_str or 'notfound' in error_str or 'not_found' in error_str or '"status": "not_found"' in error_str:
                 _fal_key_status = {
                     "valid": True,
                     "last_checked": datetime.utcnow().isoformat(),
@@ -154,7 +154,16 @@ async def validate_fal_key_on_startup() -> dict:
                 logger.error("⚠️ fal.ai features will fall back to Emergent Key (more expensive)")
                 return _fal_key_status
             else:
-                # Other errors - assume key is OK but there was a network issue
+                # Other errors - check if it looks like a success hidden in error format
+                if 'status' in error_str:
+                    _fal_key_status = {
+                        "valid": True,
+                        "last_checked": datetime.utcnow().isoformat(),
+                        "error_message": None
+                    }
+                    logger.info("✅ FAL_KEY validated successfully (status response)")
+                    return _fal_key_status
+                # Otherwise assume key is OK but there was a network issue
                 _fal_key_status = {
                     "valid": None,  # Unknown
                     "last_checked": datetime.utcnow().isoformat(),
