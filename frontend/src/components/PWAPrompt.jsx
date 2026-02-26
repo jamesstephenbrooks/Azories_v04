@@ -32,21 +32,26 @@ export default function PWAPrompt() {
       // Ignore errors from unsupported APIs
     }
     
-    // Detect iOS for specific instructions
+    // Detect iOS - ALL iOS browsers use WebKit, so check user agent for iOS device
+    // This catches Safari, Chrome, Firefox, and any other browser on iOS
     let iOS = false;
     try {
       const userAgent = typeof navigator !== 'undefined' ? navigator.userAgent || '' : '';
-      iOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+      // Check for iPhone, iPad, iPod in user agent
+      iOS = /iPad|iPhone|iPod/.test(userAgent);
+      // Also check for iPad running iPadOS 13+ which reports as Mac
+      if (!iOS && /Macintosh/.test(userAgent) && 'ontouchend' in document) {
+        iOS = true;
+      }
+      console.log('[PWAPrompt] iOS detected:', iOS, 'UserAgent:', userAgent.substring(0, 100));
     } catch (e) {
-      // Ignore
+      console.log('[PWAPrompt] Error detecting iOS:', e);
     }
     setIsIOS(iOS);
     
-    // Listen for Chrome's beforeinstallprompt event
+    // Listen for Chrome's beforeinstallprompt event (only fires on Android Chrome, never on iOS)
     const handleBeforeInstallPrompt = (e) => {
-      // Prevent Chrome's default mini-infobar
       e.preventDefault();
-      // Store the event for triggering later
       deferredPromptRef.current = e;
       setCanInstall(true);
       console.log('[PWAPrompt] beforeinstallprompt captured');
@@ -55,24 +60,31 @@ export default function PWAPrompt() {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     
     // Listen for successful installation
-    window.addEventListener('appinstalled', () => {
+    const handleAppInstalled = () => {
       console.log('[PWAPrompt] App installed successfully');
       setShowPrompt(false);
       deferredPromptRef.current = null;
       setCanInstall(false);
-    });
+    };
+    window.addEventListener('appinstalled', handleAppInstalled);
     
     // Show prompt after a short delay if conditions are met
+    console.log('[PWAPrompt] Conditions:', { isMobile, dismissed, isStandalone });
     if (isMobile && !dismissed && !isStandalone) {
-      const timer = setTimeout(() => setShowPrompt(true), 2000);
+      const timer = setTimeout(() => {
+        console.log('[PWAPrompt] Showing prompt');
+        setShowPrompt(true);
+      }, 2000);
       return () => {
         clearTimeout(timer);
         window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        window.removeEventListener('appinstalled', handleAppInstalled);
       };
     }
     
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, []);
   
