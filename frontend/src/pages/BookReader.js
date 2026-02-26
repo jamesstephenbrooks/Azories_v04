@@ -948,8 +948,9 @@ export default function BookReader() {
             </Button>
           </div>
           
-          {/* Audio Controls - Enhanced - Hidden on very small screens, shown on landscape/larger */}
-          <div className="hidden sm:flex items-center justify-center gap-2 sm:gap-4 flex-wrap text-sm">
+          {/* Audio Controls - Enhanced - Hidden on mobile landscape and very small screens */}
+          {!isMobileLandscape && (
+            <div className="hidden sm:flex items-center justify-center gap-2 sm:gap-4 flex-wrap text-sm">
             {/* Current Voice Display (read-only) */}
             <div className="hidden md:flex items-center gap-2">
               <FiMic className="w-4 h-4 text-muted-foreground" />
