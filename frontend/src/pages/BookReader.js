@@ -1043,8 +1043,7 @@ export default function BookReader() {
                   </button>
                 </div>
               </div>
-            ) :
-            {isMobilePortrait && !isCover && currentPage >= 0 ? (
+            ) : isMobilePortrait && !isCover && currentPage >= 0 ? (
               <div className="flex flex-col w-full max-w-md mx-auto" style={{ height: `calc(100vh - 140px)` }}>
                 {/* Top: Illustration - 55% of available height */}
                 <div 
