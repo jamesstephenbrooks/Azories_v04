@@ -173,11 +173,13 @@ One copy of each duplicate pair was kept and completed:
     4. Middle Grade last
 
 ### P1 - High Priority
-1. **Fix FAL_KEY permanently** - This has been a recurring issue (8+ times):
-   - Investigate root cause: Is it hardcoded? Environment variable resetting? Key expiring on fal.ai side?
-   - Set up permanent solution: Secure storage that persists between sessions
-   - Add auto-detection: Warn early if FAL_KEY becomes invalid instead of silently falling back to expensive Emergent Key
-   - Current status: Key shows "No user found for Key ID and Secret" error
+1. **Fix FAL_KEY permanently** - PARTIALLY IMPLEMENTED:
+   - ✅ Added auto-detection on startup with clear warning messages
+   - ✅ Added `/api/admin/system-status` endpoint to check all API keys
+   - ✅ Added `/api/admin/validate-fal-key` endpoint for manual re-validation
+   - ⏳ Need valid FAL_KEY from user - current key `azories-books:...` is INVALID
+   - Root cause: The key format looks correct (key_id:key_secret) but fal.ai reports "No user found" - key likely revoked or expired on their side
+   - Solution: User needs to generate a new key at https://fal.ai/dashboard/keys
 2. **Complete server.py refactoring** - Remove duplicate auth routes from server.py
 
 ### P2 - Medium Priority
