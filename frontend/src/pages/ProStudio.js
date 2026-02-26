@@ -3989,18 +3989,18 @@ export default function ProStudio() {
           </TabsContent>
 
           {/* Shots Tab */}
-          <TabsContent value="shots" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <TabsContent value="shots" className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               {/* Upload Panel */}
-              <div className="bg-black/40 rounded-xl border border-purple-500/20 p-6">
-                <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+              <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4 sm:p-6">
+                <h2 className="text-lg sm:text-xl font-bold text-white mb-4 flex items-center gap-2">
                   <FiGrid className="text-purple-400" /> Shots App
                 </h2>
-                <p className="text-gray-400 text-sm mb-4">
+                <p className="text-gray-400 text-xs sm:text-sm mb-4">
                   Upload one image and generate 9 different angles - front, side profiles, 3/4 views, and more.
                 </p>
 
-                <div className="border-2 border-dashed border-purple-500/30 rounded-lg p-8 text-center mb-4">
+                <div className="border-2 border-dashed border-purple-500/30 rounded-lg p-4 sm:p-8 text-center mb-4 min-h-[120px] flex items-center justify-center">
                   <input
                     type="file"
                     accept="image/*"
@@ -4009,21 +4009,53 @@ export default function ProStudio() {
                     id="shots-upload"
                     data-testid="shots-image-upload"
                   />
-                  <label htmlFor="shots-upload" className="cursor-pointer">
+                  <label htmlFor="shots-upload" className="cursor-pointer min-h-[80px] flex flex-col items-center justify-center">
                     {shotsSourceImage ? (
-                      <img src={shotsSourceImage} alt="Source" className="w-48 h-48 object-cover rounded-lg mx-auto" />
+                      <img src={shotsSourceImage} alt="Source" className="w-32 h-32 sm:w-48 sm:h-48 object-cover rounded-lg mx-auto" />
                     ) : (
                       <>
-                        <FiUpload className="w-12 h-12 text-purple-400 mx-auto mb-3" />
-                        <p className="text-gray-400">Click to upload source image</p>
+                        <FiUpload className="w-10 h-10 sm:w-12 sm:h-12 text-purple-400 mb-3" />
+                        <p className="text-gray-400 text-sm">Tap to upload source image</p>
                       </>
                     )}
                   </label>
                 </div>
                 
-                {/* Use Character Image */}
+                {/* Use Character Image - Collapsible on mobile */}
                 {characters.length > 0 && (
-                  <div className="mb-4">
+                  <details className="mb-4 sm:hidden">
+                    <summary className="text-purple-400 text-sm cursor-pointer hover:text-purple-300 min-h-[44px] flex items-center">
+                      + Select from character
+                    </summary>
+                    <div className="mt-2">
+                      <div className="flex gap-2 flex-wrap">
+                        {characters.slice(0, 6).map((char) => (
+                          <button
+                            key={char.id}
+                            onClick={() => handleShotsCharacterSelect(char)}
+                            className={`relative group min-w-[48px] min-h-[48px] ${shotsSelectedCharacter?.id === char.id ? 'ring-2 ring-purple-500' : ''}`}
+                            title={`Select ${char.name}`}
+                          >
+                            <img 
+                              src={char.thumbnail || char.reference_images?.[0]} 
+                              alt={char.name}
+                              className="w-12 h-12 rounded-full object-cover border-2 border-gray-600 hover:border-purple-500 transition-colors"
+                            />
+                            {shotsSelectedCharacter?.id === char.id && (
+                              <div className="absolute -bottom-1 -right-1 bg-purple-500 rounded-full p-0.5">
+                                <FiCheck className="text-white" size={10} />
+                              </div>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </details>
+                )}
+                
+                {/* Desktop character selector */}
+                {characters.length > 0 && (
+                  <div className="mb-4 hidden sm:block">
                     <p className="text-gray-400 text-xs mb-2">Or select a character:</p>
                     <div className="flex gap-2 flex-wrap">
                       {characters.slice(0, 6).map((char) => (
@@ -4059,7 +4091,7 @@ export default function ProStudio() {
                               setShotsSelectedCharacter(null);
                               setShotsCharacterGallery([]);
                             }}
-                            className="text-gray-500 hover:text-gray-300 text-xs"
+                            className="text-gray-500 hover:text-gray-300 text-xs min-w-[32px] min-h-[32px] flex items-center justify-center"
                           >
                             <FiX size={14} />
                           </button>
@@ -4073,7 +4105,7 @@ export default function ProStudio() {
                                   setShotsSourceImage(img.url);
                                   toast.success(`Using ${img.label || 'selected image'}`);
                                 }}
-                                className={`relative group aspect-square ${
+                                className={`relative group aspect-square min-w-[44px] min-h-[44px] ${
                                   shotsSourceImage === img.url ? 'ring-2 ring-purple-500' : ''
                                 }`}
                                 title={img.label}
@@ -4108,7 +4140,7 @@ export default function ProStudio() {
                 <Button
                   variant="outline"
                   onClick={() => { setGalleryPickerMode('shots'); setShowGalleryPicker(true); }}
-                  className="w-full mb-4 border-purple-500/30 text-purple-300 hover:bg-purple-500/20"
+                  className="w-full mb-4 border-purple-500/30 text-purple-300 hover:bg-purple-500/20 min-h-[48px]"
                 >
                   <FiFolder className="mr-2" /> Select from Gallery
                 </Button>
@@ -4117,21 +4149,21 @@ export default function ProStudio() {
                 <div className="mb-4">
                   <label className="text-gray-400 text-xs mb-2 block">Art Style</label>
                   <Select value={shotsStyle} onValueChange={setShotsStyle}>
-                    <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
+                    <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white min-h-[48px] text-base">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-gray-800 border-gray-700">
-                      <SelectItem value="realistic" className="text-white">Realistic / Photographic</SelectItem>
-                      <SelectItem value="cinematic" className="text-white">Cinematic</SelectItem>
-                      <SelectItem value="cartoon" className="text-white">Cartoon / Animated</SelectItem>
-                      <SelectItem value="anime" className="text-white">Anime / Manga</SelectItem>
-                      <SelectItem value="pixar" className="text-white">Pixar / 3D Animation</SelectItem>
-                      <SelectItem value="watercolor" className="text-white">Watercolor / Painterly</SelectItem>
-                      <SelectItem value="comic" className="text-white">Comic Book</SelectItem>
-                      <SelectItem value="fantasy" className="text-white">Fantasy Art</SelectItem>
-                      <SelectItem value="storybook" className="text-white">Children's Storybook</SelectItem>
+                      <SelectItem value="realistic" className="text-white min-h-[44px]">Realistic / Photographic</SelectItem>
+                      <SelectItem value="cinematic" className="text-white min-h-[44px]">Cinematic</SelectItem>
+                      <SelectItem value="cartoon" className="text-white min-h-[44px]">Cartoon / Animated</SelectItem>
+                      <SelectItem value="anime" className="text-white min-h-[44px]">Anime / Manga</SelectItem>
+                      <SelectItem value="pixar" className="text-white min-h-[44px]">Pixar / 3D Animation</SelectItem>
+                      <SelectItem value="watercolor" className="text-white min-h-[44px]">Watercolor / Painterly</SelectItem>
+                      <SelectItem value="comic" className="text-white min-h-[44px]">Comic Book</SelectItem>
+                      <SelectItem value="fantasy" className="text-white min-h-[44px]">Fantasy Art</SelectItem>
+                      <SelectItem value="storybook" className="text-white min-h-[44px]">Children's Storybook</SelectItem>
                       {shotsSelectedCharacter?.style && (
-                        <SelectItem value="character" className="text-purple-300">
+                        <SelectItem value="character" className="text-purple-300 min-h-[44px]">
                           Match Character ({shotsSelectedCharacter.style})
                         </SelectItem>
                       )}
@@ -4144,13 +4176,14 @@ export default function ProStudio() {
                   )}
                 </div>
 
+                {/* Generate Button - Hidden on mobile (floating button used instead) */}
                 <Button 
                   onClick={() => {
                     if (!checkCreditsOrRedirect(9, 'Generate 9 Shots')) return;
                     generateShots();
                   }}
                   disabled={isLoading || !shotsSourceImage}
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 min-h-[48px] text-base hidden sm:flex"
                   data-testid="generate-shots-btn"
                 >
                   <FiGrid className="mr-2" /> Generate 9 Shots
@@ -4158,12 +4191,12 @@ export default function ProStudio() {
               </div>
 
               {/* Results Panel */}
-              <div className="bg-black/40 rounded-xl border border-purple-500/20 p-6">
+              <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4 sm:p-6">
                 <h3 className="text-white font-medium mb-4">Generated Shots</h3>
                 {shotsResults.length === 0 ? (
-                  <div className="text-center py-12 text-gray-500">
-                    <FiGrid className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                    <p>Upload an image to generate multiple angles</p>
+                  <div className="text-center py-8 sm:py-12 text-gray-500">
+                    <FiGrid className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 opacity-50" />
+                    <p className="text-sm">Upload an image to generate multiple angles</p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-3 gap-2">
@@ -4174,20 +4207,21 @@ export default function ProStudio() {
                         onClick={() => setPreviewImage({ url: shot.url, prompt: SHOT_TYPES[i]?.name || `Shot ${i+1}` })}
                       >
                         <img src={shot.url} alt={shot.type} className="w-full aspect-square object-cover rounded-lg" />
-                        <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs p-1 text-center">
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-[10px] sm:text-xs p-1 text-center">
                           {SHOT_TYPES[i]?.name || `Shot ${i+1}`}
                         </div>
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
-                          <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); saveToGallery(shot); }}>
+                          <Button size="sm" variant="ghost" className="min-w-[44px] min-h-[44px]" onClick={(e) => { e.stopPropagation(); saveToGallery(shot); }}>
                             <FiSave className="text-white" size={14} />
                           </Button>
-                          <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); downloadMedia(shot.url, `shot-${i+1}.png`); }}>
+                          <Button size="sm" variant="ghost" className="min-w-[44px] min-h-[44px]" onClick={(e) => { e.stopPropagation(); downloadMedia(shot.url, `shot-${i+1}.png`); }}>
                             <FiDownload className="text-white" size={14} />
                           </Button>
                           {selectedCharacter && (
                             <Button 
                               size="sm" 
                               variant="ghost" 
+                              className="min-w-[44px] min-h-[44px]"
                               onClick={async (e) => { 
                                 e.stopPropagation(); 
                                 try {
