@@ -119,8 +119,7 @@ async def generate_batch_4():
                 prompt=full_prompt,
                 model="gpt-image-1",
                 number_of_images=1,
-                size="1024x1024",
-                quality="high"
+                quality="medium"
             )
             
             if images and len(images) > 0:
