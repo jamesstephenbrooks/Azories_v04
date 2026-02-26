@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+    <title>Orientation Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease;
+        }
+        
+        /* Portrait mode - blue background */
+        @media screen and (orientation: portrait) {
+            .container {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+            .portrait-text { display: block; }
+            .landscape-text { display: none; }
+        }
+        
+        /* Landscape mode - green background */
+        @media screen and (orientation: landscape) {
+            .container {
+                background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            }
+            .portrait-text { display: none; }
+            .landscape-text { display: block; }
+        }
+        
+        h1 {
+            color: white;
+            font-size: 3rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 1rem;
+        }
+        
+        .info {
+            color: white;
+            font-size: 1rem;
+            text-align: center;
+            padding: 1rem;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        
+        #dimensions {
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="portrait-text">PORTRAIT</h1>
+        <h1 class="landscape-text">LANDSCAPE</h1>
+        
+        <div class="info">
+            <div id="dimensions">Loading...</div>
+            <div id="orientation-api">Checking orientation API...</div>
+            <div id="matchmedia">Checking matchMedia...</div>
+        </div>
+    </div>
+    
+    <script>
+        function updateInfo() {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            
+            document.getElementById('dimensions').innerHTML = 
+                `Viewport: ${w} x ${h}<br>` +
+                `Wider than tall: ${w > h ? 'YES' : 'NO'}`;
+            
+            // Screen orientation API
+            if (screen.orientation) {
+                document.getElementById('orientation-api').innerHTML = 
+                    `screen.orientation.type: ${screen.orientation.type}`;
+            } else {
+                document.getElementById('orientation-api').innerHTML = 
+                    `screen.orientation: Not supported`;
+            }
+            
+            // matchMedia
+            const isLandscape = window.matchMedia('(orientation: landscape)').matches;
+            document.getElementById('matchmedia').innerHTML = 
+                `matchMedia landscape: ${isLandscape ? 'YES' : 'NO'}`;
+        }
+        
+        // Initial update
+        updateInfo();
+        
+        // Listen to all orientation/resize events
+        window.addEventListener('resize', () => {
+            console.log('resize event');
+            updateInfo();
+        });
+        
+        window.addEventListener('orientationchange', () => {
+            console.log('orientationchange event');
+            setTimeout(updateInfo, 100);
+            setTimeout(updateInfo, 300);
+        });
+        
+        if (screen.orientation) {
+            screen.orientation.addEventListener('change', () => {
+                console.log('screen.orientation change event');
+                setTimeout(updateInfo, 100);
+            });
+        }
+        
+        window.matchMedia('(orientation: landscape)').addEventListener('change', (e) => {
+            console.log('matchMedia change:', e.matches);
+            updateInfo();
+        });
+    </script>
+</body>
+</html>
