@@ -35,6 +35,7 @@ export default function BookReader() {
   const [isFlipping, setIsFlipping] = useState(false);
   const [flipDirection, setFlipDirection] = useState('next');
   const [requiresAuth, setRequiresAuth] = useState(false);
+  const [showRotatePrompt, setShowRotatePrompt] = useState(false);
   
   // Audio state
   const [isPlaying, setIsPlaying] = useState(false);
