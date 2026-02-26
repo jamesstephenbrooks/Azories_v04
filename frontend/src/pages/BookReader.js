@@ -853,6 +853,7 @@ export default function BookReader() {
                 height={bookDimensions.height}
                 showControls={false}
                 isFullscreen={isFullscreen}
+                isMobilePortrait={isMobilePortrait}
               />
             </div>
           </div>
