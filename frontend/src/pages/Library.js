@@ -274,7 +274,8 @@ export default function Library() {
                 data-testid="tab-best-week"
               >
                 <FiAward className="mr-1 sm:mr-2 w-3 h-3 sm:w-4 sm:h-4" />
-                <span className="hidden xs:inline">Best of </span>Week
+                <span className="sm:hidden">Top</span>
+                <span className="hidden sm:inline">Best of Week</span>
               </TabsTrigger>
             </TabsList>
             
