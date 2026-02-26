@@ -996,7 +996,7 @@ export default function Dashboard() {
                           ) : book.publish_status === 'pending_review' ? (
                             <>
                               <FiClock className="mr-1 w-3 h-3" />
-                              In Review
+                              Coming Soon
                             </>
                           ) : (
                             <>
