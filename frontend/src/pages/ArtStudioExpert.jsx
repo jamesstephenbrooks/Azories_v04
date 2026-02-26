@@ -902,7 +902,7 @@ export default function ArtStudioExpert() {
   const [galleryImages, setGalleryImages] = useState([]);
   const [galleryPickerCallback, setGalleryPickerCallback] = useState(null);
   const [galleryTab, setGalleryTab] = useState('art'); // 'art', 'pro', or 'starter'
-  const [expandedImage, setExpandedImage] = useState(null); // For image preview/lightbox
+  const [galleryExpandedImage, setGalleryExpandedImage] = useState(null); // For gallery image preview/lightbox
   
   // Load user's books
   useEffect(() => {
