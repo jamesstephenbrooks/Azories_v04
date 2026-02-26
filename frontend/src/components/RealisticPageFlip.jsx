@@ -1,7 +1,96 @@
-import { useRef, useState, useCallback, forwardRef, useImperativeHandle } from 'react';
+import { useRef, useState, useCallback, forwardRef, useImperativeHandle, useEffect, useMemo } from 'react';
 import HTMLFlipBook from 'react-pageflip';
 import { motion } from 'framer-motion';
 import { FiBook, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+
+// Shimmer placeholder component for loading states
+const ImageShimmer = () => (
+  <div className="absolute inset-0 bg-gradient-to-r from-muted/30 via-muted/50 to-muted/30 animate-shimmer overflow-hidden">
+    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-shimmer-slide" />
+  </div>
+);
+
+// Optimized lazy-loading image component with preloading and placeholder
+const LazyImage = ({ src, alt = "", className = "", style = {}, onLoad, priority = false }) => {
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+  const imgRef = useRef(null);
+  
+  useEffect(() => {
+    // Reset states when src changes
+    setLoaded(false);
+    setError(false);
+    
+    if (!src) return;
+    
+    // For priority images, start loading immediately
+    if (priority) {
+      const img = new Image();
+      img.onload = () => {
+        setLoaded(true);
+        onLoad?.();
+      };
+      img.onerror = () => setError(true);
+      img.src = src;
+    }
+  }, [src, priority, onLoad]);
+  
+  const handleImageLoad = () => {
+    setLoaded(true);
+    onLoad?.();
+  };
+  
+  const handleImageError = () => {
+    setError(true);
+  };
+  
+  if (!src || error) {
+    return (
+      <div className="absolute inset-0 bg-muted/10 flex items-center justify-center">
+        <div className="text-center text-muted-foreground/40">
+          <div className="w-16 h-16 mx-auto mb-2 rounded-full bg-muted/20 flex items-center justify-center">
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <span className="text-xs">Illustration</span>
+        </div>
+      </div>
+    );
+  }
+  
+  return (
+    <>
+      {/* Shimmer placeholder - visible until image loads */}
+      {!loaded && <ImageShimmer />}
+      
+      {/* Actual image with fade-in effect */}
+      <img 
+        ref={imgRef}
+        src={src}
+        alt={alt}
+        className={`${className} transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+        style={style}
+        onLoad={handleImageLoad}
+        onError={handleImageError}
+        loading={priority ? "eager" : "lazy"}
+        decoding="async"
+      />
+    </>
+  );
+};
+
+// Image preloader cache - stores preloaded image URLs
+const imagePreloadCache = new Set();
+
+// Preload an image in the background
+const preloadImage = (url) => {
+  if (!url || imagePreloadCache.has(url)) return;
+  
+  const img = new Image();
+  img.onload = () => imagePreloadCache.add(url);
+  img.src = url;
+};
 
 // Individual page component with realistic styling
 const Page = forwardRef(({ pageNumber, children, isLeft, isCover, isBackCover }, ref) => {
