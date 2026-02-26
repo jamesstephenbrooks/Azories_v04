@@ -1399,12 +1399,26 @@ export default function ArtStudio() {
         </div>
 
         {/* Main Content with Art Styles Sidebar */}
-        <div className="flex gap-6">
-          {/* Left Sidebar - Art Styles (scrollable) */}
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+          {/* Left Sidebar - Art Styles (collapsible on mobile) */}
           {(activeTab === 'character' || activeTab === 'scene') && (
-            <div className="w-64 flex-shrink-0">
-              <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-4 sticky top-4 max-h-[calc(100vh-180px)] overflow-y-auto">
-                <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2 sticky top-0 bg-[#1a1520] py-2 -mt-2 -mx-4 px-4 border-b border-white/10 z-10">
+            <div className="w-full lg:w-64 flex-shrink-0">
+              {/* Mobile: Collapsible header */}
+              <button 
+                className="lg:hidden w-full flex items-center justify-between p-3 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 mb-2"
+                onClick={() => setShowMobileStyles(!showMobileStyles)}
+              >
+                <span className="flex items-center gap-2 text-white font-medium">
+                  <FiSliders className="text-purple-400" />
+                  Art Styles
+                  <span className="text-xs text-white/40">({ART_STYLES.length})</span>
+                </span>
+                {showMobileStyles ? <FiChevronUp className="text-white/60" /> : <FiChevronDown className="text-white/60" />}
+              </button>
+              
+              {/* Desktop: Always visible, Mobile: Collapsible */}
+              <div className={`${showMobileStyles ? 'block' : 'hidden'} lg:block bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-4 lg:sticky lg:top-4 max-h-[50vh] lg:max-h-[calc(100vh-180px)] overflow-y-auto`}>
+                <h3 className="hidden lg:flex text-lg font-semibold text-white mb-3 items-center gap-2 sticky top-0 bg-[#1a1520] py-2 -mt-2 -mx-4 px-4 border-b border-white/10 z-10">
                   <FiSliders className="text-purple-400" />
                   Art Styles
                   <span className="text-xs text-white/40 ml-auto">{ART_STYLES.length} styles</span>
