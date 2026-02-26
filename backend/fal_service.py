@@ -81,6 +81,107 @@ def _get_fal_key() -> str:
     return key
 
 
+# Global state for key validation caching
+_fal_key_status = {
+    "valid": None,  # None = unchecked, True = valid, False = invalid
+    "last_checked": None,
+    "error_message": None
+}
+
+
+def get_fal_key_status() -> dict:
+    """Get the current FAL_KEY validation status."""
+    return _fal_key_status.copy()
+
+
+async def validate_fal_key_on_startup() -> dict:
+    """
+    Validate FAL_KEY on startup and cache the result.
+    Returns status dict with valid, last_checked, error_message.
+    """
+    global _fal_key_status
+    from datetime import datetime
+    
+    try:
+        key = os.environ.get('FAL_KEY', '')
+        if not key:
+            _fal_key_status = {
+                "valid": False,
+                "last_checked": datetime.utcnow().isoformat(),
+                "error_message": "FAL_KEY not set in environment"
+            }
+            logger.warning("⚠️ FAL_KEY not configured - fal.ai features will not work")
+            return _fal_key_status
+        
+        # Validate key format
+        if ':' not in key:
+            _fal_key_status = {
+                "valid": False,
+                "last_checked": datetime.utcnow().isoformat(),
+                "error_message": "FAL_KEY format invalid - should be key_id:key_secret"
+            }
+            logger.warning(f"⚠️ FAL_KEY format invalid - missing colon separator")
+            return _fal_key_status
+        
+        # Try a real API call to validate
+        client = AsyncClient(key=key)
+        # Use a lightweight status check
+        try:
+            # Try to get status of a non-existent job - will fail fast with auth error if key invalid
+            await asyncio.wait_for(
+                client.status("fal-ai/flux/dev", "nonexistent-job-id-12345"),
+                timeout=10
+            )
+        except Exception as e:
+            error_str = str(e).lower()
+            # "not found" is OK - means auth worked, job just doesn't exist
+            if 'not found' in error_str or 'notfound' in error_str:
+                _fal_key_status = {
+                    "valid": True,
+                    "last_checked": datetime.utcnow().isoformat(),
+                    "error_message": None
+                }
+                logger.info("✅ FAL_KEY validated successfully")
+                return _fal_key_status
+            # Auth errors mean the key is invalid
+            elif '401' in error_str or 'unauthorized' in error_str or 'no user found' in error_str:
+                _fal_key_status = {
+                    "valid": False,
+                    "last_checked": datetime.utcnow().isoformat(),
+                    "error_message": f"FAL_KEY invalid or expired: {str(e)[:100]}"
+                }
+                logger.error(f"❌ FAL_KEY INVALID: {str(e)[:100]}")
+                logger.error("⚠️ fal.ai features will fall back to Emergent Key (more expensive)")
+                return _fal_key_status
+            else:
+                # Other errors - assume key is OK but there was a network issue
+                _fal_key_status = {
+                    "valid": None,  # Unknown
+                    "last_checked": datetime.utcnow().isoformat(),
+                    "error_message": f"Could not validate: {str(e)[:100]}"
+                }
+                logger.warning(f"⚠️ FAL_KEY validation inconclusive: {str(e)[:50]}")
+                return _fal_key_status
+        
+        # If we get here without exception, key is valid
+        _fal_key_status = {
+            "valid": True,
+            "last_checked": datetime.utcnow().isoformat(),
+            "error_message": None
+        }
+        logger.info("✅ FAL_KEY validated successfully")
+        return _fal_key_status
+        
+    except Exception as e:
+        _fal_key_status = {
+            "valid": False,
+            "last_checked": datetime.utcnow().isoformat(),
+            "error_message": str(e)[:200]
+        }
+        logger.error(f"❌ FAL_KEY validation failed: {str(e)[:100]}")
+        return _fal_key_status
+
+
 def _get_client() -> AsyncClient:
     """
     Create a fresh AsyncClient with the current FAL_KEY.
