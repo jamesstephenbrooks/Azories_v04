@@ -1354,34 +1354,9 @@ export default function BookReader() {
                 <FiChevronRight className="w-5 h-5 sm:w-5 sm:h-5 sm:ml-1" />
               </Button>
             </div>
-              </Button>
-            )}
-            
-            <Button
-              variant="outline"
-              size="default"
-              onClick={() => {
-                if (isMobilePortrait && !isCover) {
-                  // In split view, navigate directly
-                  if (currentPage < allPages.length - 1) {
-                    setCurrentPage(currentPage + 1);
-                    saveReadingProgress();
-                  }
-                } else if (realisticFlipRef.current) {
-                  realisticFlipRef.current.nextPage();
-                }
-              }}
-              disabled={currentPage === -2 || currentPage >= allPages.length - 1 || isFlipping}
-              className={`rounded-full ${isMobileLandscape ? 'min-w-[36px] min-h-[36px] px-3' : 'min-w-[44px] min-h-[44px] px-4 sm:px-6'} text-sm sm:text-base`}
-            >
-              <span className="hidden sm:inline">Next</span>
-              <FiChevronRight className={isMobileLandscape ? 'w-4 h-4' : 'w-5 h-5 sm:w-5 sm:h-5 sm:ml-1'} />
-            </Button>
-          </div>
           
-          {/* Audio Controls - Enhanced - Hidden on mobile landscape and very small screens */}
-          {!isMobileLandscape && (
-            <div className="hidden sm:flex items-center justify-center gap-2 sm:gap-4 flex-wrap text-sm">
+          {/* Audio Controls - Enhanced - Hidden on very small screens */}
+          <div className="hidden sm:flex items-center justify-center gap-2 sm:gap-4 flex-wrap text-sm">
             {/* Current Voice Display (read-only) */}
             <div className="hidden md:flex items-center gap-2">
               <FiMic className="w-4 h-4 text-muted-foreground" />
@@ -1401,7 +1376,7 @@ export default function BookReader() {
               <Slider value={volume} onValueChange={setVolume} max={100} step={1} className="flex-1" />
             </div>
             
-            {/* Playback Speed - Quick buttons - fewer on mobile */}
+            {/* Playback Speed - Quick buttons */}
             <div className="flex items-center gap-1">
               <span className="hidden md:inline text-muted-foreground text-xs mr-1">Speed:</span>
               {[0.75, 1, 1.5, 2].map(speed => (
@@ -1439,9 +1414,9 @@ export default function BookReader() {
               <FiChevronDown className="w-4 h-4" />
             </Button>
           </div>
-          )}
         </div>
       </div>
+      )}
       
       {/* Auth Required Overlay */}
       {requiresAuth && (
