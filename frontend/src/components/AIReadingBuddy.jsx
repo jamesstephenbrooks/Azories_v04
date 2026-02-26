@@ -22,9 +22,16 @@ export default function AIReadingBuddy({ book, currentPage, isOpen, onToggle }) 
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
-  // Detect mobile viewport
+  // Detect mobile viewport (including mobile landscape)
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    const checkMobile = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      // Hide on mobile portrait OR mobile landscape (small height indicates rotated phone)
+      const isMobilePortrait = width < 768;
+      const isMobileLandscape = height < 500 && width < 900;
+      setIsMobile(isMobilePortrait || isMobileLandscape);
+    };
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
