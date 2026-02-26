@@ -856,7 +856,7 @@ async def login(user_data: UserLogin):
         else:
             trial_days_remaining = (expiry_date - now).days
     
-    token = create_token(user["id"], user["email"], user["role"])
+    token = create_token(user["id"], user["email"], user["role"], user_data.remember_me)
     return TokenResponse(
         access_token=token,
         user=UserResponse(
