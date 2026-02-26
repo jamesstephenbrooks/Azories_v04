@@ -3211,20 +3211,8 @@ export default function ArtStudio() {
                   </div>
                   
                   <Button
-                    onClick={() => {
-                      navigator.clipboard.writeText(selectedGalleryItem.image_url);
-                      alert('Image URL copied!');
-                    }}
-                    className="w-full bg-purple-600 hover:bg-purple-700"
-                    data-testid="copy-url-btn"
-                  >
-                    <FiCopy className="w-4 h-4 mr-2" />
-                    Copy URL for Book
-                  </Button>
-                  <Button
                     onClick={() => downloadImage(selectedGalleryItem.image_url, `${selectedGalleryItem.name}.${selectedGalleryItem.type === 'animation' ? 'mp4' : 'png'}`)}
-                    variant="outline"
-                    className="w-full border-green-500/50 text-green-400 hover:bg-green-500/20"
+                    className="w-full bg-green-600 hover:bg-green-700"
                     data-testid="download-gallery-image-btn"
                   >
                     <FiDownload className="w-4 h-4 mr-2" />
