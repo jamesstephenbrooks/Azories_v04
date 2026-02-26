@@ -165,9 +165,10 @@ export default function BookReader() {
   // Calculate responsive book dimensions
   const getBookDimensions = () => {
     const { width: vw, height: vh } = windowSize;
-    const isLandscape = vw > vh;
-    const isMobile = vw < 768;
-    const isTablet = vw >= 768 && vw < 1024;
+    // Use proper orientation detection instead of just comparing dimensions
+    const isLandscape = isLandscapeOrientation || vw > vh;
+    const isMobile = vw < 768 || vh < 500;
+    const isTablet = (vw >= 768 && vw < 1024) || (vh >= 768 && vh < 1024);
     
     if (isFullscreen) {
       // Fullscreen mode - maximize usage
