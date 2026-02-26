@@ -3042,7 +3042,7 @@ export default function ArtStudio() {
           </div>
 
           {/* Right Panel - Preview & Generate */}
-          <div className="space-y-4">
+          <div className="space-y-4 sticky top-4 self-start">
             {/* Preview Area */}
             <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-4">
               <h3 className="text-lg font-semibold text-white mb-3">Preview</h3>
