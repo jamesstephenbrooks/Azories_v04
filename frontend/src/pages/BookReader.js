@@ -129,10 +129,10 @@ export default function BookReader() {
         const bookWidth = Math.min(bookHeight * 0.7, vw * 0.35);
         return { width: bookWidth, height: bookHeight };
       } else {
-        // Mobile portrait - SINGLE PAGE MODE - fill more of the screen
-        const availableHeight = vh - 160; // Header (56px) + bottom controls (100px) + padding
-        const bookHeight = Math.min(availableHeight * 0.85, 550);
-        const bookWidth = Math.min(vw * 0.88, bookHeight * 0.75, 380);
+        // Mobile portrait - SINGLE PAGE MODE - maximize screen usage
+        const availableHeight = vh - 140; // Header (56px) + bottom controls (80px) + small padding
+        const bookHeight = Math.min(availableHeight * 0.92, 620);
+        const bookWidth = Math.min(vw * 0.92, bookHeight * 0.78, 420);
         return { width: bookWidth, height: bookHeight };
       }
     }
