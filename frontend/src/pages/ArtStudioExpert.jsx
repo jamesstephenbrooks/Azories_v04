@@ -2407,6 +2407,74 @@ export default function ArtStudioExpert() {
           </motion.div>
         )}
       </AnimatePresence>
+      
+      {/* Image Expand/Lightbox Modal */}
+      <AnimatePresence>
+        {expandedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] bg-black/90 flex items-center justify-center p-4"
+            onClick={() => setExpandedImage(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className="relative max-w-4xl max-h-[90vh] flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setExpandedImage(null)}
+                className="absolute -top-10 right-0 p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
+              >
+                <FiX className="w-5 h-5" />
+              </button>
+              
+              {/* Image */}
+              <img
+                src={expandedImage.image_url || expandedImage.url}
+                alt={expandedImage.name || expandedImage.category || 'Expanded image'}
+                className="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl"
+              />
+              
+              {/* Image info */}
+              <div className="mt-4 flex items-center justify-between">
+                <div>
+                  {expandedImage.name && (
+                    <h3 className="text-white text-lg font-semibold">{expandedImage.name}</h3>
+                  )}
+                  {expandedImage.category && (
+                    <p className="text-white/60 text-sm capitalize">{expandedImage.category}</p>
+                  )}
+                  {expandedImage.art_style && (
+                    <p className="text-white/40 text-xs mt-1 capitalize">Style: {expandedImage.art_style}</p>
+                  )}
+                </div>
+                
+                {/* Action buttons */}
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      if (galleryPickerCallback) {
+                        const imageUrl = expandedImage.image_url || expandedImage.url;
+                        galleryPickerCallback(imageUrl);
+                        setExpandedImage(null);
+                      }
+                    }}
+                    className="px-4 py-2 rounded-lg bg-yellow-500 hover:bg-yellow-400 text-black font-medium flex items-center gap-2 transition-colors"
+                  >
+                    <FiCheck className="w-4 h-4" />
+                    Select Image
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
