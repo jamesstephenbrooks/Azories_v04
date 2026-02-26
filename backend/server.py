@@ -3313,6 +3313,12 @@ async def create_scene(request: SceneCreate, current_user: dict = Depends(get_cu
         scene_id = str(uuid.uuid4())
         now = datetime.now(timezone.utc).isoformat()
         
+        # Convert any base64 reference images to CDN URLs
+        converted_reference_images = []
+        for img in (request.reference_images[:10] if request.reference_images else []):
+            converted_url = await convert_base64_to_cdn(img)
+            converted_reference_images.append(converted_url)
+        
         scene = {
             "id": scene_id,
             "user_id": current_user["id"],
@@ -3326,7 +3332,7 @@ async def create_scene(request: SceneCreate, current_user: dict = Depends(get_cu
             "mood": request.mood,
             "time_of_day": request.time_of_day,
             "weather": request.weather,
-            "reference_images": request.reference_images[:10] if request.reference_images else [],
+            "reference_images": converted_reference_images,
             "thumbnail": thumbnail,
             "created_at": now,
             "updated_at": now
