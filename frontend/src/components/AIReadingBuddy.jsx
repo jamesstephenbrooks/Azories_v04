@@ -123,6 +123,11 @@ export default function AIReadingBuddy({ book, currentPage, isOpen, onToggle }) 
   };
 
   if (!isOpen) {
+    // Hide the floating button on mobile to not overlap reading content
+    if (isMobile) {
+      return null;
+    }
+    
     return (
       <motion.button
         initial={{ scale: 0 }}
