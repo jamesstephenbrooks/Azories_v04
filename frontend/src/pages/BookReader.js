@@ -951,13 +951,12 @@ export default function BookReader() {
         </motion.div>
       )}
       
-      {/* LANDSCAPE TAP ZONES - Must be OUTSIDE book-container to avoid swipe handler interference */}
+      {/* LANDSCAPE NAVIGATION - Small visible arrow buttons for Safari iOS reliability */}
       {isMobileLandscape && !isCover && currentPage >= 0 && (
         <>
-          {/* Left Tap Zone (Previous) */}
-          <div
-            onTouchEnd={(e) => {
-              e.preventDefault();
+          {/* Left Arrow Button (Previous) */}
+          <button
+            onTouchStart={(e) => {
               e.stopPropagation();
               if (currentPage > 0) {
                 setCurrentPage(currentPage - 1);
@@ -974,27 +973,38 @@ export default function BookReader() {
                 setCurrentPage(-1);
               }
             }}
+            disabled={currentPage <= 0}
             data-testid="landscape-prev-btn"
             style={{
               position: 'fixed',
-              left: 0,
-              top: 0,
-              bottom: 0,
-              width: '80px',
+              left: '8px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              width: '36px',
+              height: '36px',
+              borderRadius: '50%',
+              background: 'rgba(0,0,0,0.3)',
+              border: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               zIndex: 99999,
-              pointerEvents: 'auto',
-              touchAction: 'manipulation',
+              cursor: 'pointer',
               WebkitTapHighlightColor: 'transparent',
-              // DEBUG: Red border
-              outline: '3px solid red',
-              background: 'rgba(255,0,0,0.15)'
+              WebkitTouchCallout: 'none',
+              WebkitUserSelect: 'none',
+              touchAction: 'manipulation',
+              opacity: currentPage <= 0 ? 0.3 : 0.6
             }}
-          />
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
           
-          {/* Right Tap Zone (Next) */}
-          <div
-            onTouchEnd={(e) => {
-              e.preventDefault();
+          {/* Right Arrow Button (Next) */}
+          <button
+            onTouchStart={(e) => {
               e.stopPropagation();
               if (currentPage < allPages.length - 1) {
                 setCurrentPage(currentPage + 1);
@@ -1007,26 +1017,38 @@ export default function BookReader() {
                 saveReadingProgress();
               }
             }}
+            disabled={currentPage >= allPages.length - 1}
             data-testid="landscape-next-btn"
             style={{
               position: 'fixed',
-              right: 0,
-              top: 0,
-              bottom: 0,
-              width: '80px',
+              right: '8px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              width: '36px',
+              height: '36px',
+              borderRadius: '50%',
+              background: 'rgba(0,0,0,0.3)',
+              border: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               zIndex: 99999,
-              pointerEvents: 'auto',
-              touchAction: 'manipulation',
+              cursor: 'pointer',
               WebkitTapHighlightColor: 'transparent',
-              // DEBUG: Blue border
-              outline: '3px solid blue',
-              background: 'rgba(0,0,255,0.15)'
+              WebkitTouchCallout: 'none',
+              WebkitUserSelect: 'none',
+              touchAction: 'manipulation',
+              opacity: currentPage >= allPages.length - 1 ? 0.3 : 0.6
             }}
-          />
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
         </>
       )}
       
-      {/* Book Display - with swipe support (disabled in landscape to allow tap zones) */}
+      {/* Book Display - with swipe support (disabled in landscape) */}
       <div 
         id="book-container"
         className={`${isMobileLandscape ? 'pt-8 pb-2' : 'pt-12 sm:pt-20 pb-24 sm:pb-48'} px-1 sm:px-4 flex items-center justify-center min-h-screen transition-all duration-300 ${
