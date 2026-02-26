@@ -873,17 +873,19 @@ export default function BookReader() {
             </div>
             
             <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-              {/* TEMP: Test Landscape Mode Button - REMOVE BEFORE LAUNCH */}
-              <Button 
-                variant={forceLandscapeTest ? "default" : "outline"}
-                size="sm"
-                onClick={() => setForceLandscapeTest(!forceLandscapeTest)}
-                className={`text-xs rounded-full px-2 py-1 ${forceLandscapeTest ? 'bg-green-600 hover:bg-green-500' : 'border-amber-500/50 text-amber-400'}`}
-                title="Toggle landscape mode for testing"
-                data-testid="test-landscape-btn"
-              >
-                {forceLandscapeTest ? '📖 Landscape ON' : '📱 Test Landscape'}
-              </Button>
+              {/* Test Landscape Mode Button - DEV ONLY */}
+              {process.env.NODE_ENV === 'development' && (
+                <Button 
+                  variant={forceLandscapeTest ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setForceLandscapeTest(!forceLandscapeTest)}
+                  className={`text-xs rounded-full px-2 py-1 ${forceLandscapeTest ? 'bg-green-600 hover:bg-green-500' : 'border-amber-500/50 text-amber-400'}`}
+                  title="Toggle landscape mode for testing"
+                  data-testid="test-landscape-btn"
+                >
+                  {forceLandscapeTest ? '📖 Landscape ON' : '📱 Test Landscape'}
+                </Button>
+              )}
               
               {/* Reading Progress - hidden on small screens */}
               {user && readingProgress > 0 && (
