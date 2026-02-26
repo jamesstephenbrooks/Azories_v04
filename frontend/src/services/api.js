@@ -89,7 +89,7 @@ export const isUnauthorized = (error) => {
 // AUTH API
 // ============================================
 export const authAPI = {
-  login: (email, password) => api.post('/auth/login', { email, password }),
+  login: (email, password, rememberMe = true) => api.post('/auth/login', { email, password, remember_me: rememberMe }),
   register: (email, password, name) => api.post('/auth/register', { email, password, name }),
   me: () => api.get('/auth/me'),
   forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
