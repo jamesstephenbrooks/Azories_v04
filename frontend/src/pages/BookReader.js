@@ -828,81 +828,99 @@ export default function BookReader() {
 
   return (
     <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#1a1a2e]' : 'bg-[#f8f5f0]'}`}>
-      {/* Header - Ultra compact on mobile, even more compact in landscape */}
-      <div className={`fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border ${isMobileLandscape ? 'py-0.5' : ''}`}>
-        <div className={`max-w-7xl mx-auto px-2 sm:px-4 ${isMobileLandscape ? 'py-1' : 'py-1.5 sm:py-3'} flex items-center justify-between`}>
-          <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate('/library')}
-              className={`rounded-full flex-shrink-0 ${isMobileLandscape ? 'w-7 h-7' : 'w-8 h-8 sm:w-10 sm:h-10'}`}
-            >
-              <FiArrowLeft className={isMobileLandscape ? 'w-3.5 h-3.5' : 'w-4 h-4 sm:w-5 sm:h-5'} />
-            </Button>
-            <div className="min-w-0">
-              <h1 className={`font-heading font-bold line-clamp-1 truncate ${isMobileLandscape ? 'text-xs' : 'text-sm sm:text-lg'}`}>{book?.title}</h1>
-              {!isMobileLandscape && (
+      {/* Header - Hidden in landscape mode for maximum book space */}
+      {!isMobileLandscape && (
+        <div className={`fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border`}>
+          <div className={`max-w-7xl mx-auto px-2 sm:px-4 py-1.5 sm:py-3 flex items-center justify-between`}>
+            <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate('/library')}
+                className={`rounded-full flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10`}
+              >
+                <FiArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+              </Button>
+              <div className="min-w-0">
+                <h1 className={`font-heading font-bold line-clamp-1 truncate text-sm sm:text-lg`}>{book?.title}</h1>
                 <p className="font-ui text-[10px] sm:text-xs text-muted-foreground truncate">
                   {isCover ? 'Cover' : currentPage === -2 ? 'Back' : currentPageData?.isChapterTitle ? currentPageData?.chapterTitle : `Page ${currentPage + 1}`}
                 </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+              {/* TEMP: Test Landscape Mode Button - REMOVE BEFORE LAUNCH */}
+              <Button 
+                variant={forceLandscapeTest ? "default" : "outline"}
+                size="sm"
+                onClick={() => setForceLandscapeTest(!forceLandscapeTest)}
+                className={`text-xs rounded-full px-2 py-1 ${forceLandscapeTest ? 'bg-green-600 hover:bg-green-500' : 'border-amber-500/50 text-amber-400'}`}
+                title="Toggle landscape mode for testing"
+                data-testid="test-landscape-btn"
+              >
+                {forceLandscapeTest ? '📖 Landscape ON' : '📱 Test Landscape'}
+              </Button>
+              
+              {/* Reading Progress - hidden on small screens */}
+              {user && readingProgress > 0 && (
+                <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full">
+                  <FiTrendingUp className="w-4 h-4 text-primary" />
+                  <span className="text-xs font-ui text-primary">{readingProgress}%</span>
+                </div>
               )}
+              
+              {/* Reading Streak Badge - hidden on small screens */}
+              {readingStats?.current_streak > 0 && (
+                <div className="hidden lg:flex items-center gap-1 px-2 py-1 bg-orange-500/10 rounded-full">
+                  <FiAward className="w-4 h-4 text-orange-500" />
+                  <span className="text-xs font-ui text-orange-500">{readingStats.current_streak} day!</span>
+                </div>
+              )}
+              
+              {/* Ambient Sound Control - hidden on mobile portrait */}
+              <div className="hidden sm:block">
+                <AmbientSound genre={book?.genre} isReading={currentPage >= 0} />
+              </div>
+              
+              <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full w-8 h-8 sm:w-10 sm:h-10">
+                {theme === 'dark' ? <FiSun className="w-4 h-4 sm:w-5 sm:h-5" /> : <FiMoon className="w-4 h-4 sm:w-5 sm:h-5" />}
+              </Button>
+              <Button variant="ghost" size="icon" onClick={toggleFullscreen} className="rounded-full w-8 h-8 sm:w-10 sm:h-10">
+                {isFullscreen ? <FiMinimize2 className="w-4 h-4 sm:w-5 sm:h-5" /> : <FiMaximize2 className="w-4 h-4 sm:w-5 sm:h-5" />}
+              </Button>
             </div>
           </div>
           
-          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-            {/* TEMP: Test Landscape Mode Button - REMOVE BEFORE LAUNCH */}
-            <Button 
-              variant={forceLandscapeTest ? "default" : "outline"}
-              size="sm"
-              onClick={() => setForceLandscapeTest(!forceLandscapeTest)}
-              className={`text-xs rounded-full px-2 py-1 ${forceLandscapeTest ? 'bg-green-600 hover:bg-green-500' : 'border-amber-500/50 text-amber-400'}`}
-              title="Toggle landscape mode for testing"
-              data-testid="test-landscape-btn"
-            >
-              {forceLandscapeTest ? '📖 Landscape ON' : '📱 Test Landscape'}
-            </Button>
-            
-            {/* Reading Progress - hidden on small screens */}
-            {user && readingProgress > 0 && (
-              <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full">
-                <FiTrendingUp className="w-4 h-4 text-primary" />
-                <span className="text-xs font-ui text-primary">{readingProgress}%</span>
-              </div>
-            )}
-            
-            {/* Reading Streak Badge - hidden on small screens */}
-            {readingStats?.current_streak > 0 && (
-              <div className="hidden lg:flex items-center gap-1 px-2 py-1 bg-orange-500/10 rounded-full">
-                <FiAward className="w-4 h-4 text-orange-500" />
-                <span className="text-xs font-ui text-orange-500">{readingStats.current_streak} day!</span>
-              </div>
-            )}
-            
-            {/* Ambient Sound Control - hidden on mobile portrait */}
-            <div className="hidden sm:block">
-              <AmbientSound genre={book?.genre} isReading={currentPage >= 0} />
+          {/* Progress bar */}
+          {totalPages > 0 && (
+            <div className="h-0.5 sm:h-1 bg-muted">
+              <div 
+                className="h-full bg-primary transition-all duration-300"
+                style={{ width: `${((currentPage + 1) / (totalPages + 1)) * 100}%` }}
+              />
             </div>
-            
-            <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full w-8 h-8 sm:w-10 sm:h-10">
-              {theme === 'dark' ? <FiSun className="w-4 h-4 sm:w-5 sm:h-5" /> : <FiMoon className="w-4 h-4 sm:w-5 sm:h-5" />}
-            </Button>
-            <Button variant="ghost" size="icon" onClick={toggleFullscreen} className="rounded-full w-8 h-8 sm:w-10 sm:h-10">
-              {isFullscreen ? <FiMinimize2 className="w-4 h-4 sm:w-5 sm:h-5" /> : <FiMaximize2 className="w-4 h-4 sm:w-5 sm:h-5" />}
-            </Button>
-          </div>
+          )}
         </div>
-        
-        {/* Progress bar */}
-        {totalPages > 0 && (
-          <div className="h-0.5 sm:h-1 bg-muted">
-            <div 
-              className="h-full bg-primary transition-all duration-300"
-              style={{ width: `${((currentPage + 1) / (totalPages + 1)) * 100}%` }}
-            />
-          </div>
-        )}
-      </div>
+      )}
+      
+      {/* Minimal Landscape Header - Just back button and tiny progress */}
+      {isMobileLandscape && (
+        <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-2 py-1 bg-black/30 backdrop-blur-sm">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate('/library')}
+            className="w-8 h-8 rounded-full text-white/80 hover:text-white hover:bg-white/20"
+          >
+            <FiArrowLeft className="w-4 h-4" />
+          </Button>
+          <span className="text-white/60 text-xs font-medium">
+            {currentPage + 1} / {totalPages}
+          </span>
+          <div className="w-8" /> {/* Spacer for balance */}
+        </div>
+      )}
       
       {/* Rotate phone prompt - only on mobile portrait */}
       {showRotatePrompt && (
