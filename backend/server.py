@@ -290,6 +290,7 @@ class UserCreate(BaseModel):
 class UserLogin(BaseModel):
     email: str
     password: str
+    remember_me: bool = False  # Extended session (30 days) if True
 
 class UserResponse(BaseModel):
     model_config = ConfigDict(extra="ignore")
