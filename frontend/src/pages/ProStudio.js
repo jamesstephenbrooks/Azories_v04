@@ -4553,41 +4553,42 @@ export default function ProStudio() {
 
               {/* Video Generation Panel */}
               <div className="lg:col-span-2 space-y-4">
-                <div className="bg-black/40 rounded-xl border border-purple-500/20 p-6">
-                  <h2 className="text-xl font-bold text-white mb-4">Animate to Video</h2>
+                <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4 sm:p-6">
+                  <h2 className="text-lg sm:text-xl font-bold text-white mb-4">Animate to Video</h2>
                   
                   {/* Art Style Selector for Consistency */}
                   <div className="mb-4">
                     <label className="text-sm text-gray-400 mb-2 block">Art Style (for consistency)</label>
                     <Select value={videoArtStyle} onValueChange={setVideoArtStyle}>
-                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
+                      <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white min-h-[48px] text-base">
                         <SelectValue placeholder="Select art style" />
                       </SelectTrigger>
                       <SelectContent className="bg-gray-800 border-gray-700">
-                        <SelectItem value="cinematic" className="text-white">🎬 Cinematic</SelectItem>
-                        <SelectItem value="anime" className="text-white">🎌 Anime</SelectItem>
-                        <SelectItem value="realistic" className="text-white">📷 Realistic</SelectItem>
-                        <SelectItem value="cyberpunk" className="text-white">🌃 Cyberpunk</SelectItem>
-                        <SelectItem value="fantasy" className="text-white">🧙 Fantasy</SelectItem>
-                        <SelectItem value="cartoon" className="text-white">🎨 Cartoon</SelectItem>
-                        <SelectItem value="watercolor" className="text-white">🖌️ Watercolor</SelectItem>
-                        <SelectItem value="oil-painting" className="text-white">🎨 Oil Painting</SelectItem>
-                        <SelectItem value="3d-render" className="text-white">💎 3D Render</SelectItem>
-                        <SelectItem value="none" className="text-white">— No Style Override</SelectItem>
+                        <SelectItem value="cinematic" className="text-white min-h-[44px]">🎬 Cinematic</SelectItem>
+                        <SelectItem value="anime" className="text-white min-h-[44px]">🎌 Anime</SelectItem>
+                        <SelectItem value="realistic" className="text-white min-h-[44px]">📷 Realistic</SelectItem>
+                        <SelectItem value="cyberpunk" className="text-white min-h-[44px]">🌃 Cyberpunk</SelectItem>
+                        <SelectItem value="fantasy" className="text-white min-h-[44px]">🧙 Fantasy</SelectItem>
+                        <SelectItem value="cartoon" className="text-white min-h-[44px]">🎨 Cartoon</SelectItem>
+                        <SelectItem value="watercolor" className="text-white min-h-[44px]">🖌️ Watercolor</SelectItem>
+                        <SelectItem value="oil-painting" className="text-white min-h-[44px]">🎨 Oil Painting</SelectItem>
+                        <SelectItem value="3d-render" className="text-white min-h-[44px]">💎 3D Render</SelectItem>
+                        <SelectItem value="none" className="text-white min-h-[44px]">— No Style Override</SelectItem>
                       </SelectContent>
                     </Select>
-                    <p className="text-xs text-gray-500 mt-1">Match your character's art style for consistent results</p>
+                    <p className="text-xs text-gray-500 mt-1 hidden sm:block">Match your character's art style for consistent results</p>
                   </div>
                   
                   <Textarea
                     placeholder="Describe the motion... (e.g., 'gentle wind blowing hair, soft breathing, subtle camera dolly forward')"
                     value={videoPrompt}
                     onChange={(e) => setVideoPrompt(e.target.value)}
-                    className="bg-gray-800/50 border-gray-700 text-white mb-4"
+                    className="bg-gray-800/50 border-gray-700 text-white mb-4 min-h-[100px] text-base"
                     rows={3}
                     data-testid="video-prompt-input"
                   />
 
+                  {/* Generate Button - Hidden on mobile (floating button used instead) */}
                   <Button 
                     onClick={() => {
                       if (!checkCreditsOrRedirect(5, 'Animate with Kling AI')) return;
@@ -4598,29 +4599,29 @@ export default function ProStudio() {
                       (videoSourceType === 'character' && !videoSelectedImage?.url && !videoSourceCharacter?.thumbnail) ||
                       (videoSourceType === 'upload' && !videoUploadedImage)
                     )}
-                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 min-h-[48px] text-base hidden sm:flex"
                     data-testid="animate-video-btn"
                   >
                     <FiPlay className="mr-2" /> Animate with Kling AI (Best Face Fidelity)
                   </Button>
 
                   {selectedVideoModel !== 'sora-2' && (
-                    <p className="text-amber-400 text-xs mt-2 text-center">
+                    <p className="text-amber-400 text-xs mt-2 text-center hidden sm:block">
                       Note: {VIDEO_MODELS.find(m => m.id === selectedVideoModel)?.name} requires an API key. Currently using Sora 2 fallback.
                     </p>
                   )}
                 </div>
 
                 {/* Generated Videos */}
-                <div className="bg-black/40 rounded-xl border border-purple-500/20 p-6">
+                <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4 sm:p-6">
                   <h3 className="text-white font-medium mb-4">Generated Videos</h3>
                   {generatedVideos.length === 0 ? (
-                    <div className="text-center py-12 text-gray-500">
-                      <FiVideo className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <div className="text-center py-8 sm:py-12 text-gray-500">
+                      <FiVideo className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 opacity-50" />
                       <p>No videos generated yet</p>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {generatedVideos.map((vid) => (
                         <div key={vid.id} className="relative group rounded-lg overflow-hidden">
                           <video 
