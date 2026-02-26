@@ -19,6 +19,10 @@ export default function VoiceNarrationUpload({ bookId, pages = [], onNarrationUp
 
   const startRecording = async () => {
     try {
+      if (typeof navigator === 'undefined' || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        toast.error('Recording is not supported in this browser');
+        return;
+      }
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaRecorderRef.current = new MediaRecorder(stream);
       audioChunksRef.current = [];
