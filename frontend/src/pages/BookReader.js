@@ -1148,12 +1148,12 @@ export default function BookReader() {
                 </div>
               </div>
             ) : isMobileLandscape && !isCover && currentPage >= 0 ? (
-              /* Mobile Landscape Two-Page Spread - Tap zones are now OUTSIDE book-container */
+              /* Mobile Landscape Two-Page Spread - Optimized for PWA full screen */
               <div className="relative w-full h-screen">
-                {/* Two-Page Spread - Takes almost full screen */}
+                {/* Two-Page Spread - Maximum screen usage */}
                 <div 
-                  className="flex w-full gap-0.5 px-2 pt-9 pb-1"
-                  style={{ height: '100vh' }}
+                  className="flex w-full gap-0.5 px-2 pt-6 pb-0"
+                  style={{ height: 'calc(100vh - 24px)' }}
                 >
                   {/* Left Page: Illustration */}
                   <div 
