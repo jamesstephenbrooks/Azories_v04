@@ -2896,8 +2896,8 @@ async def create_character(request: CharacterCreate, current_user: dict = Depend
         
         # If we generated a thumbnail but have no reference images, 
         # add the thumbnail as the first reference image (enables PuLID later)
-        if thumbnail and not character.get("reference_images"):
-            character["reference_images"] = [thumbnail]
+        if converted_thumbnail and not character.get("reference_images"):
+            character["reference_images"] = [converted_thumbnail]
         
         await db.pro_studio_characters.insert_one(character)
         
