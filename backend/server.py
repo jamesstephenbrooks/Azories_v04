@@ -242,6 +242,12 @@ setup_routes(app, db)
 api_router = APIRouter(prefix="/api")
 security = HTTPBearer(auto_error=False)
 
+# Health check endpoint for monitoring services (UptimeRobot, etc.)
+@api_router.get("/health")
+async def health_check():
+    """Simple health check endpoint to keep server warm"""
+    return {"status": "ok", "timestamp": datetime.utcnow().isoformat()}
+
 # Admin authentication helper (used by remaining admin endpoints)
 async def get_admin_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Verify admin JWT token"""
