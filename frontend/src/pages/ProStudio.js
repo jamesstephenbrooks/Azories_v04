@@ -2844,24 +2844,24 @@ export default function ProStudio() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="bg-black/40 border border-purple-500/20 p-1 mb-6 flex-wrap">
-            <TabsTrigger value="characters" className="data-[state=active]:bg-purple-600">
-              <FiUser className="mr-2" /> Characters
+          <TabsList className="bg-black/40 border border-purple-500/20 p-1 mb-4 sm:mb-6 flex justify-start sm:justify-center overflow-x-auto">
+            <TabsTrigger value="characters" className="data-[state=active]:bg-purple-600 min-w-[44px] min-h-[44px] px-2 sm:px-3">
+              <FiUser className="sm:mr-2" /><span className="hidden sm:inline"> Characters</span>
             </TabsTrigger>
-            <TabsTrigger value="scenes" className="data-[state=active]:bg-purple-600">
-              <FiLayers className="mr-2" /> Scenes
+            <TabsTrigger value="scenes" className="data-[state=active]:bg-purple-600 min-w-[44px] min-h-[44px] px-2 sm:px-3">
+              <FiLayers className="sm:mr-2" /><span className="hidden sm:inline"> Scenes</span>
             </TabsTrigger>
-            <TabsTrigger value="cinema" className="data-[state=active]:bg-purple-600">
-              <FiCamera className="mr-2" /> Cinema Studio
+            <TabsTrigger value="cinema" className="data-[state=active]:bg-purple-600 min-w-[44px] min-h-[44px] px-2 sm:px-3">
+              <FiCamera className="sm:mr-2" /><span className="hidden sm:inline"> Cinema</span>
             </TabsTrigger>
-            <TabsTrigger value="shots" className="data-[state=active]:bg-purple-600">
-              <FiGrid className="mr-2" /> Shots
+            <TabsTrigger value="shots" className="data-[state=active]:bg-purple-600 min-w-[44px] min-h-[44px] px-2 sm:px-3">
+              <FiGrid className="sm:mr-2" /><span className="hidden sm:inline"> Shots</span>
             </TabsTrigger>
-            <TabsTrigger value="video" className="data-[state=active]:bg-purple-600">
-              <FiVideo className="mr-2" /> Video
+            <TabsTrigger value="video" className="data-[state=active]:bg-purple-600 min-w-[44px] min-h-[44px] px-2 sm:px-3">
+              <FiVideo className="sm:mr-2" /><span className="hidden sm:inline"> Video</span>
             </TabsTrigger>
-            <TabsTrigger value="gallery" className="data-[state=active]:bg-purple-600">
-              <FiFolder className="mr-2" /> Gallery
+            <TabsTrigger value="gallery" className="data-[state=active]:bg-purple-600 min-w-[44px] min-h-[44px] px-2 sm:px-3">
+              <FiFolder className="sm:mr-2" /><span className="hidden sm:inline"> Gallery</span>
             </TabsTrigger>
           </TabsList>
 
