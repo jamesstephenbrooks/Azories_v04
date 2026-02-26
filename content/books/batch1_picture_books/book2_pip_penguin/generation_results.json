@@ -1,0 +1,57 @@
+{
+  "book_id": "book2_pip_penguin",
+  "title": "Pip the Brave Little Penguin",
+  "generated_at": "2026-02-26T07:51:01.976378",
+  "results": [
+    {
+      "id": "cover_front",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    },
+    {
+      "id": "cover_back",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    },
+    {
+      "id": "page_01",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    },
+    {
+      "id": "page_02",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    },
+    {
+      "id": "page_03",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    },
+    {
+      "id": "page_04",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    },
+    {
+      "id": "page_05",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    },
+    {
+      "id": "page_06",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    },
+    {
+      "id": "page_07",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    },
+    {
+      "id": "page_08",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    }
+  ]
+}

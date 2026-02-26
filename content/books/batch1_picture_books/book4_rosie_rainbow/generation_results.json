@@ -1,0 +1,57 @@
+{
+  "book_id": "book4_rosie_rainbow",
+  "title": "Rosie's Rainbow Day",
+  "generated_at": "2026-02-26T07:51:58.027522",
+  "results": [
+    {
+      "id": "cover_front",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    },
+    {
+      "id": "cover_back",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    },
+    {
+      "id": "page_01",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    },
+    {
+      "id": "page_02",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    },
+    {
+      "id": "page_03",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    },
+    {
+      "id": "page_04",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    },
+    {
+      "id": "page_05",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    },
+    {
+      "id": "page_06",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    },
+    {
+      "id": "page_07",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    },
+    {
+      "id": "page_08",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "book_id": "book1_luna_moonbeam",
+  "title": "Luna and the Moonbeam",
+  "generated_at": "2026-02-26T07:50:36.219338",
+  "results": [
+    {
+      "id": "cover_front",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    },
+    {
+      "id": "cover_back",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    },
+    {
+      "id": "page_01",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    },
+    {
+      "id": "page_02",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    },
+    {
+      "id": "page_03",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    },
+    {
+      "id": "page_04",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    },
+    {
+      "id": "page_05",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    },
+    {
+      "id": "page_06",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    },
+    {
+      "id": "page_07",
+      "status": "error",
+      "error": "Constructor parameter should be str"
+    }
+  ]
+}
