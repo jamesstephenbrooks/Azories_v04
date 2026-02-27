@@ -251,7 +251,7 @@ export default function Auth() {
               
               {/* Remember Me checkbox - only show for login */}
               {isLogin && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 sm:gap-2 scale-[0.6] sm:scale-100 origin-left">
                   <input
                     type="checkbox"
                     id="rememberMe"
@@ -260,7 +260,7 @@ export default function Auth() {
                     className="w-4 h-4 rounded border-2 text-primary focus:ring-primary"
                     data-testid="remember-me-checkbox"
                   />
-                  <Label htmlFor="rememberMe" className="font-ui text-sm text-muted-foreground cursor-pointer">
+                  <Label htmlFor="rememberMe" className="font-ui text-sm text-muted-foreground cursor-pointer whitespace-nowrap">
                     Keep me signed in for 30 days
                   </Label>
                 </div>
