@@ -113,7 +113,16 @@ Files:
 |----------|-----------|-----------|
 | Total Books | 64 | 0 |
 | Books with text | 64 | 0 |
-| Books with images | ~53 | ~11 |
+| Books with images | 64 | 0 |
+
+### Image Generation Complete (Feb 27, 2026) - 230 images
+Generated illustrations for 23 books using fal.ai flux/schnell model:
+- Fantasy: Unicorn's Rainbow Bridge, Wizard's Apprentice, Giant's Gentle Heart, Enchanted Carousel
+- Adventure: Jungle Explorers Club, Mountain Climbing Mice, Underground City, Sky Pirates of Cloudland, Lighthouse Keeper's Secret, Arctic Expedition
+- Sci-Fi: Time Machine Treehouse, Space Station School, Friendly Martians, Gadget Girl
+- Mystery: Secret Code Club, Detective Daisy's First Case
+- Humour: Burping Dragon, Backwards Day, Pirate Pete's Bad Hair Day, Dinosaur Dentist
+- General: Alphabet Zoo, Kindness Kingdom, Feelings Garden
 
 ### AI-Generated Content (Feb 27, 2026) - 11 books, 110 pages
 Using OpenAI GPT-4o via Emergent LLM Key, generated story content for:
