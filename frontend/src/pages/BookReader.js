@@ -378,24 +378,50 @@ export default function BookReader() {
         // Extract pages - handle both direct pages array and chapters structure
         let pages = [];
         
-        // First check for direct pages array (newer format)
-        if (res.data.pages && Array.isArray(res.data.pages) && res.data.pages.length > 0) {
-          pages = res.data.pages.map((page, index) => ({
-            ...page,
-            chapterTitle: res.data.title || 'Story',
-            chapterNumber: 1
-          }));
-        } 
-        // Fallback to chapters structure (legacy format)
-        else if (res.data.chapters && Array.isArray(res.data.chapters)) {
-          res.data.chapters.forEach((chapter, chapterIndex) => {
+        // Check if direct pages array has actual content (text_content)
+        const directPages = res.data.pages || [];
+        const hasDirectPagesWithContent = directPages.length > 0 && 
+          directPages.some(p => p.text_content && p.text_content.trim().length > 0);
+        
+        // Prefer chapters structure if it has content, otherwise use direct pages
+        const chapters = res.data.chapters || [];
+        const hasChaptersWithContent = chapters.length > 0 && 
+          chapters.some(ch => ch.pages?.some(p => p.text_content && p.text_content.trim().length > 0));
+        
+        if (hasChaptersWithContent) {
+          // Use chapters structure (has text content)
+          chapters.forEach((chapter, chapterIndex) => {
             chapter.pages?.forEach(page => {
               pages.push({ ...page, chapterTitle: chapter.title, chapterNumber: chapterIndex + 1 });
             });
           });
+          console.log('[BookReader] Loaded', pages.length, 'pages from chapters (has text content)');
+        } else if (hasDirectPagesWithContent) {
+          // Use direct pages array (has text content)
+          pages = directPages.map((page, index) => ({
+            ...page,
+            chapterTitle: res.data.title || 'Story',
+            chapterNumber: 1
+          }));
+          console.log('[BookReader] Loaded', pages.length, 'pages from direct pages array');
+        } else if (directPages.length > 0) {
+          // Fallback: use direct pages even if no text (for books with only images)
+          pages = directPages.map((page, index) => ({
+            ...page,
+            chapterTitle: res.data.title || 'Story',
+            chapterNumber: 1
+          }));
+          console.log('[BookReader] Loaded', pages.length, 'pages from direct pages (no text)');
+        } else if (chapters.length > 0) {
+          // Fallback: use chapters even if no text
+          chapters.forEach((chapter, chapterIndex) => {
+            chapter.pages?.forEach(page => {
+              pages.push({ ...page, chapterTitle: chapter.title, chapterNumber: chapterIndex + 1 });
+            });
+          });
+          console.log('[BookReader] Loaded', pages.length, 'pages from chapters (no text)');
         }
         
-        console.log('[BookReader] Loaded', pages.length, 'pages from', res.data.pages ? 'direct pages array' : 'chapters');
         setAllPages(pages);
         
         // Track read
