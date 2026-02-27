@@ -1128,7 +1128,7 @@ export default function BookReader() {
               </div>
             ) : isMobilePortrait && !isCover && currentPage >= 0 ? (
               <div className="flex flex-col w-full max-w-md mx-auto" style={{ height: `calc(100vh - 140px)` }}>
-                {/* Top: Illustration - 55% of available height */}
+                {/* Top: Illustration - 55% of available height with portrait crop */}
                 <div 
                   className="relative flex-shrink-0 rounded-t-2xl overflow-hidden shadow-lg"
                   style={{ height: '55%' }}
@@ -1137,12 +1137,14 @@ export default function BookReader() {
                     <img 
                       src={currentPageData.image_url}
                       alt=""
-                      className="w-full h-full"
                       style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
                         width: '100%',
                         height: '100%',
                         objectFit: 'cover',
-                        objectPosition: 'center'
+                        objectPosition: 'center top'
                       }}
                     />
                   ) : (
