@@ -8194,6 +8194,98 @@ async def admin_get_hidden_books(current_user: dict = Depends(get_current_user))
     
     return {"books": hidden_books, "count": len(hidden_books)}
 
+
+class UpdatePageImageRequest(BaseModel):
+    page_index: int
+    image_url: str
+    chapter_index: int = 0
+    source: str = "chapters"  # "chapters" or "pages"
+
+
+@api_router.put("/admin/books/{book_id}/page-image")
+async def admin_update_page_image(book_id: str, request: UpdatePageImageRequest, current_user: dict = Depends(get_current_user)):
+    """Admin endpoint to update embedded page image URL directly"""
+    user_email = current_user.get("email", "").lower()
+    is_admin = current_user.get("role") == "admin" or user_email in [v.lower() for v in VIP_USERS]
+    
+    if not is_admin:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    book = await db.books.find_one({"id": book_id}, {"_id": 0})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    if request.source == "chapters":
+        chapters = book.get("chapters", [])
+        if request.chapter_index >= len(chapters):
+            raise HTTPException(status_code=400, detail="Chapter index out of range")
+        chapter = chapters[request.chapter_index]
+        pages = chapter.get("pages", [])
+        if request.page_index >= len(pages):
+            raise HTTPException(status_code=400, detail="Page index out of range")
+        
+        # Update the page image URL
+        chapters[request.chapter_index]["pages"][request.page_index]["image_url"] = request.image_url
+        await db.books.update_one(
+            {"id": book_id},
+            {"$set": {"chapters": chapters, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        )
+    else:
+        pages = book.get("pages", [])
+        if request.page_index >= len(pages):
+            raise HTTPException(status_code=400, detail="Page index out of range")
+        
+        pages[request.page_index]["image_url"] = request.image_url
+        await db.books.update_one(
+            {"id": book_id},
+            {"$set": {"pages": pages, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        )
+    
+    return {"success": True, "message": f"Updated page {request.page_index + 1} image"}
+
+
+@api_router.put("/admin/books/{book_id}/bulk-page-images")
+async def admin_bulk_update_page_images(book_id: str, updates: List[UpdatePageImageRequest], current_user: dict = Depends(get_current_user)):
+    """Admin endpoint to bulk update multiple page images for a book"""
+    user_email = current_user.get("email", "").lower()
+    is_admin = current_user.get("role") == "admin" or user_email in [v.lower() for v in VIP_USERS]
+    
+    if not is_admin:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    book = await db.books.find_one({"id": book_id}, {"_id": 0})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    chapters = book.get("chapters", [])
+    pages = book.get("pages", [])
+    updated_count = 0
+    
+    for update in updates:
+        try:
+            if update.source == "chapters" and chapters:
+                if update.chapter_index < len(chapters):
+                    ch_pages = chapters[update.chapter_index].get("pages", [])
+                    if update.page_index < len(ch_pages):
+                        chapters[update.chapter_index]["pages"][update.page_index]["image_url"] = update.image_url
+                        updated_count += 1
+            elif update.source == "pages" and pages:
+                if update.page_index < len(pages):
+                    pages[update.page_index]["image_url"] = update.image_url
+                    updated_count += 1
+        except Exception as e:
+            logger.error(f"Error updating page {update.page_index}: {e}")
+    
+    update_data = {"updated_at": datetime.now(timezone.utc).isoformat()}
+    if chapters:
+        update_data["chapters"] = chapters
+    if pages:
+        update_data["pages"] = pages
+    
+    await db.books.update_one({"id": book_id}, {"$set": update_data})
+    
+    return {"success": True, "updated_count": updated_count, "message": f"Updated {updated_count} page images"}
+
 @api_router.post("/admin/books/{book_id}/run-moderation")
 async def admin_run_moderation(book_id: str, admin: dict = Depends(get_admin_user)):
     """Admin can manually run content moderation on a book"""
