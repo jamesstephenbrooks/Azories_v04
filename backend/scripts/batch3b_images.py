@@ -184,8 +184,17 @@ async def main(dry_run: bool = True):
         # Check if pages already exist
         existing_pages = await db.pages.count_documents({"book_id": book_id})
         if existing_pages > 0:
-            logger.info(f"⚠️ {book_data['title']} already has {existing_pages} pages - skipping")
-            continue
+            # Check if images exist
+            pages_without_images = await db.pages.count_documents({"book_id": book_id, "image_url": None})
+            if pages_without_images > 0:
+                logger.info(f"⚠️ {book_data['title']} has {existing_pages} pages but {pages_without_images} need images - will generate")
+                # Delete existing pages to recreate with images
+                await db.pages.delete_many({"book_id": book_id})
+                await db.books.update_one({"id": book_id}, {"$set": {"pages": []}})
+                logger.info(f"   Cleared existing pages to regenerate with images")
+            else:
+                logger.info(f"⚠️ {book_data['title']} already has {existing_pages} pages with images - skipping")
+                continue
         
         created = await create_book_pages_with_images(db, book_id, book_data, dry_run)
         total_created += created
