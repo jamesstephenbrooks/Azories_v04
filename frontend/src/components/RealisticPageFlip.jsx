@@ -485,10 +485,13 @@ const RealisticPageFlip = forwardRef(({
   const flipBookRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [isFlipping, setIsFlipping] = useState(false);
+  const [flipDirection, setFlipDirection] = useState(null); // 'next' or 'prev'
+  const [showFlipAnimation, setShowFlipAnimation] = useState(false);
   
   // Build the page mapping once so we can track which flipbook page = which content page
   // This map tracks: flipbookPageIndex -> contentPageIndex (from pages array)
   const pageMapping = useRef([]);
+  const previousPage = useRef(initialPage);
   
   // Preload images for upcoming pages when current page changes
   useEffect(() => {
