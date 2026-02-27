@@ -3,104 +3,101 @@ The user wants to enhance their Azories digital book application. The primary go
 
 A critical launch requirement (P0) is to make the entire application, especially the , , and , fully functional and user-friendly on mobile devices. This includes fixing a major bug where rotating a real device to landscape mode would zoom the content instead of switching to a two-page layout. Other P0 bugs included runtime errors on Safari and Firefox and broken Listen buttons.
 
+More recently, the user has identified two launch-blocking issues: a server cold start problem causing slow initial load times, and sparse text in the books requiring a bulk update mechanism. The user has also provided detailed documentation for a future refactor of the content creation Studios into a single, streamlined Creative Studio.
+
 **PRODUCT REQUIREMENTS:**
--   **Book Reader Mobile Experience (P0):** Must be fully optimized for mobile.
-    -   **Portrait Mode:** Show a single page with a split view (illustration top, text bottom).
-    -   **Landscape Mode:** Show a two-page spread.
-    -   **Usability:** Navigation must be easy and intuitive (e.g., swipe to turn pages). The layout should be full-screen with minimal browser UI.
+-   **Book Reader Experience (P0):** Must be fully optimized for both mobile and desktop.
+    -   **Mobile:** Portrait mode shows a single split-view page; landscape shows a two-page spread. Navigation is by swipe.
+    -   **Desktop:** An immersive, full-screen page-flip experience, with the book taking up ~80% of the viewport height.
+    -   **Text Handling:** Long text passages must be fully visible and scrollable within a single page without being cut off.
 -   **Art/Pro Studio Mobile Optimization (P0):** The core creation tools must be usable on mobile, with large touch targets, keyboard-safe layouts, and no horizontal scrolling.
--   **PWA Prompt (P0):** A prompt should encourage users to Add to Home Screen for the best full-screen experience.
--   **Browser Compatibility (P0):** The application must work without runtime errors on major mobile browsers, including Safari (iOS) and Firefox.
+-   **Server Performance (P0):** Eliminate the cold start delay for first-time users.
+-   **Content Management (P0):** Provide a method for bulk exporting and importing book text to allow for offline story expansion.
+-   **Browser Caching (P0):** Ensure that when book text is updated in the backend, the changes are immediately visible in the app without requiring users to manually clear their cache.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The  component has been completely re-engineered for mobile, resolving the critical landscape orientation bug. It now uses pure CSS flexbox layouts for both portrait (split-view) and landscape (two-page spread), bypassing a problematic third-party library. Swipe-to-navigate is implemented for landscape mode. The  has also been made mobile-friendly, featuring a floating Generate button, larger form inputs, and collapsible sections. A PWA Add to Home Screen prompt has been created, showing manual instructions for iOS and using the native browser prompt for Chrome. Multiple P0 runtime errors on Safari and Firefox have been addressed by implementing defensive code around browser-specific APIs. The Listen button functionality has also been fixed for mobile views.
+The application has undergone significant mobile and performance optimizations. The  was re-engineered for mobile, and a persistent desktop sizing/text overflow issue was resolved by the user providing a complete replacement file for . The agent has created and configured PWA app icons and removed a dev-only Test Landscape button.
+
+To address the server cold-start issue, a  endpoint was added for an external ping service. For bulk text updates, Python scripts (, ) were created to manage exporting and importing book content, which the user successfully used to update over 100 pages.
+
+A complex caching issue preventing text updates from appearing was resolved by adding  headers to all relevant backend API endpoints and modifying the frontend service worker to prevent it from caching API responses. The agent also implemented a data synchronization script to fix an inconsistency between embedded book data and the primary  collection.
+
+The agent began implementing mobile optimizations for the 5700-line  file, but verification is pending. The user also provided detailed planning documents for a future Creative Studio refactor.
 
 **Last working item**:
--   **Last item agent was working:** The agent completed a series of P0 mobile fixes. The final adjustments were made to the 's landscape PWA view to use more screen space, and swipe navigation was enabled. Concurrently, defensive code was added to fix browser-specific runtime errors (Firefox/Safari) and a PWA prompt was implemented. The agent also finished the mobile optimization for  and was preparing to start on .
--   **Status:** USER VERIFICATION PENDING
--   **Agent Testing Done:** Y
+-   **Last item agent was working:** The user reported that book thumbnails on the main library page are loading slowly. The agent began investigating the cause by viewing the  file.
+-   **Status:** IN PROGRESS
+-   **Agent Testing Done:** N
 -   **Which testing method agent to use?** Frontend testing agent
--   **User Testing Done:** N (The user has signed off on the  layout but is still to test the Firefox fix and the final PWA prompt implementation on iOS Chrome).
+-   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Pro Studio Mobile Optimization (P0)**
--   **Issue 2: Verify Firefox runtime error fix (P0)**
--   **Issue 3: Verify PWA prompt on iOS Chrome (P0)**
--   **Issue 4: Fix Numbers Come Alive layout bug (P1)**
--   **Issue 5: Change Awaiting Approval to Coming Soon (P1)**
+-   **Issue 1: Slow loading thumbnails on the library page (P0)**
+-   **Issue 2: Pro Studio Mobile Optimization (P0)**
+-   **Issue 3: Fix Numbers Come Alive layout bug (P1)**
+-   **Issue 4: Change Awaiting Approval to Coming Soon (P1)**
 
 **Issues Detail:**
--   **Issue 1: Pro Studio Mobile Optimization (P0)**
-    -   **Attempted fixes:** The agent has analyzed the file () and is ready to begin implementation.
+-   **Issue 1: Slow loading thumbnails on the library page (P0)**
+    -   **Attempted fixes:** The agent started investigating by viewing . No fix has been applied.
     -   **Next debug checklist:**
-        1.  Refactor tabs to be icon-only on mobile.
-        2.  Implement collapsible sections for complex forms.
-        3.  Ensure all form inputs and dropdowns are at least 48px high.
-        4.  Add a full-width, floating action button (e.g., Generate) fixed at the bottom (56px tall).
-        5.  Ensure the layout is keyboard-safe.
-        6.  Eliminate any horizontal scrolling.
-    -   **Why fix this issue and what will be achieved with the fix?** To make the advanced content creation tools accessible and usable on mobile, a key launch requirement.
-    -   **Status:** NOT STARTED
+        1.  Analyze  to see how images are being fetched and rendered.
+        2.  Check the size and format of the thumbnail images being served. They may not be optimized.
+        3.  Implement lazy loading for the book cover images so they only load as the user scrolls them into view.
+        4.  Consider using a Low-Quality Image Placeholder (LQIP) or a solid color placeholder to improve perceived performance.
+    -   **Why fix this issue and what will be achieved with the fix?** A slow-loading library, which is a primary entry point, provides a poor user experience. Fixing this will make the app feel faster and more professional.
+    -   **Status:** IN PROGRESS
     -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** Frontend
     -   **Blocked on other issue:** None
 
--   **Issue 2: Verify Firefox runtime error fix (P0)**
-    -   **Attempted fixes:** The agent wrapped multiple unsafe browser API calls (, , etc.) in defensive checks across several files (, , etc.) to prevent crashes.
-    -   **Next debug checklist:** The user needs to test on a real Firefox device to confirm the fix is effective. If not, the agent must get the exact console error message.
-    -   **Why fix this issue and what will be achieved with the fix?** To ensure application stability on a common mobile browser.
-    -   **Status:** USER VERIFICATION PENDING
-    -   **Is recurring issue?** Y (Browser-specific runtime errors have been a recurring theme).
-    -   **Should Test frontend/backend/both after fix?** Frontend (specifically on Firefox).
-    -   **Blocked on other issue:** None
-
--   **Issue 3: Verify PWA prompt on iOS Chrome (P0)**
-    -   **Attempted fixes:** The iOS detection logic in  was broadened to use  to ensure it works on all iOS browsers, not just Safari.
-    -   **Next debug checklist:** User needs to confirm the banner now appears correctly on iOS Chrome.
-    -   **Why fix this issue and what will be achieved with the fix?** To encourage users to adopt the full-screen PWA experience, which is free of distracting browser UI.
+-   **Issue 2: Pro Studio Mobile Optimization (P0)**
+    -   **Attempted fixes:** The agent applied numerous mobile-specific CSS classes to  (e.g., floating action button, larger inputs) based on user requirements. However, testing was blocked by a persistent welcome modal, so the implementation remains unverified.
+    -   **Next debug checklist:**
+        1.  Bypass the welcome/login modal to allow for testing. This can be done by using credentials or setting a  flag.
+        2.  Take a screenshot of the Pro Studio on a mobile viewport to verify the layout.
+        3.  Use the  to conduct a thorough test against all mobile requirements provided by the user (floating button, 48px inputs, collapsible sections, no horizontal scroll).
+    -   **Why fix this issue and what will be achieved with the fix?** This is a P0 launch requirement to make the app's advanced features usable on mobile devices.
     -   **Status:** USER VERIFICATION PENDING
     -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Frontend (on iOS Chrome).
+    -   **Should Test frontend/backend/both after fix?** Frontend
     -   **Blocked on other issue:** None
 
--   **Issue 4: Fix Numbers Come Alive layout bug (P1)**
+-   **Issue 3: Fix Numbers Come Alive layout bug (P1)**
     -   **Status:** NOT STARTED
--   **Issue 5: Change Awaiting Approval to Coming Soon (P1)**
+-   **Issue 4: Change Awaiting Approval to Coming Soon (P1)**
     -   **Status:** NOT STARTED
 
 **In progress Task List**:
--   None. The agent has just completed a major block of tasks.
+-   None.
 
 **Upcoming and Future Tasks**
 
 **Upcoming Tasks:**
--   **Pro Studio Mobile Optimization (P0):** Implement mobile-friendly layout for .
+-   **Pro Studio Mobile Optimization Verification (P0):** Thoroughly test the applied mobile layout changes in .
 -   **Fix Numbers Come Alive layout bug (P1):** Investigate and fix the rendering issue for this book.
--   **Change 'Awaiting Approval' to 'Coming Soon' (P1):** Locate and update this status text string.
+-   **Change 'Awaiting Approval' to 'Coming Soon' (P1):** Locate and update this status text string across the application.
 
 **Future Tasks:**
--   Remove the Test Landscape button from .
--   Refactor  into modular route files.
--   Refactor large frontend components like  and .
--   Complete generation of the remaining 19 library books.
--   Implement permanent image storage to replace 's temporary storage.
--   Add dedicated audio controls for landscape mode in the .
+-   **Creative Studio Rebuild (P0):** Begin the phased rebuild of the Art and Pro studios into a single Creative Studio as detailed in the user's design documents.
+-   **Monetization and Tier Gating (P1):** Implement logic to restrict features based on user tiers (Free, Creator, Schools) using the existing Stripe integration.
+-   **Refactor  (P2):** Break down the monolithic 5000+ line  into modular route files for better maintainability.
+-   **Refactor Large Frontend Components (P2):** Decompose the massive  and  components into smaller, reusable child components.
+-   **Implement Permanent Image Storage:** Migrate from 's temporary image storage to a permanent solution like Cloudinary (which is already integrated for video).
 
 **Completed work in this session**
--   **P0 Book Reader Mobile Experience (SIGNED OFF):**
-    -   **Landscape Orientation Fix:** Replaced  on mobile with pure CSS layouts, fixing the critical zoom on rotate bug on real devices.
-    -   **Navigation:** Fixed unresponsive portrait mode buttons and implemented swipe-to-navigate for landscape mode.
-    -   **UI/UX:** Redesigned the landscape layout to be a minimal, full-screen, two-page spread.
--   **P0 Critical Bug Fixes:**
-    -   **Runtime Errors:** Added defensive code to fix crashes on Safari and Firefox caused by incompatible browser APIs.
-    -   **Listen Button:** Fixed functionality for mobile portrait and landscape modes.
--   **P0 Mobile Optimization - Art Studio:**
-    -   Completed mobile redesign of  with a floating action button and larger touch targets.
--   **P0 PWA Add to Home Screen Prompt:**
-    -   Created and implemented a PWA prompt banner () with logic for both iOS (manual instructions) and Chrome (native install).
-    -   Added  to the project.
+-   **PWA App Icon Created:** Generated and configured , , and  icons, updating .
+-   **Test Landscape Button Removed:** The development-only button was completely removed from the  codebase.
+-   **Server Cold Start Fix:** Implemented a  endpoint in  to allow an external monitoring service to keep the preview server warm.
+-   **Book Text Expansion Tools & Execution:** Created  and  scripts and used them to successfully update/create over 100 pages of book text across two batches provided by the user.
+-   **Critical Caching Fix:**
+    -   Added  headers to all book-related API endpoints in .
+    -   Modified  to prevent caching of API data and bumped the cache version to force an update.
+    -   Fixed the root cause of stale data by syncing text from the  collection into the denormalized  array, which the API was incorrectly serving.
+-   **Desktop BookReader UI/UX Fix:** Replaced  with a user-provided file, resolving major issues with desktop book sizing and text overflow.
+-   **Pro Studio Mobile Optimization (Implementation):** Applied significant mobile-first styling changes to the 5700+ line  file, though this awaits user verification.
 
 **Earlier issues found/mentioned but not fixed**
 -   **Issue 1:** N+1 query pattern in  in .
@@ -115,63 +112,64 @@ The  component has been completely re-engineered for mobile, resolving the criti
 
 
 **Key Technical Concepts**
--   **Pure CSS Responsive Layouts:** Abandoned a JS library () for mobile in favor of robust, pure CSS Flexbox layouts to resolve critical device rotation bugs.
--   **Browser API Compatibility:** Extensive use of defensive programming (, ) to handle inconsistencies in APIs like  and  across Safari, Chrome, and Firefox.
--   **PWA (Progressive Web App):** Implemented a  and a prompt that uses the  event on Chrome and provides manual instructions for iOS.
--   **Mobile UX/UI:** Implemented mobile-first patterns like floating action buttons, larger touch targets (min 48px), and swipe-based navigation.
--   **Event Handling on iOS:** Switched from  to  and used  CSS to fix unreliable tap events on iOS Safari.
+-   **PWA Configuration:** Creation and linking of  and various platform-specific app icons.
+-   **Backend Scripting (Python/MongoDB):** Creation of standalone scripts using  to perform complex bulk data operations (export, import, and synchronization) directly against the MongoDB database.
+-   **API Cache Control:** Implementation of  HTTP headers in FastAPI to instruct browsers not to cache dynamic API responses.
+-   **Service Worker Management:** Modification of the frontend service worker to exclude specific API routes from its caching strategy and versioning the cache to force updates on clients.
+-   **Data Consistency:** Diagnosed and fixed a data integrity problem by writing a script to synchronize data between a normalized  collection and denormalized  embedded documents.
 
 **key DB schema**
--   No changes made to the database schema in this session.
+-   ** collection:** Contains an embedded  array. This was found to be a source of stale data. The agent wrote a script to synchronize this array with the  collection.
+-   ** collection:** The canonical source of truth for all page text content. Updates are made here first.
 
 **All files of reference**
--    (Heavily modified for mobile)
--    (Modified for mobile)
--    (Created)
--    (Created)
--    (Modified)
--    (Next file to be modified)
--    (Modified for browser compatibility)
--    (Modified for browser compatibility)
--    (Modified for browser compatibility)
--    (Modified for browser compatibility)
-
-**Areas that need refactoring**:
--   **** (5700+ lines) and **** (3700+ lines) are monolithic and should be broken down into smaller components.
--   **** (5000+ lines) needs to be refactored into modular routes.
-
-**key api endpoints**
--   No new API endpoints were created or modified.
+-    (Currently under investigation)
+-    (Heavily modified for mobile, needs testing)
+-    (Replaced with a user-provided file)
+-    (Modified for caching and health endpoint)
+-    (Modified to fix caching)
+-    (Created for bulk data updates)
+-    (Created for bulk data exports)
+-    (User-provided planning doc)
+-    (User-provided planning doc)
+-    (User-provided planning doc)
+-    (User-provided planning doc)
 
 **Critical Info for New Agent**
--   ** is now signed off by the user.** Do not make further changes unless a new bug is reported. The successful fix involved replacing the  library on mobile with pure CSS layouts.
--   **Real device testing is paramount.** The user is testing on real iOS and Firefox devices. DevTools simulation is not sufficient.
--   **The next P0 task is the mobile optimization of .** Follow the same principles applied to  (floating button, large inputs, collapsible sections).
--   **Follow the user's workflow:** Implement one fix, confirm readiness for testing, and wait for approval before proceeding.
--   Be prepared to receive user feedback on the Firefox runtime error fix and the PWA prompt on iOS Chrome.
+-   The user is technically proficient and proactive, providing high-quality documentation and even entire replacement code files. Prioritize and trust their input. The four  files detailing the future Creative Studio refactor should be saved to  for future reference.
+-   The immediate priority is to diagnose and fix the slow-loading thumbnails in . This is a new P0 issue.
+-   The second priority is to verify the mobile optimization of . The previous agent was blocked by a welcome/login modal; you will need to bypass this to test the UI changes.
+-   Caching has been a recurring theme. The solution involved backend  headers, service worker modifications, and a one-time data sync script. If content appears stale, remember this history and verify all three components. Remind the user they may need to unregister their old service worker to see the fixes.
+-   Do not start the Creative Studio refactor until all current P0/P1 bugs are resolved and the user gives the green light.
 
 **documents and test reports created in this job**
--   None.
+-   
+-   
+-   
+-   
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** Requests fix for Chrome's native Add to Home Screen prompt ().
-2.  **User:** Reports PWA install banner is not appearing on iOS Chrome. Clarifies that all iOS browsers require manual instructions.
-3.  **User:** Asks to move on to Pro Studio mobile optimization, providing detailed requirements.
-4.  **User:** Reports book content is cut off in landscape PWA mode and asks for it to be moved up.
-5.  **User:** Approves the final landscape layout and swipe navigation. **Signs off on the BookReader.** Provides the next task list: Firefox error, Pro Studio optimization, etc.
-6.  **User:** Reports the listen buttons don't work in either portrait or landscape.
-7.  **User:** Confirms the test URL is the same but changes are not visible.
-8.  **User:** Confirms landscape is the last attempt before parking. Suggests specific fixes for Safari tap zones, including using visible arrow buttons as an acceptable fallback.
-9.  **User:** Confirms portrait mode is approved. Reports landscape mode still has black elements and non-working edge taps. Asks for CSS/HTML of tap zones and a debug screenshot.
-10. **User:** Reports landscape PWA view is still not showing the whole book and asks for content to be adjusted upwards.
+1.  **User:** Asks for plans to restructure the studios and provides 4 detailed planning documents.
+2.  **User:** Provides a document with expanded text for 9 books (Batch 1) and asks the agent to update the database.
+3.  **User:** Confirms the dry run for Batch 1 is correct and asks the agent to apply the 76 page updates.
+4.  **User:** Confirms Batch 1 was imported perfectly. Provides Batch 2 document. Reports an **urgent bug:** the  on desktop has become too small due to the mobile CSS changes. Asks to fix desktop size first, then process Batch 2.
+5.  **User:** Reports the expanded text from Batch 1 is still not showing up for the book Colors of the World and asks the agent to investigate.
+6.  **User:** Acknowledges the agent's finding that the database is correct and the issue is likely caching. Asks the agent to proceed with applying Batch 2 updates.
+7.  **User:** Provides instructions for the 4 pages that failed in the Batch 2 dry run (creating 3 new pages and correcting 1 ID).
+8.  **User:** Confirms Batch 2 is complete. Reports a **critical issue:** the caching fix (hard refresh) is not working, and the old text is still showing. Asks for a robust cache-busting mechanism. Also reiterates the desktop book size is still too small and the Test Landscape button needs to be removed.
+9.  **User:** Reports that none of the agent's fixes worked.
+10. **User:** Reports that the text is finally visible, but the book is still too small, text is cut off, and there's a white bar at the bottom. Provides an annotated image showing the problems.
+11. **User:** Provides a complete replacement file for  to fix all the layout issues.
+12. **User:** Asks the agent to call the Deployer Agent and run a health check.
+13. **User:** Reports a new issue: **thumbnails on the main library page are loading slow again.** (Current task)
 
 **Project Health Check:**
 -   **Broken:**
-    -   Pro Studio is not usable on mobile.
-    -   The Numbers Come Alive book has a visual layout bug.
-    -   Potential runtime error on Firefox (fix is pending user verification).
+    -   : Thumbnails are loading slowly, impacting user experience.
+    -   : Mobile optimizations have been implemented but remain unverified and potentially buggy.
+    -   Numbers Come Alive book still has an unspecified layout bug.
 -   **Mocked:**
-    -   A Test Landscape button exists in  but is correctly behind a dev-mode flag.
+    -   None.
 
 **3rd Party Integrations**
 -   **Stripe**: Payments.
@@ -184,11 +182,12 @@ The  component has been completely re-engineered for mobile, resolving the criti
 -   **Testing agent used after significant changes:** NO
 -   **Troubleshoot agent used after agent stuck in loop:** NO
 -   **Test files created:** None.
--   **Known regressions:** None.
+-   **Known regressions:** The mobile optimization work on  caused a major regression on the desktop view (book became too small), which was ultimately fixed by the user providing a new file.
 
 **Credentials to test flow:**
 -   **Admin Login:**  / 
 -   **VIP User:**  / 
 
 **What agent forgot to execute**
--   The user's request to change 'Awaiting Approval' to 'Coming Soon' has not yet been implemented. It is correctly captured in the upcoming tasks list.</analysis>
+-   The agent acknowledged the user's four planning documents and suggested saving them to , but did not perform the action.
+-   The P1 issues from the initial handoff (Numbers Come Alive layout bug, changing Awaiting Approval text) have not been addressed.</analysis>
