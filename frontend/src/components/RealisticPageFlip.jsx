@@ -178,26 +178,28 @@ const CoverPage = forwardRef(({ book }, ref) => {
           boxShadow: '5px 0 15px rgba(0,0,0,0.3)',
         }}
       >
-        {/* Cover image with lazy loading */}
+        {/* Cover image - title is already part of the cover artwork */}
         {book?.cover_image && (
           <LazyImage 
             src={book.cover_image}
             alt={book.title}
-            className="absolute inset-0 w-full h-full object-cover opacity-90"
+            className="absolute inset-0 w-full h-full object-cover"
             priority={true}
           />
         )}
         
-        {/* Cover overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
-        
-        {/* Cover content */}
-        <div className="relative h-full flex flex-col items-center justify-center text-white p-8">
-          <h1 className="font-heading text-3xl md:text-4xl font-bold text-center mb-4 drop-shadow-lg">
-            {book?.title}
-          </h1>
-          <p className="text-lg opacity-80 drop-shadow">{book?.author_name}</p>
-        </div>
+        {/* Only show title/author if NO cover image (fallback) */}
+        {!book?.cover_image && (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
+            <div className="relative h-full flex flex-col items-center justify-center text-white p-8">
+              <h1 className="font-heading text-3xl md:text-4xl font-bold text-center mb-4 drop-shadow-lg">
+                {book?.title}
+              </h1>
+              <p className="text-lg opacity-80 drop-shadow">{book?.author_name}</p>
+            </div>
+          </>
+        )}
         
         {/* Spine effect */}
         <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-black/40 to-transparent" />
