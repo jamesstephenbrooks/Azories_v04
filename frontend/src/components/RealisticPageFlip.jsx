@@ -763,22 +763,6 @@ const RealisticPageFlip = forwardRef(({
         >
           {allBookPages}
         </HTMLFlipBook>
-        
-        {/* Mobile page turn animation overlay */}
-        {isMobilePortrait && showFlipAnimation && (
-          <div 
-            className={`absolute inset-0 pointer-events-none z-20 ${
-              flipDirection === 'next' 
-                ? 'animate-slide-left' 
-                : 'animate-slide-right'
-            }`}
-            style={{
-              background: flipDirection === 'next'
-                ? 'linear-gradient(to left, rgba(0,0,0,0.15), transparent 50%)'
-                : 'linear-gradient(to right, rgba(0,0,0,0.15), transparent 50%)',
-            }}
-          />
-        )}
           </div>
         </div>
       </div>
