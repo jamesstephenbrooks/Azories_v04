@@ -7,15 +7,23 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Database connection
+# Database connection - no fallbacks, must be set in environment
 MONGO_URL = os.environ.get('MONGO_URL')
-DB_NAME = os.environ.get('DB_NAME', 'azories')
+DB_NAME = os.environ.get('DB_NAME')
+
+# Validate required environment variables
+if not MONGO_URL:
+    raise ValueError("MONGO_URL environment variable is required")
+if not DB_NAME:
+    raise ValueError("DB_NAME environment variable is required")
 
 client = AsyncIOMotorClient(MONGO_URL)
 db = client[DB_NAME]
 
-# JWT Configuration
-JWT_SECRET = os.environ.get('JWT_SECRET', 'default_secret_key')
+# JWT Configuration - no fallback for secret
+JWT_SECRET = os.environ.get('JWT_SECRET')
+if not JWT_SECRET:
+    raise ValueError("JWT_SECRET environment variable is required")
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION = 24 * 7  # 7 days
 
