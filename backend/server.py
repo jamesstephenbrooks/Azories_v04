@@ -8112,6 +8112,62 @@ async def admin_validate_fal_key(admin: dict = Depends(get_admin_user)):
             "error": str(e)
         }
 
+class UpdateFalKeyRequest(BaseModel):
+    fal_key: str
+
+@api_router.post("/admin/update-fal-key")
+async def admin_update_fal_key(request: UpdateFalKeyRequest, admin: dict = Depends(get_admin_user)):
+    """Update FAL_KEY at runtime and persist to .env file (admin only)"""
+    import fal_client
+    
+    new_key = request.fal_key.strip()
+    if not new_key or ':' not in new_key:
+        return {"success": False, "error": "Invalid key format. Expected format: key_id:key_secret"}
+    
+    try:
+        # Test the new key first
+        os.environ['FAL_KEY'] = new_key
+        
+        handler = await fal_client.submit_async(
+            "fal-ai/flux/schnell",
+            arguments={"prompt": "test", "image_size": "square", "num_images": 1}
+        )
+        result = await handler.get()
+        
+        if not result or not result.get('images'):
+            return {"success": False, "error": "Key test failed - no images returned"}
+        
+        # Key works! Update the .env file
+        env_path = '/app/backend/.env'
+        with open(env_path, 'r') as f:
+            lines = f.readlines()
+        
+        updated = False
+        new_lines = []
+        for line in lines:
+            if line.startswith('FAL_KEY='):
+                new_lines.append(f'FAL_KEY={new_key}\n')
+                updated = True
+            else:
+                new_lines.append(line)
+        
+        if not updated:
+            new_lines.append(f'FAL_KEY={new_key}\n')
+        
+        with open(env_path, 'w') as f:
+            f.writelines(new_lines)
+        
+        logger.info(f"FAL_KEY updated successfully by admin")
+        
+        return {
+            "success": True,
+            "message": "FAL_KEY updated and validated successfully",
+            "key_preview": f"{new_key[:15]}...{new_key[-10:]}"
+        }
+        
+    except Exception as e:
+        return {"success": False, "error": f"Key validation failed: {str(e)}"}
+
 
 # ==========================================================================================
 # CONTACT FORM
