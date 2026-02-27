@@ -280,6 +280,14 @@ export default function BookReader() {
   
   const bookDimensions = getBookDimensions();
   
+  // Debug logging for book dimensions
+  useEffect(() => {
+    console.log('[BookReader] Window size:', windowSize);
+    console.log('[BookReader] Book dimensions:', bookDimensions);
+    console.log('[BookReader] isLandscapeOrientation:', isLandscapeOrientation);
+    console.log('[BookReader] isFullscreen:', isFullscreen);
+  }, [windowSize, bookDimensions, isLandscapeOrientation, isFullscreen]);
+  
   // Determine if we should use single-page (portrait) mode
   // Mobile portrait = single page, Mobile landscape = two-page spread
   // Uses proper orientation APIs for real device detection
