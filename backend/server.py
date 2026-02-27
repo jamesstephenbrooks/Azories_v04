@@ -1551,7 +1551,7 @@ async def get_books(
 
 @api_router.get("/books/featured", response_model=List[BookResponse])
 async def get_featured_books():
-    query = {"is_published": True, "$or": [{"is_featured": True}, {"is_best_of_week": True}]}
+    query = {"is_published": True, "hidden": {"$ne": True}, "$or": [{"is_featured": True}, {"is_best_of_week": True}]}
     books = await db.books.find(query, {"_id": 0}).to_list(20)
     result = []
     for book in books:
