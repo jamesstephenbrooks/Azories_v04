@@ -2209,74 +2209,94 @@ export default function ProStudio() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-950 to-gray-900">
-      {/* Header */}
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-950 to-gray-900 pb-20 sm:pb-0">
+      {/* Header - Mobile optimized */}
       <header className="bg-black/40 backdrop-blur-md border-b border-purple-500/20 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" onClick={() => navigate('/art-studio')} className="text-gray-400 hover:text-white">
-              <FiArrowLeft className="mr-2" /> Back to Art Studio
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-3">
+          {/* Mobile Header - Simplified */}
+          <div className="flex items-center justify-between sm:hidden">
+            <Button variant="ghost" size="sm" onClick={() => navigate('/art-studio')} className="text-gray-400 hover:text-white p-2">
+              <FiArrowLeft className="w-5 h-5" />
             </Button>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                <FiFilm className="text-white" />
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                <FiFilm className="text-white w-4 h-4" />
               </div>
-              <span className="text-xl font-bold text-white">Pro Studio</span>
-              <span className="px-2 py-0.5 text-xs bg-gradient-to-r from-amber-500 to-orange-500 rounded-full text-white font-medium">
-                BETA
-              </span>
+              <span className="text-base font-bold text-white">Pro Studio</span>
+            </div>
+            <div className="flex items-center gap-1 bg-amber-500/20 px-2 py-1 rounded-full">
+              <FiZap className="text-amber-400 w-4 h-4" />
+              <span className="text-amber-300 font-medium text-sm">{credits}</span>
             </div>
           </div>
           
-          {/* Credits Display */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500/20 to-orange-500/20 px-4 py-2 rounded-full border border-amber-500/30">
-              <FiZap className="text-amber-400" />
-              <span className="text-amber-300 font-medium">{credits}</span>
-              <span className="text-amber-400/70 text-sm">credits</span>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={goToPurchaseCredits}
-                className="ml-2 text-amber-300 hover:text-amber-100 hover:bg-amber-500/20 h-6 px-2"
-                title="Buy more credits"
-              >
-                <FiPlus size={14} />
+          {/* Desktop Header - Full */}
+          <div className="hidden sm:flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" onClick={() => navigate('/art-studio')} className="text-gray-400 hover:text-white">
+                <FiArrowLeft className="mr-2" /> Back to Art Studio
               </Button>
-            </div>
-          </div>
-          
-          {/* Book selector and Character in header */}
-          <div className="flex items-center gap-3">
-            {/* Book selector */}
-            <Select value={selectedBookId} onValueChange={setSelectedBookId}>
-              <SelectTrigger className="w-40 bg-gray-800/50 border-gray-700 text-white rounded-full text-sm">
-                <SelectValue placeholder="Select book" />
-              </SelectTrigger>
-              <SelectContent className="bg-gray-800 border-gray-700">
-                <SelectItem value="general" className="text-white">General (All Books)</SelectItem>
-                {userBooks.map((book) => (
-                  <SelectItem key={book.id} value={book.id} className="text-white">
-                    {book.title?.substring(0, 25)}{book.title?.length > 25 ? '...' : ''}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            
-            {/* Selected Character */}
-            {selectedCharacter && (
-              <div className="flex items-center gap-2 bg-purple-900/30 px-3 py-1.5 rounded-full">
-                <img 
-                  src={selectedCharacter.thumbnail || selectedCharacter.reference_images?.[0]} 
-                  alt={selectedCharacter.name}
-                  className="w-6 h-6 rounded-full object-cover"
-                />
-                <span className="text-white text-sm">{selectedCharacter.name}</span>
-                <button onClick={() => setSelectedCharacter(null)} className="text-gray-400 hover:text-white">
-                  <FiX size={14} />
-                </button>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                  <FiFilm className="text-white" />
+                </div>
+                <span className="text-xl font-bold text-white">Pro Studio</span>
+                <span className="px-2 py-0.5 text-xs bg-gradient-to-r from-amber-500 to-orange-500 rounded-full text-white font-medium">
+                  BETA
+                </span>
               </div>
-            )}
+            </div>
+          
+            {/* Credits Display */}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500/20 to-orange-500/20 px-4 py-2 rounded-full border border-amber-500/30">
+                <FiZap className="text-amber-400" />
+                <span className="text-amber-300 font-medium">{credits}</span>
+                <span className="text-amber-400/70 text-sm">credits</span>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={goToPurchaseCredits}
+                  className="ml-2 text-amber-300 hover:text-amber-100 hover:bg-amber-500/20 h-6 px-2"
+                  title="Buy more credits"
+                >
+                  <FiPlus size={14} />
+                </Button>
+              </div>
+            </div>
+          
+            {/* Book selector and Character in header */}
+            <div className="flex items-center gap-3">
+              {/* Book selector */}
+              <Select value={selectedBookId} onValueChange={setSelectedBookId}>
+                <SelectTrigger className="w-40 bg-gray-800/50 border-gray-700 text-white rounded-full text-sm">
+                  <SelectValue placeholder="Select book" />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-800 border-gray-700">
+                  <SelectItem value="general" className="text-white">General (All Books)</SelectItem>
+                  {userBooks.map((book) => (
+                    <SelectItem key={book.id} value={book.id} className="text-white">
+                      {book.title?.substring(0, 25)}{book.title?.length > 25 ? '...' : ''}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            
+              {/* Selected Character */}
+              {selectedCharacter && (
+                <div className="flex items-center gap-2 bg-purple-900/30 px-3 py-1.5 rounded-full">
+                  <img 
+                    src={selectedCharacter.thumbnail || selectedCharacter.reference_images?.[0]} 
+                    alt={selectedCharacter.name}
+                    className="w-6 h-6 rounded-full object-cover"
+                  />
+                  <span className="text-white text-sm">{selectedCharacter.name}</span>
+                  <button onClick={() => setSelectedCharacter(null)} className="text-gray-400 hover:text-white">
+                    <FiX size={14} />
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </header>
