@@ -167,7 +167,9 @@ One copy of each duplicate pair was kept and completed:
 ## Pending Tasks (P0-P2)
 
 ### P0 - Critical
-- **Complete remaining 27 books** (was 28, deleted 1 duplicate)
+- ✅ **Complete Batch 3C Import** - DONE (Feb 27, 2026) - 10 books, 100 pages
+- ✅ **BookReader API text_content fix** - DONE (Feb 27, 2026)
+- **Complete remaining 26 books** (text and images)
   - Priority order:
     1. Super Silly Superhero, Colors of the World (duplicate survivors)
     2. Remaining Picture Books
