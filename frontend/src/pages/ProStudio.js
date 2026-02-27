@@ -3130,11 +3130,15 @@ export default function ProStudio() {
               <div className="bg-black/40 rounded-xl border border-purple-500/20 p-6">
                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                   <FiUser className="text-purple-400" /> My Characters
-                  {falAvailable && (
+                  {falKeyError ? (
+                    <span className="ml-auto text-xs bg-red-500/20 text-red-400 px-2 py-1 rounded-full flex items-center gap-1">
+                      <FiAlertTriangle className="w-3 h-3" /> fal.ai Key Expired
+                    </span>
+                  ) : falAvailable ? (
                     <span className="ml-auto text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded-full">
                       fal.ai Connected
                     </span>
-                  )}
+                  ) : null}
                 </h2>
                 
                 {characters.length === 0 ? (
