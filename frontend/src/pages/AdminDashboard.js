@@ -1005,6 +1005,24 @@ export default function AdminDashboard() {
               </div>
             )}
           </TabsContent>
+
+          {/* Settings Tab */}
+          <TabsContent value="settings">
+            <Card className="bg-white/5 border-white/10">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <FiSettings className="w-5 h-5" /> System Settings
+                </CardTitle>
+                <CardDescription className="text-white/60">
+                  Manage API keys and system configuration
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* FAL.AI Key Management */}
+                <SettingsFalKey />
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
       </main>
 
