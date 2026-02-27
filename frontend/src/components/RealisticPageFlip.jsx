@@ -11,17 +11,31 @@ const ImageShimmer = () => (
 );
 
 // Optimized lazy-loading image component with preloading and placeholder
-const LazyImage = ({ src, alt = "", className = "", style = {}, onLoad, priority = false }) => {
+/**
+ * Get optimized Cloudinary URL with transformations
+ */
+const getOptimizedCloudinaryUrl = (url, { width, quality = 'auto', format = 'auto' } = {}) => {
+  if (!url || !url.includes('res.cloudinary.com')) return url;
+  const transforms = width ? `w_${width},q_${quality},f_${format}` : `q_${quality},f_${format}`;
+  return url.replace('/upload/', `/upload/${transforms}/`);
+};
+
+const LazyImage = ({ src, alt = "", className = "", style = {}, onLoad, priority = false, optimizeWidth }) => {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
   const imgRef = useRef(null);
+  
+  // Optimize Cloudinary URLs
+  const optimizedSrc = useMemo(() => {
+    return getOptimizedCloudinaryUrl(src, { width: optimizeWidth });
+  }, [src, optimizeWidth]);
   
   useEffect(() => {
     // Reset states when src changes
     setLoaded(false);
     setError(false);
     
-    if (!src) return;
+    if (!optimizedSrc) return;
     
     // For priority images, start loading immediately
     if (priority) {
@@ -31,9 +45,9 @@ const LazyImage = ({ src, alt = "", className = "", style = {}, onLoad, priority
         onLoad?.();
       };
       img.onerror = () => setError(true);
-      img.src = src;
+      img.src = optimizedSrc;
     }
-  }, [src, priority, onLoad]);
+  }, [optimizedSrc, priority, onLoad]);
   
   const handleImageLoad = () => {
     setLoaded(true);
@@ -44,7 +58,7 @@ const LazyImage = ({ src, alt = "", className = "", style = {}, onLoad, priority
     setError(true);
   };
   
-  if (!src || error) {
+  if (!optimizedSrc || error) {
     return (
       <div className="absolute inset-0 bg-muted/10 flex items-center justify-center">
         <div className="text-center text-muted-foreground/40">
@@ -67,7 +81,7 @@ const LazyImage = ({ src, alt = "", className = "", style = {}, onLoad, priority
       {/* Actual image with fade-in effect */}
       <img 
         ref={imgRef}
-        src={src}
+        src={optimizedSrc}
         alt={alt}
         className={`${className} transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
         style={style}
