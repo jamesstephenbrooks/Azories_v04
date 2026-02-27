@@ -265,17 +265,19 @@ export default function BookReader() {
       // Desktop landscape: book should be very large and fill most of the viewport
       // Target 80% of viewport height for the book
       const targetHeight = vh * 0.80;
-      const availableHeight = vh - 120; // Minimal header + bottom controls
+      const availableHeight = vh - 100; // Minimal header + bottom controls
       const bookHeight = Math.max(Math.min(targetHeight, availableHeight), 700); // At least 700px
       // Each page width should maintain a book-like aspect ratio (roughly 0.65-0.7)
-      const bookWidth = Math.min(bookHeight * 0.68, vw * 0.45); // 45% of viewport width max
+      // Spread width will be 2x this, so make sure spread fits in viewport
+      // For a spread to fit, single page width should be max ~45% of viewport
+      const bookWidth = Math.min(bookHeight * 0.70, vw * 0.42);
       return { width: bookWidth, height: bookHeight };
     } else {
       // Desktop portrait (rare case)
-      const targetHeight = vh * 0.78;
-      const availableHeight = vh - 140;
+      const targetHeight = vh * 0.80;
+      const availableHeight = vh - 100;
       const bookHeight = Math.max(Math.min(targetHeight, availableHeight), 650);
-      const bookWidth = Math.min(bookHeight * 0.72, vw * 0.55);
+      const bookWidth = Math.min(bookHeight * 0.72, vw * 0.50);
       return { width: bookWidth, height: bookHeight };
     }
   };
