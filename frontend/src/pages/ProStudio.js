@@ -5877,7 +5877,8 @@ export default function ProStudio() {
       </AnimatePresence>
 
       {/* Mobile Floating Action Button - Fixed at bottom, 56px tall */}
-      <div className="fixed bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/95 via-black/90 to-transparent sm:hidden z-40 safe-area-pb">
+      {/* Mobile Fixed Action Button - Full width, 56px height, keyboard safe */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/95 to-transparent sm:hidden z-40" style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}>
         {activeTab === 'characters' && (
           <Button 
             onClick={() => {
@@ -5885,7 +5886,8 @@ export default function ProStudio() {
               createCharacter();
             }}
             disabled={isCreatingCharacter || !characterName.trim() || (!characterDescription.trim() && characterImages.length < 1)}
-            className="w-full h-14 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-base font-semibold rounded-xl shadow-lg shadow-purple-500/30"
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-base font-semibold rounded-xl shadow-lg shadow-purple-500/30"
+            style={{ minHeight: '56px' }}
             data-testid="mobile-create-character-btn"
           >
             <FiPlus className="w-5 h-5 mr-2" />
@@ -5899,7 +5901,8 @@ export default function ProStudio() {
               createScene();
             }}
             disabled={isCreatingScene || !sceneName.trim() || !sceneDescription.trim()}
-            className="w-full h-14 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-base font-semibold rounded-xl shadow-lg shadow-purple-500/30"
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-base font-semibold rounded-xl shadow-lg shadow-purple-500/30"
+            style={{ minHeight: '56px' }}
             data-testid="mobile-create-scene-btn"
           >
             <FiPlus className="w-5 h-5 mr-2" />
@@ -5913,7 +5916,8 @@ export default function ProStudio() {
               generateCinemaImage();
             }}
             disabled={isLoading || !prompt.trim()}
-            className="w-full h-14 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-base font-semibold rounded-xl shadow-lg shadow-purple-500/30"
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-base font-semibold rounded-xl shadow-lg shadow-purple-500/30"
+            style={{ minHeight: '56px' }}
             data-testid="mobile-cinema-generate-btn"
           >
             <FiZap className="w-5 h-5 mr-2" />
@@ -5927,7 +5931,8 @@ export default function ProStudio() {
               generateShots();
             }}
             disabled={isLoading || !shotsSourceImage}
-            className="w-full h-14 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-base font-semibold rounded-xl shadow-lg shadow-purple-500/30"
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-base font-semibold rounded-xl shadow-lg shadow-purple-500/30"
+            style={{ minHeight: '56px' }}
             data-testid="mobile-generate-shots-btn"
           >
             <FiGrid className="w-5 h-5 mr-2" />
@@ -5941,7 +5946,8 @@ export default function ProStudio() {
               generateVideo();
             }}
             disabled={isLoading || !videoPrompt.trim()}
-            className="w-full h-14 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-base font-semibold rounded-xl shadow-lg shadow-purple-500/30"
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-base font-semibold rounded-xl shadow-lg shadow-purple-500/30"
+            style={{ minHeight: '56px' }}
             data-testid="mobile-generate-video-btn"
           >
             <FiVideo className="w-5 h-5 mr-2" />
