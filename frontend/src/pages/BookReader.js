@@ -1190,7 +1190,7 @@ export default function BookReader() {
                 >
                   {/* Left Page: Illustration */}
                   <div 
-                    className="relative flex-1 rounded-l-lg overflow-hidden bg-[#fdfbf7]"
+                    className="relative flex-1 rounded-l-lg overflow-hidden"
                     style={{ 
                       boxShadow: '4px 0 15px -5px rgba(0,0,0,0.2)'
                     }}
@@ -1201,9 +1201,10 @@ export default function BookReader() {
                         alt=""
                         className="w-full h-full"
                         style={{
-                          objectFit: 'contain',
-                          objectPosition: 'center',
-                          backgroundColor: '#fdfbf7'
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          objectPosition: 'center'
                         }}
                       />
                     ) : (
