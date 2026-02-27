@@ -1198,9 +1198,11 @@ export default function BookReader() {
                       <img 
                         src={currentPageData.image_url}
                         alt=""
-                        className="w-full h-full object-cover"
+                        className="w-full h-full"
                         style={{
-                          objectPosition: `${currentPageData.image_position_x || 50}% ${currentPageData.image_position_y || 50}%`
+                          objectFit: 'contain',
+                          objectPosition: 'center',
+                          backgroundColor: '#fdfbf7'
                         }}
                       />
                     ) : (
