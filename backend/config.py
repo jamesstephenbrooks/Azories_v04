@@ -82,11 +82,11 @@ CREDIT_PACKAGES = {
     }
 }
 
-# Stripe configuration
-STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY', 'sk_test_emergent')
+# Stripe configuration - no fallback, must be set
+STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY')
 
-# Emergent LLM Key
+# Emergent LLM Key (optional - used for fallback image generation)
 EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY', '')
 
-# fal.ai configuration
+# fal.ai configuration (optional - primary image generation)
 FAL_KEY = os.environ.get('FAL_KEY', '')
