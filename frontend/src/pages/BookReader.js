@@ -1019,7 +1019,10 @@ export default function BookReader() {
         
         <div className={`w-full transition-all duration-500 ${
           isFullscreen ? 'max-w-[98vw] h-[90vh]' : 'max-w-[95vw] xl:max-w-[90vw]'
-        }`} style={{ perspective: '2000px' }}>
+        }`} style={{ 
+          perspective: '2000px',
+          minHeight: isFullscreen ? '90vh' : 'calc(100vh - 200px)'
+        }}>
           <div className={`relative h-full ${isFullscreen ? 'flex items-center justify-center' : ''}`}>
             
             {/* Overlay buttons positioned over the cover - these work because they're outside react-pageflip */}
