@@ -147,31 +147,18 @@ The Arctic Expedition, The Burping Dragon, The Enchanted Carousel, The Feelings 
 - `/app/generate_books_v2.py` - Using OpenAI GPT-Image-1 via Emergent Key
 - Images stored in: `/app/frontend/public/book-assets/[book-slug]/`
 
-## Book Library Audit (Final Status)
+## Book Library Audit (Final Status - Feb 27, 2026)
 
-### Original State → Current State
-- **Started with:** 80 empty book shells (titles only, no content)
-- **After cleanup:** 65 books (15 deleted)
-- **Now completed:** 37 books with full content
-- **Still empty:** 28 books
+### Current State
+- **Total books:** 64
+- **Books with text content:** 64 (100%)
+- **Books with images:** 64 (100%)
+- **Pages with images:** 640 out of 703 (91%)
 
-### Deletions (15 books removed)
-**Test books (4):** PDF Test Book, Font Size Test Book, Node Test Book, Jamie The City Hero
-
-**Overlapping titles (11):** Grandma's Wacky Inventions, The Great Golden Cookie Caper, The Mystery of the Missing Cookies, The Dragon's Secret, Journey to Planet Sparkle, Space Explorers: Mission to Mars, Captain Clara and the Kindness Quest
-
-### Duplicates Handled
-One copy of each duplicate pair was kept and completed:
-- Robot Best Friend (completed)
-- The Case of the Missing Cookies (completed)  
-- Super Silly Superhero (still empty - priority for next session)
-- Colors of the World (still empty - priority for next session)
-- Guardians of Tomorrow (1 duplicate deleted, 1 remains empty)
-
-### Starter Library Usage
-- **3 images** from the 200-image starter library used (only in "The Unicorn's Rainbow Bridge")
-- **371 images** freshly generated using GPT-Image-1 and fal.ai
-- Note: Starter library is designed for the Book Editor gallery picker, not for pre-populating library books
+### Generation Methods Used
+- **fal.ai flux/schnell** - Primary image generation (230 images)
+- **OpenAI GPT-4o** - Text content generation for 11 books
+- **OpenAI GPT-Image-1** - Fallback image generation when fal.ai key was invalid
 
 ## Pending Tasks (P0-P2)
 
