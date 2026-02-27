@@ -248,13 +248,27 @@ export default function ProStudio() {
     }
   };
 
-  // Check if fal.ai is available
+  // Check if fal.ai is available and key is valid
   const checkFalAvailability = async () => {
     try {
       const response = await fetch(`${API_URL}/api/fal/models`);
       if (response.ok) {
         const data = await response.json();
         setFalAvailable(data.available);
+        
+        // Also check key health
+        const healthResponse = await fetch(`${API_URL}/api/health/fal`);
+        if (!healthResponse.ok) {
+          const errorData = await healthResponse.json();
+          if (errorData.detail?.error === 'FAL_KEY_EXPIRED') {
+            setFalKeyError({
+              message: 'fal.ai API key has expired',
+              action: 'Please update the key via Admin Dashboard > Settings'
+            });
+          }
+        } else {
+          setFalKeyError(null);
+        }
       }
     } catch (error) {
       console.error('Error checking fal.ai availability:', error);
