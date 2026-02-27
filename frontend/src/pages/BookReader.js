@@ -1130,7 +1130,7 @@ export default function BookReader() {
               <div className="flex flex-col w-full max-w-md mx-auto" style={{ height: `calc(100vh - 140px)` }}>
                 {/* Top: Illustration - 55% of available height */}
                 <div 
-                  className="relative flex-shrink-0 rounded-t-2xl overflow-hidden bg-[#fdfbf7] shadow-lg"
+                  className="relative flex-shrink-0 rounded-t-2xl overflow-hidden shadow-lg"
                   style={{ height: '55%' }}
                 >
                   {currentPageData?.image_url ? (
@@ -1139,9 +1139,10 @@ export default function BookReader() {
                       alt=""
                       className="w-full h-full"
                       style={{
-                        objectFit: 'contain',
-                        objectPosition: 'center',
-                        backgroundColor: '#fdfbf7'
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        objectPosition: 'center'
                       }}
                     />
                   ) : (
