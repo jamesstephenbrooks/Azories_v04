@@ -300,7 +300,7 @@ const ImagePage = forwardRef(({ page, pageNumber, isCurrentPage = false, onImage
       data-density="soft"
       data-page-number={pageNumber}
     >
-      {/* Full-page media container - STRICT overflow:hidden to prevent any bleeding */}
+      {/* Full-page media container - Portrait 3:4 aspect ratio with overflow hidden */}
       <div 
         className="absolute inset-0 bg-[#fdfbf7] dark:bg-[#2a2a30]"
         style={{
@@ -311,8 +311,7 @@ const ImagePage = forwardRef(({ page, pageNumber, isCurrentPage = false, onImage
         {/* Spine shadow gradient */}
         <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black/10 to-transparent pointer-events-none z-10" />
         
-        {/* Full-page media - NO TEXT OVERLAYS on illustration page */}
-        {/* Image fills entire page edge-to-edge */}
+        {/* Full-page media - fills entire page edge-to-edge with cover crop */}
         {useVideo ? (
           <video 
             src={page.video_url}
@@ -320,24 +319,28 @@ const ImagePage = forwardRef(({ page, pageNumber, isCurrentPage = false, onImage
             loop
             muted
             playsInline
-            className="absolute inset-0 w-full h-full"
             style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
               width: '100%',
               height: '100%',
               objectFit: 'cover',
-              objectPosition: 'center'
+              objectPosition: 'center top'
             }}
           />
         ) : hasImage ? (
           <LazyImage 
             src={page.image_url}
             alt=""
-            className="absolute inset-0 w-full h-full"
             style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
               width: '100%',
               height: '100%',
               objectFit: 'cover',
-              objectPosition: 'center'
+              objectPosition: 'center top'
             }}
             priority={isCurrentPage}
             onLoad={onImageLoad}
