@@ -247,7 +247,7 @@ When fal.ai fails, the system now automatically uses OpenAI via Emergent LLM Key
 5. Pro Studio warning banner shows when key expired
 6. Admin update endpoint now persists to both .env AND database
 
-**UptimeRobot URL:** `https://book-reader-hub-2.preview.emergentagent.com/api/health/fal`
+**UptimeRobot URL:** `https://book-content-update.preview.emergentagent.com/api/health/fal`
 
 ### Cloudinary Migration COMPLETE ✅
 **Migration Date:** Feb 27, 2026
