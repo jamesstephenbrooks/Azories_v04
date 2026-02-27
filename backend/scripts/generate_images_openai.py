@@ -154,6 +154,10 @@ async def generate_images_for_book(db, book_id: str, book_data: dict, dry_run: b
                 # Upload image and get URL
                 image_url = await upload_image_to_storage(images[0])
                 
+                if not image_url:
+                    logger.warning(f"   ⚠️ Page {page_num}: Failed to upload image")
+                    continue
+                
                 # Update page in database
                 await db.pages.update_one(
                     {"id": page["id"]},
