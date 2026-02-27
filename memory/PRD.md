@@ -106,17 +106,19 @@ Files:
 
 **Status:** FUNCTIONAL - loads without crashing, just slow
 
-## Book Library Generation (Feb 26, 2026)
+## Book Library Generation (Updated Feb 27, 2026)
 
 ### Progress Summary
 | Category | Completed | Remaining |
 |----------|-----------|-----------|
-| Total Books | 37 | 28 |
-| Picture Books (3-6) | ~15 | ~10 |
-| Early Readers (6-8) | ~12 | ~8 |
-| Middle Grade (8-12) | ~10 | ~10 |
+| Total Books | 47 | 26 |
+| Books with text | 47 | 17 |
+| Books with images | ~37 | ~28 |
 
-### Completed Books (37 total)
+### Batch 3C Import (Feb 27, 2026) - 10 books, 100 pages
+The Arctic Expedition, The Burping Dragon, The Enchanted Carousel, The Feelings Garden, The Giant's Gentle Heart, The Lighthouse Keeper's Secret, The Time Machine Treehouse, The Underground City, The Unicorn's Rainbow Bridge, The Wizard's Apprentice
+
+### Previously Completed Books (37 total)
 Fantasy: Dragon's Secret Garden, Unicorn's Rainbow Bridge, Princess Penny's Pet Dragon, Wizard's Apprentice, Fairies of Moonlight Meadow, Mermaid's Lost Pearl, Elves & Magic Tree, Giant's Gentle Heart, Pixie Dust Adventures, Enchanted Carousel
 
 Adventure: Captain Compass, Jungle Explorers Club, Mountain Climbing Mice, Underground City, Sky Pirates of Cloudland, Safari Sam's Big Day, River Rafting Raccoons, Arctic Expedition
@@ -129,7 +131,7 @@ Humour: Burping Dragon, Backwards Day, Pirate Pete's Bad Hair Day, Monster Who W
 
 General: Alphabet Zoo, Seasons of Magic Forest, Kindness Kingdom, Feelings Garden, Robot Best Friend, Superhero School, Case of Missing Cookies
 
-### Books Still Empty (28)
+### Books Still Empty (26)
 Bedtime in the Animal World, Colors of the World, Cooking Adventures with Chef Cat, Desert Treasure Hunt, Flame's Courageous Journey, Friendship Island, Galaxy Racers, Guardians of Tomorrow (x2), Lila and the Whispering Blossoms, Luna's Rainbow Adventure, Mystery at the Zoo, Numbers Come Alive, Ocean Wonders, Princess and the Enchanted Forest, Puzzle Palace Adventures, Shapes in the City, The Dinosaur Time Machine, The Emotion Squad, The Haunted Library Book, The Haunted Treehouse, The Journey to Merlden, The Lighthouse Keeper's Secret, The Midnight Brush, The Missing Birthday Present, The Robot Who Wanted Friends, The Time Machine Treehouse
 
 ### Generation Script
