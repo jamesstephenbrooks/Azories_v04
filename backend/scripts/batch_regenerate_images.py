@@ -28,7 +28,7 @@ os.environ['FAL_KEY'] = FAL_KEY
 # Cloudinary config (from .env)
 cloudinary.config(
     cloud_name="dlbmjqmoy",
-    api_key="518276398682156",
+    api_key="623841689882156",
     api_secret="FUp37HECcXY77gAuaVJ1q8HL5CQ"
 )
 
