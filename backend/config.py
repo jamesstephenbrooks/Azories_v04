@@ -19,8 +19,8 @@ JWT_SECRET = os.environ.get('JWT_SECRET', 'default_secret_key')
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION = 24 * 7  # 7 days
 
-# VIP Users - loaded from environment variable in server.py
-# VIP_USERS = os.environ.get('VIP_USERS', '').split(',')
+# VIP Users - loaded from environment variable
+VIP_USERS = [e.strip() for e in os.environ.get('VIP_USERS', '').split(',') if e.strip()]
 
 # Credit costs for Pro Studio features
 CREDIT_COSTS = {
