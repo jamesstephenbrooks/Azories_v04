@@ -981,8 +981,8 @@ export default function BookReader() {
       {/* Book Display - with swipe support */}
       <div 
         id="book-container"
-        className={`${isMobileLandscape ? 'pt-6 pb-0' : 'pt-8 sm:pt-12 pb-16 sm:pb-24'} px-1 sm:px-2 flex items-center justify-center min-h-screen transition-all duration-300 ${
-          isFullscreen ? 'bg-black/95 fixed inset-0 z-50 pt-4 sm:pt-8 pb-4 sm:pb-8' : ''
+        className={`${isMobileLandscape ? 'pt-4 pb-0' : 'pt-4 sm:pt-6 pb-16 sm:pb-20'} px-1 sm:px-2 flex items-center justify-center min-h-[calc(100vh-60px)] transition-all duration-300 ${
+          isFullscreen ? 'bg-black/95 fixed inset-0 z-50 pt-4 sm:pt-6 pb-4 sm:pb-6' : ''
         }`}
         {...swipeHandlers}
         style={{ touchAction: 'pan-y pinch-zoom' }}
