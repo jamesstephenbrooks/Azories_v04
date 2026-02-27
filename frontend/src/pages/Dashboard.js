@@ -351,7 +351,7 @@ export default function Dashboard() {
       
       // If book is in pending_review, show message
       if (book.publish_status === 'pending_review') {
-        toast.info('This book is already pending admin review');
+        toast.info('This book is already coming soon!');
         return;
       }
       
