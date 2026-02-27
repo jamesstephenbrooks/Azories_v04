@@ -1,0 +1,1389 @@
+{
+  "total_fal_images": 284,
+  "successfully_migrated": 284,
+  "failed": 0,
+  "already_cloudinary": 20,
+  "errors": [],
+  "migrated_urls": [
+    {
+      "book": "The Unicorn's Rainbow Bridge",
+      "page": 1,
+      "old_url": "https://v3b.fal.media/files/b/0a902909/n6XZ1e0dw2SK0XSlW5zCy...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216731/azories/books/the_unicorns_rainbow_bridge/page_01.jpg"
+    },
+    {
+      "book": "The Unicorn's Rainbow Bridge",
+      "page": 2,
+      "old_url": "https://v3b.fal.media/files/b/0a902909/Is7r7bGUTdoamIRTYpNvz...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216732/azories/books/the_unicorns_rainbow_bridge/page_02.jpg"
+    },
+    {
+      "book": "The Unicorn's Rainbow Bridge",
+      "page": 3,
+      "old_url": "https://v3b.fal.media/files/b/0a902909/7IGGlgdnqTQv3SUfkt9NU...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216734/azories/books/the_unicorns_rainbow_bridge/page_03.jpg"
+    },
+    {
+      "book": "The Unicorn's Rainbow Bridge",
+      "page": 4,
+      "old_url": "https://v3b.fal.media/files/b/0a902909/E8EEMJQ6WoCPLGy08WdyH...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216735/azories/books/the_unicorns_rainbow_bridge/page_04.jpg"
+    },
+    {
+      "book": "The Unicorn's Rainbow Bridge",
+      "page": 5,
+      "old_url": "https://v3b.fal.media/files/b/0a902909/mL9uCd44GH6fUZCd8epYD...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216737/azories/books/the_unicorns_rainbow_bridge/page_05.jpg"
+    },
+    {
+      "book": "The Unicorn's Rainbow Bridge",
+      "page": 6,
+      "old_url": "https://v3b.fal.media/files/b/0a90290a/ebqBzF2cwott1LkXAkM87...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216738/azories/books/the_unicorns_rainbow_bridge/page_06.jpg"
+    },
+    {
+      "book": "The Unicorn's Rainbow Bridge",
+      "page": 7,
+      "old_url": "https://v3b.fal.media/files/b/0a90290a/RYJsWswvtz6DhloPzCxiJ...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216739/azories/books/the_unicorns_rainbow_bridge/page_07.jpg"
+    },
+    {
+      "book": "The Unicorn's Rainbow Bridge",
+      "page": 8,
+      "old_url": "https://v3b.fal.media/files/b/0a90290a/6iVVY2srtTxAlw0HIlFhn...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216741/azories/books/the_unicorns_rainbow_bridge/page_08.jpg"
+    },
+    {
+      "book": "The Unicorn's Rainbow Bridge",
+      "page": 9,
+      "old_url": "https://v3b.fal.media/files/b/0a90290a/biXeVuthYoDnLerVf-jLY...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216742/azories/books/the_unicorns_rainbow_bridge/page_09.jpg"
+    },
+    {
+      "book": "The Unicorn's Rainbow Bridge",
+      "page": 10,
+      "old_url": "https://v3b.fal.media/files/b/0a90290a/89mv869Ocm3hQbPDNnfv3...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216744/azories/books/the_unicorns_rainbow_bridge/page_10.jpg"
+    },
+    {
+      "book": "The Wizard's Apprentice",
+      "page": 1,
+      "old_url": "https://v3b.fal.media/files/b/0a90290a/whrgq2vgvBP6c316Eo-Wb...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216745/azories/books/the_wizards_apprentice/page_01.jpg"
+    },
+    {
+      "book": "The Wizard's Apprentice",
+      "page": 2,
+      "old_url": "https://v3b.fal.media/files/b/0a90290a/8bTXHXHzFWATa5RlMsEfW...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216747/azories/books/the_wizards_apprentice/page_02.jpg"
+    },
+    {
+      "book": "The Wizard's Apprentice",
+      "page": 3,
+      "old_url": "https://v3b.fal.media/files/b/0a90290a/ksSRXLVORWT8INGevwIx9...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216750/azories/books/the_wizards_apprentice/page_03.jpg"
+    },
+    {
+      "book": "The Wizard's Apprentice",
+      "page": 4,
+      "old_url": "https://v3b.fal.media/files/b/0a90290a/PnBGJHKLfk9GV1EIR83CT...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216751/azories/books/the_wizards_apprentice/page_04.jpg"
+    },
+    {
+      "book": "The Wizard's Apprentice",
+      "page": 5,
+      "old_url": "https://v3b.fal.media/files/b/0a90290b/n2_riqMDxn-7cdAaMMvbO...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216752/azories/books/the_wizards_apprentice/page_05.jpg"
+    },
+    {
+      "book": "The Wizard's Apprentice",
+      "page": 6,
+      "old_url": "https://v3b.fal.media/files/b/0a90290b/VFY5LIJOnjjkiwz5ien7M...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216753/azories/books/the_wizards_apprentice/page_06.jpg"
+    },
+    {
+      "book": "The Wizard's Apprentice",
+      "page": 7,
+      "old_url": "https://v3b.fal.media/files/b/0a90290b/luct8yIKrjJj6z9Ch5tgQ...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216754/azories/books/the_wizards_apprentice/page_07.jpg"
+    },
+    {
+      "book": "The Wizard's Apprentice",
+      "page": 8,
+      "old_url": "https://v3b.fal.media/files/b/0a90290b/SdARbL_0nHDyBZlRlyB21...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216755/azories/books/the_wizards_apprentice/page_08.jpg"
+    },
+    {
+      "book": "The Wizard's Apprentice",
+      "page": 9,
+      "old_url": "https://v3b.fal.media/files/b/0a90290b/CeQAAJBIs851KgGuNRnRe...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216757/azories/books/the_wizards_apprentice/page_09.jpg"
+    },
+    {
+      "book": "The Wizard's Apprentice",
+      "page": 10,
+      "old_url": "https://v3b.fal.media/files/b/0a90290b/TtfE51A9Yg27uELI3kUQt...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216758/azories/books/the_wizards_apprentice/page_10.jpg"
+    },
+    {
+      "book": "The Giant's Gentle Heart",
+      "page": 1,
+      "old_url": "https://v3b.fal.media/files/b/0a90290b/HSYAInXhXgLpdL3cbtHtV...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216760/azories/books/the_giants_gentle_heart/page_01.jpg"
+    },
+    {
+      "book": "The Giant's Gentle Heart",
+      "page": 2,
+      "old_url": "https://v3b.fal.media/files/b/0a90290b/kKWTGlCD61OntpsyZvDdy...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216761/azories/books/the_giants_gentle_heart/page_02.jpg"
+    },
+    {
+      "book": "The Giant's Gentle Heart",
+      "page": 3,
+      "old_url": "https://v3b.fal.media/files/b/0a90290b/Xt-CwMElO-273J08mY3ly...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216762/azories/books/the_giants_gentle_heart/page_03.jpg"
+    },
+    {
+      "book": "The Giant's Gentle Heart",
+      "page": 4,
+      "old_url": "https://v3b.fal.media/files/b/0a90290c/Bk1TDZWLr45N-BF-il1Gr...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216764/azories/books/the_giants_gentle_heart/page_04.jpg"
+    },
+    {
+      "book": "The Giant's Gentle Heart",
+      "page": 5,
+      "old_url": "https://v3b.fal.media/files/b/0a90290c/L5XOTgpyaikb0McaG94Ne...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216766/azories/books/the_giants_gentle_heart/page_05.jpg"
+    },
+    {
+      "book": "The Giant's Gentle Heart",
+      "page": 6,
+      "old_url": "https://v3b.fal.media/files/b/0a90290c/V115HEwvGHvovNxC6qUUi...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216767/azories/books/the_giants_gentle_heart/page_06.jpg"
+    },
+    {
+      "book": "The Giant's Gentle Heart",
+      "page": 7,
+      "old_url": "https://v3b.fal.media/files/b/0a90290c/gwt4K7wUleGRRJ7ULV8YL...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216768/azories/books/the_giants_gentle_heart/page_07.jpg"
+    },
+    {
+      "book": "The Giant's Gentle Heart",
+      "page": 8,
+      "old_url": "https://v3b.fal.media/files/b/0a90290c/hZm6R89v00qC-i9XIvyhK...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216770/azories/books/the_giants_gentle_heart/page_08.jpg"
+    },
+    {
+      "book": "The Giant's Gentle Heart",
+      "page": 9,
+      "old_url": "https://v3b.fal.media/files/b/0a90290c/6KB2FWEOwXaqhmOZP_dB_...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216772/azories/books/the_giants_gentle_heart/page_09.jpg"
+    },
+    {
+      "book": "The Giant's Gentle Heart",
+      "page": 10,
+      "old_url": "https://v3b.fal.media/files/b/0a90290c/IemhVIO6mosc9tg4fmJT2...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216775/azories/books/the_giants_gentle_heart/page_10.jpg"
+    },
+    {
+      "book": "The Enchanted Carousel",
+      "page": 1,
+      "old_url": "https://v3b.fal.media/files/b/0a90290c/sQ_k8BJIVlGdFc0jNS6D1...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216776/azories/books/the_enchanted_carousel/page_01.jpg"
+    },
+    {
+      "book": "The Enchanted Carousel",
+      "page": 2,
+      "old_url": "https://v3b.fal.media/files/b/0a90290c/tM_xCklaxYE5n-LbhVWPc...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216778/azories/books/the_enchanted_carousel/page_02.jpg"
+    },
+    {
+      "book": "The Enchanted Carousel",
+      "page": 3,
+      "old_url": "https://v3b.fal.media/files/b/0a90290d/gCzMG0J-_0wit_r3S66xG...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216779/azories/books/the_enchanted_carousel/page_03.jpg"
+    },
+    {
+      "book": "The Enchanted Carousel",
+      "page": 4,
+      "old_url": "https://v3b.fal.media/files/b/0a90290d/NuLey1wPp-K6KQqtSCDzy...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216780/azories/books/the_enchanted_carousel/page_04.jpg"
+    },
+    {
+      "book": "The Enchanted Carousel",
+      "page": 5,
+      "old_url": "https://v3b.fal.media/files/b/0a90290d/vy2QUVRYi1URryddd3FWT...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216781/azories/books/the_enchanted_carousel/page_05.jpg"
+    },
+    {
+      "book": "The Enchanted Carousel",
+      "page": 6,
+      "old_url": "https://v3b.fal.media/files/b/0a90290d/AWN9nql5fEe28IYGnLKhU...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216783/azories/books/the_enchanted_carousel/page_06.jpg"
+    },
+    {
+      "book": "The Enchanted Carousel",
+      "page": 7,
+      "old_url": "https://v3b.fal.media/files/b/0a90290d/DfuG9c8QF_B0Uj3esi9Oc...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216784/azories/books/the_enchanted_carousel/page_07.jpg"
+    },
+    {
+      "book": "The Enchanted Carousel",
+      "page": 8,
+      "old_url": "https://v3b.fal.media/files/b/0a90290d/HhW8AfzC15xbGsVNFufxh...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216785/azories/books/the_enchanted_carousel/page_08.jpg"
+    },
+    {
+      "book": "The Enchanted Carousel",
+      "page": 9,
+      "old_url": "https://v3b.fal.media/files/b/0a90290d/AvpQI0vSF3wji1jo-wkO7...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216787/azories/books/the_enchanted_carousel/page_09.jpg"
+    },
+    {
+      "book": "The Enchanted Carousel",
+      "page": 10,
+      "old_url": "https://v3b.fal.media/files/b/0a90290d/KbdrsN00G87wDncYKcoOO...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216788/azories/books/the_enchanted_carousel/page_10.jpg"
+    },
+    {
+      "book": "The Jungle Explorers Club",
+      "page": 1,
+      "old_url": "https://v3b.fal.media/files/b/0a90290d/zOjtNC0FYM9R52bc0S22v...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216789/azories/books/the_jungle_explorers_club/page_01.jpg"
+    },
+    {
+      "book": "The Jungle Explorers Club",
+      "page": 2,
+      "old_url": "https://v3b.fal.media/files/b/0a90290e/nB3W4RcSUTUw50F4fLZgF...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216791/azories/books/the_jungle_explorers_club/page_02.jpg"
+    },
+    {
+      "book": "The Jungle Explorers Club",
+      "page": 3,
+      "old_url": "https://v3b.fal.media/files/b/0a90290e/dSUhC-EF71W6opnLvbJQZ...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216792/azories/books/the_jungle_explorers_club/page_03.jpg"
+    },
+    {
+      "book": "The Jungle Explorers Club",
+      "page": 4,
+      "old_url": "https://v3b.fal.media/files/b/0a90290e/fN9X0YhMyJ3S13-3iJIXn...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216793/azories/books/the_jungle_explorers_club/page_04.jpg"
+    },
+    {
+      "book": "The Jungle Explorers Club",
+      "page": 5,
+      "old_url": "https://v3b.fal.media/files/b/0a90290e/PyBK3eUd8N64RZqOn51EK...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216795/azories/books/the_jungle_explorers_club/page_05.jpg"
+    },
+    {
+      "book": "The Jungle Explorers Club",
+      "page": 6,
+      "old_url": "https://v3b.fal.media/files/b/0a90290e/qKtVnx2ekJ8OgfhJlC7nv...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216796/azories/books/the_jungle_explorers_club/page_06.jpg"
+    },
+    {
+      "book": "The Jungle Explorers Club",
+      "page": 7,
+      "old_url": "https://v3b.fal.media/files/b/0a90290e/-NPxhXcE7P9pSeGX7UEgU...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216797/azories/books/the_jungle_explorers_club/page_07.jpg"
+    },
+    {
+      "book": "The Jungle Explorers Club",
+      "page": 8,
+      "old_url": "https://v3b.fal.media/files/b/0a90290e/5tb2A_iEPCevFoyveBMBb...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216799/azories/books/the_jungle_explorers_club/page_08.jpg"
+    },
+    {
+      "book": "The Jungle Explorers Club",
+      "page": 9,
+      "old_url": "https://v3b.fal.media/files/b/0a90290e/73JSXekJ4W5Wnm6gFDlFP...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216801/azories/books/the_jungle_explorers_club/page_09.jpg"
+    },
+    {
+      "book": "The Jungle Explorers Club",
+      "page": 10,
+      "old_url": "https://v3b.fal.media/files/b/0a90290e/X_ff3piQF1sC65eJZLlA_...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216802/azories/books/the_jungle_explorers_club/page_10.jpg"
+    },
+    {
+      "book": "Mountain Climbing Mice",
+      "page": 1,
+      "old_url": "https://v3b.fal.media/files/b/0a90290f/5JFMgl7MXFUIrffNlJSqx...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216805/azories/books/mountain_climbing_mice/page_01.jpg"
+    },
+    {
+      "book": "Mountain Climbing Mice",
+      "page": 2,
+      "old_url": "https://v3b.fal.media/files/b/0a90290f/qv1fjCi7zu492LP8-JtHX...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216806/azories/books/mountain_climbing_mice/page_02.jpg"
+    },
+    {
+      "book": "Mountain Climbing Mice",
+      "page": 3,
+      "old_url": "https://v3b.fal.media/files/b/0a90290f/55Qqed98e75luWbRf-Xer...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216809/azories/books/mountain_climbing_mice/page_03.jpg"
+    },
+    {
+      "book": "Mountain Climbing Mice",
+      "page": 4,
+      "old_url": "https://v3b.fal.media/files/b/0a90290f/9Mo9LoY7FAtGT61-ue-hG...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216813/azories/books/mountain_climbing_mice/page_04.jpg"
+    },
+    {
+      "book": "Mountain Climbing Mice",
+      "page": 5,
+      "old_url": "https://v3b.fal.media/files/b/0a90290f/pcOfdltc1sMtEGC_7RPEa...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216814/azories/books/mountain_climbing_mice/page_05.jpg"
+    },
+    {
+      "book": "Mountain Climbing Mice",
+      "page": 6,
+      "old_url": "https://v3b.fal.media/files/b/0a90290f/y6Mb1kGDETeOnNO3ZRhCY...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216815/azories/books/mountain_climbing_mice/page_06.jpg"
+    },
+    {
+      "book": "Mountain Climbing Mice",
+      "page": 7,
+      "old_url": "https://v3b.fal.media/files/b/0a90290f/o4fA44FEIItGoKTZ0UIv_...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216816/azories/books/mountain_climbing_mice/page_07.jpg"
+    },
+    {
+      "book": "Mountain Climbing Mice",
+      "page": 8,
+      "old_url": "https://v3b.fal.media/files/b/0a90290f/iYPp1GppAfqkdZAA6kXjr...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216818/azories/books/mountain_climbing_mice/page_08.jpg"
+    },
+    {
+      "book": "Mountain Climbing Mice",
+      "page": 9,
+      "old_url": "https://v3b.fal.media/files/b/0a90290f/NH2fzIoZmA6kWP1LKrGgA...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216819/azories/books/mountain_climbing_mice/page_09.jpg"
+    },
+    {
+      "book": "Mountain Climbing Mice",
+      "page": 10,
+      "old_url": "https://v3b.fal.media/files/b/0a90290f/DEXstHW9loncZ3KpAAfSl...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216821/azories/books/mountain_climbing_mice/page_10.jpg"
+    },
+    {
+      "book": "The Underground City",
+      "page": 1,
+      "old_url": "https://v3b.fal.media/files/b/0a902910/BQF8g4cuN5WOA-ZmaI9JX...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216822/azories/books/the_underground_city/page_01.jpg"
+    },
+    {
+      "book": "The Underground City",
+      "page": 2,
+      "old_url": "https://v3b.fal.media/files/b/0a902910/RoHTvIiukGhNkNQ2dEltw...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216823/azories/books/the_underground_city/page_02.jpg"
+    },
+    {
+      "book": "The Underground City",
+      "page": 3,
+      "old_url": "https://v3b.fal.media/files/b/0a902910/StV5ylRGAiJQRdHOoOYCx...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216825/azories/books/the_underground_city/page_03.jpg"
+    },
+    {
+      "book": "The Underground City",
+      "page": 4,
+      "old_url": "https://v3b.fal.media/files/b/0a902910/w0n69OVImvmniXbVT_o-f...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216826/azories/books/the_underground_city/page_04.jpg"
+    },
+    {
+      "book": "The Underground City",
+      "page": 5,
+      "old_url": "https://v3b.fal.media/files/b/0a902910/HjrZzF_7804dGlGMBEcF3...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216828/azories/books/the_underground_city/page_05.jpg"
+    },
+    {
+      "book": "The Underground City",
+      "page": 6,
+      "old_url": "https://v3b.fal.media/files/b/0a902910/0MkbhTun1jljexR_q9B9s...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216829/azories/books/the_underground_city/page_06.jpg"
+    },
+    {
+      "book": "The Underground City",
+      "page": 7,
+      "old_url": "https://v3b.fal.media/files/b/0a902910/Q-Xh_l8KK9UurPcGzmcU5...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216831/azories/books/the_underground_city/page_07.jpg"
+    },
+    {
+      "book": "The Underground City",
+      "page": 8,
+      "old_url": "https://v3b.fal.media/files/b/0a902910/IGI_9wI7PcnGiEm73dwz8...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216832/azories/books/the_underground_city/page_08.jpg"
+    },
+    {
+      "book": "The Underground City",
+      "page": 9,
+      "old_url": "https://v3b.fal.media/files/b/0a902910/hHofX9x9GXbNbqRaW5H0i...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216833/azories/books/the_underground_city/page_09.jpg"
+    },
+    {
+      "book": "The Underground City",
+      "page": 10,
+      "old_url": "https://v3b.fal.media/files/b/0a902911/rKlECuS7v-t40mk3ikgcp...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216835/azories/books/the_underground_city/page_10.jpg"
+    },
+    {
+      "book": "Sky Pirates of Cloudland",
+      "page": 1,
+      "old_url": "https://v3b.fal.media/files/b/0a902911/RtHfAu13aBim-2C9iUDcp...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216836/azories/books/sky_pirates_of_cloudland/page_01.jpg"
+    },
+    {
+      "book": "Sky Pirates of Cloudland",
+      "page": 2,
+      "old_url": "https://v3b.fal.media/files/b/0a902911/S4M2PGRJ1oKE-zkEFPNKh...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216838/azories/books/sky_pirates_of_cloudland/page_02.jpg"
+    },
+    {
+      "book": "Sky Pirates of Cloudland",
+      "page": 3,
+      "old_url": "https://v3b.fal.media/files/b/0a902911/YSbZT0O4N4AyVOVT4TGDu...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216839/azories/books/sky_pirates_of_cloudland/page_03.jpg"
+    },
+    {
+      "book": "Sky Pirates of Cloudland",
+      "page": 4,
+      "old_url": "https://v3b.fal.media/files/b/0a902911/JleDqTGLd03XjPQmWor9e...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216841/azories/books/sky_pirates_of_cloudland/page_04.jpg"
+    },
+    {
+      "book": "Sky Pirates of Cloudland",
+      "page": 5,
+      "old_url": "https://v3b.fal.media/files/b/0a902912/M08OvrzzEg8BrxLTMz_GY...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216842/azories/books/sky_pirates_of_cloudland/page_05.jpg"
+    },
+    {
+      "book": "Sky Pirates of Cloudland",
+      "page": 6,
+      "old_url": "https://v3b.fal.media/files/b/0a902912/GnRix556JWjw8TBFBoUc1...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216844/azories/books/sky_pirates_of_cloudland/page_06.jpg"
+    },
+    {
+      "book": "Sky Pirates of Cloudland",
+      "page": 7,
+      "old_url": "https://v3b.fal.media/files/b/0a902912/GZ2VQ8tiIDdiXJlrEK_uX...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216845/azories/books/sky_pirates_of_cloudland/page_07.jpg"
+    },
+    {
+      "book": "Sky Pirates of Cloudland",
+      "page": 8,
+      "old_url": "https://v3b.fal.media/files/b/0a902912/MD2JV9PudyZCQDXjm5wDs...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216846/azories/books/sky_pirates_of_cloudland/page_08.jpg"
+    },
+    {
+      "book": "Sky Pirates of Cloudland",
+      "page": 9,
+      "old_url": "https://v3b.fal.media/files/b/0a902912/IP64nSVpUqKEQQ-dx9EWw...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216848/azories/books/sky_pirates_of_cloudland/page_09.jpg"
+    },
+    {
+      "book": "Sky Pirates of Cloudland",
+      "page": 10,
+      "old_url": "https://v3b.fal.media/files/b/0a902912/-B71QDi1wGXcUQ5cER0OU...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216849/azories/books/sky_pirates_of_cloudland/page_10.jpg"
+    },
+    {
+      "book": "The Lighthouse Keeper's Secret",
+      "page": 1,
+      "old_url": "https://v3b.fal.media/files/b/0a902912/AXO-hPz9fBD4g73nxL2Bn...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216850/azories/books/the_lighthouse_keepers_secret/page_01.jpg"
+    },
+    {
+      "book": "The Lighthouse Keeper's Secret",
+      "page": 2,
+      "old_url": "https://v3b.fal.media/files/b/0a902913/GpR2U8beChw0qnBtBNgQa...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216851/azories/books/the_lighthouse_keepers_secret/page_02.jpg"
+    },
+    {
+      "book": "The Lighthouse Keeper's Secret",
+      "page": 3,
+      "old_url": "https://v3b.fal.media/files/b/0a902913/KSCi6nYQv7RHLqywze9aN...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216852/azories/books/the_lighthouse_keepers_secret/page_03.jpg"
+    },
+    {
+      "book": "The Lighthouse Keeper's Secret",
+      "page": 4,
+      "old_url": "https://v3b.fal.media/files/b/0a902913/HuljC4MXNZdKg5lQE_4_M...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216854/azories/books/the_lighthouse_keepers_secret/page_04.jpg"
+    },
+    {
+      "book": "The Lighthouse Keeper's Secret",
+      "page": 5,
+      "old_url": "https://v3b.fal.media/files/b/0a902913/6kyg89MnVuAVrwkcQoWGs...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216855/azories/books/the_lighthouse_keepers_secret/page_05.jpg"
+    },
+    {
+      "book": "The Lighthouse Keeper's Secret",
+      "page": 6,
+      "old_url": "https://v3b.fal.media/files/b/0a902913/kpu64TWyZofjt6c3BkIbZ...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216856/azories/books/the_lighthouse_keepers_secret/page_06.jpg"
+    },
+    {
+      "book": "The Lighthouse Keeper's Secret",
+      "page": 7,
+      "old_url": "https://v3b.fal.media/files/b/0a902913/qU-fBpfZOzyF6XIxPq-eL...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216857/azories/books/the_lighthouse_keepers_secret/page_07.jpg"
+    },
+    {
+      "book": "The Lighthouse Keeper's Secret",
+      "page": 8,
+      "old_url": "https://v3b.fal.media/files/b/0a902913/co4ttC7txkjAQ1Inknl19...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216858/azories/books/the_lighthouse_keepers_secret/page_08.jpg"
+    },
+    {
+      "book": "The Lighthouse Keeper's Secret",
+      "page": 9,
+      "old_url": "https://v3b.fal.media/files/b/0a902913/V9i8qBbOI_wZ5MMvmhUDr...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216859/azories/books/the_lighthouse_keepers_secret/page_09.jpg"
+    },
+    {
+      "book": "The Lighthouse Keeper's Secret",
+      "page": 10,
+      "old_url": "https://v3b.fal.media/files/b/0a902913/ADYVoOvCK0eGedjPqUXBh...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216862/azories/books/the_lighthouse_keepers_secret/page_10.jpg"
+    },
+    {
+      "book": "The Arctic Expedition",
+      "page": 1,
+      "old_url": "https://v3b.fal.media/files/b/0a902914/8Juz4d4ANvx_fkaUQh3Q0...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216866/azories/books/the_arctic_expedition/page_01.jpg"
+    },
+    {
+      "book": "The Arctic Expedition",
+      "page": 2,
+      "old_url": "https://v3b.fal.media/files/b/0a902914/n5eny0TPCOk7E_bW5mnI1...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216867/azories/books/the_arctic_expedition/page_02.jpg"
+    },
+    {
+      "book": "The Arctic Expedition",
+      "page": 3,
+      "old_url": "https://v3b.fal.media/files/b/0a902914/XHNok7Xw9mGD40fsF762F...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216869/azories/books/the_arctic_expedition/page_03.jpg"
+    },
+    {
+      "book": "The Arctic Expedition",
+      "page": 4,
+      "old_url": "https://v3b.fal.media/files/b/0a902914/635CB2zho8liT8Hj29Oe1...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216870/azories/books/the_arctic_expedition/page_04.jpg"
+    },
+    {
+      "book": "The Arctic Expedition",
+      "page": 5,
+      "old_url": "https://v3b.fal.media/files/b/0a902914/InyzxotMU2XoYH0eVABrp...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216871/azories/books/the_arctic_expedition/page_05.jpg"
+    },
+    {
+      "book": "The Arctic Expedition",
+      "page": 6,
+      "old_url": "https://v3b.fal.media/files/b/0a902914/MCPUDOlV8yMgwATgfOOwr...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216872/azories/books/the_arctic_expedition/page_06.jpg"
+    },
+    {
+      "book": "The Arctic Expedition",
+      "page": 7,
+      "old_url": "https://v3b.fal.media/files/b/0a902914/LvMYnH7b405fLMNSkxlkO...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216873/azories/books/the_arctic_expedition/page_07.jpg"
+    },
+    {
+      "book": "The Arctic Expedition",
+      "page": 8,
+      "old_url": "https://v3b.fal.media/files/b/0a902914/tDX7sUDn-zrTtRsSO7VTC...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216874/azories/books/the_arctic_expedition/page_08.jpg"
+    },
+    {
+      "book": "The Arctic Expedition",
+      "page": 9,
+      "old_url": "https://v3b.fal.media/files/b/0a902914/yQ7QR0_HqRWU-Jka3XGzx...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216876/azories/books/the_arctic_expedition/page_09.jpg"
+    },
+    {
+      "book": "The Arctic Expedition",
+      "page": 10,
+      "old_url": "https://v3b.fal.media/files/b/0a902915/8Sit3d4LdmaP8tE9hN1La...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216877/azories/books/the_arctic_expedition/page_10.jpg"
+    },
+    {
+      "book": "The Time Machine Treehouse",
+      "page": 1,
+      "old_url": "https://v3b.fal.media/files/b/0a902915/fKs9886HTneNzk1_wgTIj...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216878/azories/books/the_time_machine_treehouse/page_01.jpg"
+    },
+    {
+      "book": "The Time Machine Treehouse",
+      "page": 2,
+      "old_url": "https://v3b.fal.media/files/b/0a902915/47Klkje0FBD0jyVsWLZFn...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216879/azories/books/the_time_machine_treehouse/page_02.jpg"
+    },
+    {
+      "book": "The Time Machine Treehouse",
+      "page": 3,
+      "old_url": "https://v3b.fal.media/files/b/0a902915/0X4qZW72OW-eU12_IADPI...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216880/azories/books/the_time_machine_treehouse/page_03.jpg"
+    },
+    {
+      "book": "The Time Machine Treehouse",
+      "page": 4,
+      "old_url": "https://v3b.fal.media/files/b/0a902915/_0XZUa_2LNX8PYG4cGutK...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216882/azories/books/the_time_machine_treehouse/page_04.jpg"
+    },
+    {
+      "book": "The Time Machine Treehouse",
+      "page": 5,
+      "old_url": "https://v3b.fal.media/files/b/0a902915/uFfXPBv9slNWlk1KEIvy2...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216883/azories/books/the_time_machine_treehouse/page_05.jpg"
+    },
+    {
+      "book": "The Time Machine Treehouse",
+      "page": 6,
+      "old_url": "https://v3b.fal.media/files/b/0a902915/iMxRIEtw6ozke4hn6U3ia...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216885/azories/books/the_time_machine_treehouse/page_06.jpg"
+    },
+    {
+      "book": "The Time Machine Treehouse",
+      "page": 7,
+      "old_url": "https://v3b.fal.media/files/b/0a902915/YNHuvChq9GkEKUmgvDJMu...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216886/azories/books/the_time_machine_treehouse/page_07.jpg"
+    },
+    {
+      "book": "The Time Machine Treehouse",
+      "page": 8,
+      "old_url": "https://v3b.fal.media/files/b/0a902915/tAkQYKtJiUtpYs_nHq2Kk...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216888/azories/books/the_time_machine_treehouse/page_08.jpg"
+    },
+    {
+      "book": "The Time Machine Treehouse",
+      "page": 9,
+      "old_url": "https://v3b.fal.media/files/b/0a902915/ig2tdtBQWFv_jy_3aTSPx...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216889/azories/books/the_time_machine_treehouse/page_09.jpg"
+    },
+    {
+      "book": "The Time Machine Treehouse",
+      "page": 10,
+      "old_url": "https://v3b.fal.media/files/b/0a902916/F2dsJVKOsWiTlDxaGfeyy...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216890/azories/books/the_time_machine_treehouse/page_10.jpg"
+    },
+    {
+      "book": "Space Station School",
+      "page": 1,
+      "old_url": "https://v3b.fal.media/files/b/0a902916/g-46tP8EO6TTg3W7ET5im...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216891/azories/books/space_station_school/page_01.jpg"
+    },
+    {
+      "book": "Space Station School",
+      "page": 2,
+      "old_url": "https://v3b.fal.media/files/b/0a902916/EhHQXP_r0P7i6MVUEtmLf...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216892/azories/books/space_station_school/page_02.jpg"
+    },
+    {
+      "book": "Space Station School",
+      "page": 3,
+      "old_url": "https://v3b.fal.media/files/b/0a902916/NTp20n_EcrJ8T9w_PX_s9...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216894/azories/books/space_station_school/page_03.jpg"
+    },
+    {
+      "book": "Space Station School",
+      "page": 4,
+      "old_url": "https://v3b.fal.media/files/b/0a902916/VHVQwxaTC8PyyU952WP0H...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216895/azories/books/space_station_school/page_04.jpg"
+    },
+    {
+      "book": "Space Station School",
+      "page": 5,
+      "old_url": "https://v3b.fal.media/files/b/0a902916/uZcaEyCC96d0zS_M90pOE...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216896/azories/books/space_station_school/page_05.jpg"
+    },
+    {
+      "book": "Space Station School",
+      "page": 6,
+      "old_url": "https://v3b.fal.media/files/b/0a902916/mRzxQiduKFbqYyO6UiX44...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216898/azories/books/space_station_school/page_06.jpg"
+    },
+    {
+      "book": "Space Station School",
+      "page": 7,
+      "old_url": "https://v3b.fal.media/files/b/0a902916/A0EYPZcbEdRKsPiXxEelo...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216900/azories/books/space_station_school/page_07.jpg"
+    },
+    {
+      "book": "Space Station School",
+      "page": 8,
+      "old_url": "https://v3b.fal.media/files/b/0a902916/EyWCEMMwJ4uZkFpbmto0l...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216901/azories/books/space_station_school/page_08.jpg"
+    },
+    {
+      "book": "Space Station School",
+      "page": 9,
+      "old_url": "https://v3b.fal.media/files/b/0a902917/qlHdwYiXA0VLt-0CzoSQe...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216902/azories/books/space_station_school/page_09.jpg"
+    },
+    {
+      "book": "Space Station School",
+      "page": 10,
+      "old_url": "https://v3b.fal.media/files/b/0a902917/VKQLnr_v60NwB59XBQOSO...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216903/azories/books/space_station_school/page_10.jpg"
+    },
+    {
+      "book": "The Friendly Martians",
+      "page": 1,
+      "old_url": "https://v3b.fal.media/files/b/0a902917/2YrvISEAgjMNSw7k9Il3v...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216905/azories/books/the_friendly_martians/page_01.jpg"
+    },
+    {
+      "book": "The Friendly Martians",
+      "page": 2,
+      "old_url": "https://v3b.fal.media/files/b/0a902917/RDf5Y7buS7ox_95fsWatE...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216906/azories/books/the_friendly_martians/page_02.jpg"
+    },
+    {
+      "book": "The Friendly Martians",
+      "page": 3,
+      "old_url": "https://v3b.fal.media/files/b/0a902917/wNDgPsxL1B4hEaUfUAtYK...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216907/azories/books/the_friendly_martians/page_03.jpg"
+    },
+    {
+      "book": "The Friendly Martians",
+      "page": 4,
+      "old_url": "https://v3b.fal.media/files/b/0a902917/frsstq-g17ASDO-KRwJQX...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216908/azories/books/the_friendly_martians/page_04.jpg"
+    },
+    {
+      "book": "The Friendly Martians",
+      "page": 5,
+      "old_url": "https://v3b.fal.media/files/b/0a902917/nCa9DuVIKVkdyJppD9GS7...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216910/azories/books/the_friendly_martians/page_05.jpg"
+    },
+    {
+      "book": "The Friendly Martians",
+      "page": 6,
+      "old_url": "https://v3b.fal.media/files/b/0a902917/mbZ_JSRkrQYxvTgLdtTGS...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216911/azories/books/the_friendly_martians/page_06.jpg"
+    },
+    {
+      "book": "The Friendly Martians",
+      "page": 7,
+      "old_url": "https://v3b.fal.media/files/b/0a902917/wbmBXhftSHZ9_99dP5Xlp...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216912/azories/books/the_friendly_martians/page_07.jpg"
+    },
+    {
+      "book": "The Friendly Martians",
+      "page": 8,
+      "old_url": "https://v3b.fal.media/files/b/0a902918/_sfi8wYGLvVSe3jJjKxup...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216913/azories/books/the_friendly_martians/page_08.jpg"
+    },
+    {
+      "book": "The Friendly Martians",
+      "page": 9,
+      "old_url": "https://v3b.fal.media/files/b/0a902918/bos0s2NZCse_mje3Oe571...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216915/azories/books/the_friendly_martians/page_09.jpg"
+    },
+    {
+      "book": "The Friendly Martians",
+      "page": 10,
+      "old_url": "https://v3b.fal.media/files/b/0a902918/cC-IxX-eBfsLz-84IcBIQ...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216917/azories/books/the_friendly_martians/page_10.jpg"
+    },
+    {
+      "book": "Gadget Girl and the Invention Fair",
+      "page": 1,
+      "old_url": "https://v3b.fal.media/files/b/0a902918/4ot04Y3Pv2H10WqqVRoXE...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216918/azories/books/gadget_girl_and_the_invention_/page_01.jpg"
+    },
+    {
+      "book": "Gadget Girl and the Invention Fair",
+      "page": 2,
+      "old_url": "https://v3b.fal.media/files/b/0a902919/ipXX0hSusG3SUUJ8zXDI7...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216920/azories/books/gadget_girl_and_the_invention_/page_02.jpg"
+    },
+    {
+      "book": "Gadget Girl and the Invention Fair",
+      "page": 3,
+      "old_url": "https://v3b.fal.media/files/b/0a902919/k2vAk4auuHwteoKYGCCTy...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216921/azories/books/gadget_girl_and_the_invention_/page_03.jpg"
+    },
+    {
+      "book": "Gadget Girl and the Invention Fair",
+      "page": 4,
+      "old_url": "https://v3b.fal.media/files/b/0a902919/aMErdH4viQf8RKAaLqT7e...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216926/azories/books/gadget_girl_and_the_invention_/page_04.jpg"
+    },
+    {
+      "book": "Gadget Girl and the Invention Fair",
+      "page": 5,
+      "old_url": "https://v3b.fal.media/files/b/0a902919/Ag-tasuj31TQ9FZu_tzX3...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216931/azories/books/gadget_girl_and_the_invention_/page_05.jpg"
+    },
+    {
+      "book": "Gadget Girl and the Invention Fair",
+      "page": 6,
+      "old_url": "https://v3b.fal.media/files/b/0a902919/OXT0pLsUmBBV7_erXdqtp...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216932/azories/books/gadget_girl_and_the_invention_/page_06.jpg"
+    },
+    {
+      "book": "Gadget Girl and the Invention Fair",
+      "page": 7,
+      "old_url": "https://v3b.fal.media/files/b/0a902919/CnauCPlpoykaSA7r_zLMF...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216934/azories/books/gadget_girl_and_the_invention_/page_07.jpg"
+    },
+    {
+      "book": "Gadget Girl and the Invention Fair",
+      "page": 8,
+      "old_url": "https://v3b.fal.media/files/b/0a902919/U1WPx7I7J1DY3lcIrQ6Gx...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216936/azories/books/gadget_girl_and_the_invention_/page_08.jpg"
+    },
+    {
+      "book": "Gadget Girl and the Invention Fair",
+      "page": 9,
+      "old_url": "https://v3b.fal.media/files/b/0a90291a/kbKTYibTNo82pnjRTZ9w2...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216937/azories/books/gadget_girl_and_the_invention_/page_09.jpg"
+    },
+    {
+      "book": "Gadget Girl and the Invention Fair",
+      "page": 10,
+      "old_url": "https://v3b.fal.media/files/b/0a90291a/Zq283CIRcN6LZhfWJldTi...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216939/azories/books/gadget_girl_and_the_invention_/page_10.jpg"
+    },
+    {
+      "book": "The Secret Code Club",
+      "page": 1,
+      "old_url": "https://v3b.fal.media/files/b/0a90291a/ZC6-tFXx533g1PA6cSz0_...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216940/azories/books/the_secret_code_club/page_01.jpg"
+    },
+    {
+      "book": "The Secret Code Club",
+      "page": 2,
+      "old_url": "https://v3b.fal.media/files/b/0a90291a/eNKm_wFtlj5rifKZECB0J...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216941/azories/books/the_secret_code_club/page_02.jpg"
+    },
+    {
+      "book": "The Secret Code Club",
+      "page": 3,
+      "old_url": "https://v3b.fal.media/files/b/0a90291a/XblBd_oXbJJwNjWxWcQ9l...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216942/azories/books/the_secret_code_club/page_03.jpg"
+    },
+    {
+      "book": "The Secret Code Club",
+      "page": 4,
+      "old_url": "https://v3b.fal.media/files/b/0a90291a/26Yz7R4SX0LgDusEa7_31...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216943/azories/books/the_secret_code_club/page_04.jpg"
+    },
+    {
+      "book": "The Secret Code Club",
+      "page": 5,
+      "old_url": "https://v3b.fal.media/files/b/0a90291a/GUF8CtjjiX_6-FPsD_8th...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216945/azories/books/the_secret_code_club/page_05.jpg"
+    },
+    {
+      "book": "The Secret Code Club",
+      "page": 6,
+      "old_url": "https://v3b.fal.media/files/b/0a90291a/yYcJ9cyqvVDkBcAFgFHKv...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216946/azories/books/the_secret_code_club/page_06.jpg"
+    },
+    {
+      "book": "The Secret Code Club",
+      "page": 7,
+      "old_url": "https://v3b.fal.media/files/b/0a90291a/pKPuPYk3DNCr-6VILg7AK...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216948/azories/books/the_secret_code_club/page_07.jpg"
+    },
+    {
+      "book": "The Secret Code Club",
+      "page": 8,
+      "old_url": "https://v3b.fal.media/files/b/0a90291a/GD5pZdDk_Tp5o6H_Ktj7a...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216950/azories/books/the_secret_code_club/page_08.jpg"
+    },
+    {
+      "book": "The Secret Code Club",
+      "page": 9,
+      "old_url": "https://v3b.fal.media/files/b/0a90291b/EadcK5V0lTXxaXao5yfza...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216951/azories/books/the_secret_code_club/page_09.jpg"
+    },
+    {
+      "book": "The Secret Code Club",
+      "page": 10,
+      "old_url": "https://v3b.fal.media/files/b/0a90291b/gqvRRPbjkNaSrhKZAxzTK...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216952/azories/books/the_secret_code_club/page_10.jpg"
+    },
+    {
+      "book": "Detective Daisy's First Case",
+      "page": 1,
+      "old_url": "https://v3b.fal.media/files/b/0a90291b/vyRqr7k9dKGDPKzaf2Csx...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216954/azories/books/detective_daisys_first_case/page_01.jpg"
+    },
+    {
+      "book": "Detective Daisy's First Case",
+      "page": 2,
+      "old_url": "https://v3b.fal.media/files/b/0a90291b/9xyJCXOSlinexrj5uZZg1...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216955/azories/books/detective_daisys_first_case/page_02.jpg"
+    },
+    {
+      "book": "Detective Daisy's First Case",
+      "page": 3,
+      "old_url": "https://v3b.fal.media/files/b/0a90291b/1oMzy4evi-hNh_Rs1keI4...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216956/azories/books/detective_daisys_first_case/page_03.jpg"
+    },
+    {
+      "book": "Detective Daisy's First Case",
+      "page": 4,
+      "old_url": "https://v3b.fal.media/files/b/0a90291b/L-_ZTvLSduIkp6WS4Iv3O...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216960/azories/books/detective_daisys_first_case/page_04.jpg"
+    },
+    {
+      "book": "Detective Daisy's First Case",
+      "page": 5,
+      "old_url": "https://v3b.fal.media/files/b/0a90291b/u3Ew8W65H3rw4MervUJB0...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216961/azories/books/detective_daisys_first_case/page_05.jpg"
+    },
+    {
+      "book": "Detective Daisy's First Case",
+      "page": 6,
+      "old_url": "https://v3b.fal.media/files/b/0a90291b/nUgIL9MPZzvrRbpY2AWb5...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216963/azories/books/detective_daisys_first_case/page_06.jpg"
+    },
+    {
+      "book": "Detective Daisy's First Case",
+      "page": 7,
+      "old_url": "https://v3b.fal.media/files/b/0a90291b/RIFlL-vimtTM296I8W4r3...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216964/azories/books/detective_daisys_first_case/page_07.jpg"
+    },
+    {
+      "book": "Detective Daisy's First Case",
+      "page": 8,
+      "old_url": "https://v3b.fal.media/files/b/0a90291c/c6g5MrxQSojYYefkkP5L2...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216965/azories/books/detective_daisys_first_case/page_08.jpg"
+    },
+    {
+      "book": "Detective Daisy's First Case",
+      "page": 9,
+      "old_url": "https://v3b.fal.media/files/b/0a90291c/Nb45-yCa6-YXJvhwQukm5...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216966/azories/books/detective_daisys_first_case/page_09.jpg"
+    },
+    {
+      "book": "Detective Daisy's First Case",
+      "page": 10,
+      "old_url": "https://v3b.fal.media/files/b/0a90291c/KTS459Q8jyQi-cuuAAtQl...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216968/azories/books/detective_daisys_first_case/page_10.jpg"
+    },
+    {
+      "book": "The Burping Dragon",
+      "page": 1,
+      "old_url": "https://v3b.fal.media/files/b/0a90291c/B4IfxdImJQzzRmU6IPQGP...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216969/azories/books/the_burping_dragon/page_01.jpg"
+    },
+    {
+      "book": "The Burping Dragon",
+      "page": 2,
+      "old_url": "https://v3b.fal.media/files/b/0a90291c/bUAIQP23S7Tp-9aTVSwrE...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216970/azories/books/the_burping_dragon/page_02.jpg"
+    },
+    {
+      "book": "The Burping Dragon",
+      "page": 3,
+      "old_url": "https://v3b.fal.media/files/b/0a90291c/9Wf8H__ueTXWHcu0bO6yj...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216972/azories/books/the_burping_dragon/page_03.jpg"
+    },
+    {
+      "book": "The Burping Dragon",
+      "page": 4,
+      "old_url": "https://v3b.fal.media/files/b/0a90291c/wLhdDinLW_xW_AAh9J8wM...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216973/azories/books/the_burping_dragon/page_04.jpg"
+    },
+    {
+      "book": "The Burping Dragon",
+      "page": 5,
+      "old_url": "https://v3b.fal.media/files/b/0a90291c/kfhbJv8Vty4TzBcw2OcvQ...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216974/azories/books/the_burping_dragon/page_05.jpg"
+    },
+    {
+      "book": "The Burping Dragon",
+      "page": 6,
+      "old_url": "https://v3b.fal.media/files/b/0a90291d/GZkj4vQtyCgkIh0VDGuSf...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216976/azories/books/the_burping_dragon/page_06.jpg"
+    },
+    {
+      "book": "The Burping Dragon",
+      "page": 7,
+      "old_url": "https://v3b.fal.media/files/b/0a90291d/T626qXxvVOb7DONxvdxH8...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216978/azories/books/the_burping_dragon/page_07.jpg"
+    },
+    {
+      "book": "The Burping Dragon",
+      "page": 8,
+      "old_url": "https://v3b.fal.media/files/b/0a90291d/DGBNggFSrcOrIaVw9Z4zh...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216979/azories/books/the_burping_dragon/page_08.jpg"
+    },
+    {
+      "book": "The Burping Dragon",
+      "page": 9,
+      "old_url": "https://v3b.fal.media/files/b/0a90291d/Rj8CB7iTw9cBKeScoaDAG...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216980/azories/books/the_burping_dragon/page_09.jpg"
+    },
+    {
+      "book": "The Burping Dragon",
+      "page": 10,
+      "old_url": "https://v3b.fal.media/files/b/0a90291d/KMq2_xeumBVZ96N65i23Z...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216981/azories/books/the_burping_dragon/page_10.jpg"
+    },
+    {
+      "book": "The Backwards Day",
+      "page": 1,
+      "old_url": "https://v3b.fal.media/files/b/0a90291d/4jV77N3G8RHgWNlTH3Akt...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216983/azories/books/the_backwards_day/page_01.jpg"
+    },
+    {
+      "book": "The Backwards Day",
+      "page": 2,
+      "old_url": "https://v3b.fal.media/files/b/0a90291d/pktm9L0Gl1hzRe7mMU-hi...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216984/azories/books/the_backwards_day/page_02.jpg"
+    },
+    {
+      "book": "The Backwards Day",
+      "page": 3,
+      "old_url": "https://v3b.fal.media/files/b/0a90291d/W0YeBJgODUaxecYSF2P34...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216985/azories/books/the_backwards_day/page_03.jpg"
+    },
+    {
+      "book": "The Backwards Day",
+      "page": 4,
+      "old_url": "https://v3b.fal.media/files/b/0a90291d/Lyq47upfwurGJL6hvla9D...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216987/azories/books/the_backwards_day/page_04.jpg"
+    },
+    {
+      "book": "The Backwards Day",
+      "page": 5,
+      "old_url": "https://v3b.fal.media/files/b/0a90291e/zRxVDPx_pexYN4ztUsgYR...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216988/azories/books/the_backwards_day/page_05.jpg"
+    },
+    {
+      "book": "The Backwards Day",
+      "page": 6,
+      "old_url": "https://v3b.fal.media/files/b/0a90291e/0Nn1_gSrOxNM3GeHJqqpe...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216990/azories/books/the_backwards_day/page_06.jpg"
+    },
+    {
+      "book": "The Backwards Day",
+      "page": 7,
+      "old_url": "https://v3b.fal.media/files/b/0a90291e/OML9uOq4vDAnIG6j9BIuQ...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216991/azories/books/the_backwards_day/page_07.jpg"
+    },
+    {
+      "book": "The Backwards Day",
+      "page": 8,
+      "old_url": "https://v3b.fal.media/files/b/0a90291e/3JE2h5Sfn2QbDfWvFkJaL...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216992/azories/books/the_backwards_day/page_08.jpg"
+    },
+    {
+      "book": "The Backwards Day",
+      "page": 9,
+      "old_url": "https://v3b.fal.media/files/b/0a90291f/DMA6qAUbeXZycO7Hmd20W...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216993/azories/books/the_backwards_day/page_09.jpg"
+    },
+    {
+      "book": "The Backwards Day",
+      "page": 10,
+      "old_url": "https://v3b.fal.media/files/b/0a90291f/bdgbiRFJkuBWGfJK2XmzO...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216994/azories/books/the_backwards_day/page_10.jpg"
+    },
+    {
+      "book": "Pirate Pete's Bad Hair Day",
+      "page": 1,
+      "old_url": "https://v3b.fal.media/files/b/0a90291f/A6epXRknsPQpiNbyp8Oec...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216996/azories/books/pirate_petes_bad_hair_day/page_01.jpg"
+    },
+    {
+      "book": "Pirate Pete's Bad Hair Day",
+      "page": 2,
+      "old_url": "https://v3b.fal.media/files/b/0a90291f/jHpiskctci8Y-cYpGL-Ys...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216997/azories/books/pirate_petes_bad_hair_day/page_02.jpg"
+    },
+    {
+      "book": "Pirate Pete's Bad Hair Day",
+      "page": 3,
+      "old_url": "https://v3b.fal.media/files/b/0a90291f/T2odF57SkTUw-TcCJrwGT...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216998/azories/books/pirate_petes_bad_hair_day/page_03.jpg"
+    },
+    {
+      "book": "Pirate Pete's Bad Hair Day",
+      "page": 4,
+      "old_url": "https://v3b.fal.media/files/b/0a90291f/64FtGBR58Y4vxl7K4ituH...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772216999/azories/books/pirate_petes_bad_hair_day/page_04.jpg"
+    },
+    {
+      "book": "Pirate Pete's Bad Hair Day",
+      "page": 5,
+      "old_url": "https://v3b.fal.media/files/b/0a90291f/xKV7HozAbj5SfiUiK28BD...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217001/azories/books/pirate_petes_bad_hair_day/page_05.jpg"
+    },
+    {
+      "book": "Pirate Pete's Bad Hair Day",
+      "page": 6,
+      "old_url": "https://v3b.fal.media/files/b/0a902920/xWyvGuw887RUaVpZhY8AU...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217003/azories/books/pirate_petes_bad_hair_day/page_06.jpg"
+    },
+    {
+      "book": "Pirate Pete's Bad Hair Day",
+      "page": 7,
+      "old_url": "https://v3b.fal.media/files/b/0a902920/Ubccth8nIIm3VGve1pPOb...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217004/azories/books/pirate_petes_bad_hair_day/page_07.jpg"
+    },
+    {
+      "book": "Pirate Pete's Bad Hair Day",
+      "page": 8,
+      "old_url": "https://v3b.fal.media/files/b/0a902920/2FvwYwI6CzqVLJngsy66z...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217006/azories/books/pirate_petes_bad_hair_day/page_08.jpg"
+    },
+    {
+      "book": "Pirate Pete's Bad Hair Day",
+      "page": 9,
+      "old_url": "https://v3b.fal.media/files/b/0a902920/XBDnjNx4bcEerkOOk4klR...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217007/azories/books/pirate_petes_bad_hair_day/page_09.jpg"
+    },
+    {
+      "book": "Pirate Pete's Bad Hair Day",
+      "page": 10,
+      "old_url": "https://v3b.fal.media/files/b/0a902920/ti-1JM5IRDHox1fm5F-7b...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217008/azories/books/pirate_petes_bad_hair_day/page_10.jpg"
+    },
+    {
+      "book": "Dinosaur Dentist",
+      "page": 1,
+      "old_url": "https://v3b.fal.media/files/b/0a902920/a50sqU-i1BBumHEtS12Qa...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217010/azories/books/dinosaur_dentist/page_01.jpg"
+    },
+    {
+      "book": "Dinosaur Dentist",
+      "page": 2,
+      "old_url": "https://v3b.fal.media/files/b/0a902920/bxHgjiZPj_f1envzMyQhd...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217011/azories/books/dinosaur_dentist/page_02.jpg"
+    },
+    {
+      "book": "Dinosaur Dentist",
+      "page": 3,
+      "old_url": "https://v3b.fal.media/files/b/0a902920/vGoEcGiuTI_rmIXIe6bAt...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217014/azories/books/dinosaur_dentist/page_03.jpg"
+    },
+    {
+      "book": "Dinosaur Dentist",
+      "page": 4,
+      "old_url": "https://v3b.fal.media/files/b/0a902921/kCiruX4vY7dkY53krQhVd...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217026/azories/books/dinosaur_dentist/page_04.jpg"
+    },
+    {
+      "book": "Dinosaur Dentist",
+      "page": 5,
+      "old_url": "https://v3b.fal.media/files/b/0a902921/owWUm6CxjM8NmqVFLZUpU...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217027/azories/books/dinosaur_dentist/page_05.jpg"
+    },
+    {
+      "book": "Dinosaur Dentist",
+      "page": 6,
+      "old_url": "https://v3b.fal.media/files/b/0a902921/LuGKE1OWzXtU4i7wIPUQx...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217028/azories/books/dinosaur_dentist/page_06.jpg"
+    },
+    {
+      "book": "Dinosaur Dentist",
+      "page": 7,
+      "old_url": "https://v3b.fal.media/files/b/0a902921/j8uW1Z14V17C7ANoLLlMI...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217030/azories/books/dinosaur_dentist/page_07.jpg"
+    },
+    {
+      "book": "Dinosaur Dentist",
+      "page": 8,
+      "old_url": "https://v3b.fal.media/files/b/0a902921/UHVxNKjeqLoE9AwVs0XpT...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217031/azories/books/dinosaur_dentist/page_08.jpg"
+    },
+    {
+      "book": "Dinosaur Dentist",
+      "page": 9,
+      "old_url": "https://v3b.fal.media/files/b/0a902921/HXN7ROYd3_1pgPl4jXL4X...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217032/azories/books/dinosaur_dentist/page_09.jpg"
+    },
+    {
+      "book": "Dinosaur Dentist",
+      "page": 10,
+      "old_url": "https://v3b.fal.media/files/b/0a902921/d8IkzZR0WOOFzxWhEARKJ...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217033/azories/books/dinosaur_dentist/page_10.jpg"
+    },
+    {
+      "book": "The Alphabet Zoo",
+      "page": 1,
+      "old_url": "https://v3b.fal.media/files/b/0a902921/AQKtvNoCGZKQIERRrpF7n...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217034/azories/books/the_alphabet_zoo/page_01.jpg"
+    },
+    {
+      "book": "The Alphabet Zoo",
+      "page": 2,
+      "old_url": "https://v3b.fal.media/files/b/0a902921/dpXadetaXYlNBQba-1nPZ...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217036/azories/books/the_alphabet_zoo/page_02.jpg"
+    },
+    {
+      "book": "The Alphabet Zoo",
+      "page": 3,
+      "old_url": "https://v3b.fal.media/files/b/0a902921/1WC_oL-P1ph53uZSNipG1...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217037/azories/books/the_alphabet_zoo/page_03.jpg"
+    },
+    {
+      "book": "The Alphabet Zoo",
+      "page": 4,
+      "old_url": "https://v3b.fal.media/files/b/0a902922/ppLSLllfeOLe3ewJ2mjxb...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217039/azories/books/the_alphabet_zoo/page_04.jpg"
+    },
+    {
+      "book": "The Alphabet Zoo",
+      "page": 5,
+      "old_url": "https://v3b.fal.media/files/b/0a902922/1JUBXo7WQO__b45PYUcJT...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217042/azories/books/the_alphabet_zoo/page_05.jpg"
+    },
+    {
+      "book": "The Alphabet Zoo",
+      "page": 6,
+      "old_url": "https://v3b.fal.media/files/b/0a902922/XRvSTZoHsG7PcoSIQ6QrB...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217043/azories/books/the_alphabet_zoo/page_06.jpg"
+    },
+    {
+      "book": "The Alphabet Zoo",
+      "page": 7,
+      "old_url": "https://v3b.fal.media/files/b/0a902922/LxcSGr8GY8xcCv2VRg_Or...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217046/azories/books/the_alphabet_zoo/page_07.jpg"
+    },
+    {
+      "book": "The Alphabet Zoo",
+      "page": 8,
+      "old_url": "https://v3b.fal.media/files/b/0a902922/G81zOFQSHeqyDfrhmDdUz...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217052/azories/books/the_alphabet_zoo/page_08.jpg"
+    },
+    {
+      "book": "The Alphabet Zoo",
+      "page": 9,
+      "old_url": "https://v3b.fal.media/files/b/0a902922/62SZ3WEL2QAsM4urN0UIH...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217053/azories/books/the_alphabet_zoo/page_09.jpg"
+    },
+    {
+      "book": "The Alphabet Zoo",
+      "page": 10,
+      "old_url": "https://v3b.fal.media/files/b/0a902922/D1-Zgr-Cbk4jN2uMz1rNi...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217055/azories/books/the_alphabet_zoo/page_10.jpg"
+    },
+    {
+      "book": "Kindness Kingdom",
+      "page": 1,
+      "old_url": "https://v3b.fal.media/files/b/0a902922/2iF6TQs4eQCRzAF46teRh...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217056/azories/books/kindness_kingdom/page_01.jpg"
+    },
+    {
+      "book": "Kindness Kingdom",
+      "page": 2,
+      "old_url": "https://v3b.fal.media/files/b/0a902922/EGPzzYaeE3Z9mLzV7i6P7...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217057/azories/books/kindness_kingdom/page_02.jpg"
+    },
+    {
+      "book": "Kindness Kingdom",
+      "page": 3,
+      "old_url": "https://v3b.fal.media/files/b/0a902923/yH6vqJl7N0sm1MzYRGEmw...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217058/azories/books/kindness_kingdom/page_03.jpg"
+    },
+    {
+      "book": "Kindness Kingdom",
+      "page": 4,
+      "old_url": "https://v3b.fal.media/files/b/0a902923/KGJZLrgEYtZqMX9IAvBtT...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217059/azories/books/kindness_kingdom/page_04.jpg"
+    },
+    {
+      "book": "Kindness Kingdom",
+      "page": 5,
+      "old_url": "https://v3b.fal.media/files/b/0a902923/3SPxq5Lm5NTzxb-dicy-L...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217061/azories/books/kindness_kingdom/page_05.jpg"
+    },
+    {
+      "book": "Kindness Kingdom",
+      "page": 6,
+      "old_url": "https://v3b.fal.media/files/b/0a902923/cV8UOBWYDIusnn69p5fTA...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217062/azories/books/kindness_kingdom/page_06.jpg"
+    },
+    {
+      "book": "Kindness Kingdom",
+      "page": 7,
+      "old_url": "https://v3b.fal.media/files/b/0a902923/SR8j9P_1n5Bc1fHV1LDxw...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217063/azories/books/kindness_kingdom/page_07.jpg"
+    },
+    {
+      "book": "Kindness Kingdom",
+      "page": 8,
+      "old_url": "https://v3b.fal.media/files/b/0a902923/mhVcoCkvdOAfV_Vt1ktKh...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217065/azories/books/kindness_kingdom/page_08.jpg"
+    },
+    {
+      "book": "Kindness Kingdom",
+      "page": 9,
+      "old_url": "https://v3b.fal.media/files/b/0a902923/nambwHYfYPwJaxVdBcUM8...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217067/azories/books/kindness_kingdom/page_09.jpg"
+    },
+    {
+      "book": "Kindness Kingdom",
+      "page": 10,
+      "old_url": "https://v3b.fal.media/files/b/0a902923/wg4tajAorvag5TBIlcP3V...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217069/azories/books/kindness_kingdom/page_10.jpg"
+    },
+    {
+      "book": "The Feelings Garden",
+      "page": 1,
+      "old_url": "https://v3b.fal.media/files/b/0a902923/WV5ou_DjwVlNXdR8GLmna...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217070/azories/books/the_feelings_garden/page_01.jpg"
+    },
+    {
+      "book": "The Feelings Garden",
+      "page": 2,
+      "old_url": "https://v3b.fal.media/files/b/0a902924/11H63uSInahf6D5O5bTNK...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217072/azories/books/the_feelings_garden/page_02.jpg"
+    },
+    {
+      "book": "The Feelings Garden",
+      "page": 3,
+      "old_url": "https://v3b.fal.media/files/b/0a902924/5pmgXfc-AlOj8GFwlTNKU...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217074/azories/books/the_feelings_garden/page_03.jpg"
+    },
+    {
+      "book": "The Feelings Garden",
+      "page": 4,
+      "old_url": "https://v3b.fal.media/files/b/0a902924/KkfjJTKyTM6sxKBgx3jSy...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217077/azories/books/the_feelings_garden/page_04.jpg"
+    },
+    {
+      "book": "The Feelings Garden",
+      "page": 5,
+      "old_url": "https://v3b.fal.media/files/b/0a902924/0s59de7G3pWh3J_nur6US...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217078/azories/books/the_feelings_garden/page_05.jpg"
+    },
+    {
+      "book": "The Feelings Garden",
+      "page": 6,
+      "old_url": "https://v3b.fal.media/files/b/0a902924/0kfWDLAixqMcNIdnTTdA8...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217079/azories/books/the_feelings_garden/page_06.jpg"
+    },
+    {
+      "book": "The Feelings Garden",
+      "page": 7,
+      "old_url": "https://v3b.fal.media/files/b/0a902924/g_OVJEobtQrWrAWbQTXCU...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217080/azories/books/the_feelings_garden/page_07.jpg"
+    },
+    {
+      "book": "The Feelings Garden",
+      "page": 8,
+      "old_url": "https://v3b.fal.media/files/b/0a902924/LTIvA9ueJ0vZuGm0ryLW0...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217081/azories/books/the_feelings_garden/page_08.jpg"
+    },
+    {
+      "book": "The Feelings Garden",
+      "page": 9,
+      "old_url": "https://v3b.fal.media/files/b/0a902924/U1hjiFrEtsfQxPZVp0Hp5...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217082/azories/books/the_feelings_garden/page_09.jpg"
+    },
+    {
+      "book": "The Feelings Garden",
+      "page": 10,
+      "old_url": "https://v3b.fal.media/files/b/0a902924/evAYaJdnb6dxQaS7Du_on...",
+      "new_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217084/azories/books/the_feelings_garden/page_10.jpg"
+    }
+  ]
+}
