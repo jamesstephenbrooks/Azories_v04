@@ -5101,8 +5101,8 @@ async def get_full_book(book_id: str, response: Response, current_user: dict = D
                 "id": page.get("id", f"page-{page.get('page_number', 0)}"),
                 "chapter_id": "embedded-chapter",
                 "order": page.get("page_number", 0),
-                "text": page.get("text", ""),
-                "text_content": page.get("text", ""),  # Also provide text_content for compatibility
+                "text": page.get("text_content", page.get("text", "")),
+                "text_content": page.get("text_content", page.get("text", "")),
                 "image_url": page.get("image_url", ""),
                 "image_url_2": page.get("image_url_2", ""),
                 "image_url_3": page.get("image_url_3", ""),
