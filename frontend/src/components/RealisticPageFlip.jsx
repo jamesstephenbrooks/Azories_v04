@@ -312,6 +312,7 @@ const ImagePage = forwardRef(({ page, pageNumber, isCurrentPage = false, onImage
         <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black/10 to-transparent pointer-events-none z-10" />
         
         {/* Full-page media - NO TEXT OVERLAYS on illustration page */}
+        {/* Use contain to show full image without cropping, with subtle background */}
         {useVideo ? (
           <video 
             src={page.video_url}
@@ -321,8 +322,9 @@ const ImagePage = forwardRef(({ page, pageNumber, isCurrentPage = false, onImage
             playsInline
             className="absolute inset-0 w-full h-full"
             style={{
-              objectFit: 'cover',
-              objectPosition: 'center'
+              objectFit: 'contain',
+              objectPosition: 'center',
+              backgroundColor: '#fdfbf7'
             }}
           />
         ) : hasImage ? (
@@ -331,8 +333,9 @@ const ImagePage = forwardRef(({ page, pageNumber, isCurrentPage = false, onImage
             alt=""
             className="absolute inset-0 w-full h-full"
             style={{
-              objectFit: 'cover',
-              objectPosition: `${page.image_position_x || 50}% ${page.image_position_y || 50}%`
+              objectFit: 'contain',
+              objectPosition: 'center',
+              backgroundColor: '#fdfbf7'
             }}
             priority={isCurrentPage}
             onLoad={onImageLoad}
