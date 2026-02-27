@@ -523,27 +523,13 @@ const RealisticPageFlip = forwardRef(({
 
   const handleFlip = useCallback((e) => {
     const newFlipPage = e.data;
-    
-    // Detect flip direction for mobile animation
-    if (isMobilePortrait) {
-      const direction = newFlipPage > previousPage.current ? 'next' : 'prev';
-      setFlipDirection(direction);
-      setShowFlipAnimation(true);
-      
-      // Hide animation after it completes
-      setTimeout(() => {
-        setShowFlipAnimation(false);
-      }, 400);
-    }
-    
-    previousPage.current = newFlipPage;
     setCurrentPage(newFlipPage);
     
     // Map flipbook page to content page index for voiceover sync
     // The mapping tells us which content page this flipbook page corresponds to
     const contentPageIndex = pageMapping.current[newFlipPage] ?? -1;
     onPageChange?.(newFlipPage, contentPageIndex);
-  }, [onPageChange, isMobilePortrait]);
+  }, [onPageChange]);
 
   const handleFlipStart = useCallback((e) => {
     // e.data is the state: "user_fold", "fold_corner", "flipping", "read"
