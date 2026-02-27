@@ -1524,6 +1524,8 @@ async def get_books(
     query = {}
     if published_only:
         query["is_published"] = True
+    # Always exclude hidden books from public library
+    query["hidden"] = {"$ne": True}
     if search:
         query["$or"] = [
             {"title": {"$regex": search, "$options": "i"}},
