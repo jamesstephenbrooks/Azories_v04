@@ -7,6 +7,10 @@ module.exports = {
   ],
   theme: {
   	extend: {
+		fontFamily: {
+			'nunito': ['Nunito', 'sans-serif'],
+			'reader': ['Nunito', 'sans-serif'],
+		},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
