@@ -284,17 +284,18 @@ const ImagePage = forwardRef(({ page, pageNumber, isCurrentPage = false, onImage
       data-density="soft"
       data-page-number={pageNumber}
     >
-      {/* Full-page media container - no padding, fills entire page */}
+      {/* Full-page media container - STRICT overflow:hidden to prevent any bleeding */}
       <div 
-        className="absolute inset-0 bg-[#fdfbf7] dark:bg-[#2a2a30] overflow-hidden"
+        className="absolute inset-0 bg-[#fdfbf7] dark:bg-[#2a2a30]"
         style={{
+          overflow: 'hidden',
           boxShadow: 'inset -7px 0 30px -7px rgba(0,0,0,0.12)',
         }}
       >
         {/* Spine shadow gradient */}
         <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black/10 to-transparent pointer-events-none z-10" />
         
-        {/* Full-page media - centered and covering the entire page */}
+        {/* Full-page media - NO TEXT OVERLAYS on illustration page */}
         {useVideo ? (
           <video 
             src={page.video_url}
@@ -333,12 +334,7 @@ const ImagePage = forwardRef(({ page, pageNumber, isCurrentPage = false, onImage
           </div>
         )}
         
-        {/* Page number overlay */}
-        {pageNumber && (
-          <div className="absolute bottom-4 left-6 text-sm text-white/70 drop-shadow-lg z-20">
-            {pageNumber}
-          </div>
-        )}
+        {/* REMOVED page number overlay - illustration page should be clean */}
       </div>
     </div>
   );
