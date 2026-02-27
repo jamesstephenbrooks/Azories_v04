@@ -74,6 +74,7 @@ export default function ProStudio() {
   const [isTrainingLora, setIsTrainingLora] = useState(false);
   const [trainingProgress, setTrainingProgress] = useState(null);
   const [falAvailable, setFalAvailable] = useState(false);
+  const [falKeyError, setFalKeyError] = useState(null); // Track if fal.ai key has issues
   
   // Credits state
   const [credits, setCredits] = useState(0);
