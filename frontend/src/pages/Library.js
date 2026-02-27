@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect, lazy, Suspense, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -10,6 +10,78 @@ import { FiSearch, FiBook, FiHeadphones, FiUser, FiStar, FiAward, FiTrendingUp, 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import Navbar from '@/components/Navbar';
 import BookRecommendations from '@/components/BookRecommendations';
+
+// Lazy-loaded image component with intersection observer
+const LazyImage = ({ src, alt, className, placeholderColor }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isInView, setIsInView] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const imgRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '100px', threshold: 0.1 }
+    );
+
+    if (imgRef.current) {
+      observer.observe(imgRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Generate a color based on the alt text for consistent placeholder
+  const getPlaceholderGradient = useCallback(() => {
+    if (placeholderColor) return placeholderColor;
+    const colors = [
+      'from-purple-400/30 to-pink-400/30',
+      'from-blue-400/30 to-cyan-400/30',
+      'from-green-400/30 to-emerald-400/30',
+      'from-orange-400/30 to-amber-400/30',
+      'from-rose-400/30 to-red-400/30',
+      'from-indigo-400/30 to-violet-400/30',
+    ];
+    const index = alt ? alt.charCodeAt(0) % colors.length : 0;
+    return colors[index];
+  }, [alt, placeholderColor]);
+
+  return (
+    <div ref={imgRef} className={`relative ${className}`}>
+      {/* Placeholder/skeleton */}
+      {!isLoaded && (
+        <div className={`absolute inset-0 bg-gradient-to-br ${getPlaceholderGradient()} animate-pulse flex items-center justify-center`}>
+          <FiBook className="w-10 h-10 text-white/40" />
+        </div>
+      )}
+      
+      {/* Actual image - only load when in view */}
+      {isInView && !hasError && (
+        <img
+          src={src}
+          alt={alt}
+          className={`w-full h-full object-cover transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+          onLoad={() => setIsLoaded(true)}
+          onError={() => setHasError(true)}
+          loading="lazy"
+          decoding="async"
+        />
+      )}
+      
+      {/* Error fallback */}
+      {hasError && (
+        <div className={`absolute inset-0 bg-gradient-to-br ${getPlaceholderGradient()} flex items-center justify-center`}>
+          <FiBook className="w-10 h-10 text-white/40" />
+        </div>
+      )}
+    </div>
+  );
+};
 
 // Lazy load the 3D component
 const ImmersiveLibrary3D = lazy(() => import('@/components/ImmersiveLibrary3D'));
