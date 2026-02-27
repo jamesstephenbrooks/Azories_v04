@@ -14,7 +14,7 @@ import {
   FiShield, FiBook, FiCheck, FiX, FiAlertTriangle, 
   FiEye, FiEyeOff, FiClock, FiUser, FiArrowLeft, FiLogIn, FiSearch, FiRefreshCw,
   FiUsers, FiBarChart2, FiStar, FiAward, FiTrash2, FiLock, FiLogOut, FiDatabase, FiFilter, FiImage,
-  FiChevronLeft, FiChevronRight
+  FiChevronLeft, FiChevronRight, FiSettings, FiKey, FiSave
 } from 'react-icons/fi';
 
 const API = process.env.REACT_APP_BACKEND_URL;
