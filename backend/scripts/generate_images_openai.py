@@ -70,33 +70,34 @@ BOOKS_DATA = {
 
 async def upload_image_to_storage(image_bytes: bytes) -> str:
     """
-    Upload image bytes to fal.ai storage and return URL.
-    Falls back to base64 data URL if upload fails.
+    Upload image bytes to Cloudinary and return URL.
     """
     try:
-        import aiohttp
+        import cloudinary
+        import cloudinary.uploader
+        import io
         
-        # Try to upload to fal.ai storage
-        async with aiohttp.ClientSession() as session:
-            # Use fal.ai's upload endpoint
-            headers = {
-                "Authorization": f"Key {os.environ.get('FAL_KEY', '')}",
-                "Content-Type": "image/png"
-            }
-            async with session.put(
-                "https://storage.fal.ai/uploads",
-                data=image_bytes,
-                headers=headers
-            ) as response:
-                if response.status == 200:
-                    result = await response.json()
-                    return result.get("url", "")
+        # Configure Cloudinary
+        cloudinary.config(
+            cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'),
+            api_key=os.environ.get('CLOUDINARY_API_KEY'),
+            api_secret=os.environ.get('CLOUDINARY_API_SECRET')
+        )
+        
+        # Upload to Cloudinary
+        result = cloudinary.uploader.upload(
+            io.BytesIO(image_bytes),
+            folder="azories/book-pages",
+            resource_type="image"
+        )
+        
+        if result and result.get("secure_url"):
+            return result["secure_url"]
+        
     except Exception as e:
-        logger.warning(f"Failed to upload to fal.ai storage: {e}")
+        logger.error(f"Failed to upload to Cloudinary: {e}")
     
-    # Fallback: return as data URL (works but larger)
-    b64 = base64.b64encode(image_bytes).decode('utf-8')
-    return f"data:image/png;base64,{b64}"
+    return None
 
 
 async def generate_images_for_book(db, book_id: str, book_data: dict, dry_run: bool = True):
