@@ -361,19 +361,15 @@ const TextPage = forwardRef(({ page, pageNumber, isFirstOfChapter }, ref) => {
     }
   };
   
-  // Auto-size font based on text length
-  const getAutoSizeClass = () => {
-    // For very long text, use smaller font
-    if (textLength > 800) return 'text-xs leading-snug';
-    if (textLength > 600) return 'text-xs md:text-sm leading-snug';
-    if (textLength > 400) return 'text-sm leading-relaxed';
-    // Default/short text
-    switch (page?.font_size) {
-      case 'small': return 'text-xs md:text-sm leading-relaxed';
-      case 'large': return 'text-base md:text-lg leading-relaxed';
-      case 'xlarge': return 'text-lg md:text-xl leading-relaxed';
-      default: return 'text-sm md:text-base leading-relaxed';
-    }
+  // Get text size class - NEVER shrink text, always use scrolling for overflow
+  // Desktop: min 16px (text-base), ideally 17-18px
+  // Mobile portrait: min 16px (text-base)
+  // Mobile landscape: min 14px (text-sm)
+  const getTextSizeClass = () => {
+    // Use CSS for responsive sizing - never shrink below minimums
+    // text-base = 16px, text-lg = 18px on desktop
+    // On mobile landscape (detected via parent), allow text-sm (14px)
+    return 'text-base lg:text-lg leading-[1.7] lg:leading-[1.65]';
   };
   
   const getAlignClass = () => {
@@ -387,28 +383,28 @@ const TextPage = forwardRef(({ page, pageNumber, isFirstOfChapter }, ref) => {
   
   return (
     <Page ref={ref} pageNumber={pageNumber} isLeft={false}>
-      <div className="h-full flex flex-col overflow-hidden">
+      <div className="h-full flex flex-col overflow-hidden px-4 sm:px-6 lg:px-8 py-4">
         {/* Chapter title header for first page of chapter */}
         {isFirstOfChapter && page?.chapterTitle && (
           <div className="mb-3 pb-2 border-b border-muted-foreground/20 flex-shrink-0">
             <span className="text-xs font-ui text-muted-foreground tracking-widest uppercase">
               Chapter {page.chapterNumber}
             </span>
-            <h3 className="font-heading text-base font-bold text-foreground mt-1">
+            <h3 className="font-heading text-lg lg:text-xl font-bold text-foreground mt-1">
               {page.chapterTitle}
             </h3>
           </div>
         )}
         
         {hasText ? (
-          <div className="flex-1 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent">
-            <p className={`${getFontClass()} ${getAutoSizeClass()} ${getAlignClass()} whitespace-pre-wrap text-foreground/90`}>
+          <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-muted-foreground/30 scrollbar-track-transparent">
+            <p className={`${getFontClass()} ${getTextSizeClass()} ${getAlignClass()} whitespace-pre-wrap text-foreground/90`}>
               {page.text_content}
             </p>
           </div>
         ) : (
           <div className="h-full flex items-center justify-center text-muted-foreground/40">
-            <span className="text-sm italic">This page has no text</span>
+            <span className="text-base italic">This page has no text</span>
           </div>
         )}
       </div>
