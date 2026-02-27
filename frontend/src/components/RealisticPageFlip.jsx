@@ -647,9 +647,14 @@ const RealisticPageFlip = forwardRef(({
 
   return (
     <div className={`realistic-page-flip relative ${className}`} style={{ 
-      // Set minimum dimensions to ensure book displays at proper size
-      minWidth: isMobilePortrait ? '280px' : `${width * 2}px`,
+      // Force dimensions to ensure book displays at proper size
+      width: isMobilePortrait ? `${width}px` : `${width * 2 + 40}px`,
+      height: `${height + 60}px`,
+      minWidth: isMobilePortrait ? `${width}px` : `${width * 2}px`,
       minHeight: `${height}px`,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
       transformOrigin: 'center center' 
     }}>
       {/* Book container with 3D perspective */}
