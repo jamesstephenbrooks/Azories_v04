@@ -23,6 +23,128 @@ const API = process.env.REACT_APP_BACKEND_URL;
 const GENRES = ['All', 'Fantasy', 'Adventure', 'Mystery', 'Science Fiction', 'Fairy Tales', 'Educational', 'Animals', 'Humor', 'Action', 'Other'];
 const AGE_RATINGS = ['All', 'All Ages', '5+', '8+', '12+', '16+'];
 
+// Settings Component for FAL Key Management
+function SettingsFalKey() {
+  const [falKey, setFalKey] = useState('');
+  const [showKey, setShowKey] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [status, setStatus] = useState(null);
+
+  const handleSaveKey = async () => {
+    if (!falKey.trim()) {
+      toast.error('Please enter a FAL key');
+      return;
+    }
+    
+    setSaving(true);
+    try {
+      const res = await axios.post(`${API}/api/admin/update-fal-key`, 
+        { fal_key: falKey },
+        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }}
+      );
+      
+      if (res.data.success) {
+        toast.success('FAL key updated successfully!');
+        setStatus({ valid: true, preview: res.data.key_preview });
+        setFalKey('');
+      } else {
+        toast.error(res.data.error || 'Failed to update key');
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.detail || 'Failed to update key');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleValidateKey = async () => {
+    try {
+      const res = await axios.post(`${API}/api/admin/validate-fal-key`, {}, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      
+      if (res.data.status?.valid) {
+        toast.success('FAL key is valid and working!');
+        setStatus({ valid: true });
+      } else {
+        toast.error(res.data.status?.error_message || 'Key validation failed');
+        setStatus({ valid: false, error: res.data.status?.error_message });
+      }
+    } catch (err) {
+      toast.error('Failed to validate key');
+    }
+  };
+
+  return (
+    <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-10 h-10 rounded-full bg-purple-600/20 flex items-center justify-center">
+          <FiKey className="w-5 h-5 text-purple-400" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-white">FAL.AI API Key</h3>
+          <p className="text-sm text-white/60">Used for image generation in Pro Studio</p>
+        </div>
+      </div>
+      
+      {status && (
+        <div className={`mb-4 p-3 rounded-lg ${status.valid ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'}`}>
+          <p className={`text-sm ${status.valid ? 'text-green-400' : 'text-red-400'}`}>
+            {status.valid ? '✓ Current key is valid' : `✗ ${status.error || 'Key is invalid'}`}
+            {status.preview && <span className="ml-2 text-white/40">({status.preview})</span>}
+          </p>
+        </div>
+      )}
+      
+      <div className="space-y-4">
+        <div className="relative">
+          <Input
+            type={showKey ? 'text' : 'password'}
+            placeholder="Enter new FAL key (format: key_id:key_secret)"
+            value={falKey}
+            onChange={(e) => setFalKey(e.target.value)}
+            className="bg-white/5 border-white/10 text-white pr-10"
+          />
+          <button
+            type="button"
+            onClick={() => setShowKey(!showKey)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/60"
+          >
+            {showKey ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+          </button>
+        </div>
+        
+        <div className="flex gap-3">
+          <Button
+            onClick={handleSaveKey}
+            disabled={saving || !falKey.trim()}
+            className="bg-purple-600 hover:bg-purple-700"
+          >
+            {saving ? (
+              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+            ) : (
+              <FiSave className="w-4 h-4 mr-2" />
+            )}
+            Save New Key
+          </Button>
+          <Button
+            variant="outline"
+            onClick={handleValidateKey}
+            className="border-white/20 text-white"
+          >
+            <FiRefreshCw className="w-4 h-4 mr-2" />
+            Test Current Key
+          </Button>
+        </div>
+        
+        <p className="text-xs text-white/40">
+          Get your key from <a href="https://fal.ai/dashboard/keys" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:underline">fal.ai/dashboard/keys</a>
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
