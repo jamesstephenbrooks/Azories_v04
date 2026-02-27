@@ -422,20 +422,20 @@ const ContentPage = forwardRef(({ page, pageNumber, isLeft, isCurrentPage = fals
   
   return (
     <Page ref={ref} pageNumber={pageNumber} isLeft={isLeft}>
-      <div className="h-full flex flex-col px-4 sm:px-5 py-3">
-        {/* Image section - always show container for layout consistency */}
+      <div className="h-full flex flex-col px-3 py-2">
+        {/* Image section - use contain to show full image without cropping */}
         <div 
-          className={`mb-4 rounded-lg overflow-hidden flex-shrink-0 relative ${!hasImage ? 'bg-muted/20 border border-dashed border-muted-foreground/20' : ''}`} 
-          style={{ height: hasImage || !hasText ? '45%' : '0%', minHeight: hasImage ? '120px' : hasText ? '0' : '120px' }}
+          className={`mb-3 rounded-lg overflow-hidden flex-shrink-0 relative ${!hasImage ? 'bg-muted/20 border border-dashed border-muted-foreground/20' : ''}`} 
+          style={{ height: hasImage || !hasText ? '48%' : '0%', minHeight: hasImage ? '140px' : hasText ? '0' : '120px' }}
         >
           {hasImage ? (
             <LazyImage 
               src={page.image_url}
               alt=""
-              className="w-full h-full object-cover"
+              className="w-full h-full"
               style={{
-                objectFit: page.image_fit || 'cover',
-                objectPosition: `${page.image_position_x || 50}% ${page.image_position_y || 50}%`
+                objectFit: 'contain',
+                objectPosition: 'center top'
               }}
               priority={isCurrentPage}
             />
@@ -449,7 +449,7 @@ const ContentPage = forwardRef(({ page, pageNumber, isLeft, isCurrentPage = fals
         {/* Text content - scrollable, never shrink font */}
         <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-muted-foreground/30 scrollbar-track-transparent">
           {hasText ? (
-            <p className="font-reader text-base lg:text-lg leading-[1.7] whitespace-pre-wrap text-foreground/90">
+            <p className="font-reader text-base leading-[1.7] whitespace-pre-wrap text-foreground/90">
               {page.text_content}
             </p>
           ) : (
