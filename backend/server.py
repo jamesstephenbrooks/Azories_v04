@@ -562,6 +562,7 @@ class BookUpdate(BaseModel):
     age_rating: Optional[str] = None
     series_id: Optional[str] = None
     series_order: Optional[int] = None
+    hidden: Optional[bool] = None  # Admin can hide books from public library
     # publish_status cannot be set directly by users
 
 class SeriesCreate(BaseModel):
