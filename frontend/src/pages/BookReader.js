@@ -375,14 +375,27 @@ export default function BookReader() {
         setRequiresAuth(true);
         setAllPages([]);
       } else {
-        // Flatten pages WITHOUT chapter title pages - text flows directly with images
-        const pages = [];
-        res.data.chapters?.forEach((chapter, chapterIndex) => {
-          // Skip chapter title pages - just add content pages directly
-          chapter.pages?.forEach(page => {
-            pages.push({ ...page, chapterTitle: chapter.title, chapterNumber: chapterIndex + 1 });
+        // Extract pages - handle both direct pages array and chapters structure
+        let pages = [];
+        
+        // First check for direct pages array (newer format)
+        if (res.data.pages && Array.isArray(res.data.pages) && res.data.pages.length > 0) {
+          pages = res.data.pages.map((page, index) => ({
+            ...page,
+            chapterTitle: res.data.title || 'Story',
+            chapterNumber: 1
+          }));
+        } 
+        // Fallback to chapters structure (legacy format)
+        else if (res.data.chapters && Array.isArray(res.data.chapters)) {
+          res.data.chapters.forEach((chapter, chapterIndex) => {
+            chapter.pages?.forEach(page => {
+              pages.push({ ...page, chapterTitle: chapter.title, chapterNumber: chapterIndex + 1 });
+            });
           });
-        });
+        }
+        
+        console.log('[BookReader] Loaded', pages.length, 'pages from', res.data.pages ? 'direct pages array' : 'chapters');
         setAllPages(pages);
         
         // Track read
