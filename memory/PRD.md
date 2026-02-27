@@ -220,7 +220,55 @@ REACT_APP_STRIPE_PUBLISHABLE_KEY (live)
 ## Test Credentials
 - Admin: Username: Admin / Password: Routetofreedom
 - VIP User: jamesstephenbrooks@outlook.com / test123
+- Test Admin: testadmin@azories.com / TestAdmin123!
 
 ## Test Reports
 - /app/test_reports/iteration_34.json (Latest - Feb 25, 2026)
 - /app/backend/tests/test_pre_deployment_iter34.py
+
+## Session Update - Feb 27, 2026
+
+### Character Thumbnail Generation Fix
+**Issue:** fal.ai API key expired, causing character thumbnail generation to fail silently.
+
+**Solution:** Added OpenAI (GPT-Image-1) fallback in `/app/backend/server.py` for character creation.
+When fal.ai fails, the system now automatically uses OpenAI via Emergent LLM Key.
+
+**Status:** ✅ WORKING - Characters now generate thumbnails even with invalid fal.ai key.
+
+### Book Reader Verification
+- Desktop view: Book fills ~80% viewport height ✅
+- Layout: Image LEFT, Text RIGHT (consistent) ✅
+- Text: Large, readable, Nunito font ✅
+- Text caching: No issues - fresh content served correctly ✅
+
+### Cloudinary Migration Estimate
+**Current Image Storage Analysis:**
+- Total images: 704
+- fal.ai (temporary): 284 images
+- Cloudinary (permanent): 20 images
+- Other sources: 400 images
+
+**Migration Scope:**
+- Images needing migration: 284 (fal.ai hosted)
+- fal.ai images expire after ~24-48 hours
+
+**Complexity:** MEDIUM
+- Requires batch migration script
+- Need to update all book page `image_url` fields in MongoDB
+- Character gallery images also need migration
+
+**Estimated Cost:**
+- Cloudinary Free tier: 25GB storage, 25GB bandwidth/month
+- At ~1MB/image average: 284MB for existing images
+- Well within free tier for initial migration
+
+**Implementation Steps:**
+1. Create batch migration script to download fal.ai images
+2. Upload to Cloudinary with consistent naming
+3. Update MongoDB documents with new URLs
+4. Add real-time migration for new uploads (replace fal.ai upload with Cloudinary)
+
+### Known Issues
+- fal.ai key expired - admin should update via Admin Dashboard > Settings
+- Some books (e.g., "The Arctic Expedition") have 0 pages - content not generated yet
