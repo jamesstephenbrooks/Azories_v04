@@ -2896,19 +2896,40 @@ async def create_character(request: CharacterCreate, current_user: dict = Depend
         description = "\n".join(description_parts)
         
         # Generate a thumbnail image if we have description but no images
-        if not thumbnail and has_description and FAL_AVAILABLE:
-            try:
-                gen_prompt = f"{request.description_prompt}, {style_info.get('name', '')} style, character portrait, detailed face"
-                result = await generate_image_flux(
-                    prompt=gen_prompt,
-                    model="flux-dev",
-                    image_size="square_hd",
-                    num_images=1
-                )
-                if result.get("images"):
-                    thumbnail = result["images"][0].get("url")
-            except Exception as e:
-                logger.warning(f"Could not generate thumbnail: {e}")
+        if not thumbnail and has_description:
+            gen_prompt = f"{request.description_prompt}, {style_info.get('name', '')} style, character portrait, detailed face"
+            
+            # Try fal.ai first
+            if FAL_AVAILABLE:
+                try:
+                    result = await generate_image_flux(
+                        prompt=gen_prompt,
+                        model="flux-dev",
+                        image_size="square_hd",
+                        num_images=1
+                    )
+                    if result.get("images"):
+                        thumbnail = result["images"][0].get("url")
+                        logger.info(f"Generated thumbnail via fal.ai for character")
+                except Exception as e:
+                    logger.warning(f"fal.ai thumbnail generation failed: {e}")
+            
+            # Fallback to OpenAI if fal.ai failed or unavailable
+            if not thumbnail and EMERGENT_LLM_KEY:
+                try:
+                    logger.info("Attempting thumbnail generation via OpenAI fallback")
+                    image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
+                    images = await image_gen.generate_images(
+                        prompt=gen_prompt,
+                        model="gpt-image-1",
+                        number_of_images=1
+                    )
+                    if images and len(images) > 0:
+                        image_base64 = base64.b64encode(images[0]).decode('utf-8')
+                        thumbnail = f"data:image/png;base64,{image_base64}"
+                        logger.info(f"Generated thumbnail via OpenAI fallback for character")
+                except Exception as e:
+                    logger.warning(f"OpenAI thumbnail generation also failed: {e}")
         
         # Create character record
         char_id = str(uuid.uuid4())
