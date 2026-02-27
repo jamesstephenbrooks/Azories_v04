@@ -1190,7 +1190,7 @@ export default function BookReader() {
                   className="flex w-full gap-0.5 px-2 pt-6 pb-0"
                   style={{ height: 'calc(100vh - 24px)' }}
                 >
-                  {/* Left Page: Illustration */}
+                  {/* Left Page: Illustration with portrait crop */}
                   <div 
                     className="relative flex-1 rounded-l-lg overflow-hidden"
                     style={{ 
@@ -1201,12 +1201,14 @@ export default function BookReader() {
                       <img 
                         src={currentPageData.image_url}
                         alt=""
-                        className="w-full h-full"
                         style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
                           width: '100%',
                           height: '100%',
                           objectFit: 'cover',
-                          objectPosition: 'center'
+                          objectPosition: 'center top'
                         }}
                       />
                     ) : (
