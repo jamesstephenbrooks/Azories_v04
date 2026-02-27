@@ -262,18 +262,20 @@ export default function BookReader() {
     
     // Desktop - Large immersive experience (fill 80% of screen height)
     if (isLandscape) {
-      // Desktop landscape: book should be very large and properly proportioned
-      // For a two-page spread, each page should be tall and use most of the viewport
-      const availableHeight = vh - 180; // Account for header + bottom controls
-      const bookHeight = Math.max(availableHeight * 0.92, 650); // At least 650px, use 92% of available
+      // Desktop landscape: book should be very large and fill most of the viewport
+      // Target 80% of viewport height for the book
+      const targetHeight = vh * 0.80;
+      const availableHeight = vh - 120; // Minimal header + bottom controls
+      const bookHeight = Math.max(Math.min(targetHeight, availableHeight), 700); // At least 700px
       // Each page width should maintain a book-like aspect ratio (roughly 0.65-0.7)
-      const bookWidth = Math.min(bookHeight * 0.68, vw * 0.42); // 42% of viewport width max
+      const bookWidth = Math.min(bookHeight * 0.68, vw * 0.45); // 45% of viewport width max
       return { width: bookWidth, height: bookHeight };
     } else {
       // Desktop portrait (rare case)
-      const availableHeight = vh - 180;
-      const bookHeight = Math.max(availableHeight * 0.88, 600);
-      const bookWidth = Math.min(bookHeight * 0.72, vw * 0.50);
+      const targetHeight = vh * 0.78;
+      const availableHeight = vh - 140;
+      const bookHeight = Math.max(Math.min(targetHeight, availableHeight), 650);
+      const bookWidth = Math.min(bookHeight * 0.72, vw * 0.55);
       return { width: bookWidth, height: bookHeight };
     }
   };
