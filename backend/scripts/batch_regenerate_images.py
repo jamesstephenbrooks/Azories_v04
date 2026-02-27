@@ -19,7 +19,7 @@ import cloudinary
 import cloudinary.uploader
 
 # Configuration
-API_URL = "https://book-content-update.preview.emergentagent.com"
+API_URL = "https://image-integrity-1.preview.emergentagent.com"
 FAL_KEY = "ab490710-1d52-45a3-9d2e-3fc9c1a2a995:671ae92454b3d014b5ceced926943e9b"
 
 # Set environment variables

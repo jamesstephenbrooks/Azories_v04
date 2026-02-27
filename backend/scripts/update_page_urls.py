@@ -10,7 +10,7 @@ import json
 import requests
 from datetime import datetime
 
-API_URL = "https://book-content-update.preview.emergentagent.com"
+API_URL = "https://image-integrity-1.preview.emergentagent.com"
 
 # 25 books that had pages regenerated
 BOOKS = [
