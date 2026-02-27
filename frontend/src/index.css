@@ -382,3 +382,23 @@ input:focus,
 textarea:focus {
   scroll-margin-bottom: 200px;
 }
+
+/* Flipbook page overflow control - prevent text bleeding between pages */
+.stf__parent,
+.stf__wrapper,
+.stf__block,
+.page-wrapper,
+.demoPage {
+  overflow: hidden !important;
+}
+
+/* Ensure left illustration page has no text bleeding */
+.stf__page:nth-child(odd) .page-wrapper {
+  overflow: hidden !important;
+}
+
+/* Image page should be completely clean - no text */
+.stf__page .page-wrapper > div:first-child {
+  overflow: hidden !important;
+  clip-path: inset(0);
+}
