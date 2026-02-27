@@ -8137,6 +8137,48 @@ async def get_pending_reviews(admin: dict = Depends(get_admin_user)):
     
     return {"books": pending_books, "count": len(pending_books)}
 
+
+class BulkHideBooksRequest(BaseModel):
+    book_ids: List[str]
+    hidden: bool = True
+
+
+@api_router.put("/admin/books/bulk-hide")
+async def admin_bulk_hide_books(request: BulkHideBooksRequest, admin: dict = Depends(get_admin_user)):
+    """Admin endpoint to hide/unhide multiple books from the public library.
+    Hidden books remain in the database but are not shown in the public library."""
+    
+    updated_count = 0
+    not_found = []
+    
+    for book_id in request.book_ids:
+        result = await db.books.update_one(
+            {"id": book_id},
+            {"$set": {"hidden": request.hidden, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        if result.matched_count > 0:
+            updated_count += 1
+        else:
+            not_found.append(book_id)
+    
+    return {
+        "success": True,
+        "updated_count": updated_count,
+        "not_found": not_found,
+        "message": f"Successfully {'hid' if request.hidden else 'unhid'} {updated_count} books"
+    }
+
+
+@api_router.get("/admin/hidden-books")
+async def admin_get_hidden_books(admin: dict = Depends(get_admin_user)):
+    """Get all hidden books (admin only)"""
+    hidden_books = await db.books.find(
+        {"hidden": True},
+        {"_id": 0}
+    ).to_list(100)
+    
+    return {"books": hidden_books, "count": len(hidden_books)}
+
 @api_router.post("/admin/books/{book_id}/run-moderation")
 async def admin_run_moderation(book_id: str, admin: dict = Depends(get_admin_user)):
     """Admin can manually run content moderation on a book"""
