@@ -179,7 +179,7 @@ export function AnimatedBookCardCompact({ book, onClick }) {
     >
       <div className="w-12 h-16 rounded overflow-hidden flex-shrink-0">
         {book.cover_image ? (
-          <img src={book.cover_image} alt={book.title} className="w-full h-full object-cover" />
+          <LazyImage src={book.cover_image} alt={book.title} className="w-full h-full" />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
             <FiBook className="w-4 h-4 text-white/50" />
