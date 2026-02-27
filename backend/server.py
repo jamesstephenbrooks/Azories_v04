@@ -8311,12 +8311,29 @@ async def admin_update_fal_key(request: UpdateFalKeyRequest, admin: dict = Depen
         with open(env_path, 'w') as f:
             f.writelines(new_lines)
         
-        logger.info(f"FAL_KEY updated successfully by admin")
+        # ALSO persist to database for cross-deployment persistence
+        await db.system_settings.update_one(
+            {"key": "fal_api_key"},
+            {"$set": {
+                "key": "fal_api_key",
+                "value": new_key,
+                "updated_at": datetime.now(timezone.utc).isoformat(),
+                "updated_by": admin.get("username", "admin")
+            }},
+            upsert=True
+        )
+        
+        # Re-validate and update cached status
+        if validate_fal_key_on_startup:
+            await validate_fal_key_on_startup()
+        
+        logger.info(f"FAL_KEY updated successfully by admin and persisted to database")
         
         return {
             "success": True,
-            "message": "FAL_KEY updated and validated successfully",
-            "key_preview": f"{new_key[:15]}...{new_key[-10:]}"
+            "message": "FAL_KEY updated, validated, and persisted to database successfully",
+            "key_preview": f"{new_key[:15]}...{new_key[-10:]}",
+            "persisted": True
         }
         
     except Exception as e:
