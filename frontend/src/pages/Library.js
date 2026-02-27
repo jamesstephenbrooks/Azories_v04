@@ -198,10 +198,10 @@ export default function Library() {
           {/* Book Cover */}
           <div className="aspect-[3/4] relative overflow-hidden bg-muted/30">
             {book.cover_image ? (
-              <img 
+              <LazyImage 
                 src={book.cover_image} 
                 alt={book.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full"
               />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
