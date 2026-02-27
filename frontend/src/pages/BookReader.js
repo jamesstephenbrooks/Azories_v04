@@ -1321,16 +1321,7 @@ export default function BookReader() {
             {/* Navigation - LARGE touch targets for mobile, instant response */}
             <div className={`flex items-center justify-center gap-4 sm:gap-4 mb-2 sm:mb-4`}>
               <button
-                onClick={() => {
-                  // Instant state change - no blocking
-                  if (currentPage > 0) {
-                    setCurrentPage(currentPage - 1);
-                    // Fire and forget - don't wait
-                    saveReadingProgress();
-                  } else if (currentPage === 0) {
-                    setCurrentPage(-1);
-                  }
-                }}
+                onClick={prevPage}
                 disabled={currentPage <= -1}
                 className="min-w-[56px] min-h-[56px] px-5 rounded-full border-2 border-border bg-background hover:bg-muted active:bg-muted/80 flex items-center justify-center touch-manipulation"
                 style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
