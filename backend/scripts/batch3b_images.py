@@ -11,6 +11,10 @@ import uuid
 import logging
 from datetime import datetime, timezone
 from motor.motor_asyncio import AsyncIOMotorClient
+from dotenv import load_dotenv
+
+# Load environment variables from backend/.env
+load_dotenv('/app/backend/.env')
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(message)s')
