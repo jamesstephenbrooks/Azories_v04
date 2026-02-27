@@ -917,6 +917,27 @@ const RealisticPageFlip = forwardRef(({
         .animate-shimmer-slide {
           animation: shimmer-slide 1.5s infinite ease-in-out;
         }
+        
+        /* Mobile page turn animations */
+        @keyframes slideLeft {
+          0% { opacity: 0; transform: translateX(100%); }
+          30% { opacity: 1; }
+          100% { opacity: 0; transform: translateX(-100%); }
+        }
+        
+        @keyframes slideRight {
+          0% { opacity: 0; transform: translateX(-100%); }
+          30% { opacity: 1; }
+          100% { opacity: 0; transform: translateX(100%); }
+        }
+        
+        .animate-slide-left {
+          animation: slideLeft 0.4s ease-out forwards;
+        }
+        
+        .animate-slide-right {
+          animation: slideRight 0.4s ease-out forwards;
+        }
       `}</style>
     </div>
   );
