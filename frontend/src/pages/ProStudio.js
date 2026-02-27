@@ -2887,6 +2887,34 @@ export default function ProStudio() {
           </div>
         </div>
 
+        {/* FAL.AI Key Expired Warning Banner */}
+        {falKeyError && (
+          <div className="bg-red-900/40 rounded-xl border border-red-500/50 p-3 sm:p-4 mb-4 sm:mb-6" data-testid="fal-key-warning">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center flex-shrink-0">
+                <FiAlertTriangle className="text-red-400 w-5 h-5" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-red-300 font-semibold text-sm sm:text-base">⚠️ {falKeyError.message}</h3>
+                <p className="text-red-200/80 text-xs sm:text-sm mt-1">
+                  {falKeyError.action}
+                </p>
+                <p className="text-gray-400 text-xs mt-2">
+                  Character thumbnails will use OpenAI fallback (slower). LoRA training and advanced features unavailable.
+                </p>
+              </div>
+              {user?.role === 'admin' && (
+                <button 
+                  onClick={() => navigate('/admin')}
+                  className="bg-red-500/20 hover:bg-red-500/30 text-red-300 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                >
+                  Update Key
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           {/* Mobile-optimized tabs - icon only on mobile, with text on larger screens */}
           <TabsList className="bg-black/40 border border-purple-500/20 p-1 mb-4 sm:mb-6 flex justify-between sm:justify-center gap-0.5 sm:gap-1 w-full">
