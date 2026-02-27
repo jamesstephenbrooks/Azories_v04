@@ -205,6 +205,9 @@ async def lifespan(app: FastAPI):
     _cleanup_task = asyncio.create_task(periodic_cleanup())
     logger.info("Started periodic task cleanup")
     
+    # Load FAL_KEY from database if not set or invalid in .env
+    await _load_fal_key_from_db()
+    
     # Validate FAL_KEY on startup
     if validate_fal_key_on_startup:
         try:
@@ -214,7 +217,8 @@ async def lifespan(app: FastAPI):
                 logger.warning("⚠️  FAL_KEY VALIDATION FAILED")
                 logger.warning(f"   Error: {fal_status.get('error_message', 'Unknown')}")
                 logger.warning("   Pro Studio image generation will use Emergent Key (more expensive)")
-                logger.warning("   To fix: Get a new key from https://fal.ai/dashboard/keys")
+                logger.warning("   To fix: Update key via Admin Dashboard > Settings")
+                logger.warning("   Or get a new key from https://fal.ai/dashboard/keys")
                 logger.warning("=" * 60)
             elif fal_status.get("valid") == True:
                 logger.info("✅ FAL_KEY validated - fal.ai features ready")
@@ -227,6 +231,68 @@ async def lifespan(app: FastAPI):
         _cleanup_task.cancel()
     client.close()
     logger.info("Database connection closed")
+
+
+async def _load_fal_key_from_db():
+    """
+    Load FAL_KEY from database if .env key is missing or invalid.
+    This ensures the key persists across deployments.
+    """
+    try:
+        # Check if we have a key in the database
+        db_setting = await db.system_settings.find_one({"key": "fal_api_key"})
+        
+        if db_setting and db_setting.get("value"):
+            db_key = db_setting["value"]
+            env_key = os.environ.get("FAL_KEY", "")
+            
+            # If .env key is missing or different, use DB key
+            if not env_key or env_key != db_key:
+                logger.info("Loading FAL_KEY from database (persisted key)")
+                os.environ["FAL_KEY"] = db_key
+                
+                # Also update .env file so it persists locally
+                try:
+                    env_path = '/app/backend/.env'
+                    with open(env_path, 'r') as f:
+                        lines = f.readlines()
+                    
+                    updated = False
+                    new_lines = []
+                    for line in lines:
+                        if line.startswith('FAL_KEY='):
+                            new_lines.append(f'FAL_KEY={db_key}\n')
+                            updated = True
+                        else:
+                            new_lines.append(line)
+                    
+                    if not updated:
+                        new_lines.append(f'FAL_KEY={db_key}\n')
+                    
+                    with open(env_path, 'w') as f:
+                        f.writelines(new_lines)
+                    
+                    logger.info("✅ FAL_KEY synced from database to .env file")
+                except Exception as e:
+                    logger.warning(f"Could not sync FAL_KEY to .env: {e}")
+        else:
+            # No key in DB, save current .env key to DB for persistence
+            env_key = os.environ.get("FAL_KEY", "")
+            if env_key and ":" in env_key:
+                await db.system_settings.update_one(
+                    {"key": "fal_api_key"},
+                    {"$set": {
+                        "key": "fal_api_key",
+                        "value": env_key,
+                        "updated_at": datetime.now(timezone.utc).isoformat(),
+                        "updated_by": "system_startup"
+                    }},
+                    upsert=True
+                )
+                logger.info("✅ FAL_KEY saved to database for persistence")
+                
+    except Exception as e:
+        logger.warning(f"Could not load/save FAL_KEY from database: {e}")
 
 # Create the main app with lifespan
 app = FastAPI(
