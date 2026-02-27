@@ -1,6 +1,82 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { FiBook, FiEye, FiStar } from 'react-icons/fi';
+
+// Lazy-loaded image component with intersection observer
+const LazyImage = ({ src, alt, className, onLoad }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isInView, setIsInView] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const imgRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '100px', threshold: 0.1 }
+    );
+
+    if (imgRef.current) {
+      observer.observe(imgRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Generate a color based on the alt text for consistent placeholder
+  const getPlaceholderGradient = useCallback(() => {
+    const colors = [
+      'from-purple-500 to-pink-500',
+      'from-blue-500 to-cyan-500',
+      'from-green-500 to-emerald-500',
+      'from-orange-500 to-amber-500',
+      'from-rose-500 to-red-500',
+      'from-indigo-500 to-violet-500',
+    ];
+    const index = alt ? alt.charCodeAt(0) % colors.length : 0;
+    return colors[index];
+  }, [alt]);
+
+  const handleLoad = () => {
+    setIsLoaded(true);
+    if (onLoad) onLoad();
+  };
+
+  return (
+    <div ref={imgRef} className={`relative ${className}`}>
+      {/* Placeholder/skeleton */}
+      {!isLoaded && (
+        <div className={`absolute inset-0 bg-gradient-to-br ${getPlaceholderGradient()} animate-pulse flex items-center justify-center`}>
+          <FiBook className="w-8 h-8 text-white/40" />
+        </div>
+      )}
+      
+      {/* Actual image - only load when in view */}
+      {isInView && !hasError && (
+        <img
+          src={src}
+          alt={alt}
+          className={`w-full h-full object-cover transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+          onLoad={handleLoad}
+          onError={() => setHasError(true)}
+          loading="lazy"
+          decoding="async"
+        />
+      )}
+      
+      {/* Error fallback */}
+      {hasError && (
+        <div className={`absolute inset-0 bg-gradient-to-br ${getPlaceholderGradient()} flex items-center justify-center`}>
+          <FiBook className="w-8 h-8 text-white/40" />
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default function AnimatedBookCard({ book, onClick, size = 'md' }) {
   const [isHovered, setIsHovered] = useState(false);
