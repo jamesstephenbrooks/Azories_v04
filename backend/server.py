@@ -245,8 +245,75 @@ security = HTTPBearer(auto_error=False)
 # Health check endpoint for monitoring services (UptimeRobot, etc.)
 @api_router.get("/health")
 async def health_check():
-    """Simple health check endpoint to keep server warm"""
-    return {"status": "ok", "timestamp": datetime.utcnow().isoformat()}
+    """
+    Health check endpoint with optional deep checks.
+    
+    Query params:
+    - deep=true: Include fal.ai key status (for monitoring alerts)
+    
+    Returns degraded status if fal.ai key is invalid, allowing UptimeRobot to alert.
+    """
+    from datetime import datetime
+    
+    result = {
+        "status": "ok",
+        "timestamp": datetime.utcnow().isoformat()
+    }
+    
+    # Check if deep health check requested (for UptimeRobot monitoring)
+    from fastapi import Query
+    # Always include fal.ai status for comprehensive monitoring
+    if FAL_AVAILABLE:
+        fal_status = get_fal_key_status()
+        result["fal_ai"] = {
+            "valid": fal_status.get("valid"),
+            "last_checked": fal_status.get("last_checked")
+        }
+        
+        # If fal.ai key is explicitly invalid, mark as degraded
+        if fal_status.get("valid") is False:
+            result["status"] = "degraded"
+            result["fal_ai"]["error"] = fal_status.get("error_message", "Key invalid or expired")
+            result["fal_ai"]["action_required"] = "Update fal.ai key via Admin Dashboard > Settings"
+    else:
+        result["fal_ai"] = {"valid": False, "error": "fal.ai service not configured"}
+        result["status"] = "degraded"
+    
+    return result
+
+
+@api_router.get("/health/fal")
+async def health_check_fal():
+    """
+    Dedicated fal.ai key health check endpoint.
+    Returns 503 if key is invalid - useful for UptimeRobot alerts.
+    """
+    from fastapi import Response
+    
+    if not FAL_AVAILABLE:
+        raise HTTPException(
+            status_code=503, 
+            detail="fal.ai service not configured"
+        )
+    
+    fal_status = get_fal_key_status()
+    
+    if fal_status.get("valid") is False:
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "error": "FAL_KEY_EXPIRED",
+                "message": fal_status.get("error_message", "fal.ai API key is invalid or expired"),
+                "action": "Update key via Admin Dashboard > Settings or POST /api/admin/update-fal-key",
+                "last_checked": fal_status.get("last_checked")
+            }
+        )
+    
+    return {
+        "status": "ok",
+        "fal_ai_key_valid": True,
+        "last_checked": fal_status.get("last_checked")
+    }
 
 # Admin authentication helper (used by remaining admin endpoints)
 async def get_admin_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
