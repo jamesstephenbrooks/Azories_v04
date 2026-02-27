@@ -543,11 +543,27 @@ const RealisticPageFlip = forwardRef(({
   }, [onFlipStart, onFlipEnd]);
 
   const goToNextPage = () => {
-    flipBookRef.current?.pageFlip()?.flipNext();
+    if (isMobilePortrait) {
+      setIsFading(true);
+      setTimeout(() => {
+        flipBookRef.current?.pageFlip()?.flipNext();
+        setTimeout(() => setIsFading(false), 150);
+      }, 100);
+    } else {
+      flipBookRef.current?.pageFlip()?.flipNext();
+    }
   };
 
   const goToPrevPage = () => {
-    flipBookRef.current?.pageFlip()?.flipPrev();
+    if (isMobilePortrait) {
+      setIsFading(true);
+      setTimeout(() => {
+        flipBookRef.current?.pageFlip()?.flipPrev();
+        setTimeout(() => setIsFading(false), 150);
+      }, 100);
+    } else {
+      flipBookRef.current?.pageFlip()?.flipPrev();
+    }
   };
 
   // Build all pages array - create spreads with image on left, text on right
