@@ -8146,9 +8146,16 @@ class BulkHideBooksRequest(BaseModel):
 
 
 @api_router.put("/admin/books/bulk-hide")
-async def admin_bulk_hide_books(request: BulkHideBooksRequest, admin: dict = Depends(get_admin_user)):
+async def admin_bulk_hide_books(request: BulkHideBooksRequest, current_user: dict = Depends(get_current_user)):
     """Admin endpoint to hide/unhide multiple books from the public library.
-    Hidden books remain in the database but are not shown in the public library."""
+    Hidden books remain in the database but are not shown in the public library.
+    Requires admin role or VIP user."""
+    
+    user_email = current_user.get("email", "").lower()
+    is_admin = current_user.get("role") == "admin" or user_email in [v.lower() for v in VIP_USERS]
+    
+    if not is_admin:
+        raise HTTPException(status_code=403, detail="Admin access required")
     
     updated_count = 0
     not_found = []
@@ -8172,8 +8179,14 @@ async def admin_bulk_hide_books(request: BulkHideBooksRequest, admin: dict = Dep
 
 
 @api_router.get("/admin/hidden-books")
-async def admin_get_hidden_books(admin: dict = Depends(get_admin_user)):
-    """Get all hidden books (admin only)"""
+async def admin_get_hidden_books(current_user: dict = Depends(get_current_user)):
+    """Get all hidden books (admin/VIP only)"""
+    user_email = current_user.get("email", "").lower()
+    is_admin = current_user.get("role") == "admin" or user_email in [v.lower() for v in VIP_USERS]
+    
+    if not is_admin:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
     hidden_books = await db.books.find(
         {"hidden": True},
         {"_id": 0}
