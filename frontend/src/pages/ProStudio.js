@@ -169,6 +169,12 @@ export default function ProStudio() {
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [cropAspect, setCropAspect] = useState(16 / 9);
   
+  // Mobile collapsible sections (hidden by default on mobile)
+  const [showMobileCharacterOptions, setShowMobileCharacterOptions] = useState(false);
+  const [showMobileSceneOptions, setShowMobileSceneOptions] = useState(false);
+  const [showMobileCinemaOptions, setShowMobileCinemaOptions] = useState(false);
+  const [showMobileVideoOptions, setShowMobileVideoOptions] = useState(false);
+  
   // Expression state
   const [selectedExpression, setSelectedExpression] = useState('neutral');
   
