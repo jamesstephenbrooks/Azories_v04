@@ -716,11 +716,12 @@ const RealisticPageFlip = forwardRef(({
         >
           {/* Clip the appropriate side when showing covers - not needed in portrait mode */}
           <div 
+            className={`transition-opacity duration-150 ${isFading ? 'opacity-0' : 'opacity-100'}`}
             style={{
               overflow: (!isMobilePortrait && (shouldClipLeft || shouldClipRight)) ? 'hidden' : 'visible',
               // Clip left half for front cover, right half for back cover (only in landscape/spread mode)
               clipPath: isMobilePortrait ? 'none' : (shouldClipLeft ? 'inset(0 0 0 50%)' : shouldClipRight ? 'inset(0 50% 0 0)' : 'none'),
-              transition: 'clip-path 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+              transition: 'clip-path 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s ease-out',
             }}
           >
           {/* Book shadow underneath */}
