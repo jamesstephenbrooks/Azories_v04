@@ -8261,14 +8261,19 @@ async def admin_bulk_update_page_images(book_id: str, updates: List[UpdatePageIm
     pages = book.get("pages", [])
     updated_count = 0
     
+    logger.info(f"Bulk update for {book_id}: chapters={len(chapters)}, pages={len(pages)}, updates={len(updates)}")
+    
     for update in updates:
         try:
             if update.source == "chapters" and chapters:
+                logger.info(f"  Updating chapters[{update.chapter_index}].pages[{update.page_index}]")
                 if update.chapter_index < len(chapters):
                     ch_pages = chapters[update.chapter_index].get("pages", [])
+                    logger.info(f"    ch_pages length: {len(ch_pages)}")
                     if update.page_index < len(ch_pages):
                         chapters[update.chapter_index]["pages"][update.page_index]["image_url"] = update.image_url
                         updated_count += 1
+                        logger.info(f"    Updated!")
             elif update.source == "pages" and pages:
                 if update.page_index < len(pages):
                     pages[update.page_index]["image_url"] = update.image_url
