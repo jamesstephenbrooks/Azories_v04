@@ -236,39 +236,38 @@ When fal.ai fails, the system now automatically uses OpenAI via Emergent LLM Key
 
 **Status:** ✅ WORKING - Characters now generate thumbnails even with invalid fal.ai key.
 
+### FAL.AI Key Persistence Implemented
+**Changes made:**
+1. Database persistence: FAL key stored in `system_settings` collection
+2. Auto-load from DB on startup if .env key is missing/different
+3. Auto-sync to .env file for local persistence
+4. New health check endpoints:
+   - `/api/health` - Returns `status: "degraded"` when key invalid
+   - `/api/health/fal` - Returns 503 for UptimeRobot monitoring
+5. Pro Studio warning banner shows when key expired
+6. Admin update endpoint now persists to both .env AND database
+
+**UptimeRobot URL:** `https://book-reader-hub-2.preview.emergentagent.com/api/health/fal`
+
+### Cloudinary Migration COMPLETE ✅
+**Migration Date:** Feb 27, 2026
+**Migration Script:** `/app/backend/scripts/migrate_fal_to_cloudinary.py`
+**Report:** `/app/backend/scripts/migration_report_20260227_183237.json`
+
+**Results:**
+- Total fal.ai images found: 284
+- Successfully migrated: 284 ✅
+- Failed migrations: 0 ✅
+- Already on Cloudinary: 20
+
+**All book images are now permanently stored on Cloudinary** and will NOT expire.
+
 ### Book Reader Verification
 - Desktop view: Book fills ~80% viewport height ✅
 - Layout: Image LEFT, Text RIGHT (consistent) ✅
 - Text: Large, readable, Nunito font ✅
 - Text caching: No issues - fresh content served correctly ✅
-
-### Cloudinary Migration Estimate
-**Current Image Storage Analysis:**
-- Total images: 704
-- fal.ai (temporary): 284 images
-- Cloudinary (permanent): 20 images
-- Other sources: 400 images
-
-**Migration Scope:**
-- Images needing migration: 284 (fal.ai hosted)
-- fal.ai images expire after ~24-48 hours
-
-**Complexity:** MEDIUM
-- Requires batch migration script
-- Need to update all book page `image_url` fields in MongoDB
-- Character gallery images also need migration
-
-**Estimated Cost:**
-- Cloudinary Free tier: 25GB storage, 25GB bandwidth/month
-- At ~1MB/image average: 284MB for existing images
-- Well within free tier for initial migration
-
-**Implementation Steps:**
-1. Create batch migration script to download fal.ai images
-2. Upload to Cloudinary with consistent naming
-3. Update MongoDB documents with new URLs
-4. Add real-time migration for new uploads (replace fal.ai upload with Cloudinary)
+- Page turning buttons: Working on both desktop and mobile ✅
 
 ### Known Issues
-- fal.ai key expired - admin should update via Admin Dashboard > Settings
-- Some books (e.g., "The Arctic Expedition") have 0 pages - content not generated yet
+- Some AI-generated images have text baked INTO the images (not a layout bug, but an image generation artifact)
