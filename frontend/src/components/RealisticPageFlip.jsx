@@ -490,6 +490,18 @@ const RealisticPageFlip = forwardRef(({
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [isFlipping, setIsFlipping] = useState(false);
   
+  // Debug logging for dimensions
+  useEffect(() => {
+    console.log('[RealisticPageFlip] Dimensions received:', { width, height, isMobilePortrait });
+    console.log('[RealisticPageFlip] Calculated book size:', {
+      singlePageWidth: width,
+      twoPageWidth: width * 2,
+      height: height,
+      containerWidth: isMobilePortrait ? width : width * 2 + 40,
+      containerHeight: height + 60
+    });
+  }, [width, height, isMobilePortrait]);
+  
   // Build the page mapping once so we can track which flipbook page = which content page
   // This map tracks: flipbookPageIndex -> contentPageIndex (from pages array)
   const pageMapping = useRef([]);
