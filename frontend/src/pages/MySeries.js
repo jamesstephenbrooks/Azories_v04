@@ -192,7 +192,7 @@ export default function MySeries() {
       if (submitted > 0) {
         toast.success(`${submitted} book(s) submitted for admin review!`);
       } else {
-        toast.info('All books are already published or pending review');
+        toast.info('All books are already published or coming soon');
       }
       fetchSeries();
       fetchBooks();
