@@ -772,12 +772,17 @@ const RealisticPageFlip = forwardRef(({
           border-radius: 0 8px 8px 0;
         }
         
+        /* Force the flipbook to use our dimensions */
         .book-flipbook .stf__parent {
           transform-style: preserve-3d;
+          width: 100% !important;
+          height: 100% !important;
         }
         
         .book-flipbook .stf__wrapper {
           transform-style: preserve-3d;
+          width: 100% !important;
+          height: 100% !important;
         }
         
         .book-flipbook .stf__block {
