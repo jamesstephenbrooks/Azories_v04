@@ -19,51 +19,60 @@ User wants to enhance their "Azories" digital book application with:
 
 ### P1 - High Priority
 - Monetization and tier gating (Stripe)
-- Generate long-form stories for 18 books with short text
+- Generate long-form stories for 17 books with short text
 - Update text for 8 books (awaiting .docx files)
 - Ingest Batch 3C books (5 new books)
 - Production deployment for 24/7 uptime
+- **Regenerate page images** for 23 books (text baked into old images)
 
 ### P2 - Medium Priority
 - Refactor server.py into modular route files
 - Refactor large frontend components (ProStudio.js, BookEditor.js)
 - Save planning documents to /app/memory/
+- Regenerate covers to match interior Pixar style
 
-## What's Been Implemented
+## Current State (Feb 27, 2026 EOD)
 
-### Feb 27, 2026 - Page-Turning Bug Fix
-- **Fixed**: Bottom navigation buttons now properly flip pages using goToPage()
-- **Fixed**: Image aspect ratio changed to object-fit:contain to prevent bleeding
-- **Fixed**: BookReader pages extraction handles both direct pages and chapters
-- **Status**: Verified by testing agent - Page 1, 2, 3 show different content
+### Working ✅
+- Page turning buttons
+- Text displaying on right page (reads from pages array)
+- 80% viewport height on desktop
+- Image fills left page (object-fit: cover)
+- Images loading (rolled back to original Cloudinary URLs)
 
-### Previous Session
-- Cloudinary Migration: All images migrated from fal.ai and local storage
-- Performance: On-the-fly Cloudinary transformations for ~97% bandwidth reduction
-- fal.ai key persistence in database with UI warning banner
-- OpenAI fallback for character thumbnail generation
-- Duplicate title overlays removed from book covers
-- Desktop reader correctly fills 80% viewport height
-- Book hiding feature via API
+### Not Working / Pending 🔴
+- 23 books have OLD images with AI text baked in
+- 17 books need story text expansion (5-10 words → 100+ words per page)
+- Cover style mismatch (old watercolor vs new Pixar style)
+
+### Books Status
+- **44 visible** in library
+- **16 hidden** (wrong covers or other issues)
+
+## IMPORTANT: Image Regeneration Notes
+The batch regeneration on Feb 27 FAILED because:
+1. Script connected to local MongoDB instead of production
+2. Database URLs were updated to non-existent files
+3. Had to rollback to original URLs
+
+**For next attempt:**
+- Use API endpoints only (not direct MongoDB)
+- Verify each Cloudinary upload before updating DB
+- Test one book completely before running batch
 
 ## Tech Stack
 - Frontend: React with react-pageflip library
 - Backend: FastAPI (Python)
-- Database: MongoDB (production)
+- Database: MongoDB (production - NOT localhost)
 - Image Storage: Cloudinary
 - AI: OpenAI (TTS, thumbnails), fal.ai (image gen)
 - Payments: Stripe
 
 ## Key Files
-- /app/frontend/src/pages/BookReader.js - Book reader with page flip
-- /app/frontend/src/components/RealisticPageFlip.jsx - Flipbook component
-- /app/backend/server.py - Main backend API
-- /app/backend/config.py - Environment configuration
-
-## Known Issues
-1. ~~Page-turning buttons not working~~ FIXED
-2. Slow narration startup (TTS latency) - PENDING
-3. Some book images have text baked in - DATA ISSUE
+- /app/frontend/src/pages/BookReader.js
+- /app/frontend/src/components/RealisticPageFlip.jsx
+- /app/backend/server.py
+- /app/memory/SESSION_STATE_20260227.md - Detailed session state
 
 ## Test Credentials
 - Admin: jamesstephenbrooks@outlook.com / test123
