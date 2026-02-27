@@ -595,26 +595,52 @@ const RealisticPageFlip = forwardRef(({
       );
       newPageMapping.push(index); // Still same content page
     } else {
-      // Regular content: Image on left page, Text on right page
-      // Both the image and text page correspond to the SAME content page
-      allBookPages.push(
-        <ImagePage 
-          key={`img-${index}`}
-          page={page}
-          pageNumber={index + 1}
-        />
-      );
-      newPageMapping.push(index); // Image page maps to content[index]
+      // Check page layout - some pages may want text on left, image on right
+      const layout = page.layout || page.layout_type || 'default';
+      const isTextLeftImageRight = layout === 'text_left_image_right';
       
-      allBookPages.push(
-        <TextPage 
-          key={`txt-${index}`}
-          page={page}
-          pageNumber={index + 1}
-          isFirstOfChapter={isFirstOfChapter}
-        />
-      );
-      newPageMapping.push(index); // Text page also maps to content[index]
+      if (isTextLeftImageRight) {
+        // Text on left page, Image on right page
+        allBookPages.push(
+          <TextPage 
+            key={`txt-${index}`}
+            page={page}
+            pageNumber={index + 1}
+            isFirstOfChapter={isFirstOfChapter}
+          />
+        );
+        newPageMapping.push(index); // Text page maps to content[index]
+        
+        allBookPages.push(
+          <ImagePage 
+            key={`img-${index}`}
+            page={page}
+            pageNumber={index + 1}
+          />
+        );
+        newPageMapping.push(index); // Image page also maps to content[index]
+      } else {
+        // Default: Image on left page, Text on right page
+        // Both the image and text page correspond to the SAME content page
+        allBookPages.push(
+          <ImagePage 
+            key={`img-${index}`}
+            page={page}
+            pageNumber={index + 1}
+          />
+        );
+        newPageMapping.push(index); // Image page maps to content[index]
+        
+        allBookPages.push(
+          <TextPage 
+            key={`txt-${index}`}
+            page={page}
+            pageNumber={index + 1}
+            isFirstOfChapter={isFirstOfChapter}
+          />
+        );
+        newPageMapping.push(index); // Text page also maps to content[index]
+      }
     }
   });
   
