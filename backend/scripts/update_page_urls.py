@@ -100,23 +100,37 @@ def main():
                 "source": source
             })
         
-        # Call bulk update API
-        resp = requests.put(
+        # Call bulk update API for BOTH sources
+        # First update pages array
+        resp_pages = requests.put(
             f"{API_URL}/api/admin/books/{book_id}/bulk-page-images",
             headers={
                 "Authorization": f"Bearer {token}",
                 "Content-Type": "application/json"
             },
-            json=updates
+            json=[{**u, "source": "pages"} for u in updates]
         )
         
-        if resp.status_code == 200:
-            result = resp.json()
-            log(f"  SUCCESS: Updated {result.get('updated_count', 0)} pages")
-            total_updated += result.get('updated_count', 0)
-        else:
-            log(f"  ERROR: {resp.status_code} - {resp.text[:100]}")
-            total_failed += 1
+        # Then update chapters array
+        resp_chapters = requests.put(
+            f"{API_URL}/api/admin/books/{book_id}/bulk-page-images",
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json"
+            },
+            json=[{**u, "source": "chapters"} for u in updates]
+        )
+        
+        pages_count = 0
+        chapters_count = 0
+        
+        if resp_pages.status_code == 200:
+            pages_count = resp_pages.json().get('updated_count', 0)
+        if resp_chapters.status_code == 200:
+            chapters_count = resp_chapters.json().get('updated_count', 0)
+        
+        log(f"  Updated: pages={pages_count}, chapters={chapters_count}")
+        total_updated += max(pages_count, chapters_count)
     
     log(f"\n{'='*60}")
     log(f"UPDATE COMPLETE")
