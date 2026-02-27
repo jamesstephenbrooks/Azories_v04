@@ -565,10 +565,10 @@ export default function Library() {
               {summaryBook?.back_cover_image && (
                 <div className="md:w-1/3 flex-shrink-0">
                   <div className="rounded-xl overflow-hidden aspect-[3/4]">
-                    <img 
+                    <LazyImage 
                       src={summaryBook.back_cover_image} 
                       alt="Back cover" 
-                      className="w-full h-full object-cover"
+                      className="w-full h-full"
                     />
                   </div>
                 </div>
