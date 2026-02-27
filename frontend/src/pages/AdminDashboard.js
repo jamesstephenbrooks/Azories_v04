@@ -541,6 +541,9 @@ export default function AdminDashboard() {
             <TabsTrigger value="analytics" className="rounded-full data-[state=active]:bg-purple-600 text-white">
               <FiBarChart2 className="w-4 h-4 mr-2" /> Analytics
             </TabsTrigger>
+            <TabsTrigger value="settings" className="rounded-full data-[state=active]:bg-purple-600 text-white">
+              <FiSettings className="w-4 h-4 mr-2" /> Settings
+            </TabsTrigger>
           </TabsList>
 
           {/* Pending Reviews Tab */}
