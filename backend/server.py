@@ -4118,10 +4118,20 @@ async def run_video_generation_task(task_id: str, user_id: str, image_url: str, 
 
 @api_router.get("/fal/models")
 async def get_fal_available_models():
-    """Get list of available fal.ai models"""
+    """Get list of available fal.ai models and key status"""
     if not FAL_AVAILABLE:
         return {"models": [], "available": False, "message": "fal.ai not configured"}
-    return {"models": get_fal_models(), "available": True}
+    
+    # Include key validity status
+    fal_status = get_fal_key_status() if get_fal_key_status else {}
+    key_valid = fal_status.get("valid", None)
+    
+    return {
+        "models": get_fal_models(), 
+        "available": True,
+        "key_valid": key_valid,
+        "key_error": fal_status.get("error_message") if key_valid is False else None
+    }
 
 @api_router.post("/fal/generate")
 async def fal_generate_image(request: FalGenerateImageRequest, current_user: dict = Depends(get_current_user)):
