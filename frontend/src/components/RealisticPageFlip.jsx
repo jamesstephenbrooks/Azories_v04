@@ -422,7 +422,7 @@ const ContentPage = forwardRef(({ page, pageNumber, isLeft, isCurrentPage = fals
   
   return (
     <Page ref={ref} pageNumber={pageNumber} isLeft={isLeft}>
-      <div className="h-full flex flex-col">
+      <div className="h-full flex flex-col px-4 sm:px-5 py-3">
         {/* Image section - always show container for layout consistency */}
         <div 
           className={`mb-4 rounded-lg overflow-hidden flex-shrink-0 relative ${!hasImage ? 'bg-muted/20 border border-dashed border-muted-foreground/20' : ''}`} 
@@ -441,20 +441,20 @@ const ContentPage = forwardRef(({ page, pageNumber, isLeft, isCurrentPage = fals
             />
           ) : !hasText ? (
             <div className="w-full h-full flex items-center justify-center text-muted-foreground/40">
-              <span className="text-sm">No illustration</span>
+              <span className="text-base">No illustration</span>
             </div>
           ) : null}
         </div>
         
-        {/* Text content */}
-        <div className="flex-1 overflow-hidden">
+        {/* Text content - scrollable, never shrink font */}
+        <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-muted-foreground/30 scrollbar-track-transparent">
           {hasText ? (
-            <p className="font-reader text-base md:text-lg leading-relaxed whitespace-pre-wrap text-foreground/90">
+            <p className="font-reader text-base lg:text-lg leading-[1.7] whitespace-pre-wrap text-foreground/90">
               {page.text_content}
             </p>
           ) : (
             <div className="h-full flex items-center justify-center text-muted-foreground/40">
-              <span className="text-sm italic">This page has no content</span>
+              <span className="text-base italic">This page has no content</span>
             </div>
           )}
         </div>
