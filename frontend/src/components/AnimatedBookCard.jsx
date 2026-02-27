@@ -98,10 +98,10 @@ export default function AnimatedBookCard({ book, onClick, size = 'md' }) {
       <div className="relative aspect-[3/4] rounded-xl overflow-hidden shadow-lg">
         {/* Cover Image */}
         {book.cover_image ? (
-          <img
+          <LazyImage
             src={book.cover_image}
             alt={book.title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className="w-full h-full transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
