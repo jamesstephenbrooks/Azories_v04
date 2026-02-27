@@ -686,21 +686,24 @@ const RealisticPageFlip = forwardRef(({
           />
         
         <HTMLFlipBook
-          key={`flipbook-${pages.length}-${isMobilePortrait ? 'portrait' : 'landscape'}`}
+          key={`flipbook-${pages.length}-${width}-${height}-${isMobilePortrait ? 'portrait' : 'landscape'}`}
           ref={flipBookRef}
           width={width}
           height={height}
-          size="fixed"
-          minWidth={isMobilePortrait ? 200 : 400}
-          maxWidth={2000}
-          minHeight={isMobilePortrait ? 300 : 500}
-          maxHeight={2400}
+          size="stretch"
+          minWidth={width * 0.8}
+          maxWidth={width * 1.2}
+          minHeight={height * 0.8}
+          maxHeight={height * 1.2}
           showCover={true}
           mobileScrollSupport={true}
           onFlip={handleFlip}
           onChangeState={handleFlipStart}
           className={`book-flipbook ${currentPage === 0 ? 'cover-view' : ''} ${isMobilePortrait ? 'mobile-portrait' : ''}`}
-          style={{}}
+          style={{ 
+            width: isMobilePortrait ? `${width}px` : `${width * 2}px`,
+            height: `${height}px`,
+          }}
           startPage={initialPage}
           startZIndex={0}
           autoSize={false}
