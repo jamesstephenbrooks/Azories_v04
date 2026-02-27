@@ -1360,14 +1360,7 @@ export default function BookReader() {
               )}
               
               <button
-                onClick={() => {
-                  // Instant state change - no blocking
-                  if (currentPage < allPages.length - 1) {
-                    setCurrentPage(currentPage + 1);
-                    // Fire and forget - don't wait
-                    saveReadingProgress();
-                  }
-                }}
+                onClick={nextPage}
                 disabled={currentPage >= allPages.length - 1}
                 className="min-w-[56px] min-h-[56px] px-5 rounded-full border-2 border-border bg-background hover:bg-muted active:bg-muted/80 flex items-center justify-center touch-manipulation"
                 style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
