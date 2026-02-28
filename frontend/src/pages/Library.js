@@ -458,8 +458,8 @@ export default function Library() {
                 </div>
               </div>
               
-              {/* 3D Grand Library Promotional Card - Only show in grid view */}
-              {viewMode === 'grid' && (
+              {/* 3D Grand Library Promotional Card - Only show in grid view when not searching */}
+              {viewMode === 'grid' && !debouncedSearch && (
                 <div 
                   className="mb-8 relative overflow-hidden rounded-3xl cursor-pointer group"
                   onClick={() => setViewMode('immersive')}
