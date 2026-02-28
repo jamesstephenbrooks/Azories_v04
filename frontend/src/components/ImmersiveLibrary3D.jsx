@@ -1389,9 +1389,6 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         
         genreBannersRef.current = genreBanners;
         
-        // Azora is disabled for now - will be re-enabled once positioning is calibrated
-        console.log('Azora disabled - needs positioning calibration');
-        
         setIsLoaded(true);
         setLoadError(null);
       },
