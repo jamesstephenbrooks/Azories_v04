@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import Navbar from '@/components/Navbar';
 import BookRecommendations from '@/components/BookRecommendations';
 import { getThumbnailUrl, preloadImages } from '@/utils/imageOptimizer';
+import { AZORA_ASSETS } from '@/components/AzoraMascot';
 
 // Lazy-loaded image component with intersection observer and aggressive optimization
 const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 250 }) => {
