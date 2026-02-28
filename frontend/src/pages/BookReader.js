@@ -1297,8 +1297,9 @@ export default function BookReader() {
                     </div>
                   )}
                 </div>
-              </div>
-            ) : isMobileLandscape && !isCover && currentPage >= 0 ? (
+              </>
+              )}
+              </div> && !isCover && currentPage >= 0 ? (
               /* Mobile Landscape Two-Page Spread - Optimized for PWA full screen */
               <div className="relative w-full h-screen">
                 {/* Back Cover - Full page image in landscape */}
