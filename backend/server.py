@@ -218,8 +218,9 @@ async def periodic_cleanup():
 # AUTO-SEEDING: Automatically seed database on first deployment
 # ============================================================
 
-PREVIEW_URL = "https://azories-deploy.preview.emergentagent.com"
-SEED_IMPORT_KEY = "azories-import-2026"
+# Auto-seed configuration (loaded from environment for flexibility)
+PREVIEW_URL = os.environ.get('SEED_PREVIEW_URL', 'https://azories-deploy.preview.emergentagent.com')
+SEED_IMPORT_KEY = os.environ.get('SEED_IMPORT_KEY', 'azories-import-2026')
 LOCAL_EXPORTS_PATH = "/app/exports/collections"
 
 async def seed_from_local_exports():
