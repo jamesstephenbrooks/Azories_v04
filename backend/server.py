@@ -94,9 +94,18 @@ except ImportError as e:
     CLOUDINARY_AVAILABLE = False
     is_cloudinary_configured = lambda: False
 
-# MongoDB connection
+# MongoDB connection with TLS configuration for production
 mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
+# Add TLS options for Atlas connections if using mongodb+srv
+mongo_options = {}
+if 'mongodb+srv' in mongo_url or 'mongodb.net' in mongo_url:
+    import certifi
+    mongo_options = {
+        'tlsCAFile': certifi.where(),
+        'serverSelectionTimeoutMS': 30000,
+        'connectTimeoutMS': 30000,
+    }
+client = AsyncIOMotorClient(mongo_url, **mongo_options)
 db = client[os.environ['DB_NAME']]
 
 # ElevenLabs client
