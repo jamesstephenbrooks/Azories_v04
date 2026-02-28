@@ -492,7 +492,7 @@ export default function BookReader() {
     } catch {}
   };
 
-  const goToPage = useCallback((newPage, direction) => {
+  const goToPage = useCallback((newPage, direction, jumpDirect = false) => {
     const minPage = -1;
     const maxPage = allPages.length - 1;
     
@@ -514,8 +514,13 @@ export default function BookReader() {
       setCurrentPage(newPage);
       saveReadingProgress();
     } else if (realisticFlipRef.current) {
-      // Use the ref to control the page flip component
-      if (direction === 'next') {
+      // If jumpDirect is true, navigate directly to the page (for Read Again feature)
+      if (jumpDirect) {
+        // In flipbook, page 0 = cover, page 1 = first content page
+        // newPage 0 should map to flipbook page 1
+        const flipbookPage = newPage + 1;
+        realisticFlipRef.current.goToPage(flipbookPage);
+      } else if (direction === 'next') {
         realisticFlipRef.current.nextPage();
       } else {
         realisticFlipRef.current.prevPage();
