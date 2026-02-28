@@ -103,3 +103,7 @@ glb_optimization/gothic_library_14_cycles.glb
 # Environment files
 *.env
 *.env.*
+-e 
+# Environment files
+*.env
+*.env.*
