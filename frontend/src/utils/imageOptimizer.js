@@ -57,13 +57,13 @@ export const getOptimizedImageUrl = (url, {
 };
 
 /**
- * Get thumbnail-optimized URL (VERY aggressive compression for fast loading)
+ * Get thumbnail-optimized URL (balanced quality/speed)
  * Use this for grid views and small previews
  */
-export const getThumbnailUrl = (url, width = 200) => {
+export const getThumbnailUrl = (url, width = 250) => {
   return getOptimizedImageUrl(url, { 
     width, 
-    quality: '40',  // Very aggressive quality reduction for fast thumbnails
+    quality: '65',  // Balanced quality - fast but not blurry
     format: 'auto' 
   });
 };
