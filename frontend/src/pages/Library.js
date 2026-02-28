@@ -325,7 +325,14 @@ export default function Library() {
           ))}
         </div>
       ) : (
-        <div className="text-center py-12 bg-muted/30 rounded-3xl">
+        <div className="flex flex-col items-center text-center py-12 bg-muted/30 rounded-3xl">
+          <motion.img 
+            src={AZORA_ASSETS.readingCozy}
+            alt="Azora reading"
+            className="w-32 h-40 object-contain mb-4 opacity-70"
+            animate={{ y: [0, -5, 0] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          />
           <p className="text-muted-foreground font-body">{emptyMessage}</p>
         </div>
       )}
