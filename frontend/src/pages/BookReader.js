@@ -1512,7 +1512,14 @@ export default function BookReader() {
               {currentPageData?.isBackCover ? (
                 <>
                   <button
-                    onClick={() => setCurrentPage(0)}
+                    onClick={() => {
+                      // Go to cover (page index -1) - use jumpDirect for immediate navigation
+                      if (isMobilePortrait || isMobileLandscape) {
+                        setCurrentPage(-1);
+                      } else if (realisticFlipRef.current) {
+                        realisticFlipRef.current.goToPage(0); // Flipbook page 0 = cover
+                      }
+                    }}
                     className="min-h-[56px] px-6 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white font-medium flex items-center justify-center gap-2 touch-manipulation"
                     style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                     data-testid="read-again-btn"
@@ -1520,7 +1527,15 @@ export default function BookReader() {
                     Read Again <FiPlay className="w-5 h-5" />
                   </button>
                   <button
-                    onClick={prevPage}
+                    onClick={() => {
+                      // Go to previous page from back cover
+                      const prevPageIndex = currentPage - 1;
+                      if (isMobilePortrait || isMobileLandscape) {
+                        setCurrentPage(prevPageIndex);
+                      } else if (realisticFlipRef.current) {
+                        realisticFlipRef.current.prevPage();
+                      }
+                    }}
                     className="min-w-[56px] min-h-[56px] px-5 rounded-full border-2 border-border bg-background hover:bg-muted active:bg-muted/80 flex items-center justify-center touch-manipulation"
                     style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                     data-testid="back-from-backcover-btn"
