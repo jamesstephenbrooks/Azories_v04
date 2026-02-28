@@ -1493,9 +1493,16 @@ export default function BookReader() {
                   </button>
                   <button
                     onClick={() => {
-                      console.log('[BackCover] Back clicked, currentPage:', currentPage);
-                      const prevPageIndex = currentPage - 1;
-                      setCurrentPage(prevPageIndex);
+                      console.log('[BackCover] Back clicked, currentPage:', currentPage, 'allPages.length:', allPages.length);
+                      // When on back cover (currentPage === -2), go to last content page
+                      // Otherwise go to previous page
+                      if (currentPage === -2) {
+                        // Last content page is allPages.length - 2 (since back cover is allPages.length - 1)
+                        const lastContentPage = allPages.length - 2;
+                        setCurrentPage(lastContentPage);
+                      } else {
+                        setCurrentPage(currentPage - 1);
+                      }
                       if (realisticFlipRef.current) {
                         realisticFlipRef.current.prevPage();
                       }
