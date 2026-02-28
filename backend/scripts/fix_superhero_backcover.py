@@ -23,8 +23,9 @@ cloudinary.config(
 
 # MongoDB connection
 MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
+DB_NAME = os.environ.get("DB_NAME", "test_database")
 client = MongoClient(MONGO_URL)
-db = client["azories"]
+db = client[DB_NAME]
 
 def create_back_cover(book_id, title, summary, author="Young Author"):
     """Create a professional back cover image"""
