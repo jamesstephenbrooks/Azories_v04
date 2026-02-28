@@ -309,13 +309,28 @@ async def seed_if_empty():
         
         if book_count == 0:
             logger.info("📭 Database is empty - starting auto-seed...")
+            
+            # Test connection to preview first
+            test_url = f"{PREVIEW_URL}/api/health"
+            logger.info(f"🔗 Testing connection to: {test_url}")
+            
+            async with aiohttp.ClientSession() as session:
+                try:
+                    async with session.get(test_url, timeout=aiohttp.ClientTimeout(total=10)) as resp:
+                        if resp.status == 200:
+                            logger.info(f"✅ Preview server reachable")
+                        else:
+                            logger.warning(f"⚠️ Preview returned {resp.status}")
+                except Exception as conn_err:
+                    logger.error(f"❌ Cannot reach preview: {conn_err}")
+                    return
+            
             await seed_from_preview()
         else:
             logger.info("✅ Database already has data - skipping seed")
             
     except Exception as e:
         logger.error(f"❌ Auto-seed check failed: {str(e)}")
-        # Don't crash the app if seeding fails - it can be done manually
 
 
 # Lifespan context manager (modern FastAPI approach)
