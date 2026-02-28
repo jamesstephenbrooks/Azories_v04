@@ -1210,30 +1210,34 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         
         scene.add(model);
         
-        // Load Azora mascot model for downstairs area
+        // Load Azora mascot model for downstairs (ground floor) area
         gltfLoader.load(
           AZORA_MODEL_URL,
           (azora) => {
             console.log('Azora mascot loaded!');
             const azoraMesh = azora.scene;
             
-            // Scale Azora to fit the scene (mascot should be about 1-1.5 units tall)
+            // Scale Azora to fit the scene (mascot should be about 1.5 units tall)
             const azoraBbox = new THREE.Box3().setFromObject(azoraMesh);
             const azoraHeight = azoraBbox.max.y - azoraBbox.min.y;
-            const targetHeight = 1.2; // Target height in scene units
+            const targetHeight = 1.5; // Target height in scene units
             const azoraScale = targetHeight / azoraHeight;
             azoraMesh.scale.setScalar(azoraScale);
             
-            // Position Azora in the downstairs area (visible from starting position)
-            // Based on screenshot: near the starting position, facing the camera
-            azoraMesh.position.set(-0.5, 3.5, 0.5); // Downstairs area
+            // Position Azora on the GROUND FLOOR (Y=0 is ground level)
+            // X=-1.5 is near center-left, Z=0 is center of room
+            // Ground floor Y should be ~0.1 (slightly above floor to prevent clipping)
+            azoraMesh.position.set(-1.5, 0.1, 0);
             
-            // Rotate to face the starting camera position (facing roughly toward -Z)
-            azoraMesh.rotation.y = Math.PI; // Face toward camera at start position
+            // Rotate to face visitors coming down the stairs (facing roughly toward +Z and +X)
+            azoraMesh.rotation.y = -Math.PI / 4; // Face toward stairs/entrance
+            
+            // Store reference for interaction
+            azoraRef.current = azoraMesh;
             
             // Add to scene
             scene.add(azoraMesh);
-            console.log('Azora positioned at:', azoraMesh.position);
+            console.log('Azora positioned at ground floor:', azoraMesh.position);
           },
           undefined,
           (error) => console.warn('Failed to load Azora mascot:', error)
