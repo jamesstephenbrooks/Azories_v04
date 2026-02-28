@@ -2472,25 +2472,43 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                     </p>
                   </div>
                   
-                  {/* Quick Actions */}
-                  <div className="flex flex-wrap gap-2">
-                    <button className="px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 rounded-full text-xs text-purple-200 transition-colors">
+                  {/* Quick Actions - Genre buttons that open book panels */}
+                  <div className="flex flex-wrap gap-2 pb-2">
+                    <button 
+                      onClick={() => { setSelectedGenre('Fantasy'); setShowAzoraChat(false); }}
+                      className="px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/40 rounded-full text-xs text-purple-200 transition-colors"
+                    >
                       Fantasy Adventures
                     </button>
-                    <button className="px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 rounded-full text-xs text-purple-200 transition-colors">
+                    <button 
+                      onClick={() => { setSelectedGenre('Mystery'); setShowAzoraChat(false); }}
+                      className="px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/40 rounded-full text-xs text-purple-200 transition-colors"
+                    >
                       Mystery Stories
                     </button>
-                    <button className="px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 rounded-full text-xs text-purple-200 transition-colors">
+                    <button 
+                      onClick={() => { setSelectedGenre('Science Fiction'); setShowAzoraChat(false); }}
+                      className="px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/40 rounded-full text-xs text-purple-200 transition-colors"
+                    >
                       Science Fiction
                     </button>
-                    <button className="px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 rounded-full text-xs text-purple-200 transition-colors">
-                      Recommend for me
+                    <button 
+                      onClick={() => { setSelectedGenre('Adventure'); setShowAzoraChat(false); }}
+                      className="px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/40 rounded-full text-xs text-purple-200 transition-colors"
+                    >
+                      Adventure
+                    </button>
+                    <button 
+                      onClick={() => { setSelectedGenre('Fiction'); setShowAzoraChat(false); }}
+                      className="px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/40 rounded-full text-xs text-purple-200 transition-colors"
+                    >
+                      Fiction
                     </button>
                   </div>
                 </div>
                 
-                {/* Speech bubble tail */}
-                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-gradient-to-br from-purple-900/95 to-[#1a1520]/95 rotate-45 border-r border-b border-purple-500/30"></div>
+                {/* Speech bubble tail - fixed alignment */}
+                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-[#1a1520] rotate-45 border-r border-b border-purple-500/30"></div>
               </motion.div>
             )}
           </AnimatePresence>
