@@ -94,21 +94,46 @@ except ImportError as e:
     CLOUDINARY_AVAILABLE = False
     is_cloudinary_configured = lambda: False
 
-# MongoDB connection with TLS configuration for production
-# Uses Emergent's built-in MongoDB if MONGO_URL not set, or external Atlas if provided
-mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-db_name = os.environ.get('DB_NAME', 'azories')
+# MongoDB connection with automatic fallback to localhost
+# If external MongoDB (Atlas) fails, automatically use localhost
+import asyncio
 
-# Add TLS options for Atlas connections if using mongodb+srv
-mongo_options = {}
-if 'mongodb+srv' in mongo_url or 'mongodb.net' in mongo_url:
-    import certifi
-    mongo_options = {
-        'tlsCAFile': certifi.where(),
-        'serverSelectionTimeoutMS': 30000,
-        'connectTimeoutMS': 30000,
-    }
-client = AsyncIOMotorClient(mongo_url, **mongo_options)
+def get_mongo_connection():
+    """Get MongoDB connection with automatic fallback to localhost."""
+    external_url = os.environ.get('MONGO_URL', '')
+    db_name = os.environ.get('DB_NAME', 'azories')
+    
+    # If MONGO_URL contains Atlas or external MongoDB, try it first
+    if external_url and ('mongodb+srv' in external_url or 'mongodb.net' in external_url):
+        try:
+            import certifi
+            # Try external connection with short timeout
+            test_client = MongoClient(
+                external_url,
+                tlsCAFile=certifi.where(),
+                serverSelectionTimeoutMS=5000,
+                connectTimeoutMS=5000
+            )
+            # Test the connection
+            test_client.admin.command('ping')
+            logging.info("Successfully connected to external MongoDB (Atlas)")
+            return AsyncIOMotorClient(
+                external_url,
+                tlsCAFile=certifi.where(),
+                serverSelectionTimeoutMS=30000,
+                connectTimeoutMS=30000
+            ), db_name
+        except Exception as e:
+            logging.warning(f"External MongoDB connection failed: {e}")
+            logging.info("Falling back to localhost MongoDB")
+    
+    # Default to localhost (Emergent's built-in MongoDB)
+    localhost_url = 'mongodb://localhost:27017'
+    logging.info(f"Using localhost MongoDB: {localhost_url}")
+    return AsyncIOMotorClient(localhost_url), db_name
+
+# Initialize MongoDB connection with fallback
+client, db_name = get_mongo_connection()
 db = client[db_name]
 
 # ElevenLabs client
