@@ -1203,6 +1203,35 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         
         scene.add(model);
         
+        // Load Azora mascot model for downstairs area
+        gltfLoader.load(
+          AZORA_MODEL_URL,
+          (azora) => {
+            console.log('Azora mascot loaded!');
+            const azoraMesh = azora.scene;
+            
+            // Scale Azora to fit the scene (mascot should be about 1-1.5 units tall)
+            const azoraBbox = new THREE.Box3().setFromObject(azoraMesh);
+            const azoraHeight = azoraBbox.max.y - azoraBbox.min.y;
+            const targetHeight = 1.2; // Target height in scene units
+            const azoraScale = targetHeight / azoraHeight;
+            azoraMesh.scale.setScalar(azoraScale);
+            
+            // Position Azora in the downstairs area (visible from starting position)
+            // Based on screenshot: near the starting position, facing the camera
+            azoraMesh.position.set(-0.5, 3.5, 0.5); // Downstairs area
+            
+            // Rotate to face the starting camera position (facing roughly toward -Z)
+            azoraMesh.rotation.y = Math.PI; // Face toward camera at start position
+            
+            // Add to scene
+            scene.add(azoraMesh);
+            console.log('Azora positioned at:', azoraMesh.position);
+          },
+          undefined,
+          (error) => console.warn('Failed to load Azora mascot:', error)
+        );
+        
         // Try to find a good starting position using raycasting
         const raycaster = new THREE.Raycaster();
         const downRay = new THREE.Vector3(0, -1, 0);
