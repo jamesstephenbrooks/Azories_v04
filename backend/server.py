@@ -386,10 +386,13 @@ async def get_admin_user(credentials: HTTPAuthorizationCredentials = Depends(sec
     """Verify admin JWT token"""
     try:
         payload = jwt.decode(credentials.credentials, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        if not payload.get("admin"):
+        # Check for admin role in the payload
+        if payload.get("role") != "admin" and not payload.get("admin"):
             raise HTTPException(status_code=403, detail="Admin access required")
         return payload
-    except Exception:
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid admin token")
 
 # Age ratings
