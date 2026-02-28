@@ -756,7 +756,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         let materials;
         if (book.cover_image) {
           const textureLoader = new THREE.TextureLoader();
-          const coverTexture = textureLoader.load(book.cover_image);
+          const optimizedCoverUrl = getOptimizedImageUrl(book.cover_image, { width: 256 });
+          const coverTexture = textureLoader.load(optimizedCoverUrl);
           coverTexture.colorSpace = THREE.SRGBColorSpace;
           
           const sideMat = new THREE.MeshStandardMaterial({ color: bookColor });
