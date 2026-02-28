@@ -7,7 +7,7 @@ import requests
 import sys
 from datetime import datetime
 
-API_URL = "https://azories-audit.preview.emergentagent.com"
+API_URL = "https://azories-page-finale.preview.emergentagent.com"
 
 # Books that need URL rollback (original batch - NOT the retry batch)
 BOOKS_TO_ROLLBACK = [
