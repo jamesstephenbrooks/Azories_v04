@@ -2,6 +2,7 @@ import { useRef, useState, useCallback, forwardRef, useImperativeHandle, useEffe
 import HTMLFlipBook from 'react-pageflip';
 import { motion } from 'framer-motion';
 import { FiBook, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { getOptimizedImageUrl } from '@/utils/imageOptimizer';
 
 // Shimmer placeholder component for loading states
 const ImageShimmer = () => (
@@ -12,12 +13,10 @@ const ImageShimmer = () => (
 
 // Optimized lazy-loading image component with preloading and placeholder
 /**
- * Get optimized Cloudinary URL with transformations
+ * Get optimized Cloudinary URL with transformations (uses centralized utility)
  */
 const getOptimizedCloudinaryUrl = (url, { width, quality = 'auto', format = 'auto' } = {}) => {
-  if (!url || !url.includes('res.cloudinary.com')) return url;
-  const transforms = width ? `w_${width},q_${quality},f_${format}` : `q_${quality},f_${format}`;
-  return url.replace('/upload/', `/upload/${transforms}/`);
+  return getOptimizedImageUrl(url, { width: width || 800, quality, format });
 };
 
 const LazyImage = ({ src, alt = "", className = "", style = {}, onLoad, priority = false, optimizeWidth }) => {
