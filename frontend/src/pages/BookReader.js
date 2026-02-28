@@ -1301,90 +1301,119 @@ export default function BookReader() {
             ) : isMobileLandscape && !isCover && currentPage >= 0 ? (
               /* Mobile Landscape Two-Page Spread - Optimized for PWA full screen */
               <div className="relative w-full h-screen">
-                {/* Two-Page Spread - Maximum screen usage */}
-                <div 
-                  className="flex w-full gap-0.5 px-2 pt-6 pb-0"
-                  style={{ height: 'calc(100vh - 24px)' }}
-                >
-                  {/* Left Page: Illustration with portrait crop */}
+                {/* Back Cover - Full page image in landscape */}
+                {currentPageData?.isBackCover ? (
                   <div 
-                    className="relative flex-1 rounded-l-lg overflow-hidden"
-                    style={{ 
-                      boxShadow: '4px 0 15px -5px rgba(0,0,0,0.2)'
-                    }}
+                    className="flex items-center justify-center w-full px-4 pt-6 pb-2"
+                    style={{ height: 'calc(100vh - 24px)' }}
                   >
-                    {currentPageData?.image_url ? (
+                    <div className="relative h-full aspect-[3/4] max-w-[50vw] rounded-lg overflow-hidden shadow-2xl">
                       <img 
                         src={currentPageData.image_url}
-                        alt=""
+                        alt="Back Cover"
                         style={{
                           position: 'absolute',
                           top: 0,
                           left: 0,
                           width: '100%',
                           height: '100%',
-                          objectFit: 'cover',
-                          objectPosition: 'center top'
+                          objectFit: 'contain',
+                          objectPosition: 'center',
+                          backgroundColor: '#1a0a2e'
                         }}
                       />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-100 to-blue-50">
-                        <span className="text-purple-300 text-sm">No illustration</span>
+                      {/* Back cover badge */}
+                      <div className="absolute bottom-3 right-3 px-4 py-1.5 rounded-full bg-black/50 text-white text-sm">
+                        The End
                       </div>
-                    )}
-                  </div>
-                  
-                  {/* Right Page: Text with vertical centering */}
-                  <div 
-                    className="flex-1 bg-[#fdfbf7] dark:bg-[#2a2a30] rounded-r-lg overflow-hidden flex flex-col"
-                    style={{ 
-                      boxShadow: '-4px 0 15px -5px rgba(0,0,0,0.1)'
-                    }}
-                  >
-                    {/* Book/Chapter header - subtle */}
-                    <div className="px-4 pt-2 pb-1 flex items-center justify-between">
-                      <span className="text-[9px] uppercase tracking-widest text-muted-foreground/60 font-medium">
-                        {currentPageData?.chapterTitle || book?.title}
-                      </span>
-                      <span className="text-[9px] text-muted-foreground/50">
-                        {currentPage + 1}
-                      </span>
                     </div>
-                    
-                    {/* Text content - vertically centered with larger font */}
-                    <div className="flex-1 flex flex-col justify-center px-5 py-2">
-                      {(currentPageData?.text_content || currentPageData?.text || currentPageData?.content) ? (
-                        <p className="font-reader text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap text-center">
-                          {currentPageData.text_content || currentPageData.text || currentPageData.content}
-                        </p>
-                      ) : currentPageData?.isChapterTitle ? (
-                        <div className="text-center">
-                          <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
-                            Chapter {currentPageData.chapterNumber || ''}
-                          </p>
-                          <h3 className="font-heading text-base font-bold text-foreground">
-                            {currentPageData.chapterTitle}
-                          </h3>
-                        </div>
+                  </div>
+                ) : (
+                  /* Two-Page Spread - Maximum screen usage */
+                  <div 
+                    className="flex w-full gap-0.5 px-2 pt-6 pb-0"
+                    style={{ height: 'calc(100vh - 24px)' }}
+                  >
+                    {/* Left Page: Illustration with portrait crop */}
+                    <div 
+                      className="relative flex-1 rounded-l-lg overflow-hidden"
+                      style={{ 
+                        boxShadow: '4px 0 15px -5px rgba(0,0,0,0.2)'
+                      }}
+                    >
+                      {currentPageData?.image_url ? (
+                        <img 
+                          src={currentPageData.image_url}
+                          alt=""
+                          style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            objectPosition: 'center top'
+                          }}
+                        />
                       ) : (
-                        <p className="text-muted-foreground/60 text-xs italic text-center">
-                          Tap edges to navigate
-                        </p>
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-100 to-blue-50">
+                          <span className="text-purple-300 text-sm">No illustration</span>
+                        </div>
                       )}
                     </div>
                     
-                    {/* Decorative footer element */}
-                    <div className="px-4 pb-2 flex justify-center">
-                      <div className="flex items-center gap-2 text-muted-foreground/30">
-                        <div className="w-8 h-px bg-current" />
-                        <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
-                        </svg>
-                        <div className="w-8 h-px bg-current" />
+                    {/* Right Page: Text with vertical centering */}
+                    <div 
+                      className="flex-1 bg-[#fdfbf7] dark:bg-[#2a2a30] rounded-r-lg overflow-hidden flex flex-col"
+                      style={{ 
+                        boxShadow: '-4px 0 15px -5px rgba(0,0,0,0.1)'
+                      }}
+                    >
+                      {/* Book/Chapter header - subtle */}
+                      <div className="px-4 pt-2 pb-1 flex items-center justify-between">
+                        <span className="text-[9px] uppercase tracking-widest text-muted-foreground/60 font-medium">
+                          {currentPageData?.chapterTitle || book?.title}
+                        </span>
+                        <span className="text-[9px] text-muted-foreground/50">
+                          {currentPage + 1}
+                        </span>
+                      </div>
+                      
+                      {/* Text content - vertically centered with larger font */}
+                      <div className="flex-1 flex flex-col justify-center px-5 py-2">
+                        {(currentPageData?.text_content || currentPageData?.text || currentPageData?.content) ? (
+                          <p className="font-reader text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap text-center">
+                            {currentPageData.text_content || currentPageData.text || currentPageData.content}
+                          </p>
+                        ) : currentPageData?.isChapterTitle ? (
+                          <div className="text-center">
+                            <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
+                              Chapter {currentPageData.chapterNumber || ''}
+                            </p>
+                            <h3 className="font-heading text-base font-bold text-foreground">
+                              {currentPageData.chapterTitle}
+                            </h3>
+                          </div>
+                        ) : (
+                          <p className="text-muted-foreground/60 text-xs italic text-center">
+                            Tap edges to navigate
+                          </p>
+                        )}
+                      </div>
+                      
+                      {/* Decorative footer element */}
+                      <div className="px-4 pb-2 flex justify-center">
+                        <div className="flex items-center gap-2 text-muted-foreground/30">
+                          <div className="w-8 h-px bg-current" />
+                          <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                          </svg>
+                          <div className="w-8 h-px bg-current" />
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             ) : (
               /* Realistic Page Flip Mode - for landscape and cover */
