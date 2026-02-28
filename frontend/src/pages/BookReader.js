@@ -1584,6 +1584,8 @@ export default function BookReader() {
               >
                 <FiChevronRight className="w-6 h-6" />
               </button>
+                </>
+              )}
             </div>
           
           {/* Audio Controls - Enhanced - Hidden on very small screens */}
