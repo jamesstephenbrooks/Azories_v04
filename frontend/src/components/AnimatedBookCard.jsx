@@ -1,9 +1,19 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { FiBook, FiEye, FiStar } from 'react-icons/fi';
 
+// Get optimized Cloudinary URL with transformations for faster loading
+const getOptimizedImageUrl = (url, { width = 300, quality = 'auto', format = 'auto' } = {}) => {
+  if (!url) return url;
+  if (url.includes('res.cloudinary.com')) {
+    const transformations = `w_${width},q_${quality},f_${format}`;
+    return url.replace('/upload/', `/upload/${transformations}/`);
+  }
+  return url;
+};
+
 // Lazy-loaded image component with intersection observer
-const LazyImage = ({ src, alt, className, onLoad }) => {
+const LazyImage = ({ src, alt, className, onLoad, thumbnailWidth = 300 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const [hasError, setHasError] = useState(false);
