@@ -1,16 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { FiBook, FiEye, FiStar } from 'react-icons/fi';
-
-// Get optimized Cloudinary URL with transformations for faster loading
-const getOptimizedImageUrl = (url, { width = 300, quality = 'auto', format = 'auto' } = {}) => {
-  if (!url) return url;
-  if (url.includes('res.cloudinary.com')) {
-    const transformations = `w_${width},q_${quality},f_${format}`;
-    return url.replace('/upload/', `/upload/${transformations}/`);
-  }
-  return url;
-};
+import { getThumbnailUrl } from '@/utils/imageOptimizer';
 
 // Lazy-loaded image component with intersection observer
 const LazyImage = ({ src, alt, className, onLoad, thumbnailWidth = 300 }) => {
@@ -19,9 +10,9 @@ const LazyImage = ({ src, alt, className, onLoad, thumbnailWidth = 300 }) => {
   const [hasError, setHasError] = useState(false);
   const imgRef = useRef(null);
 
-  // Get optimized thumbnail URL
+  // Get optimized thumbnail URL using centralized utility
   const optimizedSrc = useMemo(() => {
-    return getOptimizedImageUrl(src, { width: thumbnailWidth, quality: 'auto', format: 'auto' });
+    return getThumbnailUrl(src, thumbnailWidth);
   }, [src, thumbnailWidth]);
 
   useEffect(() => {
@@ -32,7 +23,7 @@ const LazyImage = ({ src, alt, className, onLoad, thumbnailWidth = 300 }) => {
           observer.disconnect();
         }
       },
-      { rootMargin: '100px', threshold: 0.1 }
+      { rootMargin: '200px', threshold: 0.01 }
     );
 
     if (imgRef.current) {
@@ -80,6 +71,7 @@ const LazyImage = ({ src, alt, className, onLoad, thumbnailWidth = 300 }) => {
           onError={() => setHasError(true)}
           loading="lazy"
           decoding="async"
+          fetchpriority="low"
         />
       )}
       
