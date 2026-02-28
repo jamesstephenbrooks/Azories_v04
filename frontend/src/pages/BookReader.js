@@ -1420,12 +1420,16 @@ export default function BookReader() {
               {isCover ? (
                 <button
                   onClick={startListening}
-                  className="min-h-[56px] px-6 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white font-medium flex items-center justify-center gap-2 touch-manipulation"
+                  disabled={narrationPreparing}
+                  className={`min-h-[56px] px-6 rounded-full ${narrationPreparing ? 'bg-purple-400' : 'bg-purple-600 hover:bg-purple-500 active:bg-purple-700'} text-white font-medium flex items-center justify-center gap-2 touch-manipulation`}
                   style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                   data-testid="cover-start-listening-btn"
                 >
-                  <FiPlay className="w-5 h-5" />
-                  Listen
+                  {narrationPreparing ? (
+                    <><div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> Preparing narration...</>
+                  ) : (
+                    <><FiPlay className="w-5 h-5" /> Listen</>
+                  )}
                 </button>
               ) : (
                 <button
