@@ -9130,45 +9130,210 @@ async def import_books_json(
 # Import all collections from exported JSON files
 # ============================================================
 
+@api_router.get("/admin/import-collections")
+async def list_import_collections(
+    import_key: str = Query(..., description="Admin import key for security")
+):
+    """
+    List all available collections for import with their sizes.
+    Use this to see what can be imported, then import one at a time.
+    """
+    import glob
+    
+    IMPORT_KEY = os.environ.get('DB_IMPORT_KEY', 'azories-import-2026')
+    if import_key != IMPORT_KEY:
+        raise HTTPException(status_code=403, detail="Invalid import key")
+    
+    exports_path = "/app/exports/collections"
+    
+    if not os.path.exists(exports_path):
+        return {"error": "Exports directory not found", "collections": []}
+    
+    json_files = glob.glob(os.path.join(exports_path, "*.json"))
+    
+    collections = []
+    # Priority order - essential collections first, large caches last
+    priority_order = ['users', 'books', 'chapters', 'pages', 'system_settings', 
+                      'character_profiles', 'character_gallery', 'book_images',
+                      'analytics', 'reading_history', 'favorites', 'follows', 'invites',
+                      'credit_usage', 'vip_usage', 'password_resets', 'contact_messages',
+                      'art_studio_animations', 'art_studio_workflows', 
+                      'art_studio_generations', 'art_studio_gallery', 'audio_cache']
+    
+    for json_file in json_files:
+        name = os.path.basename(json_file).replace('.json', '')
+        size_mb = os.path.getsize(json_file) / (1024 * 1024)
+        priority = priority_order.index(name) if name in priority_order else 99
+        collections.append({
+            "name": name,
+            "file": json_file,
+            "size_mb": round(size_mb, 2),
+            "priority": priority,
+            "recommended": size_mb < 10  # Recommend importing smaller files
+        })
+    
+    # Sort by priority
+    collections.sort(key=lambda x: x["priority"])
+    
+    return {
+        "total_collections": len(collections),
+        "collections": collections,
+        "instructions": "Import collections one at a time using POST /api/admin/import-collection?collection=NAME&import_key=KEY"
+    }
+
+
+@api_router.post("/admin/import-collection")
+async def import_single_collection(
+    collection: str = Query(..., description="Collection name to import"),
+    import_key: str = Query(..., description="Admin import key for security")
+):
+    """
+    Import a SINGLE collection from exports. Use this to import one at a time
+    to avoid timeout issues with large databases.
+    """
+    from bson import json_util
+    
+    IMPORT_KEY = os.environ.get('DB_IMPORT_KEY', 'azories-import-2026')
+    if import_key != IMPORT_KEY:
+        raise HTTPException(status_code=403, detail="Invalid import key")
+    
+    json_file = f"/app/exports/collections/{collection}.json"
+    
+    if not os.path.exists(json_file):
+        raise HTTPException(status_code=404, detail=f"Collection '{collection}' not found")
+    
+    try:
+        file_size = os.path.getsize(json_file) / (1024 * 1024)
+        logger.info(f"Importing collection '{collection}' ({file_size:.2f} MB)...")
+        
+        with open(json_file, 'r') as f:
+            documents = json_util.loads(f.read())
+        
+        if not documents:
+            return {"collection": collection, "status": "skipped", "reason": "empty file", "documents": 0}
+        
+        # Get the collection and drop existing data
+        coll = db[collection]
+        await coll.drop()
+        
+        # Insert documents in batches to avoid memory issues
+        if isinstance(documents, list) and len(documents) > 0:
+            batch_size = 500
+            total_inserted = 0
+            
+            for i in range(0, len(documents), batch_size):
+                batch = documents[i:i + batch_size]
+                result = await coll.insert_many(batch)
+                total_inserted += len(result.inserted_ids)
+            
+            return {
+                "collection": collection,
+                "status": "success",
+                "documents": total_inserted,
+                "size_mb": round(file_size, 2)
+            }
+        else:
+            return {"collection": collection, "status": "skipped", "reason": "no documents", "documents": 0}
+            
+    except Exception as e:
+        logger.error(f"Error importing {collection}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Import failed: {str(e)}")
+
+
+@api_router.post("/admin/import-essential")
+async def import_essential_collections(
+    import_key: str = Query(..., description="Admin import key for security")
+):
+    """
+    Import only the essential collections needed for the app to function.
+    This is faster and avoids timeout issues. Skips large cache collections.
+    """
+    from bson import json_util
+    
+    IMPORT_KEY = os.environ.get('DB_IMPORT_KEY', 'azories-import-2026')
+    if import_key != IMPORT_KEY:
+        raise HTTPException(status_code=403, detail="Invalid import key")
+    
+    # Essential collections only - skip large caches
+    essential = ['users', 'books', 'chapters', 'pages', 'system_settings',
+                 'character_profiles', 'favorites', 'follows', 'invites',
+                 'reading_history', 'analytics']
+    
+    results = {"imported": [], "skipped": [], "errors": []}
+    
+    for name in essential:
+        json_file = f"/app/exports/collections/{name}.json"
+        
+        if not os.path.exists(json_file):
+            results["skipped"].append({"collection": name, "reason": "file not found"})
+            continue
+        
+        try:
+            file_size = os.path.getsize(json_file) / (1024 * 1024)
+            
+            with open(json_file, 'r') as f:
+                documents = json_util.loads(f.read())
+            
+            if not documents:
+                results["skipped"].append({"collection": name, "reason": "empty"})
+                continue
+            
+            coll = db[name]
+            await coll.drop()
+            
+            if isinstance(documents, list) and len(documents) > 0:
+                # Batch insert
+                batch_size = 500
+                total = 0
+                for i in range(0, len(documents), batch_size):
+                    batch = documents[i:i + batch_size]
+                    result = await coll.insert_many(batch)
+                    total += len(result.inserted_ids)
+                
+                results["imported"].append({
+                    "collection": name,
+                    "documents": total,
+                    "size_mb": round(file_size, 2)
+                })
+            
+        except Exception as e:
+            results["errors"].append({"collection": name, "error": str(e)})
+    
+    results["success"] = len(results["errors"]) == 0
+    results["total_imported"] = len(results["imported"])
+    
+    return results
+
+
 @api_router.post("/admin/import-database")
 async def import_database_from_exports(
     import_key: str = Query(..., description="Admin import key for security")
 ):
     """
     Import all collections from /app/exports/collections/ into MongoDB.
-    This is a one-time endpoint to populate the production database.
-    
-    Security: Requires correct import key.
+    WARNING: This may timeout for large databases. Use /import-essential or /import-collection instead.
     """
-    import json
     from bson import json_util
     import glob
     
-    # Security check - require special import key
     IMPORT_KEY = os.environ.get('DB_IMPORT_KEY', 'azories-import-2026')
     
     if import_key != IMPORT_KEY:
         raise HTTPException(status_code=403, detail="Invalid import key")
     
-    # Path to exported collections
     exports_path = "/app/exports/collections"
     
-    # Check if exports exist
     if not os.path.exists(exports_path):
         return {
             "success": False,
             "error": f"Exports directory not found at {exports_path}",
-            "hint": "The export files need to be included in the deployment"
+            "hint": "Use /api/admin/import-essential for faster import"
         }
     
-    # Get all JSON files
     json_files = glob.glob(os.path.join(exports_path, "*.json"))
     
     if not json_files:
-        return {
-            "success": False, 
-            "error": "No JSON files found in exports directory"
-        }
+        return {"success": False, "error": "No JSON files found"}
     
     results = {
         "success": True,
@@ -9182,45 +9347,34 @@ async def import_database_from_exports(
         collection_name = os.path.basename(json_file).replace('.json', '')
         
         try:
-            # Read JSON file
             with open(json_file, 'r') as f:
-                # Use json_util to handle BSON types like $oid, $date
                 documents = json_util.loads(f.read())
             
             if not documents:
-                results["details"].append({
-                    "collection": collection_name,
-                    "status": "skipped",
-                    "reason": "empty file"
-                })
+                results["details"].append({"collection": collection_name, "status": "skipped", "reason": "empty"})
                 continue
             
-            # Get the collection
             collection = db[collection_name]
-            
-            # Drop existing data to avoid duplicates
             await collection.drop()
             
-            # Insert all documents
             if isinstance(documents, list) and len(documents) > 0:
-                result = await collection.insert_many(documents)
-                count = len(result.inserted_ids)
+                # Batch insert for large collections
+                batch_size = 500
+                total = 0
+                for i in range(0, len(documents), batch_size):
+                    batch = documents[i:i + batch_size]
+                    result = await collection.insert_many(batch)
+                    total += len(result.inserted_ids)
+                count = total
             else:
                 count = 0
             
             results["collections_imported"] += 1
             results["total_documents"] += count
-            results["details"].append({
-                "collection": collection_name,
-                "status": "success",
-                "documents": count
-            })
+            results["details"].append({"collection": collection_name, "status": "success", "documents": count})
             
         except Exception as e:
-            results["errors"].append({
-                "collection": collection_name,
-                "error": str(e)
-            })
+            results["errors"].append({"collection": collection_name, "error": str(e)})
     
     if results["errors"]:
         results["success"] = len(results["errors"]) < len(json_files)
