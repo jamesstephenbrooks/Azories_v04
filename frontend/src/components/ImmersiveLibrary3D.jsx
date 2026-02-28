@@ -1233,11 +1233,11 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
             const scaledBbox = new THREE.Box3().setFromObject(azoraMesh);
             const yOffset = floorY - scaledBbox.min.y;
             
-            // Center of the reading area (between Fiction and Fantasy banners)
-            azoraMesh.position.set(-2.0, yOffset, -4.0);
+            // Center of the reading area - moved back closer to visible area
+            azoraMesh.position.set(-1.5, yOffset, -2.0);
             
             // Face toward the entrance/stairs (where player starts)
-            azoraMesh.rotation.y = Math.PI * 0.75; // Face toward entrance
+            azoraMesh.rotation.y = Math.PI * 0.5; // Face toward entrance
             
             // Store reference
             azoraRef.current = azoraMesh;
