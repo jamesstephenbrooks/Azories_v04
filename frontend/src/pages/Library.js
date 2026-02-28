@@ -10,28 +10,7 @@ import { FiSearch, FiBook, FiHeadphones, FiUser, FiStar, FiAward, FiTrendingUp, 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import Navbar from '@/components/Navbar';
 import BookRecommendations from '@/components/BookRecommendations';
-
-// Lazy-loaded image component with intersection observer
-/**
- * Get optimized Cloudinary URL with transformations for faster loading
- * @param {string} url - Original Cloudinary URL
- * @param {object} options - Transformation options
- * @returns {string} - Optimized URL
- */
-const getOptimizedImageUrl = (url, { width = 400, quality = 'auto', format = 'auto' } = {}) => {
-  if (!url) return url;
-  
-  // Only transform Cloudinary URLs
-  if (url.includes('res.cloudinary.com')) {
-    // Insert transformation parameters after /upload/
-    // Format: /upload/w_400,q_auto,f_auto/
-    const transformations = `w_${width},q_${quality},f_${format}`;
-    return url.replace('/upload/', `/upload/${transformations}/`);
-  }
-  
-  // Return original URL for non-Cloudinary images
-  return url;
-};
+import { getThumbnailUrl, preloadImages } from '@/utils/imageOptimizer';
 
 const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 400 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
