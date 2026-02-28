@@ -1210,62 +1210,40 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         
         scene.add(model);
         
-        // Load Azora mascot model for downstairs (ground floor) area
-        console.log('Starting to load Azora from:', AZORA_MODEL_URL);
-        
-        // Create a visible test marker to verify position is correct
-        const testGeometry = new THREE.BoxGeometry(0.3, 2, 0.3);
-        const testMaterial = new THREE.MeshBasicMaterial({ color: 0xff00ff, transparent: false });
-        const testCube = new THREE.Mesh(testGeometry, testMaterial);
-        testCube.position.set(0, 1, 0); // Center of ground floor, 1 unit up
-        scene.add(testCube);
-        console.log('Added PINK test cube at center of ground floor');
+        // Load Azora mascot model - position in front of "My Books" banner
+        console.log('Loading Azora from:', AZORA_MODEL_URL);
         
         gltfLoader.load(
           AZORA_MODEL_URL,
           (azora) => {
-            console.log('Azora mascot loaded successfully!');
-            
-            // Remove test cube once Azora loads
-            scene.remove(testCube);
-            
+            console.log('Azora mascot loaded!');
             const azoraMesh = azora.scene;
             
-            // Log the original model bounds
+            // Scale Azora to be about 1.2 units tall
             const originalBbox = new THREE.Box3().setFromObject(azoraMesh);
-            console.log('Azora original size - height:', originalBbox.max.y - originalBbox.min.y);
-            
-            // Scale Azora to be about 1.5 units tall
             const azoraHeight = originalBbox.max.y - originalBbox.min.y;
-            const targetHeight = 1.5;
+            const targetHeight = 1.2;
             const azoraScale = targetHeight / azoraHeight;
             azoraMesh.scale.setScalar(azoraScale);
             
-            // Position Azora at ground floor center
-            // Ground floor is at Y=0, so put her feet at Y=0
-            // Adjust for model's own origin point
+            // Position in front of "My Books" banner
+            // Banner is at (-1.41, 3.54, -1.43)
+            // Place Azora slightly in front (more positive Z) and on the floor
+            // The floor at this location is around Y = 3.5 based on bannerPos
             const scaledBbox = new THREE.Box3().setFromObject(azoraMesh);
-            const yOffset = -scaledBbox.min.y; // Move up so bottom touches ground
-            azoraMesh.position.set(0, yOffset, 0);
+            const yOffset = -scaledBbox.min.y + 3.5; // Put feet on floor level ~3.5
+            azoraMesh.position.set(-1.41, yOffset, -0.5); // In front of My Books
             
-            // Face toward positive Z (toward the entrance from archway)
+            // Face outward (toward positive Z / the room center)
             azoraMesh.rotation.y = 0;
             
-            // Store reference for interaction
+            // Store reference
             azoraRef.current = azoraMesh;
-            
-            // Add to scene
             scene.add(azoraMesh);
-            console.log('Azora placed at:', azoraMesh.position, 'Y offset was:', yOffset);
+            console.log('Azora placed in front of My Books at:', azoraMesh.position);
           },
-          (progress) => {
-            if (progress.total > 0) {
-              console.log('Azora loading:', Math.round((progress.loaded / progress.total) * 100) + '%');
-            }
-          },
-          (error) => {
-            console.error('Failed to load Azora:', error.message);
-          }
+          undefined,
+          (error) => console.error('Failed to load Azora:', error)
         );
         
         // Try to find a good starting position using raycasting
