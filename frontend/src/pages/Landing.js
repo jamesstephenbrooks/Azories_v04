@@ -158,21 +158,24 @@ export default function Landing() {
               className="relative hidden lg:block"
             >
               <div className="relative w-full h-[500px]">
-                {/* Azora pointing - main mascot - transparent background, no box */}
+                {/* Azora pointing - main mascot - blend with background */}
                 <motion.div 
                   className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20"
                   animate={{ y: [0, -15, 0] }}
                   transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                 >
-                  <img 
-                    src={AZORA_ASSETS.pointing}
-                    alt="Azora - Your magical adventure guide"
-                    className="w-72 h-96 object-contain"
-                    style={{ 
-                      filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.15))',
-                      mixBlendMode: 'normal'
-                    }}
-                  />
+                  <div className="relative">
+                    {/* Gradient overlay to blend edges */}
+                    <div className="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-background pointer-events-none z-10 rounded-full scale-110" />
+                    <img 
+                      src={AZORA_ASSETS.pointing}
+                      alt="Azora - Your magical adventure guide"
+                      className="w-72 h-96 object-contain rounded-3xl"
+                      style={{ 
+                        filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.15))',
+                      }}
+                    />
+                  </div>
                 </motion.div>
                 
                 {/* Floating book covers - larger with animation */}
