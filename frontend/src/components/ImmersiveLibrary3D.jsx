@@ -673,7 +673,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         // Try to apply book cover texture
         if (book.cover_image) {
           const textureLoader = new THREE.TextureLoader();
-          textureLoader.load(book.cover_image, (coverTexture) => {
+          const optimizedCoverUrl = getOptimizedImageUrl(book.cover_image, { width: 256 });
+          textureLoader.load(optimizedCoverUrl, (coverTexture) => {
             coverTexture.colorSpace = THREE.SRGBColorSpace;
             coverTexture.flipY = false;
             
