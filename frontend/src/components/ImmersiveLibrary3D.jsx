@@ -19,6 +19,9 @@ const getOptimizedImageUrl = (url, { width = 256, quality = 'auto', format = 'au
 // Compression only - no mesh simplification to preserve collisions and positions
 const LIBRARY_MODEL_URL = '/models/gothic_library_optimized.glb';
 
+// Azora Mascot Model URL - compressed to 1.7MB
+const AZORA_MODEL_URL = '/models/azora_mascot.glb';
+
 // Library boundaries (will be set after model loads)
 const DEFAULT_BOUNDS = {
   minX: -9, maxX: 9,
