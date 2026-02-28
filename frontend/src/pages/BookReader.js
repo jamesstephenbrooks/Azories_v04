@@ -429,6 +429,10 @@ export default function BookReader() {
             chapterTitle: 'Back Cover',
             chapterNumber: 999
           });
+          // DEBUG: Log array order to verify back cover is last
+          console.log('[DEBUG] Pages array after adding back cover:', 
+            pages.map((p, i) => ({ index: i, isBackCover: p.isBackCover, text: (p.text_content || '').substring(0, 30) }))
+          );
         }
         
         setAllPages(pages);
