@@ -623,8 +623,14 @@ const RealisticPageFlip = forwardRef(({
   newPageMapping.push(-1); // Cover = no content page
   
   // Process content pages as spreads (image left, text right)
+  // IMPORTANT: Skip back cover pages here - they're handled separately by BackCoverPage
   let lastChapterNumber = null;
   pages.forEach((page, index) => {
+    // Skip back cover - it's handled separately as a single full-width page
+    if (page.isBackCover) {
+      return;
+    }
+    
     // Check if this is the first page of a new chapter
     const isFirstOfChapter = page.chapterNumber !== lastChapterNumber;
     lastChapterNumber = page.chapterNumber;
