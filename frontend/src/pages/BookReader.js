@@ -1160,8 +1160,7 @@ export default function BookReader() {
             )}
             
             {/* Back Cover overlay - Read Again button for desktop */}
-            {/* currentPage === -2 indicates back cover in flipbook mode, OR currentPageData?.isBackCover for mobile */}
-            {(currentPage === -2 || currentPageData?.isBackCover) && !isMobilePortrait && !isMobileLandscape && (
+            {currentPageData?.isBackCover && !isMobilePortrait && !isMobileLandscape && (
               <div 
                 className="absolute z-[70] flex flex-col items-center"
                 style={{
@@ -1172,7 +1171,11 @@ export default function BookReader() {
                 }}
               >
                 <button
-                  onClick={() => goToPage(0, 'prev', true)}
+                  onClick={() => {
+                    if (realisticFlipRef.current) {
+                      realisticFlipRef.current.goToPage(0); // Flipbook page 0 = cover
+                    }
+                  }}
                   className="px-6 py-2.5 rounded-full bg-purple-600 hover:bg-purple-500 text-white font-medium flex items-center gap-2 transition-colors shadow-lg text-sm"
                   data-testid="read-again-btn"
                 >
