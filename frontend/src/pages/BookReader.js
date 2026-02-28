@@ -297,8 +297,12 @@ export default function BookReader() {
   const isMobilePortrait = !forceLandscapeTest && isMobile && !isLandscapeOrientation;
   
   const isCover = currentPage === -1;
+  const isBackCover = currentPage === -2;
   const totalPages = allPages.length;
-  const currentPageData = currentPage >= 0 ? allPages[currentPage] : null;
+  // Handle back cover: when currentPage is -2, get the last page (which has isBackCover: true)
+  const currentPageData = currentPage >= 0 
+    ? allPages[currentPage] 
+    : (currentPage === -2 && allPages.length > 0 ? allPages[allPages.length - 1] : null);
   
   // Swipe gestures for page navigation
   const swipeHandlers = useSwipeGestures({
