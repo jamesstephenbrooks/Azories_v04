@@ -117,17 +117,10 @@ Rules:
             >
               <div className="relative w-full h-full">
                 <img 
-                  src="/images/azora-avatar.png" 
+                  src={AZORA_ASSETS.waving}
                   alt="Azora"
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'flex';
-                  }}
+                  className="w-full h-full object-cover scale-150"
                 />
-                <div className="hidden w-full h-full items-center justify-center">
-                  <FiMessageCircle className="w-6 h-6" />
-                </div>
                 <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-green-400 rounded-full border-2 border-white animate-pulse" />
               </div>
             </Button>
