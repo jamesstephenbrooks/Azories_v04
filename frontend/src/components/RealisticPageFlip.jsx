@@ -613,6 +613,11 @@ const RealisticPageFlip = forwardRef(({
   const allBookPages = [];
   const newPageMapping = [];
   
+  // DEBUG: Log incoming pages array to RealisticPageFlip
+  console.log('[DEBUG RealisticPageFlip] Received pages:', 
+    pages.map((p, i) => ({ idx: i, isBackCover: !!p.isBackCover, txt: (p.text_content || '').substring(0, 20) }))
+  );
+  
   // Front cover - single page (hard cover)
   allBookPages.push(
     <CoverPage 
