@@ -114,12 +114,28 @@ const ImmersiveLibrary3D = lazy(() => import('@/components/ImmersiveLibrary3D'))
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
+// Custom hook for debounced value
+const useDebounce = (value, delay = 300) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debouncedValue;
+};
+
 export default function Library() {
   const [books, setBooks] = useState([]);
   const [featuredBooks, setFeaturedBooks] = useState([]);
   const [bestOfWeek, setBestOfWeek] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search, 300); // Debounce search input
   const [genre, setGenre] = useState('All');
   const [ageRange, setAgeRange] = useState('All');
   const [genres, setGenres] = useState([]);
