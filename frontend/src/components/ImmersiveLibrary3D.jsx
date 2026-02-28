@@ -8,15 +8,11 @@ import { Button } from '@/components/ui/button';
 import { FiX, FiBook, FiBookOpen, FiMaximize2, FiMinimize2, FiVolume2, FiVolumeX, FiMapPin, FiMove, FiChevronUp, FiRotateCw, FiStar, FiBookmark, FiMessageCircle } from 'react-icons/fi';
 import { useAuth } from '@/context/AuthContext';
 import AILibrarian from './AILibrarian';
+import { getThumbnailUrl } from '@/utils/imageOptimizer';
 
-// Get optimized Cloudinary URL with transformations for faster loading
+// Get optimized Cloudinary URL with transformations for faster loading (for 3D textures)
 const getOptimizedImageUrl = (url, { width = 256, quality = 'auto', format = 'auto' } = {}) => {
-  if (!url) return url;
-  if (url.includes('res.cloudinary.com')) {
-    const transformations = `w_${width},q_${quality},f_${format}`;
-    return url.replace('/upload/', `/upload/${transformations}/`);
-  }
-  return url;
+  return getThumbnailUrl(url, width);
 };
 
 // Gothic Library Model URL - v16 with Draco compression (5MB, down from 20MB)
