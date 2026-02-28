@@ -7,7 +7,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://image-integrity-1.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://launch-prep-49.preview.emergentagent.com')
 
 # Test credentials
 TEST_EMAIL = "test@test.com"

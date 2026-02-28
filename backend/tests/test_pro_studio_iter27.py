@@ -9,7 +9,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://image-integrity-1.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://launch-prep-49.preview.emergentagent.com').rstrip('/')
 
 # Test credentials provided by main agent
 TEST_EMAIL = "test@test.com"
