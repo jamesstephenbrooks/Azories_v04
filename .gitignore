@@ -120,3 +120,5 @@ glb_optimization/gothic_library_14_cycles.glb
 *.env
 *.env.*
 exports/full_db_export.json
+frontend/public/downloads/mongodb_export.zip
+exports/mongodb_export.zip

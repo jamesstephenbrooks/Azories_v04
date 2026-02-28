@@ -1226,18 +1226,16 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
             const azoraScale = targetHeight / azoraHeight;
             azoraMesh.scale.setScalar(azoraScale);
             
-            // Position in CENTER of upper floor reading area
-            // Floor level is at Y = 4.72, so feet at Y = 4.75
-            // Move to center of room between the tables
+            // Position near the left side by Mystery banner
             const floorY = 4.75;
             const scaledBbox = new THREE.Box3().setFromObject(azoraMesh);
             const yOffset = floorY - scaledBbox.min.y;
             
-            // Center of the reading area - moved back closer to visible area
-            azoraMesh.position.set(-1.5, yOffset, -2.0);
+            // Position by left wall near Mystery section, facing into room
+            azoraMesh.position.set(-4.5, yOffset, -2.5);
             
-            // Face toward the entrance/stairs (where player starts)
-            azoraMesh.rotation.y = Math.PI * 0.5; // Face toward entrance
+            // Face diagonally into the room
+            azoraMesh.rotation.y = Math.PI * 0.25;
             
             // Store reference
             azoraRef.current = azoraMesh;
