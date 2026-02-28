@@ -12,15 +12,16 @@ import Navbar from '@/components/Navbar';
 import BookRecommendations from '@/components/BookRecommendations';
 import { getThumbnailUrl, preloadImages } from '@/utils/imageOptimizer';
 
-const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 400 }) => {
+// Lazy-loaded image component with intersection observer and aggressive optimization
+const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 300 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const [hasError, setHasError] = useState(false);
   const imgRef = useRef(null);
 
-  // Get optimized thumbnail URL
+  // Get optimized thumbnail URL using centralized utility
   const optimizedSrc = useMemo(() => {
-    return getOptimizedImageUrl(src, { width: thumbnailWidth, quality: 'auto', format: 'auto' });
+    return getThumbnailUrl(src, thumbnailWidth);
   }, [src, thumbnailWidth]);
 
   useEffect(() => {
@@ -31,7 +32,7 @@ const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 400
           observer.disconnect();
         }
       },
-      { rootMargin: '200px', threshold: 0.1 }  // Increased rootMargin for earlier loading
+      { rootMargin: '300px', threshold: 0.01 }  // Even larger rootMargin for earlier loading
     );
 
     if (imgRef.current) {
@@ -75,6 +76,7 @@ const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 400
           onError={() => setHasError(true)}
           loading="lazy"
           decoding="async"
+          fetchpriority="low"
         />
       )}
       
