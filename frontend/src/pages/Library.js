@@ -158,12 +158,13 @@ export default function Library() {
     if (activeTab === 'all') {
       fetchBooks();
     }
-  }, [search, genre, ageRange]);
+  }, [debouncedSearch, genre, ageRange]);
 
   const fetchBooks = async () => {
     try {
+      setLoading(true);
       const params = new URLSearchParams();
-      if (search) params.append('search', search);
+      if (debouncedSearch) params.append('search', debouncedSearch);
       if (genre && genre !== 'All') params.append('genre', genre);
       if (ageRange && ageRange !== 'All') params.append('age_rating', ageRange);
       params.append('published_only', 'true');
