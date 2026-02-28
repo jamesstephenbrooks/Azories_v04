@@ -9116,6 +9116,115 @@ async def import_books_json(
     except Exception as e:
         return {"success": False, "error": str(e)}
 
+
+# ============================================================
+# ADMIN DATABASE IMPORT ENDPOINT
+# Import all collections from exported JSON files
+# ============================================================
+
+@api_router.post("/admin/import-database")
+async def import_database_from_exports(
+    import_key: str = Query(..., description="Admin import key for security"),
+    current_user: dict = Depends(get_current_user_optional)
+):
+    """
+    Import all collections from /app/exports/collections/ into MongoDB.
+    This is a one-time endpoint to populate the production database.
+    
+    Security: Requires either admin user OR correct import key.
+    """
+    import json
+    from bson import json_util
+    import glob
+    
+    # Security check - require admin or special import key
+    IMPORT_KEY = os.environ.get('DB_IMPORT_KEY', 'azories-import-2026')
+    
+    is_admin = current_user and current_user.get('role') == 'admin'
+    key_valid = import_key == IMPORT_KEY
+    
+    if not is_admin and not key_valid:
+        raise HTTPException(status_code=403, detail="Admin access or valid import key required")
+    
+    # Path to exported collections
+    exports_path = "/app/exports/collections"
+    
+    # Check if exports exist
+    if not os.path.exists(exports_path):
+        return {
+            "success": False,
+            "error": f"Exports directory not found at {exports_path}",
+            "hint": "The export files need to be included in the deployment"
+        }
+    
+    # Get all JSON files
+    json_files = glob.glob(os.path.join(exports_path, "*.json"))
+    
+    if not json_files:
+        return {
+            "success": False, 
+            "error": "No JSON files found in exports directory"
+        }
+    
+    results = {
+        "success": True,
+        "collections_imported": 0,
+        "total_documents": 0,
+        "details": [],
+        "errors": []
+    }
+    
+    for json_file in json_files:
+        collection_name = os.path.basename(json_file).replace('.json', '')
+        
+        try:
+            # Read JSON file
+            with open(json_file, 'r') as f:
+                # Use json_util to handle BSON types like $oid, $date
+                documents = json_util.loads(f.read())
+            
+            if not documents:
+                results["details"].append({
+                    "collection": collection_name,
+                    "status": "skipped",
+                    "reason": "empty file"
+                })
+                continue
+            
+            # Get the collection
+            collection = db[collection_name]
+            
+            # Drop existing data to avoid duplicates
+            await collection.drop()
+            
+            # Insert all documents
+            if isinstance(documents, list) and len(documents) > 0:
+                result = await collection.insert_many(documents)
+                count = len(result.inserted_ids)
+            else:
+                count = 0
+            
+            results["collections_imported"] += 1
+            results["total_documents"] += count
+            results["details"].append({
+                "collection": collection_name,
+                "status": "success",
+                "documents": count
+            })
+            
+        except Exception as e:
+            results["errors"].append({
+                "collection": collection_name,
+                "error": str(e)
+            })
+    
+    if results["errors"]:
+        results["success"] = len(results["errors"]) < len(json_files)
+    
+    return results
+
+
+
 # Include the router
 app.include_router(api_router)
 
