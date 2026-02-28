@@ -214,6 +214,110 @@ async def periodic_cleanup():
         await asyncio.sleep(3600)  # 1 hour
         await cleanup_old_tasks()
 
+# ============================================================
+# AUTO-SEEDING: Automatically seed database on first deployment
+# ============================================================
+
+PREVIEW_URL = "https://azories-deploy.preview.emergentagent.com"
+SEED_IMPORT_KEY = "azories-import-2026"
+
+async def seed_from_preview():
+    """
+    Fetch essential data from preview environment and insert into local database.
+    This runs inside the container - no HTTP timeouts.
+    """
+    from bson import json_util
+    
+    essential_collections = ['users', 'books', 'chapters', 'pages', 'book_images', 'system_settings']
+    results = {"imported": [], "failed": [], "skipped": []}
+    
+    logger.info("=" * 60)
+    logger.info("🌱 STARTING DATABASE SEED FROM PREVIEW")
+    logger.info("=" * 60)
+    
+    async with aiohttp.ClientSession() as session:
+        for collection_name in essential_collections:
+            remote_url = f"{PREVIEW_URL}/api/admin/export-collection/{collection_name}?import_key={SEED_IMPORT_KEY}"
+            
+            try:
+                logger.info(f"📥 Fetching {collection_name} from preview...")
+                
+                async with session.get(remote_url, timeout=aiohttp.ClientTimeout(total=120)) as response:
+                    if response.status == 404:
+                        logger.warning(f"   ⚠️ {collection_name}: not found in preview")
+                        results["skipped"].append({"collection": collection_name, "reason": "not found"})
+                        continue
+                    elif response.status != 200:
+                        logger.error(f"   ❌ {collection_name}: HTTP {response.status}")
+                        results["failed"].append({"collection": collection_name, "error": f"HTTP {response.status}"})
+                        continue
+                    
+                    data_text = await response.text()
+                
+                # Parse BSON-aware JSON
+                documents = json_util.loads(data_text)
+                
+                if not documents or (isinstance(documents, list) and len(documents) == 0):
+                    logger.info(f"   ⏭️ {collection_name}: empty, skipping")
+                    results["skipped"].append({"collection": collection_name, "reason": "empty"})
+                    continue
+                
+                # Get collection and drop existing data
+                coll = db[collection_name]
+                await coll.drop()
+                
+                # Batch insert for efficiency
+                if isinstance(documents, list) and len(documents) > 0:
+                    batch_size = 500
+                    total = 0
+                    for i in range(0, len(documents), batch_size):
+                        batch = documents[i:i + batch_size]
+                        result = await coll.insert_many(batch)
+                        total += len(result.inserted_ids)
+                    
+                    logger.info(f"   ✅ {collection_name}: {total} documents imported")
+                    results["imported"].append({"collection": collection_name, "documents": total})
+                
+            except asyncio.TimeoutError:
+                logger.error(f"   ⏱️ {collection_name}: timeout fetching data")
+                results["failed"].append({"collection": collection_name, "error": "timeout"})
+            except Exception as e:
+                logger.error(f"   ❌ {collection_name}: {str(e)[:100]}")
+                results["failed"].append({"collection": collection_name, "error": str(e)[:100]})
+    
+    # Summary
+    logger.info("=" * 60)
+    logger.info(f"🌱 SEED COMPLETE: {len(results['imported'])} collections imported")
+    if results["failed"]:
+        logger.warning(f"   ⚠️ {len(results['failed'])} collections failed")
+    logger.info("=" * 60)
+    
+    return results
+
+
+async def seed_if_empty():
+    """
+    Check if the database is empty and seed from preview if needed.
+    This runs automatically on startup.
+    """
+    try:
+        # Check if we have any books (primary content)
+        book_count = await db.books.count_documents({})
+        user_count = await db.users.count_documents({})
+        
+        logger.info(f"📊 Database check: {book_count} books, {user_count} users")
+        
+        if book_count == 0:
+            logger.info("📭 Database is empty - starting auto-seed...")
+            await seed_from_preview()
+        else:
+            logger.info("✅ Database already has data - skipping seed")
+            
+    except Exception as e:
+        logger.error(f"❌ Auto-seed check failed: {str(e)}")
+        # Don't crash the app if seeding fails - it can be done manually
+
+
 # Lifespan context manager (modern FastAPI approach)
 from contextlib import asynccontextmanager
 
@@ -227,6 +331,9 @@ async def lifespan(app: FastAPI):
     
     # Load FAL_KEY from database if not set or invalid in .env
     await _load_fal_key_from_db()
+    
+    # AUTO-SEED: Check if database is empty and seed from preview
+    await seed_if_empty()
     
     # Create indexes for audio cache collection
     try:
