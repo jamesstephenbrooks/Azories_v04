@@ -2,17 +2,18 @@ import { motion } from 'framer-motion';
 
 // Azora mascot URLs - Official Azories character
 export const AZORA_ASSETS = {
-  // Main poses
-  pointing: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279592/azories/mascot/azora_pose4_pointing.jpg',
+  // Main poses - with background removal for transparent effect
+  pointing: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/e_background_removal/v1772279592/azories/mascot/azora_pose4_pointing.png',
+  pointingOriginal: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279592/azories/mascot/azora_pose4_pointing.jpg',
   confident: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279581/azories/mascot/azora_pose1_confident.jpg',
   running: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279585/azories/mascot/azora_pose2_running.jpg',
-  reading: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279589/azories/mascot/azora_pose3_reading.jpg',
+  reading: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/e_background_removal/v1772279589/azories/mascot/azora_pose3_reading.png',
   
   // Additional variations
-  readingCozy: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279866/azories/mascot/azora_reading_cozy.jpg',
+  readingCozy: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/e_background_removal/v1772279866/azories/mascot/azora_reading_cozy.png',
   avatar: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279871/azories/mascot/azora_avatar_face.jpg',
-  waving: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279875/azories/mascot/azora_waving_hello.jpg',
-  dragonIcon: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279877/azories/mascot/dragon_icon_solo.jpg',
+  waving: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/e_background_removal/v1772279875/azories/mascot/azora_waving_hello.png',
+  dragonIcon: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/e_background_removal/v1772279877/azories/mascot/dragon_icon_solo.png',
   
   // Templates
   backCoverTemplate: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279892/azories/templates/back_cover_template_v1.jpg'
