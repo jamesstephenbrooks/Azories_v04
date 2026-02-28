@@ -111,18 +111,29 @@ export default function OnboardingTutorial({ onComplete }) {
             <FiX className="w-5 h-5" />
           </button>
 
-          {/* Gradient Header */}
-          <div className={`bg-gradient-to-r ${step.color} p-8 text-white`}>
+          {/* Gradient Header with Azora */}
+          <div className={`bg-gradient-to-r ${step.color} p-6 text-white relative overflow-hidden`}>
+            {/* Azora mascot image */}
+            {step.mascotImage && (
+              <motion.img
+                src={step.mascotImage}
+                alt="Azora"
+                className="absolute right-2 bottom-0 w-28 h-36 object-contain opacity-90"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 0.9, x: 0 }}
+                transition={{ delay: 0.3 }}
+              />
+            )}
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: 'spring' }}
-              className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mb-4 backdrop-blur"
+              className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-3 backdrop-blur"
             >
-              <Icon className="w-8 h-8" />
+              <Icon className="w-7 h-7" />
             </motion.div>
-            <h2 className="text-2xl font-bold mb-2">{step.title}</h2>
-            <p className="text-white/80">{step.description}</p>
+            <h2 className="text-2xl font-bold mb-1 pr-24">{step.title}</h2>
+            <p className="text-white/80 text-sm pr-28">{step.description}</p>
           </div>
 
           {/* Content */}
