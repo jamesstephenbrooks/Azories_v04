@@ -2,14 +2,16 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { FiBook, FiEdit3, FiHeadphones, FiShare2, FiStar, FiArrowRight, FiX, FiCheck } from 'react-icons/fi';
+import { AZORA_ASSETS, AZORIES_TAGLINE } from '@/components/AzoraMascot';
 
 const ONBOARDING_STEPS = [
   {
     id: 'welcome',
     title: 'Welcome to Azories!',
-    description: 'Your magical storytelling platform where imagination comes to life.',
+    description: AZORIES_TAGLINE,
     icon: FiStar,
     color: 'from-purple-500 to-pink-500',
+    mascotImage: AZORA_ASSETS.pointing,
     tips: [
       'Read amazing stories from young authors',
       'Create your own illustrated books',
@@ -22,6 +24,7 @@ const ONBOARDING_STEPS = [
     description: 'Discover stories across all genres - Fantasy, Adventure, Mystery, and more.',
     icon: FiBook,
     color: 'from-blue-500 to-cyan-500',
+    mascotImage: AZORA_ASSETS.readingCozy,
     tips: [
       'Browse featured and trending books',
       'Filter by genre or search by title',
@@ -34,6 +37,7 @@ const ONBOARDING_STEPS = [
     description: 'Enjoy a beautiful reading experience with special features.',
     icon: FiHeadphones,
     color: 'from-green-500 to-emerald-500',
+    mascotImage: AZORA_ASSETS.reading,
     tips: [
       'Auto-read narration with different voices',
       'Ambient sounds to set the mood',
@@ -46,6 +50,7 @@ const ONBOARDING_STEPS = [
     description: 'Upgrade to Pro and become an author with AI-powered tools.',
     icon: FiEdit3,
     color: 'from-orange-500 to-red-500',
+    mascotImage: AZORA_ASSETS.confident,
     tips: [
       'Write and illustrate your own books',
       'AI generates images for your story',
