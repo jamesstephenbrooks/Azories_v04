@@ -220,11 +220,72 @@ async def periodic_cleanup():
 
 PREVIEW_URL = "https://azories-deploy.preview.emergentagent.com"
 SEED_IMPORT_KEY = "azories-import-2026"
+LOCAL_EXPORTS_PATH = "/app/exports/collections"
+
+async def seed_from_local_exports():
+    """
+    Seed database from local export files (for preview environment).
+    """
+    from bson import json_util
+    import glob
+    
+    essential_collections = ['users', 'books', 'chapters', 'pages', 'book_images', 'system_settings']
+    results = {"imported": [], "failed": [], "skipped": []}
+    
+    logger.info("=" * 60)
+    logger.info("🌱 SEEDING DATABASE FROM LOCAL EXPORT FILES")
+    logger.info("=" * 60)
+    
+    for collection_name in essential_collections:
+        json_file = f"{LOCAL_EXPORTS_PATH}/{collection_name}.json"
+        
+        if not os.path.exists(json_file):
+            logger.warning(f"   ⚠️ {collection_name}: export file not found")
+            results["skipped"].append({"collection": collection_name, "reason": "file not found"})
+            continue
+        
+        try:
+            logger.info(f"📥 Loading {collection_name} from {json_file}...")
+            
+            with open(json_file, 'r') as f:
+                documents = json_util.loads(f.read())
+            
+            if not documents or (isinstance(documents, list) and len(documents) == 0):
+                logger.info(f"   ⏭️ {collection_name}: empty, skipping")
+                results["skipped"].append({"collection": collection_name, "reason": "empty"})
+                continue
+            
+            # Get collection and drop existing data
+            coll = db[collection_name]
+            await coll.drop()
+            
+            # Batch insert for efficiency
+            if isinstance(documents, list) and len(documents) > 0:
+                batch_size = 500
+                total = 0
+                for i in range(0, len(documents), batch_size):
+                    batch = documents[i:i + batch_size]
+                    result = await coll.insert_many(batch)
+                    total += len(result.inserted_ids)
+                
+                logger.info(f"   ✅ {collection_name}: {total} documents imported")
+                results["imported"].append({"collection": collection_name, "documents": total})
+                
+        except Exception as e:
+            logger.error(f"   ❌ {collection_name}: {str(e)[:100]}")
+            results["failed"].append({"collection": collection_name, "error": str(e)[:100]})
+    
+    logger.info("=" * 60)
+    logger.info(f"🌱 LOCAL SEED COMPLETE: {len(results['imported'])} collections imported")
+    logger.info("=" * 60)
+    
+    return results
+
 
 async def seed_from_preview():
     """
     Fetch essential data from preview environment and insert into local database.
-    This runs inside the container - no HTTP timeouts.
+    This is used by production to fetch data from preview.
     """
     from bson import json_util
     
@@ -232,7 +293,8 @@ async def seed_from_preview():
     results = {"imported": [], "failed": [], "skipped": []}
     
     logger.info("=" * 60)
-    logger.info("🌱 STARTING DATABASE SEED FROM PREVIEW")
+    logger.info("🌱 SEEDING DATABASE FROM PREVIEW ENVIRONMENT")
+    logger.info(f"   Source: {PREVIEW_URL}")
     logger.info("=" * 60)
     
     async with aiohttp.ClientSession() as session:
@@ -287,7 +349,7 @@ async def seed_from_preview():
     
     # Summary
     logger.info("=" * 60)
-    logger.info(f"🌱 SEED COMPLETE: {len(results['imported'])} collections imported")
+    logger.info(f"🌱 REMOTE SEED COMPLETE: {len(results['imported'])} collections imported")
     if results["failed"]:
         logger.warning(f"   ⚠️ {len(results['failed'])} collections failed")
     logger.info("=" * 60)
@@ -297,8 +359,9 @@ async def seed_from_preview():
 
 async def seed_if_empty():
     """
-    Check if the database is empty and seed from preview if needed.
-    This runs automatically on startup.
+    Check if the database is empty and seed if needed.
+    - If local export files exist, use them (preview environment)
+    - Otherwise, fetch from preview URL (production environment)
     """
     try:
         # Check if we have any books (primary content)
@@ -310,27 +373,19 @@ async def seed_if_empty():
         if book_count == 0:
             logger.info("📭 Database is empty - starting auto-seed...")
             
-            # Test connection to preview first
-            test_url = f"{PREVIEW_URL}/api/health"
-            logger.info(f"🔗 Testing connection to: {test_url}")
-            
-            async with aiohttp.ClientSession() as session:
-                try:
-                    async with session.get(test_url, timeout=aiohttp.ClientTimeout(total=10)) as resp:
-                        if resp.status == 200:
-                            logger.info(f"✅ Preview server reachable")
-                        else:
-                            logger.warning(f"⚠️ Preview returned {resp.status}")
-                except Exception as conn_err:
-                    logger.error(f"❌ Cannot reach preview: {conn_err}")
-                    return
-            
-            await seed_from_preview()
+            # Check if local export files exist
+            if os.path.exists(LOCAL_EXPORTS_PATH) and os.path.exists(f"{LOCAL_EXPORTS_PATH}/books.json"):
+                logger.info("📁 Local export files found - using local seed")
+                await seed_from_local_exports()
+            else:
+                logger.info("🌐 No local exports - fetching from preview")
+                await seed_from_preview()
         else:
             logger.info("✅ Database already has data - skipping seed")
             
     except Exception as e:
         logger.error(f"❌ Auto-seed check failed: {str(e)}")
+        # Don't crash the app if seeding fails - it can be done manually
 
 
 # Lifespan context manager (modern FastAPI approach)
