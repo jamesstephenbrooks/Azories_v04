@@ -5,6 +5,14 @@ import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { FiBook, FiEdit3, FiHeadphones, FiArrowRight, FiStar, FiZap, FiPlay } from 'react-icons/fi';
 import Navbar from '@/components/Navbar';
+import { AZORA_ASSETS, AZORIES_TAGLINE } from '@/components/AzoraMascot';
+
+// Sample book covers from our library
+const FEATURED_BOOK_COVERS = [
+  'https://res.cloudinary.com/dlbmjqmoy/image/upload/w_200,q_70/v1772271593/azories/books/robot_best_friend/cover.png',
+  'https://res.cloudinary.com/dlbmjqmoy/image/upload/w_200,q_70/v1772217091/azories/books/colors_of_the_world/cover.png',
+  'https://res.cloudinary.com/dlbmjqmoy/image/upload/w_200,q_70/v1772271593/azories/books/super_silly_superhero/cover.png',
+];
 
 export default function Landing() {
   const { theme } = useTheme();
