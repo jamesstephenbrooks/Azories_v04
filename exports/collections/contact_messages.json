@@ -1,0 +1,1 @@
+[{"_id": {"$oid": "699e23b9f91df63678d0d912"}, "id": "ab33a0f2-f0ba-437c-a0bc-44a691808691", "name": "Test User", "email": "test@example.com", "subject": "Test Subject", "message": "This is a test message.", "status": "new", "created_at": "2026-02-24T22:18:33.106646+00:00"}]
