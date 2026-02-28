@@ -887,6 +887,27 @@ export default function BookReader() {
     };
   }, [audioElement]);
 
+  // Scroll indicator for mobile text container
+  useEffect(() => {
+    const checkScrollable = () => {
+      const el = textScrollRef.current;
+      if (el) {
+        const hasOverflow = el.scrollHeight > el.clientHeight + 10;
+        const isAtBottom = el.scrollHeight - el.scrollTop <= el.clientHeight + 10;
+        setShowScrollIndicator(hasOverflow && !isAtBottom);
+      }
+    };
+    
+    // Check on mount and when page changes
+    checkScrollable();
+    
+    const el = textScrollRef.current;
+    if (el) {
+      el.addEventListener('scroll', checkScrollable);
+      return () => el.removeEventListener('scroll', checkScrollable);
+    }
+  }, [currentPage, currentPageData]);
+
   if (loading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
