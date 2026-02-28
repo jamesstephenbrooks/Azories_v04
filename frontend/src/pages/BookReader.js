@@ -38,6 +38,8 @@ export default function BookReader() {
   const [requiresAuth, setRequiresAuth] = useState(false);
   const [showRotatePrompt, setShowRotatePrompt] = useState(false);
   const [forceLandscapeTest, setForceLandscapeTest] = useState(false); // TEMP: For testing landscape mode
+  const [showScrollIndicator, setShowScrollIndicator] = useState(false);
+  const textScrollRef = useRef(null);
   
   // Audio state
   const [isPlaying, setIsPlaying] = useState(false);
