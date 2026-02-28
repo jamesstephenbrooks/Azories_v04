@@ -1507,7 +1507,7 @@ export default function BookReader() {
       
       {/* Bottom Controls - Hidden in landscape (edge arrows are used instead) */}
       {!isMobileLandscape && (
-        <div className={`fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-xl border-t border-border z-40 transition-transform duration-300 ${hideControls ? 'translate-y-full' : ''}`}>
+        <div className={`fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-xl border-t border-border z-[100] transition-transform duration-300 ${hideControls ? 'translate-y-full' : ''}`}>
           <div className={`max-w-4xl mx-auto px-2 sm:px-4 py-3 sm:py-4`}>
             {/* Navigation - LARGE touch targets for mobile, instant response */}
             <div className={`flex items-center justify-center gap-4 sm:gap-4 mb-2 sm:mb-4`}>
@@ -1516,11 +1516,10 @@ export default function BookReader() {
                 <>
                   <button
                     onClick={() => {
-                      // Go to cover (page index -1) - use jumpDirect for immediate navigation
-                      if (isMobilePortrait || isMobileLandscape) {
-                        setCurrentPage(-1);
-                      } else if (realisticFlipRef.current) {
-                        realisticFlipRef.current.goToPage(0); // Flipbook page 0 = cover
+                      console.log('[BackCover] Read Again clicked, going to cover');
+                      setCurrentPage(-1);
+                      if (realisticFlipRef.current) {
+                        realisticFlipRef.current.goToPage(0);
                       }
                     }}
                     className="min-h-[56px] px-6 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white font-medium flex items-center justify-center gap-2 touch-manipulation"
@@ -1531,11 +1530,10 @@ export default function BookReader() {
                   </button>
                   <button
                     onClick={() => {
-                      // Go to previous page from back cover
+                      console.log('[BackCover] Back clicked, currentPage:', currentPage);
                       const prevPageIndex = currentPage - 1;
-                      if (isMobilePortrait || isMobileLandscape) {
-                        setCurrentPage(prevPageIndex);
-                      } else if (realisticFlipRef.current) {
+                      setCurrentPage(prevPageIndex);
+                      if (realisticFlipRef.current) {
                         realisticFlipRef.current.prevPage();
                       }
                     }}
