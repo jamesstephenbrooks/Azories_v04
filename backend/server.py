@@ -95,24 +95,21 @@ except ImportError as e:
     CLOUDINARY_AVAILABLE = False
     is_cloudinary_configured = lambda: False
 
-# MongoDB connection - ALWAYS use localhost for Emergent deployment
-# External Atlas connections are blocked by Emergent's network
+# MongoDB connection - uses Emergent's managed database
+# In production, MONGO_URL is set by Emergent's deployment pipeline
 import asyncio
 
 def get_mongo_connection():
-    """Get MongoDB connection - forces localhost for production."""
-    raw_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+    """Get MongoDB connection from environment."""
+    mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
     db_name = os.environ.get('DB_NAME', 'azories')
     
-    # FORCE localhost - Atlas is blocked from Emergent production
-    # If the URL contains Atlas/mongodb.net, override it with localhost
-    if 'mongodb.net' in raw_url or 'mongodb+srv' in raw_url:
-        logging.warning(f"Atlas URL detected but blocked - forcing localhost")
-        mongo_url = 'mongodb://localhost:27017'
+    # Log connection info (mask credentials)
+    if 'mongodb+srv' in mongo_url or 'mongodb.net' in mongo_url:
+        logging.info(f"MongoDB: Using managed Atlas connection, database: {db_name}")
     else:
-        mongo_url = raw_url
+        logging.info(f"MongoDB: Using local connection ({mongo_url}), database: {db_name}")
     
-    logging.info(f"MongoDB connection: {mongo_url}, database: {db_name}")
     return AsyncIOMotorClient(mongo_url), db_name
 
 # Initialize MongoDB connection
