@@ -570,7 +570,9 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     
     // Set rotation if specified
     if (portal.destRotation !== undefined) {
-      euler.current.set(0, portal.destRotation, 0);
+      // Use same euler order as initial position: 'YXZ'
+      // Include slight downward tilt for natural viewing angle
+      euler.current.set(-0.2, portal.destRotation, 0, 'YXZ');
       cameraRef.current.quaternion.setFromEuler(euler.current);
     }
     
