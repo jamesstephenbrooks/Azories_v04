@@ -158,7 +158,7 @@ export default function Landing() {
               className="relative hidden lg:block"
             >
               <div className="relative w-full h-[500px]">
-                {/* Azora pointing - main mascot */}
+                {/* Azora pointing - main mascot - transparent background, no box */}
                 <motion.div 
                   className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20"
                   animate={{ y: [0, -15, 0] }}
@@ -167,14 +167,22 @@ export default function Landing() {
                   <img 
                     src={AZORA_ASSETS.pointing}
                     alt="Azora - Your magical adventure guide"
-                    className="w-64 h-80 object-contain drop-shadow-2xl"
+                    className="w-72 h-96 object-contain"
+                    style={{ 
+                      filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.15))',
+                      mixBlendMode: 'normal'
+                    }}
                   />
                 </motion.div>
                 
-                {/* Floating book covers */}
+                {/* Floating book covers - larger with animation */}
                 <motion.div 
-                  className="absolute top-8 right-8 w-20 h-28 rounded-lg overflow-hidden shadow-xl z-10"
-                  animate={{ y: [0, -10, 0], rotate: [0, 3, 0] }}
+                  className="absolute top-4 right-4 w-28 h-36 rounded-xl overflow-hidden shadow-2xl z-10"
+                  animate={{ 
+                    y: [0, -12, 0], 
+                    rotate: [2, 5, 2],
+                    scale: [1, 1.02, 1]
+                  }}
                   transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
                 >
                   <img 
@@ -185,8 +193,12 @@ export default function Landing() {
                 </motion.div>
                 
                 <motion.div 
-                  className="absolute bottom-20 left-8 w-18 h-24 rounded-lg overflow-hidden shadow-xl z-10"
-                  animate={{ y: [0, 10, 0], rotate: [0, -3, 0] }}
+                  className="absolute bottom-16 left-4 w-24 h-32 rounded-xl overflow-hidden shadow-2xl z-10"
+                  animate={{ 
+                    y: [0, 12, 0], 
+                    rotate: [-2, -5, -2],
+                    scale: [1, 1.03, 1]
+                  }}
                   transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
                 >
                   <img 
@@ -197,8 +209,12 @@ export default function Landing() {
                 </motion.div>
                 
                 <motion.div 
-                  className="absolute top-24 left-16 w-16 h-22 rounded-lg overflow-hidden shadow-xl z-10"
-                  animate={{ y: [0, -8, 0], rotate: [0, 2, 0] }}
+                  className="absolute top-20 left-12 w-22 h-28 rounded-xl overflow-hidden shadow-2xl z-10"
+                  animate={{ 
+                    y: [0, -10, 0], 
+                    rotate: [0, 3, 0],
+                    scale: [1, 1.02, 1]
+                  }}
                   transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
                 >
                   <img 
@@ -209,7 +225,7 @@ export default function Landing() {
                 </motion.div>
                 
                 {/* Magical glow behind Azora */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-radial from-purple-500/20 via-cyan-500/10 to-transparent rounded-full blur-3xl z-0" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-radial from-purple-500/20 via-cyan-500/10 to-transparent rounded-full blur-3xl z-0" />
               </div>
             </motion.div>
           </div>
