@@ -567,11 +567,13 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     // Teleport to destination (PLAYER_HEIGHT = 1.1)
     const destY = portal.destPos.y + 1.1;
     cameraRef.current.position.set(portal.destPos.x, destY, portal.destPos.z);
+    console.log('Teleporting to:', portal.destPos, 'Y adjusted:', destY);
     
     // Set rotation if specified
     if (portal.destRotation !== undefined) {
       // Use same euler order as initial position: 'YXZ'
       // Include slight downward tilt for natural viewing angle
+      console.log('Setting rotation to:', portal.destRotation, 'radians =', (portal.destRotation * 180 / Math.PI).toFixed(1), 'degrees');
       euler.current.set(-0.2, portal.destRotation, 0, 'YXZ');
       cameraRef.current.quaternion.setFromEuler(euler.current);
     }
