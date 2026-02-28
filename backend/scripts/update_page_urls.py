@@ -10,7 +10,7 @@ import json
 import requests
 from datetime import datetime
 
-API_URL = "https://launch-prep-49.preview.emergentagent.com"
+API_URL = "https://azories-audit.preview.emergentagent.com"
 
 # 25 books that had pages regenerated
 BOOKS = [
