@@ -2440,11 +2440,11 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                className="absolute bottom-24 left-1/2 -translate-x-1/2 pointer-events-auto max-w-md w-full mx-4"
+                className="absolute bottom-24 left-1/2 -translate-x-1/2 pointer-events-auto max-w-md w-full mx-4 z-50"
               >
-                <div className="bg-gradient-to-br from-purple-900/95 to-[#1a1520]/95 backdrop-blur-lg rounded-2xl p-4 border border-purple-500/30 shadow-2xl shadow-purple-500/20">
-                  {/* Header */}
-                  <div className="flex items-center justify-between mb-3">
+                <div className="bg-gradient-to-br from-purple-900/95 to-[#1a1520]/95 backdrop-blur-lg rounded-2xl p-4 border border-purple-500/30 shadow-2xl shadow-purple-500/20 max-h-[60vh] overflow-y-auto">
+                  {/* Header with prominent close button */}
+                  <div className="flex items-center justify-between mb-3 sticky top-0 bg-gradient-to-br from-purple-900 to-[#1a1520] -mx-4 -mt-4 px-4 pt-4 pb-2 rounded-t-2xl">
                     <div className="flex items-center gap-2">
                       <div className="w-10 h-10 rounded-full bg-purple-500/30 flex items-center justify-center">
                         <FiMessageCircle className="w-5 h-5 text-purple-300" />
@@ -2456,7 +2456,8 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                     </div>
                     <button
                       onClick={() => setShowAzoraChat(false)}
-                      className="text-white/50 hover:text-white"
+                      className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+                      data-testid="close-azora-chat"
                     >
                       <FiX className="w-5 h-5" />
                     </button>
