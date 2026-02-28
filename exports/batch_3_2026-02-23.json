@@ -1,0 +1,1740 @@
+{
+  "batch": 3,
+  "created_date": "2026-02-23",
+  "total_books": 14,
+  "exported_at": "2026-02-28T08:30:52.134310",
+  "books": [
+    {
+      "id": "cbc823c2-7507-44bb-8c82-8422e8ba512a",
+      "title": "Flame's Courageous Journey",
+      "description": "An enchanting tale about a small dragon named Flame who learns to conquer his fear of fire with the help of a wise owl.",
+      "genre": "Fantasy",
+      "cover_image": "",
+      "back_cover_image": "",
+      "cover_title": "Flame's Courageous Journey",
+      "cover_subtitle": "",
+      "back_cover_text": "Join Flame, a little dragon with a big heart, on an adventure to find his inner strength. With the guidance of a wise owl named Ollie, Flame discovers that bravery means facing your fears and learning from them.",
+      "author_id": "9817465e-7fa1-44d7-b519-2ae74a5072e2",
+      "author_name": "Test User",
+      "is_published": false,
+      "is_featured": false,
+      "is_best_of_week": false,
+      "layout_mode": "standard",
+      "narrator_voice_id": "21m00Tcm4TlvDq8ikWAM",
+      "age_rating": "All Ages",
+      "view_count": 0,
+      "read_count": 0,
+      "created_at": "2026-02-23T11:34:07.777236+00:00",
+      "updated_at": "2026-02-26T12:03:27.489236",
+      "age_range": "6-8",
+      "art_style": "watercolour",
+      "cover_image_url": "/book-assets/flames_courageous_journey/cover.png",
+      "page_count": 10,
+      "pages": [
+        {
+          "page_number": 1,
+          "text": "Deep in the heart of the Elderwood Forest, where the trees grew so tall their tops disappeared into the clouds, there lived a small dragon named Flame. He had emerald green scales, wings the colour of autumn leaves, and a tail that curled up at the end like a question mark. The other young dragons spent their days breathing fire at logs, scorching patterns into the bark, and competing to see who could make the biggest flame. But Flame always watched from a safe distance, his belly tight with a feeling he could not quite name. The truth was \u2014 and it was a truth that filled him with great shame \u2014 Flame was afraid of fire.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224169/azories/books/flame_s_courageous_journey/page_01.jpg",
+          "layout": "full_spread"
+        },
+        {
+          "page_number": 2,
+          "text": "One quiet afternoon, Flame sat alone on a mossy rock at the edge of a stream, watching his reflection in the water and wondering if there was something terribly wrong with him. That was when Ollie landed on the branch above. Ollie was the oldest owl in the forest, with wide amber eyes and feathers so soft he made almost no sound when he flew. He tilted his head and studied Flame for a long moment. 'You have the expression of someone carrying a very heavy stone,' Ollie observed. Flame looked up, startled. He thought about denying it, but Ollie's eyes were kind. 'I am afraid of fire,' Flame admitted at last, in barely more than a whisper. 'And I am a dragon. So what does that make me?' He braced himself for laughter. But Ollie did not laugh at all.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224170/azories/books/flame_s_courageous_journey/page_02.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 3,
+          "text": "'It makes you honest,' said Ollie calmly. 'Most creatures spend their whole lives being afraid of things but pretending they are not. You have already done something brave \u2014 you have named it.' He spread his great wings and glided down to sit beside Flame on the rock. 'Fear is not a wall,' Ollie continued. 'It is a door. And doors can be opened.' He told Flame that he knew a place deep in the forest where small, gentle fires burned in the roots of the ancient trees \u2014 fires that had burned quietly for a thousand years, hurting nothing, warming everything around them. Together, they set off through the shadowy ferns, Flame's heart hammering with every step.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224170/azories/books/flame_s_courageous_journey/page_03.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 4,
+          "text": "The ancient fires were nothing like what Flame had imagined. They were not roaring or violent or hungry. They were small and still, burning in little cups of stone among the tree roots, as steady and calm as breathing. Their light was warm gold, and the air around them smelled of pine and something older and sweeter that Flame had no word for. Ollie said nothing. He simply waited. After a long time, Flame leaned forward and blew \u2014 the gentlest breath he had ever taken. A tiny flame appeared at the tip of his tongue. It danced for a moment in the air, then joined the fire in the stone cup, adding its small light to the larger warmth. Flame stared at what he had done. 'I did it,' he said, barely believing it. Ollie's eyes crinkled with quiet joy.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224171/azories/books/flame_s_courageous_journey/page_04.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 5,
+          "text": "On the way home through the forest, Flame felt different \u2014 not because the fear had completely gone, but because he had looked at it clearly and taken one small step toward it anyway. He thought about what Ollie had said: that bravery was not the absence of fear, but moving forward while the fear was still there. When the other dragons saw him the next day and invited him to join their fire-breathing games, Flame took a deep breath and stepped forward. His flame was small and gentle \u2014 nothing like the great blazing roars of his friends. But it was real, and it was his, and as he watched it curl upward into the morning air, Flame felt something in his chest that was warm in a completely different way from fire. He felt proud.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224172/azories/books/flame_s_courageous_journey/page_05.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 6,
+          "text": "Big dragons couldn't help - their fire made steam that made things worse!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224172/azories/books/flame_s_courageous_journey/page_06.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 7,
+          "text": "But Flame had an idea! His tiny sparks could light the warning beacons!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224173/azories/books/flame_s_courageous_journey/page_07.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 8,
+          "text": "One by one, Flame lit every beacon. The village was warned in time!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224173/azories/books/flame_s_courageous_journey/page_08.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 9,
+          "text": "\"You saved us all!\" the villagers cheered. Flame stood tall with pride.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224174/azories/books/flame_s_courageous_journey/page_09.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 10,
+          "text": "Flame learned that being different isn't bad - it's what makes you special!\n\nThe End",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224175/azories/books/flame_s_courageous_journey/page_10.jpg",
+          "layout": "text_left_image_right"
+        }
+      ],
+      "status": "published"
+    },
+    {
+      "id": "e407351d-6474-4917-935f-df4c009de967",
+      "title": "Luna's Rainbow Adventure",
+      "description": "Join young astronaut Luna as she discovers a moon of rainbow crystals and meets a civilization of friendly aliens, embarking on a delightful journey of friendship and wonder.",
+      "genre": "Sci-Fi",
+      "cover_image": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217152/azories/books/lunas_rainbow_adventure/cover.jpg",
+      "back_cover_image": "",
+      "cover_title": "Luna's Rainbow Adventure",
+      "cover_subtitle": "",
+      "back_cover_text": "Luna the astronaut lands on a sparkly moon! Meet her new friends from a cheerful alien civilization and explore the dazzling world of rainbow crystals. Adventure and friendship await!",
+      "author_id": "9817465e-7fa1-44d7-b519-2ae74a5072e2",
+      "author_name": "Test User",
+      "is_published": true,
+      "is_featured": false,
+      "is_best_of_week": false,
+      "layout_mode": "standard",
+      "narrator_voice_id": "21m00Tcm4TlvDq8ikWAM",
+      "age_rating": "5+",
+      "view_count": 0,
+      "read_count": 12,
+      "created_at": "2026-02-23T11:34:57.772176+00:00",
+      "updated_at": "2026-02-27T21:32:42.721915+00:00",
+      "age_range": "3-6",
+      "art_style": "watercolour",
+      "cover_image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217152/azories/books/lunas_rainbow_adventure/cover.jpg",
+      "page_count": 10,
+      "pages": [
+        {
+          "page_number": 1,
+          "text": "Luna had always dreamed of exploring the stars. She had spent her whole childhood lying in the grass outside her house, watching the night sky and pointing at distant lights and wondering what they felt like up close. So when she grew up and became an astronaut \u2014 a real one, with a silver suit and a helmet that reflected the whole world back at her \u2014 it felt less like a new beginning and more like finally arriving somewhere she had always been going. On a bright Tuesday morning, her spacecraft hummed to life and carried her away from everything she knew, out into the deep, velvet dark. Her mission was to survey a newly discovered moon \u2014 one that the scientists back home had given a long number as a name, but which Luna, the moment she saw it glimmering on her monitor, privately called Rainbow.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224175/azories/books/luna_s_rainbow_adventure/page_01.jpg",
+          "layout": "full_spread"
+        },
+        {
+          "page_number": 2,
+          "text": "When the spacecraft landed with a soft crunch and Luna stepped out onto the surface, she stood completely still for a long moment. The ground beneath her boots was made of something she had no word for \u2014 not rock exactly, not sand, but something in between, and it caught the light of the distant sun and threw it back in fragments of every colour imaginable. Wherever she looked, the surface sparkled. Pinks and greens and deep purples and flashing golds. The scientists had told her the moon was made of a type of mineral crystal that refracted light, but no description had prepared her for this \u2014 for the feeling of standing in the middle of so much impossible beauty. She turned slowly on the spot, mouth open inside her helmet, breathing too fast.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224176/azories/books/luna_s_rainbow_adventure/page_02.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 3,
+          "text": "She was still standing there, turning slowly, when she heard something she definitely had not expected: laughter. It was light and bubbling, like water over stones, and it seemed to be coming from behind a cluster of tall crystal formations nearby. Luna checked her equipment \u2014 all readings normal, atmosphere not breathable, no signs of life on any scanner. And yet. The laughter came again. She took a breath, squared her shoulders, and walked toward it. Around the edge of the crystals, she stopped dead. Standing in a loose, cheerful group were creatures unlike anything she had ever seen or imagined. They were small \u2014 about the height of her knee \u2014 with large round eyes that shimmered with every colour of the surface beneath their feet. They were looking at her with enormous curiosity and, it seemed, considerable delight.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224176/azories/books/luna_s_rainbow_adventure/page_03.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 4,
+          "text": "They communicated not in words but in gestures and colours \u2014 the shimmering of their eyes, the movement of their small hands, patterns that rippled across their skin like light through water. Luna, who had trained for years for contact with alien life and had privately assumed it would be formal and terrifying, found herself simply smiling. One of them \u2014 the smallest, with eyes that flickered between deep blue and warm gold \u2014 stepped forward and took her gloved hand with both of its tiny ones and held it. That was the introduction. Luna named them the Crystal Friends, because she needed to call them something, and they seemed to understand that too, tilting their heads and repeating the sound back to her in high, bright tones.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224177/azories/books/luna_s_rainbow_adventure/page_04.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 5,
+          "text": "For the rest of the day, they showed her everything. She learned that the crystals sang \u2014 a low, barely audible vibration that changed pitch with the temperature, a constant music that the Crystal Friends had grown up listening to. She learned that their colours shifted with their feelings: deep blue when they were calm, bright yellow when excited, soft pink when they were being kind. She watched them play \u2014 a game that involved rolling smooth pebbles across the crystal ground and watching the light scatter in different patterns \u2014 and found herself laughing along, even when she did not fully understand the rules. By the time the distant sun began to set, painting the whole moon in extraordinary shades of amber and violet, Luna felt as though she had known them for years.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224177/azories/books/luna_s_rainbow_adventure/page_05.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 6,
+          "text": "When her instruments told her it was time to return to the spacecraft, Luna felt a tightness in her chest that she had not expected. She turned to the Crystal Friends and pressed both hands over her heart \u2014 the universal gesture she had improvised for 'I am glad I met you' \u2014 and they responded by pressing their own hands over their hearts and then reaching them toward her, palms open. She walked backward toward the ship, not wanting to turn away until she absolutely had to. As the spacecraft rose from the glittering surface and the moon grew small below her, Luna pressed her hand against the viewport. She had promised, in the only way she could, that she would come back. And as the little moon sparkled in the darkness behind her, she was already thinking about how.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224178/azories/books/luna_s_rainbow_adventure/page_06.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 7,
+          "text": "Green took her to a jungle planet with talking trees!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224179/azories/books/luna_s_rainbow_adventure/page_07.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 8,
+          "text": "Blue brought her to an ocean world with flying fish!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224180/azories/books/luna_s_rainbow_adventure/page_08.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 9,
+          "text": "Purple led to a quiet world where dreams are made.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224181/azories/books/luna_s_rainbow_adventure/page_09.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 10,
+          "text": "Home on the full rainbow! Luna knew she'd visit again.\n\nThe End",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224181/azories/books/luna_s_rainbow_adventure/page_10.jpg",
+          "layout": "text_left_image_right"
+        }
+      ],
+      "status": "published",
+      "cover_image_original_fal": "https://v3b.fal.media/files/b/0a8f9f89/jCZyQSc5dwW5MXC6T4qGy.jpg",
+      "cover_image_url_original_fal": "https://v3b.fal.media/files/b/0a8f9f89/jCZyQSc5dwW5MXC6T4qGy.jpg",
+      "hidden": true
+    },
+    {
+      "id": "a0b23e67-5b1a-4ec7-9098-9c7a2aa397be",
+      "title": "Lila and the Whispering Blossoms",
+      "description": "Lila, a shy forest fairy, finds her special gift and learns the beauty of friendship with woodland creatures.",
+      "genre": "Fantasy",
+      "cover_image": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217153/azories/books/lila_and_the_whispering_blosso/cover.jpg",
+      "back_cover_image": "",
+      "cover_title": "Lila and the Whispering Blossoms",
+      "cover_subtitle": "",
+      "back_cover_text": "Join Lila, the timid forest fairy, as she discovers her magical ability to speak with flowers. With the help of her newfound woodland friends, Lila learns the courage to embrace her own special gift.",
+      "author_id": "9817465e-7fa1-44d7-b519-2ae74a5072e2",
+      "author_name": "Test User",
+      "is_published": true,
+      "is_featured": false,
+      "is_best_of_week": false,
+      "layout_mode": "standard",
+      "narrator_voice_id": "21m00Tcm4TlvDq8ikWAM",
+      "age_rating": "All Ages",
+      "view_count": 0,
+      "read_count": 15,
+      "created_at": "2026-02-23T11:35:26.593254+00:00",
+      "updated_at": "2026-02-26T12:04:28.598695",
+      "age_range": "3-6",
+      "art_style": "watercolour",
+      "cover_image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217153/azories/books/lila_and_the_whispering_blosso/cover.jpg",
+      "page_count": 10,
+      "pages": [
+        {
+          "page_number": 1,
+          "text": "Deep in the heart of the Glimmering Woodlands, where sunlight filtered through leaves in long golden shafts and the air always smelled of rain and honey, there lived a small fairy named Lila. She had hair the colour of copper and wings like a dragonfly \u2014 translucent and shot through with little rainbows when the light caught them just right. Lila loved the forest with her whole heart. She loved the sound of the stream and the feeling of soft moss underfoot and the way the older trees seemed to breathe slowly in the dark. But whenever she came across another woodland creature \u2014 a hedgehog, a robin, a young fox \u2014 she would freeze up completely, her wings pressing flat against her back, and find she had nothing at all to say. She was, in the most gentle and private way, terribly shy.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224182/azories/books/lila_and_the_whispering_blossoms/page_01.jpg",
+          "layout": "full_spread",
+          "text_content": "In a sun-drenched garden at the edge of a quiet village, there lived a little girl named Lila. She had warm brown hair and big, curious eyes, and she spent every afternoon wandering among the flowers. The roses, the daisies, the tall orange birds of paradise \u2014 Lila knew every one of them by heart. A little robin often perched nearby, watching her with its bright black eyes as she walked the paths alone. Lila was the kind of girl who noticed small things. She noticed the way petals caught the light. She noticed the way the garden smelled just before rain. And one afternoon, she noticed something else \u2014 something quite extraordinary."
+        },
+        {
+          "page_number": 2,
+          "text": "One sunny morning, while Lila was sitting very quietly near a cluster of white flowers, she heard something that made her sit bolt upright. A voice \u2014 tiny and bright and unmistakably cheerful \u2014 said: 'Hello there!' Lila spun around, wings snapping open in surprise. There was nobody behind her. Nobody above her. Nobody to the left or right. She looked down at the flowers. One of them \u2014 a small white blossom with a golden centre \u2014 had turned ever so slightly toward her. 'Was that... you?' Lila whispered. The flower's petals ruffled, and she was almost certain it was nodding. 'I have been watching you sit here for three mornings,' the flower said. 'I thought it was time we were introduced.'",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224183/azories/books/lila_and_the_whispering_blossoms/page_02.jpg",
+          "layout": "text_left_image_right",
+          "text_content": "Lila was crouching beside a tall pink flower when it happened. The flower tilted its head toward her \u2014 just slightly, just enough \u2014 and said in a small, bright voice: 'Hello there!' Lila stumbled backward in surprise. She looked left and right. There was no one else in the garden. Slowly, she leaned back toward the flower. 'Was that... you?' she whispered. The flower's petals trembled, and Lila was quite certain it was nodding. 'We have always been able to talk,' it said cheerfully. 'Most people simply walk past too quickly to hear. But you always stop. You always look. So today, we thought it was time to say hello properly.'"
+        },
+        {
+          "page_number": 3,
+          "text": "Lila's first thought was that she must be dreaming. Her second thought was that if she was dreaming, she might as well enjoy it. She leaned closer. 'Can all flowers talk?' she asked. 'Oh, we always could,' the blossom said cheerfully. 'Most people simply do not know how to listen. You are quieter than most, and quiet is the right kind of listening.' Over the next hour, Lila sat in absolute wonder as the flowers told her things she had never known \u2014 which paths led to the sweetest berries, where the foxes went in winter, why the great oak at the forest's heart had a hollow big enough to sleep in. The forest she thought she knew was full of secrets she had never even guessed at.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224184/azories/books/lila_and_the_whispering_blossoms/page_03.jpg",
+          "layout": "text_left_image_right",
+          "text_content": "Lila laughed \u2014 a real laugh, bright and surprised, the kind that made her spin on the spot with her arms out. The flowers laughed too, in their own way, their petals trembling with delight. 'Can all of you talk?' she asked, looking around at the whole garden. 'Every one of us,' said a cheerful daisy nearby. 'We have been waiting for someone quiet enough to listen.' That afternoon, Lila sat in the middle of the garden and the flowers told her everything \u2014 which paths led to the sweetest wild berries, where the foxes made their dens at the edge of the wood, why the old oak tree at the far wall had a hollow just the right size to keep a secret."
+        },
+        {
+          "page_number": 4,
+          "text": "That afternoon, filled with more courage than she had felt in a long time, Lila flew to find the other woodland creatures. She found the hedgehog first, snuffling through the leaves near the brook. 'Excuse me,' Lila said, her voice barely louder than the rustling leaves. 'The flowers told me you know where the very best mushrooms grow. I thought perhaps you might like to show me?' The hedgehog looked up, surprised that anyone had spoken to him so gently. 'I would like that very much,' he said. Word spread, the way words do in a forest, and by evening a small gathering had formed around the flower patch \u2014 a robin, two young rabbits, a sleepy dormouse, and even a cautious young deer standing at the edge of the clearing.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224184/azories/books/lila_and_the_whispering_blossoms/page_04.jpg",
+          "layout": "text_left_image_right",
+          "text_content": "With her heart full of new courage, Lila decided to find the other creatures of the garden and share what she had learned. She found a small white rabbit first, sitting very still among the pink blooms. 'Excuse me,' said Lila softly, kneeling down so she was at his level. 'The flowers told me you know all the best hiding places in this garden. I thought perhaps you would like to show me?' The rabbit looked up at her with round dark eyes. He had not expected anyone to speak to him so gently. 'I would like that very much,' he said quietly. 'I have been sitting here alone for quite a long time.' And so they set off together, following the flower-lined paths through the afternoon light."
+        },
+        {
+          "page_number": 5,
+          "text": "Lila stood in the middle of them all \u2014 the creatures she had watched from a distance for so long \u2014 and felt something open up inside her like a flower itself. She introduced each creature to the flowers, who greeted everyone warmly. She translated the flowers' stories for those who could not quite hear them. She laughed for the first time in what felt like months. And as the sun dipped below the trees and painted the clearing amber and rose, Lila realised that her shyness had not disappeared \u2014 it was still there, soft and familiar \u2014 but it had made room for something else. The most magical gift, she thought, as the flowers whispered goodnight, was not the ability to hear them at all. It was finding out that she had been worth talking to all along.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224185/azories/books/lila_and_the_whispering_blossoms/page_05.jpg",
+          "layout": "text_left_image_right",
+          "text_content": "Word spread through the garden the way it does when something good is happening \u2014 quickly, warmly, without anyone quite knowing how it started. By the time the sun was beginning to dip, Lila found herself surrounded. There were butterflies resting on her shoulders. There were bees hovering nearby in contented circles. There were tiny birds she had never seen before, watching from the branches above with tilted heads. And the flowers were talking all at once, telling stories and asking questions and laughing their petal-trembling laugh. Lila stood in the middle of it all and felt something she had not felt in a long time \u2014 not just happy, but completely, entirely at home. She had been coming to this garden every day for years. Today, for the first time, it had welcomed her back."
+        },
+        {
+          "page_number": 6,
+          "text": "\"What do you need?\" Lila whispered. \"Someone to sing to me.\"",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224186/azories/books/lila_and_the_whispering_blossoms/page_06.jpg",
+          "layout": "text_left_image_right",
+          "text_content": "As the afternoon grew late, Lila came upon a part of the garden she had never explored \u2014 a quiet corner behind the tall roses, where a girl stood alone among the flowers. She was taller than Lila, with long brown hair and a small golden crown that caught the slanting light. She looked proud, but also somehow sad. When she saw Lila, she did not speak. She simply looked at her with very serious eyes. 'Hello,' said Lila carefully. 'I did not know anyone else came here.' The girl with the crown was quiet for a long moment. Then she said, very softly: 'What do you need?' Lila blinked. 'I don't need anything,' she said. 'I am just happy being here.' The girl's expression shifted \u2014 something in it softened. 'Someone to sing to me,' she finally admitted. 'That is what I need.'"
+        },
+        {
+          "page_number": 7,
+          "text": "Lila sang her grandmother's lullaby, soft and sweet.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224186/azories/books/lila_and_the_whispering_blossoms/page_07.jpg",
+          "layout": "text_left_image_right",
+          "text_content": "Lila thought for a moment. Then she remembered the song her grandmother used to sing on summer evenings \u2014 a gentle, lilting melody with no particular words, just a rise and fall like breathing. She opened her mouth and sang it, softly at first, then more fully as her voice found its shape. Something extraordinary happened. As Lila sang, tiny pink butterflies appeared \u2014 first one, then three, then dozens \u2014 rising from the flowers around her feet in a soft, spiralling cloud. They drifted upward into the golden light, turning slow, lazy circles above the garden, their wings catching the sun like rose-coloured sparks. Lila sang and sang. The butterflies rose and rose. And the girl with the crown stood very still and listened with her eyes closed, and the tightness around her mouth slowly, gently eased away."
+        },
+        {
+          "page_number": 8,
+          "text": "The Queen Blossom stood tall again! Her petals glowed!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224187/azories/books/lila_and_the_whispering_blossoms/page_08.jpg",
+          "layout": "text_left_image_right",
+          "text_content": "When Lila finished singing, the garden was very quiet. Then, from the corner of the garden, came a sound \u2014 a deep, slow sound like a breath being released after a very long time. The Queen Blossom, the oldest and largest flower in the whole garden, who had been drooping for weeks with her petals turned toward the ground, lifted her great pink head. Her petals opened wide. They did not just open \u2014 they glowed, softly, from within, like a lantern lit against the evening. 'Thank you,' said the Queen Blossom, in a voice that seemed to come from the roots of the earth itself. 'I had forgotten that song.' Lila held the small blossom the Queen offered her and felt its warmth pulse gently in her palm, like a tiny heartbeat."
+        },
+        {
+          "page_number": 9,
+          "text": "\"Thank you, little one. Music heals the soul - even flower souls.\"",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224187/azories/books/lila_and_the_whispering_blossoms/page_09.jpg",
+          "layout": "text_left_image_right",
+          "text_content": "The girl with the crown knelt down beside the Queen Blossom and touched one of her glowing petals very carefully. Then she looked at Lila. 'How did you know what to do?' she asked. Lila thought about it honestly. 'I didn't,' she said. 'I just did what felt right.' She held out the small heart-shaped flower that had appeared in her hand, and offered it to the girl. 'I think this is for you,' Lila said. 'I think the garden wanted you to have it.' The girl took it with both hands, the way you take something precious. 'Thank you, little one,' she said quietly. 'Music heals the soul. Even flower souls.' She looked around at the glowing, breathing garden and for the first time since Lila had met her, she smiled."
+        },
+        {
+          "page_number": 10,
+          "text": "Now Lila sings to her garden every day. And it sings back!\n\nThe End",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224188/azories/books/lila_and_the_whispering_blossoms/page_10.jpg",
+          "layout": "text_left_image_right",
+          "text_content": "After that day, Lila came to the garden every morning without fail. She brought her singing voice with her the way other children bring toys or books. She sang to the roses when they were drooping. She sang to the seedlings when they were just beginning to push through the soil. She sang to the butterflies and the bees and the little birds in the branches above. And every time she sang, the garden sang back \u2014 in its own way, with the rustle of leaves and the turning of petals and the soft, warm sound of everything growing. Lila had come to the garden looking for nothing in particular. She had found something she had not known she was looking for. And now Lila sings to her garden every day. And it sings back. The End."
+        }
+      ],
+      "status": "published",
+      "cover_image_original_fal": "https://v3b.fal.media/files/b/0a8f9f8c/Gc04sjgnoqY8f3DM-hsU4.jpg",
+      "cover_image_url_original_fal": "https://v3b.fal.media/files/b/0a8f9f8c/Gc04sjgnoqY8f3DM-hsU4.jpg"
+    },
+    {
+      "id": "cb1254c5-63fa-479d-9b29-db771ddde5ba",
+      "title": "The Midnight Brush",
+      "description": "A magical tale of a young artist whose paintings come alive each night, leading to a colorful and enchanting adventure.",
+      "genre": "Fantasy",
+      "cover_image": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217155/azories/books/the_midnight_brush/cover.jpg",
+      "back_cover_image": "",
+      "cover_title": "The Midnight Brush",
+      "cover_subtitle": "",
+      "back_cover_text": "Join Emma on a whimsical journey as her painted friends come to life after dark. With her creativity and courage, she must help them find their way back to their homes before sunrise!",
+      "author_id": "9817465e-7fa1-44d7-b519-2ae74a5072e2",
+      "author_name": "Test User",
+      "is_published": true,
+      "is_featured": false,
+      "is_best_of_week": false,
+      "layout_mode": "standard",
+      "narrator_voice_id": "21m00Tcm4TlvDq8ikWAM",
+      "age_rating": "All Ages",
+      "view_count": 0,
+      "read_count": 4,
+      "created_at": "2026-02-23T11:37:01.690715+00:00",
+      "updated_at": "2026-02-26T12:05:00.890398",
+      "age_range": "6-8",
+      "art_style": "watercolour",
+      "cover_image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217155/azories/books/the_midnight_brush/cover.jpg",
+      "page_count": 10,
+      "pages": [
+        {
+          "page_number": 1,
+          "text": "Emma's bedroom was more art studio than bedroom, which her parents had accepted with the philosophical grace of people who had tried the alternative and found it did not work. Her bed was pushed into one corner to make room for the easel. The windowsill was lined with jars of brushes and stained, beloved palettes. The walls \u2014 where they were visible beneath the canvases that covered almost every surface \u2014 were a pale cream that the paint had long since found its way to in interesting patterns. Emma painted every evening after school and sometimes in the morning before, and she painted with the particular focus of someone who had found the thing they were meant to do and was simply getting on with doing it. She was eleven years old and she had never once had to think about what to do with her hands. Colours talked to her in a way she found difficult to describe but never needed to explain \u2014 she simply knew, always, which one came next.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224189/azories/books/the_midnight_brush/page_01.jpg",
+          "layout": "full_spread"
+        },
+        {
+          "page_number": 2,
+          "text": "The first time it happened, Emma thought she was dreaming. She had fallen asleep at her desk \u2014 not unusual \u2014 and woken to find the studio lit by a different kind of light than the moon, warmer and more golden, and the painting on the easel in front of her was moving. Not violently or strangely \u2014 the bird in the upper left corner was simply flying, its wings rising and falling with the easy authority of real flight. And then it banked toward her and landed on the edge of the frame, and looked at her with painted eyes that were somehow entirely alive. 'Hello,' it said, in a voice like rustling leaves. Before she could speak, a low sound behind her made her turn: the lion from the large canvas on the wall had stepped forward until his front paws rested on the baseboard, his golden eyes steady. 'We've been waiting for the right night,' the lion said. 'We need your help.'",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224189/azories/books/the_midnight_brush/page_02.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 3,
+          "text": "They explained carefully. Each of them \u2014 the bird, the lion, and gradually others who stepped forward from their canvases and found space in the small room \u2014 had been painted into a world. A beautiful world, a world Emma had made with love and care and the particular attention she brought to everything she painted. But they were, they told her, not quite home. 'You painted us well,' the bird said, perched on her shoulder now, its painted feathers surprisingly soft. 'But the world we come from is beyond what you can see. We need a path.' Emma looked at the lion, who had settled onto the rug with the quiet confidence of something that had always belonged there. She thought for a moment, then she reached for her brushes. 'Tell me what it looks like,' she said. 'The place you're trying to get back to. Tell me every detail.'",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224190/azories/books/the_midnight_brush/page_03.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 4,
+          "text": "She painted through the night, listening to their descriptions \u2014 the colours of their sky, the particular quality of the light in their home places, the sounds that came at dawn. The wise old tree from the large landscape painting in the corner joined them at some point, its bark-textured voice rolling slowly through the room, offering observations about direction and season that Emma found she could translate directly into colour and angle of light. She painted a path \u2014 not a literal road but something more like a memory of one, shimmering at the edges where the possible met the definite. She painted the horizon they described with such care that she found herself half-believing in it herself. As she worked, the room filled with the smell of somewhere else \u2014 salt air and pine and warm stone \u2014 that she knew was not coming from her paints.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224190/azories/books/the_midnight_brush/page_04.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 5,
+          "text": "Just before dawn \u2014 the sky outside beginning to shift from deep blue to grey \u2014 Emma stood back from the canvas and looked at what she had made. The path gleamed softly on the surface, leading from a point near the bottom right of the image toward the upper left, disappearing into a light that she had not consciously decided to paint but that felt exactly right. The bird flew to the path first, circling it once, and then moved into it and was gone \u2014 not dramatically, not with any flourish, just gone, in the way that things go when they arrive at exactly where they were always going. The lion followed, slower, and paused at the edge to look back at Emma with an expression she could not describe but would remember for the rest of her life. The others followed one by one, until the room was quiet. Emma stood alone in her studio as the sun came up and turned everything gold, and she understood, with the deep, calm certainty of someone who has done something exactly right, that this was why she painted. THE END",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224191/azories/books/the_midnight_brush/page_05.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 6,
+          "text": "He painted a dragon - friendly, of course! They flew over the town.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224191/azories/books/the_midnight_brush/page_06.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 7,
+          "text": "But then he painted something sad - a lonely monster.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224192/azories/books/the_midnight_brush/page_07.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 8,
+          "text": "\"I don't want to be scary,\" it cried. So Milo painted it a friend!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224193/azories/books/the_midnight_brush/page_08.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 9,
+          "text": "He learned: what you create affects others. Paint with kindness!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224193/azories/books/the_midnight_brush/page_09.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 10,
+          "text": "Now Milo only paints joy. And every midnight, his room fills with friends.\n\nThe End",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224194/azories/books/the_midnight_brush/page_10.jpg",
+          "layout": "text_left_image_right"
+        }
+      ],
+      "status": "published",
+      "cover_image_original_fal": "https://v3b.fal.media/files/b/0a8f9f96/rGU9hgn9NvybgvckgnBBg.jpg",
+      "cover_image_url_original_fal": "https://v3b.fal.media/files/b/0a8f9f96/rGU9hgn9NvybgvckgnBBg.jpg",
+      "hidden": false,
+      "published": false
+    },
+    {
+      "id": "2844ed0e-1440-4be6-b7a8-8b48046ea96c",
+      "title": "The Emotion Squad: Power of Unity",
+      "description": "Join the adventure of the Emotion Squad, a group of young superheroes who discover the true power of friendship and teamwork through their emotion-based abilities.",
+      "genre": "Adventure",
+      "cover_image": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217156/azories/books/the_emotion_squad:_power_of_un/cover.jpg",
+      "back_cover_image": "",
+      "cover_title": "The Emotion Squad: Power of Unity",
+      "cover_subtitle": "",
+      "back_cover_text": "Meet the Emotion Squad, young superheroes with powers driven by their feelings. When a mysterious force threatens their town, they learn that working together brings their strongest magic to life. Can they unite to save the day?",
+      "author_id": "9817465e-7fa1-44d7-b519-2ae74a5072e2",
+      "author_name": "Test User",
+      "is_published": true,
+      "is_featured": false,
+      "is_best_of_week": false,
+      "layout_mode": "standard",
+      "narrator_voice_id": "21m00Tcm4TlvDq8ikWAM",
+      "age_rating": "8+",
+      "view_count": 0,
+      "read_count": 4,
+      "created_at": "2026-02-23T11:37:30.420393+00:00",
+      "updated_at": "2026-02-26T12:05:33.965190",
+      "age_range": "6-8",
+      "art_style": "cartoon",
+      "cover_image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217156/azories/books/the_emotion_squad:_power_of_un/cover.jpg",
+      "page_count": 10,
+      "pages": [
+        {
+          "page_number": 1,
+          "text": "The town of Cheerstone sat in a sunny valley between two gentle hills, and it was, by any measure, a happy place. The streets were wide and clean, the park had excellent swings, and the bakery on the corner always seemed to be producing something that smelled wonderful. But the most remarkable thing about Cheerstone was not any of this. It was five children who lived there \u2014 children who, for reasons that nobody had ever fully explained, had grown up with something extra. Joy could make flowers grow with her laughter and could lift the spirits of anyone within earshot of her voice. Calm moved through difficult situations like water around stones, never getting caught up, always finding the steadiest path. Brave felt fear just like everyone else but had somehow never let it win. Kind noticed things \u2014 small things, the specific things \u2014 that others missed entirely. And Creative could look at any problem sideways and find a solution where none seemed to exist. They had called themselves, with characteristic directness, the Emotion Squad.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224194/azories/books/the_emotion_squad__power_of_unity/page_01.jpg",
+          "layout": "full_spread"
+        },
+        {
+          "page_number": 2,
+          "text": "It began on a Thursday morning with a shadow. Not the ordinary shadow that a cloud casts \u2014 this was something different, something that settled over the town with a weight to it, that made the light feel thinner and the colours less vivid. By afternoon, people in Cheerstone were moving more slowly than usual, speaking more quietly, stopping in the middle of sentences as though they had forgotten what they meant to say. The birds in the park went quiet. The bakery closed early. Joy, who felt changes in mood the way other people felt changes in temperature, noticed it first \u2014 a shift in the emotional weather of the whole town that made her stomach tighten. She sent a message to the others and they gathered at their usual meeting place: the old bandstand at the centre of the park, which they had claimed as their base of operations three summers ago and had never officially given up.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224195/azories/books/the_emotion_squad__power_of_unity/page_02.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 3,
+          "text": "They could see the cloud from the bandstand \u2014 it sat above the eastern part of town, dark and still, not moving with the wind the way a normal cloud should. 'I'll try first,' Joy said, and she took a breath and laughed \u2014 her full laugh, the one that usually sent flowers exploding into bloom across the grass. For a moment, a shaft of sunlight broke through the cloud and the townspeople below looked up, blinking, and smiled. But the cloud reformed. The light disappeared. The shadow deepened. Brave went next, flying straight up at the cloud with her arms wide and her face set with determination \u2014 and for a few seconds the cloud wavered and the shadows receded. But it held. Kind tried talking to it, which was not as strange as it sounded \u2014 Kind could often reach things that others couldn't by simply acknowledging them. The cloud rumbled but didn't move. One by one, each of them tried everything they knew, and each time the cloud came back.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224196/azories/books/the_emotion_squad__power_of_unity/page_03.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 4,
+          "text": "It was Creative who said, quietly, what all of them were already beginning to think. 'We keep trying to fix it alone,' she said. 'We each go in with our own thing and the cloud absorbs it and closes up again. But what if\u2014' she paused, working it out as she spoke, which was how her best ideas always arrived, 'what if the reason it keeps coming back is because it's bigger than any one of us? What if it needs all of us at once?' They looked at each other. It was obvious, put that way. So obvious that Brave said 'Why didn't we think of that before?' and Calm said 'We were too busy doing to see it,' which was, they all felt, probably true. They moved to stand in a circle \u2014 Joy, Calm, Brave, Kind, Creative \u2014 and they each reached out until their hands met, and they each brought with them, completely and without holding back, everything that they were.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224196/azories/books/the_emotion_squad__power_of_unity/page_04.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 5,
+          "text": "What rose from their joined hands was not any one colour. It was all of them at once \u2014 warm gold and cool blue and steady green and bright rose and the particular kind of silver-white that belongs to possibility. It rose in a column toward the cloud and hit it not like an attack but like an opening \u2014 the way a window lets in light not by force but by simply being present. The cloud shuddered. For a moment it seemed to pull tighter, to resist. And then, slowly at first and then all at once, it began to break apart. Sunlight poured through. The townspeople below lifted their heads. A child in the park began to run just for the pleasure of it. The baker opened her shutters and the smell of cinnamon rolled down the street. The birds started again. The five of them stood in their circle and watched the last of the shadow dissolve into the blue sky above Cheerstone and felt something that was bigger than any of their individual powers: the particular satisfaction of something that could only have been done together.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224197/azories/books/the_emotion_squad__power_of_unity/page_05.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 6,
+          "text": "That evening they sat on the bandstand steps while the sun went down and painted the valley in amber and rose, and they talked \u2014 the way they did after every difficult day \u2014 about what they had learned. 'We always go in separately first,' Brave said. 'Every time.' 'Because we each think we might be enough,' Joy said honestly. 'And sometimes one of us is,' Calm said. 'But sometimes the problem is bigger. And the hard part is knowing the difference.' Kind turned her hands over in her lap, thinking about the moment the cloud had broken. 'It was not just more power,' she said slowly. 'When we joined, it was not that we had five times as much of anything. It was something different. Something new.' Creative, who had been quiet for a while, nodded. 'That's what friendship does,' she said. 'It makes something that wasn't there before.' They watched the sun finish setting. Cheerstone glowed below them, fully itself again, warm and lit and full of the particular sound of a town that had remembered how to be happy. THE END",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224197/azories/books/the_emotion_squad__power_of_unity/page_06.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 7,
+          "text": "Calm helps us breathe and think clearly.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224198/azories/books/the_emotion_squad__power_of_unity/page_07.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 8,
+          "text": "One day, a big problem came. Each emotion tried alone - but failed!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224200/azories/books/the_emotion_squad__power_of_unity/page_08.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 9,
+          "text": "\"Together!\" said Joy. They combined their powers!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224201/azories/books/the_emotion_squad__power_of_unity/page_09.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 10,
+          "text": "All emotions matter. Together, they make us complete!\n\nThe End",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224201/azories/books/the_emotion_squad__power_of_unity/page_10.jpg",
+          "layout": "text_left_image_right"
+        }
+      ],
+      "status": "published",
+      "cover_image_original_fal": "https://v3b.fal.media/files/b/0a8f9f99/s5YvH5fioLJHL7LMbotJZ.jpg",
+      "cover_image_url_original_fal": "https://v3b.fal.media/files/b/0a8f9f99/s5YvH5fioLJHL7LMbotJZ.jpg",
+      "hidden": false,
+      "published": false
+    },
+    {
+      "id": "4f09ecbf-fc70-404a-838d-c1c547c73450",
+      "title": "Friendship Island",
+      "description": "Five friends get stranded on an island and learn about teamwork.",
+      "genre": "Adventure",
+      "cover_image": "https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?w=400",
+      "back_cover_image": "",
+      "cover_title": "Friendship Island",
+      "cover_subtitle": "",
+      "back_cover_text": "When their boat drifts away, five friends must work together to survive on a mysterious island.",
+      "author_id": "c1c42b9f-c6cf-42c6-b874-918f6ca3cd9f",
+      "author_name": "Azories Team",
+      "is_published": true,
+      "is_featured": false,
+      "is_best_of_week": true,
+      "layout_mode": "standard",
+      "narrator_voice_id": "21m00Tcm4TlvDq8ikWAM",
+      "age_rating": "7-9 years",
+      "view_count": 0,
+      "read_count": 3,
+      "created_at": "2026-02-23T21:51:39.722563+00:00",
+      "updated_at": "2026-02-27T21:32:42.722693+00:00",
+      "age_range": "6-8",
+      "art_style": "cartoon",
+      "cover_image_url": "/book-assets/friendship_island/cover.png",
+      "page_count": 10,
+      "pages": [
+        {
+          "page_number": 1,
+          "text": "In the middle of a wide, sparkling sea, there was a small island where two animals lived side by side. On the left side of the island lived Turtle, who moved slowly and thought carefully about everything before she did it. On the right side lived Hummingbird, who moved so fast he was often just a blur of green and arrived somewhere before he had quite decided to go there. They had lived on the island for years and years without ever once saying hello, because the island, though small, had somehow always felt just large enough for them to stay on their own sides.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224202/azories/books/friendship_island/page_01.jpg",
+          "layout": "full_spread"
+        },
+        {
+          "page_number": 2,
+          "text": "One stormy morning, a great wave came and swept away Turtle's favourite flat rock, which she had sat on every single day since she could remember. She stood where it had been and felt a sadness she did not quite know what to do with. Hummingbird, zipping past overhead, stopped in mid-air and hovered. He had seen what happened. He thought about flying on. Then he thought about the sadness on Turtle's face, and he flew down instead. 'I know where there is a much better rock,' he said. 'I've seen it from the air. I could show you, if you like.' Turtle looked at him for a moment. 'I move very slowly,' she said. 'That is all right,' said Hummingbird. 'I have been moving too fast for too long. I think I could use the practice.'",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224203/azories/books/friendship_island/page_02.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 3,
+          "text": "They walked together across the island \u2014 or rather, Turtle walked and Hummingbird hovered beside her at walking pace, which was completely new to him. He discovered that at this speed you noticed things. The pattern the grass made in the wind. The way the sea sounded different on different parts of the shore. Turtle, for her part, discovered that having someone beside her made the same walk she had done a thousand times feel entirely different. They reached the rock \u2014 it was wider and flatter and caught the afternoon sun perfectly. Turtle stepped onto it and settled her weight. 'Yes,' she said. 'This is better.' They sat together as the sun went down and the sea turned gold, and neither of them said anything for a while, because it turned out that being comfortable in silence with someone is one of the best kinds of friendship there is. THE END",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224203/azories/books/friendship_island/page_03.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 4,
+          "text": "Breeze the seagull landed nearby. \"Hello!\" Sunny scuttled away nervously.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224204/azories/books/friendship_island/page_04.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 5,
+          "text": "One stormy day, Sunny's shell collection washed away!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224205/azories/books/friendship_island/page_05.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 6,
+          "text": "Splash dove deep to find the shells. Breeze flew high to spot them!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224206/azories/books/friendship_island/page_06.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 7,
+          "text": "Together they brought back every single shell!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224207/azories/books/friendship_island/page_07.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 8,
+          "text": "\"You did that... for ME?\" Sunny couldn't believe it.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224208/azories/books/friendship_island/page_08.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 9,
+          "text": "\"That's what friends do,\" Splash smiled. Sunny smiled back.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224208/azories/books/friendship_island/page_09.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 10,
+          "text": "Now the island isn't lonely anymore. It's Friendship Island!\n\nThe End",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224209/azories/books/friendship_island/page_10.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "id": "63347227-a2d4-4143-bf7f-c27d8deac063",
+          "page_number": 4,
+          "text_content": "Isla began to look forward to checking the beach each morning more than anything else. On the days when a bottle was there, she would sit on the sand immediately and read without moving until she had finished every word. On the days when no bottle had arrived, she would sit for a while anyway, watching the direction of Leo's island, wondering what he was doing. She wrote him a letter about this and he wrote back: 'I do the same thing. I've named the gap of sea between us the Friendship Channel.' Isla thought this was the best name she had ever heard.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "48232210-7cae-46f7-9b24-ff89eefdda53",
+          "page_number": 5,
+          "text_content": "One letter contained a drawing \u2014 a careful, detailed map of Leo's island, with every tree and rock and the little crab pool where Pinchy lived labelled in tiny precise handwriting. Isla pinned it to the wall of her hut and looked at it every day. She drew one of her own island in return, marking the tallest coconut tree (she called it the Observatory because you could see everything from the top), the best tide pool, and the spot on the western beach where dolphins sometimes appeared at dawn.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "e8b3bbde-7ecf-495c-8ebf-ba6c10ce3c41",
+          "page_number": 6,
+          "text_content": "Then came the letter Isla had been secretly hoping for. 'I have been building something,' Leo wrote. 'I am not very good at building but I have been practising. I think it might be ready in two weeks. I am going to sail to your island. I hope that is all right. Pinchy says it is a terrible idea because of the open water but Pinchy is a crab and therefore cautious by nature. Please write back and tell me where to land.' Isla wrote back immediately: 'The western beach. The dolphins will know you're a friend.'",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "37872a48-a1d0-43f7-976c-7991e1eb1b60",
+          "page_number": 7,
+          "text_content": "The two weeks felt like two years. Isla cleaned her hut thoroughly. She stocked up on coconuts and dried fish. She practised conversations in her head and then felt embarrassed about practising conversations in her head. On the morning of the fourteenth day she climbed the Observatory tree before sunrise and sat there watching the horizon. The sun came up. The sea glittered. Nothing. Then, just after breakfast, a small shape appeared on the water \u2014 a raft with a patched sail, moving steadily westward.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "23d8fa86-308a-448b-9227-b12ae1df51ba",
+          "page_number": 8,
+          "text_content": "The raft bumped onto the western beach and a boy climbed out \u2014 slightly sunburned, slightly damp, carrying a battered bag and what appeared to be a very grumpy crab in a small jar of seawater. Isla stood on the beach and they looked at each other. They had written hundreds of words to each other. Now neither of them could think of a single one. Then they both started talking at the same time, and then both stopped at the same time, and then both laughed at exactly the same moment \u2014 the same laugh, it turned out, surprised and delighted.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "b96aead5-fd02-45a7-8ae1-a2d583a5baca",
+          "page_number": 9,
+          "text_content": "Leo stayed for a week. They climbed the Observatory tree together and saw four other islands from the top. They snorkelled over the reef with the red coral and Leo drew a new map with everything in it. Pinchy escaped from his jar and spent three days hiding behind the tide pool rocks before consenting to come back. They ate coconut and dried fish and talked from morning until the stars came out, catching up on all the conversations you can't have in a letter, discovering that a friend you have only written to is exactly as real as a friend you can stand next to.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "9d8a3ef0-8ef9-4a54-9661-bc1b8ebac5cc",
+          "page_number": 10,
+          "text_content": "When Leo sailed back to his own island, he left the map he had drawn on the wall of Isla's hut, next to the one she had drawn of his. Two islands. Two maps. A channel of sea between them that already felt like a road. That evening Isla sat on the western beach and a bottle came in on the tide \u2014 it must have been thrown just before he set sail. Inside was a note: 'Same time next month? I'll bring better provisions. Pinchy says absolutely not but we both know he doesn't mean it.' Isla laughed. She was already composing her reply. THE END",
+          "image_url": null,
+          "audio_url": null
+        }
+      ],
+      "status": "published",
+      "hidden": true
+    },
+    {
+      "id": "cb920fd3-c0bd-4be7-a40a-4ae2caeb8618",
+      "title": "The Robot Who Wanted Friends",
+      "description": "A lonely robot learns what it means to have friends.",
+      "genre": "Science Fiction",
+      "cover_image": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400",
+      "back_cover_image": "",
+      "cover_title": "The Robot Who Wanted Friends",
+      "cover_subtitle": "",
+      "back_cover_text": "ROBO-7 was built to work, but all he wants is a friend. A heartwarming story about friendship.",
+      "author_id": "c1c42b9f-c6cf-42c6-b874-918f6ca3cd9f",
+      "author_name": "Azories Team",
+      "is_published": true,
+      "is_featured": true,
+      "is_best_of_week": false,
+      "layout_mode": "standard",
+      "narrator_voice_id": "21m00Tcm4TlvDq8ikWAM",
+      "age_rating": "All Ages",
+      "view_count": 0,
+      "read_count": 4,
+      "created_at": "2026-02-23T21:51:39.722563+00:00",
+      "updated_at": "2026-02-27T21:32:42.723256+00:00",
+      "age_range": "6-8",
+      "art_style": "cartoon",
+      "cover_image_url": "/book-assets/the_robot_who_wanted_friends/cover.png",
+      "page_count": 10,
+      "pages": [
+        {
+          "page_number": 1,
+          "text": "In a workshop at the end of a quiet street, a robot named Cog sat on a shelf and watched the world through a small round window. He had been built to count things \u2014 screws, bolts, measurements \u2014 and he was very good at it. But what Cog really wanted, more than anything he could count, was a friend. He watched the children playing outside his window every day and wondered what it felt like to play. He had never tried. He wasn't sure robots were allowed to try.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224210/azories/books/the_robot_who_wanted_friends/page_01.jpg",
+          "layout": "full_spread"
+        },
+        {
+          "page_number": 2,
+          "text": "One afternoon, a girl with red boots and a large umbrella stopped outside the window and looked right at him. Cog went very still. People didn't usually look at him \u2014 they looked past him, at the tools on the wall or the parts on the bench. But this girl looked at him with clear, interested eyes. Then she waved. Cog had not waved before. He raised one hand, very slowly, and moved it side to side the way he had seen the children do. The girl's face broke into a wide smile. She pointed at the door. Cog looked at the door. Then he climbed down from the shelf, which took a while because his legs were quite short, and opened it.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224210/azories/books/the_robot_who_wanted_friends/page_02.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 3,
+          "text": "Her name was Isla, and she was seven, and she said she had been wondering about him for weeks. They walked together to the park, which was new for Cog and interesting in many ways he had not anticipated \u2014 the grass felt strange under his metal feet, and the wind made a sound against his body that he decided he liked. Isla showed him how to play \u2014 not complicated games, just the simple ones: rolling a ball, collecting interesting leaves, counting clouds. Cog was very good at the counting part. Isla was very good at the finding part. By the end of the afternoon, when the light turned orange and Isla's mother called her home, Cog understood what playing felt like. It felt like exactly the kind of thing he had been built for all along, even though nobody had put it in his instructions. THE END",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224211/azories/books/the_robot_who_wanted_friends/page_03.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 4,
+          "text": "\"That is friendship,\" the computer said. \"Robots don't need it.\"",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224213/azories/books/the_robot_who_wanted_friends/page_04.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 5,
+          "text": "But Rusty WANTED it! He tried to play but didn't know how.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224213/azories/books/the_robot_who_wanted_friends/page_05.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 6,
+          "text": "He brought toys - too many! He talked - too loud! Everything was wrong.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224214/azories/books/the_robot_who_wanted_friends/page_06.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 7,
+          "text": "Sad Rusty sat alone. A little girl came up. \"Are you okay?\"",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224215/azories/books/the_robot_who_wanted_friends/page_07.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 8,
+          "text": "\"I want friends but I don't know how,\" Rusty admitted.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224215/azories/books/the_robot_who_wanted_friends/page_08.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 9,
+          "text": "\"Just be yourself,\" she smiled. \"And listen. That's how friendship starts.\"",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224216/azories/books/the_robot_who_wanted_friends/page_09.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 10,
+          "text": "Rusty learned to listen, share, and care. Now he has more friends than circuits!\n\nThe End",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224217/azories/books/the_robot_who_wanted_friends/page_10.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "id": "c2800be7-662e-4e72-bdf8-2094a8c39315",
+          "page_number": 4,
+          "text_content": "He put down the bolts. He had never left the workshop before during working hours. He walked to the door, which had a handle he had never used from this side, and opened it. The outside air was different from workshop air \u2014 warmer, fuller of information. The girl was standing right there. 'I'm Bea,' she said. Her voice was friendly and direct. 'I've been watching you sort things for three weeks. You're very fast.' Cog processed this. 'I know,' he said, because it was true. 'What else can you do?' Bea asked. Cog thought about this for longer than expected. He had never been asked before.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "51f30343-68df-49fd-804c-da020ac64d40",
+          "page_number": 5,
+          "text_content": "They sat on the wall outside the workshop. Bea had a lot of questions, which Cog answered as accurately as he could. Yes, he could hear. Yes, he could see in colour. No, he didn't sleep \u2014 he had a low-power mode but it wasn't the same. Yes, he had opinions about things, though he was still developing what those were. Did he like things? He considered this. He liked when the bolts were sorted correctly. He liked the sound of rain on the workshop roof. He thought he might like talking to Bea, though he would need more data. 'That's basically how it works for me too,' said Bea. Cog found this helpful.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "85c88cb8-cee9-405c-ab2b-dd27da4c555b",
+          "page_number": 6,
+          "text_content": "Bea taught him hopscotch the following Saturday. His weight distribution made it technically challenging and he left noticeable impressions in the pavement where he landed, but the principle was sound and with modifications it worked. He was considerably better at the counting aspects than the jumping aspects. Bea was considerably better at the jumping aspects. They made, she said, a good team. Cog logged this: first use of the word 'team' in relation to himself. He noted it felt different from other information. It had a quality he didn't have a processing category for yet. He created one. He labelled it: significant.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "25ef350e-edfb-40ab-a5d0-8732d07d241c",
+          "page_number": 7,
+          "text_content": "Bea introduced him to her friends one afternoon: three children from her class named Omar, Yuki, and Dev, who arrived in a group and regarded Cog with varying degrees of fascination. Omar asked him questions about his mechanics with great enthusiasm. Yuki was quieter but watched him with an attention that he recognised as the same kind he used himself. Dev immediately challenged him to a maths race, which Cog won comprehensively, and then challenged him to a drawing race, which Dev won comprehensively, and then they spent half an hour teaching each other and both improved, which Dev said was the whole point.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "79854127-fb0d-41f0-994e-cf33edce5188",
+          "page_number": 8,
+          "text_content": "The thing Cog was worst at, he discovered, was understanding emotions. He could identify them \u2014 he had excellent facial recognition and he had studied body language extensively \u2014 but understanding why they happened and what they required in response was more difficult. Bea was patient about explaining. 'When someone is sad,' she said, 'you don't need to fix it. Sometimes you just stay.' Cog processed this. It went against his core programming, which was oriented toward problem-solving. 'Just stay?' he said. 'Yes,' said Bea. 'That's usually enough.' He practised staying. It turned out to require considerable effort but produced good results.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "8312d9d4-fcd2-435d-93c8-24c31f248070",
+          "page_number": 9,
+          "text_content": "The workshop owner noticed the change in Cog. The sorting was still perfect \u2014 impeccable, as always \u2014 but Cog seemed different in a way that was hard to define. More present, perhaps. More oriented toward the window. He came in one evening to find Bea sitting on the workshop floor, doing homework, while Cog sorted next to her in companionable quiet. They weren't talking. They were just there, in the same space, being comfortable with each other. The workshop owner watched them for a moment and then quietly backed out and went home. Some things, he understood, didn't need interfering with.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "773ab3f4-fe7e-4ef9-bda8-81507fe0dbbc",
+          "page_number": 10,
+          "text_content": "One afternoon Cog told Bea something he had calculated but not said out loud: that before she had pressed her nose against his window, he had been running at approximately forty percent of his potential. Not mechanically \u2014 his sorting was always perfect. But in every other way. 'You were lonely,' Bea said. 'Yes,' said Cog. 'That is the correct word.' Bea thought about this. 'I was a bit lonely too,' she said. 'Even with people around. It's different when you find the right one.' Cog filed this carefully. He was going to need a much larger category labelled significant. THE END",
+          "image_url": null,
+          "audio_url": null
+        }
+      ],
+      "status": "published",
+      "hidden": true
+    },
+    {
+      "id": "1cb453f2-65f3-40c5-ab32-d3d96fb17f80",
+      "title": "Princess and the Enchanted Forest",
+      "description": "Princess Luna discovers a magical forest full of talking animals.",
+      "genre": "Fairy Tales",
+      "cover_image": "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400",
+      "back_cover_image": "",
+      "cover_title": "Princess and the Enchanted Forest",
+      "cover_subtitle": "",
+      "back_cover_text": "Beyond the castle walls lies a forest where animals talk and magic is real. Join Princess Luna's adventure!",
+      "author_id": "c1c42b9f-c6cf-42c6-b874-918f6ca3cd9f",
+      "author_name": "Azories Team",
+      "is_published": true,
+      "is_featured": false,
+      "is_best_of_week": false,
+      "layout_mode": "standard",
+      "narrator_voice_id": "21m00Tcm4TlvDq8ikWAM",
+      "age_rating": "All Ages",
+      "view_count": 0,
+      "read_count": 0,
+      "created_at": "2026-02-23T21:51:39.722563+00:00",
+      "updated_at": "2026-02-27T21:32:42.723769+00:00",
+      "age_range": "3-6",
+      "art_style": "watercolour",
+      "cover_image_url": "/book-assets/princess_and_the_enchanted_forest/cover.png",
+      "page_count": 10,
+      "pages": [
+        {
+          "page_number": 1,
+          "text": "Princess Nadia had everything a princess was supposed to have \u2014 a tall tower, a kind horse, and a very nice crown that she kept polishing because it helped her think. But there was one thing she wanted that she did not have: an adventure. Real adventures, she was fairly sure, did not happen inside the palace. They happened in the Enchanted Forest that she could see from her window every morning, green and mysterious, with sunlight moving through it in a way that seemed almost alive. Every morning she looked at it. Every morning she thought: today. And on one particular morning, she meant it.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224218/azories/books/princess_and_the_enchanted_forest/page_01.jpg",
+          "layout": "full_spread"
+        },
+        {
+          "page_number": 2,
+          "text": "The Enchanted Forest was everything she had hoped it would be. The trees were older than the palace \u2014 older, perhaps, than the kingdom \u2014 and their roots rose from the ground in great curved arches that made natural seats and bridges. Flowers grew that she had no names for, in colours that didn't quite match anything she had seen before. Small creatures watched her from shadows with bright, curious eyes. And the further she walked, the quieter the world outside became, until there was nothing but the sound of leaves and her own footsteps and the occasional soft call of some bird she couldn't see. She was not frightened. She was the opposite of frightened. She was completely, wholly alive.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224219/azories/books/princess_and_the_enchanted_forest/page_02.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 3,
+          "text": "At the centre of the forest, where the oldest trees grew in a circle around a clearing full of soft grass, Nadia found something extraordinary: a door. Not attached to a building \u2014 simply standing on its own, covered in climbing roses, perfectly upright. She walked around it. From the back it was just a door. From the front, when she looked through the keyhole, she saw somewhere else entirely \u2014 a garden even more beautiful than the forest, full of golden light that seemed to come from everywhere at once. The door was locked. But lying in the roots of the nearest tree was a small silver key. Nadia picked it up and held it in her palm for a moment, looking at the door. Then she smiled, straightened her crown, and opened it. Some adventures, she had discovered, were waiting for you all along. THE END",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224219/azories/books/princess_and_the_enchanted_forest/page_03.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 4,
+          "text": "The trees were her friends. They whispered secrets of the kingdom.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224220/azories/books/princess_and_the_enchanted_forest/page_04.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 5,
+          "text": "The animals trusted her. She helped lost fawns find their mothers.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224221/azories/books/princess_and_the_enchanted_forest/page_05.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 6,
+          "text": "One day, a drought threatened the kingdom. The crops were dying!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224222/azories/books/princess_and_the_enchanted_forest/page_06.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 7,
+          "text": "Ivy asked the forest for help. The trees knew where hidden springs were!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224223/azories/books/princess_and_the_enchanted_forest/page_07.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 8,
+          "text": "She led her people to fresh water! The kingdom was saved!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224223/azories/books/princess_and_the_enchanted_forest/page_08.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 9,
+          "text": "The King understood now. \"The forest is your gift, Ivy.\"",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224224/azories/books/princess_and_the_enchanted_forest/page_09.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 10,
+          "text": "Princess Ivy became the Forest Guardian - the kingdom's greatest treasure.\n\nThe End",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224225/azories/books/princess_and_the_enchanted_forest/page_10.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "id": "01efe7c5-784d-450a-acc5-c654355a2409",
+          "page_number": 4,
+          "text_content": "The door was no bigger than Rowan's hand \u2014 made of bark and wound through with living vines, fitting so perfectly into the hollow that you'd miss it unless you were looking. A voice came from behind it: small and old and cautious, saying words she couldn't quite make out. Rowan crouched down and put her ear close. 'Only someone truly brave and truly kind can open this door,' the voice said. Rowan thought for a long moment. She had faced plenty of challenges that required bravery. The kindness part, she thought, was actually more important. She knocked very gently. 'Please may I come in? I would love to meet you.'",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "b25f5f66-053e-47ab-a20a-97f56f528a89",
+          "page_number": 5,
+          "text_content": "The door swung inward with a sound like a sigh. Inside, in a space that seemed larger than the hollow should allow, stood a whole village of woodland sprites \u2014 no taller than Rowan's thumb, with wings like dried leaves and eyes like polished acorns. There were hundreds of them. They had been trapped inside the tree for a hundred years by an enchantment that had simply been forgotten \u2014 not cast by an enemy, just the remnant of old protective magic that had outlasted its purpose and didn't know how to end. They stared at Rowan. She stared back. Then the eldest sprite, who had a white beard down to his knees, said: 'We hoped someone would come.'",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "2925d035-44a8-41da-b378-2b0898be6811",
+          "page_number": 6,
+          "text_content": "Rowan helped them out one by one, which took a considerable time because there were a great many of them and they were all quite stiff from a hundred years of standing around inside a tree. She sat on the root with her legs crossed and held each one in her cupped palms and carried them to the edge of the hollow where they could stretch their wings in the proper air. The sprites shook their wings, blinked in the dappled forest light, and made small sounds of pure relief. The silver fox sat nearby and watched the whole operation with dignified approval.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "c83fc8f0-077b-4f17-b70e-8ad43b4e22a2",
+          "page_number": 7,
+          "text_content": "Once all the sprites were free, something extraordinary happened to the forest. It was as if it exhaled \u2014 a long slow breath through every leaf and root and branch. The mist that had hung over it for as long as anyone could remember thinned and dispersed. Sunlight came through in proper shafts, golden and warm. The trees seemed to stand differently, somehow \u2014 less hunched, more open. The eldest sprite told Rowan that the enchantment had been making the whole forest sad for a hundred years. 'We didn't know,' Rowan said. 'How could you?' said the sprite. 'You hadn't come yet.'",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "a5e90db1-bbe7-43e7-90cb-a1f096bd0619",
+          "page_number": 8,
+          "text_content": "The sprites showed Rowan the hidden parts of the Enchanted Forest in return \u2014 the places that no human had seen in a century. A glade where every tree grew in a perfect spiral. A stream whose water was so clear it looked like glass, with fish that seemed to be made of light. A hill where the grass grew in a dozen shades of green, each shade corresponding to a different kind of luck. The eldest sprite told her the names of each thing in the old forest language, which sounded like wind in branches, and Rowan tried to remember all of it.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "0ae8969a-5e96-4faa-be5c-e75154bcbdef",
+          "page_number": 9,
+          "text_content": "All too soon, the light through the trees told her it was approaching lunch and she had made a promise. The sprites gathered to see her off. The eldest handed her a tiny acorn carved with a pattern she couldn't quite read. 'Come back,' he said. 'The forest will know you now.' Rowan closed her fingers around the acorn and looked back at the village of sprites settling happily into the spaces between the roots, rediscovering their home after a century. The silver fox appeared at her side and led her back to the path. She followed it out of the trees into the ordinary morning light.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "18aea7c1-8e64-4207-b64b-fb909988e1c6",
+          "page_number": 10,
+          "text_content": "She arrived back at the palace exactly at lunch. Her boots were very muddy. Her hair was considerably more tangled than it had been. In her pocket was an acorn with a carved pattern and in her head was a forest language that sounded like wind. Her mother looked at her muddy state and sighed. Her father looked at her expression \u2014 that particular brightness in her eyes that meant something significant had happened \u2014 and said nothing, only smiled. Rowan sat down to lunch and thought about what she had learned: that sometimes the greatest magic is not what you find, but the act of knocking, gently and kindly, and asking to come in. THE END",
+          "image_url": null,
+          "audio_url": null
+        }
+      ],
+      "status": "published",
+      "hidden": true
+    },
+    {
+      "id": "2d44ad4f-61ce-439f-9fbf-f7bdc441ae59",
+      "title": "The Dinosaur Time Machine",
+      "description": "Two siblings accidentally travel back to the age of dinosaurs.",
+      "genre": "Adventure",
+      "cover_image": "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400",
+      "back_cover_image": "",
+      "cover_title": "The Dinosaur Time Machine",
+      "cover_subtitle": "",
+      "back_cover_text": "When Sam and Emma fix grandpa's old machine, they didn't expect to meet real dinosaurs!",
+      "author_id": "c1c42b9f-c6cf-42c6-b874-918f6ca3cd9f",
+      "author_name": "Azories Team",
+      "is_published": true,
+      "is_featured": false,
+      "is_best_of_week": true,
+      "layout_mode": "standard",
+      "narrator_voice_id": "21m00Tcm4TlvDq8ikWAM",
+      "age_rating": "7-9 years",
+      "view_count": 0,
+      "read_count": 0,
+      "created_at": "2026-02-23T21:51:39.722563+00:00",
+      "updated_at": "2026-02-27T21:32:42.724189+00:00",
+      "age_range": "6-8",
+      "art_style": "cartoon",
+      "cover_image_url": "/book-assets/the_dinosaur_time_machine/cover.png",
+      "page_count": 10,
+      "pages": [
+        {
+          "page_number": 1,
+          "text": "The time machine was sitting in the school science cupboard between a broken microscope and a box of batteries, and it had a Post-it note on it that said DO NOT TOUCH in large red letters, which was unfortunately exactly the kind of note most likely to make eleven-year-old Theo touch it. He had been looking for graph paper. He found instead a device the size of a large lunchbox, with two dials, a small screen, and a green button that was practically daring him to press it. He checked that nobody was watching. The cupboard was empty. He pressed the green button. The world went sideways, then inside-out, then right again, and when Theo opened his eyes he was no longer in the science cupboard.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224225/azories/books/the_dinosaur_time_machine/page_01.jpg",
+          "layout": "full_spread"
+        },
+        {
+          "page_number": 2,
+          "text": "He was outdoors. The air was warm and heavy and smelled of plants and rain and something earthier and older than anything he had encountered before. The trees were not right \u2014 they were too large and the wrong shapes, with leaves that were enormous and ferns that came up to his shoulders. The sky was pale and wide. And from somewhere not very far away \u2014 close enough that the ground trembled very slightly with each one \u2014 came a sound. Footsteps. Very large footsteps. Theo looked down at the time machine, which had a small screen showing the number -66,000,000. He looked at the ferns. He looked at the direction the footsteps were coming from. He made several calculations very quickly. Then he climbed the nearest tree, which he felt was the only reasonable response to the situation.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224226/azories/books/the_dinosaur_time_machine/page_02.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 3,
+          "text": "The dinosaur that came through the ferns was not a terrifying one, as it turned out \u2014 it was a young Triceratops, about the size of a large car, with three magnificent horns and a frill that caught the light as it moved. It stopped below Theo's tree and looked up at him with one large, calm eye. Theo had studied dinosaurs since he was five. He knew that Triceratops were herbivores. He knew they were probably not dangerous if you didn't threaten them. He also knew that knowing these things intellectually was quite different from sitting in a tree while one looked at you. They regarded each other for a long time. Then the Triceratops made a low sound, turned, and walked away with the unhurried dignity of something that had never been in a hurry in its life. Theo climbed down. He pressed the green button. The world went sideways again, and he arrived back in the science cupboard, where the graph paper was exactly where he'd looked before. He put the Post-it note back very carefully, and went to his lesson, and said nothing to anyone. Though for the rest of the day he kept thinking about that eye. THE END",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224226/azories/books/the_dinosaur_time_machine/page_03.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 4,
+          "text": "Danny landed in a prehistoric jungle. Real dinosaurs everywhere!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224227/azories/books/the_dinosaur_time_machine/page_04.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 5,
+          "text": "A friendly Triceratops let him ride! \"This is AMAZING!\"",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224228/azories/books/the_dinosaur_time_machine/page_05.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 6,
+          "text": "He watched Pterodactyls fly and Brachiosaurus eat from tall trees.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224228/azories/books/the_dinosaur_time_machine/page_06.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 7,
+          "text": "But then - THUMP THUMP - a T-Rex appeared!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224229/azories/books/the_dinosaur_time_machine/page_07.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 8,
+          "text": "Danny remembered: T-Rex has bad eyesight! He stood very still.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224229/azories/books/the_dinosaur_time_machine/page_08.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 9,
+          "text": "The T-Rex walked away! Danny's knowledge saved him!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224231/azories/books/the_dinosaur_time_machine/page_09.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 10,
+          "text": "Back home, Danny knew: learning isn't just fun - it's powerful!\n\nThe End",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224232/azories/books/the_dinosaur_time_machine/page_10.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "id": "06f1aeee-243d-46f3-befa-c7973b9529a1",
+          "page_number": 4,
+          "text_content": "He spent the morning observing from a respectful distance, notebook in hand, writing everything down with shaking hands that eventually steadied. The Triceratops was part of a herd \u2014 eight adults and three juveniles who moved together through the forest, communicating in low rumbles and occasional horn gestures that Max was fairly sure had meaning. The juveniles, he noticed, played. They shoved each other with their small horns and chased each other between the adults' legs. One of them kept wandering slightly too far and being herded back by a patient adult. Dinosaur parenting, Max thought, looked familiar.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "1f17e947-6bf0-4c4e-a3d8-c254dd30cf17",
+          "page_number": 5,
+          "text_content": "In the afternoon, he heard a different kind of sound \u2014 higher, shrieking, coming from somewhere through the trees. He moved carefully toward it and found a dry riverbed where a pair of Velociraptors were hunting. Everything the books had described was right: they were fast, they communicated with each other constantly, and they were terrifyingly intelligent. He watched one problem-solve its way around an obstacle with a patience and ingenuity that made his skin prickle. They were nothing like the movie versions. They were considerably more alarming. He stayed very still for a very long time.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "bbc9cad4-d25f-4861-b492-b6a772042b0d",
+          "page_number": 6,
+          "text_content": "The baby Stegosaurus found him. He still didn't know how \u2014 he had been sitting quietly behind a tree \u2014 but suddenly it was there, sniffing his shoe with a thoughtful expression. It was about the size of a large dog, with plates along its back that were soft and slightly translucent, not yet fully grown. Its tail swayed slowly. It investigated his notebook. It investigated his other shoe. Then it sat down heavily on his foot, which he chose to interpret as affection. He named it Socrates, which he felt was a dignified name for a dignified creature.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "bd16f0b5-a324-4943-afef-8c88addffa1b",
+          "page_number": 7,
+          "text_content": "Socrates followed him for the rest of the day, which complicated his observations somewhat but made the day considerably better. Together they watched a herd of Ankylosaurus cross a river, slow and armoured and unstoppable. They witnessed a flock of Pterosaurs wheeling overhead in the orange late-afternoon sky, their calls carrying across the forest in long echoing notes. Once, in the distance, Max glimpsed something enormous moving through the trees \u2014 too large to be any of the species he'd seen so far, its footsteps shaking the ground even from half a kilometre away. He wrote T-REX? in his notebook with three question marks.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "c49136c1-ae16-4e0a-8920-19c96c9c7b5c",
+          "page_number": 8,
+          "text_content": "As the sun began to lower and the shadows grew long across the fern floor, Max knew he would have to go back. The machine had given him a twelve-hour window \u2014 he'd read this on a small screen inside that he hadn't noticed at first. He looked at his notes: forty-seven pages, front and back, written in his smallest handwriting. He had seen things no human being alive had ever seen. He had sat next to a Stegosaurus. He had watched Velociraptors hunt. He had breathed the air of a world sixty-six million years in the past. His hands were still shaking slightly.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "b07f7e45-b1e9-4456-9668-07602c8724c5",
+          "page_number": 9,
+          "text_content": "He said goodbye to Socrates, which felt important even if Socrates didn't understand what goodbye meant. He patted the small dinosaur very gently on the warm side. Socrates swung its tail once, slowly, and turned back to the ferns. Max walked back to where he had landed, oriented himself carefully with his notebook, and placed his hand on the machine's return button. He looked back one last time at the prehistoric forest \u2014 the colours, the scale, the impossible aliveness of it all \u2014 and pressed the button.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "96e46c21-a775-4ff9-9464-3fbe31d8f503",
+          "page_number": 10,
+          "text_content": "The garage reformed around him. His grandfather's toolboxes. The smell of oil and dust. Outside, through the small window, the ordinary sky of an ordinary Tuesday. Max sat down on the garage floor because his legs had decided they were done. He opened his notebook to the first page and looked at his first entry: 9:14am. Arrived. There is a Triceratops. He smiled so hard his face hurt. That evening he sat at his desk and began transferring his notes into his proper field journal, every detail, every observation, every moment. He had been the only human being to ever do this. He was going to do it justice. THE END",
+          "image_url": null,
+          "audio_url": null
+        }
+      ],
+      "status": "published",
+      "hidden": true
+    },
+    {
+      "id": "da7a01a5-cd8f-4aed-a0ad-4e5d667355e7",
+      "title": "Ocean Wonders",
+      "description": "Explore the magical world beneath the waves.",
+      "genre": "Educational",
+      "cover_image": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400",
+      "back_cover_image": "",
+      "cover_title": "Ocean Wonders",
+      "cover_subtitle": "",
+      "back_cover_text": "Dive deep into the ocean and discover amazing creatures you never knew existed!",
+      "author_id": "c1c42b9f-c6cf-42c6-b874-918f6ca3cd9f",
+      "author_name": "Azories Team",
+      "is_published": true,
+      "is_featured": false,
+      "is_best_of_week": false,
+      "layout_mode": "standard",
+      "narrator_voice_id": "21m00Tcm4TlvDq8ikWAM",
+      "age_rating": "All Ages",
+      "view_count": 0,
+      "read_count": 4,
+      "created_at": "2026-02-23T21:51:39.722563+00:00",
+      "updated_at": "2026-02-26T12:08:08.593776",
+      "age_range": "3-6",
+      "art_style": "watercolour",
+      "cover_image_url": "/book-assets/ocean_wonders/cover.png",
+      "page_count": 10,
+      "pages": [
+        {
+          "page_number": 1,
+          "text": "Beneath the waves, in the deepest, most beautiful part of the ocean, there lived a little fish named Finn. Finn was bright blue with one yellow stripe along his side, and he was absolutely certain that the small coral reef where he lived was the most wonderful place in the entire world. He knew every rock and every anemone and every crack where the shy seahorses hid. He knew where the light came through the water in long golden shafts at midday, and where the current made the sea grass dance like ribbons. But one morning, Finn's grandmother said something that changed everything. 'Have you ever swum to the Drop Off, Finn? Where the reef ends and the deep water begins?' Finn looked toward the blue darkness at the edge of his world. He never had.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224233/azories/books/ocean_wonders/page_01.jpg",
+          "layout": "full_spread"
+        },
+        {
+          "page_number": 2,
+          "text": "The journey to the Drop Off took Finn past parts of the reef he had never visited. He swam through an archway of pink coral where tiny purple fish darted in formation like living confetti. He passed a garden of sea anemones in every colour, their tentacles swaying in a current that smelled of open water. He watched a sea turtle glide past above him with the slow, magnificent authority of something that had been swimming since before his grandparents were born. The ocean, Finn began to realise, was much larger than his small corner of it. This thought was both frightening and wonderful at the same time, which he was learning was how the best discoveries usually felt.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224234/azories/books/ocean_wonders/page_02.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 3,
+          "text": "At the Drop Off, the reef ended and the water changed. Below him was a blue so deep it looked almost black, and it went down further than he could see. Finn hovered at the edge and looked out into it. And then \u2014 slowly, in ones and twos and then in dozens \u2014 lights appeared in the deep. Soft bioluminescent glows, drifting and pulsing in the dark water. Creatures he had no names for, lit from within, moving through the deep ocean with a graceful slowness that was completely different from anything in the reef above. Finn watched for a long time without moving. He had not known the world was this large and this beautiful. When he finally swam home and told his grandmother what he had seen, she smiled. 'The ocean never runs out of wonders,' she said. 'That is why we must never stop exploring it.' THE END",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224235/azories/books/ocean_wonders/page_03.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 4,
+          "text": "Clownfish hide in anemones. They're best friends who protect each other!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224235/azories/books/ocean_wonders/page_04.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 5,
+          "text": "Sea turtles are ancient travelers. They swim thousands of miles!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224236/azories/books/ocean_wonders/page_05.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 6,
+          "text": "Dolphins are the ocean's playful puppies. They talk with clicks!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224236/azories/books/ocean_wonders/page_06.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 7,
+          "text": "Even the scary-looking sharks keep the ocean healthy!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224237/azories/books/ocean_wonders/page_07.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 8,
+          "text": "The deep sea has creatures that GLOW! Like underwater stars!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224238/azories/books/ocean_wonders/page_08.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 9,
+          "text": "\"The ocean needs our help,\" Coral said. \"Keep it clean and wonderful!\"",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224239/azories/books/ocean_wonders/page_09.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 10,
+          "text": "Now you know ocean secrets! Go share them with the world!\n\nThe End",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224241/azories/books/ocean_wonders/page_10.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "id": "d3fc9b50-d5e5-4893-bda1-93e5a82ae976",
+          "page_number": 4,
+          "text_content": "Her dad knew a lot about the sea. He had grown up near the coast and spent his whole childhood in it. He showed Mara how to identify the different types of seaweed \u2014 the flat green sheets, the long brown ribbons, the tiny bubbled strings that popped satisfyingly when you squeezed them. He showed her how the tide had left a line of treasures along the beach: shells, pebbles worn smooth by years of tumbling in the waves, a single perfect sea glass, frosted green, with all its sharp edges softened away. He let her keep the sea glass.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "a12d2b74-531f-4a2a-a955-f27894d21644",
+          "page_number": 5,
+          "text_content": "In the afternoon they hired a small rowing boat and went out past the breakers into calmer water. Here the sea was a different colour \u2014 deeper, darker, a true blue-green over the sandy bottom. Mara leaned over the side and looked down. She could see for what felt like miles: sunlight making shifting patterns on the sand, a shoal of small silver fish moving as a single shimmering shape, a long ribbon of dark seagrass swaying in a current she couldn't feel from the surface. The sea had a whole sky of its own, going down instead of up.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "74b18d8d-a0bc-43d7-8696-8253314c31d9",
+          "page_number": 6,
+          "text_content": "Just before they turned back, a seal appeared. It surfaced ten metres from the boat, regarded them with large liquid eyes, then dove again in one smooth arc. Mara gripped the side of the boat. 'Will it come back?' she whispered. 'Maybe,' said her dad. They waited. Two minutes later it surfaced on the other side \u2014 closer this time, curious. Mara and the seal looked at each other for a long still moment. Then it dove again and was gone. Mara breathed out slowly. She felt as though something important had just happened, though she couldn't have said what.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "e3c84612-331f-480d-8464-0e67389853ad",
+          "page_number": 7,
+          "text_content": "That evening they ate fish and chips on the harbour wall, watching the fishing boats come in. The chips were hot and salty and the portions were enormous. Mara ate everything. The sky turned pink and orange over the water. The boats rocked gently against their ropes, their hulls knocking against the wooden pier in a slow rhythm like a heartbeat. Mara listened. The harbour, she thought, had a sound like breathing \u2014 the water going in and out, in and out, the same rhythm it had kept for thousands of years while different people sat on different harbour walls and ate their chips and watched.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "cb8cd9d0-1d0d-47fc-9063-4fdc189d6df0",
+          "page_number": 8,
+          "text_content": "Before bed, Mara sat on the floor of the cottage with her bucket of collected shells and sorted them. She had twelve different kinds \u2014 she counted carefully and looked them up in the guide from the gift shop. Scallops with their fan shape. Whelks in their spiral. Mussels with their dark blue sheen. One perfect razor clam. One she couldn't identify at all, which her dad said was the best kind. She arranged them on the windowsill in a row where the morning light would hit them, and went to sleep listening to the sound of the sea.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "1b1ba0ea-e165-4fe3-8f62-dabb7e89ff59",
+          "page_number": 9,
+          "text_content": "On the last morning, Mara got up before everyone else and walked down to the beach alone. The tide was out further than she had seen it, revealing a wide stretch of wet sand that the sea had left behind, full of its own patterns \u2014 ripples and pools and the trails of things that had moved across it in the night. The sky was pale and the sea was quiet and she had the whole beach entirely to herself. She walked to the water's edge and stood there, looking at the horizon, saying goodbye in the way you say goodbye to something enormous \u2014 not out loud, just inwardly, with your whole chest.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "dfcd8307-1936-4fe9-8186-f2db507bcbdc",
+          "page_number": 10,
+          "text_content": "In the car on the way home, Mara held the green sea glass in her fist and looked out at the fields rolling past and thought about everything she had seen. The seal's eyes. The starfish. The world under the rowing boat. The way a wave felt when it lifted you. She would come back, she promised herself. She would come back every year until she knew every shell and every tide pattern and where the seals liked to surface and which rock pool held the most interesting things. There was simply far too much wonder to see it all in one visit. THE END",
+          "image_url": null,
+          "audio_url": null
+        }
+      ],
+      "status": "published"
+    },
+    {
+      "id": "28e741d7-daf3-4c5c-b482-ac0f5dcde7be",
+      "title": "The Superhero School",
+      "description": "A regular kid discovers they have superpowers on their first day at a new school.",
+      "genre": "Superhero",
+      "cover_image": "https://images.unsplash.com/photo-1531259683007-016a7b628fc3?w=400",
+      "back_cover_image": "",
+      "cover_title": "The Superhero School",
+      "cover_subtitle": "",
+      "back_cover_text": "Jake thought he was ordinary until his first day at Hero Academy revealed his true powers!",
+      "author_id": "c1c42b9f-c6cf-42c6-b874-918f6ca3cd9f",
+      "author_name": "Azories Team",
+      "is_published": true,
+      "is_featured": false,
+      "is_best_of_week": false,
+      "layout_mode": "standard",
+      "narrator_voice_id": "21m00Tcm4TlvDq8ikWAM",
+      "age_rating": "10-12 years",
+      "view_count": 0,
+      "read_count": 0,
+      "created_at": "2026-02-23T21:51:39.722563+00:00",
+      "updated_at": "2026-02-27T21:32:42.724590+00:00",
+      "age_range": "6-8",
+      "art_style": "cartoon",
+      "cover_image_url": "/book-assets/the_superhero_school/cover.png",
+      "page_count": 10,
+      "pages": [
+        {
+          "page_number": 1,
+          "text": "The letter arrived on a Tuesday morning and said, in plain black type on official cream paper: YOU HAVE BEEN ACCEPTED TO CAPE ACADEMY. Please report on Monday. Bring sensible shoes. Priya read it four times. She had not applied to Cape Academy. She had not known Cape Academy existed. She turned the letter over. On the back, in smaller print: All students are selected. None apply. You have demonstrated an ability that requires training. We look forward to meeting you. Priya thought about this carefully. She thought about the three separate occasions in the past month when she had known something was about to happen before it happened. She folded the letter and put it in her school bag. She wore her sensible shoes on Monday.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224241/azories/books/the_superhero_school/page_01.png",
+          "layout": "full_spread"
+        },
+        {
+          "page_number": 2,
+          "text": "Cape Academy was inside what looked from outside like an ordinary office building on an ordinary street, but inside it opened up into something much larger than the exterior suggested \u2014 a discovery that the teacher at the front desk confirmed happened to everyone on their first day. There were thirty-two students in Priya's intake. A girl who could communicate with animals. A boy who could see the structural weakness in any physical object. Twins who shared the same dreams. None of them had known about the others. None of them had fully understood, until now, why they were different. The teacher \u2014 a small, calm woman who had apparently once stopped a bridge from collapsing using only her ability to slow down time by exactly three seconds \u2014 said the same thing to all of them: 'A power without understanding is an accident. We are here to make it something else.'",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224242/azories/books/the_superhero_school/page_02.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 3,
+          "text": "Priya's ability, they told her, was precognition \u2014 specifically, she saw events approximately ninety seconds before they happened. Not always. Not reliably. Not yet. The training was mostly about the not yet part. She spent weeks learning to stay calm when the images came, to observe them clearly rather than reacting to them immediately, to understand the difference between what was certain and what was probable. It was difficult. It was sometimes frightening. And then, on a grey Wednesday afternoon six weeks in, she saw something in her mind \u2014 a child stepping into the road, a car coming fast \u2014 and she acted on it calmly and correctly and everything was fine, and nobody who didn't know about her ability understood what she had done. This, her teacher told her afterwards, was exactly the point. 'Heroism,' she said, 'is not about being seen. It's about what happens.' Priya thought about that all the way home. Then she took out her notebook and wrote it down. THE END",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224243/azories/books/the_superhero_school/page_03.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 4,
+          "text": "\"What's YOUR power?\" they asked. Zoe didn't know yet. \"I'm still figuring it out...\"",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224245/azories/books/the_superhero_school/page_04.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 5,
+          "text": "In Power Class, nothing happened. No flying. No lasers. Nothing.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224245/azories/books/the_superhero_school/page_05.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 6,
+          "text": "But during lunch, a bully was being mean to a small kid. Zoe stepped in.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224246/azories/books/the_superhero_school/page_06.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 7,
+          "text": "\"That's not cool,\" she said bravely. Everyone stopped. The bully walked away.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224247/azories/books/the_superhero_school/page_07.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 8,
+          "text": "\"Zoe! You have the power of COURAGE!\" said the headmaster. \"The rarest power of all!\"",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224249/azories/books/the_superhero_school/page_08.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 9,
+          "text": "Zoe learned that being brave doesn't mean you're not scared\u2014it means you do the right thing anyway.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224250/azories/books/the_superhero_school/page_09.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 10,
+          "text": "She became the hero everyone looked up to\u2014not for what she could do, but for who she was.\n\nThe End",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224251/azories/books/the_superhero_school/page_10.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "id": "23f09edd-81c0-459f-b2a0-45bcc9d68bdf",
+          "page_number": 4,
+          "text_content": "Nadia's cape shimmered at the edge of grey, the faintest silver beginning to show. Ms Marvel noticed but said nothing yet. In the classroom debrief, she asked each student what power they had used on the kitten problem. 'Strength,' said Theo. 'Speed,' said Suki. 'Analysis,' said Reed. Then she looked at Nadia. 'I just thought about what the kitten actually needed,' Nadia said. 'Rather than what I could do.' Ms Marvel wrote something on the board: PROBLEM DEFINITION. 'The most powerful skill in heroism,' she said, 'is understanding what problem you're actually solving before you try to solve it.'",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "67500fd4-dcef-4ecc-838f-1150fb9e0c4b",
+          "page_number": 5,
+          "text_content": "Hero History classes were Nadia's favourite. They studied heroes throughout time \u2014 not the ones with the most impressive powers, but the ones who had made the most difference. She was particularly interested in those who had solved problems that everyone else was solving wrong. A water engineer who ended a drought not by making it rain but by redesigning how water was stored. A negotiator who ended a conflict not by overpowering either side but by finding the one thing they both actually needed. 'These people had grey capes,' Nadia said to Ms Marvel after class. 'Almost certainly,' Ms Marvel agreed.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "8f01151a-7f11-4630-a8b2-e6e4b194cd1a",
+          "page_number": 6,
+          "text_content": "The academy's annual Challenges week came in October. Each student faced a series of problems designed to test their specific powers. The others had straightforward tests: lift this, run here, answer this. Nadia's tests were different. She was given situations \u2014 a team that wasn't working, a resource that wasn't being used well, a conflict that had no obvious solution \u2014 and asked to improve them. She approached each one the same way: first understand exactly what the problem was, then find the simplest intervention that changed it. She solved every one. Her cape turned noticeably silver by the end of day three.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "ac327b12-c4cc-481e-a38e-5aa77b7c36e4",
+          "page_number": 7,
+          "text_content": "Theo asked her to help him with something. He was enormously strong but kept accidentally breaking things \u2014 doors, chairs, equipment \u2014 because he didn't know his own power yet. 'What am I doing wrong?' he asked. Nadia watched him try to open a door and immediately saw it: he was applying strength uniformly instead of calibrating it. 'You're solving every problem at maximum,' she said. 'Try ten percent first and scale up.' Theo tried it. The door opened intact. He stared at his hands. 'How did you see that?' he asked. Nadia shrugged. 'I watched what you were actually doing.' It was the most useful thing anyone had said to him since he'd arrived.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "35f709ad-964b-43af-87cb-2881f86c397f",
+          "page_number": 8,
+          "text_content": "Word spread through Heroic Heights that Nadia could help you understand your own power better than you could yourself. Students started finding her at lunch, at break, in the corridors between classes. She never told anyone what to do \u2014 she just asked questions, the right questions, until they saw it themselves. Ms Marvel watched this from a distance with quiet satisfaction. She had taught at Heroic Heights for twenty years and had seen many impressive powers. She had rarely seen one this rare. She updated Nadia's file with a single new entry under power classification: Insight.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "962411f9-7978-40f0-897d-4891ce04e951",
+          "page_number": 9,
+          "text_content": "Near the end of term, Heroic Heights faced a real problem. A section of the school's foundations had developed a crack that the structural engineer said was serious. The students were given the challenge for real: solve this problem before the affected wing had to close. Teams formed \u2014 strength teams to shore up walls, speed teams to evacuate equipment, intelligence teams to model solutions. Nadia was given team leadership, which surprised her. She sat everyone down and spent twenty minutes just asking questions before she let anyone do anything. When they finally acted, they acted correctly, and the problem took four hours instead of the estimated two days.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "d5adabd1-25e4-4297-9662-218a77930b51",
+          "page_number": 10,
+          "text_content": "On the last day of term, capes were reassessed. One by one, students went to the front and their capes shimmered into whatever they had become. Theo's deepened red. Suki's blazed blue. Reed's shone gold. When Nadia stood at the front, her cape blazed so brilliantly silver that students shielded their eyes. It was not a colour she had seen on any cape before. 'Silver and grey,' said Ms Marvel quietly, 'make platinum.' She held up the assembly register. On the first page, in the column for most valuable students: Nadia's name, at the top, with a star. Not because she was the strongest or the fastest or the cleverest. Because she helped everyone else be better. THE END",
+          "image_url": null,
+          "audio_url": null
+        }
+      ],
+      "status": "published",
+      "hidden": true
+    },
+    {
+      "id": "a81c3db4-5aaf-4afc-8834-9c6566de5d7e",
+      "title": "Cooking Adventures with Chef Cat",
+      "description": "Chef Cat teaches kids fun and easy recipes.",
+      "genre": "Educational",
+      "cover_image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400",
+      "back_cover_image": "",
+      "cover_title": "Cooking Adventures with Chef Cat",
+      "cover_subtitle": "",
+      "back_cover_text": "Learn to make delicious treats with Chef Cat's simple recipes that kids can make!",
+      "author_id": "c1c42b9f-c6cf-42c6-b874-918f6ca3cd9f",
+      "author_name": "Azories Team",
+      "is_published": true,
+      "is_featured": false,
+      "is_best_of_week": false,
+      "layout_mode": "standard",
+      "narrator_voice_id": "21m00Tcm4TlvDq8ikWAM",
+      "age_rating": "All Ages",
+      "view_count": 0,
+      "read_count": 2,
+      "created_at": "2026-02-23T21:51:39.722563+00:00",
+      "updated_at": "2026-02-27T21:32:42.724945+00:00",
+      "age_range": "3-6",
+      "art_style": "cartoon",
+      "cover_image_url": "/book-assets/cooking_adventures_with_chef_cat/cover.png",
+      "page_count": 10,
+      "pages": [
+        {
+          "page_number": 1,
+          "text": "In the cosiest kitchen in the whole neighbourhood, there lived a cat named Chef Cat. She wore a tall white hat that was slightly too big and always slid down over one ear, and a striped apron with pockets full of wooden spoons. Every morning she woke up early, stretched her paws, and thought about what wonderful thing she would cook today. Cooking, she believed with her whole heart, was the best magic in the world \u2014 because you could share it with everyone you loved.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224253/azories/books/cooking_adventures_with_chef_cat/page_01.jpg",
+          "layout": "full_spread"
+        },
+        {
+          "page_number": 2,
+          "text": "Today, Chef Cat had decided to bake a birthday cake for her friend Rabbit. Rabbit's favourite colour was orange, so Chef Cat thought: carrot cake! She climbed onto her little step stool and began pulling ingredients from the shelves. Flour, sugar, butter, eggs, and three of the finest carrots from her garden, which she had grown herself in a pot by the sunny window. She lined them all up on the counter and looked at them with great satisfaction. 'Perfect,' she said to nobody in particular, because saying things out loud made them feel more official.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224254/azories/books/cooking_adventures_with_chef_cat/page_02.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 3,
+          "text": "The mixing was Chef Cat's favourite part. She tipped the flour into the big blue bowl with a satisfying cloud of white, cracked the eggs with a decisive tap, and grated the carrots until her paws were faintly orange. She stirred everything together in big, happy circles, humming to herself as she worked. Baking smelled like warmth. It smelled like someone thinking about you. She poured the mixture into a round tin and slid it carefully into the oven, then sat on her step stool to wait, which was the hardest part.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224254/azories/books/cooking_adventures_with_chef_cat/page_03.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 4,
+          "text": "While the cake was baking, Chef Cat made the icing \u2014 cream cheese and orange zest and a spoonful of honey, whipped together until it was smooth and fluffy and smelled extraordinary. She tasted it with a clean spoon and her eyes went very wide. She tasted it again just to be sure. Then she put the bowl in the fridge before she could eat any more of it, which she felt showed admirable self-control. The kitchen was warm and smelled of carrots and spice and something sweet, and outside the window the first snow of winter was just beginning to fall.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224255/azories/books/cooking_adventures_with_chef_cat/page_04.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 5,
+          "text": "When Rabbit arrived that afternoon and saw the cake \u2014 three layers, orange icing, decorated with tiny marzipan carrots that Chef Cat had spent a happy hour making \u2014 she put both paws over her mouth and her eyes went very bright. 'You made this for me?' she said. 'Of course,' said Chef Cat. 'Sit down. I will cut you the biggest piece.' They sat together at the kitchen table as the snow fell outside, and Rabbit said it was the best cake she had ever tasted, and Chef Cat said that was because it had been made with the best ingredient of all. 'What is that?' asked Rabbit. Chef Cat smiled and passed her another slice. 'Knowing exactly who it is for,' she said. THE END",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224255/azories/books/cooking_adventures_with_chef_cat/page_05.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 6,
+          "text": "\"Whole grains keep us running!\" They baked yummy wheat muffins.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224256/azories/books/cooking_adventures_with_chef_cat/page_06.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 7,
+          "text": "\"Milk makes bones strong!\" Whiskers made a banana smoothie. DELICIOUS!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224256/azories/books/cooking_adventures_with_chef_cat/page_07.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 8,
+          "text": "\"The secret ingredient is always LOVE,\" Chef Whiskers purred.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224257/azories/books/cooking_adventures_with_chef_cat/page_08.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 9,
+          "text": "They had a feast! Everything was healthy AND tasty!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224257/azories/books/cooking_adventures_with_chef_cat/page_09.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 10,
+          "text": "\"Now YOU can be a chef! Cook with love and eat your colors!\"\n\nThe End",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224258/azories/books/cooking_adventures_with_chef_cat/page_10.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "id": "271a752e-a29b-442a-ab18-7d8f4f6c5594",
+          "page_number": 4,
+          "text_content": "Then disaster struck. Bear stirred so enthusiastically that a great wave of soup splashed right over the edge of the pot and onto the kitchen floor. Mouse squeaked and jumped back. Rabbit gasped. Bear's ears drooped all the way down and he looked ready to cry. 'I've ruined it,' he said in a very small voice for such a very large bear. But Chef Cat simply laughed, reached calmly for a cloth, and began mopping up. 'Every cook in the world has spilled something,' she said cheerfully. 'The secret is to simply keep going.'",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "ded147bf-d1b0-4b2c-99b9-207dd28e39f3",
+          "page_number": 5,
+          "text_content": "They cleaned up together \u2014 Rabbit mopping, Mouse wringing out the cloth with her tiny paws, Bear carefully checking the pot still had enough soup inside. It did. They tasted it cautiously from small spoons. The soup was warm and sweet and the ginger gave it a lovely gentle heat. 'It's wonderful,' said Rabbit, eyes wide. 'It tastes like autumn,' said Mouse, writing this down carefully in her notebook. Bear had three spoonfuls without saying anything at all, which everyone agreed was the best possible review.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "9677ed1e-165d-48f6-8797-1982ef7710db",
+          "page_number": 6,
+          "text_content": "Chef Cat showed them what to do next. The soup needed to be blended until it was perfectly smooth and velvety. She passed the blending stick carefully to each of them in turn. Rabbit blended too fast and made it splatter. Mouse blended very carefully and did it perfectly. Bear blended with one paw while eating a carrot he'd found on the counter with the other. 'Focus, Bear,' said Chef Cat. Bear put the carrot down with great dignity. The soup became smooth and golden and absolutely beautiful.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "7a86504a-a72c-4b1d-9964-4ce9075e2247",
+          "page_number": 7,
+          "text_content": "Now came the toppings \u2014 Chef Cat's favourite part. She set out little bowls of things: a swirl of cream, chopped fresh herbs that smelled of the garden, a sprinkle of toasted seeds that crackled satisfyingly between the teeth. Each of them decorated their own bowl. Mouse made a very precise pattern with the herbs. Rabbit added extra cream. Bear put a bit of everything on, some of it in the soup and some of it beside the soup, and pronounced this 'experimental presentation.' Chef Cat said it was very advanced.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "4d6a21d4-3e3c-4649-a3c9-6d8da55bca4c",
+          "page_number": 8,
+          "text_content": "They sat around the kitchen table together, four friends and four bowls of soup they had made with their own hands and paws. The kitchen was warm and smelled of ginger and herbs and happiness. Outside, the autumn wind blew leaves past the window. Inside, spoons clinked against bowls. Nobody spoke for a little while because they were too busy eating. 'I didn't know I could make something this good,' Rabbit said eventually. 'I didn't know cooking felt like this,' said Mouse softly, closing her notebook because some moments don't need to be written down.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "801c42e5-3a63-4a5d-939a-588915b2a154",
+          "page_number": 9,
+          "text_content": "After the washing up \u2014 which Bear did, insisting, though the bowls looked rather small in his great paws \u2014 they sat together with cups of warm tea. Chef Cat pulled out her recipe book and showed them the next recipe she planned to teach: a layered vegetable pie with a golden pastry top. Rabbit's eyes went wide. Mouse immediately reopened her notebook. Bear leaned forward with an expression of absolute serious dedication. 'Same time next week?' said Chef Cat. Three voices answered at once: 'Yes please.'",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "4824d141-67be-4271-acea-544d6d72b3b0",
+          "page_number": 10,
+          "text_content": "Walking home through the autumn leaves, each of them carried something. Rabbit carried the leftover soup in a jar for her supper. Mouse carried her recipe notebook, now with four new pages filled. Bear carried the wooden spoon, which Chef Cat had given him as a gift because he had stirred with such commitment. And all three of them carried something that couldn't be put in a jar or a notebook or held in a paw \u2014 the warm knowledge that they had made something wonderful together, and that next week, they would make something wonderful again. THE END",
+          "image_url": null,
+          "audio_url": null
+        }
+      ],
+      "status": "published",
+      "hidden": true
+    },
+    {
+      "id": "795336e6-3622-4342-968d-bec1098ebd1b",
+      "title": "The Haunted Treehouse",
+      "description": "Three friends investigate strange sounds coming from an old treehouse.",
+      "genre": "Mystery",
+      "cover_image": "https://images.unsplash.com/photo-1520637836993-a071674a76e7?w=400",
+      "back_cover_image": "",
+      "cover_title": "The Haunted Treehouse",
+      "cover_subtitle": "",
+      "back_cover_text": "Is the old treehouse really haunted? Join the Mystery Kids as they find out the truth!",
+      "author_id": "c1c42b9f-c6cf-42c6-b874-918f6ca3cd9f",
+      "author_name": "Azories Team",
+      "is_published": true,
+      "is_featured": false,
+      "is_best_of_week": false,
+      "layout_mode": "standard",
+      "narrator_voice_id": "21m00Tcm4TlvDq8ikWAM",
+      "age_rating": "7-9 years",
+      "view_count": 0,
+      "read_count": 0,
+      "created_at": "2026-02-23T21:51:39.722563+00:00",
+      "updated_at": "2026-02-27T21:32:42.725431+00:00",
+      "age_range": "6-8",
+      "art_style": "cartoon",
+      "cover_image_url": "/book-assets/the_haunted_treehouse/cover.png",
+      "page_count": 10,
+      "pages": [
+        {
+          "page_number": 1,
+          "text": "Everyone in Maple Street knew the treehouse was haunted. It sat at the top of the old oak at the end of number forty-two's garden, and the family who owned the house had moved away three years ago and left it behind. The rope ladder creaked in no wind. Sometimes lights appeared in the small window at night. Maisie had heard all the stories, catalogued them carefully in a notebook, and concluded that they were probably not true \u2014 but that finding out for certain would be a much better way to spend a Saturday than anything else available.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224259/azories/books/the_haunted_treehouse/page_01.jpg",
+          "layout": "full_spread"
+        },
+        {
+          "page_number": 2,
+          "text": "She climbed the rope ladder on a grey October afternoon with her notebook, a torch, and a flask of hot chocolate that her mother had pressed on her without asking why she needed it. The treehouse was one room, about the size of a large wardrobe, smelling of old wood and pine sap. Someone had left a blanket. Someone had left a jar of pebbles, carefully arranged by size. And on the wall, in neat handwriting that had faded to grey, was a list: THINGS I SAW FROM HERE: a fox with three cubs, the Hendersons' cat on the roof, a shooting star (Tuesday, August). Maisie sat down on the blanket and read the list three times.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224259/azories/books/the_haunted_treehouse/page_02.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 3,
+          "text": "The lights, it turned out, were fireflies. A whole colony of them lived in the hollow of a branch just below the treehouse floor, and on mild evenings they drifted up through a gap in the boards and floated around the small room in their dozens, which explained everything and was, Maisie felt, actually better than a ghost. She added a page to her notebook: CASE CLOSED \u2014 NOT HAUNTED. Then, because she liked it, she added: THOUGH POSSIBLY ENCHANTED, which seemed more accurate. She started her own list on the wall. The first entry read: October 14th \u2014 fireflies, dozens of them, green-gold. Maisie, age 11. She left the blanket. She left the pebbles. She came back the following Saturday, and the one after that. THE END",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224260/azories/books/the_haunted_treehouse/page_03.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 4,
+          "text": "Creak! The floor groaned. \"Who's there?\" Emma called.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224260/azories/books/the_haunted_treehouse/page_04.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 5,
+          "text": "Something moved in the corner! Emma pointed her light...",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224261/azories/books/the_haunted_treehouse/page_05.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 6,
+          "text": "It was a family of raccoons! They had made the treehouse their home!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224262/azories/books/the_haunted_treehouse/page_06.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 7,
+          "text": "The \"spooky sounds\" were just babies playing at night!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224262/azories/books/the_haunted_treehouse/page_07.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 8,
+          "text": "\"You can stay,\" Emma smiled. She built them a special corner.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224262/azories/books/the_haunted_treehouse/page_08.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 9,
+          "text": "Now Emma and the raccoons share the treehouse! Best roommates ever!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224263/azories/books/the_haunted_treehouse/page_09.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 10,
+          "text": "The \"haunted\" treehouse became the coolest clubhouse in town!\n\nThe End",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224263/azories/books/the_haunted_treehouse/page_10.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "id": "8aac88a4-00cf-466f-a006-c467e8deaf0c",
+          "page_number": 4,
+          "text_content": "Pip told her. He had been ten years old in 1974 when the treehouse was built by a boy named Thomas who had been his best friend. They had spent three summers up here, reading comics and using the telescope and making plans for adventures they were going to have. Then Thomas's family had moved away and Pip had gone home one afternoon and his family had moved away too, and somehow \u2014 this was the part he found hardest to explain \u2014 Pip had come back to the treehouse instead of following them. He had been here ever since. 'Waiting for Thomas?' Priya asked. Pip was quiet for a moment. 'Waiting for someone,' he said.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "7a78d721-6523-4d8a-a867-db18372cd539",
+          "page_number": 5,
+          "text_content": "Priya looked at the comic books. The top one had a date on it: July 1977. She looked at the telescope, pointed at its gap in the boards. She looked at Pip, floating quietly in his corner, glowing with the soft patience of someone who has been in one place for a very long time. 'I could fix the telescope,' she said. Pip's glow flickered, which she was learning to read as surprise. 'You can't fix it. It's broken.' 'I know how to fix telescopes,' said Priya, which was true \u2014 her dad had one and had taught her the mechanics of them when she was seven. 'Oh,' said Pip. Another flicker. 'All right then.'",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "bbf0a22c-f752-4769-818b-36d728b34495",
+          "page_number": 6,
+          "text_content": "She brought tools the next afternoon. The telescope needed a new lens mount, which she fashioned from a piece of metal pipe she found in her dad's garage, and a cleaning and realignment of the mirrors inside. Pip watched with intense interest, occasionally floating closer to look at what she was doing and occasionally drifting away again when he felt he was in the way. By the time she was done, the telescope pointed through the gap in the boards at a patch of evening sky in which two stars were already visible. Pip pressed his face \u2014 or the approximation of a face that he had \u2014 to the eyepiece. He went very still. 'I forgot,' he said softly. 'I forgot how many there were.'",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "f4fdf08c-5f59-4a72-adc7-aac848491b76",
+          "page_number": 7,
+          "text_content": "She brought the comic books back the next week \u2014 found the same series at a second-hand book fair, the issues Pip didn't have from the years after Thomas left. She read them aloud because Pip's hands couldn't turn pages. He listened with the complete absorption of someone who had been waiting a very long time for a story to continue. Occasionally he would make a small sound of satisfaction when something he had been hoping would happen happened. Occasionally he would make a sound of outrage when it didn't. 'You're very emotionally invested for a ghost,' Priya told him. 'I've had a lot of time to develop feelings about comics,' Pip said with dignity.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "701a218b-3622-41d5-af94-a6627d090775",
+          "page_number": 8,
+          "text_content": "Word got out, because word always gets out. By the third week, Priya's friend Josie had climbed up to see for herself. Then Josie's brother. Then three other children from the road, who had been daring each other to approach the treehouse for years and now could do it because someone else had gone first. Pip was initially apprehensive. He had been a source of fear for so long that being a source of interest felt strange. But these children were curious and kind and they brought snacks and new comics and treated the treehouse with the respect it deserved, and Pip found, to his considerable surprise, that he liked them.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "1091089c-98ef-47b0-9bce-ac27d648a308",
+          "page_number": 9,
+          "text_content": "They fixed the treehouse up together over several weekends. New boards where the old ones had rotted. A proper curtain for the window gap. A shelf for the comic collection. The rope ladder was replaced with a proper wooden ladder that Josie's dad helped build. Pip couldn't help with any of it physically, but he directed operations with enthusiasm and a photographic memory of where everything had originally been. 'The telescope goes on the left,' he would say. 'Thomas always kept it on the left.' They put it on the left. Some things, Priya understood, were worth doing exactly right.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "20f87315-c2fa-401f-8d0c-9d788dcf5cd1",
+          "page_number": 10,
+          "text_content": "One evening in autumn, Priya climbed up to find Pip looking different \u2014 steadier, somehow. Less apologetically uncertain. More simply present. The treehouse was warm with the smell of old wood and the new curtain moved in a breeze through the repaired window. The comic collection was complete on its shelf. The telescope pointed at the stars. 'You're not really haunting it anymore, are you,' Priya said. It wasn't quite a question. Pip considered this. 'No,' he said. 'I think I'm just living here now.' Priya smiled. The treehouse had never, she thought, been haunted at all. It had just been waiting for the right people to fill it up again. THE END",
+          "image_url": null,
+          "audio_url": null
+        }
+      ],
+      "status": "published",
+      "hidden": true
+    },
+    {
+      "id": "770f4835-06db-44cd-9fcf-2c29d979fa22",
+      "title": "Galaxy Racers",
+      "description": "Kids from different planets compete in the ultimate space race.",
+      "genre": "Science Fiction",
+      "cover_image": "https://images.unsplash.com/photo-1454789548928-9efd52dc4031?w=400",
+      "back_cover_image": "",
+      "cover_title": "Galaxy Racers",
+      "cover_subtitle": "",
+      "back_cover_text": "In the year 3000, the biggest race in the galaxy is about to begin. Who will win?",
+      "author_id": "c1c42b9f-c6cf-42c6-b874-918f6ca3cd9f",
+      "author_name": "Azories Team",
+      "is_published": true,
+      "is_featured": true,
+      "is_best_of_week": false,
+      "layout_mode": "standard",
+      "narrator_voice_id": "21m00Tcm4TlvDq8ikWAM",
+      "age_rating": "10-12 years",
+      "view_count": 0,
+      "read_count": 2,
+      "created_at": "2026-02-23T21:51:39.722563+00:00",
+      "updated_at": "2026-02-27T21:32:42.725840+00:00",
+      "age_range": "6-8",
+      "art_style": "cartoon",
+      "cover_image_url": "/book-assets/galaxy_racers/cover.png",
+      "page_count": 10,
+      "pages": [
+        {
+          "page_number": 1,
+          "text": "The most important race in the galaxy happened once every ten years, and this year, for the first time in the history of the Junior Division, the favourite to win was a twelve-year-old girl from a small moon nobody had heard of. Her name was Mira, her ship was called the Sandpiper, and she had spent the last three years building it herself in her family's garage from salvaged parts and stubbornness. The Sandpiper was not beautiful in any conventional sense \u2014 it was asymmetric in a way that made engineers wince, and it had been painted three different colours at three different stages of construction and nobody had bothered to make it consistent. But Mira knew exactly what it could do, because she had made it do things that the engineers at the big racing academies said weren't possible.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224264/azories/books/galaxy_racers/page_01.jpg",
+          "layout": "full_spread"
+        },
+        {
+          "page_number": 2,
+          "text": "The night before the race, Mira sat in the Sandpiper's cockpit with all the systems off and the canopy open and looked at the stars. The racing academy pilots \u2014 the ones with sponsor logos on their uniforms and ships that cost more than her entire moon's annual budget \u2014 were in the preparation facility being coached by teams of specialists. Mira had her notes, a sandwich her father had made her, and a very clear picture in her head of every turn on the course. She had memorised it not just as data but as feeling \u2014 the way each bend would pull at her stomach, the places where the gravitational currents changed. She finished the sandwich, closed the canopy, and went to sleep in her pilot's seat. She had done everything she could. Tomorrow she would fly.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224265/azories/books/galaxy_racers/page_02.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 3,
+          "text": "At the halfway point of the race, Mira was in third place and gaining. The Sandpiper moved through the asteroid field with a precision that made the commentary team go quiet for a moment \u2014 not because it was showy, but because it was so exactly right, every tiny adjustment so perfectly timed, that it looked effortless in a way that only truly practised things look effortless. The pilot in second place was good. The one in first was excellent. But Mira had something they didn't have: she had built her ship, which meant she knew it the way you know something you've made yourself \u2014 not just its capabilities but its character, its particular strengths, the way it responded to her instinctively. She found her line through a gap that no other pilot had attempted and she flew it clean. When she crossed the finish line first, she did not shout or pump her fist. She just breathed out, very slowly, and patted the dashboard gently. 'Good girl,' she told the Sandpiper. 'I knew you could.' THE END",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224266/azories/books/galaxy_racers/page_03.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 4,
+          "text": "Race day! Ships from every planet lined up. Star was nervous.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224267/azories/books/galaxy_racers/page_04.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 5,
+          "text": "The race went through asteroid belts, around moons, and through star gates!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224267/azories/books/galaxy_racers/page_05.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 6,
+          "text": "Star was behind! But she knew a shortcut through the Nebula Cloud!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224268/azories/books/galaxy_racers/page_06.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 7,
+          "text": "The clouds were thick, but Star trusted her instincts.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224269/azories/books/galaxy_racers/page_07.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 8,
+          "text": "She shot out of the nebula - in FIRST PLACE!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224269/azories/books/galaxy_racers/page_08.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 9,
+          "text": "Crossing the finish line, the crowd went wild! Star had WON!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224270/azories/books/galaxy_racers/page_09.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 10,
+          "text": "\"Dream big, fly fast, never give up!\" Star told young fans.\n\nThe End",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224271/azories/books/galaxy_racers/page_10.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "id": "ae6cc47d-1acc-49f5-a2c5-dd3c674273d0",
+          "page_number": 4,
+          "text_content": "Blaze immediately shot to the front, his enormous engines leaving a blazing red trail across the stars. Rex was right behind him, boosters screaming. The twins threaded through traffic with practised elegance. Zara let them all go. She had studied the course for two years and she knew something they didn't: the first asteroid field had a narrow corridor on the lower route that nobody ever took because it looked too tight. It wasn't. She dropped her nose and cut through it at full speed, saving forty-seven seconds.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "c22a221c-c4c4-42c6-9ddd-f4c8cf72af9d",
+          "page_number": 5,
+          "text_content": "By the time they reached the nebula section, Zara had moved up to eighth place just by flying smart. The nebula was the most beautiful part of the race \u2014 clouds of gas in pink and gold and violet, so thick you navigated by instruments alone. Zara had memorised the instrument readings she needed. Some pilots slowed down in the nebula, frightened by the reduced visibility. Zara did not slow down. She came out of the nebula in fourth place and heard a surprised cheer crackle through her radio from someone watching at home.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "c70c8a1c-c917-44cb-b122-198551bbeba4",
+          "page_number": 6,
+          "text_content": "Saturn's rings were next \u2014 the most dangerous section. The rings were made of ice and rock, some pieces the size of a fist and some the size of a house, and they moved constantly. You could not plan your route through the rings. You had to read them as you went, making split-second decisions, trusting your instincts. This was where Zara came alive. Her hands moved across the controls with a fluency that felt like music. She wove through the rings, under a tumbling boulder, over a flat sheet of ice, tight left past a spinning cluster, and out the other side in second place.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "2a95fce1-1447-4af4-9010-71e759e5a618",
+          "page_number": 7,
+          "text_content": "Blaze was first, just ahead of her. He had been in first place for the whole race and his confidence showed in the way he flew \u2014 fast but relaxed, certain of his victory. He hadn't noticed Zara moving up through the field because she had done it quietly and cleverly. Now she was right behind him with one section left: the long straight home past the moons of Jupiter, where engines and fuel management determined everything. Zara checked her fuel gauge. She had saved more than anyone. She smiled.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "ff8795d0-708d-4ecf-b6e6-6b36c8b58f6c",
+          "page_number": 8,
+          "text_content": "She opened the Silver Spark's engine to full for the first time in the entire race. The little ship surged forward with a sound like thunder. Blaze heard her coming and pushed his own throttle further \u2014 but he had been running at full power all race and had less in reserve. Zara pulled alongside him. He looked across at her \u2014 this small dented silver ship, this girl nobody had heard of \u2014 and she could see even through his visor that he was surprised. She pulled ahead. One kilometre from the finish she crossed into the lead.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "ab41b43c-6a1e-4144-ae64-ef0f9da0d747",
+          "page_number": 9,
+          "text_content": "The Silver Spark crossed the finish line first. For a moment Zara just sat there in the sudden quiet of the cockpit, hands still on the controls, heart hammering. Then the radio exploded with voices \u2014 the race commentator, her dad, her team, the crowd. She pulled off her helmet and looked out at the stars through the porthole \u2014 the same stars she had looked at from her bedroom window and promised herself she would one day race through. She had done it. She pressed her hand against the sticker above the controls.",
+          "image_url": null,
+          "audio_url": null
+        },
+        {
+          "id": "327ac1e0-fe9f-4968-b8e3-34c4169eb3ee",
+          "page_number": 10,
+          "text_content": "On the podium, they gave her the golden comet trophy. It was heavier than she expected and it caught the light beautifully. Blaze stood next to her, and after a moment he held out his hand. She shook it. 'Good race,' he said, and she could tell he meant it. Her dad found her afterwards in the crowd and hugged her so hard her feet left the ground. 'Smart flying,' he said into her hair. 'Smart flying wins races.' The Wall of Champions on the moon of Arcturus had a new name on it. It was hers. THE END",
+          "image_url": null,
+          "audio_url": null
+        }
+      ],
+      "status": "published",
+      "hidden": true
+    }
+  ]
+}
