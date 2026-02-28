@@ -172,8 +172,8 @@ const TELEPORT_PORTALS = [
     name: 'Go Upstairs',
     triggerPos: { x: -1.53, y: 4.0, z: -5.99 },
     visualY: 4.22,
-    triggerRadius: 0.9, // Reduced from 1.2 for tighter detection
-    autoTeleportRadius: 0.4,
+    triggerRadius: 1.2,
+    autoTeleportRadius: 0.5,
     destPos: { x: -1.28, y: 6.5, z: -1.06 }, // Teleport to bridge
     destRotation: 0,
     color: '#00ffff',
@@ -187,8 +187,8 @@ const TELEPORT_PORTALS = [
     name: 'Go Upstairs',
     triggerPos: { x: -1.61, y: 4.0, z: 3.21 },
     visualY: 4.22,
-    triggerRadius: 0.9, // Reduced from 1.2 for tighter detection
-    autoTeleportRadius: 0.4,
+    triggerRadius: 1.2,
+    autoTeleportRadius: 0.5,
     destPos: { x: -1.28, y: 6.5, z: -1.06 }, // Teleport to bridge
     destRotation: Math.PI,
     color: '#00ffff',
