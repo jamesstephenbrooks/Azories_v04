@@ -1210,7 +1210,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         
         scene.add(model);
         
-        // Load Azora mascot model - position in front of "My Books" banner
+        // Load Azora mascot model - center of upper floor
         console.log('Loading Azora from:', AZORA_MODEL_URL);
         
         gltfLoader.load(
@@ -1226,21 +1226,23 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
             const azoraScale = targetHeight / azoraHeight;
             azoraMesh.scale.setScalar(azoraScale);
             
-            // Position in front of "My Books" banner
-            // Banner is at (-1.41, 3.54, -1.43)
-            // Place Azora slightly in front (more positive Z) and on the floor
-            // The floor at this location is around Y = 3.5 based on bannerPos
+            // Position in CENTER of upper floor room
+            // Floor level is at Y = 4.72, so feet at Y = 4.75
+            // Center of room is approximately X = -1.1, Z = -1.0
+            const floorY = 4.75;
             const scaledBbox = new THREE.Box3().setFromObject(azoraMesh);
-            const yOffset = -scaledBbox.min.y + 3.5; // Put feet on floor level ~3.5
-            azoraMesh.position.set(-1.41, yOffset, -0.5); // In front of My Books
+            const yOffset = floorY - scaledBbox.min.y;
             
-            // Face outward (toward positive Z / the room center)
-            azoraMesh.rotation.y = 0;
+            // Center of the upper floor room (between the bookcases)
+            azoraMesh.position.set(-1.0, yOffset, -1.0);
+            
+            // Face toward the entrance (positive Z direction)
+            azoraMesh.rotation.y = Math.PI;
             
             // Store reference
             azoraRef.current = azoraMesh;
             scene.add(azoraMesh);
-            console.log('Azora placed in front of My Books at:', azoraMesh.position);
+            console.log('Azora placed at center of room:', azoraMesh.position);
           },
           undefined,
           (error) => console.error('Failed to load Azora:', error)
