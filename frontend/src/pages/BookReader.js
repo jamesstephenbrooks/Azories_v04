@@ -1155,7 +1155,8 @@ export default function BookReader() {
             )}
             
             {/* Back Cover overlay - Read Again button for desktop */}
-            {currentPageData?.isBackCover && !isMobilePortrait && !isMobileLandscape && (
+            {/* currentPage === -2 indicates back cover in flipbook mode, OR currentPageData?.isBackCover for mobile */}
+            {(currentPage === -2 || currentPageData?.isBackCover) && !isMobilePortrait && !isMobileLandscape && (
               <div 
                 className="absolute z-[70] flex flex-col items-center"
                 style={{
