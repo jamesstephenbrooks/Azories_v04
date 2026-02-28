@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { FiMessageCircle, FiX, FiSend, FiBook, FiLoader } from 'react-icons/fi';
 import { aiAPI, getErrorMessage } from '../services/api';
+import { AZORA_ASSETS } from './AzoraMascot';
 
 // Azora - AI Librarian for the 3D Library - helps users find books
 export default function AILibrarian({ books = [], isVisible = true, onCallAzora }) {
