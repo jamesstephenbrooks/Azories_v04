@@ -304,12 +304,6 @@ export default function BookReader() {
     ? allPages[currentPage] 
     : (currentPage === -2 && allPages.length > 0 ? allPages[allPages.length - 1] : null);
   
-  // DEBUG: Log page data on each render
-  console.log('[BookReader RENDER] currentPage:', currentPage, 'totalPages:', totalPages, 
-    'currentPageData?.isBackCover:', currentPageData?.isBackCover,
-    'allPages[0]?.isBackCover:', allPages[0]?.isBackCover,
-    'allPages[last]?.isBackCover:', allPages[allPages.length-1]?.isBackCover);
-  
   // Swipe gestures for page navigation
   const swipeHandlers = useSwipeGestures({
     onSwipeLeft: () => {
