@@ -1704,11 +1704,18 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         }
         
         // Update portal state for button display
+        // Must explicitly set to null when no portal found to hide button
         if (foundPortal !== nearPortal) {
           if (foundPortal) {
             console.log('Near portal:', foundPortal.name, foundPortal.id);
+          } else {
+            console.log('Left portal area - hiding button');
           }
           setNearPortal(foundPortal);
+        } else if (!foundPortal && nearPortal) {
+          // Extra safety: ensure button hides when moving away
+          console.log('Clearing stale portal state');
+          setNearPortal(null);
         }
       }
       
