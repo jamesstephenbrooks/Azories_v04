@@ -9382,6 +9382,168 @@ async def import_database_from_exports(
     return results
 
 
+@api_router.get("/admin/export-collection/{collection_name}")
+async def export_collection_data(
+    collection_name: str,
+    import_key: str = Query(..., description="Admin import key for security")
+):
+    """
+    Serve collection data from local export files via API.
+    This allows production to fetch data from preview environment.
+    """
+    from bson import json_util
+    
+    IMPORT_KEY = os.environ.get('DB_IMPORT_KEY', 'azories-import-2026')
+    if import_key != IMPORT_KEY:
+        raise HTTPException(status_code=403, detail="Invalid import key")
+    
+    json_file = f"/app/exports/collections/{collection_name}.json"
+    
+    if not os.path.exists(json_file):
+        raise HTTPException(status_code=404, detail=f"Collection '{collection_name}' export not found")
+    
+    try:
+        with open(json_file, 'r') as f:
+            # Return raw JSON string to preserve BSON types
+            return Response(content=f.read(), media_type="application/json")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error reading export: {str(e)}")
+
+
+@api_router.post("/admin/import-from-remote")
+async def import_from_remote_url(
+    collection: str = Query(..., description="Collection name to import"),
+    source_url: str = Query(..., description="URL of the preview/source environment"),
+    import_key: str = Query(..., description="Admin import key for security")
+):
+    """
+    Fetch collection data from a remote URL and import it into the local database.
+    Use this to import data from preview environment into production.
+    
+    Example:
+    POST /api/admin/import-from-remote?collection=books&source_url=https://preview.example.com&import_key=KEY
+    """
+    from bson import json_util
+    
+    IMPORT_KEY = os.environ.get('DB_IMPORT_KEY', 'azories-import-2026')
+    if import_key != IMPORT_KEY:
+        raise HTTPException(status_code=403, detail="Invalid import key")
+    
+    # Construct the remote export URL
+    remote_url = f"{source_url.rstrip('/')}/api/admin/export-collection/{collection}?import_key={import_key}"
+    
+    try:
+        logger.info(f"Fetching {collection} from {source_url}...")
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.get(remote_url, timeout=aiohttp.ClientTimeout(total=120)) as response:
+                if response.status != 200:
+                    error_text = await response.text()
+                    raise HTTPException(status_code=response.status, detail=f"Remote fetch failed: {error_text}")
+                
+                data_text = await response.text()
+        
+        # Parse the BSON-aware JSON
+        documents = json_util.loads(data_text)
+        
+        if not documents:
+            return {"collection": collection, "status": "skipped", "reason": "no documents", "documents": 0}
+        
+        # Drop and reimport
+        coll = db[collection]
+        await coll.drop()
+        
+        if isinstance(documents, list) and len(documents) > 0:
+            # Batch insert
+            batch_size = 500
+            total = 0
+            for i in range(0, len(documents), batch_size):
+                batch = documents[i:i + batch_size]
+                result = await coll.insert_many(batch)
+                total += len(result.inserted_ids)
+            
+            logger.info(f"Imported {total} documents into {collection}")
+            return {"collection": collection, "status": "success", "documents": total}
+        else:
+            return {"collection": collection, "status": "skipped", "reason": "invalid data format", "documents": 0}
+            
+    except aiohttp.ClientError as e:
+        logger.error(f"Network error fetching {collection}: {str(e)}")
+        raise HTTPException(status_code=502, detail=f"Network error: {str(e)}")
+    except Exception as e:
+        logger.error(f"Error importing {collection}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Import failed: {str(e)}")
+
+
+@api_router.post("/admin/seed-from-preview")
+async def seed_from_preview(
+    import_key: str = Query(..., description="Admin import key for security"),
+    preview_url: str = Query(default="https://azories-deploy.preview.emergentagent.com", description="Preview environment URL")
+):
+    """
+    Seed the production database with essential collections from the preview environment.
+    This is a one-command solution to populate production after deployment.
+    
+    Essential collections: users, books, chapters, pages, book_images
+    """
+    from bson import json_util
+    
+    IMPORT_KEY = os.environ.get('DB_IMPORT_KEY', 'azories-import-2026')
+    if import_key != IMPORT_KEY:
+        raise HTTPException(status_code=403, detail="Invalid import key")
+    
+    # Essential collections in order of dependency
+    essential_collections = ['users', 'books', 'chapters', 'pages', 'book_images', 'system_settings']
+    
+    results = {"imported": [], "failed": [], "skipped": []}
+    
+    async with aiohttp.ClientSession() as session:
+        for collection in essential_collections:
+            remote_url = f"{preview_url.rstrip('/')}/api/admin/export-collection/{collection}?import_key={import_key}"
+            
+            try:
+                logger.info(f"Fetching {collection} from preview...")
+                
+                async with session.get(remote_url, timeout=aiohttp.ClientTimeout(total=120)) as response:
+                    if response.status == 404:
+                        results["skipped"].append({"collection": collection, "reason": "not found in preview"})
+                        continue
+                    elif response.status != 200:
+                        results["failed"].append({"collection": collection, "error": f"HTTP {response.status}"})
+                        continue
+                    
+                    data_text = await response.text()
+                
+                documents = json_util.loads(data_text)
+                
+                if not documents or (isinstance(documents, list) and len(documents) == 0):
+                    results["skipped"].append({"collection": collection, "reason": "empty"})
+                    continue
+                
+                # Drop and reimport
+                coll = db[collection]
+                await coll.drop()
+                
+                if isinstance(documents, list):
+                    batch_size = 500
+                    total = 0
+                    for i in range(0, len(documents), batch_size):
+                        batch = documents[i:i + batch_size]
+                        result = await coll.insert_many(batch)
+                        total += len(result.inserted_ids)
+                    
+                    results["imported"].append({"collection": collection, "documents": total})
+                    logger.info(f"✅ Imported {total} documents into {collection}")
+                
+            except Exception as e:
+                logger.error(f"Error with {collection}: {str(e)}")
+                results["failed"].append({"collection": collection, "error": str(e)})
+    
+    results["success"] = len(results["failed"]) == 0
+    results["total_imported"] = len(results["imported"])
+    
+    return results
+
 
 # Include the router
 app.include_router(api_router)
