@@ -7,15 +7,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Database connection - no fallbacks, must be set in environment
-MONGO_URL = os.environ.get('MONGO_URL')
-DB_NAME = os.environ.get('DB_NAME')
-
-# Validate required environment variables
-if not MONGO_URL:
-    raise ValueError("MONGO_URL environment variable is required")
-if not DB_NAME:
-    raise ValueError("DB_NAME environment variable is required")
+# Database connection
+# In production, MONGO_URL is set by Emergent's deployment pipeline
+# For local development, defaults to localhost
+MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+DB_NAME = os.environ.get('DB_NAME', 'azories')
 
 client = AsyncIOMotorClient(MONGO_URL)
 db = client[DB_NAME]
