@@ -205,7 +205,7 @@ const TELEPORT_PORTALS = [
     triggerRadius: 1.2,
     autoTeleportRadius: 0, // No auto-teleport, button only
     destPos: { x: -1.13, y: 4.72, z: -0.84 }, // Starting location (same as scene load)
-    destRotation: 1.396, // 80 degrees anticlockwise (same as scene load)
+    destRotation: 1.396, // 80 degrees - facing Fiction banner (same as scene load)
     color: '#00ffff',
     icon: '↓',
     floor: 'upper',
