@@ -2446,15 +2446,11 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                   {/* Header with prominent close button */}
                   <div className="flex items-center justify-between mb-3 sticky top-0 bg-gradient-to-br from-purple-900 to-[#1a1520] -mx-4 -mt-4 px-4 pt-4 pb-2 rounded-t-2xl">
                     <div className="flex items-center gap-2">
-                      <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-purple-400/50">
+                      <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-purple-400/50 bg-gradient-to-br from-purple-500 to-pink-500">
                         <img 
-                          src="/images/azora-avatar.png" 
+                          src="https://res.cloudinary.com/dlbmjqmoy/image/upload/e_background_removal/v1772279875/azories/mascot/azora_waving_hello.png"
                           alt="Azora"
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.target.style.display = 'none';
-                            e.target.parentElement.innerHTML = '<div class="w-full h-full bg-purple-500/30 flex items-center justify-center"><svg class="w-6 h-6 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg></div>';
-                          }}
+                          className="w-full h-full object-cover scale-150"
                         />
                       </div>
                       <div>
