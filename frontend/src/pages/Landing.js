@@ -48,29 +48,25 @@ export default function Landing() {
       
       {/* Hero Section */}
       <section className="min-h-[90vh] relative overflow-hidden">
-        {/* Background Image */}
-        <div 
-          className="absolute inset-0 z-0"
-          style={{
-            backgroundImage: `linear-gradient(to bottom, ${theme === 'dark' ? 'rgba(11, 10, 20, 0.85), rgba(11, 10, 20, 0.95)' : 'rgba(253, 251, 247, 0.8), rgba(253, 251, 247, 0.92)'}, url('https://images.unsplash.com/photo-1770515927761-979f248c64d4?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjh8MHwxfHNlYXJjaHwyfHxtYWdpY2FsJTIwZmFudGFzeSUyMGxpYnJhcnklMjBnbG93aW5nJTIwYm9va3MlMjBuaWdodHxlbnwwfHx8fDE3NzEzNTQ0NzZ8MA&ixlib=rb-4.1.0&q=85')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center'
-          }}
-        />
+        {/* Magical gradient background */}
         <div 
           className="absolute inset-0 z-0"
           style={{
             background: theme === 'dark' 
-              ? 'linear-gradient(to bottom, rgba(11, 10, 20, 0.85), rgba(11, 10, 20, 0.95))' 
-              : 'linear-gradient(to bottom, rgba(253, 251, 247, 0.8), rgba(253, 251, 247, 0.92))'
+              ? 'linear-gradient(135deg, #1a0a2e 0%, #16213e 50%, #0f0f23 100%)' 
+              : 'linear-gradient(135deg, #f8f4ff 0%, #e8f4f8 50%, #fff8f0 100%)'
           }}
         />
-        <div 
-          className="absolute inset-0 z-0 bg-cover bg-center opacity-20"
-          style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1770515927761-979f248c64d4?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjh8MHwxfHNlYXJjaHwyfHxtYWdpY2FsJTIwZmFudGFzeSUyMGxpYnJhcnklMjBnbG93aW5nJTIwYm9va3MlMjBuaWdodHxlbnwwfHx8fDE3NzEzNTQ0NzZ8MA&ixlib=rb-4.1.0&q=85')`
-          }}
-        />
+        
+        {/* Subtle sparkle effect overlay */}
+        <div className="absolute inset-0 z-0 opacity-30">
+          <div className="absolute top-20 left-[10%] w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
+          <div className="absolute top-40 left-[25%] w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" style={{ animationDelay: '0.5s' }} />
+          <div className="absolute top-32 right-[30%] w-2 h-2 rounded-full bg-cyan-400 animate-pulse" style={{ animationDelay: '1s' }} />
+          <div className="absolute top-60 right-[15%] w-1.5 h-1.5 rounded-full bg-pink-400 animate-pulse" style={{ animationDelay: '1.5s' }} />
+          <div className="absolute bottom-40 left-[20%] w-2 h-2 rounded-full bg-emerald-400 animate-pulse" style={{ animationDelay: '0.7s' }} />
+          <div className="absolute bottom-32 right-[25%] w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" style={{ animationDelay: '1.2s' }} />
+        </div>
         
         <div className="max-w-7xl mx-auto px-6 md:px-12 pt-32 pb-20 relative z-10">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -83,7 +79,7 @@ export default function Landing() {
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary font-ui text-sm">
                 <FiStar className="w-4 h-4" />
-                <span>Where Stories Come Alive</span>
+                <span>{AZORIES_TAGLINE}</span>
               </div>
               
               <h1 className="font-heading text-5xl md:text-7xl font-bold tracking-tight leading-tight">
@@ -154,53 +150,66 @@ export default function Landing() {
               </div>
             </motion.div>
             
-            {/* Right - Floating Book Visual */}
+            {/* Right - Azora Mascot and Book Covers */}
             <motion.div 
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
               className="relative hidden lg:block"
             >
-              <div className="relative w-full h-[500px] book-perspective">
-                {/* Main floating book */}
+              <div className="relative w-full h-[500px]">
+                {/* Azora pointing - main mascot */}
                 <motion.div 
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-float"
-                  whileHover={{ scale: 1.05 }}
-                >
-                  <div className="w-72 h-96 rounded-2xl overflow-hidden shadow-2xl magic-glow book-3d relative">
-                    <img 
-                      src="https://images.unsplash.com/photo-1681487414305-2b9c0ce7ab50?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NjZ8MHwxfHNlYXJjaHwxfHxvcGVuJTIwYm9vayUyMHBhZ2VzJTIwZmFudGFzeSUyMHN0b3J5dGVsbGluZ3xlbnwwfHx8fDE3NzEzNTQ0ODV8MA&ixlib=rb-4.1.0&q=85"
-                      alt="Open magical book"
-                      className="w-full h-full object-cover"
-                    />
-                    {/* Overlay gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-primary/30 to-transparent" />
-                  </div>
-                </motion.div>
-                
-                {/* Smaller floating books */}
-                <motion.div 
-                  className="absolute top-10 right-16 w-20 h-28 rounded-lg overflow-hidden shadow-xl animate-float-slow stagger-2"
-                  style={{ animationDelay: '0.5s' }}
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20"
+                  animate={{ y: [0, -15, 0] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1765338914703-03c2312fab8d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2OTV8MHwxfHNlYXJjaHwzfHxjb2xvcmZ1bCUyMGJvb2tzaGVsZiUyMGxpYnJhcnklMjBjb3p5fGVufDB8fHx8MTc3MTM1NDQ5Nnww&ixlib=rb-4.1.0&q=85"
-                    alt="Bookshelf"
+                    src={AZORA_ASSETS.pointing}
+                    alt="Azora - Your magical adventure guide"
+                    className="w-64 h-80 object-contain drop-shadow-2xl"
+                  />
+                </motion.div>
+                
+                {/* Floating book covers */}
+                <motion.div 
+                  className="absolute top-8 right-8 w-20 h-28 rounded-lg overflow-hidden shadow-xl z-10"
+                  animate={{ y: [0, -10, 0], rotate: [0, 3, 0] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                >
+                  <img 
+                    src={FEATURED_BOOK_COVERS[0]}
+                    alt="Featured book"
                     className="w-full h-full object-cover"
                   />
                 </motion.div>
                 
                 <motion.div 
-                  className="absolute bottom-16 left-10 w-16 h-24 rounded-lg overflow-hidden shadow-xl animate-float-slow stagger-4"
-                  style={{ animationDelay: '1s' }}
+                  className="absolute bottom-20 left-8 w-18 h-24 rounded-lg overflow-hidden shadow-xl z-10"
+                  animate={{ y: [0, 10, 0], rotate: [0, -3, 0] }}
+                  transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
                 >
-                  <div className="w-full h-full bg-gradient-to-br from-secondary/40 to-primary/40 backdrop-blur" />
+                  <img 
+                    src={FEATURED_BOOK_COVERS[1]}
+                    alt="Featured book"
+                    className="w-full h-full object-cover"
+                  />
                 </motion.div>
                 
-                {/* Decorative glowing orbs */}
-                <div className="absolute top-20 left-20 w-4 h-4 rounded-full bg-primary/50 animate-pulse" />
-                <div className="absolute bottom-32 right-20 w-3 h-3 rounded-full bg-secondary/50 animate-pulse" style={{ animationDelay: '0.5s' }} />
-                <div className="absolute top-40 right-10 w-2 h-2 rounded-full bg-accent/50 animate-pulse" style={{ animationDelay: '1s' }} />
+                <motion.div 
+                  className="absolute top-24 left-16 w-16 h-22 rounded-lg overflow-hidden shadow-xl z-10"
+                  animate={{ y: [0, -8, 0], rotate: [0, 2, 0] }}
+                  transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+                >
+                  <img 
+                    src={FEATURED_BOOK_COVERS[2]}
+                    alt="Featured book"
+                    className="w-full h-full object-cover"
+                  />
+                </motion.div>
+                
+                {/* Magical glow behind Azora */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-radial from-purple-500/20 via-cyan-500/10 to-transparent rounded-full blur-3xl z-0" />
               </div>
             </motion.div>
           </div>
