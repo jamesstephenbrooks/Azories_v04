@@ -422,8 +422,6 @@ export default function BookReader() {
         
         // Append back cover as final page if available
         if (res.data.back_cover_image) {
-          console.log('[BookReader] BEFORE adding back cover, pages array length:', pages.length);
-          console.log('[BookReader] BEFORE adding back cover, first page:', pages[0]?.text_content?.substring(0, 50));
           pages.push({
             isBackCover: true,
             image_url: res.data.back_cover_image,
@@ -431,9 +429,6 @@ export default function BookReader() {
             chapterTitle: 'Back Cover',
             chapterNumber: 999
           });
-          console.log('[BookReader] AFTER adding back cover, pages array length:', pages.length);
-          console.log('[BookReader] AFTER adding back cover, last page isBackCover:', pages[pages.length - 1]?.isBackCover);
-          console.log('[BookReader] AFTER adding back cover, first page isBackCover:', pages[0]?.isBackCover);
         }
         
         setAllPages(pages);
