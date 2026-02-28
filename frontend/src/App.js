@@ -7,6 +7,7 @@ import OnboardingTutorial, { useOnboarding } from "@/components/OnboardingTutori
 import { OfflineIndicator } from "@/components/OfflineReading";
 import CookieConsent from "@/components/CookieConsent";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { AZORA_ASSETS } from "@/components/AzoraMascot";
 import "@/App.css";
 
 // Lazy load all pages — they only download when navigated to
@@ -35,11 +36,24 @@ const NotFound = lazy(() => import("@/pages/NotFound"));
 const TermsOfService = lazy(() => import("@/pages/Legal").then(m => ({ default: m.TermsOfService })));
 const PrivacyPolicy = lazy(() => import("@/pages/Legal").then(m => ({ default: m.PrivacyPolicy })));
 
-// Loading spinner shown while lazy page loads
+// Loading screen with Azora mascot and dragon spinner
 function PageLoader() {
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-900">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500" />
+    <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-b from-purple-900/95 to-slate-900">
+      <img 
+        src={AZORA_ASSETS.waving}
+        alt="Azora welcomes you"
+        className="w-32 h-40 object-contain mb-6 animate-bounce-slow"
+        style={{ animation: 'float 2s ease-in-out infinite' }}
+      />
+      <h2 className="text-xl font-bold text-white mb-3">Welcome to Azories</h2>
+      <p className="text-white/60 text-sm mb-6">Loading magical adventures...</p>
+      <img 
+        src={AZORA_ASSETS.dragonIcon}
+        alt="Loading"
+        className="w-12 h-12 object-contain rounded-full"
+        style={{ animation: 'spin-slow 2s linear infinite, pulse 1s ease-in-out infinite' }}
+      />
     </div>
   );
 }
