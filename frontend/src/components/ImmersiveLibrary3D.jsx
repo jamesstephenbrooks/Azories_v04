@@ -2067,9 +2067,9 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
             </div>
           )}
           
-          {/* Teleport Portal Prompt */}
+          {/* Teleport Portal Prompt - hide when Azora chat is open */}
           <AnimatePresence>
-            {nearPortal && (
+            {nearPortal && !showAzoraChat && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
