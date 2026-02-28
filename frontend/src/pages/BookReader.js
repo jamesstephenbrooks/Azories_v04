@@ -416,6 +416,18 @@ export default function BookReader() {
           console.log('[BookReader] Loaded', pages.length, 'pages from pages (no text)');
         }
         
+        // Append back cover as final page if available
+        if (res.data.back_cover_image) {
+          pages.push({
+            isBackCover: true,
+            image_url: res.data.back_cover_image,
+            text_content: '',
+            chapterTitle: 'Back Cover',
+            chapterNumber: 999
+          });
+          console.log('[BookReader] Added back cover as final page');
+        }
+        
         setAllPages(pages);
         
         // Track read
