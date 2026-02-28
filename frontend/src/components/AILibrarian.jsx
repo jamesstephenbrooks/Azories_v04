@@ -141,14 +141,11 @@ Rules:
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-purple-500/20 bg-purple-500/10">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-purple-400/50">
+                <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-purple-400/50 bg-gradient-to-br from-purple-400 to-pink-400">
                   <img 
-                    src="/images/azora-avatar.png" 
+                    src={AZORA_ASSETS.waving}
                     alt="Azora"
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.target.parentElement.innerHTML = '<div class="w-full h-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center"><span class="text-lg">✨</span></div>';
-                    }}
+                    className="w-full h-full object-cover scale-150"
                   />
                 </div>
                 <div>
