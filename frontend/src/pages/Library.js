@@ -13,18 +13,18 @@ import BookRecommendations from '@/components/BookRecommendations';
 import { getThumbnailUrl, preloadImages } from '@/utils/imageOptimizer';
 
 // Lazy-loaded image component with intersection observer and aggressive optimization
-const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 200 }) => {
+const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 250 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const [hasError, setHasError] = useState(false);
   const imgRef = useRef(null);
 
-  // Get AGGRESSIVELY optimized thumbnail URL - smaller size, lower quality for speed
+  // Get optimized thumbnail URL - balanced quality/speed
   const optimizedSrc = useMemo(() => {
     if (!src) return src;
-    // Use even more aggressive compression: w=200, q=40
+    // Use w=250, q=65 for good balance of quality and speed
     if (src.includes('res.cloudinary.com')) {
-      return src.replace('/upload/', `/upload/w_${thumbnailWidth},q_40,f_auto,c_limit/`);
+      return src.replace('/upload/', `/upload/w_${thumbnailWidth},q_65,f_auto,c_limit/`);
     }
     return src;
   }, [src, thumbnailWidth]);

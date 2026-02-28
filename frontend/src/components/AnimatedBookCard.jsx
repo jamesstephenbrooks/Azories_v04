@@ -3,18 +3,18 @@ import { motion } from 'framer-motion';
 import { FiBook, FiEye, FiStar } from 'react-icons/fi';
 import { getThumbnailUrl } from '@/utils/imageOptimizer';
 
-// Lazy-loaded image component with intersection observer - AGGRESSIVE optimization
-const LazyImage = ({ src, alt, className, onLoad, thumbnailWidth = 200 }) => {
+// Lazy-loaded image component with intersection observer - balanced optimization
+const LazyImage = ({ src, alt, className, onLoad, thumbnailWidth = 250 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const [hasError, setHasError] = useState(false);
   const imgRef = useRef(null);
 
-  // Get AGGRESSIVELY optimized thumbnail URL - w=200, q=40 for speed
+  // Get optimized thumbnail URL - w=250, q=65 for good balance
   const optimizedSrc = useMemo(() => {
     if (!src) return src;
     if (src.includes('res.cloudinary.com')) {
-      return src.replace('/upload/', `/upload/w_${thumbnailWidth},q_40,f_auto,c_limit/`);
+      return src.replace('/upload/', `/upload/w_${thumbnailWidth},q_65,f_auto,c_limit/`);
     }
     return src;
   }, [src, thumbnailWidth]);
