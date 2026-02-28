@@ -567,7 +567,13 @@ export default function Library() {
                 </div>
               ) : (
                 <div className="text-center py-20">
-                  <FiBook className="w-16 h-16 mx-auto text-muted-foreground/50 mb-4" />
+                  <motion.img 
+                    src={AZORA_ASSETS.readingCozy}
+                    alt="Azora searching"
+                    className="w-36 h-44 object-contain mx-auto mb-4 opacity-70"
+                    animate={{ y: [0, -8, 0] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  />
                   <h3 className="font-heading text-xl text-muted-foreground">
                     No books found
                   </h3>
