@@ -223,8 +223,10 @@ const CoverPage = forwardRef(({ book }, ref) => {
 
 CoverPage.displayName = 'CoverPage';
 
-// Back cover page component
+// Back cover page component - Uses actual back_cover_image if available
 const BackCoverPage = forwardRef(({ book }, ref) => {
+  const hasBackCoverImage = book?.back_cover_image && book.back_cover_image.trim() !== '';
+  
   return (
     <div 
       ref={ref}
@@ -234,23 +236,40 @@ const BackCoverPage = forwardRef(({ book }, ref) => {
       <div 
         className="absolute inset-0 rounded-l-lg overflow-hidden"
         style={{
-          background: `linear-gradient(225deg, 
+          background: hasBackCoverImage ? '#1a0a2e' : `linear-gradient(225deg, 
             ${book?.cover_gradient_start || '#667eea'} 0%, 
             ${book?.cover_gradient_end || '#764ba2'} 100%)`,
           boxShadow: '-5px 0 15px rgba(0,0,0,0.3)',
         }}
       >
-        {/* Back cover content */}
-        <div className="relative h-full flex flex-col items-center justify-center text-white p-8">
-          <p className="text-center opacity-80 max-w-xs leading-relaxed">
-            {book?.back_cover_text || book?.description || 'Thank you for reading!'}
-          </p>
-          {book?.age_rating && (
-            <span className="mt-6 px-4 py-1 rounded-full bg-white/20 text-sm">
-              {book.age_rating}
-            </span>
-          )}
-        </div>
+        {/* Back cover image - if available, show the designed back cover */}
+        {hasBackCoverImage ? (
+          <img 
+            src={book.back_cover_image}
+            alt="Back Cover"
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              objectPosition: 'center'
+            }}
+          />
+        ) : (
+          /* Fallback: CSS-generated back cover content */
+          <div className="relative h-full flex flex-col items-center justify-center text-white p-8">
+            <p className="text-center opacity-80 max-w-xs leading-relaxed">
+              {book?.back_cover_text || book?.description || 'Thank you for reading!'}
+            </p>
+            {book?.age_rating && (
+              <span className="mt-6 px-4 py-1 rounded-full bg-white/20 text-sm">
+                {book.age_rating}
+              </span>
+            )}
+          </div>
+        )}
         
         {/* Spine effect */}
         <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-black/40 to-transparent" />
