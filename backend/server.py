@@ -8873,6 +8873,39 @@ async def save_prompt_to_history(data: dict, current_user: dict = Depends(get_cu
         logging.error(f"Prompt history save error: {e}")
         return {"success": False}
 
+# Export endpoints for downloading book data
+@api_router.get("/admin/exports")
+async def list_exports(admin: dict = Depends(get_admin_user)):
+    """List available export files"""
+    export_dir = Path("/app/exports")
+    if not export_dir.exists():
+        return {"files": []}
+    
+    files = []
+    for f in export_dir.glob("*.json"):
+        files.append({
+            "filename": f.name,
+            "size_kb": round(f.stat().st_size / 1024, 1),
+            "download_url": f"/api/admin/exports/{f.name}"
+        })
+    
+    return {"files": sorted(files, key=lambda x: x["filename"])}
+
+@api_router.get("/admin/exports/{filename}")
+async def download_export(filename: str, admin: dict = Depends(get_admin_user)):
+    """Download an export file"""
+    from fastapi.responses import FileResponse
+    
+    export_path = Path(f"/app/exports/{filename}")
+    if not export_path.exists() or not filename.endswith('.json'):
+        raise HTTPException(status_code=404, detail="Export file not found")
+    
+    return FileResponse(
+        path=export_path,
+        filename=filename,
+        media_type="application/json"
+    )
+
 # Include the router
 app.include_router(api_router)
 
