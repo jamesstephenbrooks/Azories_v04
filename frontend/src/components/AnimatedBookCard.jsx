@@ -73,7 +73,7 @@ const LazyImage = ({ src, alt, className, onLoad, thumbnailWidth = 300 }) => {
       {/* Actual image - only load when in view */}
       {isInView && !hasError && (
         <img
-          src={src}
+          src={optimizedSrc}
           alt={alt}
           className={`w-full h-full object-cover transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
           onLoad={handleLoad}
