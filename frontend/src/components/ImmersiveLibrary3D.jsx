@@ -1213,57 +1213,58 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         // Load Azora mascot model for downstairs (ground floor) area
         console.log('Starting to load Azora from:', AZORA_MODEL_URL);
         
-        // Create a test cube first to verify the position is visible
-        const testGeometry = new THREE.BoxGeometry(0.5, 1.5, 0.5);
-        const testMaterial = new THREE.MeshBasicMaterial({ color: 0xff00ff });
+        // Create a visible test marker to verify position is correct
+        const testGeometry = new THREE.BoxGeometry(0.3, 2, 0.3);
+        const testMaterial = new THREE.MeshBasicMaterial({ color: 0xff00ff, transparent: false });
         const testCube = new THREE.Mesh(testGeometry, testMaterial);
-        testCube.position.set(0, 0.75, -1);
+        testCube.position.set(0, 1, 0); // Center of ground floor, 1 unit up
         scene.add(testCube);
-        console.log('Added test cube at position:', testCube.position);
+        console.log('Added PINK test cube at center of ground floor');
         
         gltfLoader.load(
           AZORA_MODEL_URL,
           (azora) => {
             console.log('Azora mascot loaded successfully!');
             
-            // Remove test cube
+            // Remove test cube once Azora loads
             scene.remove(testCube);
             
             const azoraMesh = azora.scene;
             
             // Log the original model bounds
             const originalBbox = new THREE.Box3().setFromObject(azoraMesh);
-            console.log('Azora original bounds:', originalBbox.min, originalBbox.max);
+            console.log('Azora original size - height:', originalBbox.max.y - originalBbox.min.y);
             
-            // Scale Azora to fit the scene (mascot should be about 1.5 units tall)
+            // Scale Azora to be about 1.5 units tall
             const azoraHeight = originalBbox.max.y - originalBbox.min.y;
-            const targetHeight = 1.5; // Target height in scene units
+            const targetHeight = 1.5;
             const azoraScale = targetHeight / azoraHeight;
-            console.log('Azora scale factor:', azoraScale, 'from height:', azoraHeight);
             azoraMesh.scale.setScalar(azoraScale);
             
-            // Position Azora on the stone floor area in center of ground floor
-            // Based on the screenshot: the marble/stone center area is at approximately (0, 0, 0)
-            azoraMesh.position.set(0, 0.05, -1);
+            // Position Azora at ground floor center
+            // Ground floor is at Y=0, so put her feet at Y=0
+            // Adjust for model's own origin point
+            const scaledBbox = new THREE.Box3().setFromObject(azoraMesh);
+            const yOffset = -scaledBbox.min.y; // Move up so bottom touches ground
+            azoraMesh.position.set(0, yOffset, 0);
             
-            // Rotate to face the entrance/stairs
-            azoraMesh.rotation.y = Math.PI; // Face toward the viewer/stairs
+            // Face toward positive Z (toward the entrance from archway)
+            azoraMesh.rotation.y = 0;
             
             // Store reference for interaction
             azoraRef.current = azoraMesh;
             
             // Add to scene
             scene.add(azoraMesh);
-            console.log('Azora added to scene at:', azoraMesh.position);
+            console.log('Azora placed at:', azoraMesh.position, 'Y offset was:', yOffset);
           },
           (progress) => {
             if (progress.total > 0) {
-              console.log('Azora loading progress:', Math.round((progress.loaded / progress.total) * 100) + '%');
+              console.log('Azora loading:', Math.round((progress.loaded / progress.total) * 100) + '%');
             }
           },
           (error) => {
-            console.error('Failed to load Azora mascot:', error);
-            console.error('Error details:', error.message);
+            console.error('Failed to load Azora:', error.message);
           }
         );
         
