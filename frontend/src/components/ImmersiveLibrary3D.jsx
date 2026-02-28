@@ -1212,10 +1212,23 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         
         // Load Azora mascot model for downstairs (ground floor) area
         console.log('Starting to load Azora from:', AZORA_MODEL_URL);
+        
+        // Create a test cube first to verify the position is visible
+        const testGeometry = new THREE.BoxGeometry(0.5, 1.5, 0.5);
+        const testMaterial = new THREE.MeshBasicMaterial({ color: 0xff00ff });
+        const testCube = new THREE.Mesh(testGeometry, testMaterial);
+        testCube.position.set(0, 0.75, -1);
+        scene.add(testCube);
+        console.log('Added test cube at position:', testCube.position);
+        
         gltfLoader.load(
           AZORA_MODEL_URL,
           (azora) => {
             console.log('Azora mascot loaded successfully!');
+            
+            // Remove test cube
+            scene.remove(testCube);
+            
             const azoraMesh = azora.scene;
             
             // Log the original model bounds
