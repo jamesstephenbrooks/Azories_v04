@@ -95,7 +95,10 @@ except ImportError as e:
     is_cloudinary_configured = lambda: False
 
 # MongoDB connection with TLS configuration for production
-mongo_url = os.environ['MONGO_URL']
+# Uses Emergent's built-in MongoDB if MONGO_URL not set, or external Atlas if provided
+mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+db_name = os.environ.get('DB_NAME', 'azories')
+
 # Add TLS options for Atlas connections if using mongodb+srv
 mongo_options = {}
 if 'mongodb+srv' in mongo_url or 'mongodb.net' in mongo_url:
@@ -106,7 +109,7 @@ if 'mongodb+srv' in mongo_url or 'mongodb.net' in mongo_url:
         'connectTimeoutMS': 30000,
     }
 client = AsyncIOMotorClient(mongo_url, **mongo_options)
-db = client[os.environ['DB_NAME']]
+db = client[db_name]
 
 # ElevenLabs client
 eleven_client = None
