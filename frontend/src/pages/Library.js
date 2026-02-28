@@ -529,10 +529,24 @@ export default function Library() {
               ) : (
               /* Books Grid with Recommendations */
               <>
-              {/* Recommendations Section */}
-              <div className="mb-12">
-                <BookRecommendations />
-              </div>
+              {/* Recommendations Section - Hide when searching */}
+              {!debouncedSearch && (
+                <div className="mb-12">
+                  <BookRecommendations />
+                </div>
+              )}
+              
+              {/* Search Results Header - Show when searching */}
+              {debouncedSearch && (
+                <div className="mb-6">
+                  <h2 className="text-xl font-semibold text-foreground">
+                    Search results for "{debouncedSearch}"
+                  </h2>
+                  <p className="text-muted-foreground text-sm mt-1">
+                    {books.length} {books.length === 1 ? 'book' : 'books'} found
+                  </p>
+                </div>
+              )}
               
               {/* Books Grid */}
               {loading ? (
