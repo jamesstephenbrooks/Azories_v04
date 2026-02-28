@@ -1479,10 +1479,14 @@ export default function BookReader() {
                 <>
                   <button
                     onClick={() => {
-                      console.log('[BackCover] Read Again clicked, going to cover');
-                      setCurrentPage(-1);
+                      console.log('[BackCover] Read Again clicked, going to front cover');
+                      // For desktop flipbook, flip to page 0 (front cover)
+                      // The onPageChange callback will set currentPage to -1
                       if (realisticFlipRef.current) {
                         realisticFlipRef.current.goToPage(0);
+                      } else {
+                        // Fallback for mobile
+                        setCurrentPage(-1);
                       }
                     }}
                     className="min-h-[56px] px-6 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white font-medium flex items-center justify-center gap-2 touch-manipulation"
