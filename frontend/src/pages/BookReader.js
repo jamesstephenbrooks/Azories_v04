@@ -1199,9 +1199,12 @@ export default function BookReader() {
                 
                 {/* Bottom: Text content - 45% of available height */}
                 <div 
-                  className="flex-1 bg-[#fdfbf7] dark:bg-[#2a2a30] rounded-b-2xl shadow-lg overflow-hidden"
+                  className="flex-1 bg-[#fdfbf7] dark:bg-[#2a2a30] rounded-b-2xl shadow-lg overflow-hidden relative"
                 >
-                  <div className="h-full overflow-y-auto px-5 py-4">
+                  <div 
+                    ref={textScrollRef}
+                    className="h-full overflow-y-auto px-5 py-4 pb-8"
+                  >
                     {(currentPageData?.text_content || currentPageData?.text || currentPageData?.content) ? (
                       <p className="font-reader text-base leading-relaxed text-foreground/90 whitespace-pre-wrap">
                         {currentPageData.text_content || currentPageData.text || currentPageData.content}
@@ -1219,6 +1222,15 @@ export default function BookReader() {
                       </p>
                     )}
                   </div>
+                  {/* Scroll indicator - shows when more content below */}
+                  {showScrollIndicator && (
+                    <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
+                      <div className="h-12 bg-gradient-to-t from-[#fdfbf7] dark:from-[#2a2a30] to-transparent" />
+                      <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex flex-col items-center animate-bounce">
+                        <FiChevronDown className="w-5 h-5 text-muted-foreground/60" />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             ) : isMobileLandscape && !isCover && currentPage >= 0 ? (
