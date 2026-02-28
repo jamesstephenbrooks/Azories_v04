@@ -8909,6 +8909,163 @@ async def download_export(filename: str, admin: dict = Depends(get_admin_user)):
         media_type="application/json"
     )
 
+@api_router.post("/admin/imports/books")
+async def import_books(admin: dict = Depends(get_admin_user)):
+    """Import books from JSON data. Accepts file upload."""
+    from fastapi import File, UploadFile
+    # This endpoint handles the actual import - see import_books_file below
+    return {"error": "Use POST with file upload"}
+
+@api_router.post("/admin/imports/books/upload")
+async def import_books_file(
+    file: UploadFile = File(...),
+    admin: dict = Depends(get_admin_user)
+):
+    """Import books from uploaded JSON file"""
+    import uuid
+    from datetime import datetime
+    
+    try:
+        # Read and parse the uploaded JSON
+        content = await file.read()
+        data = json.loads(content.decode('utf-8'))
+        
+        # Handle different JSON formats
+        books_to_import = []
+        
+        # Format 1: {"books": [...]} (our export format)
+        if isinstance(data, dict) and 'books' in data:
+            books_to_import = data['books']
+        # Format 2: [{"book": "title", "pages": [...]}] (text import format)
+        elif isinstance(data, list) and len(data) > 0 and 'pages' in data[0]:
+            books_to_import = data
+        # Format 3: Direct array of books
+        elif isinstance(data, list):
+            books_to_import = data
+        else:
+            return {"success": False, "error": "Unrecognized JSON format"}
+        
+        imported_count = 0
+        skipped_count = 0
+        errors = []
+        imported_titles = []
+        
+        for book_data in books_to_import:
+            try:
+                title = book_data.get('title', book_data.get('book', 'Unknown'))
+                
+                # Check if book already exists
+                existing = await db.books.find_one({"title": title})
+                if existing:
+                    skipped_count += 1
+                    continue
+                
+                # Generate new ID if not present
+                if not book_data.get('id'):
+                    book_data['id'] = str(uuid.uuid4())
+                
+                # Ensure required fields
+                book_data.setdefault('title', title)
+                book_data.setdefault('description', '')
+                book_data.setdefault('genre', 'General')
+                book_data.setdefault('is_published', True)
+                book_data.setdefault('hidden', False)
+                book_data.setdefault('author_id', admin.get('sub', 'admin'))
+                book_data.setdefault('author_name', 'Azories')
+                book_data.setdefault('created_at', datetime.utcnow().isoformat())
+                book_data.setdefault('updated_at', datetime.utcnow().isoformat())
+                book_data.setdefault('view_count', 0)
+                book_data.setdefault('read_count', 0)
+                
+                # Handle pages - normalize text_content field
+                pages = book_data.get('pages', [])
+                normalized_pages = []
+                for i, page in enumerate(pages):
+                    normalized_page = {
+                        'page_number': page.get('page_number', page.get('page', i + 1)),
+                        'text_content': page.get('text_content', page.get('text', page.get('content', ''))),
+                        'image_url': page.get('image_url', ''),
+                        'layout': page.get('layout', 'standard')
+                    }
+                    normalized_pages.append(normalized_page)
+                
+                book_data['pages'] = normalized_pages
+                
+                # Insert into database
+                await db.books.insert_one(book_data)
+                imported_count += 1
+                imported_titles.append(title)
+                
+            except Exception as e:
+                errors.append(f"{title}: {str(e)}")
+        
+        return {
+            "success": True,
+            "imported": imported_count,
+            "skipped": skipped_count,
+            "errors": len(errors),
+            "error_details": errors[:10] if errors else [],
+            "imported_titles": imported_titles[:20],
+            "message": f"Successfully imported {imported_count} books, skipped {skipped_count} duplicates"
+        }
+        
+    except json.JSONDecodeError as e:
+        return {"success": False, "error": f"Invalid JSON: {str(e)}"}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+@api_router.post("/admin/imports/books/json")
+async def import_books_json(
+    request: Request,
+    admin: dict = Depends(get_admin_user)
+):
+    """Import books from JSON body (for smaller imports)"""
+    import uuid
+    from datetime import datetime
+    
+    try:
+        data = await request.json()
+        
+        # Handle different formats
+        books_to_import = []
+        if isinstance(data, dict) and 'books' in data:
+            books_to_import = data['books']
+        elif isinstance(data, list):
+            books_to_import = data
+        else:
+            return {"success": False, "error": "Expected {books: [...]} or [...]"}
+        
+        imported_count = 0
+        skipped_count = 0
+        
+        for book_data in books_to_import:
+            title = book_data.get('title', 'Unknown')
+            
+            existing = await db.books.find_one({"title": title})
+            if existing:
+                skipped_count += 1
+                continue
+            
+            if not book_data.get('id'):
+                book_data['id'] = str(uuid.uuid4())
+            
+            book_data.setdefault('is_published', True)
+            book_data.setdefault('hidden', False)
+            book_data.setdefault('created_at', datetime.utcnow().isoformat())
+            
+            await db.books.insert_one(book_data)
+            imported_count += 1
+        
+        return {
+            "success": True,
+            "imported": imported_count,
+            "skipped": skipped_count,
+            "message": f"Imported {imported_count} books"
+        }
+        
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
 # Include the router
 app.include_router(api_router)
 
