@@ -1328,10 +1328,14 @@ export default function BookReader() {
                           backgroundColor: '#1a0a2e'
                         }}
                       />
-                      {/* Back cover badge */}
-                      <div className="absolute bottom-3 right-3 px-4 py-1.5 rounded-full bg-black/50 text-white text-sm">
-                        The End
-                      </div>
+                      {/* Read Again button */}
+                      <button
+                        onClick={() => goToPage(0, 'prev')}
+                        className="absolute bottom-4 left-1/2 -translate-x-1/2 px-6 py-2 rounded-full bg-purple-600 hover:bg-purple-500 text-white font-medium flex items-center gap-2 shadow-lg"
+                        data-testid="read-again-btn"
+                      >
+                        Read Again <FiPlay className="w-4 h-4" />
+                      </button>
                     </div>
                   </div>
                 ) : (
