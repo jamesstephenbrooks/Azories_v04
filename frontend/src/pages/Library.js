@@ -153,6 +153,10 @@ export default function Library() {
       
       const res = await axios.get(`${API}/books?${params.toString()}`);
       setBooks(res.data);
+      
+      // Preload first 8 book covers for faster initial display
+      const coverUrls = res.data.slice(0, 8).map(b => b.cover_image).filter(Boolean);
+      preloadImages(coverUrls, 'high');
     } catch (error) {
       console.error('Error fetching books:', error);
     } finally {
