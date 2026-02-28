@@ -111,12 +111,23 @@ Rules:
           >
             <Button
               onClick={() => setIsOpen(true)}
-              className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-lg shadow-purple-500/30"
+              className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-lg shadow-purple-500/30 p-0 overflow-hidden"
               data-testid="ai-librarian-btn"
             >
-              <div className="relative">
-                <FiMessageCircle className="w-6 h-6" />
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white animate-pulse" />
+              <div className="relative w-full h-full">
+                <img 
+                  src="/images/azora-avatar.png" 
+                  alt="Azora"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
+                <div className="hidden w-full h-full items-center justify-center">
+                  <FiMessageCircle className="w-6 h-6" />
+                </div>
+                <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-green-400 rounded-full border-2 border-white animate-pulse" />
               </div>
             </Button>
             <p className="text-center text-xs text-white/80 mt-1 font-medium">Azora</p>
