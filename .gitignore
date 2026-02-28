@@ -119,3 +119,4 @@ glb_optimization/gothic_library_14_cycles.glb
 # Environment files
 *.env
 *.env.*
+exports/full_db_export.json
