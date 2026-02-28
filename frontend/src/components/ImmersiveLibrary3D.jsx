@@ -2334,7 +2334,7 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                           <div className="w-12 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-purple-900/50">
                             {book.cover_image ? (
                               <img 
-                                src={book.cover_image} 
+                                src={getOptimizedImageUrl(book.cover_image, { width: 100 })} 
                                 alt={book.title}
                                 className="w-full h-full object-cover"
                               />
