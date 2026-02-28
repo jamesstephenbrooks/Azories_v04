@@ -235,6 +235,72 @@ export default function Landing() {
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent z-10" />
       </section>
       
+      {/* Start Your Adventure - Book Showcase */}
+      <section className="py-16 px-6 md:px-12 bg-background">
+        <div className="max-w-7xl mx-auto">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-12"
+          >
+            <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground mb-3">
+              Start Your Adventure
+            </h2>
+            <p className="font-body text-muted-foreground">
+              Discover magical stories waiting to be explored
+            </p>
+          </motion.div>
+          
+          <div className="flex justify-center gap-6 flex-wrap">
+            {[
+              { url: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/w_300,q_80/v1772271593/azories/books/robot_best_friend/cover.png', title: 'Robot Best Friend' },
+              { url: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/w_300,q_80/v1772217091/azories/books/colors_of_the_world/cover.png', title: 'Colors of the World' },
+              { url: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/w_300,q_80/v1772271593/azories/books/super_silly_superhero/cover.png', title: 'Super Silly Superhero' },
+              { url: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/w_300,q_80/v1772271593/azories/books/the_case_of_the_missing_cookies/cover.png', title: 'Missing Cookies' },
+              { url: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/w_300,q_80/v1772271593/azories/books/the_dragons_secret_garden/cover.png', title: "Dragon's Secret Garden" },
+            ].map((book, index) => (
+              <motion.div
+                key={book.title}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ scale: 1.05, y: -10 }}
+                className="cursor-pointer"
+                onClick={() => navigate('/library')}
+              >
+                <div className="w-36 h-48 md:w-44 md:h-60 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-shadow duration-300">
+                  <img 
+                    src={book.url}
+                    alt={book.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </motion.div>
+            ))}
+          </div>
+          
+          <motion.div 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.5 }}
+            className="text-center mt-10"
+          >
+            <Button 
+              onClick={() => navigate('/library')}
+              variant="outline"
+              className="rounded-full px-8 py-5 font-ui"
+            >
+              View All Books
+              <FiArrowRight className="ml-2" />
+            </Button>
+          </motion.div>
+        </div>
+      </section>
+      
       {/* Features Section */}
       <section className="py-20 md:py-32 px-6 md:px-12">
         <div className="max-w-7xl mx-auto">
