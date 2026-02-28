@@ -9,6 +9,16 @@ import { FiX, FiBook, FiBookOpen, FiMaximize2, FiMinimize2, FiVolume2, FiVolumeX
 import { useAuth } from '@/context/AuthContext';
 import AILibrarian from './AILibrarian';
 
+// Get optimized Cloudinary URL with transformations for faster loading
+const getOptimizedImageUrl = (url, { width = 256, quality = 'auto', format = 'auto' } = {}) => {
+  if (!url) return url;
+  if (url.includes('res.cloudinary.com')) {
+    const transformations = `w_${width},q_${quality},f_${format}`;
+    return url.replace('/upload/', `/upload/${transformations}/`);
+  }
+  return url;
+};
+
 // Gothic Library Model URL - v16 with Draco compression (5MB, down from 20MB)
 // Compression only - no mesh simplification to preserve collisions and positions
 const LIBRARY_MODEL_URL = '/models/gothic_library_optimized.glb';
