@@ -208,6 +208,14 @@ async def lifespan(app: FastAPI):
     # Load FAL_KEY from database if not set or invalid in .env
     await _load_fal_key_from_db()
     
+    # Create indexes for audio cache collection
+    try:
+        await db.audio_cache.create_index("cache_key", unique=True)
+        await db.audio_cache.create_index("expires_at", expireAfterSeconds=0)  # TTL index
+        logger.info("✅ Audio cache indexes created")
+    except Exception as e:
+        logger.warning(f"Audio cache index creation: {e}")
+    
     # Validate FAL_KEY on startup
     if validate_fal_key_on_startup:
         try:
