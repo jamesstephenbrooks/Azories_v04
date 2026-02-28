@@ -389,6 +389,15 @@ async def seed_if_empty():
         # Don't crash the app if seeding fails - it can be done manually
 
 
+async def background_seed():
+    """
+    Run seed in background so it doesn't block app startup.
+    Waits a few seconds for the app to fully initialize first.
+    """
+    await asyncio.sleep(5)  # Wait for app to be ready
+    await seed_if_empty()
+
+
 # Lifespan context manager (modern FastAPI approach)
 from contextlib import asynccontextmanager
 
@@ -403,8 +412,10 @@ async def lifespan(app: FastAPI):
     # Load FAL_KEY from database if not set or invalid in .env
     await _load_fal_key_from_db()
     
-    # AUTO-SEED: Check if database is empty and seed from preview
-    await seed_if_empty()
+    # AUTO-SEED: Run in background so app starts immediately
+    # This prevents startup timeouts when fetching from preview
+    asyncio.create_task(background_seed())
+    logger.info("🌱 Background seed task scheduled")
     
     # Create indexes for audio cache collection
     try:
