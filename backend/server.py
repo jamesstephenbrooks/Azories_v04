@@ -9124,27 +9124,23 @@ async def import_books_json(
 
 @api_router.post("/admin/import-database")
 async def import_database_from_exports(
-    import_key: str = Query(..., description="Admin import key for security"),
-    current_user: dict = Depends(get_current_user_optional)
+    import_key: str = Query(..., description="Admin import key for security")
 ):
     """
     Import all collections from /app/exports/collections/ into MongoDB.
     This is a one-time endpoint to populate the production database.
     
-    Security: Requires either admin user OR correct import key.
+    Security: Requires correct import key.
     """
     import json
     from bson import json_util
     import glob
     
-    # Security check - require admin or special import key
+    # Security check - require special import key
     IMPORT_KEY = os.environ.get('DB_IMPORT_KEY', 'azories-import-2026')
     
-    is_admin = current_user and current_user.get('role') == 'admin'
-    key_valid = import_key == IMPORT_KEY
-    
-    if not is_admin and not key_valid:
-        raise HTTPException(status_code=403, detail="Admin access or valid import key required")
+    if import_key != IMPORT_KEY:
+        raise HTTPException(status_code=403, detail="Invalid import key")
     
     # Path to exported collections
     exports_path = "/app/exports/collections"
