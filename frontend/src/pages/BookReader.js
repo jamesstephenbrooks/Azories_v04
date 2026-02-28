@@ -1225,9 +1225,11 @@ export default function BookReader() {
                   {/* Scroll indicator - shows when more content below */}
                   {showScrollIndicator && (
                     <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
-                      <div className="h-12 bg-gradient-to-t from-[#fdfbf7] dark:from-[#2a2a30] to-transparent" />
-                      <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex flex-col items-center animate-bounce">
-                        <FiChevronDown className="w-5 h-5 text-muted-foreground/60" />
+                      <div className="h-16 bg-gradient-to-t from-[#fdfbf7] dark:from-[#2a2a30] to-transparent" />
+                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center">
+                        <div className="animate-bounce bg-[#fdfbf7] dark:bg-[#2a2a30] rounded-full p-1 shadow-sm">
+                          <FiChevronDown className="w-4 h-4 text-purple-500/70" />
+                        </div>
                       </div>
                     </div>
                   )}
