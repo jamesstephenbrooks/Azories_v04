@@ -552,7 +552,7 @@ const RealisticPageFlip = forwardRef(({
   useImperativeHandle(ref, () => ({
     nextPage: () => flipBookRef.current?.pageFlip()?.flipNext(),
     prevPage: () => flipBookRef.current?.pageFlip()?.flipPrev(),
-    goToPage: (pageNum) => flipBookRef.current?.pageFlip()?.flip(pageNum),
+    goToPage: (pageNum) => flipBookRef.current?.pageFlip()?.turnToPage(pageNum), // Use turnToPage for reliable navigation (flip() has known bugs)
     getCurrentPage: () => currentPage,
     getTotalPages: () => pages.length + 2, // +2 for cover and back cover
     // Get the content page index for audio sync
