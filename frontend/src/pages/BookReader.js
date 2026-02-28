@@ -1172,7 +1172,7 @@ export default function BookReader() {
                 }}
               >
                 <button
-                  onClick={() => goToPage(0, 'prev')}
+                  onClick={() => goToPage(0, 'prev', true)}
                   className="px-6 py-2.5 rounded-full bg-purple-600 hover:bg-purple-500 text-white font-medium flex items-center gap-2 transition-colors shadow-lg text-sm"
                   data-testid="read-again-btn"
                 >
