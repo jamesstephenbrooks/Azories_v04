@@ -609,14 +609,39 @@ export default function BookReader() {
     }
   }, [allPages, narratorVoice]);
 
-  // Pre-load audio for first few pages when book is ready
+  // Pre-load audio for first few pages when book is ready - START IMMEDIATELY
   useEffect(() => {
-    if (allPages.length > 0 && narratorVoice) {
-      // Pre-load first 3 pages in background for instant start
-      for (let i = 0; i < Math.min(3, allPages.length); i++) {
-        preloadAudio(i);
+    const preloadFirstPages = async () => {
+      if (allPages.length > 0 && narratorVoice) {
+        setNarrationPreparing(true);
+        setNarrationReady(false);
+        
+        // Pre-load first 3 pages in background for instant start
+        const preloadPromises = [];
+        for (let i = 0; i < Math.min(3, allPages.length); i++) {
+          if (allPages[i]?.text_content && !audioCache.current.has(i)) {
+            preloadPromises.push(preloadAudio(i));
+          }
+        }
+        
+        // Wait for at least the first page to be ready
+        if (preloadPromises.length > 0) {
+          try {
+            await Promise.race([
+              preloadPromises[0], // Wait for first page at minimum
+              new Promise(resolve => setTimeout(resolve, 10000)) // 10s timeout
+            ]);
+          } catch (e) {
+            console.log('Preload error (non-critical):', e);
+          }
+        }
+        
+        setNarrationPreparing(false);
+        setNarrationReady(true);
       }
-    }
+    };
+    
+    preloadFirstPages();
   }, [allPages.length, narratorVoice, preloadAudio]);
 
   const playAudio = useCallback(async () => {
