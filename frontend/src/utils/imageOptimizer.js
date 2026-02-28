@@ -57,13 +57,28 @@ export const getOptimizedImageUrl = (url, {
 };
 
 /**
- * Get thumbnail-optimized URL (balanced quality/speed)
+ * Get thumbnail-optimized URL (sharp and crisp)
  * Use this for grid views and small previews
  */
-export const getThumbnailUrl = (url, width = 250) => {
+export const getThumbnailUrl = (url, width = 300) => {
+  if (!url) return url;
+  
+  // For Cloudinary, add sharpening for crisp thumbnails
+  if (url.includes('res.cloudinary.com')) {
+    const transforms = [
+      `w_${width}`,
+      'q_75',
+      'e_sharpen:100',
+      'f_auto',
+      'c_limit',
+      'dpr_auto'
+    ];
+    return url.replace('/upload/', `/upload/${transforms.join(',')}/`);
+  }
+  
   return getOptimizedImageUrl(url, { 
     width, 
-    quality: '65',  // Balanced quality - fast but not blurry
+    quality: '75',
     format: 'auto' 
   });
 };
