@@ -1211,36 +1211,47 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
         scene.add(model);
         
         // Load Azora mascot model for downstairs (ground floor) area
+        console.log('Starting to load Azora from:', AZORA_MODEL_URL);
         gltfLoader.load(
           AZORA_MODEL_URL,
           (azora) => {
-            console.log('Azora mascot loaded!');
+            console.log('Azora mascot loaded successfully!');
             const azoraMesh = azora.scene;
             
+            // Log the original model bounds
+            const originalBbox = new THREE.Box3().setFromObject(azoraMesh);
+            console.log('Azora original bounds:', originalBbox.min, originalBbox.max);
+            
             // Scale Azora to fit the scene (mascot should be about 1.5 units tall)
-            const azoraBbox = new THREE.Box3().setFromObject(azoraMesh);
-            const azoraHeight = azoraBbox.max.y - azoraBbox.min.y;
+            const azoraHeight = originalBbox.max.y - originalBbox.min.y;
             const targetHeight = 1.5; // Target height in scene units
             const azoraScale = targetHeight / azoraHeight;
+            console.log('Azora scale factor:', azoraScale, 'from height:', azoraHeight);
             azoraMesh.scale.setScalar(azoraScale);
             
-            // Position Azora on the GROUND FLOOR (Y=0 is ground level)
-            // X=-1.5 is near center-left, Z=0 is center of room
-            // Ground floor Y should be ~0.1 (slightly above floor to prevent clipping)
-            azoraMesh.position.set(-1.5, 0.1, 0);
+            // Position Azora on the stone floor area in center of ground floor
+            // Based on the screenshot: the marble/stone center area is at approximately (0, 0, 0)
+            azoraMesh.position.set(0, 0.05, -1);
             
-            // Rotate to face visitors coming down the stairs (facing roughly toward +Z and +X)
-            azoraMesh.rotation.y = -Math.PI / 4; // Face toward stairs/entrance
+            // Rotate to face the entrance/stairs
+            azoraMesh.rotation.y = Math.PI; // Face toward the viewer/stairs
             
             // Store reference for interaction
             azoraRef.current = azoraMesh;
             
             // Add to scene
             scene.add(azoraMesh);
-            console.log('Azora positioned at ground floor:', azoraMesh.position);
+            console.log('Azora added to scene at:', azoraMesh.position);
           },
-          undefined,
-          (error) => console.warn('Failed to load Azora mascot:', error)
+          (progress) => {
+            if (progress.total > 0) {
+              console.log('Azora loading progress:', Math.round((progress.loaded / progress.total) * 100) + '%');
+            }
+          },
+          (error) => {
+            console.error('Failed to load Azora mascot:', error);
+            console.error('Error details:', error.message);
+          }
         );
         
         // Try to find a good starting position using raycasting
