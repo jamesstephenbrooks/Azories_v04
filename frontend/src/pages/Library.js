@@ -13,15 +13,20 @@ import BookRecommendations from '@/components/BookRecommendations';
 import { getThumbnailUrl, preloadImages } from '@/utils/imageOptimizer';
 
 // Lazy-loaded image component with intersection observer and aggressive optimization
-const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 300 }) => {
+const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 200 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const [hasError, setHasError] = useState(false);
   const imgRef = useRef(null);
 
-  // Get optimized thumbnail URL using centralized utility
+  // Get AGGRESSIVELY optimized thumbnail URL - smaller size, lower quality for speed
   const optimizedSrc = useMemo(() => {
-    return getThumbnailUrl(src, thumbnailWidth);
+    if (!src) return src;
+    // Use even more aggressive compression: w=200, q=40
+    if (src.includes('res.cloudinary.com')) {
+      return src.replace('/upload/', `/upload/w_${thumbnailWidth},q_40,f_auto,c_limit/`);
+    }
+    return src;
   }, [src, thumbnailWidth]);
 
   useEffect(() => {
@@ -32,7 +37,7 @@ const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 300
           observer.disconnect();
         }
       },
-      { rootMargin: '300px', threshold: 0.01 }  // Even larger rootMargin for earlier loading
+      { rootMargin: '100px', threshold: 0.01 }  // Smaller rootMargin - only load when closer to viewport
     );
 
     if (imgRef.current) {
@@ -76,7 +81,6 @@ const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 300
           onError={() => setHasError(true)}
           loading="lazy"
           decoding="async"
-          fetchpriority="low"
         />
       )}
       
