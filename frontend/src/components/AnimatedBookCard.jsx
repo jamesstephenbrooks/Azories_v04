@@ -19,6 +19,11 @@ const LazyImage = ({ src, alt, className, onLoad, thumbnailWidth = 300 }) => {
   const [hasError, setHasError] = useState(false);
   const imgRef = useRef(null);
 
+  // Get optimized thumbnail URL
+  const optimizedSrc = useMemo(() => {
+    return getOptimizedImageUrl(src, { width: thumbnailWidth, quality: 'auto', format: 'auto' });
+  }, [src, thumbnailWidth]);
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
