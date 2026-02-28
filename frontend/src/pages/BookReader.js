@@ -1206,6 +1206,30 @@ export default function BookReader() {
               </div>
             ) : isMobilePortrait && !isCover && currentPage >= 0 ? (
               <div className="flex flex-col w-full max-w-md mx-auto" style={{ height: `calc(100vh - 140px)` }}>
+                {/* Back Cover - Full page image */}
+                {currentPageData?.isBackCover ? (
+                  <div className="relative flex-1 rounded-2xl overflow-hidden shadow-lg">
+                    <img 
+                      src={currentPageData.image_url}
+                      alt="Back Cover"
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain',
+                        objectPosition: 'center',
+                        backgroundColor: '#1a0a2e'
+                      }}
+                    />
+                    {/* Back cover badge */}
+                    <div className="absolute bottom-2 right-2 px-3 py-1 rounded-full bg-black/50 text-white text-xs">
+                      The End
+                    </div>
+                  </div>
+                ) : (
+                <>
                 {/* Top: Illustration - 55% of available height with portrait crop */}
                 <div 
                   className="relative flex-shrink-0 rounded-t-2xl overflow-hidden shadow-lg"
@@ -1232,7 +1256,7 @@ export default function BookReader() {
                   )}
                   {/* Page number badge */}
                   <div className="absolute bottom-2 right-2 px-2 py-1 rounded-full bg-black/50 text-white text-xs">
-                    {currentPage + 1} / {allPages.length}
+                    {currentPage + 1} / {allPages.length - (allPages[allPages.length - 1]?.isBackCover ? 1 : 0)}
                   </div>
                 </div>
                 
