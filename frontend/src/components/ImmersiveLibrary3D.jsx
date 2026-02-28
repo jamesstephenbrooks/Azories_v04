@@ -1143,10 +1143,13 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
                 name.includes('metal rail bars') || name.includes('bridge_rail');
             
             // Check if this mesh should be EXCLUDED from collision
+            // Exclude furniture and decorations to allow walking through areas
             const excludeFromCollision = !forceCollision && (name.includes('book') || name.includes('table') || 
                 name.includes('chair') || name.includes('ceiling') || name.includes('seat') ||
                 name.includes('lamp') || name.includes('candle') || name.includes('painting') ||
-                name.includes('picture') || name.includes('frame') || name.includes('decoration'));
+                name.includes('picture') || name.includes('frame') || name.includes('decoration') ||
+                name.includes('bookcase') || name.includes('shelf') || name.includes('bookshelf') ||
+                name.includes('cabinet'));
             
             if (isCollisionOnlyMesh) {
               // Make collision-only meshes invisible but keep for raycasting
