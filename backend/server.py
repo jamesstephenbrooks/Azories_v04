@@ -5081,7 +5081,9 @@ async def get_voices():
 
 @api_router.post("/tts/generate")
 async def generate_tts(request: TTSRequest):
-    """Generate TTS audio using OpenAI TTS (via Emergent LLM Key)"""
+    """Generate TTS audio using OpenAI TTS (via Emergent LLM Key) with server-side caching"""
+    import hashlib
+    
     try:
         emergent_key = os.environ.get("EMERGENT_LLM_KEY")
         if not emergent_key:
@@ -5103,6 +5105,18 @@ async def generate_tts(request: TTSRequest):
         # Get OpenAI voice name (default to nova for storytelling)
         openai_voice = voice_mapping.get(request.voice_id, "nova")
         
+        # Create a cache key based on text content and voice
+        cache_key = hashlib.sha256(f"{request.text}:{openai_voice}".encode()).hexdigest()
+        
+        # Check server-side cache first
+        cached_audio = await db.audio_cache.find_one({"cache_key": cache_key})
+        if cached_audio and cached_audio.get("audio_base64"):
+            logger.info(f"TTS cache hit for key: {cache_key[:16]}...")
+            return {"audio_base64": cached_audio["audio_base64"], "success": True, "cached": True}
+        
+        # Not in cache - generate new audio
+        logger.info(f"TTS cache miss, generating for key: {cache_key[:16]}...")
+        
         # Initialize OpenAI TTS
         tts = OpenAITextToSpeech(api_key=emergent_key)
         
@@ -5114,7 +5128,23 @@ async def generate_tts(request: TTSRequest):
             response_format="mp3"
         )
         
-        return {"audio_base64": audio_base64, "success": True}
+        # Store in server-side cache (with TTL of 30 days)
+        await db.audio_cache.update_one(
+            {"cache_key": cache_key},
+            {
+                "$set": {
+                    "cache_key": cache_key,
+                    "audio_base64": audio_base64,
+                    "voice": openai_voice,
+                    "text_preview": request.text[:100],
+                    "created_at": datetime.now(timezone.utc),
+                    "expires_at": datetime.now(timezone.utc) + timedelta(days=30)
+                }
+            },
+            upsert=True
+        )
+        
+        return {"audio_base64": audio_base64, "success": True, "cached": False}
     except Exception as e:
         logger.error(f"Error generating TTS: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error generating TTS: {str(e)}")
