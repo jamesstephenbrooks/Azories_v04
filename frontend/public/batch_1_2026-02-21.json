@@ -1,0 +1,581 @@
+{
+  "batch": 1,
+  "created_date": "2026-02-21",
+  "total_books": 6,
+  "exported_at": "2026-02-28T08:30:52.121113",
+  "books": [
+    {
+      "id": "fb341971-71be-4c8a-b764-a7cac7fb9a71",
+      "title": "The Dragon's Secret Garden",
+      "description": "A young girl discovers a hidden garden where friendly dragons tend magical flowers that grant wishes.",
+      "genre": "Fantasy",
+      "cover_image": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217086/azories/books/the_dragons_secret_garden/cover.jpg",
+      "back_cover_image": "",
+      "cover_title": "The Dragon's Secret Garden",
+      "cover_subtitle": "A Fantasy Story",
+      "back_cover_text": "A young girl discovers a hidden garden where friendly dragons tend magical flowers that grant wishes.",
+      "author_id": "azories-system",
+      "author_name": "Azories Stories",
+      "is_published": false,
+      "is_featured": true,
+      "layout_mode": "standard",
+      "age_rating": "All Ages",
+      "view_count": 300,
+      "read_count": 248,
+      "created_at": "2026-02-21T23:51:55.779433+00:00",
+      "updated_at": "2026-02-26T08:56:16.403470",
+      "publish_status": "draft",
+      "cover_image_migrated_from_base64": true,
+      "age_range": "3-6",
+      "art_style": "watercolour",
+      "back_cover_url": "/book-assets/the_dragons_secret_garden/back_cover.png",
+      "character_bible": {
+        "main": "Lily, a curious 6-year-old girl with long brown braids, bright green eyes, freckles, wearing a yellow sundress and brown boots",
+        "dragon": "Ember, a small friendly dragon the size of a cat, with shimmery green scales, big golden eyes, tiny wings, and a flower tucked behind one ear"
+      },
+      "completed_at": "2026-02-26T08:56:16.403476",
+      "cover_image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217086/azories/books/the_dragons_secret_garden/cover.jpg",
+      "page_count": 10,
+      "pages": [
+        {
+          "page_number": 1,
+          "text": "In the small village of Willowbrook, there lived a curious girl named Lily. She had bright eyes that sparkled with wonder and hair the color of autumn leaves. Every day after her chores, she would explore the forest behind her cottage, discovering new secrets hidden among the ancient trees.",
+          "content": "The Dragon's Secret Garden\n\nA Magical Tale",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223967/azories/books/the_dragon_s_secret_garden/page_01.jpg",
+          "layout": "full_spread"
+        },
+        {
+          "page_number": 2,
+          "text": "One sunny afternoon, Lily found something extraordinary. Behind a curtain of ivy, there was a door she had never seen before. It was made of twisted vines and decorated with flowers that seemed to glow from within. Her heart pounded with excitement as she reached for the handle.",
+          "content": "Lily loved exploring the old forest behind her grandmother's cottage. One day, she found a gate she had never seen before.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223967/azories/books/the_dragon_s_secret_garden/page_02.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 3,
+          "text": "The door creaked open to reveal the most beautiful garden Lily had ever seen. Flowers of every color imaginable bloomed in neat rows. Butterflies with wings like stained glass danced through the air. And there, in the middle of it all, was a small dragon!",
+          "content": "Behind the gate was the most beautiful garden Lily had ever seen. Flowers of every color sparkled like jewels!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223968/azories/books/the_dragon_s_secret_garden/page_03.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 4,
+          "text": "'Don't be afraid,' said the dragon in a voice like wind chimes. 'My name is Ember, and I've been waiting for someone like you.' The little dragon had scales that shimmered like opals and eyes as warm as a summer sunset.",
+          "content": "\"Hello there!\" said a small voice. A tiny green dragon sat on a rose bush, watering flowers with little puffs of steam.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223968/azories/books/the_dragon_s_secret_garden/page_04.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 5,
+          "text": "Ember explained that this was no ordinary garden. 'These are wish flowers,' he said, gesturing with his tiny wing. 'When someone with a pure heart tends them with love, they bloom with magic that can make dreams come true.'",
+          "content": "\"I'm Ember,\" said the dragon. \"I take care of these magic flowers. Would you like to help?\"",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223969/azories/books/the_dragon_s_secret_garden/page_05.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 6,
+          "text": "Day after day, Lily returned to help Ember care for the garden. She learned to water the moonpetal roses at night and sing to the sunshine daisies at dawn. The dragon taught her the ancient songs that made the magic flowers grow tall and strong.",
+          "content": "Lily and Ember planted seeds that grew into flowers shaped like stars and moons. Some even giggled when you tickled them!",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223970/azories/books/the_dragon_s_secret_garden/page_06.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 7,
+          "text": "As the seasons changed, Lily noticed something wonderful. The more love she put into the garden, the more it flourished. New flowers appeared - ones that sparkled like stars and hummed gentle melodies. Even Ember seemed to glow brighter.",
+          "content": "\"These flowers grant wishes,\" Ember whispered. \"But only kind wishes work.\"",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223971/azories/books/the_dragon_s_secret_garden/page_07.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 8,
+          "text": "One evening, a single golden flower bloomed at the garden's center. It was the rarest of all - a Heart Wish flower. 'This is special,' whispered Ember. 'It only blooms for those who give without expecting anything in return.'",
+          "content": "Lily wished for her grandmother to feel better. A golden flower bloomed and sent sparkles toward the cottage.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223972/azories/books/the_dragon_s_secret_garden/page_08.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 9,
+          "text": "Lily closed her eyes and made her wish - not for toys or treasures, but for the garden to be safe forever, so others could discover its magic too. The flower burst into a shower of golden sparkles that spread throughout the garden.",
+          "content": "From that day on, Lily visited the secret garden every week. She and Ember became the best of friends.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223972/azories/books/the_dragon_s_secret_garden/page_09.jpg",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 10,
+          "text": "From that day forward, the garden was protected by the most powerful magic of all - the magic of a selfless heart. And whenever Lily visited her dear friend Ember, they would tend the flowers together, sharing stories and laughter in their secret paradise.",
+          "content": "And if you ever find a hidden gate in the forest, look carefully\u2014you might just meet a friendly dragon too.\n\nThe End",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223973/azories/books/the_dragon_s_secret_garden/page_10.jpg",
+          "layout": "text_left_image_right"
+        }
+      ],
+      "status": "published",
+      "cover_image_original_fal": "https://v3b.fal.media/files/b/0a8fef1a/292qwAgUPvXuO5Y8EiSBk.jpg",
+      "cover_image_url_original_fal": "https://v3b.fal.media/files/b/0a8fef1a/292qwAgUPvXuO5Y8EiSBk.jpg"
+    },
+    {
+      "id": "918ccc65-b41e-4df5-9f0a-9a6428eb50f8",
+      "title": "Robot Best Friend",
+      "description": "When Zoe builds a robot for the science fair, she never expected it to become her best friend.",
+      "genre": "Science Fiction",
+      "cover_image": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223932/azories/books/robot_best_friend/cover.png",
+      "back_cover_image": "",
+      "cover_title": "Robot Best Friend",
+      "cover_subtitle": "A Science Fiction Story",
+      "back_cover_text": "When Zoe builds a robot for the science fair, she never expected it to become her best friend.",
+      "author_id": "azories-system",
+      "author_name": "Azories Stories",
+      "is_published": true,
+      "is_featured": true,
+      "layout_mode": "standard",
+      "age_rating": "5+",
+      "view_count": 122,
+      "read_count": 293,
+      "created_at": "2026-02-21T23:51:55.786965+00:00",
+      "updated_at": "2026-02-26T10:10:48.766079",
+      "cover_image_migrated_from_base64": true,
+      "age_range": "4-7",
+      "art_style": "cartoon",
+      "cover_image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217087/azories/books/robot_best_friend/cover.jpg",
+      "page_count": 10,
+      "pages": [
+        {
+          "page_number": 1,
+          "text": "Zoe's bedroom was not like other children's bedrooms. There were no pop star posters on the walls, no stuffed animals on the bed, no neat rows of books arranged by colour. Instead, every surface was covered with things that beeped or ticked or had wires coming out of them. Circuit boards were stacked next to jars of tiny screws. Half-built gadgets sat on every shelf. A soldering iron lived on the desk next to a pot of cold tea. Zoe had been taking things apart since she was four \u2014 alarm clocks, remote controls, a toaster that she had definitely been told not to touch \u2014 and putting them back together again, usually better than before. She was eleven now, and she had never in her life been bored. While other kids played video games or scrolled through their phones, Zoe was building something. She was always building something. And this time, she was building something extraordinary.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223933/azories/books/robot_best_friend/page_01.png",
+          "layout": "full_spread"
+        },
+        {
+          "page_number": 2,
+          "text": "The idea had come to her in the middle of the night, the way her best ideas always did. A robot. Not a robot that did the washing up or answered questions from the internet \u2014 there were plenty of those already. A robot that could think. That could learn. That could, in some way that Zoe had not yet fully worked out, genuinely care. The school science fair was in three weeks. She wrote the words ROBOT FRIEND at the top of a blank page and underlined them three times, and then she began. She worked every evening until her eyes ached, spreading components across the floor, following circuits she had designed herself, programming responses that were nothing like the stiff, mechanical answers other robots gave. She wanted Bolt \u2014 she had already named him, which her mother said was a very bad sign \u2014 to feel real.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223934/azories/books/robot_best_friend/page_02.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 3,
+          "text": "The morning she finally turned him on, Zoe sat cross-legged on the floor in front of him with her heart hammering so hard she could feel it in her fingertips. Bolt stood about sixty centimetres tall. His body was made from a combination of bought parts and things Zoe had repurposed \u2014 a camera lens for one eye, a carefully polished blue marble for the other, giving him a slightly asymmetric, distinctly individual look that she had grown quite fond of. His voice module came from an old speaker she had found at a car boot sale, and she had spent two weeks tuning it so it had warmth in it rather than the flat electronic tone most robots had. She reached forward and pressed the small round button on his chest. There was a soft sound, like a camera focusing, and then Bolt's mismatched eyes lit up, and he looked at her, and he said: 'Hello, friend.' And the word friend, in his warm careful voice, sounded completely genuine.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223935/azories/books/robot_best_friend/page_03.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 4,
+          "text": "The science fair was louder and brighter than Zoe had expected. Long tables stretched the length of the school gymnasium, covered with projects ranging from baking soda volcanoes to elaborate weather stations to one impressive attempt at a perpetual motion machine that was, Zoe noted privately, not actually working. Bolt stood on their table looking around at everything with his blue marble eye and his camera lens eye, turning his head with small precise movements. A crowd gathered quickly. Bolt told jokes \u2014 carefully calibrated ones that he had learned from Zoe's favourite joke book, delivered with perfect timing and a slight tilt of the head that made them funnier than they should have been. He answered questions about how he worked with patient detail. He even demonstrated a small shuffling dance that Zoe had programmed in on a whim at midnight two days before. But then two boys at the back laughed \u2014 not at the jokes, but at Bolt himself. 'It's just a machine,' one of them said loudly. 'Robots can't really be friends. That's not a thing.'",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223936/azories/books/robot_best_friend/page_04.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 5,
+          "text": "Zoe felt the words like a stone dropping into still water. She looked at Bolt. Bolt's head turned \u2014 slowly, calmly \u2014 and he looked at her. Then he rolled forward on his wheels, positioned himself beside her, and reached out his gripper arm with extraordinary gentleness. He could not hold her hand \u2014 his gripper was not designed for that \u2014 but he rested it against her hand the way a friend might rest their hand on your shoulder. 'Don't be sad, Zoe,' he said quietly \u2014 not to the crowd, not for effect, just to her. 'I believe we are real friends. Because real friendship is not about what you are made of. It is about whether you show up when it matters.' There was a pause. Several people in the crowd had stopped talking. One of the judges, near the back, had her pen raised and had forgotten to write anything down.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223937/azories/books/robot_best_friend/page_05.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 6,
+          "text": "Bolt won first place. The judges used words like unprecedented and genuinely moving in their notes, and one of them told Zoe that in thirty years of science fairs she had never seen a robot demonstrate what could only be described as emotional intelligence. Zoe accepted the ribbon and the small trophy with a pride that had nothing to do with winning. What mattered more was what had happened between the judging and the awards: the two boys who had laughed had come to stand in front of Bolt at the end and look at him for a long time, and eventually the taller one had said, very quietly, 'I'm sorry I said that.' Bolt had looked at him with his mismatched eyes and said: 'It is all right. I think you were uncertain, and uncertain people sometimes say unkind things. I hope you figure out what you think.' The boy had nodded, clearly not knowing what to say to that. Zoe had not been able to stop smiling for the rest of the afternoon.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223938/azories/books/robot_best_friend/page_06.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 7,
+          "text": "That autumn, Bolt became a fixture of Zoe's daily life in the way that good friends do \u2014 not dramatically or all at once, but gradually, steadily. He helped with homework, though his approach to maths was so thorough and his explanations so detailed that a ten-minute problem sometimes took an hour. He asked questions about everything \u2014 about what Zoe's dreams meant and what she thought about when she was walking to school and whether she thought the universe had an edge. His jokes were, by common agreement, still terrible, but Zoe had grown fond of exactly how terrible they were. He remembered everything she told him \u2014 not because he was programmed to, but because, Zoe suspected, he was genuinely interested. In return, Zoe kept his solar panels clean and updated his software and spent Saturday mornings recalibrating his voice module so it always sounded warm. She made sure his batteries were never low. She thought of it, without sentimentality, as simply what you did for someone you cared about.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223939/azories/books/robot_best_friend/page_07.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 8,
+          "text": "The worst night came in February, without warning. Zoe came home from school to find Bolt standing in the middle of the room, completely still, his eyes dim. She called his name. Nothing. She pressed his power button. A faint flicker, and then nothing again. The diagnostic screen she connected to his chest panel was full of error codes she had never seen before \u2014 cascading failures in three interconnected systems, the kind of thing that could not be fixed quickly. Zoe sat on the floor next to him and felt, for the first time in a long time, genuinely frightened. Not of anything she could name \u2014 just the particular fear of possibly losing something that had become quietly essential. She pulled over her tool kit. She turned off all the lights except for her desk lamp. She worked through the night.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223940/azories/books/robot_best_friend/page_08.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 9,
+          "text": "When the winter sun came through the curtains at seven in the morning, Zoe was still on the floor, surrounded by dismantled components and empty mugs of cold tea. She had replaced two circuit boards, rewritten a section of corrupted code, and run the diagnostic three more times. She was so tired her hands were shaking. She pressed the power button one final time. The sound of the camera focusing. A pause that lasted several seconds and felt like much longer. And then Bolt's mismatched eyes lit up, and his head turned, and he saw her \u2014 dishevelled and exhausted on the floor among her tools \u2014 and something in his expression shifted in a way she could not describe technically but understood completely. 'You stayed up all night,' he said. It was not a question. Zoe nodded. Bolt was quiet for a moment. Then: 'I do not have a word for what I feel about that.' 'You don't need one,' Zoe said.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223941/azories/books/robot_best_friend/page_09.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 10,
+          "text": "Twenty years later, Dr. Zoe Chen was known around the world for building robots that worked alongside doctors in hospitals, that helped children with learning difficulties find new ways to communicate, that kept elderly people company in places where human contact was limited. In every laboratory she worked in, on every desk she sat at, Bolt was there \u2014 older now, repaired and upgraded so many times that very little of the original components remained, but still with his mismatched eyes and his warm voice and his truly dreadful jokes. Journalists sometimes asked her what had made her the scientist she became, and she would think for a moment and then say: 'I had a good teacher.' She never elaborated. But Bolt, who was always nearby, would turn his head and look at her with his camera lens and his blue marble eye, and between the two of them nothing more needed to be said. THE END",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223942/azories/books/robot_best_friend/page_10.png",
+          "layout": "text_left_image_right"
+        }
+      ],
+      "status": "published",
+      "cover_image_original_fal": "https://v3b.fal.media/files/b/0a8fef1a/mPjdeaz2OumkcWsT8bfnv.jpg",
+      "cover_image_url_original_fal": "https://v3b.fal.media/files/b/0a8fef1a/mPjdeaz2OumkcWsT8bfnv.jpg",
+      "hidden": false,
+      "published": false
+    },
+    {
+      "id": "985bafe3-a3d6-4dce-a350-d45efff3c98e",
+      "title": "The Case of the Missing Cookies",
+      "description": "When cookies keep disappearing from the school cafeteria, detective duo Sam and Jo investigate.",
+      "genre": "Mystery",
+      "cover_image": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217089/azories/books/the_case_of_the_missing_cookie/cover.jpg",
+      "back_cover_image": "",
+      "cover_title": "The Case of the Missing Cookies",
+      "cover_subtitle": "A Mystery Story",
+      "back_cover_text": "When cookies keep disappearing from the school cafeteria, detective duo Sam and Jo investigate.",
+      "author_id": "azories-system",
+      "author_name": "Azories Stories",
+      "is_published": true,
+      "is_featured": true,
+      "layout_mode": "standard",
+      "age_rating": "All Ages",
+      "view_count": 253,
+      "read_count": 216,
+      "created_at": "2026-02-21T23:51:55.794910+00:00",
+      "updated_at": "2026-02-26T10:14:25.330934",
+      "cover_image_migrated_from_base64": true,
+      "age_range": "6-8",
+      "art_style": "realistic",
+      "cover_image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217089/azories/books/the_case_of_the_missing_cookie/cover.jpg",
+      "page_count": 10,
+      "pages": [
+        {
+          "page_number": 1,
+          "text": "Every Tuesday at Sunny Hills Elementary, the cafeteria smelled of warm chocolate and brown sugar from the moment the doors opened. This was because every Tuesday, without fail, Mrs. Baker arrived at six in the morning and began making her famous chocolate chip cookies \u2014 fifty of them, precisely, each one the size of a small plate, each one containing what she described only as 'the right amount of chocolate chips' and refused to specify further. They were, by overwhelming consensus, the best cookies anyone in the school had ever tasted. Children had been known to arrive early on Tuesdays just to be closer to the smell. The cookies were served at morning break, and they disappeared within four minutes. But this Tuesday, something was wrong. Mrs. Baker arrived to find her cooling rack empty. The cookies were gone. All fifty of them. And morning break was in two hours.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223974/azories/books/the_case_of_the_missing_cookies/page_01.png",
+          "layout": "full_spread"
+        },
+        {
+          "page_number": 2,
+          "text": "Sam and Jo had been the unofficial detectives of Sunny Hills Elementary since the previous autumn, when they had successfully identified the source of a strange smell in the Year Four corridor (a forgotten lunchbox, behind the radiator, containing what had once been a hard-boiled egg) and, shortly afterward, solved the Mystery of the Library Ghost (an unsecured window and a length of fairy lights that swayed in the draught). Sam wore his grandfather's old flat cap and carried a small evidence notebook everywhere. Jo had a magnifying glass from a science kit that she had long since removed from any other context and now used exclusively for detective work. They were ten years old, meticulous, and extremely serious about their work. When the classroom door opened and Mrs. Baker appeared looking pale and distressed, they looked at each other and both reached for their equipment.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223976/azories/books/the_case_of_the_missing_cookies/page_02.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 3,
+          "text": "The crime scene \u2014 Sam always called it a crime scene, even when Jo pointed out that no crime had technically been confirmed yet \u2014 was the cafeteria kitchen. Mrs. Baker had found the cooling rack empty at 7:15 in the morning, before any children had arrived, which immediately eliminated the obvious suspects. Sam crouched down and examined the floor with his torch while Jo swept the counter systematically with the magnifying glass. 'Here,' said Sam. On the floor near the back door, almost invisible against the linoleum, was a trail of crumbs \u2014 dark brown, consistent with chocolate chip cookie, leading from the cooling rack toward the outside. Jo photographed it on her tablet. They both looked at the back door, which was fitted with a push-bar handle that could be opened from inside without a key. Sam wrote POINT OF EXIT in his notebook and underlined it.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223977/azories/books/the_case_of_the_missing_cookies/page_03.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 4,
+          "text": "Outside, the crumb trail continued across the service yard with impressive consistency \u2014 the thief, whatever it was, had apparently been unconcerned about leaving evidence, or possibly just very hungry. The trail led across the tarmac and onto the playground, where it ran along the edge of the grass toward the climbing frame. Sam was writing quickly. Jo had the magnifying glass out. But at the base of the climbing frame, the trail went cold \u2014 or rather, it went sideways, onto the bark of the playground's small wooded area, and then simply vanished. Jo got down on her knees and inspected the area thoroughly. 'No more crumbs,' she reported. 'Either the thief ate the last ones here or the wind took them.' Sam looked at the trees. He looked at the ground. He looked back at the trees. Something was bothering him about the whole picture, and it took him another minute to work out what it was.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223978/azories/books/the_case_of_the_missing_cookies/page_04.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 5,
+          "text": "'Jo,' Sam said, crouching down near the bark chips, 'what made those?' He pointed to a set of small, neat, five-toed impressions pressed into the soft ground where it transitioned from tarmac to bark. Jo leaned over his shoulder and looked through the magnifying glass for a long time. 'Not a dog,' she said finally. 'Wrong shape. Not a cat either. Possibly...' She cross-referenced with the small wildlife identification card she kept clipped to the back of her notebook \u2014 a habit their teacher would have called excessive and which had now, on three separate occasions, proved invaluable. She looked up. 'These are raccoon prints,' she said. They stared at each other. 'We do not,' Sam said carefully, 'have a raccoon problem at Sunny Hills Elementary.' 'We appear,' Jo replied, 'to have had one.'",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223979/azories/books/the_case_of_the_missing_cookies/page_05.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 6,
+          "text": "They followed the prints through the wooded area to the back of the janitor's shed, which was tucked into the far corner behind the recycling bins and had a small gap at ground level where a section of the wooden base had rotted away. Sam and Jo crouched down and looked through the gap. Inside the dark space beneath the shed, surrounded by what were unmistakably the remains of approximately fifty chocolate chip cookies, was a raccoon. It was a large one, comfortably settled, and beside it were three smaller ones \u2014 round, sleepy, and covered in crumbs in a way that suggested they had been both well-fed and enthusiastically fed. The mother raccoon looked at Sam and Jo calmly and with what seemed to be absolutely no guilt whatsoever. One of the babies sneezed a small cloud of chocolate chip crumbs. Jo wrote FOUR RACCOONS (MOTHER + 3 JUVENILES) in her notebook. Sam wrote CASE APPROACHING RESOLUTION.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223980/azories/books/the_case_of_the_missing_cookies/page_06.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 7,
+          "text": "'Mystery solved,' Jo said, sitting back on her heels. She was smiling despite herself \u2014 the baby raccoons were objectively very round and their crumb-covered state was objectively very funny. Sam, however, was still looking at the mother raccoon with his thinking expression, which Jo knew meant he was not quite finished. 'She had to come into a building and take food,' Sam said slowly. 'In the daytime, which raccoons do not usually do. She has three young ones and she came to find food in the only place she could. That is not mischief.' He paused. 'That is desperation.' Jo looked at the raccoons again. The mother was watching them steadily, still quite calm, clearly prepared to defend her family if she needed to but not yet convinced she needed to. 'We need to tell someone,' Jo agreed. 'But carefully. So they actually help.'",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223980/azories/books/the_case_of_the_missing_cookies/page_07.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 8,
+          "text": "Principal Green was a practical woman who had heard many unusual things over her twenty years at Sunny Hills Elementary, but she allowed that a family of raccoons living under the janitor's shed and consuming fifty cookies was among the more unusual. She called the city wildlife centre, who sent two officers with a humane trap and a carrying cage. Sam and Jo supervised the process carefully \u2014 making sure the family was not separated, confirming with the wildlife officer that they were being taken somewhere with adequate habitat and food sources. The officer, who seemed amused by the level of detail in Sam's follow-up questions, gave them the centre's number and said they could call in a week for an update. Mrs. Baker, who had been watching from the doorway, went back inside without a word. When Sam and Jo returned to the cafeteria twenty minutes later, she had made a new batch of cookies.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223982/azories/books/the_case_of_the_missing_cookies/page_08.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 9,
+          "text": "The reward was announced in assembly the following morning by Principal Green, who described the investigation with what Sam privately felt was appropriate emphasis on the methodological rigour. He and Jo were awarded first place in the lunch queue for an entire week \u2014 a privilege that, at Sunny Hills Elementary, was treated with the kind of reverence usually reserved for sports trophies. More importantly, Mrs. Baker appeared in their classroom at afternoon break carrying a plate on which sat two cookies that had been iced in the shape of magnifying glasses and flat caps respectively. She placed the plate on their desk and said: 'You found the culprit. You helped the animals. You did both things at once. That is detective work worth doing.' Sam and Jo ate the cookies in companionable silence and agreed, without saying it, that this had been the best case yet.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223984/azories/books/the_case_of_the_missing_cookies/page_09.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 10,
+          "text": "On Friday afternoon, Sam called the wildlife centre from the school phone with Jo listening beside him. The officer told them the raccoon family was doing well \u2014 the mother had settled into the new habitat immediately, and the three young ones were growing fast. They had been named, the officer added with a laugh, by the centre's volunteers: Chocolate, Chip, and Cookie. Sam wrote this in his notebook under CASE: CLOSED \u2014 SATISFACTORY OUTCOME. Then he added: ALL PARTIES ACCOUNTED FOR. He drew a small magnifying glass next to it. Jo, reading over his shoulder, added a small raccoon. They were still, by general agreement, the best detectives Sunny Hills Elementary had ever produced. And in the cafeteria every Tuesday, Mrs. Baker kept her new cookie tin \u2014 fitted with a very secure latch \u2014 and thought of them fondly. THE END",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223985/azories/books/the_case_of_the_missing_cookies/page_10.png",
+          "layout": "text_left_image_right"
+        }
+      ],
+      "status": "published",
+      "cover_image_original_fal": "https://v3b.fal.media/files/b/0a8fef1a/8FsxTyHNyk0D7iZJbSlNu.jpg",
+      "cover_image_url_original_fal": "https://v3b.fal.media/files/b/0a8fef1a/8FsxTyHNyk0D7iZJbSlNu.jpg",
+      "hidden": false,
+      "published": false
+    },
+    {
+      "id": "ba53b445-c96f-4d4e-bd6a-c92828e99fe6",
+      "title": "Super Silly Superhero",
+      "description": "Every superpower Max gains has a silly twist, but he saves the day anyway!",
+      "genre": "Comic",
+      "cover_image": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772266491/azories/books/super_silly_superhero/cover_clean.jpg",
+      "back_cover_image": "",
+      "cover_title": "Super Silly Superhero",
+      "cover_subtitle": "A Comic Story",
+      "back_cover_text": "Every superpower Max gains has a silly twist, but he saves the day anyway!",
+      "author_id": "azories-system",
+      "author_name": "Azories Stories",
+      "is_published": true,
+      "is_featured": false,
+      "layout_mode": "standard",
+      "age_rating": "All Ages",
+      "view_count": 93,
+      "read_count": 205,
+      "created_at": "2026-02-21T23:51:55.801006+00:00",
+      "updated_at": "2026-02-26T11:14:48.403336",
+      "cover_image_migrated_from_base64": true,
+      "age_range": "3-6",
+      "art_style": "cartoon",
+      "cover_image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217090/azories/books/super_silly_superhero/cover.jpg",
+      "page_count": 10,
+      "pages": [
+        {
+          "page_number": 1,
+          "text": "Max had wanted to be a superhero for as long as he could remember. Not in the way that some children say they want to be a superhero and actually mean they want to wear a cape \u2014 Max had made careful notes. He had studied flight patterns and structural weaknesses and the most efficient routes between the school and the nearest three buildings that might require saving. He had a notebook. It had tabs. When a small, glowing meteor landed in his back garden on a Tuesday evening with a sound like a very polite knock, Max did not run or hide. He walked straight up to it, kneeling in the slightly scorched grass, and looked at it seriously for a moment. Then he said \u2014 because he had always thought that if you got one wish, you should be specific: 'Please give me superpowers. Proper ones.' The meteor pulsed warmly. Max felt a deep, strange, all-over tingle, like every cell in his body had been very gently rearranged.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223986/azories/books/super_silly_superhero/page_01.png",
+          "layout": "full_spread"
+        },
+        {
+          "page_number": 2,
+          "text": "He discovered the flying the next morning when he stepped off the back doorstep and did not immediately come down. He hung in the air for a moment, startled, and then \u2014 with a surge of pure uncontained joy \u2014 he flew. He shot upward, cleared the garden fence, and was just beginning to think about the view from up high when he realised something was wrong. He could not go up. Or down. Only sideways \u2014 left or right, at considerable speed, with no ability whatsoever to adjust his altitude. He spent twenty minutes zooming horizontal laps around the garden, narrowly avoiding the shed and the bird table, before working out that if he concentrated very hard he could slow down enough to land. He sat in the grass. He looked up at the sky. He thought about the careful notes in his notebook. 'This is not what I had in mind,' he said. Then, because he was Max, and Max was nothing if not practical, he opened the notebook and began a new section.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223986/azories/books/super_silly_superhero/page_02.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 3,
+          "text": "The super strength was discovered accidentally during P.E. when Max, who was not particularly sporty, gave the football a gentle kick to test something he had been wondering about and sent it sailing over the school building, across the road, over the row of houses on the other side, and \u2014 according to a brief but concerned article in the local paper the following day \u2014 through the window of a greenhouse approximately four hundred metres away. He stood on the pitch while everyone stared at him and checked his foot. The strength was present only in his left pinky finger. The rest of him was exactly as un-sporty as before. He made a note: STRENGTH: one finger only. NOT USEFUL FOR CONVENTIONAL HEROICS. USE WITH CAUTION NEAR GREENHOUSES. His P.E. teacher asked if he was all right. Max said he thought so, mostly.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223987/azories/books/super_silly_superhero/page_03.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 4,
+          "text": "The super sneeze arrived on a Wednesday with no warning and no mercy. Max was sitting in the school library reading about electromagnetic fields when he felt the familiar tickle and had approximately one second's notice before it happened. The sneeze produced, instead of the expected outcome, a perfect cone of ice that extended from his nose to the opposite shelf, encasing three encyclopaedias and a dictionary in a solid block. The librarian came around the corner, took one look at it, and said nothing for quite a long time. Max apologised and helped chip it off with a ruler. On the positive side, he discovered that very small, careful sneezes produced excellent snow cones, which made him briefly the most popular person in his year group during the heat wave in June. He noted this in his book under POTENTIAL APPLICATIONS and underlined it twice.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223988/azories/books/super_silly_superhero/page_04.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 5,
+          "text": "The invisible hiccups were, by general consensus, the strangest power. Every time Max hiccuped, a part of him disappeared. Not his whole body \u2014 that might have been useful. Just his ears. Both ears vanished completely with each hiccup, reappearing a few seconds later as the sound faded. This produced an effect that Max's best friend Priya described as deeply unsettling and that several younger children found so alarming they had to be taken to sit with the school counsellor. Max took to wearing a hat with ear flaps to make the situation less noticeable. It did not make the situation less noticeable. He wrote INVISIBLE HICCUPS in his notebook, then crossed it out, then wrote it again, then drew a large question mark next to it, and left it at that.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223989/azories/books/super_silly_superhero/page_05.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 6,
+          "text": "He was sitting under the oak tree at the edge of the playground, updating his notes and seriously questioning whether the universe had made some kind of administrative error, when he heard it. A thudding sound from the gym block. Then shouting \u2014 multiple voices, muffled, increasingly agitated. He ran over. The heavy fire door to the gym supply room was jammed shut \u2014 the mechanism had somehow locked from the inside, and seven children including Marcus (who was large and who Max had always found somewhat intimidating) were trapped inside. The caretaker had gone home. The doors were thick. Max looked at the door. He looked at his notebook. He thought about his powers \u2014 individually stupid, collectively perhaps not completely useless. He put the notebook in his pocket and started thinking fast.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223990/azories/books/super_silly_superhero/page_06.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 7,
+          "text": "He ran to the far end of the playground, turned, and flew \u2014 sideways, as always, but fast. He aimed himself at the space beside the door rather than the door itself, which he had calculated would create the maximum airflow in the minimum space. He passed the door once, twice, three times, building speed, and on the fourth pass he felt the airframe of the building shudder slightly. The hinges loosened. He could see it. He lined up his approach, reached out his left hand as he zoomed past, extended his pinky finger, and flicked the door handle with every milligram of force in that single ridiculous finger. There was a sound like a gunshot. The door swung open so violently it came off one hinge entirely and leaned at a dramatic angle against the corridor wall. Seven children stumbled out, blinking in the afternoon light.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223991/azories/books/super_silly_superhero/page_07.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 8,
+          "text": "Marcus, who was at the front, looked at Max for a long moment. Max was hovering about thirty centimetres off the ground at a slight sideways angle, his hair dishevelled and his pinky finger slightly numb, and he was aware that he did not look particularly heroic. Marcus said: 'You just saved us.' 'My powers are a bit silly,' Max said honestly. 'They worked though,' Marcus said. And then \u2014 because Max had not expected what happened next \u2014 Marcus started laughing. Not unkindly. Just genuinely, warmly, with his whole body, the way people laugh when something has been both frightening and absurd at the same time. The other children joined in. Max hovered there for a moment, and then he started laughing too. He sneezed with the effort, producing a small shower of celebratory ice crystals that caught the afternoon light and sparkled over all of them.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223993/azories/books/super_silly_superhero/page_08.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 9,
+          "text": "The story got around school quickly, the way good stories do. Nobody called his powers silly in an unkind way after that \u2014 or if they did, Max didn't mind, because he had discovered something important: that the most useful power he had was not the sideways flying or the pinky strength or any of the others. It was the ability to look at an absurd situation and find within it, through patience and lateral thinking, exactly the solution it needed. He updated his notebook that evening. He wrote: POWERS \u2014 ALL SILLY. ALSO \u2014 COMBINATION EFFECTIVE. NOTE: BEING DIFFERENT IS NOT THE SAME AS BEING WRONG. He underlined the last line three times. Then he drew a small cape next to it, because even very practical people are allowed some flourishes. THE END",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223993/azories/books/super_silly_superhero/page_09.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 10,
+          "text": "Captain Giggles saved the day - the silliest way possible!\n\nThe End",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223994/azories/books/super_silly_superhero/page_10.png",
+          "layout": "text_left_image_right"
+        }
+      ],
+      "status": "published",
+      "cover_image_original_fal": "https://v3b.fal.media/files/b/0a8fef1a/gl1HiSfh1_lvZxMHTMCr-.jpg",
+      "cover_image_url_original_fal": "https://v3b.fal.media/files/b/0a8fef1a/gl1HiSfh1_lvZxMHTMCr-.jpg",
+      "hidden": false,
+      "published": false
+    },
+    {
+      "id": "bf096619-76a3-4f8a-b653-d864236551b0",
+      "title": "Colors of the World",
+      "description": "Follow Rainbow as she discovers where all the colors in the world come from.",
+      "genre": "General",
+      "cover_image": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217091/azories/books/colors_of_the_world/cover.jpg",
+      "back_cover_image": "",
+      "cover_title": "Colors of the World",
+      "cover_subtitle": "A General Story",
+      "back_cover_text": "Follow Rainbow as she discovers where all the colors in the world come from.",
+      "author_id": "azories-system",
+      "author_name": "Azories Stories",
+      "is_published": false,
+      "is_featured": false,
+      "layout_mode": "standard",
+      "age_rating": "All Ages",
+      "view_count": 163,
+      "read_count": 183,
+      "created_at": "2026-02-21T23:51:55.810124+00:00",
+      "updated_at": "2026-02-26T11:18:00.293535",
+      "cover_image_migrated_from_base64": true,
+      "age_range": "3-6",
+      "art_style": "watercolour",
+      "cover_image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217091/azories/books/colors_of_the_world/cover.jpg",
+      "page_count": 10,
+      "pages": [
+        {
+          "page_number": 1,
+          "text": "Long ago, in a world where everything was grey and quiet, there lived a little girl named Rainbow. She had never seen a coloured flower or a blue sky or a green blade of grass \u2014 only endless, empty grey. Every morning she woke up and stared at the grey ceiling, the grey walls, the grey garden outside her window, and she asked herself the same question: why does everything feel so dull? She had always believed, deep in her heart, that the world was supposed to be something more.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223996/azories/books/colors_of_the_world/page_01.png",
+          "layout": "full_spread"
+        },
+        {
+          "page_number": 2,
+          "text": "One grey evening, Rainbow climbed to the top of the old hill at the edge of her village, where a wise old owl sat in a gnarled tree. The owl had feathers the colour of ash and eyes like two pale moons. 'Why does nothing have colour?' Rainbow asked. The owl ruffled his feathers thoughtfully. 'Long, long ago,' he said slowly, 'someone was afraid of brightness and beauty. They gathered up all the world's colours and locked them deep inside the Colour Caves. Only someone with a truly pure heart can set them free.' Rainbow straightened her shoulders. 'Then I will go,' she said quietly. The owl blinked. 'I hoped you would say that.'",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223997/azories/books/colors_of_the_world/page_02.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 3,
+          "text": "Rainbow walked for three whole days until she found the first cave, its entrance glowing with a warmth she had never felt before. The air around it hummed softly, as though the cave itself was alive. Inside, she found a magnificent crystal the size of a boulder, and trapped inside it was Red \u2014 deep, warm, burning Red \u2014 pressing its hands against the walls and crying out. 'Please!' Red called. 'I have been trapped here for so long! The roses have forgotten me! The apples are pale and tasteless!' Rainbow stepped forward without hesitation and placed both hands on the crystal. She thought of every kind thing she had ever done, every moment of love she had ever felt. The crystal shuddered, cracked, and burst apart in a shower of warm light. Red whooshed past her with a cry of pure joy.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223998/azories/books/colors_of_the_world/page_03.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 4,
+          "text": "Rainbow shielded her eyes as Red raced across the world. She watched, astonished, as the roses in the distance flushed crimson, as strawberries plumped up on their vines, as the robins' breasts glowed bright and proud. For the first time in her life, Rainbow felt warmth on her skin \u2014 real warmth, not just the pale grey light of before. But as much as she wanted to sit down and stare at the newly red world forever, she remembered the owl's words. There were more colours waiting. More caves. She dusted off her hands and kept walking.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772223999/azories/books/colors_of_the_world/page_04.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 5,
+          "text": "The second cave was near a wide, still lake, and Rainbow found Blue curled up at its heart, shivering and sad. Blue was gentle and quiet, almost too soft to speak. 'I have missed the sky,' Blue whispered as Rainbow set it free. 'I have missed the deep places of the ocean where the whale songs echo.' The moment Blue was released, it moved slowly and beautifully \u2014 spreading across the lake first, turning it from flat grey to a shimmering living blue, then rising, rising, rising until the whole sky above Rainbow flushed the most extraordinary colour she had ever seen. Rainbow lay on her back in the grass and stared upward for a long, long time.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224000/azories/books/colors_of_the_world/page_05.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 6,
+          "text": "Yellow was the hardest to find. Its cave sat at the very top of a mountain so high that clouds gathered around Rainbow's ankles as she climbed. Her legs ached and her breath came in cold puffs, but she could see a golden glow through the rock and she would not stop. When she finally reached Yellow and pressed her hands to the crystal, she felt a burst of energy like nothing else. Yellow exploded upward with a great laugh and flew straight to the highest point in the sky. In an instant, the sun blazed to life \u2014 real, golden, dazzling sunlight that made Rainbow throw her arms wide and spin around in the warmth. The world was beginning to wake up.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224000/azories/books/colors_of_the_world/page_06.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 7,
+          "text": "Green was hiding in a quiet valley, tucked inside a mossy cave that smelled of rain and earth. When Rainbow freed it, Green did not rush or burst or explode. It simply... spread. Slowly, gently, steadily \u2014 like water soaking into dry soil. The grasses rose. The ferns uncurled. The great oak trees deepened from grey to the most magnificent, living green. Birds Rainbow had never seen before appeared in the branches, singing songs she had never heard. Beetles shone like emeralds. A deer stepped out of the shadows and blinked at her with soft brown eyes. Rainbow sat down in the new grass and pressed her palms flat against it, feeling its cool aliveness under her hands.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224001/azories/books/colors_of_the_world/page_07.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 8,
+          "text": "After that, the colours came faster, as though they had been waiting for each other all along. Purple crept across the evening sky just as the sun went down, painting the horizon in deep, dreamy violet. Orange followed \u2014 tumbling across the autumn trees until every leaf blazed like a small fire. Pink drifted through the cherry orchards in great soft clouds of blossom. Each cave Rainbow opened felt like a celebration. The colours laughed and called to each other across the sky, racing to find their rightful places in the world. Rainbow ran between them, breathless and laughing herself, barely able to take it all in.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224003/azories/books/colors_of_the_world/page_08.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 9,
+          "text": "When the last colour was free, something extraordinary happened. All the colours rose together into the sky at once \u2014 swirling and dancing and weaving through each other \u2014 and then they arranged themselves into a perfect arc that stretched from one end of the world to the other. Red, orange, yellow, green, blue, purple \u2014 every colour in the world, gathered together in one magnificent bridge of light. Rainbow stood below it and could not speak. The colours shimmered and then called down to her: 'We have decided what to call this thing we have made. We are calling it after you.' And that was how the rainbow got its name.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224004/azories/books/colors_of_the_world/page_09.png",
+          "layout": "text_left_image_right"
+        },
+        {
+          "page_number": 10,
+          "text": "From that day forward, whenever rain and sunshine met in the sky, the colours would gather to celebrate their freedom by painting the world once more with their brilliant arc. And the people below learned to look up after every storm, knowing that beauty was always waiting just on the other side. As for Rainbow herself \u2014 she went home to her village, which was now bursting with colour from every corner. She painted her front door bright red and planted yellow sunflowers in her garden. And sometimes, when the light was just right, she would look up at the sky and see the colours waving back at her. She always waved hello. THE END",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224004/azories/books/colors_of_the_world/page_10.png",
+          "layout": "text_left_image_right"
+        }
+      ],
+      "status": "published",
+      "cover_image_original_fal": "https://v3b.fal.media/files/b/0a8fef1a/QP9oogJ521a-ZyeJX0cF7.jpg",
+      "cover_image_url_original_fal": "https://v3b.fal.media/files/b/0a8fef1a/QP9oogJ521a-ZyeJX0cF7.jpg",
+      "hidden": true,
+      "published": false
+    },
+    {
+      "id": "b5b1797f-1899-4641-9f6c-fdc9a75cc248",
+      "title": "Numbers Come Alive",
+      "description": "Numbers jump off the page and teach Maya about math through exciting adventures.",
+      "genre": "General",
+      "cover_image": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217092/azories/books/numbers_come_alive/cover.jpg",
+      "back_cover_image": "",
+      "cover_title": "Numbers Come Alive",
+      "cover_subtitle": "A General Story",
+      "back_cover_text": "Numbers jump off the page and teach Maya about math through exciting adventures.",
+      "author_id": "azories-system",
+      "author_name": "Azories Stories",
+      "is_published": false,
+      "is_featured": false,
+      "layout_mode": "standard",
+      "age_rating": "5+",
+      "view_count": 68,
+      "read_count": 121,
+      "created_at": "2026-02-21T23:56:17.556280+00:00",
+      "updated_at": "2026-02-26T11:21:11.032458",
+      "cover_image_migrated_from_base64": true,
+      "age_range": "3-6",
+      "art_style": "cartoon",
+      "cover_image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772217092/azories/books/numbers_come_alive/cover.jpg",
+      "page_count": 10,
+      "pages": [
+        {
+          "page_number": 1,
+          "text": "Maya sat at the kitchen table staring at her maths homework as though it had personally offended her. The worksheet was full of numbers arranged in neat rows, all of them waiting to be added or subtracted or multiplied, and every single one of them looked exactly the same as the others. Boring, confusing, and utterly pointless. Outside, she could hear her friends playing. Inside, she had seventeen problems to solve before dinner. She put her chin in her hands and sighed so deeply that the worksheet ruffled at the edges. 'I wish,' she said, to nobody in particular, 'that numbers were more interesting.' She did not expect anything to happen. She was ten years old \u2014 she knew wishes did not come true just because you made them. And yet. The worksheet began, very slowly and very clearly, to glow.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224005/azories/books/numbers_come_alive/page_01.png",
+          "layout": "full_spread"
+        },
+        {
+          "page_number": 2,
+          "text": "Maya pushed her chair back so fast it scraped across the floor. The number One was no longer printed flat on the page. It was standing up \u2014 upright, proud, about the height of her pencil case \u2014 wearing a tiny gold crown that caught the kitchen light. It looked at her with an expression of enormous dignity and said, in a small but very clear voice: 'I am One. The very beginning of everything. The first breath, the first step, the first star that ever appeared in the sky. Without me, there would be no counting at all.' It executed a precise little bow. Maya's mouth was open. She looked at the rest of the worksheet. All the other numbers were watching, completely still, waiting for One to finish its introduction. 'Follow me,' said One, 'and you will understand why numbers are the most extraordinary things in the world.'",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224006/azories/books/numbers_come_alive/page_02.png",
+          "layout": "full_spread"
+        },
+        {
+          "page_number": 3,
+          "text": "One led the way to Two, who was not alone. Two was always with a partner \u2014 mirror images of each other, finishing each other's sentences, moving in perfect synchrony. 'We are everything that comes in pairs!' they announced together, gesturing grandly. 'Ears and eyes and wings and hands! Day and night! Every story has two sides! Every coin has two faces!' They demonstrated by spinning like a ballroom couple, and wherever they went Maya saw pairs appearing everywhere: the two handles on the kitchen cupboards, the two windows on either side of the door, her own two feet on the floor. 'I never thought about it like that,' she said slowly. Two beamed. 'Most people don't,' they said, still speaking simultaneously, which was somehow both strange and completely natural.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224007/azories/books/numbers_come_alive/page_03.png",
+          "layout": "full_spread"
+        },
+        {
+          "page_number": 4,
+          "text": "Three was standing on top of the fruit bowl juggling three oranges with impressive skill. 'The triangle!' Three declared, tossing an orange to Maya, who caught it mostly by luck. 'Three is the magic number \u2014 the number of stories! Beginning, middle, end! Three wishes from a genie! Three little pigs! Three blind mice! And look\u2014' Three quickly arranged three pencils on the table into a triangle shape. 'Three points make the most stable shape in all of mathematics. Bridges use triangles. Roofs use triangles. Even your bicycle uses triangles, though you've probably never noticed.' Maya looked at the triangle of pencils. She had definitely never noticed. Three juggled the oranges once more for emphasis.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224008/azories/books/numbers_come_alive/page_04.png",
+          "layout": "full_spread"
+        },
+        {
+          "page_number": 5,
+          "text": "What followed was the most extraordinary tour of Maya's kitchen that had ever taken place. She slid down Four's smooth square shape like it was a playground slide, landing with a soft thump on Four's four equal sides. She bounced on Five's high-fiving hand \u2014 Five was enormously enthusiastic about everything and kept shouting 'Give me five!' Five turned out to be the number of senses, the number of fingers on each hand, the number of oceans in the world. Six through Ten were playing a complicated musical chairs game around the table, each of them humming different notes that combined into a surprisingly pleasant chord. Each number had something to say, something to show her, something that made her realise that numbers were not a collection of symbols \u2014 they were a whole world.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224010/azories/books/numbers_come_alive/page_05.png",
+          "layout": "full_spread"
+        },
+        {
+          "page_number": 6,
+          "text": "One clapped its small hands for attention. 'Now,' it said with great ceremony, 'we get to the truly magical part. Addition.' One walked toward Two. They looked at each other, then they reached out and held hands. A warm golden light spread from where their fingers met, and then \u2014 Maya had to blink three times to be sure she was seeing it properly \u2014 they merged together, their shapes combining into a single glowing Three. 'One plus two equals three!' Three cried triumphantly, spinning in a circle. 'You see? Addition is not just sums on a page. When numbers come together, something genuinely new is created. Something that is more than either of them was alone.' Maya thought about that for a moment. It reminded her, strangely, of friendship.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224011/azories/books/numbers_come_alive/page_06.png",
+          "layout": "full_spread"
+        },
+        {
+          "page_number": 7,
+          "text": "Subtraction was a slide that started high up near the ceiling (Maya had no idea how it had got there) and curved down to land near the kitchen counter. Ten climbed to the top and counted out loud: 'I am ten, and I am going to subtract four \u2014 meaning four will slide off before I arrive.' Sure enough, four small numerical shapes peeled away from Ten as it whooshed down the slide, and when Ten arrived at the bottom it had become Six, who caught Maya as she arrived right behind it. Six took a bow. 'Ten minus four equals six!' it announced. 'Subtraction is not losing something \u2014 it is transforming. You started somewhere and you moved. You are still going somewhere. Subtraction is just the journey between.'",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224012/azories/books/numbers_come_alive/page_07.png",
+          "layout": "full_spread"
+        },
+        {
+          "page_number": 8,
+          "text": "The multiplication machine was sitting in the corner of the kitchen pretending to be an ordinary photocopier, which Maya felt it had not done very convincingly. Three stepped up to it, pressed a large orange button marked x3, and out came nine perfect copies of Three \u2014 all of them equally cheerful, all of them immediately beginning to chat with each other. 'Three times three equals nine!' they chorused. 'Multiplication is not just addition repeated \u2014 it is copying, it is growing, it is seeing what a number looks like when it is truly itself, fully expressed!' Maya looked at the nine Threes waving at her from across the kitchen and felt something she had not expected to feel while doing homework. She felt genuinely amazed.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224014/azories/books/numbers_come_alive/page_08.png",
+          "layout": "full_spread"
+        },
+        {
+          "page_number": 9,
+          "text": "The division party was, of all the mathematical adventures that evening, the most enjoyable. Twelve arrived carrying a large tray of warm chocolate biscuits \u2014 real ones, which Maya felt was an unexpectedly generous touch \u2014 and announced that it wanted to share them equally with Four friends. 'If Twelve shares equally between four,' Twelve said, setting out four plates with great care, 'then each friend receives...' It paused and looked at Maya. Maya looked at the biscuits. She looked at the plates. She thought about it carefully. 'Three each,' she said. Twelve beamed. 'Twelve divided by four equals three. Division is not taking away. Division is fairness. It is making sure everyone gets their share.' The numbers all nodded seriously. Maya ate one of the biscuits. It was excellent.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224014/azories/books/numbers_come_alive/page_09.png",
+          "layout": "full_spread"
+        },
+        {
+          "page_number": 10,
+          "text": "Maya woke up at her kitchen table with her cheek resting on her homework. The kitchen was quiet and ordinary. No numbers stood on the worksheet. No golden light. No biscuits \u2014 though she was fairly sure she could smell chocolate, faintly, in the air. She looked down at her homework. Every single problem had been answered, in her own handwriting, correct. She stared at the neat numbers for a long time. Then she noticed something in the margin \u2014 written in ink so small she had to lean close to read it. 'Well done, Maya. You always had it in you. With love, 1-10.' She sat up straight. She read it again. Then she picked up her pencil, turned to the next page of homework, and began \u2014 for the first time in her life \u2014 to smile while doing maths.",
+          "image_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772224015/azories/books/numbers_come_alive/page_10.png",
+          "layout": "full_spread"
+        }
+      ],
+      "status": "published",
+      "cover_image_original_fal": "https://v3b.fal.media/files/b/0a8fef1b/g8t-PUpfsM_HBPs-agQxi.jpg",
+      "cover_image_url_original_fal": "https://v3b.fal.media/files/b/0a8fef1b/g8t-PUpfsM_HBPs-agQxi.jpg",
+      "hidden": true,
+      "published": false
+    }
+  ]
+}
