@@ -104,6 +104,13 @@ def get_mongo_connection():
     external_url = os.environ.get('MONGO_URL', '')
     db_name = os.environ.get('DB_NAME', 'azories')
     
+    # Check if we should force localhost (useful for Emergent production)
+    force_localhost = os.environ.get('FORCE_LOCAL_MONGODB', 'false').lower() == 'true'
+    
+    if force_localhost:
+        logging.info("FORCE_LOCAL_MONGODB is set - using localhost MongoDB")
+        return AsyncIOMotorClient('mongodb://localhost:27017'), db_name
+    
     # If MONGO_URL contains Atlas or external MongoDB, try it first
     if external_url and ('mongodb+srv' in external_url or 'mongodb.net' in external_url):
         try:
@@ -117,6 +124,7 @@ def get_mongo_connection():
             )
             # Test the connection
             test_client.admin.command('ping')
+            test_client.close()
             logging.info("Successfully connected to external MongoDB (Atlas)")
             return AsyncIOMotorClient(
                 external_url,
