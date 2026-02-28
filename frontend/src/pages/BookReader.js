@@ -1508,6 +1508,28 @@ export default function BookReader() {
           <div className={`max-w-4xl mx-auto px-2 sm:px-4 py-3 sm:py-4`}>
             {/* Navigation - LARGE touch targets for mobile, instant response */}
             <div className={`flex items-center justify-center gap-4 sm:gap-4 mb-2 sm:mb-4`}>
+              {/* Back Cover: Show Read Again + Back button */}
+              {currentPageData?.isBackCover ? (
+                <>
+                  <button
+                    onClick={() => setCurrentPage(0)}
+                    className="min-h-[56px] px-6 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white font-medium flex items-center justify-center gap-2 touch-manipulation"
+                    style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                    data-testid="read-again-btn"
+                  >
+                    Read Again <FiPlay className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={prevPage}
+                    className="min-w-[56px] min-h-[56px] px-5 rounded-full border-2 border-border bg-background hover:bg-muted active:bg-muted/80 flex items-center justify-center touch-manipulation"
+                    style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                    data-testid="back-from-backcover-btn"
+                  >
+                    <FiChevronLeft className="w-6 h-6" />
+                  </button>
+                </>
+              ) : (
+                <>
               <button
                 onClick={prevPage}
                 disabled={currentPage <= -1}
