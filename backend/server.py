@@ -1198,6 +1198,37 @@ async def register(user_data: UserCreate, background_tasks: BackgroundTasks):
     if email_configured():
         welcome_html = get_welcome_email_html(user_data.name)
         background_tasks.add_task(send_email, user_data.email, "Welcome to Azories! 🎉", welcome_html)
+        
+        # Send admin notification for new user signup
+        admin_email = os.environ.get("ADMIN_NOTIFY_EMAIL", "books@azories.com")
+        admin_subject = f"🆕 New User Signup: {user_data.name}"
+        admin_html = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+            <div style="background: linear-gradient(135deg, #10b981, #059669); padding: 20px; border-radius: 12px 12px 0 0;">
+                <h1 style="color: white; margin: 0; font-size: 24px;">🎉 New User Registered!</h1>
+            </div>
+            <div style="background: #ffffff; padding: 20px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+                <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+                    <tr>
+                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>Name:</strong></td>
+                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">{user_data.name}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>Email:</strong></td>
+                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">{user_data.email}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>Registered:</strong></td>
+                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">{now_iso}</td>
+                    </tr>
+                </table>
+                <p style="color: #6b7280; margin-top: 20px;">User has a 30-day Pro trial active.</p>
+            </div>
+        </body>
+        </html>
+        """
+        background_tasks.add_task(send_email, admin_email, admin_subject, admin_html)
     
     token = create_token(user_id, user_data.email, "user")
     return TokenResponse(
