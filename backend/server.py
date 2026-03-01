@@ -5044,20 +5044,27 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
                 )
                 
                 if cover_result and cover_result.get("url"):
-                    cloudinary_cover = cloudinary.uploader.upload(
-                        cover_result["url"],
-                        folder=f"azories/books/{book_id}",
-                        public_id="cover",
-                        resource_type="image"
-                    )
-                    cover_image_url = cloudinary_cover.get("secure_url", "")
+                    if CLOUDINARY_AVAILABLE and cloudinary:
+                        try:
+                            cloudinary_cover = cloudinary.uploader.upload(
+                                cover_result["url"],
+                                folder=f"azories/books/{book_id}",
+                                public_id="cover",
+                                resource_type="image"
+                            )
+                            cover_image_url = cloudinary_cover.get("secure_url", "")
+                        except Exception as cloud_err:
+                            logger.warning(f"Cloudinary upload failed for cover, using direct URL: {cloud_err}")
+                            cover_image_url = cover_result["url"]
+                    else:
+                        cover_image_url = cover_result["url"]
                     
                     # Update book with cover
                     await db.books.update_one(
                         {"id": book_id},
                         {"$set": {"cover_image": cover_image_url}}
                     )
-                    logger.info(f"Generated cover image for book")
+                    logger.info("Generated cover image for book")
                     
             except Exception as cover_error:
                 logger.error(f"Failed to generate cover: {str(cover_error)}")
