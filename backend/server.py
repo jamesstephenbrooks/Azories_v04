@@ -924,7 +924,8 @@ class AIStoryRequest(BaseModel):
     num_pages: int = 5
     generate_images: bool = True
     media_type: str = "images"  # images, videos, cinemagraphs, none
-    image_style: str = "illustration"
+    image_style: str = "3d-pixar"  # Changed default to Pixar 3D
+    words_per_page: str = "medium"  # short (50), medium (100), long (150)
 
 class SummaryGenerateRequest(BaseModel):
     book_id: str
