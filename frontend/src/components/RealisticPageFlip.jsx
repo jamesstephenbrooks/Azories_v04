@@ -1,7 +1,7 @@
 import { useRef, useState, useCallback, forwardRef, useImperativeHandle, useEffect, useMemo } from 'react';
 import HTMLFlipBook from 'react-pageflip';
 import { motion } from 'framer-motion';
-import { FiBook, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { FiBook, FiChevronLeft, FiChevronRight, FiChevronDown } from 'react-icons/fi';
 import { getOptimizedImageUrl } from '@/utils/imageOptimizer';
 
 // Shimmer placeholder component for loading states
