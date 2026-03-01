@@ -122,6 +122,7 @@ export default function Library() {
   const [newlyAddedBooks, setNewlyAddedBooks] = useState([]);
   const [comingSoonBooks, setComingSoonBooks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 300); // Debounce search input
   const [genre, setGenre] = useState('All');
@@ -136,82 +137,73 @@ export default function Library() {
   // Age range options
   const AGE_RANGES = ['All', '0-3', '4-6', '7-9', '10-12', '13+'];
 
+  // Initial data fetch - runs once on mount
   useEffect(() => {
-    fetchBooks();
-    fetchFeaturedBooks();
-    fetchNewlyAdded();
-    fetchComingSoon();
-    fetchGenres();
+    const loadInitialData = async () => {
+      setLoading(true);
+      try {
+        // Fetch all data in parallel for faster load
+        const [booksRes, featuredRes, newlyAddedRes, comingSoonRes, genresRes] = await Promise.all([
+          axios.get(`${API}/books?published_only=true&limit=12`),
+          axios.get(`${API}/books/featured`),
+          axios.get(`${API}/books/newly-added`),
+          axios.get(`${API}/books/coming-soon`),
+          axios.get(`${API}/genres`)
+        ]);
+        
+        // Set all state at once to minimize re-renders
+        setBooks(booksRes.data);
+        const featured = featuredRes.data.filter(b => b.is_featured);
+        const bestWeek = featuredRes.data.filter(b => b.is_best_of_week);
+        setFeaturedBooks(featured);
+        setBestOfWeek(bestWeek);
+        setNewlyAddedBooks(newlyAddedRes.data || []);
+        setComingSoonBooks(comingSoonRes.data || []);
+        setGenres(['All', ...genresRes.data.genres]);
+        
+        // Preload only first 4 book covers for faster initial display
+        const coverUrls = booksRes.data.slice(0, 4).map(b => b.cover_image).filter(Boolean);
+        preloadImages(coverUrls, 'high');
+      } catch (error) {
+        console.error('Error loading library data:', error);
+      } finally {
+        setLoading(false);
+        setInitialLoadComplete(true);
+      }
+    };
+    
+    loadInitialData();
   }, []);
 
+  // Search/filter changes - only run after initial load is complete
   useEffect(() => {
-    if (activeTab === 'all') {
-      fetchBooks();
+    if (!initialLoadComplete) return; // Skip if initial load not done
+    if (activeTab !== 'all') return; // Only fetch when on 'all' tab
+    
+    const fetchFilteredBooks = async () => {
+      try {
+        setLoading(true);
+        const params = new URLSearchParams();
+        if (debouncedSearch) params.append('search', debouncedSearch);
+        if (genre && genre !== 'All') params.append('genre', genre);
+        if (ageRange && ageRange !== 'All') params.append('age_rating', ageRange);
+        params.append('published_only', 'true');
+        params.append('limit', '12');
+        
+        const res = await axios.get(`${API}/books?${params.toString()}`);
+        setBooks(res.data);
+      } catch (error) {
+        console.error('Error fetching filtered books:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    // Only fetch if filters actually changed from defaults
+    if (debouncedSearch || genre !== 'All' || ageRange !== 'All') {
+      fetchFilteredBooks();
     }
-  }, [debouncedSearch, genre, ageRange]);
-
-  const fetchBooks = async () => {
-    try {
-      setLoading(true);
-      const params = new URLSearchParams();
-      if (debouncedSearch) params.append('search', debouncedSearch);
-      if (genre && genre !== 'All') params.append('genre', genre);
-      if (ageRange && ageRange !== 'All') params.append('age_rating', ageRange);
-      params.append('published_only', 'true');
-      params.append('limit', '12'); // Limit initial load for FASTER rendering
-      
-      const res = await axios.get(`${API}/books?${params.toString()}`);
-      setBooks(res.data);
-      
-      // Preload only first 4 book covers for faster initial display
-      const coverUrls = res.data.slice(0, 4).map(b => b.cover_image).filter(Boolean);
-      preloadImages(coverUrls, 'high');
-    } catch (error) {
-      console.error('Error fetching books:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchFeaturedBooks = async () => {
-    try {
-      const res = await axios.get(`${API}/books/featured`);
-      const featured = res.data.filter(b => b.is_featured);
-      const bestWeek = res.data.filter(b => b.is_best_of_week);
-      setFeaturedBooks(featured);
-      setBestOfWeek(bestWeek);
-    } catch (error) {
-      console.error('Error fetching featured books:', error);
-    }
-  };
-
-  const fetchNewlyAdded = async () => {
-    try {
-      const res = await axios.get(`${API}/books/newly-added`);
-      setNewlyAddedBooks(res.data || []);
-    } catch (error) {
-      console.error('Error fetching newly added books:', error);
-    }
-  };
-
-  const fetchComingSoon = async () => {
-    try {
-      const res = await axios.get(`${API}/books/coming-soon`);
-      console.log('Coming Soon API response:', res.data);
-      setComingSoonBooks(res.data || []);
-    } catch (error) {
-      console.error('Error fetching coming soon books:', error);
-    }
-  };
-
-  const fetchGenres = async () => {
-    try {
-      const res = await axios.get(`${API}/genres`);
-      setGenres(['All', ...res.data.genres]);
-    } catch (error) {
-      console.error('Error fetching genres:', error);
-    }
-  };
+  }, [debouncedSearch, genre, ageRange, activeTab, initialLoadComplete]);
 
   // Check if a book is new (published in last 7 days)
   const isNewBook = (book) => {
