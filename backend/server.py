@@ -4794,6 +4794,15 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
     if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Pro subscription required")
     
+    # Check and deduct credits (5 credits for AI story creation)
+    if not await deduct_credits(current_user["id"], "ai_story_create"):
+        current_credits = current_user.get("credits", 0)
+        required_credits = CREDIT_COSTS.get("ai_story_create", 5)
+        raise HTTPException(
+            status_code=402, 
+            detail=f"Insufficient credits. You have {current_credits} credits but need {required_credits}. Please purchase more credits to continue."
+        )
+    
     try:
         if not EMERGENT_LLM_KEY:
             raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
