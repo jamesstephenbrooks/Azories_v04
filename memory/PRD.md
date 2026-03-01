@@ -122,6 +122,41 @@ PUT /api/books/{book_id}/coming-soon - Mark book as coming soon (admin)
 
 ## Ready for Production Deployment ✅
 
+## Printable Book PDF Feature (March 1, 2026) ✅
+
+### Overview
+Users can download a printable A5 booklet PDF of their books for **5 credits**.
+
+### Layout Design
+- **A4 page split into two A5 halves**:
+  - Left half: Full illustration
+  - Right half: Story text (centered, word-wrapped)
+- When printed double-sided and folded = real A5 picture book
+
+### Pages Included
+1. **Front Cover**: Cover illustration (left), Title/Author/Branding (right)
+2. **Content Pages**: Each page has illustration (left) and text (right)
+3. **Back Cover**: Branded back cover image (left), "The End" with description (right)
+
+### API Endpoint
+```
+GET /api/books/{book_id}/print-pdf
+- Requires authentication
+- Returns PDF with Content-Disposition: attachment
+- Cost: 5 credits (VIP/Admin exempt)
+- Returns 402 if insufficient credits
+```
+
+### Frontend UI
+- **Print Button**: FiPrinter icon in BookReader header (visible when logged in)
+- **Print Dialog Modal**: Shows cost (5 credits), features list, Cancel/Download buttons
+- **Data test IDs**: `print-book-btn`, `confirm-print-btn`
+
+### Credit Usage
+- Regular users: 5 credits deducted per download
+- VIP users: Free (usage tracked in `vip_usage` collection)
+- Admin users: Free
+
 ## Email Notification System
 - **Provider**: Resend (primary), Brevo (fallback)
 - **Admin Notification Email**: books@azories.com (configurable via ADMIN_NOTIFY_EMAIL)
