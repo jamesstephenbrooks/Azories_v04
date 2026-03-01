@@ -518,8 +518,15 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Setup modular routes (admin, etc.)
-setup_routes(app, db)
+# Setup modular routes (admin, etc.) with email functions
+email_funcs = {
+    'email_configured': is_configured,
+    'send_email': send_email,
+    'get_welcome_email_html': get_welcome_email_html,
+    'get_password_reset_email_html': get_password_reset_email_html,
+    'get_password_changed_email_html': get_password_changed_email_html
+}
+setup_routes(app, db, email_funcs)
 
 # Create a router with the /api prefix (for remaining routes)
 api_router = APIRouter(prefix="/api")
