@@ -1173,8 +1173,6 @@ async def register(user_data: UserCreate, background_tasks: BackgroundTasks):
     now_iso = now.isoformat()
     # 30-day free Pro trial for all new users
     trial_expires = (now + timedelta(days=30)).isoformat()
-    # 48-hour AI Story Creator trial
-    ai_story_trial_expires = (now + timedelta(hours=48)).isoformat()
     
     user = {
         "id": user_id,
@@ -1185,8 +1183,8 @@ async def register(user_data: UserCreate, background_tasks: BackgroundTasks):
         "subscription": "pro",  # Start with Pro
         "pro_trial": True,  # Mark as trial user
         "pro_trial_expires_at": trial_expires,  # Trial expiration
-        "trial_start_date": now_iso,  # For AI Story Creator 48hr trial
-        "ai_story_trial_expires": ai_story_trial_expires,  # AI Story trial expiration
+        "free_stories_remaining": 3,  # 3 free AI story creations
+        "free_stories_used": 0,  # Track usage
         "created_at": now_iso
     }
     await db.users.insert_one(user)
