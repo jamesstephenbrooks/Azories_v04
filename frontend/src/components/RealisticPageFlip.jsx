@@ -494,11 +494,11 @@ const TextPage = forwardRef(({ page, pageNumber, isFirstOfChapter }, ref) => {
         )}
         
         {hasText ? (
-          <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-muted-foreground/30 scrollbar-track-transparent">
+          <ScrollableTextArea>
             <p className={`${getFontClass()} ${getTextSizeClass()} ${getAlignClass()} whitespace-pre-wrap text-foreground/90`}>
               {page.text_content}
             </p>
-          </div>
+          </ScrollableTextArea>
         ) : (
           <div className="h-full flex items-center justify-center text-muted-foreground/40">
             <span className="text-base italic">This page has no text</span>
