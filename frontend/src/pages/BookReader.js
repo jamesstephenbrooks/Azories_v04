@@ -641,24 +641,34 @@ export default function BookReader() {
   // Pre-load audio for first few pages when book is ready - START IMMEDIATELY
   useEffect(() => {
     const preloadFirstPages = async () => {
-      if (allPages.length > 0 && narratorVoice) {
+      if (allPages.length > 0 && narratorVoice && book?.id) {
         setNarrationPreparing(true);
         setNarrationReady(false);
         
-        // Pre-load first 3 pages in background for instant start
+        // Trigger batch preparation in background for ALL pages
+        try {
+          axios.post(`${API}/tts/batch-prepare`, {
+            book_id: book.id,
+            voice_id: narratorVoice
+          }).catch(() => {}); // Fire and forget - don't block
+        } catch (e) {
+          // Ignore errors - this is optimization
+        }
+        
+        // Pre-load first 5 pages in parallel for instant start
         const preloadPromises = [];
-        for (let i = 0; i < Math.min(3, allPages.length); i++) {
+        for (let i = 0; i < Math.min(5, allPages.length); i++) {
           if (allPages[i]?.text_content && !audioCache.current.has(i)) {
             preloadPromises.push(preloadAudio(i));
           }
         }
         
-        // Wait for at least the first page to be ready
+        // Wait for at least the first page to be ready (with shorter timeout)
         if (preloadPromises.length > 0) {
           try {
             await Promise.race([
               preloadPromises[0], // Wait for first page at minimum
-              new Promise(resolve => setTimeout(resolve, 10000)) // 10s timeout
+              new Promise(resolve => setTimeout(resolve, 5000)) // 5s timeout (reduced from 10s)
             ]);
           } catch (e) {
             console.log('Preload error (non-critical):', e);
@@ -671,7 +681,7 @@ export default function BookReader() {
     };
     
     preloadFirstPages();
-  }, [allPages.length, narratorVoice, preloadAudio]);
+  }, [allPages.length, narratorVoice, preloadAudio, book?.id]);
 
   const playAudio = useCallback(async () => {
     // Skip chapter title pages - handled by useEffect
