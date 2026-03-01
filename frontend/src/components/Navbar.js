@@ -152,13 +152,13 @@ export const Navbar = () => {
           )}
           {user && (
             <Link 
-              to="/art-studio" 
+              to="/creators" 
               className="block px-4 py-3 font-ui rounded-xl hover:bg-muted min-h-[44px] flex items-center gap-2"
               onClick={() => setMobileOpen(false)}
-              data-testid="mobile-nav-art-studio"
+              data-testid="mobile-nav-creators"
             >
               <FiDroplet className="w-4 h-4 text-purple-500" />
-              Art Studio
+              Creators
             </Link>
           )}
           {user && (
