@@ -584,6 +584,80 @@ export default function Dashboard() {
                       </div>
                     )}
                     
+                    {/* Story Templates Section */}
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">💡</span>
+                        <h3 className="font-semibold text-sm text-muted-foreground">Need inspiration? Choose a template</h3>
+                      </div>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        {[
+                          {
+                            emoji: '🧙',
+                            title: 'Magical Adventure',
+                            character_name: '',
+                            character_description: 'A curious young wizard',
+                            story_description: 'Discovers a hidden door in their school that leads to a magical world full of friendly creatures'
+                          },
+                          {
+                            emoji: '🦁',
+                            title: 'Animal Friends',
+                            character_name: 'Leo',
+                            character_description: 'A small lion cub named Leo',
+                            story_description: 'Leo is scared of the dark and learns to be brave with help from his woodland friends'
+                          },
+                          {
+                            emoji: '🚀',
+                            title: 'Space Explorer',
+                            character_name: '',
+                            character_description: 'A brave young astronaut',
+                            story_description: 'Crash lands on a friendly alien planet and must find their way home by making new friends'
+                          },
+                          {
+                            emoji: '🌊',
+                            title: 'Under the Sea',
+                            character_name: 'Pearl',
+                            character_description: 'A curious mermaid named Pearl',
+                            story_description: 'Discovers a sunken treasure chest guarded by a grumpy but secretly kind octopus'
+                          },
+                          {
+                            emoji: '🏫',
+                            title: 'School Days',
+                            character_name: '',
+                            character_description: 'A nervous new student',
+                            story_description: 'The new kid at school discovers a secret talent that brings the whole class together'
+                          },
+                          {
+                            emoji: '🐉',
+                            title: 'Dragon Friend',
+                            character_name: '',
+                            character_description: 'A kind child',
+                            story_description: 'Finds a tiny lost dragon egg in the garden and must help it hatch and find its family'
+                          }
+                        ].map((template) => (
+                          <button
+                            key={template.title}
+                            onClick={() => setAIStory(prev => ({
+                              ...prev,
+                              character_name: template.character_name || prev.character_name,
+                              character_description: template.character_description,
+                              story_description: template.story_description
+                            }))}
+                            className="flex flex-col items-start p-3 rounded-xl border-2 border-border hover:border-purple-500/50 hover:bg-purple-500/5 transition-all text-left group"
+                            data-testid={`template-${template.title.toLowerCase().replace(/\s+/g, '-')}`}
+                          >
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-xl group-hover:scale-110 transition-transform">{template.emoji}</span>
+                              <span className="font-semibold text-sm text-foreground">{template.title}</span>
+                            </div>
+                            <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                              {template.story_description.substring(0, 60)}...
+                            </p>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
                     <div className="space-y-6 pt-4">
                       {/* Story Details Section */}
                       <div className="space-y-4">
