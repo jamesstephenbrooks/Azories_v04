@@ -9746,6 +9746,235 @@ async def admin_get_hidden_books(current_user: dict = Depends(get_current_user))
     return {"books": hidden_books, "count": len(hidden_books)}
 
 
+# ============ SITE-WIDE ANALYTICS ============
+
+class AnalyticsEvent(BaseModel):
+    event_type: str  # page_view, book_read, ai_story_create, signup, login, etc.
+    page: Optional[str] = None
+    book_id: Optional[str] = None
+    metadata: Optional[dict] = None
+
+@api_router.post("/analytics/track")
+async def track_analytics_event(event: AnalyticsEvent, request: Request):
+    """Track an analytics event (anonymous or authenticated)"""
+    # Get user info if authenticated
+    user_id = None
+    try:
+        auth_header = request.headers.get("Authorization", "")
+        if auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
+            payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+            user_id = payload.get("sub")
+    except:
+        pass
+    
+    # Create analytics record
+    analytics_record = {
+        "id": str(uuid.uuid4()),
+        "event_type": event.event_type,
+        "page": event.page,
+        "book_id": event.book_id,
+        "user_id": user_id,
+        "metadata": event.metadata or {},
+        "ip_hash": hashlib.sha256(request.client.host.encode()).hexdigest()[:16] if request.client else None,
+        "user_agent": request.headers.get("User-Agent", "")[:200],
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "date": datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    }
+    
+    await db.site_analytics.insert_one(analytics_record)
+    return {"success": True}
+
+
+@api_router.get("/admin/site-analytics")
+async def get_site_analytics(
+    days: int = 30,
+    admin: dict = Depends(get_admin_user)
+):
+    """Get comprehensive site analytics (admin only)"""
+    from_date = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%d")
+    
+    # Get total users
+    total_users = await db.users.count_documents({})
+    
+    # Get users created in period
+    new_users = await db.users.count_documents({
+        "created_at": {"$gte": from_date}
+    })
+    
+    # Get total books
+    total_books = await db.books.count_documents({})
+    published_books = await db.books.count_documents({"is_published": True})
+    
+    # Get page views by day
+    pipeline = [
+        {"$match": {"date": {"$gte": from_date}, "event_type": "page_view"}},
+        {"$group": {"_id": "$date", "views": {"$sum": 1}, "unique_visitors": {"$addToSet": "$ip_hash"}}},
+        {"$project": {"date": "$_id", "views": 1, "unique_visitors": {"$size": "$unique_visitors"}}},
+        {"$sort": {"date": 1}}
+    ]
+    daily_views = await db.site_analytics.aggregate(pipeline).to_list(100)
+    
+    # Get unique visitors total
+    unique_visitors_pipeline = [
+        {"$match": {"date": {"$gte": from_date}}},
+        {"$group": {"_id": "$ip_hash"}},
+        {"$count": "total"}
+    ]
+    unique_result = await db.site_analytics.aggregate(unique_visitors_pipeline).to_list(1)
+    unique_visitors = unique_result[0]["total"] if unique_result else 0
+    
+    # Get popular pages
+    popular_pages_pipeline = [
+        {"$match": {"date": {"$gte": from_date}, "event_type": "page_view"}},
+        {"$group": {"_id": "$page", "views": {"$sum": 1}}},
+        {"$sort": {"views": -1}},
+        {"$limit": 10}
+    ]
+    popular_pages = await db.site_analytics.aggregate(popular_pages_pipeline).to_list(10)
+    
+    # Get popular books (by reads)
+    popular_books_pipeline = [
+        {"$match": {"date": {"$gte": from_date}, "event_type": "book_read"}},
+        {"$group": {"_id": "$book_id", "reads": {"$sum": 1}}},
+        {"$sort": {"reads": -1}},
+        {"$limit": 10}
+    ]
+    popular_books_data = await db.site_analytics.aggregate(popular_books_pipeline).to_list(10)
+    
+    # Enrich with book titles
+    popular_books = []
+    for pb in popular_books_data:
+        if pb["_id"]:
+            book = await db.books.find_one({"id": pb["_id"]}, {"_id": 0, "title": 1, "cover_image": 1})
+            if book:
+                popular_books.append({
+                    "book_id": pb["_id"],
+                    "title": book.get("title", "Unknown"),
+                    "cover_image": book.get("cover_image"),
+                    "reads": pb["reads"]
+                })
+    
+    # Get event counts
+    event_counts_pipeline = [
+        {"$match": {"date": {"$gte": from_date}}},
+        {"$group": {"_id": "$event_type", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
+    ]
+    event_counts = await db.site_analytics.aggregate(event_counts_pipeline).to_list(50)
+    
+    # Get AI stories created
+    ai_stories_created = await db.site_analytics.count_documents({
+        "date": {"$gte": from_date},
+        "event_type": "ai_story_create"
+    })
+    
+    # Get signups
+    signups = await db.site_analytics.count_documents({
+        "date": {"$gte": from_date},
+        "event_type": "signup"
+    })
+    
+    # Get total page views
+    total_page_views = await db.site_analytics.count_documents({
+        "date": {"$gte": from_date},
+        "event_type": "page_view"
+    })
+    
+    # Get recent users (last 20)
+    recent_users = await db.users.find(
+        {},
+        {"_id": 0, "id": 1, "email": 1, "name": 1, "created_at": 1, "credits": 1, "role": 1}
+    ).sort("created_at", -1).limit(20).to_list(20)
+    
+    return {
+        "period_days": days,
+        "from_date": from_date,
+        "summary": {
+            "total_users": total_users,
+            "new_users": new_users,
+            "unique_visitors": unique_visitors,
+            "total_page_views": total_page_views,
+            "total_books": total_books,
+            "published_books": published_books,
+            "ai_stories_created": ai_stories_created,
+            "signups": signups
+        },
+        "daily_views": daily_views,
+        "popular_pages": [{"page": p["_id"], "views": p["views"]} for p in popular_pages],
+        "popular_books": popular_books,
+        "event_counts": [{"event": e["_id"], "count": e["count"]} for e in event_counts],
+        "recent_users": recent_users
+    }
+
+
+@api_router.get("/admin/users")
+async def get_all_users(
+    search: Optional[str] = None,
+    limit: int = 50,
+    skip: int = 0,
+    admin: dict = Depends(get_admin_user)
+):
+    """Get all users with search capability (admin only)"""
+    query = {}
+    if search:
+        query = {
+            "$or": [
+                {"email": {"$regex": search, "$options": "i"}},
+                {"name": {"$regex": search, "$options": "i"}}
+            ]
+        }
+    
+    total = await db.users.count_documents(query)
+    users = await db.users.find(
+        query,
+        {"_id": 0, "password": 0, "password_reset_token": 0}  # Exclude sensitive fields
+    ).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    
+    return {
+        "users": users,
+        "total": total,
+        "limit": limit,
+        "skip": skip
+    }
+
+
+@api_router.get("/admin/user/{user_id}")
+async def get_user_details(user_id: str, admin: dict = Depends(get_admin_user)):
+    """Get detailed user information (admin only)"""
+    user = await db.users.find_one(
+        {"id": user_id},
+        {"_id": 0, "password": 0, "password_reset_token": 0}
+    )
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Get user's books
+    user_books = await db.books.find(
+        {"author_id": user_id},
+        {"_id": 0, "id": 1, "title": 1, "is_published": 1, "publish_status": 1, "created_at": 1}
+    ).to_list(100)
+    
+    # Get user's activity
+    user_activity = await db.site_analytics.find(
+        {"user_id": user_id}
+    ).sort("timestamp", -1).limit(50).to_list(50)
+    
+    # Get credit history
+    credit_history = await db.credit_usage.find(
+        {"user_id": user_id},
+        {"_id": 0}
+    ).sort("timestamp", -1).limit(50).to_list(50)
+    
+    return {
+        "user": user,
+        "books": user_books,
+        "recent_activity": user_activity,
+        "credit_history": credit_history
+    }
+
+
 # ============ AUDIO CACHING / PRE-GENERATION ============
 
 @api_router.post("/admin/generate-narration-batch")
