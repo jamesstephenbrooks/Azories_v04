@@ -520,7 +520,7 @@ app = FastAPI(
 
 # Setup modular routes (admin, etc.) with email functions
 email_funcs = {
-    'email_configured': is_configured,
+    'email_configured': email_configured,
     'send_email': send_email,
     'get_welcome_email_html': get_welcome_email_html,
     'get_password_reset_email_html': get_password_reset_email_html,
