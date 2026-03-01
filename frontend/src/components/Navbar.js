@@ -49,12 +49,12 @@ export const Navbar = () => {
           
           {user && (
             <Link 
-              to="/art-studio" 
+              to="/creators" 
               className="font-ui text-foreground/80 hover:text-foreground transition-colors flex items-center gap-1.5"
-              data-testid="nav-art-studio"
+              data-testid="nav-creators"
             >
               <FiDroplet className="w-4 h-4 text-purple-500" />
-              Art Studio
+              Creators
             </Link>
           )}
         </div>
