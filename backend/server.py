@@ -210,10 +210,14 @@ async def cleanup_old_tasks():
         logger.info(f"Cleaned up {len(expired)} expired tasks")
 
 async def periodic_cleanup():
-    """Run cleanup every hour"""
+    """Run cleanup every 30 minutes to prevent memory buildup"""
     while True:
-        await asyncio.sleep(3600)  # 1 hour
+        await asyncio.sleep(1800)  # 30 minutes
         await cleanup_old_tasks()
+        # Also force garbage collection
+        import gc
+        gc.collect()
+        logger.info("Periodic cleanup and GC completed")
 
 # ============================================================
 # AUTO-SEEDING: Automatically seed database on first deployment
