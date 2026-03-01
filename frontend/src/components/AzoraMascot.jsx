@@ -7,6 +7,7 @@ export const AZORA_ASSETS = {
   pointingOriginal: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279592/azories/mascot/azora_pose4_pointing.jpg',
   confident: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279581/azories/mascot/azora_pose1_confident.jpg',
   running: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279585/azories/mascot/azora_pose2_running.jpg',
+  runningTransparent: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/e_background_removal/v1772279585/azories/mascot/azora_pose2_running.png',
   reading: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/e_background_removal/v1772279589/azories/mascot/azora_pose3_reading.png',
   
   // Additional variations
