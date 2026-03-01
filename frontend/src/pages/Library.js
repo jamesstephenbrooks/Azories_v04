@@ -371,6 +371,42 @@ export default function Library() {
     );
   };
 
+  // Skeleton loader for book cards
+  const BookCardSkeleton = () => (
+    <div className="book-card">
+      <div className="book-perspective">
+        <div className="relative bg-card rounded-3xl overflow-hidden border border-border">
+          <div className="relative aspect-[3/4] bg-gradient-to-br from-purple-400/20 to-pink-400/20 animate-pulse">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <FiBook className="w-10 h-10 text-white/30" />
+            </div>
+          </div>
+          <div className="p-4 space-y-2">
+            <div className="h-4 bg-muted/50 rounded animate-pulse" />
+            <div className="h-3 bg-muted/30 rounded w-2/3 animate-pulse" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Skeleton section for horizontal scroll
+  const SectionSkeleton = ({ title, icon }) => (
+    <div className="mb-12">
+      <div className="flex items-center gap-3 mb-6">
+        <span className="text-2xl">{icon}</span>
+        <div className="h-6 w-32 bg-muted/50 rounded animate-pulse" />
+      </div>
+      <div className="flex gap-6 overflow-x-auto pb-4">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className="flex-shrink-0 w-48">
+            <BookCardSkeleton />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
   const FeaturedSection = ({ title, icon, books: sectionBooks, emptyMessage }) => (
     <div className="mb-16">
       <div className="flex items-center gap-3 mb-6">
