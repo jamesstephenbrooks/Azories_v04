@@ -825,8 +825,12 @@ export default function BookEditor() {
     setImageUploadProgress(0);
     
     try {
+      const token = localStorage.getItem('azories-token');
       const res = await axios.post(`${API}/upload/image`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: { 
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`
+        },
         onUploadProgress: (progressEvent) => {
           const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
           setImageUploadProgress(progress);
@@ -848,7 +852,8 @@ export default function BookEditor() {
         toast.success('Image uploaded!');
       }
     } catch (error) {
-      toast.error('Failed to upload image');
+      console.error('Image upload error:', error);
+      toast.error(error.response?.data?.detail || 'Failed to upload image');
     } finally {
       setIsUploading(false);
       setImageUploadProgress(0);
