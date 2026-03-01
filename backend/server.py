@@ -4913,44 +4913,52 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
         
         # Use detected style if found, otherwise use the selected style
         final_style = detected_style if detected_style else selected_style
-        style_desc = style_prompts.get(final_style, style_prompts["illustration"])
+        style_desc = style_prompts.get(final_style, style_prompts["3d-pixar"])
         
-        logger.info(f"Using style: {final_style} (detected: {detected_style}, selected: {request.image_style})")
+        logger.info(f"Using style: {final_style} (detected: {detected_style}, selected: {selected_style})")
+        
+        # Build the title instruction
+        title_instruction = f'Use the title: "{request.title}"' if request.title.strip() else 'Create an engaging, memorable title'
         
         # Generate story structure using Emergent LLM Chat
-        story_prompt = f"""Create a children's story based on this idea: "{request.idea}"
-        
-        Genre: {request.genre}
-        Age Rating: {request.age_rating}
-        Number of pages: {request.num_pages}
-        
-        CRITICAL WORD COUNT REQUIREMENT:
-        Each page MUST contain EXACTLY {target_words} words (±10 words tolerance).
-        Count your words carefully for each page. This is essential.
-        
-        Return a JSON object with this structure:
+        story_prompt = f"""Create a children's story with these details:
+
+STORY IDEA: {story_idea}
+{character_context}
+
+REQUIREMENTS:
+- Title: {title_instruction}
+- Target audience: {age_context}
+- Number of pages: {request.num_pages}
+- Words per page: EXACTLY {target_words} words (±10 words tolerance). COUNT CAREFULLY!
+
+CRITICAL WORD COUNT REQUIREMENT:
+Each page MUST contain EXACTLY {target_words} words. Count your words carefully for each page. This is essential.
+
+Return a JSON object with this structure:
+{{
+    "title": "Story Title",
+    "description": "Brief description for the book",
+    "back_cover_text": "Engaging back cover summary (2-3 sentences)",
+    "main_character_description": "Detailed visual description of the main character: {request.character_description if request.character_description else 'describe based on the story'}",
+    "pages": [
         {{
-            "title": "Story Title",
-            "description": "Brief description for the book",
-            "back_cover_text": "Engaging back cover summary (2-3 sentences)",
-            "main_character_description": "Detailed visual description of the main character for consistent illustrations",
-            "pages": [
-                {{
-                    "page_number": 1,
-                    "text": "Page text content with EXACTLY {target_words} words",
-                    "image_prompt": "Detailed scene description for illustration (include main character, setting, action, mood)"
-                }}
-            ]
+            "page_number": 1,
+            "text": "Page text content with EXACTLY {target_words} words",
+            "image_prompt": "Detailed scene description for {final_style} style illustration (include main character, setting, action, mood)"
         }}
-        
-        Guidelines:
-        - Make it engaging and age-appropriate for {request.age_rating}
-        - NO inappropriate content, violence, or bad language
-        - Include vivid, detailed image prompts that describe the scene clearly
-        - Maintain character consistency in all image prompts
-        - Each page text MUST be exactly {target_words} words (count carefully!)
-        
-        Return ONLY the JSON object, no other text."""
+    ]
+}}
+
+Guidelines:
+- Make it engaging and age-appropriate for {age_context}
+- NO inappropriate content, violence, or bad language
+- Include vivid, detailed image prompts suitable for {final_style} style
+- Each image prompt should describe: characters, setting, action, lighting, mood
+- Maintain character consistency in all image prompts
+- Each page text MUST be exactly {target_words} words (count carefully!)
+
+Return ONLY the JSON object, no other text."""
         
         chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
