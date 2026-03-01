@@ -455,7 +455,16 @@ export default function BookReader() {
 
   const fetchBook = async () => {
     try {
-      const res = await axios.get(`${API}/books/${bookId}/full`);
+      // Check if component is still mounted
+      if (!mountedRef.current) return;
+      
+      const res = await axios.get(`${API}/books/${bookId}/full`, {
+        signal: abortControllerRef.current?.signal
+      });
+      
+      // Check again after async operation
+      if (!mountedRef.current) return;
+      
       setBook(res.data);
       setNarratorVoice(res.data.narrator_voice_id || '21m00Tcm4TlvDq8ikWAM');
       setNarratorVoiceLocked(res.data.narrator_voice_locked || false);
@@ -469,11 +478,14 @@ export default function BookReader() {
           page: `/read/${bookId}`,
           metadata: { title: res.data.title }
         }, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {}
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          signal: abortControllerRef.current?.signal
         });
       } catch (e) {
-        // Silently fail analytics
+        // Silently fail analytics (including aborted requests)
       }
+      
+      if (!mountedRef.current) return;
       
       if (res.data.requires_auth) {
         setRequiresAuth(true);
