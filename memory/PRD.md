@@ -19,6 +19,10 @@ User wants to enhance their "Azories" digital book application with:
 - **Audio Caching**: Narration cached to Cloudinary (70.5% complete) ✅
 - **Newly Added Section**: Horizontal scroll row with NEW badges ✅
 - **Coming Soon Section**: Blurred teasers with countdown labels ✅
+- **Admin Email Notifications**: ✅ VERIFIED (March 1, 2026)
+  - New user signup notifications via Resend
+  - Credit purchase notifications via Resend  
+  - Book submission notifications via Resend
 
 ### P1 - High Priority
 - Monetization and tier gating (Stripe) ✅
