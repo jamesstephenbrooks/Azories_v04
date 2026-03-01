@@ -6558,31 +6558,33 @@ async def batch_prepare_tts(request: BatchTTSRequest, background_tasks: Backgrou
                     del audio_bytes  # Free memory immediately
                     
                     cloudinary_url = upload_result.get("secure_url")
-                
-                # Cache and update page
-                await db.audio_cache.update_one(
-                    {"cache_key": cache_key},
-                    {"$set": {
-                        "cache_key": cache_key,
-                        "cloudinary_url": cloudinary_url,
-                        "voice": openai_voice,
-                        "created_at": datetime.now(timezone.utc)
-                    }},
-                    upsert=True
-                )
-                
-                await db.books.update_one(
-                    {"id": request.book_id, "pages.page_number": page.get("page_number")},
-                    {"$set": {"pages.$.audio_url": cloudinary_url}}
-                )
-                processed += 1
-                logger.info(f"Batch TTS: Processed page {page.get('page_number')} for book {request.book_id}")
-                
-            except Exception as e:
-                logger.error(f"Batch TTS error for page {page.get('page_number')}: {e}")
-                continue
-        
-        logger.info(f"Batch TTS complete: {processed}/{len(pages_to_process)} pages for book {request.book_id}")
+                    
+                    # Cache and update page
+                    await db.audio_cache.update_one(
+                        {"cache_key": cache_key},
+                        {"$set": {
+                            "cache_key": cache_key,
+                            "cloudinary_url": cloudinary_url,
+                            "voice": openai_voice,
+                            "created_at": datetime.now(timezone.utc)
+                        }},
+                        upsert=True
+                    )
+                    
+                    await db.books.update_one(
+                        {"id": request.book_id, "pages.page_number": page.get("page_number")},
+                        {"$set": {"pages.$.audio_url": cloudinary_url}}
+                    )
+                    processed += 1
+                    logger.info(f"Batch TTS: Processed page {page.get('page_number')} for book {request.book_id}")
+                    
+                except Exception as e:
+                    logger.error(f"Batch TTS error for page {page.get('page_number')}: {e}")
+                    continue
+            
+            logger.info(f"Batch TTS complete: {processed}/{len(pages_to_process)} pages for book {request.book_id}")
+        except Exception as e:
+            logger.error(f"Batch TTS fatal error: {e}")
     
     # Run in background for instant response
     background_tasks.add_task(process_pages)
