@@ -1811,17 +1811,17 @@ export default function BookEditor() {
               </div>
               
               {/* Right - Text Panel */}
-              <div className="w-1/2 p-6 flex flex-col">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-heading font-semibold">Story Text</h3>
+              <div className={`${mobileActivePanel === 'text' ? 'flex' : 'hidden'} lg:flex w-full lg:w-1/2 p-4 lg:p-6 flex-col`}>
+                <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-4 gap-2">
+                  <h3 className="font-heading font-semibold text-sm lg:text-base">Story Text</h3>
                   
-                  {/* Text Formatting Controls */}
-                  <div className="flex items-center gap-2">
+                  {/* Text Formatting Controls - Scrollable on mobile */}
+                  <div className="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 w-full lg:w-auto">
                     <Select 
                       value={selectedPage.font_family || 'default'} 
                       onValueChange={(value) => setSelectedPage({ ...selectedPage, font_family: value })}
                     >
-                      <SelectTrigger className="w-32 h-8 text-xs rounded-full">
+                      <SelectTrigger className="w-24 lg:w-32 h-8 text-xs rounded-full flex-shrink-0">
                         <SelectValue placeholder="Font" />
                       </SelectTrigger>
                       <SelectContent>
@@ -1837,7 +1837,7 @@ export default function BookEditor() {
                       value={selectedPage.font_size || 'medium'} 
                       onValueChange={(value) => setSelectedPage({ ...selectedPage, font_size: value })}
                     >
-                      <SelectTrigger className="w-24 h-8 text-xs rounded-full">
+                      <SelectTrigger className="w-20 lg:w-24 h-8 text-xs rounded-full flex-shrink-0">
                         <SelectValue placeholder="Size" />
                       </SelectTrigger>
                       <SelectContent>
@@ -1852,7 +1852,7 @@ export default function BookEditor() {
                       value={selectedPage.text_align || 'left'} 
                       onValueChange={(value) => setSelectedPage({ ...selectedPage, text_align: value })}
                     >
-                      <SelectTrigger className="w-24 h-8 text-xs rounded-full">
+                      <SelectTrigger className="w-20 lg:w-24 h-8 text-xs rounded-full flex-shrink-0">
                         <SelectValue placeholder="Align" />
                       </SelectTrigger>
                       <SelectContent>
@@ -1870,7 +1870,7 @@ export default function BookEditor() {
                     placeholder="Write your story here..."
                     value={selectedPage.text_content}
                     onChange={(e) => setSelectedPage({ ...selectedPage, text_content: e.target.value })}
-                    className={`flex-1 min-h-[400px] rounded-2xl border-2 resize-none ${
+                    className={`flex-1 min-h-[200px] lg:min-h-[400px] rounded-2xl border-2 resize-none text-base ${
                       selectedPage.font_family === 'serif' ? 'font-serif' :
                       selectedPage.font_family === 'sans' ? 'font-sans' :
                       selectedPage.font_family === 'mono' ? 'font-mono' :
