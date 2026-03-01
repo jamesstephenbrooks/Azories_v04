@@ -58,6 +58,7 @@ export default function Auth() {
     try {
       if (isLogin) {
         await login(formData.email, formData.password, formData.rememberMe);
+        trackEvent('login', { page: '/auth' });
         toast.success('Welcome back!');
       } else {
         if (!formData.name.trim()) {
@@ -66,6 +67,7 @@ export default function Auth() {
           return;
         }
         await register(formData.email, formData.password, formData.name);
+        trackEvent('signup', { page: '/auth' });
         toast.success('Account created successfully!');
       }
       // Small delay to ensure state is updated before navigation
