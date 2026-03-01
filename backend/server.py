@@ -519,6 +519,43 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# Global exception handler to prevent server crashes
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """Catch all unhandled exceptions to prevent server crash"""
+    import traceback
+    error_id = str(uuid.uuid4())[:8]
+    logger.error(f"[ERROR-{error_id}] Unhandled exception on {request.url.path}: {str(exc)[:200]}")
+    logger.error(f"[ERROR-{error_id}] Traceback: {traceback.format_exc()[:500]}")
+    
+    # Return a proper error response instead of crashing
+    return Response(
+        content=json.dumps({
+            "detail": "An internal error occurred. Please try again.",
+            "error_id": error_id
+        }),
+        status_code=500,
+        media_type="application/json"
+    )
+
+# Memory management - force garbage collection periodically
+import gc
+_gc_counter = 0
+
+@app.middleware("http")
+async def memory_management_middleware(request: Request, call_next):
+    """Middleware to manage memory and prevent leaks"""
+    global _gc_counter
+    response = await call_next(request)
+    
+    # Run garbage collection every 100 requests
+    _gc_counter += 1
+    if _gc_counter >= 100:
+        gc.collect()
+        _gc_counter = 0
+    
+    return response
+
 # Setup modular routes (admin, etc.) with email functions
 email_funcs = {
     'email_configured': email_configured,
