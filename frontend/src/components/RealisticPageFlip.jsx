@@ -226,6 +226,8 @@ CoverPage.displayName = 'CoverPage';
 // Back cover page component - Uses actual back_cover_image if available
 const BackCoverPage = forwardRef(({ book }, ref) => {
   const hasBackCoverImage = book?.back_cover_image && book.back_cover_image.trim() !== '';
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
   
   return (
     <div 
@@ -236,31 +238,37 @@ const BackCoverPage = forwardRef(({ book }, ref) => {
       <div 
         className="absolute inset-0 rounded-l-lg overflow-hidden"
         style={{
-          background: hasBackCoverImage ? '#1a0a2e' : `linear-gradient(225deg, 
+          background: `linear-gradient(225deg, 
             ${book?.cover_gradient_start || '#667eea'} 0%, 
             ${book?.cover_gradient_end || '#764ba2'} 100%)`,
           boxShadow: '-5px 0 15px rgba(0,0,0,0.3)',
         }}
       >
         {/* Back cover image - if available, show the designed back cover */}
-        {hasBackCoverImage ? (
+        {hasBackCoverImage && !imageError ? (
           <img 
             src={book.back_cover_image}
             alt="Back Cover"
+            onLoad={() => setImageLoaded(true)}
+            onError={() => setImageError(true)}
             style={{
               position: 'absolute',
               top: 0,
               left: 0,
               width: '100%',
               height: '100%',
-              objectFit: 'contain',
-              objectPosition: 'center'
+              objectFit: 'cover',
+              objectPosition: 'center',
+              opacity: imageLoaded ? 1 : 0,
+              transition: 'opacity 0.3s ease'
             }}
           />
-        ) : (
-          /* Fallback: CSS-generated back cover content */
+        ) : null}
+        
+        {/* Fallback content - shown if no image or while loading or on error */}
+        {(!hasBackCoverImage || imageError || !imageLoaded) && (
           <div className="relative h-full flex flex-col items-center justify-center text-white p-8">
-            <p className="text-center opacity-80 max-w-xs leading-relaxed">
+            <p className="text-center opacity-80 max-w-xs leading-relaxed text-sm sm:text-base">
               {book?.back_cover_text || book?.description || 'Thank you for reading!'}
             </p>
             {book?.age_rating && (
