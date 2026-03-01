@@ -108,6 +108,10 @@ export default function BookEditor() {
   const [newChapterOpen, setNewChapterOpen] = useState(false);
   const [newChapterTitle, setNewChapterTitle] = useState('');
   const [creatingChapter, setCreatingChapter] = useState(false);
+  
+  // Mobile responsive state
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [mobileActivePanel, setMobileActivePanel] = useState('visual'); // 'visual' | 'text'
 
   // Unsaved changes warning - beforeunload
   useEffect(() => {
