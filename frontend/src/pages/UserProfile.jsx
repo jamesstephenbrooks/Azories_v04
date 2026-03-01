@@ -98,12 +98,16 @@ export default function UserProfile() {
 
   const handleUpdateProfile = async () => {
     try {
-      await axios.put(`${API}/users/profile`, editData);
+      const token = localStorage.getItem('azories-token');
+      await axios.put(`${API}/users/profile`, editData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setProfile({ ...profile, ...editData });
       setIsEditOpen(false);
       toast.success('Profile updated!');
     } catch (error) {
-      toast.error('Failed to update profile');
+      console.error('Profile update error:', error);
+      toast.error(error.response?.data?.detail || 'Failed to update profile');
     }
   };
 
