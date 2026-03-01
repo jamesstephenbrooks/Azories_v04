@@ -257,7 +257,7 @@ export default function Landing() {
               { url: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/w_300,q_80/v1772271593/azories/books/robot_best_friend/cover.png', title: 'Robot Best Friend' },
               { url: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/w_300,q_80/v1772217091/azories/books/colors_of_the_world/cover.png', title: 'Colors of the World' },
               { url: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/w_300,q_80/v1772271593/azories/books/super_silly_superhero/cover.png', title: 'Super Silly Superhero' },
-              { url: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/w_300,q_80/v1772271593/azories/books/the_case_of_the_missing_cookies/cover.png', title: 'Missing Cookies' },
+              { url: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/w_300,q_80/v1772217089/azories/books/the_case_of_the_missing_cookie/cover.jpg', title: 'Missing Cookies' },
               { url: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/w_300,q_80/v1772271593/azories/books/the_dragons_secret_garden/cover.png', title: "Dragon's Secret Garden" },
             ].map((book, index) => (
               <motion.div
