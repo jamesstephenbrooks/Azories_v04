@@ -182,7 +182,18 @@ const Credits = () => {
         >
           <h2 className="text-2xl font-bold text-white mb-6 text-center">What Can You Create?</h2>
           
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-4 gap-6">
+            <div className="text-center p-4">
+              <div className="w-16 h-16 bg-gradient-to-r from-amber-600/30 to-orange-600/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FiZap className="text-3xl text-amber-400" />
+              </div>
+              <h3 className="text-white font-semibold mb-2">AI Story Creator</h3>
+              <p className="text-gray-400 text-sm">
+                5 credits = 1 complete story<br />
+                AI writes text + generates all page images
+              </p>
+            </div>
+            
             <div className="text-center p-4">
               <div className="w-16 h-16 bg-purple-600/30 rounded-full flex items-center justify-center mx-auto mb-4">
                 <FiImage className="text-3xl text-purple-400" />
