@@ -1221,6 +1221,18 @@ export default function BookReader() {
                 </Button>
               )}
               
+              {/* Share Book Button */}
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={shareBook} 
+                className="rounded-full w-8 h-8 sm:w-10 sm:h-10"
+                title="Share this book"
+                data-testid="share-book-btn"
+              >
+                <FiShare2 className="w-4 h-4 sm:w-5 sm:h-5" />
+              </Button>
+              
               <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full w-8 h-8 sm:w-10 sm:h-10">
                 {theme === 'dark' ? <FiSun className="w-4 h-4 sm:w-5 sm:h-5" /> : <FiMoon className="w-4 h-4 sm:w-5 sm:h-5" />}
               </Button>
