@@ -22,6 +22,16 @@ import CollaborativeWriting from '@/components/CollaborativeWriting';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
+// Optimize Cloudinary URLs for thumbnails
+const getOptimizedThumbnail = (url, width = 200) => {
+  if (!url) return url;
+  if (url.includes('res.cloudinary.com')) {
+    // Add optimization: f_auto (best format), q_auto (auto quality), w_200 (thumbnail width)
+    return url.replace('/upload/', `/upload/f_auto,q_auto,w_${width},c_limit/`);
+  }
+  return url;
+};
+
 export default function BookEditor() {
   const { bookId } = useParams();
   const navigate = useNavigate();
