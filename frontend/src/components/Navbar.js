@@ -101,6 +101,19 @@ export const Navbar = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
+                {/* Credit Balance in dropdown */}
+                <div className="px-2 py-2 border-b border-border/50 mb-1">
+                  <button 
+                    onClick={() => navigate('/credits')}
+                    className="w-full flex items-center justify-between px-2 py-1 rounded-md hover:bg-muted transition-colors"
+                  >
+                    <span className="text-sm text-muted-foreground">Credits</span>
+                    <span className="flex items-center gap-1 text-sm font-semibold text-amber-600 dark:text-amber-400">
+                      <FiZap className="w-3 h-3" />
+                      {credits !== null ? credits.toLocaleString() : '...'}
+                    </span>
+                  </button>
+                </div>
                 <DropdownMenuItem 
                   onClick={() => navigate('/profile')}
                   data-testid="menu-profile"
@@ -120,6 +133,13 @@ export const Navbar = () => {
                 >
                   <FiDroplet className="mr-2 text-purple-500" />
                   Creators
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => navigate('/credits')}
+                  data-testid="menu-buy-credits"
+                >
+                  <FiDollarSign className="mr-2 text-green-500" />
+                  Buy Credits
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={logout}
