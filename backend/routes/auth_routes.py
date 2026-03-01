@@ -298,11 +298,16 @@ async def get_me(current_user: dict = Depends(get_current_user)):
 @router.post("/forgot-password")
 async def forgot_password(request: ForgotPasswordRequest, background_tasks: BackgroundTasks):
     """Request a password reset email."""
+    logger.info(f"[FORGOT-PASSWORD] Request received for: {request.email}")
+    
     user = await db.users.find_one({"email": request.email.lower()}, {"_id": 0})
     
     # Always return success to prevent email enumeration attacks
     if not user:
+        logger.warning(f"[FORGOT-PASSWORD] User not found: {request.email}")
         return {"message": "If this email exists, a reset link has been sent."}
+    
+    logger.info(f"[FORGOT-PASSWORD] User found: {user.get('name')}")
     
     # Generate reset token
     reset_token = generate_reset_token()
@@ -320,26 +325,37 @@ async def forgot_password(request: ForgotPasswordRequest, background_tasks: Back
         "expires_at": expiry.isoformat(),
         "created_at": datetime.now(timezone.utc).isoformat()
     })
+    logger.info(f"[FORGOT-PASSWORD] Reset token stored for user {user['id']}")
     
     # Get app URL for reset link
     app_url = os.environ.get("APP_URL", "https://azories.com")
     reset_url = f"{app_url}/reset-password?token={reset_token}"
     
+    # Debug email configuration
+    logger.info(f"[FORGOT-PASSWORD] Email check - email_configured: {email_configured is not None}, send_email: {send_email is not None}")
+    if email_configured:
+        config_result = email_configured() if callable(email_configured) else bool(email_configured)
+        logger.info(f"[FORGOT-PASSWORD] Email configured result: {config_result}")
+    
     # Send reset email (with unhashed token)
     if email_configured and email_configured() and send_email:
+        logger.info(f"[FORGOT-PASSWORD] Generating email HTML...")
         reset_html = get_password_reset_email_html(user["name"], reset_token, reset_url)
         # Send email directly (not in background) to ensure delivery
         try:
-            import asyncio
+            logger.info(f"[FORGOT-PASSWORD] Calling send_email for {request.email}...")
             result = await send_email(request.email, "Reset Your Azories Password", reset_html)
+            logger.info(f"[FORGOT-PASSWORD] send_email result: {result}")
             if result and result.get("success"):
-                logger.info(f"Password reset email sent to {request.email}, email_id: {result.get('email_id')}")
+                logger.info(f"[FORGOT-PASSWORD] ✅ Email SENT to {request.email}, email_id: {result.get('email_id')}")
             else:
-                logger.error(f"Password reset email failed for {request.email}: {result}")
+                logger.error(f"[FORGOT-PASSWORD] ❌ Email FAILED for {request.email}: {result}")
         except Exception as e:
-            logger.error(f"Password reset email error for {request.email}: {str(e)}")
+            logger.error(f"[FORGOT-PASSWORD] ❌ Email ERROR for {request.email}: {str(e)}")
+            import traceback
+            logger.error(traceback.format_exc())
     else:
-        logger.warning(f"Email not configured - reset token for {request.email}: {reset_token}")
+        logger.warning(f"[FORGOT-PASSWORD] ⚠️ Email not configured - token for {request.email}: {reset_token[:10]}...")
     
     return {"message": "If this email exists, a reset link has been sent."}
 
