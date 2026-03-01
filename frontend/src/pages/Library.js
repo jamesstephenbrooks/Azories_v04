@@ -312,11 +312,22 @@ export default function Library() {
           cacheData.genres = ['All'];
         }
         
-        // Save to cache for next navigation
-        setBookCache(cacheData);
+        // Only cache if we got valid books data
+        if (cacheData.books && cacheData.books.length > 0) {
+          setBookCache(cacheData);
+        }
         
       } catch (error) {
         console.error('Error loading library data:', error);
+        // On error, try a simple fallback fetch
+        try {
+          const fallbackRes = await axios.get(`${API}/books?published_only=true&limit=50`);
+          if (fallbackRes.data && fallbackRes.data.length > 0) {
+            setBooks(fallbackRes.data);
+          }
+        } catch (fallbackError) {
+          console.error('Fallback fetch also failed:', fallbackError);
+        }
       } finally {
         setLoading(false);
         setInitialLoadComplete(true);
