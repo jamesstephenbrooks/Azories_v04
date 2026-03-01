@@ -49,19 +49,26 @@ const preloadAndCacheImage = (url, width = 300) => {
 
 // Session storage cache for book data
 const CACHE_KEY = 'azories_library_cache';
+const CACHE_VERSION = 'v2'; // Increment to invalidate old caches
 const CACHE_EXPIRY = 5 * 60 * 1000; // 5 minutes
 
 const getBookCache = () => {
   try {
     const cached = sessionStorage.getItem(CACHE_KEY);
     if (cached) {
-      const { data, timestamp } = JSON.parse(cached);
-      if (Date.now() - timestamp < CACHE_EXPIRY) {
-        return data;
+      const parsed = JSON.parse(cached);
+      // Check version and expiry
+      if (parsed.version === CACHE_VERSION && 
+          parsed.timestamp && 
+          Date.now() - parsed.timestamp < CACHE_EXPIRY) {
+        return parsed.data;
       }
+      // Invalid cache - clear it
+      sessionStorage.removeItem(CACHE_KEY);
     }
   } catch (e) {
-    // Ignore cache errors
+    // Corrupted cache - clear it
+    try { sessionStorage.removeItem(CACHE_KEY); } catch {}
   }
   return null;
 };
@@ -69,6 +76,7 @@ const getBookCache = () => {
 const setBookCache = (data) => {
   try {
     sessionStorage.setItem(CACHE_KEY, JSON.stringify({
+      version: CACHE_VERSION,
       data,
       timestamp: Date.now()
     }));
