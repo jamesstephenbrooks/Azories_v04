@@ -1098,6 +1098,20 @@ export default function BookReader() {
                 <AmbientSound genre={book?.genre} isReading={currentPage >= 0} />
               </div>
               
+              {/* Print Book Button - visible for logged in users */}
+              {user && (
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => setShowPrintDialog(true)} 
+                  className="rounded-full w-8 h-8 sm:w-10 sm:h-10"
+                  title="Print My Book"
+                  data-testid="print-book-btn"
+                >
+                  <FiPrinter className="w-4 h-4 sm:w-5 sm:h-5" />
+                </Button>
+              )}
+              
               <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full w-8 h-8 sm:w-10 sm:h-10">
                 {theme === 'dark' ? <FiSun className="w-4 h-4 sm:w-5 sm:h-5" /> : <FiMoon className="w-4 h-4 sm:w-5 sm:h-5" />}
               </Button>
