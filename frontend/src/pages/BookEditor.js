@@ -405,7 +405,7 @@ export default function BookEditor() {
       setCoverData({ ...coverData, back_cover_image: imageUrl });
     }
     setShowCoverGalleryPicker(false);
-    toast.success(`${coverGalleryTarget === 'front' ? 'Front' : 'Back'} cover image added from Art Studio`);
+    toast.success(`${coverGalleryTarget === 'front' ? 'Front' : 'Back'} cover image added from Creators`);
   };
   
   // Update image position/fit settings
