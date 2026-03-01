@@ -568,10 +568,19 @@ export default function BookReader() {
         }
       }
     } catch (error) {
-      toast.error('Failed to load book');
-      navigate('/library');
+      // Don't show error for aborted requests (component unmounted)
+      if (error.name === 'CanceledError' || error.name === 'AbortError') {
+        console.log('[BookReader] Fetch aborted (component unmounted)');
+        return;
+      }
+      if (mountedRef.current) {
+        toast.error('Failed to load book');
+        navigate('/library');
+      }
     } finally {
-      setLoading(false);
+      if (mountedRef.current) {
+        setLoading(false);
+      }
     }
   };
 
