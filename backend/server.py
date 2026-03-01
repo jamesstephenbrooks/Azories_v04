@@ -5411,6 +5411,37 @@ Return ONLY the JSON array, no other text."""
         logger.error(f"Error generating story: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error generating story: {str(e)}")
 
+# Endpoint to add Azories back cover to existing books that don't have one
+@api_router.post("/admin/add-back-covers")
+async def add_back_covers_to_books(current_user: dict = Depends(get_admin_user)):
+    """Add Azories branded back cover to all books that don't have one"""
+    azories_back_cover_url = "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772281331/azories/back_covers/azories_standard_back.png"
+    
+    # Find all books without back cover image
+    books_without_back_cover = await db.books.find(
+        {"$or": [{"back_cover_image": ""}, {"back_cover_image": None}, {"back_cover_image": {"$exists": False}}]},
+        {"_id": 0, "id": 1, "title": 1, "description": 1}
+    ).to_list(1000)
+    
+    updated_count = 0
+    for book in books_without_back_cover:
+        back_cover_text = (book.get("description") or "")[:200]
+        await db.books.update_one(
+            {"id": book["id"]},
+            {"$set": {
+                "back_cover_image": azories_back_cover_url,
+                "back_cover_text": back_cover_text
+            }}
+        )
+        updated_count += 1
+        logger.info(f"Added back cover to book: {book['title']}")
+    
+    return {
+        "success": True,
+        "books_updated": updated_count,
+        "message": f"Added Azories back cover to {updated_count} books"
+    }
+
 class GenerateAllImagesRequest(BaseModel):
     book_id: str
     style: Optional[str] = "illustration"
