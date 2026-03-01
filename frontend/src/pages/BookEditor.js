@@ -1055,10 +1055,6 @@ export default function BookEditor() {
 
   if (!user) return null;
 
-  // Mobile sidebar state
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [mobileActivePanel, setMobileActivePanel] = useState('visual'); // 'visual' | 'text'
-  
   return (
     <div className="min-h-screen bg-background">
       {/* Top Bar */}
