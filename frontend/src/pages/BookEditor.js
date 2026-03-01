@@ -2285,7 +2285,7 @@ export default function BookEditor() {
                   <FiVideo className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
                   <h3 className="font-medium text-lg mb-2">No Videos Yet</h3>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Create animations in Pro Studio or Art Studio to see them here.
+                    Create animations in Pro Studio or Creators to see them here.
                   </p>
                   <Button
                     onClick={() => {
