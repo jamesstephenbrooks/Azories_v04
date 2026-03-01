@@ -657,17 +657,23 @@ export default function Dashboard() {
                       
                       <Button 
                         onClick={generateAIStory}
-                        disabled={generatingStory}
-                        className="w-full rounded-full py-6 bg-accent hover:bg-accent/90"
+                        disabled={generatingStory || credits < AI_STORY_COST}
+                        className={`w-full rounded-full py-6 ${credits < AI_STORY_COST ? 'bg-muted text-muted-foreground' : 'bg-accent hover:bg-accent/90'}`}
                       >
                         {generatingStory ? (
                           <>
                             <FiLoader className="mr-2 animate-spin" />
                             Creating Your Story...
                           </>
+                        ) : credits < AI_STORY_COST ? (
+                          <>
+                            <FiZap className="mr-2" />
+                            Need {AI_STORY_COST - credits} More Credits
+                          </>
                         ) : (
                           <>
                             <FiZap className="mr-2" />
+                            Generate Story ({AI_STORY_COST} credits)
                             Generate Story
                           </>
                         )}
