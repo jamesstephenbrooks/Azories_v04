@@ -1914,7 +1914,7 @@ export default function BookEditor() {
         </div>
       </div>
       
-      {/* Art Studio Gallery Picker Modal */}
+      {/* Creators Gallery Picker Modal */}
       <Dialog open={showGalleryPicker} onOpenChange={setShowGalleryPicker}>
         <DialogContent className="max-w-4xl max-h-[80vh]">
           <DialogHeader>
