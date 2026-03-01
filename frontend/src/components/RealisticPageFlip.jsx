@@ -543,18 +543,18 @@ const ContentPage = forwardRef(({ page, pageNumber, isLeft, isCurrentPage = fals
           ) : null}
         </div>
         
-        {/* Text content - scrollable, never shrink font */}
-        <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-muted-foreground/30 scrollbar-track-transparent">
-          {hasText ? (
+        {/* Text content - scrollable with indicator, never shrink font */}
+        {hasText ? (
+          <ScrollableTextArea>
             <p className="font-reader text-base leading-[1.7] whitespace-pre-wrap text-foreground/90">
               {page.text_content}
             </p>
-          ) : (
-            <div className="h-full flex items-center justify-center text-muted-foreground/40">
-              <span className="text-base italic">This page has no content</span>
-            </div>
-          )}
-        </div>
+          </ScrollableTextArea>
+        ) : (
+          <div className="flex-1 flex items-center justify-center text-muted-foreground/40">
+            <span className="text-base italic">This page has no content</span>
+          </div>
+        )}
       </div>
     </Page>
   );
