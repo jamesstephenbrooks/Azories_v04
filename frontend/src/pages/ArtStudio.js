@@ -1265,7 +1265,7 @@ export default function ArtStudio() {
       <div className="min-h-screen bg-gradient-to-br from-[#1a1520] to-[#0d0a10] flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-white mb-4">Pro Feature</h2>
-          <p className="text-white/60 mb-6">Sign in to access the Art Studio</p>
+          <p className="text-white/60 mb-6">Sign in to access Creators</p>
           <Button onClick={() => navigate('/login')} className="bg-purple-600 hover:bg-purple-700">
             Sign In
           </Button>
