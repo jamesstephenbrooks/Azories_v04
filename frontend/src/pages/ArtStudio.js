@@ -1363,7 +1363,7 @@ export default function ArtStudio() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate('/art-studio/expert')}
+              onClick={() => navigate('/creators/expert')}
               className="text-xs sm:text-sm text-amber-300 hover:text-amber-200 hover:bg-amber-500/20"
               data-testid="node-workflow-tab"
             >
