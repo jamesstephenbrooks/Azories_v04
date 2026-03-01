@@ -619,6 +619,44 @@ async def get_admin_user(credentials: HTTPAuthorizationCredentials = Depends(sec
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid admin token")
 
+# ============ ADMIN LOGIN ============
+# Separate admin login endpoint for the admin dashboard
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "Admin")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "Routetofreedom")
+
+class AdminLoginRequest(BaseModel):
+    username: str
+    password: str
+
+@api_router.post("/admin/login")
+async def admin_login(request: AdminLoginRequest):
+    """
+    Admin login endpoint for the admin dashboard.
+    Uses a separate username/password from regular user accounts.
+    Returns a JWT token with admin role.
+    """
+    # Check credentials
+    if request.username != ADMIN_USERNAME or request.password != ADMIN_PASSWORD:
+        raise HTTPException(status_code=401, detail="Invalid admin credentials")
+    
+    # Create admin token
+    expire = datetime.now(timezone.utc) + timedelta(days=7)
+    payload = {
+        "sub": "admin",
+        "email": "admin@azories.com",
+        "role": "admin",
+        "admin": True,
+        "exp": expire
+    }
+    token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+    
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "expires_in": 7 * 24 * 60 * 60,  # 7 days in seconds
+        "admin": True
+    }
+
 # Age ratings
 AGE_RATINGS = ["All Ages", "5+", "8+", "12+", "16+"]
 
