@@ -606,6 +606,46 @@ export default function BookReader() {
     }
   }, [currentPage, audioElement, isMobilePortrait, isMobileLandscape]);
 
+  // Download printable PDF (5 credits)
+  const handlePrintBook = useCallback(async () => {
+    if (!user) {
+      toast.error('Please sign in to download your book');
+      return;
+    }
+    
+    setIsPrinting(true);
+    try {
+      const response = await axios.get(`${API}/books/${bookId}/print-pdf`, {
+        responseType: 'blob',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      // Create download link
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${book?.title || 'book'}_printable_a5.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      toast.success('Your printable book is downloading! 🖨️');
+      setShowPrintDialog(false);
+    } catch (error) {
+      console.error('Print PDF error:', error);
+      if (error.response?.status === 402) {
+        toast.error('Not enough credits. You need 5 credits to download a printable PDF.');
+      } else {
+        toast.error(error.response?.data?.detail || 'Failed to generate printable PDF');
+      }
+    } finally {
+      setIsPrinting(false);
+    }
+  }, [bookId, user, token, book?.title]);
+
   // startListening is defined after playAudio below
 
   // Pre-load audio for upcoming pages in the background
