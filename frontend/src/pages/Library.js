@@ -119,6 +119,8 @@ export default function Library() {
   const [books, setBooks] = useState([]);
   const [featuredBooks, setFeaturedBooks] = useState([]);
   const [bestOfWeek, setBestOfWeek] = useState([]);
+  const [newlyAddedBooks, setNewlyAddedBooks] = useState([]);
+  const [comingSoonBooks, setComingSoonBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 300); // Debounce search input
@@ -137,6 +139,8 @@ export default function Library() {
   useEffect(() => {
     fetchBooks();
     fetchFeaturedBooks();
+    fetchNewlyAdded();
+    fetchComingSoon();
     fetchGenres();
   }, []);
 
