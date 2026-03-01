@@ -115,7 +115,7 @@ async def register(user_data: UserCreate):
     is_vip = user_data.email.lower() in [e.lower() for e in VIP_EMAILS]
     
     # Pro trial for all new users
-    trial_expires = datetime.utcnow() + timedelta(days=30)
+    trial_expires = datetime.utcnow() + timedelta(days=3)
     
     user = {
         "id": str(uuid.uuid4()),
