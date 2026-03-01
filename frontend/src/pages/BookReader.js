@@ -612,6 +612,12 @@ export default function BookReader() {
     const pageData = allPages[pageIndex];
     if (!pageData?.text_content || !narratorVoice) return;
     
+    // Check if page already has a cached Cloudinary URL from database
+    if (pageData.audio_url && pageData.audio_url.startsWith('https://')) {
+      audioCache.current.set(pageIndex, { type: 'url', url: pageData.audio_url });
+      return;
+    }
+    
     preloadingPages.current.add(pageIndex);
     
     try {
@@ -620,8 +626,11 @@ export default function BookReader() {
         voice_id: narratorVoice
       });
       
-      if (res.data.audio_base64) {
-        audioCache.current.set(pageIndex, res.data.audio_base64);
+      // Prefer Cloudinary URL over base64 for faster loading
+      if (res.data.audio_url) {
+        audioCache.current.set(pageIndex, { type: 'url', url: res.data.audio_url });
+      } else if (res.data.audio_base64) {
+        audioCache.current.set(pageIndex, { type: 'base64', data: res.data.audio_base64 });
       }
     } catch (error) {
     } finally {
