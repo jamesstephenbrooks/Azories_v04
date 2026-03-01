@@ -1549,21 +1549,47 @@ export default function BookEditor() {
         </div>
         
         {/* Main Editor Area */}
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex flex-col lg:flex-row overflow-hidden pb-20 lg:pb-0">
           {selectedPage ? (
             <>
+              {/* Mobile Panel Toggle */}
+              <div className="lg:hidden flex border-b border-border bg-card">
+                <button
+                  onClick={() => setMobileActivePanel('visual')}
+                  className={`flex-1 py-3 px-4 text-sm font-medium flex items-center justify-center gap-2 ${
+                    mobileActivePanel === 'visual' 
+                      ? 'text-primary border-b-2 border-primary' 
+                      : 'text-muted-foreground'
+                  }`}
+                >
+                  <FiImage className="w-4 h-4" />
+                  Visual
+                </button>
+                <button
+                  onClick={() => setMobileActivePanel('text')}
+                  className={`flex-1 py-3 px-4 text-sm font-medium flex items-center justify-center gap-2 ${
+                    mobileActivePanel === 'text' 
+                      ? 'text-primary border-b-2 border-primary' 
+                      : 'text-muted-foreground'
+                  }`}
+                >
+                  <FiBook className="w-4 h-4" />
+                  Text
+                </button>
+              </div>
+              
               {/* Left - Visual Content Panel with Scroll */}
-              <div className="w-1/2 border-r border-border flex flex-col">
+              <div className={`${mobileActivePanel === 'visual' ? 'flex' : 'hidden'} lg:flex w-full lg:w-1/2 border-r border-border flex-col`}>
                 <ScrollArea className="flex-1">
-                  <div className="p-6 space-y-6">
+                  <div className="p-4 lg:p-6 space-y-4 lg:space-y-6">
                     <div className="flex items-center justify-between">
-                      <h3 className="font-heading font-semibold">Visual Content</h3>
+                      <h3 className="font-heading font-semibold text-sm lg:text-base">Visual Content</h3>
                       {isComicMode && (
                         <Select 
                           value={selectedPage.layout_type || 'single'} 
                           onValueChange={(v) => setSelectedPage({ ...selectedPage, layout_type: v })}
                         >
-                          <SelectTrigger className="w-40 rounded-full">
+                          <SelectTrigger className="w-32 lg:w-40 rounded-full text-sm">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -1579,22 +1605,22 @@ export default function BookEditor() {
                     <Tabs defaultValue="media">
                       <TabsList className="mb-4">
                         <TabsTrigger value="media" data-testid="tab-media">
-                          <FiImage className="mr-2 w-4 h-4" />
-                          Media
+                          <FiImage className="mr-1 lg:mr-2 w-4 h-4" />
+                          <span className="text-sm">Media</span>
                         </TabsTrigger>
                       </TabsList>
                       
                       <TabsContent value="media" className="space-y-4">
-                        {/* Media Preview - Larger size */}
+                        {/* Media Preview - Responsive size */}
                         <div className="flex justify-center">
                           {selectedPage.video_url ? (
                             /* Video/Animation Preview - Book page aspect ratio (3:4) */
                             <div 
-                              className="rounded-2xl border-2 border-border bg-[#fdfbf7] dark:bg-[#2a2a30] overflow-hidden relative shadow-lg"
+                              className="rounded-2xl border-2 border-border bg-[#fdfbf7] dark:bg-[#2a2a30] overflow-hidden relative shadow-lg w-full max-w-xs lg:max-w-none"
                               style={{
                                 aspectRatio: '3/4',
-                                height: '55vh',
-                                width: 'auto',
+                                height: 'auto',
+                                maxHeight: '40vh',
                                 boxShadow: 'inset -7px 0 30px -7px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.1)'
                               }}
                             >
