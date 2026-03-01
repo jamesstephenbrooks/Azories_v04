@@ -2691,7 +2691,10 @@ export default function BookEditor() {
                           {scene.gallery.map((img, idx) => (
                             <button
                               key={idx}
-                              onClick={() => addCoverFromGallery(img.image_url)}
+                              onClick={() => {
+                                addCoverFromGallery(img.image_url);
+                                setShowCoverGalleryPicker(false);
+                              }}
                               className="group relative aspect-[3/4] rounded-lg overflow-hidden border-2 border-transparent hover:border-emerald-500 transition-all bg-muted/30"
                             >
                               <img 
