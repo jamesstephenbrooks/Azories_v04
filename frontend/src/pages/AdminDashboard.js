@@ -1076,7 +1076,7 @@ export default function AdminDashboard() {
                     <CardTitle className="text-white text-lg">Total Books</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-4xl font-bold text-blue-400">{analytics.total_books}</p>
+                    <p className="text-4xl font-bold text-blue-400">{analytics.summary?.total_books || allBooks.length || 0}</p>
                   </CardContent>
                 </Card>
                 <Card className="bg-white/5 border-white/10">
@@ -1084,7 +1084,7 @@ export default function AdminDashboard() {
                     <CardTitle className="text-white text-lg">Published Books</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-4xl font-bold text-green-400">{analytics.published_books}</p>
+                    <p className="text-4xl font-bold text-green-400">{analytics.summary?.published_books || 0}</p>
                   </CardContent>
                 </Card>
                 <Card className="bg-white/5 border-white/10">
@@ -1092,33 +1092,96 @@ export default function AdminDashboard() {
                     <CardTitle className="text-white text-lg">Total Users</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-4xl font-bold text-purple-400">{analytics.total_users}</p>
+                    <p className="text-4xl font-bold text-purple-400">{analytics.summary?.total_users || users.length || 0}</p>
                   </CardContent>
                 </Card>
                 <Card className="bg-white/5 border-white/10">
                   <CardHeader>
-                    <CardTitle className="text-white text-lg">Pro Users</CardTitle>
+                    <CardTitle className="text-white text-lg">New Users (30 days)</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-4xl font-bold text-yellow-400">{analytics.pro_users}</p>
+                    <p className="text-4xl font-bold text-yellow-400">{analytics.summary?.new_users || 0}</p>
                   </CardContent>
                 </Card>
                 <Card className="bg-white/5 border-white/10">
                   <CardHeader>
-                    <CardTitle className="text-white text-lg">Total Views</CardTitle>
+                    <CardTitle className="text-white text-lg">Page Views</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-4xl font-bold text-cyan-400">{analytics.total_views || 0}</p>
+                    <p className="text-4xl font-bold text-cyan-400">{analytics.summary?.total_page_views || 0}</p>
+                    <p className="text-white/50 text-sm mt-1">Since tracking enabled</p>
                   </CardContent>
                 </Card>
                 <Card className="bg-white/5 border-white/10">
                   <CardHeader>
-                    <CardTitle className="text-white text-lg">Total Reads</CardTitle>
+                    <CardTitle className="text-white text-lg">Unique Visitors</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-4xl font-bold text-pink-400">{analytics.total_reads || 0}</p>
+                    <p className="text-4xl font-bold text-pink-400">{analytics.summary?.unique_visitors || 0}</p>
+                    <p className="text-white/50 text-sm mt-1">Last 30 days</p>
                   </CardContent>
                 </Card>
+                <Card className="bg-white/5 border-white/10">
+                  <CardHeader>
+                    <CardTitle className="text-white text-lg">AI Stories Created</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-4xl font-bold text-orange-400">{analytics.summary?.ai_stories_created || 0}</p>
+                  </CardContent>
+                </Card>
+                <Card className="bg-white/5 border-white/10">
+                  <CardHeader>
+                    <CardTitle className="text-white text-lg">New Signups</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-4xl font-bold text-emerald-400">{analytics.summary?.signups || 0}</p>
+                    <p className="text-white/50 text-sm mt-1">Last 30 days</p>
+                  </CardContent>
+                </Card>
+                
+                {/* Recent Users Section */}
+                {analytics.recent_users && analytics.recent_users.length > 0 && (
+                  <Card className="bg-white/5 border-white/10 col-span-full">
+                    <CardHeader>
+                      <CardTitle className="text-white text-lg">Recent Users</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2 max-h-64 overflow-y-auto">
+                        {analytics.recent_users.slice(0, 10).map((user, idx) => (
+                          <div key={idx} className="flex justify-between items-center py-2 border-b border-white/10">
+                            <div>
+                              <p className="text-white font-medium">{user.name || 'Unknown'}</p>
+                              <p className="text-white/50 text-sm">{user.email}</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-white/70 text-sm">{user.credits || 0} credits</p>
+                              <p className="text-white/40 text-xs">{user.created_at?.slice(0, 10)}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+                
+                {/* Popular Books Section */}
+                {analytics.popular_books && analytics.popular_books.length > 0 && (
+                  <Card className="bg-white/5 border-white/10 col-span-full">
+                    <CardHeader>
+                      <CardTitle className="text-white text-lg">Popular Books (Most Read)</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        {analytics.popular_books.map((book, idx) => (
+                          <div key={idx} className="flex justify-between items-center py-2 border-b border-white/10">
+                            <p className="text-white">{book.title}</p>
+                            <p className="text-cyan-400 font-bold">{book.reads} reads</p>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
               </div>
             ) : (
               <div className="text-center py-12 text-white/60">
