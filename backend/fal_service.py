@@ -273,7 +273,7 @@ async def _submit_with_retry(model_id: str, arguments: dict, timeout: int = IMAG
 async def generate_image_flux(
     prompt: str,
     model: str = "flux-dev",
-    image_size: str = "landscape_16_9",
+    image_size: str = "portrait_4_3",
     num_images: int = 1,
     seed: Optional[int] = None,
     guidance_scale: float = 3.5,
