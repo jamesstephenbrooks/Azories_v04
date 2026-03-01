@@ -57,6 +57,7 @@ export default function BookReader() {
   // Audio cache for pre-loading upcoming pages
   const audioCache = useRef(new Map()); // pageIndex -> audio base64
   const preloadingPages = useRef(new Set()); // pages currently being preloaded
+  const abortControllerRef = useRef(null); // For cancelling API requests on unmount
   
   // Track which page audio has been played for - prevents duplicate playback
   const lastPlayedPageRef = useRef(-999);
