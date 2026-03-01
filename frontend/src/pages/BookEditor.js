@@ -1954,7 +1954,7 @@ export default function BookEditor() {
                   : 'bg-muted hover:bg-muted/80'
               }`}
             >
-              Art Studio ({generalGalleryImages.length})
+              Creators ({generalGalleryImages.length})
             </button>
             <button
               onClick={() => setGalleryTab('characters')}
@@ -2382,7 +2382,7 @@ export default function BookEditor() {
                   : 'bg-muted hover:bg-muted/80'
               }`}
             >
-              Art Studio ({generalGalleryImages.length})
+              Creators ({generalGalleryImages.length})
             </button>
             <button
               onClick={() => setGalleryTab('characters')}
