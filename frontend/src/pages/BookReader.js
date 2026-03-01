@@ -82,6 +82,10 @@ export default function BookReader() {
   const [showPrintDialog, setShowPrintDialog] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
   
+  // Book completion celebration state
+  const [showCelebration, setShowCelebration] = useState(false);
+  const hasShownCelebrationRef = useRef(false);
+  
   // Realistic page flip mode - always enabled
   const realisticFlipRef = useRef(null);
   
