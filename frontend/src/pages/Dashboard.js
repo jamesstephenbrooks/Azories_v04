@@ -85,8 +85,21 @@ export default function Dashboard() {
       fetchGenres();
       fetchAgeRatings();
       fetchSeries();
+      fetchCredits();
     }
   }, [user]);
+
+  const fetchCredits = async () => {
+    try {
+      const token = localStorage.getItem('azories-token');
+      const res = await axios.get(`${API}/credits/balance`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setCredits(res.data.credits || 0);
+    } catch (error) {
+      console.error('Failed to fetch credits:', error);
+    }
+  };
 
   const fetchMyBooks = async () => {
     try {
