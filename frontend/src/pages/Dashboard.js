@@ -668,12 +668,7 @@ export default function Dashboard() {
                         ].map((template) => (
                           <button
                             key={template.title}
-                            onClick={() => setAIStory(prev => ({
-                              ...prev,
-                              character_name: template.character_name || prev.character_name,
-                              character_description: template.character_description,
-                              story_description: template.story_description
-                            }))}
+                            onClick={() => handleTemplateSelect(template)}
                             className="flex flex-col items-start p-3 rounded-xl border-2 border-border hover:border-purple-500/50 hover:bg-purple-500/5 transition-all text-left group"
                             data-testid={`template-${template.title.toLowerCase().replace(/\s+/g, '-')}`}
                           >
