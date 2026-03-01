@@ -948,11 +948,24 @@ export default function Library() {
                     transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                   />
                   <h3 className="font-heading text-xl text-muted-foreground">
-                    No books found
+                    {loadError ? 'Oops! Something went wrong' : 'No books found'}
                   </h3>
                   <p className="font-body text-muted-foreground mt-2">
-                    Try adjusting your search or filters
+                    {loadError 
+                      ? 'We couldn\'t load the library. Please try again.' 
+                      : 'Try adjusting your search or filters'
+                    }
                   </p>
+                  {loadError && (
+                    <Button 
+                      onClick={handleRetry}
+                      className="mt-4 gap-2"
+                      data-testid="retry-load-btn"
+                    >
+                      <FiRefreshCw className="w-4 h-4" />
+                      Retry
+                    </Button>
+                  )}
                 </div>
               )}
               </>
