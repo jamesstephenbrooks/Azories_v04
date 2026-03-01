@@ -105,10 +105,10 @@ def get_mongo_connection():
     db_name = os.environ.get('DB_NAME', 'azories')
     
     # Log connection info (mask credentials)
-    if 'mongodb+srv' in mongo_url or 'mongodb.net' in mongo_url:
-        logging.info(f"MongoDB: Using managed Atlas connection, database: {db_name}")
-    else:
-        logging.info(f"MongoDB: Using local connection ({mongo_url}), database: {db_name}")
+    # if 'mongodb+srv' in mongo_url or 'mongodb.net' in mongo_url:
+    #     logging.info(f"MongoDB: Using managed Atlas connection, database: {db_name}")
+    # else:
+    #     logging.info(f"MongoDB: Using local connection ({mongo_url}), database: {db_name}")
     
     return AsyncIOMotorClient(mongo_url), db_name
 
