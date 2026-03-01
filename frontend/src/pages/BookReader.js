@@ -77,6 +77,10 @@ export default function BookReader() {
   // iOS audio unlock state
   const [iosAudioUnlocked, setIosAudioUnlocked] = useState(false);
   
+  // Printable PDF state
+  const [showPrintDialog, setShowPrintDialog] = useState(false);
+  const [isPrinting, setIsPrinting] = useState(false);
+  
   // Realistic page flip mode - always enabled
   const realisticFlipRef = useRef(null);
   
