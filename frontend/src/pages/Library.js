@@ -210,6 +210,7 @@ export default function Library() {
   const [newlyAddedBooks, setNewlyAddedBooks] = useState([]);
   const [comingSoonBooks, setComingSoonBooks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 300); // Debounce search input
