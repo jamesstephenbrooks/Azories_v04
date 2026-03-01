@@ -4785,13 +4785,32 @@ async def generate_consistent_character_image(
 
 @api_router.post("/ai/generate-story")
 async def generate_story(request: AIStoryRequest, current_user: dict = Depends(get_current_user)):
-    """Generate a complete story from an idea using AI"""
+    """Generate a complete story from an idea using AI, with images"""
     if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Pro subscription required")
     
     try:
         if not EMERGENT_LLM_KEY:
             raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
+        
+        # Word count mapping
+        word_counts = {
+            "short": 50,
+            "medium": 100,
+            "long": 150
+        }
+        target_words = word_counts.get(request.words_per_page, 100)
+        
+        # Image style mapping for prompts
+        style_prompts = {
+            "3d-pixar": "Pixar 3D animation style, Disney quality, vibrant colors, expressive characters, magical lighting, cinematic composition",
+            "illustration": "Professional children's book illustration, colorful, friendly, whimsical, hand-drawn feel",
+            "comic": "Comic book panel style, bold outlines, dynamic poses, vibrant colors",
+            "watercolor": "Soft watercolor illustration, gentle colors, dreamy atmosphere",
+            "anime": "Anime style illustration, big expressive eyes, colorful, dynamic",
+            "realistic": "Photorealistic digital art, detailed, cinematic lighting"
+        }
+        style_desc = style_prompts.get(request.image_style, style_prompts["3d-pixar"])
         
         # Generate story structure using Emergent LLM Chat
         story_prompt = f"""Create a children's story based on this idea: "{request.idea}"
@@ -4800,27 +4819,38 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
         Age Rating: {request.age_rating}
         Number of pages: {request.num_pages}
         
+        CRITICAL WORD COUNT REQUIREMENT:
+        Each page MUST contain EXACTLY {target_words} words (±10 words tolerance).
+        Count your words carefully for each page. This is essential.
+        
         Return a JSON object with this structure:
         {{
             "title": "Story Title",
             "description": "Brief description for the book",
             "back_cover_text": "Engaging back cover summary (2-3 sentences)",
+            "main_character_description": "Detailed visual description of the main character for consistent illustrations",
             "pages": [
                 {{
                     "page_number": 1,
-                    "text": "Page text content (2-4 sentences appropriate for children)",
-                    "image_prompt": "Detailed image prompt for illustration"
+                    "text": "Page text content with EXACTLY {target_words} words",
+                    "image_prompt": "Detailed scene description for illustration (include main character, setting, action, mood)"
                 }}
             ]
         }}
         
-        Make it engaging, age-appropriate for {request.age_rating}, and ensure NO inappropriate content, violence, or bad language.
+        Guidelines:
+        - Make it engaging and age-appropriate for {request.age_rating}
+        - NO inappropriate content, violence, or bad language
+        - Include vivid, detailed image prompts that describe the scene clearly
+        - Maintain character consistency in all image prompts
+        - Each page text MUST be exactly {target_words} words (count carefully!)
+        
         Return ONLY the JSON object, no other text."""
         
         chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"story-gen-{current_user['id']}-{str(uuid.uuid4())[:8]}",
-            system_message="You are a children's book author. Create engaging, safe, age-appropriate stories. Always respond with valid JSON only."
+            system_message="You are a children's book author. Create engaging, safe, age-appropriate stories. Always respond with valid JSON only. Pay careful attention to word count requirements."
         ).with_model("openai", "gpt-4o")
         
         response = await chat.send_message(UserMessage(text=story_prompt))
