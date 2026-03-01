@@ -396,8 +396,19 @@ export default function BookReader() {
     // Mark component as mounted
     mountedRef.current = true;
     
-    // Create new AbortController for this book session
+    // IMPORTANT: Abort the PREVIOUS controller before creating a new one
+    // This prevents the cleanup from aborting the NEW book's requests
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    
+    // Create new AbortController for THIS book session
     abortControllerRef.current = new AbortController();
+    
+    // Clear previous book's cache immediately when bookId changes
+    audioCache.current.clear();
+    preloadingPages.current.clear();
+    lastPlayedPageRef.current = -999;
     
     if (!authLoading) {
       // Ensure axios has the auth header set if user is logged in
@@ -412,13 +423,15 @@ export default function BookReader() {
       }
     }
     
-    // COMPREHENSIVE CLEANUP when leaving this book
+    // CLEANUP when leaving this book - but DON'T abort here (we do it above)
     return () => {
-      console.log('[BookReader] Component unmounting, running full cleanup');
+      console.log('[BookReader] Component unmounting, running cleanup');
       mountedRef.current = false;
-      performFullCleanup();
+      clearAllTimeouts();
+      // Don't abort here - we abort at the START of the next effect
+      // This prevents aborting the NEW book's requests
     };
-  }, [bookId, user, authLoading, token, performFullCleanup]);
+  }, [bookId, user, authLoading, token, clearAllTimeouts]);
 
   // Ref to track if we should continue auto-reading
   // NOTE: Only update this ref explicitly, NOT on every render
