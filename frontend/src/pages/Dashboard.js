@@ -35,6 +35,7 @@ export default function Dashboard() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
   const [isAIStoryOpen, setIsAIStoryOpen] = useState(false);
+  const [templateHighlight, setTemplateHighlight] = useState(false); // Track template fill animation
   const [analyticsDialog, setAnalyticsDialog] = useState(null);
   const [analyticsData, setAnalyticsData] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');  // Search for books
