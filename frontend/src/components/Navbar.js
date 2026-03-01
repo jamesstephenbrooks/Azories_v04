@@ -72,6 +72,20 @@ export const Navbar = () => {
         
         {/* Right side */}
         <div className="flex items-center gap-3">
+          {/* Credit Balance Display */}
+          {user && credits !== null && (
+            <button
+              onClick={() => navigate('/credits')}
+              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-500/20 to-orange-500/20 hover:from-amber-500/30 hover:to-orange-500/30 transition-all cursor-pointer"
+              data-testid="credit-balance"
+            >
+              <FiZap className="w-4 h-4 text-amber-500" />
+              <span className="text-sm font-semibold text-amber-600 dark:text-amber-400">
+                {credits.toLocaleString()}
+              </span>
+            </button>
+          )}
+          
           <ThemeToggleCompact />
           
           {user ? (
