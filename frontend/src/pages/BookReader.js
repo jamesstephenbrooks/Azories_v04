@@ -788,9 +788,10 @@ export default function BookReader() {
       audio.volume = volume[0] / 100;
       audio.playbackRate = playbackSpeed[0];
       
-      // Pre-load next 2 pages while this one plays
+      // Pre-load next 3 pages while this one plays (more aggressive preloading)
       preloadAudio(pageIndex + 1);
       preloadAudio(pageIndex + 2);
+      preloadAudio(pageIndex + 3);
       
       audio.onended = () => {
         setIsPlaying(false);
