@@ -42,9 +42,9 @@ function PageLoader() {
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-b from-purple-900/95 to-slate-900">
       <img 
-        src={AZORA_ASSETS.waving}
-        alt="Azora welcomes you"
-        className="w-32 h-40 object-contain mb-6 animate-bounce-slow"
+        src={AZORA_ASSETS.runningTransparent}
+        alt="Azora running to greet you"
+        className="w-36 h-44 object-contain mb-6"
         style={{ animation: 'float 2s ease-in-out infinite' }}
       />
       <h2 className="text-xl font-bold text-white mb-3">Welcome to Azories</h2>
