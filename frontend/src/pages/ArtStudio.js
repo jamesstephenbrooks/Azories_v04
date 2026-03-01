@@ -2810,7 +2810,7 @@ export default function ArtStudio() {
                                   <div className="w-6 h-6 rounded bg-purple-500 flex items-center justify-center">
                                     <FiImage className="w-3 h-3 text-white" />
                                   </div>
-                                  <span className="text-sm font-semibold text-purple-300">Art Studio</span>
+                                  <span className="text-sm font-semibold text-purple-300">Creators</span>
                                   <span className="text-xs text-purple-400/60">({artStudioItems.length})</span>
                                 </div>
                                 <FiChevronDown className={`w-4 h-4 text-purple-400 transition-transform ${artStudioExpanded ? 'rotate-180' : ''}`} />
