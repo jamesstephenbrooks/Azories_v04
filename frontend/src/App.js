@@ -8,6 +8,7 @@ import { OfflineIndicator } from "@/components/OfflineReading";
 import CookieConsent from "@/components/CookieConsent";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { AZORA_ASSETS } from "@/components/AzoraMascot";
+import { usePageTracking } from "@/hooks/useAnalytics";
 import "@/App.css";
 
 // Lazy load all pages — they only download when navigated to
