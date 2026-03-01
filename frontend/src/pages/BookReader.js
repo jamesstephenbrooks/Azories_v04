@@ -802,15 +802,23 @@ export default function BookReader() {
         setNarrationPreparing(true);
         setNarrationReady(false);
         
+        // Check if still mounted
+        if (!mountedRef.current) return;
+        
         // Trigger batch preparation in background for ALL pages
         try {
           axios.post(`${API}/tts/batch-prepare`, {
             book_id: book.id,
             voice_id: narratorVoice
+          }, {
+            signal: abortControllerRef.current?.signal
           }).catch(() => {}); // Fire and forget - don't block
         } catch (e) {
           // Ignore errors - this is optimization
         }
+        
+        // Check if still mounted
+        if (!mountedRef.current) return;
         
         // Pre-load first 5 pages in parallel for instant start
         const preloadPromises = [];
