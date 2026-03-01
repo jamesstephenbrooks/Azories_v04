@@ -2025,6 +2025,36 @@ export default function BookReader() {
         />
       )}
       
+      {/* Book Completion Celebration Overlay */}
+      <AnimatePresence>
+        {showCelebration && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] pointer-events-none flex items-center justify-center"
+          >
+            <motion.div
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.5, opacity: 0 }}
+              transition={{ type: "spring", damping: 15 }}
+              className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-6 rounded-2xl shadow-2xl text-center"
+            >
+              <motion.div
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 0.5, repeat: Infinity }}
+                className="text-6xl mb-4"
+              >
+                🎉
+              </motion.div>
+              <h2 className="text-2xl font-bold mb-2">The End!</h2>
+              <p className="text-white/80">Amazing job finishing this story!</p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
       {/* PWA Home Screen Prompt - shows once on mobile */}
       <PWAPrompt />
     </div>
