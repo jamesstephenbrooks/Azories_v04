@@ -663,6 +663,7 @@ class UserResponse(BaseModel):
     pro_trial: Optional[bool] = False
     pro_trial_expires_at: Optional[str] = None
     trial_days_remaining: Optional[int] = None
+    is_admin: Optional[bool] = False
     
 # Credit costs for Pro Studio features
 CREDIT_COSTS = {
