@@ -48,6 +48,8 @@ def setup(database, email_funcs: dict):
     get_welcome_email_html = email_funcs.get('get_welcome_email_html')
     get_password_reset_email_html = email_funcs.get('get_password_reset_email_html')
     get_password_changed_email_html = email_funcs.get('get_password_changed_email_html')
+    
+    logger.info(f"Auth routes setup - email_configured: {email_configured is not None}, send_email: {send_email is not None}")
 
 
 # ============ CONFIGURATION ============
