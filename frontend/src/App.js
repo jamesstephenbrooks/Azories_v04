@@ -42,8 +42,8 @@ function PageLoader() {
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-b from-purple-900/95 to-slate-900">
       <img 
-        src={AZORA_ASSETS.runningTransparent}
-        alt="Azora running to greet you"
+        src={AZORA_ASSETS.pointing}
+        alt="Azora welcomes you"
         className="w-36 h-44 object-contain mb-6"
         style={{ animation: 'float 2s ease-in-out infinite' }}
       />
