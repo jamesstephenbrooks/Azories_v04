@@ -185,6 +185,24 @@ export default function Library() {
     }
   };
 
+  const fetchNewlyAdded = async () => {
+    try {
+      const res = await axios.get(`${API}/books/newly-added`);
+      setNewlyAddedBooks(res.data || []);
+    } catch (error) {
+      console.error('Error fetching newly added books:', error);
+    }
+  };
+
+  const fetchComingSoon = async () => {
+    try {
+      const res = await axios.get(`${API}/books/coming-soon`);
+      setComingSoonBooks(res.data || []);
+    } catch (error) {
+      console.error('Error fetching coming soon books:', error);
+    }
+  };
+
   const fetchGenres = async () => {
     try {
       const res = await axios.get(`${API}/genres`);
