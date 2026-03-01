@@ -46,19 +46,35 @@ export default function Dashboard() {
     age_rating: 'All Ages'
   });
   const [aiStory, setAIStory] = useState({
+    // Story Details
+    title: '',
+    age_range: '5-8',  // 3-5, 5-8, 8-12
+    num_pages: 8,
+    words_per_page: 'medium',  // short (50), medium (100), long (150)
+    
+    // Main Character
+    character_name: '',
+    character_description: '',
+    
+    // Story
+    story_description: '',
+    
+    // Style
+    art_style: '3d-pixar',  // 3d-pixar, watercolour, storybook
+    
+    // Legacy/backend compatibility
     idea: '',
     genre: 'Adventure',
     age_rating: 'All Ages',
-    num_pages: 5,
     generate_images: true,
-    media_type: 'images',  // 'images', 'videos', 'cinemagraphs', 'none'
-    image_style: '3d-pixar',  // Changed default to Pixar 3D
-    words_per_page: 'medium'  // 'short' (50), 'medium' (100), 'long' (150)
+    media_type: 'images',
+    image_style: '3d-pixar'
   });
   const [creating, setCreating] = useState(false);
   const [generatingStory, setGeneratingStory] = useState(false);
   const [subscription, setSubscription] = useState('free');
   const [credits, setCredits] = useState(0);
+  const [trialStatus, setTrialStatus] = useState({ in_trial: false, display_text: '' });
   const AI_STORY_COST = 5; // Cost in credits for AI story creation
   
   // Series state
