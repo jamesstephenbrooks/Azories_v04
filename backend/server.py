@@ -646,6 +646,7 @@ async def admin_login(request: AdminLoginRequest):
         "email": "admin@azories.com",
         "role": "admin",
         "admin": True,
+        "username": request.username,
         "exp": expire
     }
     token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
@@ -653,8 +654,8 @@ async def admin_login(request: AdminLoginRequest):
     return {
         "access_token": token,
         "token_type": "bearer",
-        "expires_in": 7 * 24 * 60 * 60,  # 7 days in seconds
-        "admin": True
+        "admin_name": request.username,
+        "expires_in": 7 * 24 * 60 * 60  # 7 days in seconds
     }
 
 # Age ratings
