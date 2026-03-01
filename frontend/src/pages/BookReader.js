@@ -469,20 +469,22 @@ export default function BookReader() {
       setNarratorVoice(res.data.narrator_voice_id || '21m00Tcm4TlvDq8ikWAM');
       setNarratorVoiceLocked(res.data.narrator_voice_locked || false);
       
-      // Track book read event
+      // Track book read event - fire and forget, never block
       try {
         const token = localStorage.getItem('azories-token');
-        await axios.post(`${API}/analytics/track`, {
+        // Don't await - fire and forget
+        axios.post(`${API}/analytics/track`, {
           event_type: 'book_read',
           book_id: bookId,
           page: `/read/${bookId}`,
           metadata: { title: res.data.title }
         }, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
-          signal: abortControllerRef.current?.signal
-        });
+          signal: abortControllerRef.current?.signal,
+          timeout: 5000 // 5s timeout
+        }).catch(() => {}); // Silently ignore all errors
       } catch (e) {
-        // Silently fail analytics (including aborted requests)
+        // Silently fail analytics
       }
       
       if (!mountedRef.current) return;
