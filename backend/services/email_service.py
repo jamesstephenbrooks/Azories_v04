@@ -108,8 +108,8 @@ FEATURED_BOOK_COVERS = [
     "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772266491/azories/books/super_silly_superhero/cover_clean.jpg"
 ]
 
-# Azora mascot image
-AZORA_MASCOT_URL = "https://static.prod-images.emergentagent.com/jobs/8300eeae-2398-40c5-a548-43ac3b542ffe/images/ccc60a41bec6e72e250417e7f03b954c7d1f68aeb2bc2ab012ac0bcf3319b037.png"
+# Azora mascot image (official Cloudinary asset)
+AZORA_MASCOT_URL = "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279592/azories/mascot/azora_pose4_pointing.jpg"
 
 def get_welcome_email_html(user_name: str) -> str:
     """Generate magical welcome email HTML for new users with 3 free stories"""
