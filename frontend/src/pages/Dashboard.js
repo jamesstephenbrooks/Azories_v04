@@ -367,6 +367,9 @@ export default function Dashboard() {
         setCredits(prev => prev - AI_STORY_COST);
       }
       
+      // Refresh trial status to update free stories count
+      fetchTrialStatus();
+      
       const imagesGenerated = res.data.images_generated || 0;
       toast.success(`Story "${res.data.title}" created with ${res.data.pages_created} pages and ${imagesGenerated} images!`);
       setIsAIStoryOpen(false);
