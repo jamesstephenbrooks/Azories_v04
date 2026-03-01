@@ -329,6 +329,10 @@ export default function Library() {
         // Only cache if we got valid books data
         if (cacheData.books && cacheData.books.length > 0) {
           setBookCache(cacheData);
+          setLoadError(false);
+        } else if (books.length === 0) {
+          // No books loaded at all - show error state
+          setLoadError(true);
         }
         
       } catch (error) {
@@ -338,18 +342,32 @@ export default function Library() {
           const fallbackRes = await axios.get(`${API}/books?published_only=true&limit=50`);
           if (fallbackRes.data && fallbackRes.data.length > 0) {
             setBooks(fallbackRes.data);
+            setLoadError(false);
+          } else {
+            setLoadError(true);
           }
         } catch (fallbackError) {
           console.error('Fallback fetch also failed:', fallbackError);
+          setLoadError(true);
         }
       } finally {
         setLoading(false);
         setInitialLoadComplete(true);
       }
-    };
-    
-    loadInitialData();
   }, []);
+
+  // Initial data fetch - runs once on mount
+  useEffect(() => {
+    fetchLibraryData();
+  }, [fetchLibraryData]);
+
+  // Retry handler for when loading fails
+  const handleRetry = useCallback(() => {
+    // Clear cache and refetch
+    try { sessionStorage.removeItem('azories_library_cache'); } catch {}
+    toast.info('Refreshing library...');
+    fetchLibraryData(true); // Skip cache
+  }, [fetchLibraryData]);
 
   // Search/filter changes - only run after initial load is complete
   useEffect(() => {
