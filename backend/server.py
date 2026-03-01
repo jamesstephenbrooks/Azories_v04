@@ -9411,11 +9411,14 @@ async def request_book_publish(book_id: str, background_tasks: BackgroundTasks, 
     </html>
     """
     
-    # Send email in background
+    # Send emails directly (await instead of background_tasks for async functions)
     if email_configured():
-        # Send to admin email
-        background_tasks.add_task(send_email, admin_email, subject, html_content)
-        logging.info(f"Admin notification email sent for book {book_id} to {admin_email}")
+        try:
+            # Send to admin email
+            await send_email(admin_email, subject, html_content)
+            logging.info(f"Admin notification email sent for book {book_id} to {admin_email}")
+        except Exception as e:
+            logging.error(f"Failed to send admin email for book {book_id}: {e}")
         
         # Also send confirmation email to the author
         author_email = current_user.get("email")
@@ -9461,8 +9464,11 @@ async def request_book_publish(book_id: str, background_tasks: BackgroundTasks, 
             </body>
             </html>
             """
-            background_tasks.add_task(send_email, author_email, author_subject, author_html)
-            logging.info(f"Author confirmation email sent for book {book_id} to {author_email}")
+            try:
+                await send_email(author_email, author_subject, author_html)
+                logging.info(f"Author confirmation email sent for book {book_id} to {author_email}")
+            except Exception as e:
+                logging.error(f"Failed to send author email for book {book_id}: {e}")
     else:
         logging.warning(f"Email not configured - admin notification for book {book_id} skipped")
     
