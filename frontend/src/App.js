@@ -95,6 +95,9 @@ function AppContent() {
   const location = useLocation();
   const isAdminPage = location.pathname.startsWith("/admin");
   const isBookReaderPage = location.pathname.startsWith("/read/");
+  
+  // Track page views automatically
+  usePageTracking();
 
   return (
     <ErrorBoundary>
