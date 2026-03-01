@@ -5723,13 +5723,17 @@ Return ONLY the JSON array, no other text."""
         # Create the book
         book_id = str(uuid.uuid4())
         now = datetime.now(timezone.utc).isoformat()
+        
+        # Azories branded back cover for all AI-created books
+        azories_back_cover_url = "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772281331/azories/back_covers/the_dragons_secret_garden_back.png"
+        
         book = {
             "id": book_id,
             "title": story_data["title"],
             "description": story_data["description"],
             "genre": request.genre,
             "cover_image": "",
-            "back_cover_image": "",
+            "back_cover_image": azories_back_cover_url,
             "cover_title": story_data["title"],
             "cover_subtitle": "",
             "back_cover_text": story_data["back_cover_text"],
