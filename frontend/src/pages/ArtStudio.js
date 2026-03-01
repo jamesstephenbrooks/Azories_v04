@@ -2799,7 +2799,7 @@ export default function ArtStudio() {
                             </div>
                           )}
                           
-                          {/* Art Studio Section */}
+                          {/* Creators Section */}
                           {artStudioItems.length > 0 && (
                             <div className="bg-purple-500/10 rounded-xl border border-purple-500/20 overflow-hidden">
                               <button
