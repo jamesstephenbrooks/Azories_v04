@@ -59,7 +59,7 @@ export default function BookEditor() {
   const [audioChunks, setAudioChunks] = useState([]);
   const audioChunksRef = useRef([]);
   
-  // Book gallery state (images assigned to this book from Art Studio)
+  // Book gallery state (images assigned to this book from Creators)
   const [bookGallery, setBookGallery] = useState([]);
   const [showBookGallery, setShowBookGallery] = useState(false);
   
