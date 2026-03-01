@@ -119,6 +119,16 @@
   }
 }
 
+/* Shimmer animation for loading skeletons */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 .page-turn {
   animation: page-turn 0.6s ease-in-out forwards;
   transform-origin: left center;
