@@ -113,17 +113,20 @@ export default function UserProfile() {
 
   const handleFollow = async () => {
     try {
+      const token = localStorage.getItem('azories-token');
+      const headers = { Authorization: `Bearer ${token}` };
+      
       if (isFollowing) {
-        await axios.delete(`${API}/users/${userId}/follow`);
+        await axios.delete(`${API}/users/${userId}/follow`, { headers });
         setIsFollowing(false);
         setProfile(p => ({ ...p, followers_count: (p.followers_count || 1) - 1 }));
       } else {
-        await axios.post(`${API}/users/${userId}/follow`);
+        await axios.post(`${API}/users/${userId}/follow`, {}, { headers });
         setIsFollowing(true);
         setProfile(p => ({ ...p, followers_count: (p.followers_count || 0) + 1 }));
       }
     } catch (error) {
-      toast.error('Failed to update follow status');
+      toast.error(error.response?.data?.detail || 'Failed to update follow status');
     }
   };
 
