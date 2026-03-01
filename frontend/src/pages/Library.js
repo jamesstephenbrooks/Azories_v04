@@ -197,6 +197,7 @@ export default function Library() {
   const fetchComingSoon = async () => {
     try {
       const res = await axios.get(`${API}/books/coming-soon`);
+      console.log('Coming Soon API response:', res.data);
       setComingSoonBooks(res.data || []);
     } catch (error) {
       console.error('Error fetching coming soon books:', error);
