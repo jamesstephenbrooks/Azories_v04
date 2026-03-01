@@ -220,10 +220,15 @@ export default function Library() {
   // Initial data fetch - runs once on mount, uses cache if available
   useEffect(() => {
     const loadInitialData = async () => {
-      // Check cache first for instant display - but ONLY if it has actual books
+      // Check cache first for instant display - but ONLY if it has valid books
       const cached = getBookCache();
-      if (cached && cached.books && cached.books.length > 0) {
-        setBooks(cached.books || []);
+      const hasValidCache = cached && 
+                           cached.books && 
+                           Array.isArray(cached.books) && 
+                           cached.books.length > 0;
+      
+      if (hasValidCache) {
+        setBooks(cached.books);
         setFeaturedBooks(cached.featuredBooks || []);
         setBestOfWeek(cached.bestOfWeek || []);
         setNewlyAddedBooks(cached.newlyAddedBooks || []);
