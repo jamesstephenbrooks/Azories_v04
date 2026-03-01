@@ -2524,17 +2524,21 @@ export default function BookEditor() {
                     {starterLibraryImages.map((img, idx) => (
                       <div
                         key={img.id || idx}
-                        onClick={() => setExpandedStarterImage({...img, forCover: true})}
+                        onClick={() => {
+                          addCoverFromGallery(img.url || img.image_url);
+                          setShowCoverGalleryPicker(false);
+                        }}
                         className="group relative aspect-[3/4] rounded-lg overflow-hidden border-2 border-transparent hover:border-amber-500 transition-all cursor-pointer bg-muted/30"
                       >
                         <img 
-                          src={img.url || img.image_url} 
+                          src={getOptimizedThumbnail(img.url || img.image_url, 150)} 
                           alt={img.name || 'Starter image'}
-                          className="w-full h-full object-contain"
+                          className="w-full h-full object-cover"
+                          loading="lazy"
                         />
                         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1">
-                          <FiMaximize2 className="w-5 h-5 text-white" />
-                          <span className="text-white text-sm font-medium">View Larger</span>
+                          <FiPlus className="w-5 h-5 text-white" />
+                          <span className="text-white text-sm font-medium">Use as Cover</span>
                         </div>
                       </div>
                     ))}
