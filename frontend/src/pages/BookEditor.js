@@ -2334,7 +2334,10 @@ export default function BookEditor() {
                           {scene.gallery.map((img, idx) => (
                             <button
                               key={idx}
-                              onClick={() => addGalleryImageToPage(img.image_url, activeImageSlot)}
+                              onClick={() => {
+                                addGalleryImageToPage(img.image_url, activeImageSlot);
+                                setShowGalleryPicker(false);
+                              }}
                               className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-emerald-500 transition-all bg-muted/30"
                             >
                               <img 
