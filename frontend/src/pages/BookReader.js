@@ -1781,6 +1781,119 @@ export default function BookReader() {
         </div>
       )}
       
+      {/* Print Book Dialog */}
+      {showPrintDialog && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="bg-background rounded-2xl shadow-2xl max-w-md w-full overflow-hidden"
+          >
+            {/* Header with gradient */}
+            <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-5 text-white">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                  <FiPrinter className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="font-heading text-xl font-bold">Print My Book</h2>
+                  <p className="text-white/80 text-sm">Create a real picture book!</p>
+                </div>
+              </div>
+            </div>
+            
+            {/* Content */}
+            <div className="p-6">
+              <div className="mb-6">
+                <h3 className="font-semibold text-lg mb-2">{book?.title}</h3>
+                <p className="text-muted-foreground text-sm">
+                  Download a beautifully formatted A5 booklet PDF. Print on A4 paper, fold in half, and you have a real picture book!
+                </p>
+              </div>
+              
+              {/* Features */}
+              <div className="space-y-3 mb-6">
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-medium text-sm">Full illustration on every spread</p>
+                    <p className="text-muted-foreground text-xs">Left page: picture, Right page: story</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-medium text-sm">All pages + covers included</p>
+                    <p className="text-muted-foreground text-xs">Front cover, story pages, and back cover</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-medium text-sm">Perfect for gifting</p>
+                    <p className="text-muted-foreground text-xs">Print at home or at a print shop</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Cost */}
+              <div className="bg-muted/50 rounded-xl p-4 mb-6">
+                <div className="flex items-center justify-between">
+                  <span className="font-medium">Cost:</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">5</span>
+                    <span className="text-muted-foreground">credits</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Buttons */}
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowPrintDialog(false)}
+                  className="flex-1 rounded-full"
+                  disabled={isPrinting}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handlePrintBook}
+                  className="flex-1 rounded-full bg-purple-600 hover:bg-purple-500"
+                  disabled={isPrinting}
+                  data-testid="confirm-print-btn"
+                >
+                  {isPrinting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <FiDownload className="w-4 h-4 mr-2" />
+                      Download PDF
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+      
       {/* AI Reading Buddy */}
       {book && user && (
         <AIReadingBuddy
