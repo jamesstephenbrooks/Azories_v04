@@ -2245,12 +2245,12 @@ export default function BookEditor() {
                             <button
                               key={idx}
                               onClick={() => addGalleryImageToPage(img.image_url, activeImageSlot)}
-                              className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-emerald-500 transition-all"
+                              className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-emerald-500 transition-all bg-muted/30"
                             >
                               <img 
                                 src={img.image_url} 
                                 alt={`${scene.name} image`}
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-contain"
                                 onError={(e) => {
                                   e.target.onerror = null;
                                   e.target.src = '/placeholder-scene.svg';
