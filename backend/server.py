@@ -6511,47 +6511,53 @@ async def batch_prepare_tts(request: BatchTTSRequest, background_tasks: Backgrou
         emergent_key = os.environ.get("EMERGENT_LLM_KEY")
         if not emergent_key:
             return
-            
-        tts = OpenAITextToSpeech(api_key=emergent_key)
-        processed = 0
         
-        for page in pages_to_process:
-            try:
-                text = page.get("text_content", "")
-                if not text:
-                    continue
+        try:
+            tts = OpenAITextToSpeech(api_key=emergent_key)
+            processed = 0
+            max_pages = 10  # Limit concurrent processing to prevent memory issues
+            
+            for page in pages_to_process[:max_pages]:  # Process max 10 pages per batch
+                try:
+                    text = page.get("text_content", "")
+                    if not text:
+                        continue
+                        
+                    cache_key = hashlib.sha256(f"{text}:{openai_voice}".encode()).hexdigest()
                     
-                cache_key = hashlib.sha256(f"{text}:{openai_voice}".encode()).hexdigest()
-                
-                # Check cache first
-                cached = await db.audio_cache.find_one({"cache_key": cache_key})
-                if cached and cached.get("cloudinary_url"):
-                    # Update page with cached URL
-                    await db.books.update_one(
-                        {"id": request.book_id, "pages.page_number": page.get("page_number")},
-                        {"$set": {"pages.$.audio_url": cached["cloudinary_url"]}}
+                    # Check cache first
+                    cached = await db.audio_cache.find_one({"cache_key": cache_key})
+                    if cached and cached.get("cloudinary_url"):
+                        # Update page with cached URL
+                        await db.books.update_one(
+                            {"id": request.book_id, "pages.page_number": page.get("page_number")},
+                            {"$set": {"pages.$.audio_url": cached["cloudinary_url"]}}
+                        )
+                        processed += 1
+                        continue
+                    
+                    # Generate new audio
+                    audio_base64 = await tts.generate_speech_base64(
+                        text=text,
+                        model="tts-1",
+                        voice=openai_voice,
+                        response_format="mp3"
                     )
-                    processed += 1
-                    continue
-                
-                # Generate new audio
-                audio_base64 = await tts.generate_speech_base64(
-                    text=text,
-                    model="tts-1",
-                    voice=openai_voice,
-                    response_format="mp3"
-                )
-                
-                # Upload to Cloudinary
-                audio_bytes = base64.b64decode(audio_base64)
-                upload_result = cloudinary.uploader.upload(
-                    audio_bytes,
-                    resource_type="video",
-                    folder=f"azories/audio/narration",
-                    public_id=f"tts_{cache_key[:16]}",
-                    format="mp3"
-                )
-                cloudinary_url = upload_result.get("secure_url")
+                    
+                    # Upload to Cloudinary - clear memory immediately after
+                    audio_bytes = base64.b64decode(audio_base64)
+                    del audio_base64  # Free memory immediately
+                    
+                    upload_result = cloudinary.uploader.upload(
+                        audio_bytes,
+                        resource_type="video",
+                        folder=f"azories/audio/narration",
+                        public_id=f"tts_{cache_key[:16]}",
+                        format="mp3"
+                    )
+                    del audio_bytes  # Free memory immediately
+                    
+                    cloudinary_url = upload_result.get("secure_url")
                 
                 # Cache and update page
                 await db.audio_cache.update_one(
