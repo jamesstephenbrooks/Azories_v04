@@ -1155,6 +1155,8 @@ export default function BookReader() {
     return () => {
       if (audioElement) {
         audioElement.pause();
+        audioElement.src = ''; // Release resources
+        audioElement.onended = null;
       }
     };
   }, [audioElement]);
