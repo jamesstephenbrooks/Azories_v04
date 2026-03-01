@@ -352,6 +352,12 @@ export default function BookReader() {
     
     // CRITICAL: Cleanup function when component unmounts or bookId changes
     return () => {
+      // Abort any pending API requests
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+        abortControllerRef.current = null;
+      }
+      
       // Stop any playing audio
       if (audioElement) {
         audioElement.pause();
@@ -368,7 +374,7 @@ export default function BookReader() {
       // Reset celebration flag
       hasShownCelebrationRef.current = false;
       
-      console.log('[BookReader] Cleanup: Cleared audio cache and stopped playback');
+      console.log('[BookReader] Cleanup: Cleared audio cache, aborted requests, stopped playback');
     };
   }, [bookId, user, authLoading, token]);
 
