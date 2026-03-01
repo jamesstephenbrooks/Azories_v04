@@ -1154,12 +1154,76 @@ export default function BookReader() {
 
   if (loading || authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="font-body text-muted-foreground">Opening book...</p>
+      <motion.div 
+        className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden"
+        style={{ background: 'linear-gradient(to bottom, #6B21A8, #4C1D95, #1E1B4B)' }}
+        initial={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        {/* Sparkle particles */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[...Array(20)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1 h-1 bg-white rounded-full"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+              animate={{
+                opacity: [0, 1, 0],
+                scale: [0, 1.5, 0],
+              }}
+              transition={{
+                duration: 2 + Math.random() * 2,
+                repeat: Infinity,
+                delay: Math.random() * 2,
+                ease: "easeInOut"
+              }}
+            />
+          ))}
         </div>
-      </div>
+        
+        {/* Running Azora */}
+        <motion.img 
+          src={AZORA_ASSETS.runningTransparent}
+          alt="Azora running to your story"
+          className="w-40 h-48 object-contain mb-6 relative z-10"
+          animate={{ 
+            y: [0, -10, 0],
+          }}
+          transition={{ 
+            duration: 2, 
+            repeat: Infinity, 
+            ease: "easeInOut" 
+          }}
+        />
+        
+        {/* Text */}
+        <motion.h2 
+          className="text-xl font-bold text-white mb-3 relative z-10"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          Opening your story...
+        </motion.h2>
+        
+        {/* Subtle loading bar */}
+        <motion.div 
+          className="w-48 h-1 bg-white/20 rounded-full overflow-hidden relative z-10"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+        >
+          <motion.div 
+            className="h-full bg-gradient-to-r from-pink-400 to-purple-300 rounded-full"
+            animate={{ x: ["-100%", "100%"] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </motion.div>
+      </motion.div>
     );
   }
 
