@@ -397,7 +397,7 @@ export default function BookEditor() {
     }
   };
   
-  // Add cover image from Art Studio gallery
+  // Add cover image from Creators gallery
   const addCoverFromGallery = (imageUrl) => {
     if (coverGalleryTarget === 'front') {
       setCoverData({ ...coverData, cover_image: imageUrl });
