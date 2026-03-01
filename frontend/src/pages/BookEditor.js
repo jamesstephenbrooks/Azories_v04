@@ -2049,7 +2049,7 @@ export default function BookEditor() {
                         <Button
                           onClick={() => {
                             setShowGalleryPicker(false);
-                            navigate('/art-studio');
+                            navigate('/creators');
                           }}
                           className="rounded-full"
                         >
