@@ -13,24 +13,94 @@ import BookRecommendations from '@/components/BookRecommendations';
 import { getThumbnailUrl, preloadImages } from '@/utils/imageOptimizer';
 import { AZORA_ASSETS } from '@/components/AzoraMascot';
 
-// Lazy-loaded image component with intersection observer and aggressive optimization
-const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 250 }) => {
-  const [isLoaded, setIsLoaded] = useState(false);
+// ============================================
+// THUMBNAIL CACHING UTILITIES
+// ============================================
+
+// Cache for preloaded images (persists during session)
+const imageCache = new Map();
+
+// Optimized Cloudinary URL generator
+const getOptimizedThumbnailUrl = (url, width = 300) => {
+  if (!url) return url;
+  if (url.includes('res.cloudinary.com')) {
+    // Add aggressive optimization: f_auto (best format), q_auto (auto quality), w_300
+    return url.replace('/upload/', `/upload/f_auto,q_auto,w_${width},c_limit/`);
+  }
+  return url;
+};
+
+// Preload image and cache it
+const preloadAndCacheImage = (url, width = 300) => {
+  if (!url || imageCache.has(url)) return Promise.resolve();
+  
+  const optimizedUrl = getOptimizedThumbnailUrl(url, width);
+  
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      imageCache.set(url, true);
+      resolve();
+    };
+    img.onerror = () => resolve(); // Don't fail on error
+    img.src = optimizedUrl;
+  });
+};
+
+// Session storage cache for book data
+const CACHE_KEY = 'azories_library_cache';
+const CACHE_EXPIRY = 5 * 60 * 1000; // 5 minutes
+
+const getBookCache = () => {
+  try {
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (cached) {
+      const { data, timestamp } = JSON.parse(cached);
+      if (Date.now() - timestamp < CACHE_EXPIRY) {
+        return data;
+      }
+    }
+  } catch (e) {
+    // Ignore cache errors
+  }
+  return null;
+};
+
+const setBookCache = (data) => {
+  try {
+    sessionStorage.setItem(CACHE_KEY, JSON.stringify({
+      data,
+      timestamp: Date.now()
+    }));
+  } catch (e) {
+    // Ignore cache errors
+  }
+};
+
+// ============================================
+// LAZY IMAGE COMPONENT WITH CACHING
+// ============================================
+
+// Lazy-loaded image component with intersection observer, caching, and purple shimmer
+const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 300 }) => {
+  const [isLoaded, setIsLoaded] = useState(() => imageCache.has(src));
   const [isInView, setIsInView] = useState(false);
   const [hasError, setHasError] = useState(false);
   const imgRef = useRef(null);
 
-  // Get optimized thumbnail URL - balanced quality/speed
+  // Get optimized thumbnail URL with aggressive Cloudinary optimization
   const optimizedSrc = useMemo(() => {
-    if (!src) return src;
-    // Use w=250, q=65 for good balance of quality and speed
-    if (src.includes('res.cloudinary.com')) {
-      return src.replace('/upload/', `/upload/w_${thumbnailWidth},q_65,f_auto,c_limit/`);
-    }
-    return src;
+    return getOptimizedThumbnailUrl(src, thumbnailWidth);
   }, [src, thumbnailWidth]);
 
   useEffect(() => {
+    // If already cached, show immediately
+    if (imageCache.has(src)) {
+      setIsLoaded(true);
+      setIsInView(true);
+      return;
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -38,7 +108,7 @@ const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 250
           observer.disconnect();
         }
       },
-      { rootMargin: '100px', threshold: 0.01 }  // Smaller rootMargin - only load when closer to viewport
+      { rootMargin: '200px', threshold: 0.01 }  // Larger rootMargin for earlier loading
     );
 
     if (imgRef.current) {
@@ -46,18 +116,24 @@ const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 250
     }
 
     return () => observer.disconnect();
-  }, []);
+  }, [src]);
+
+  // Handle successful image load - cache it
+  const handleLoad = useCallback(() => {
+    setIsLoaded(true);
+    imageCache.set(src, true);
+  }, [src]);
 
   // Generate a color based on the alt text for consistent placeholder
   const getPlaceholderGradient = useCallback(() => {
     if (placeholderColor) return placeholderColor;
     const colors = [
-      'from-purple-400/30 to-pink-400/30',
-      'from-blue-400/30 to-cyan-400/30',
-      'from-green-400/30 to-emerald-400/30',
-      'from-orange-400/30 to-amber-400/30',
-      'from-rose-400/30 to-red-400/30',
-      'from-indigo-400/30 to-violet-400/30',
+      'from-purple-500/40 to-pink-500/40',
+      'from-purple-400/40 to-indigo-500/40',
+      'from-violet-500/40 to-purple-400/40',
+      'from-indigo-400/40 to-purple-500/40',
+      'from-purple-600/40 to-violet-400/40',
+      'from-fuchsia-400/40 to-purple-500/40',
     ];
     const index = alt ? alt.charCodeAt(0) % colors.length : 0;
     return colors[index];
@@ -65,10 +141,14 @@ const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 250
 
   return (
     <div ref={imgRef} className={`relative ${className}`}>
-      {/* Placeholder/skeleton */}
+      {/* Purple shimmer skeleton placeholder */}
       {!isLoaded && (
-        <div className={`absolute inset-0 bg-gradient-to-br ${getPlaceholderGradient()} animate-pulse flex items-center justify-center`}>
-          <FiBook className="w-10 h-10 text-white/40" />
+        <div className={`absolute inset-0 bg-gradient-to-br ${getPlaceholderGradient()} overflow-hidden`}>
+          {/* Animated shimmer effect */}
+          <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <FiBook className="w-10 h-10 text-white/40" />
+          </div>
         </div>
       )}
       
@@ -78,7 +158,7 @@ const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 250
           src={optimizedSrc}
           alt={alt}
           className={`w-full h-full object-cover transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
-          onLoad={() => setIsLoaded(true)}
+          onLoad={handleLoad}
           onError={() => setHasError(true)}
           loading="lazy"
           decoding="async"
