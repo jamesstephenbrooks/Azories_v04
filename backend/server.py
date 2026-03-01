@@ -85,6 +85,8 @@ try:
         migrate_video_from_fal_to_cloudinary,
         is_cloudinary_configured
     )
+    import cloudinary
+    import cloudinary.uploader
     CLOUDINARY_AVAILABLE = is_cloudinary_configured()
     if CLOUDINARY_AVAILABLE:
         logging.info("Cloudinary service initialized for permanent video storage")
@@ -94,6 +96,7 @@ except ImportError as e:
     logging.warning(f"Cloudinary service not available: {e}")
     CLOUDINARY_AVAILABLE = False
     is_cloudinary_configured = lambda: False
+    cloudinary = None
 
 # MongoDB connection - uses Emergent's managed database
 # In production, MONGO_URL is set by Emergent's deployment pipeline
