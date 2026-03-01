@@ -49,23 +49,14 @@ def get_provider() -> str:
 
 async def send_email(to_email: str, subject: str, html_content: str) -> dict:
     """
-    Send an email using configured provider (Brevo preferred, Resend fallback)
+    Send an email using configured provider (Resend preferred, Brevo fallback)
     Returns: {"success": bool, "email_id": str or None, "error": str or None}
     """
     if not is_configured():
         logger.warning("Email service not configured - no API keys found")
         return {"success": False, "email_id": None, "error": "Email service not configured"}
     
-    # Try Brevo first if configured
-    if BREVO_API_KEY and brevo_service:
-        logger.info(f"Sending email via Brevo to {to_email}")
-        result = await brevo_service(to_email, subject, html_content)
-        if result["success"]:
-            return {"success": True, "email_id": result.get("message_id"), "error": None, "provider": "brevo"}
-        else:
-            logger.warning(f"Brevo failed, trying Resend fallback: {result.get('error')}")
-    
-    # Fallback to Resend
+    # Try Resend first (preferred - Brevo has auth issues)
     if RESEND_API_KEY and resend:
         FALLBACK_EMAIL = os.environ.get("FALLBACK_NOTIFY_EMAIL", "jamesstephenbrooks@outlook.com")
         
@@ -93,12 +84,19 @@ async def send_email(to_email: str, subject: str, html_content: str) -> dict:
                     return {"success": True, "email_id": email.get("id"), "error": None, "provider": "resend"}
                 except Exception as e2:
                     logger.error(f"Failed to send to fallback email: {str(e2)}")
-                    return {"success": False, "email_id": None, "error": str(e2)}
             
-            logger.error(f"Failed to send email to {to_email}: {error_msg}")
-            return {"success": False, "email_id": None, "error": error_msg}
+            logger.warning(f"Resend failed, trying Brevo fallback: {error_msg}")
     
-    return {"success": False, "email_id": None, "error": "No email provider available"}
+    # Fallback to Brevo
+    if BREVO_API_KEY and brevo_service:
+        logger.info(f"Sending email via Brevo to {to_email}")
+        result = await brevo_service(to_email, subject, html_content)
+        if result["success"]:
+            return {"success": True, "email_id": result.get("message_id"), "error": None, "provider": "brevo"}
+        else:
+            logger.error(f"Brevo also failed: {result.get('error')}")
+    
+    return {"success": False, "email_id": None, "error": "All email providers failed"}
 
 # Email Templates
 
