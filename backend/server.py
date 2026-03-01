@@ -5651,8 +5651,9 @@ async def get_voices():
 
 @api_router.post("/tts/generate")
 async def generate_tts(request: TTSRequest):
-    """Generate TTS audio using OpenAI TTS (via Emergent LLM Key) with server-side caching"""
+    """Generate TTS audio using OpenAI TTS (via Emergent LLM Key) with Cloudinary caching"""
     import hashlib
+    import base64
     
     try:
         emergent_key = os.environ.get("EMERGENT_LLM_KEY")
@@ -5678,11 +5679,16 @@ async def generate_tts(request: TTSRequest):
         # Create a cache key based on text content and voice
         cache_key = hashlib.sha256(f"{request.text}:{openai_voice}".encode()).hexdigest()
         
-        # Check server-side cache first
+        # Check if we have a Cloudinary URL cached
         cached_audio = await db.audio_cache.find_one({"cache_key": cache_key})
-        if cached_audio and cached_audio.get("audio_base64"):
-            logger.info(f"TTS cache hit for key: {cache_key[:16]}...")
-            return {"audio_base64": cached_audio["audio_base64"], "success": True, "cached": True}
+        if cached_audio and cached_audio.get("cloudinary_url"):
+            logger.info(f"TTS Cloudinary cache hit for key: {cache_key[:16]}...")
+            return {
+                "audio_url": cached_audio["cloudinary_url"],
+                "audio_base64": None,
+                "success": True, 
+                "cached": True
+            }
         
         # Not in cache - generate new audio
         logger.info(f"TTS cache miss, generating for key: {cache_key[:16]}...")
@@ -5693,30 +5699,135 @@ async def generate_tts(request: TTSRequest):
         # Generate speech as base64
         audio_base64 = await tts.generate_speech_base64(
             text=request.text,
-            model="tts-1",  # Use standard for faster response
+            model="tts-1",
             voice=openai_voice,
             response_format="mp3"
         )
         
-        # Store in server-side cache (with TTL of 30 days)
+        # Upload to Cloudinary
+        cloudinary_url = None
+        try:
+            audio_bytes = base64.b64decode(audio_base64)
+            upload_result = cloudinary.uploader.upload(
+                audio_bytes,
+                resource_type="video",  # Cloudinary uses "video" for audio files
+                folder=f"azories/audio/narration",
+                public_id=f"tts_{cache_key[:16]}",
+                format="mp3"
+            )
+            cloudinary_url = upload_result.get("secure_url")
+            logger.info(f"Audio uploaded to Cloudinary: {cloudinary_url}")
+        except Exception as upload_error:
+            logger.warning(f"Failed to upload audio to Cloudinary: {upload_error}")
+            # Continue with base64 fallback
+        
+        # Store in cache with Cloudinary URL
         await db.audio_cache.update_one(
             {"cache_key": cache_key},
             {
                 "$set": {
                     "cache_key": cache_key,
-                    "audio_base64": audio_base64,
+                    "cloudinary_url": cloudinary_url,
+                    "audio_base64": audio_base64 if not cloudinary_url else None,
                     "voice": openai_voice,
                     "text_preview": request.text[:100],
                     "created_at": datetime.now(timezone.utc),
-                    "expires_at": datetime.now(timezone.utc) + timedelta(days=30)
+                    "expires_at": datetime.now(timezone.utc) + timedelta(days=365)
                 }
             },
             upsert=True
         )
         
-        return {"audio_base64": audio_base64, "success": True, "cached": False}
+        return {
+            "audio_url": cloudinary_url,
+            "audio_base64": audio_base64 if not cloudinary_url else None,
+            "success": True, 
+            "cached": False
+        }
     except Exception as e:
         logger.error(f"Error generating TTS: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error generating TTS: {str(e)}")
+
+
+@api_router.post("/tts/generate-for-page/{page_id}")
+async def generate_tts_for_page(
+    page_id: str,
+    voice_id: str = "21m00Tcm4TlvDq8ikWAM",
+    current_user: dict = Depends(get_current_user)
+):
+    """Generate and cache TTS audio for a specific page, saving URL to the page document"""
+    import hashlib
+    import base64
+    
+    try:
+        # Find the page
+        page = await db.pages.find_one({"id": page_id})
+        if not page:
+            raise HTTPException(status_code=404, detail="Page not found")
+        
+        # Check if page already has cached audio
+        if page.get("audio_url") and page["audio_url"].startswith("https://"):
+            logger.info(f"Page {page_id} already has cached audio: {page['audio_url']}")
+            return {"audio_url": page["audio_url"], "cached": True, "success": True}
+        
+        text = page.get("text_content", "")
+        if not text.strip():
+            return {"audio_url": None, "cached": False, "success": True, "message": "No text to narrate"}
+        
+        emergent_key = os.environ.get("EMERGENT_LLM_KEY")
+        if not emergent_key:
+            raise HTTPException(status_code=500, detail="TTS service not configured")
+        
+        # Voice mapping
+        voice_mapping = {
+            "21m00Tcm4TlvDq8ikWAM": "nova",
+            "AZnzlk1XvdvUeBnXmlld": "shimmer",
+            "EXAVITQu4vr4xnSDxMaL": "alloy",
+            "ErXwobaYiN019PkySvjV": "onyx",
+            "MF3mGyEYCl7XYWbV9V6O": "coral",
+            "TxGEqnHWrfWFTfGW9XjX": "echo",
+            "VR6AewLTigWG4xSOukaG": "fable",
+            "pNInz6obpgDQGcFmaJgB": "sage",
+            "yoZ06aMxZJJ28mfd3POQ": "ash",
+        }
+        openai_voice = voice_mapping.get(voice_id, "nova")
+        
+        # Generate TTS
+        tts = OpenAITextToSpeech(api_key=emergent_key)
+        audio_base64 = await tts.generate_speech_base64(
+            text=text,
+            model="tts-1",
+            voice=openai_voice,
+            response_format="mp3"
+        )
+        
+        # Upload to Cloudinary
+        audio_bytes = base64.b64decode(audio_base64)
+        
+        # Get book info for folder organization
+        chapter = await db.chapters.find_one({"id": page.get("chapter_id")})
+        book_id = chapter.get("book_id", "unknown") if chapter else "unknown"
+        
+        upload_result = cloudinary.uploader.upload(
+            audio_bytes,
+            resource_type="video",
+            folder=f"azories/audio/books/{book_id}",
+            public_id=f"page_{page_id}",
+            format="mp3"
+        )
+        cloudinary_url = upload_result.get("secure_url")
+        
+        # Save audio URL to page document
+        await db.pages.update_one(
+            {"id": page_id},
+            {"$set": {"audio_url": cloudinary_url}}
+        )
+        
+        logger.info(f"Generated and cached audio for page {page_id}: {cloudinary_url}")
+        return {"audio_url": cloudinary_url, "cached": False, "success": True}
+        
+    except Exception as e:
+        logger.error(f"Error generating TTS for page: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error generating TTS: {str(e)}")
 
 # ============ SPEECH TO TEXT (WHISPER) ============
