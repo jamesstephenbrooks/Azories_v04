@@ -348,6 +348,27 @@ export default function BookReader() {
         fetchReadingStats();
       }
     }
+    
+    // CRITICAL: Cleanup function when component unmounts or bookId changes
+    return () => {
+      // Stop any playing audio
+      if (audioElement) {
+        audioElement.pause();
+        audioElement.src = '';
+      }
+      
+      // Clear audio cache to prevent memory leaks
+      audioCache.current.clear();
+      preloadingPages.current.clear();
+      
+      // Reset playback tracking
+      lastPlayedPageRef.current = -999;
+      
+      // Reset celebration flag
+      hasShownCelebrationRef.current = false;
+      
+      console.log('[BookReader] Cleanup: Cleared audio cache and stopped playback');
+    };
   }, [bookId, user, authLoading, token]);
 
   // Ref to track if we should continue auto-reading
