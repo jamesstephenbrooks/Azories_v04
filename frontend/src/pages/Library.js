@@ -652,7 +652,7 @@ export default function Library() {
                   <div className="relative h-40 sm:h-48 md:h-64 overflow-hidden">
                     {/* Background Image */}
                     <img 
-                      src="https://customer-assets.emergentagent.com/job_99cdf25d-3424-4245-a1d4-fa1604524917/artifacts/63nngm8v_art-fantasy.png"
+                      src="https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772378060/azories/library/grand_library_entrance.jpg"
                       alt="Grand Library"
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
