@@ -4809,18 +4809,59 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
     if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Pro subscription required")
     
-    # Check and deduct credits (5 credits for AI story creation)
-    if not await deduct_credits(current_user["id"], "ai_story_create"):
-        current_credits = current_user.get("credits", 0)
-        required_credits = CREDIT_COSTS.get("ai_story_create", 5)
-        raise HTTPException(
-            status_code=402, 
-            detail=f"Insufficient credits. You have {current_credits} credits but need {required_credits}. Please purchase more credits to continue."
-        )
+    # Check if user is in free trial period (48 hours from signup)
+    trial_start = current_user.get("trial_start_date") or current_user.get("created_at")
+    is_in_trial = False
+    trial_remaining_hours = 0
+    
+    if trial_start:
+        try:
+            if isinstance(trial_start, str):
+                trial_start = datetime.fromisoformat(trial_start.replace('Z', '+00:00'))
+            trial_end = trial_start + timedelta(hours=48)
+            now = datetime.now(timezone.utc)
+            if now < trial_end:
+                is_in_trial = True
+                trial_remaining_hours = (trial_end - now).total_seconds() / 3600
+                logger.info(f"User {current_user['id']} is in trial period ({trial_remaining_hours:.1f} hours remaining)")
+        except Exception as e:
+            logger.warning(f"Trial check error: {e}")
+    
+    # Only deduct credits if NOT in trial
+    if not is_in_trial:
+        if not await deduct_credits(current_user["id"], "ai_story_create"):
+            current_credits = current_user.get("credits", 0)
+            required_credits = CREDIT_COSTS.get("ai_story_create", 5)
+            raise HTTPException(
+                status_code=402, 
+                detail=f"Insufficient credits. You have {current_credits} credits but need {required_credits}. Please purchase more credits to continue."
+            )
+    else:
+        logger.info(f"Trial user - skipping credit deduction for story creation")
     
     try:
         if not EMERGENT_LLM_KEY:
             raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
+        
+        # Build the story idea from new fields
+        story_idea = request.story_description or request.idea
+        if not story_idea.strip():
+            raise HTTPException(status_code=400, detail="Please provide a story description")
+        
+        # Build character context
+        character_context = ""
+        if request.character_name and request.character_description:
+            character_context = f"The main character is {request.character_name}: {request.character_description}."
+        elif request.character_name:
+            character_context = f"The main character is named {request.character_name}."
+        
+        # Build age-appropriate context
+        age_mapping = {
+            "3-5": "preschoolers (ages 3-5) - use simple words and short sentences",
+            "5-8": "early readers (ages 5-8) - engaging vocabulary appropriate for the age",
+            "8-12": "middle grade readers (ages 8-12) - more complex narrative and vocabulary"
+        }
+        age_context = age_mapping.get(request.age_range, age_mapping["5-8"])
         
         # Word count mapping
         word_counts = {
@@ -4834,25 +4875,29 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
         style_prompts = {
             "3d-pixar": "Pixar 3D animation style, Disney quality, vibrant colors, expressive characters, magical lighting, cinematic composition",
             "pixar": "Pixar 3D animation style, Disney quality, vibrant colors, expressive characters, magical lighting, cinematic composition",
+            "watercolour": "Soft watercolor illustration, gentle colors, dreamy atmosphere, hand-painted feel",
+            "watercolor": "Soft watercolor illustration, gentle colors, dreamy atmosphere, hand-painted feel",
+            "storybook": "Classic storybook illustration, warm colors, nostalgic, timeless, whimsical",
             "illustration": "Professional children's book illustration, colorful, friendly, whimsical, hand-drawn feel",
             "comic": "Comic book panel style, bold outlines, dynamic poses, vibrant colors",
-            "watercolor": "Soft watercolor illustration, gentle colors, dreamy atmosphere",
             "anime": "Anime style illustration, big expressive eyes, colorful, dynamic",
             "realistic": "Photorealistic digital art, detailed, cinematic lighting",
             "scifi": "Futuristic sci-fi style, neon colors, advanced technology, space themes",
             "sketch": "Pencil sketch illustration, hand-drawn, artistic, detailed linework",
-            "fantasy": "Fantasy art style, magical, ethereal, detailed environments",
-            "storybook": "Classic storybook illustration, warm colors, nostalgic, timeless"
+            "fantasy": "Fantasy art style, magical, ethereal, detailed environments"
         }
         
-        # Detect style from the idea text (takes priority over dropdown)
-        idea_lower = request.idea.lower()
+        # Use the art_style from request, fallback to image_style for backwards compatibility
+        selected_style = request.art_style or request.image_style or "3d-pixar"
+        
+        # Detect style from the story description (takes priority)
+        story_lower = story_idea.lower()
         detected_style = None
         style_keywords = {
             "pixar": ["pixar", "3d", "disney", "animated movie"],
             "anime": ["anime", "manga", "japanese", "studio ghibli"],
             "comic": ["comic", "superhero", "marvel", "dc"],
-            "watercolor": ["watercolor", "painted", "painterly"],
+            "watercolour": ["watercolor", "watercolour", "painted", "painterly"],
             "realistic": ["realistic", "photorealistic", "real", "photograph"],
             "scifi": ["sci-fi", "scifi", "space", "futuristic", "robot"],
             "sketch": ["sketch", "pencil", "drawn", "line art"],
@@ -4861,13 +4906,13 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
         }
         
         for style, keywords in style_keywords.items():
-            if any(kw in idea_lower for kw in keywords):
+            if any(kw in story_lower for kw in keywords):
                 detected_style = style
-                logger.info(f"Detected style '{style}' from idea text")
+                logger.info(f"Detected style '{style}' from story description")
                 break
         
         # Use detected style if found, otherwise use the selected style
-        final_style = detected_style if detected_style else request.image_style
+        final_style = detected_style if detected_style else selected_style
         style_desc = style_prompts.get(final_style, style_prompts["illustration"])
         
         logger.info(f"Using style: {final_style} (detected: {detected_style}, selected: {request.image_style})")
