@@ -549,10 +549,10 @@ export default function Dashboard() {
                         <div className="flex items-center gap-2">
                           <span className="text-lg">✨</span>
                           <span className="text-sm font-medium text-purple-300">
-                            Free Trial — {trialStatus.display_text}
+                            {trialStatus.display_text}
                           </span>
                         </div>
-                        <span className="text-xs text-purple-400">Unlimited stories!</span>
+                        <span className="text-xs text-purple-400">FREE</span>
                       </div>
                     ) : (
                       <div className={`flex items-center justify-between p-3 rounded-xl ${credits >= AI_STORY_COST ? 'bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20' : 'bg-red-500/10 border border-red-500/30'}`}>
