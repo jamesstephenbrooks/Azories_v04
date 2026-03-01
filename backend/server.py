@@ -5382,8 +5382,8 @@ Return ONLY the JSON array, no other text."""
                 logger.error(f"Failed to generate cover: {str(cover_error)}")
         
         # Add Azories branded back cover to every AI-created book
-        # Use the standard Azories back cover template
-        azories_back_cover_url = "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772281331/azories/back_covers/azories_standard_back.png"
+        # Use a working Azories back cover template
+        azories_back_cover_url = "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772281331/azories/back_covers/the_dragons_secret_garden_back.png"
         back_cover_text = story_data.get("description", request.story_description)[:200]
         
         await db.books.update_one(
