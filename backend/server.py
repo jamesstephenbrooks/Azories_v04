@@ -1281,7 +1281,8 @@ async def get_me(current_user: dict = Depends(get_current_user)):
         created_at=current_user["created_at"],
         pro_trial=pro_trial,
         pro_trial_expires_at=trial_expires,
-        trial_days_remaining=trial_days_remaining
+        trial_days_remaining=trial_days_remaining,
+        is_admin=current_user.get("is_admin", False) or current_user.get("role") == "admin"
     )
 
 
