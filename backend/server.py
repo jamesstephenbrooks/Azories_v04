@@ -674,6 +674,7 @@ CREDIT_COSTS = {
     "video_generate": 10,      # Video generation
     "shots_generate": 5,       # 9 angle shots generation
     "expression_generate": 2,  # Expression generation
+    "ai_story_create": 5,      # AI Story Creator (covers all page images)
 }
 
 # Actual costs to us (for tracking VIP usage)
