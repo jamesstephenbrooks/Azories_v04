@@ -407,32 +407,51 @@ export default function Library() {
     </div>
   );
 
-  const FeaturedSection = ({ title, icon, books: sectionBooks, emptyMessage }) => (
-    <div className="mb-16">
-      <div className="flex items-center gap-3 mb-6">
-        {icon}
-        <h2 className="font-heading text-2xl font-bold">{title}</h2>
+  const FeaturedSection = ({ title, icon, books: sectionBooks, emptyMessage }) => {
+    // Show skeleton while loading on initial load
+    if (loading && sectionBooks.length === 0) {
+      return (
+        <div className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            {icon}
+            <h2 className="font-heading text-2xl font-bold">{title}</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <BookCardSkeleton key={i} />
+            ))}
+          </div>
+        </div>
+      );
+    }
+    
+    return (
+      <div className="mb-16">
+        <div className="flex items-center gap-3 mb-6">
+          {icon}
+          <h2 className="font-heading text-2xl font-bold">{title}</h2>
+        </div>
+        {sectionBooks.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {sectionBooks.map((book, index) => (
+              <BookCard key={book.id} book={book} index={index} isFeatured />
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center text-center py-12 bg-muted/30 rounded-3xl">
+            <motion.img 
+              src={AZORA_ASSETS.readingCozy}
+              alt="Azora reading"
+              className="w-32 h-40 object-contain mb-4 opacity-70"
+              animate={{ y: [0, -5, 0] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <p className="text-muted-foreground font-body">{emptyMessage}</p>
+          </div>
+        )}
       </div>
-      {sectionBooks.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {sectionBooks.map((book, index) => (
-            <BookCard key={book.id} book={book} index={index} isFeatured />
-          ))}
-        </div>
-      ) : (
-        <div className="flex flex-col items-center text-center py-12 bg-muted/30 rounded-3xl">
-          <motion.img 
-            src={AZORA_ASSETS.readingCozy}
-            alt="Azora reading"
-            className="w-32 h-40 object-contain mb-4 opacity-70"
-            animate={{ y: [0, -5, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <p className="text-muted-foreground font-body">{emptyMessage}</p>
-        </div>
-      )}
-    </div>
-  );
+    );
+  };
 
   // Newly Added Section - Horizontal scroll row
   const NewlyAddedSection = () => {
