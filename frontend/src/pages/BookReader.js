@@ -1273,6 +1273,19 @@ export default function BookReader() {
                         backgroundColor: '#1a0a2e'
                       }}
                     />
+                    {/* Read Again Button Overlay */}
+                    <div className="absolute bottom-8 left-0 right-0 flex justify-center">
+                      <button
+                        onClick={() => {
+                          console.log('[BackCover Mobile] Read Again clicked');
+                          setCurrentPage(-1);
+                        }}
+                        className="px-8 py-3 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white font-semibold flex items-center gap-2 shadow-lg"
+                        data-testid="read-again-btn-mobile"
+                      >
+                        Read Again <FiPlay className="w-5 h-5" />
+                      </button>
+                    </div>
                   </div>
                 ) : (
                 <>
