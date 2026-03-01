@@ -40,7 +40,10 @@ const PrivacyPolicy = lazy(() => import("@/pages/Legal").then(m => ({ default: m
 // Loading screen with Azora mascot and dragon spinner
 function PageLoader() {
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-b from-purple-900/95 to-slate-900">
+    <div 
+      className="flex flex-col items-center justify-center h-screen"
+      style={{ background: 'linear-gradient(to bottom, #6B21A8, #4C1D95, #1E1B4B)' }}
+    >
       <img 
         src={AZORA_ASSETS.running}
         alt="Azora running to greet you"
