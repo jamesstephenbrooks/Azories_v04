@@ -318,6 +318,11 @@ export default function Dashboard() {
       return;
     }
     
+    if (credits < AI_STORY_COST) {
+      toast.error(`Insufficient credits! You need ${AI_STORY_COST} credits.`);
+      return;
+    }
+    
     setGeneratingStory(true);
     toast.info('Generating your story... This may take a minute.');
     
@@ -326,12 +331,23 @@ export default function Dashboard() {
       const res = await axios.post(`${API}/ai/generate-story`, aiStory, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      toast.success(`Story "${res.data.title}" created with ${res.data.pages_created} pages!`);
+      
+      // Update local credits after successful generation
+      setCredits(prev => prev - AI_STORY_COST);
+      
+      const imagesGenerated = res.data.images_generated || 0;
+      toast.success(`Story "${res.data.title}" created with ${res.data.pages_created} pages and ${imagesGenerated} images!`);
       setIsAIStoryOpen(false);
-      setAIStory({ idea: '', genre: 'Adventure', age_rating: 'All Ages', num_pages: 5 });
+      setAIStory({ idea: '', genre: 'Adventure', age_rating: 'All Ages', num_pages: 5, generate_images: true, media_type: 'images', image_style: '3d-pixar', words_per_page: 'medium' });
       navigate(`/editor/${res.data.book_id}`);
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Failed to generate story');
+      if (error.response?.status === 402) {
+        toast.error('Insufficient credits! Please purchase more credits to continue.');
+        setIsAIStoryOpen(false);
+        navigate('/credits');
+      } else {
+        toast.error(error.response?.data?.detail || 'Failed to generate story');
+      }
     } finally {
       setGeneratingStory(false);
     }
