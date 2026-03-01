@@ -2030,7 +2030,7 @@ export default function BookEditor() {
               </ScrollArea>
             )}
             
-            {/* Art Studio images */}
+            {/* Creators images */}
             {(galleryTab === 'book' || galleryTab === 'all') && (() => {
               const currentImages = galleryTab === 'book' ? galleryImages : generalGalleryImages;
               
