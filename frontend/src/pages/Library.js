@@ -212,30 +212,74 @@ export default function Library() {
     }
   };
 
-  const BookCard = ({ book, index, isFeatured = false }) => {
+  // Check if a book is new (published in last 7 days)
+  const isNewBook = (book) => {
+    if (!book.published_at && !book.created_at) return false;
+    const publishDate = new Date(book.published_at || book.created_at);
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    return publishDate > sevenDaysAgo;
+  };
+
+  const BookCard = ({ book, index, isFeatured = false, isComingSoon = false }) => {
+    const isNew = isNewBook(book);
+    
+    const handleClick = () => {
+      if (isComingSoon) {
+        toast.info('This story is almost ready — check back soon! 🐉');
+        return;
+      }
+      navigate(`/read/${book.id}`);
+    };
+    
     return (
       <div
         className="book-card group cursor-pointer"
-        onClick={() => navigate(`/read/${book.id}`)}
+        onClick={handleClick}
         data-testid={`book-card-${book.id}`}
       >
         <div className="book-perspective">
-          <div className={`relative bg-card rounded-3xl overflow-hidden border border-border book-3d ${isFeatured ? 'ring-2 ring-primary/50' : ''}`}>
-          {/* Summary/Back cover button - Top Right */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setSummaryBook(book);
-            }}
-            className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-all duration-200 opacity-0 group-hover:opacity-100"
-            title="View Summary"
-            data-testid={`summary-btn-${book.id}`}
-          >
-            <FiInfo className="w-4 h-4" />
-          </button>
+          <div className={`relative bg-card rounded-3xl overflow-hidden border border-border book-3d ${isFeatured ? 'ring-2 ring-primary/50' : ''} ${isComingSoon ? 'opacity-90' : ''}`}>
+          {/* Summary/Back cover button - Top Right (hide for coming soon) */}
+          {!isComingSoon && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setSummaryBook(book);
+              }}
+              className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-all duration-200 opacity-0 group-hover:opacity-100"
+              title="View Summary"
+              data-testid={`summary-btn-${book.id}`}
+            >
+              <FiInfo className="w-4 h-4" />
+            </button>
+          )}
+          
+          {/* NEW badge for recently published */}
+          {isNew && !isComingSoon && (
+            <div className="absolute top-3 right-3 z-20">
+              <span className="px-2 py-1 rounded-full bg-green-500 text-white text-xs font-bold animate-pulse">
+                NEW
+              </span>
+            </div>
+          )}
+          
+          {/* Coming Soon overlay */}
+          {isComingSoon && (
+            <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+              <div className="text-center">
+                <span className="px-4 py-2 rounded-full bg-purple-600 text-white text-sm font-bold">
+                  Coming Soon
+                </span>
+                {book.coming_soon_label && (
+                  <p className="mt-2 text-white/80 text-xs">{book.coming_soon_label}</p>
+                )}
+              </div>
+            </div>
+          )}
           
           {/* Featured/Best badges */}
-          {(book.is_featured || book.is_best_of_week) && (
+          {(book.is_featured || book.is_best_of_week) && !isComingSoon && (
             <div className="absolute top-3 left-3 z-10 flex gap-2">
               {book.is_featured && (
                 <span className="px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-ui flex items-center gap-1">
@@ -251,7 +295,7 @@ export default function Library() {
           )}
           
           {/* Book Cover */}
-          <div className="aspect-[3/4] relative overflow-hidden bg-muted/30">
+          <div className={`aspect-[3/4] relative overflow-hidden bg-muted/30 ${isComingSoon ? 'filter blur-[4px]' : ''}`}>
             {book.cover_image ? (
               <LazyImage 
                 src={book.cover_image} 
