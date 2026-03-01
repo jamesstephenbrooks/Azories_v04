@@ -8,6 +8,7 @@ from pymongo import MongoClient
 import os
 import logging
 import secrets
+import hashlib
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional, Literal, Dict
