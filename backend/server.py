@@ -1285,56 +1285,42 @@ async def get_me(current_user: dict = Depends(get_current_user)):
 
 @api_router.get("/auth/ai-story-trial")
 async def get_ai_story_trial_status(current_user: dict = Depends(get_current_user)):
-    """Check AI Story Creator trial status"""
-    now = datetime.now(timezone.utc)
+    """Check AI Story Creator free stories status"""
     
-    # Check for ai_story_trial_expires first, then fall back to created_at + 48 hours
-    trial_expires_str = current_user.get("ai_story_trial_expires") or current_user.get("trial_start_date")
+    # Get free stories remaining (default to 3 for existing users without this field)
+    free_stories_remaining = current_user.get("free_stories_remaining")
+    free_stories_used = current_user.get("free_stories_used", 0)
     
-    if not trial_expires_str:
-        # Use created_at + 48 hours as fallback for existing users
-        created_at = current_user.get("created_at")
-        if created_at:
-            try:
-                if isinstance(created_at, str):
-                    created_at = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
-                trial_end = created_at + timedelta(hours=48)
-            except:
-                return {"in_trial": False, "trial_expired": True}
-        else:
-            return {"in_trial": False, "trial_expired": True}
-    else:
-        try:
-            if "ai_story_trial_expires" in current_user:
-                trial_end = datetime.fromisoformat(trial_expires_str.replace('Z', '+00:00'))
-            else:
-                # trial_start_date - add 48 hours
-                trial_start = datetime.fromisoformat(trial_expires_str.replace('Z', '+00:00'))
-                trial_end = trial_start + timedelta(hours=48)
-        except:
-            return {"in_trial": False, "trial_expired": True}
+    # For existing users who don't have this field, give them 3 free stories
+    if free_stories_remaining is None:
+        free_stories_remaining = 3 - free_stories_used
+        # Update the user record
+        await db.users.update_one(
+            {"id": current_user["id"]},
+            {"$set": {"free_stories_remaining": free_stories_remaining, "free_stories_used": free_stories_used}}
+        )
     
-    if now < trial_end:
-        remaining = trial_end - now
-        remaining_hours = remaining.total_seconds() / 3600
-        remaining_days = int(remaining_hours // 24)
-        remaining_hours_mod = int(remaining_hours % 24)
-        
+    has_free_stories = free_stories_remaining > 0
+    
+    if has_free_stories:
         return {
+            "has_free_stories": True,
+            "free_stories_remaining": free_stories_remaining,
+            "free_stories_used": free_stories_used,
+            "display_text": f"{free_stories_remaining} free stor{'y' if free_stories_remaining == 1 else 'ies'} remaining",
+            # Legacy fields for backwards compatibility
             "in_trial": True,
-            "trial_expired": False,
-            "remaining_hours": round(remaining_hours, 1),
-            "remaining_days": remaining_days,
-            "remaining_hours_display": remaining_hours_mod,
-            "display_text": f"{remaining_days} day{'s' if remaining_days != 1 else ''} {remaining_hours_mod} hour{'s' if remaining_hours_mod != 1 else ''}" if remaining_days > 0 else f"{remaining_hours_mod} hour{'s' if remaining_hours_mod != 1 else ''} remaining",
-            "trial_ends_at": trial_end.isoformat()
+            "trial_expired": False
         }
     else:
         return {
+            "has_free_stories": False,
+            "free_stories_remaining": 0,
+            "free_stories_used": free_stories_used,
+            "display_text": "You've used your 3 free stories! Purchase credits to keep creating — from just £5",
+            # Legacy fields for backwards compatibility
             "in_trial": False,
-            "trial_expired": True,
-            "remaining_hours": 0,
-            "display_text": "Trial expired"
+            "trial_expired": True
         }
 
 
