@@ -194,7 +194,7 @@ export default function BookEditor() {
     }
   };
   
-  // Fetch Art Studio gallery images for this book
+  // Fetch Creators gallery images for this book
   const fetchGalleryImages = async () => {
     const token = localStorage.getItem('azories-token');
     const headers = token ? { Authorization: `Bearer ${token}` } : {};

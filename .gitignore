@@ -129,3 +129,5 @@ exports/mongodb_export.zip
 frontend/node_modules/.cache/default-development/7.pack
 frontend/node_modules/.cache/default-development/9.pack_
 frontend/node_modules/.cache/default-development/8.pack_
+frontend/node_modules/.cache/default-development/9.pack
+frontend/node_modules/.cache/default-development/8.pack
