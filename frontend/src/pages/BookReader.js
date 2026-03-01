@@ -781,9 +781,12 @@ export default function BookReader() {
             .catch(e => {
               console.error('Audio play failed:', e);
               // On iOS/iPad, audio fails without user interaction
-              // Show a helpful message
+              // Show a friendly tip message
               if (e.name === 'NotAllowedError') {
-                toast.error('Tap "Read Aloud" again to start audio (iOS requires tap interaction)');
+                toast.info('Tap the 🔊 button to hear the story read aloud', {
+                  duration: 4000,
+                  icon: '💡',
+                });
               }
               setIsPlaying(false);
               lastPlayedPageRef.current = -999; // Allow retry
