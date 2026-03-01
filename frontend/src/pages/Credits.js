@@ -95,6 +95,23 @@ const Credits = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-purple-900 py-12 px-4">
       <div className="max-w-6xl mx-auto">
+        {/* Back Button */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="mb-6"
+        >
+          <Button
+            variant="ghost"
+            onClick={() => navigate(-1)}
+            className="text-white/70 hover:text-white hover:bg-white/10"
+            data-testid="credits-back-btn"
+          >
+            <FiArrowLeft className="mr-2" />
+            Back
+          </Button>
+        </motion.div>
+        
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
