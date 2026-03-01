@@ -5112,16 +5112,16 @@ Return ONLY the JSON object, no other text."""
                     
                     logger.info(f"Generating image for page {idx + 1}: {full_prompt[:100]}...")
                     
-                    # Use OpenAI Image Generation (GPT Image 1)
-                    image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
-                    image_results = await image_gen.generate_images(
+                    # Use fal.ai FLUX for image generation
+                    result = await generate_image_flux(
                         prompt=full_prompt,
-                        n=1,
-                        size="1024x1536"  # Portrait for book pages
+                        model="flux-dev",
+                        image_size="portrait_4_3",  # Portrait for book pages
+                        num_images=1
                     )
                     
-                    if image_results and len(image_results) > 0:
-                        image_url_raw = image_results[0].get("url") or image_results[0].get("b64_json")
+                    if result and result.get("images") and len(result["images"]) > 0:
+                        image_url_raw = result["images"][0].get("url", "")
                         
                         if image_url_raw:
                             # Upload to Cloudinary for permanent storage if available
