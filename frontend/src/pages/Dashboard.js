@@ -532,194 +532,186 @@ export default function Dashboard() {
                         AI Story Creator
                       </Button>
                     </DialogTrigger>
-                  <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+                  <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                       <DialogTitle className="font-heading text-2xl flex items-center gap-2">
                         <FiZap className="text-accent" />
                         AI Story Creator
                       </DialogTitle>
                       <DialogDescription>
-                        Describe your story idea and AI will create the entire book with text and visuals!
+                        Create a complete illustrated storybook in minutes
                       </DialogDescription>
                     </DialogHeader>
                     
-                    {/* Credit Cost Banner */}
-                    <div className={`flex items-center justify-between p-3 rounded-xl ${credits >= AI_STORY_COST ? 'bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20' : 'bg-red-500/10 border border-red-500/30'}`}>
-                      <div className="flex items-center gap-2">
-                        <FiZap className={credits >= AI_STORY_COST ? 'text-amber-500' : 'text-red-500'} />
-                        <span className="text-sm font-medium">
-                          {credits >= AI_STORY_COST 
-                            ? `Cost: ${AI_STORY_COST} credits (You have ${credits})`
-                            : `Insufficient credits! Need ${AI_STORY_COST}, have ${credits}`
-                          }
-                        </span>
+                    {/* Trial or Credit Banner */}
+                    {trialStatus.in_trial ? (
+                      <div className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30">
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">✨</span>
+                          <span className="text-sm font-medium text-purple-300">
+                            Free Trial — {trialStatus.display_text}
+                          </span>
+                        </div>
+                        <span className="text-xs text-purple-400">Unlimited stories!</span>
                       </div>
-                      {credits < AI_STORY_COST && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="text-xs"
-                          onClick={() => {
-                            setIsAIStoryOpen(false);
-                            navigate('/credits');
-                          }}
-                        >
-                          Buy Credits
-                        </Button>
-                      )}
-                    </div>
+                    ) : (
+                      <div className={`flex items-center justify-between p-3 rounded-xl ${credits >= AI_STORY_COST ? 'bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20' : 'bg-red-500/10 border border-red-500/30'}`}>
+                        <div className="flex items-center gap-2">
+                          <FiZap className={credits >= AI_STORY_COST ? 'text-amber-500' : 'text-red-500'} />
+                          <span className="text-sm font-medium">
+                            {credits >= AI_STORY_COST 
+                              ? `Cost: ${AI_STORY_COST} credits (You have ${credits})`
+                              : `Insufficient credits! Need ${AI_STORY_COST}, have ${credits}`
+                            }
+                          </span>
+                        </div>
+                        {credits < AI_STORY_COST && !trialStatus.in_trial && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-xs"
+                            onClick={() => {
+                              setIsAIStoryOpen(false);
+                              navigate('/credits');
+                            }}
+                          >
+                            Buy Credits
+                          </Button>
+                        )}
+                      </div>
+                    )}
                     
-                    <div className="space-y-5 pt-4">
-                      <div className="space-y-2">
-                        <Label className="font-ui">Your Story Idea</Label>
-                        <Textarea
-                          value={aiStory.idea}
-                          onChange={(e) => setAIStory({ ...aiStory, idea: e.target.value })}
-                          placeholder="A brave little robot who wants to learn how to dance..."
-                          className="min-h-24 rounded-2xl border-2"
-                        />
+                    <div className="space-y-6 pt-4">
+                      {/* Story Details Section */}
+                      <div className="space-y-4">
+                        <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Story Details</h3>
+                        
+                        <div className="space-y-2">
+                          <Label className="font-ui">Title (optional)</Label>
+                          <Input
+                            value={aiStory.title}
+                            onChange={(e) => setAIStory({ ...aiStory, title: e.target.value })}
+                            placeholder="The Adventures of Finn the Fox"
+                            className="rounded-xl border-2"
+                          />
+                          <p className="text-xs text-muted-foreground">Leave blank to let AI create a title</p>
+                        </div>
+                        
+                        <div className="grid grid-cols-3 gap-3">
+                          <div className="space-y-2">
+                            <Label className="font-ui text-sm">Age Range</Label>
+                            <Select value={aiStory.age_range} onValueChange={(v) => setAIStory({ ...aiStory, age_range: v })}>
+                              <SelectTrigger className="rounded-xl border-2">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="3-5">👶 Ages 3-5</SelectItem>
+                                <SelectItem value="5-8">🧒 Ages 5-8</SelectItem>
+                                <SelectItem value="8-12">📚 Ages 8-12</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <Label className="font-ui text-sm">Pages</Label>
+                            <Select value={String(aiStory.num_pages)} onValueChange={(v) => setAIStory({ ...aiStory, num_pages: parseInt(v) })}>
+                              <SelectTrigger className="rounded-xl border-2">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="5">5 pages</SelectItem>
+                                <SelectItem value="8">8 pages</SelectItem>
+                                <SelectItem value="10">10 pages</SelectItem>
+                                <SelectItem value="12">12 pages</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <Label className="font-ui text-sm">Words/Page</Label>
+                            <Select value={aiStory.words_per_page} onValueChange={(v) => setAIStory({ ...aiStory, words_per_page: v })}>
+                              <SelectTrigger className="rounded-xl border-2">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="short">~50 (Short)</SelectItem>
+                                <SelectItem value="medium">~100 (Medium)</SelectItem>
+                                <SelectItem value="long">~150 (Long)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
                       </div>
                       
-                      <div className="grid grid-cols-2 gap-4">
+                      {/* Main Character Section */}
+                      <div className="space-y-4 pt-4 border-t border-border">
+                        <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Main Character</h3>
+                        
                         <div className="space-y-2">
-                          <Label className="font-ui">Genre</Label>
-                          <Select value={aiStory.genre} onValueChange={(v) => setAIStory({ ...aiStory, genre: v })}>
-                            <SelectTrigger className="rounded-full border-2">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {genres.map((g) => <SelectItem key={g} value={g}>{g}</SelectItem>)}
-                            </SelectContent>
-                          </Select>
+                          <Label className="font-ui">Character Name</Label>
+                          <Input
+                            value={aiStory.character_name}
+                            onChange={(e) => setAIStory({ ...aiStory, character_name: e.target.value })}
+                            placeholder="Finn"
+                            className="rounded-xl border-2"
+                          />
                         </div>
                         
                         <div className="space-y-2">
-                          <Label className="font-ui">Age Rating</Label>
-                          <Select value={aiStory.age_rating} onValueChange={(v) => setAIStory({ ...aiStory, age_rating: v })}>
-                            <SelectTrigger className="rounded-full border-2">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {ageRatings.map((r) => <SelectItem key={r} value={r}>{r}</SelectItem>)}
-                            </SelectContent>
-                          </Select>
+                          <Label className="font-ui">Character Description</Label>
+                          <Textarea
+                            value={aiStory.character_description}
+                            onChange={(e) => setAIStory({ ...aiStory, character_description: e.target.value })}
+                            placeholder="A small brave fox with orange fur and big curious eyes who loves exploring"
+                            className="min-h-20 rounded-xl border-2"
+                          />
                         </div>
                       </div>
                       
-                      <div className="space-y-2">
-                        <Label className="font-ui">Number of Pages</Label>
-                        <Select value={String(aiStory.num_pages)} onValueChange={(v) => setAIStory({ ...aiStory, num_pages: parseInt(v) })}>
-                          <SelectTrigger className="rounded-full border-2">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {[3, 5, 8, 10, 15].map((n) => <SelectItem key={n} value={String(n)}>{n} pages</SelectItem>)}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      
-                      {/* Words Per Page Selection */}
-                      <div className="space-y-2">
-                        <Label className="font-ui">Words Per Page</Label>
-                        <Select value={aiStory.words_per_page} onValueChange={(v) => setAIStory({ ...aiStory, words_per_page: v })}>
-                          <SelectTrigger className="rounded-full border-2">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="short">📝 Short (~50 words) - Quick reads</SelectItem>
-                            <SelectItem value="medium">📖 Medium (~100 words) - Standard</SelectItem>
-                            <SelectItem value="long">📚 Long (~150 words) - Detailed</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <p className="text-xs text-muted-foreground">
-                          {aiStory.words_per_page === 'short' && 'Perfect for younger readers (ages 3-5)'}
-                          {aiStory.words_per_page === 'medium' && 'Great for most children\'s books (ages 5-8)'}
-                          {aiStory.words_per_page === 'long' && 'Best for older readers (ages 8+)'}
-                        </p>
-                      </div>
-                      
-                      {/* Visual Media Options */}
-                      <div className="space-y-3 pt-2 border-t border-border">
-                        <Label className="font-ui font-semibold">Visual Media for Pages</Label>
-                        <Select value={aiStory.media_type} onValueChange={(v) => setAIStory({ ...aiStory, media_type: v })}>
-                          <SelectTrigger className="rounded-full border-2">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="images">🖼️ Generate Images</SelectItem>
-                            <SelectItem value="videos">🎬 Generate Videos (Sora AI)</SelectItem>
-                            <SelectItem value="cinemagraphs">✨ Cinemagraphs (Animated Images)</SelectItem>
-                            <SelectItem value="none">📝 Text Only (No Visuals)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <p className="text-xs text-muted-foreground">
-                          {aiStory.media_type === 'videos' && '⏱️ Video generation takes 2-5 minutes per page'}
-                          {aiStory.media_type === 'cinemagraphs' && '⏱️ Cinemagraphs are animated images with subtle motion'}
-                          {aiStory.media_type === 'images' && 'AI will generate an illustration for each page'}
-                          {aiStory.media_type === 'none' && 'Story will be text-only, you can add visuals later in the editor'}
-                        </p>
-                      </div>
-                      
-                      {/* Image Style Selection (show only if generating images/cinemagraphs) */}
-                      {(aiStory.media_type === 'images' || aiStory.media_type === 'cinemagraphs') && (
+                      {/* Story Description Section */}
+                      <div className="space-y-4 pt-4 border-t border-border">
+                        <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Story</h3>
+                        
                         <div className="space-y-2">
-                          <Label className="font-ui">Visual Style</Label>
-                          <Select value={aiStory.image_style} onValueChange={(v) => setAIStory({ ...aiStory, image_style: v })}>
-                            <SelectTrigger className="rounded-full border-2">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="3d-pixar">🎬 3D Pixar / Disney Style</SelectItem>
-                              <SelectItem value="illustration">🎨 Children's Illustration</SelectItem>
-                              <SelectItem value="comic">💥 Comic Book Style</SelectItem>
-                              <SelectItem value="realistic">📷 Realistic/Photographic</SelectItem>
-                              <SelectItem value="scifi">🚀 Sci-Fi / Futuristic</SelectItem>
-                              <SelectItem value="sketch">✏️ Pencil Sketch</SelectItem>
-                              <SelectItem value="watercolor">🎨 Watercolor Painting</SelectItem>
-                              <SelectItem value="anime">🌸 Anime / Manga Style</SelectItem>
-                              <SelectItem value="fantasy">🏰 Fantasy Art</SelectItem>
-                              <SelectItem value="storybook">📖 Classic Storybook</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <p className="text-xs text-muted-foreground">
-                            💡 Tip: Mention a style in your idea (e.g., "Pixar-style" or "anime") to override this selection
-                          </p>
+                          <Label className="font-ui">Story Description *</Label>
+                          <Textarea
+                            value={aiStory.story_description}
+                            onChange={(e) => setAIStory({ ...aiStory, story_description: e.target.value })}
+                            placeholder="Finn gets lost in a magical forest and must find his way home by helping woodland creatures solve their problems. Along the way, he discovers the power of kindness and makes unlikely friendships."
+                            className="min-h-28 rounded-xl border-2"
+                          />
+                          <p className="text-xs text-muted-foreground">Describe what happens in your story</p>
                         </div>
-                      )}
+                      </div>
                       
-                      {/* Video Style Selection (show only if generating videos) */}
-                      {aiStory.media_type === 'videos' && (
-                        <div className="space-y-2">
-                          <Label className="font-ui">Video Style</Label>
-                          <Select value={aiStory.image_style} onValueChange={(v) => setAIStory({ ...aiStory, image_style: v })}>
-                            <SelectTrigger className="rounded-full border-2">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="animation">🎬 Children's Animation</SelectItem>
-                              <SelectItem value="comic">💥 Comic Book Animation</SelectItem>
-                              <SelectItem value="realistic">📷 Realistic/Cinematic</SelectItem>
-                              <SelectItem value="scifi">🚀 Sci-Fi / Futuristic</SelectItem>
-                              <SelectItem value="anime">🌸 Anime Style</SelectItem>
-                              <SelectItem value="fantasy">🏰 Fantasy/Magical</SelectItem>
-                              <SelectItem value="pixar">🎬 3D Pixar Style</SelectItem>
-                              <SelectItem value="watercolor">🎨 Watercolor Animation</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      )}
+                      {/* Art Style Section */}
+                      <div className="space-y-4 pt-4 border-t border-border">
+                        <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Art Style</h3>
+                        
+                        <Select value={aiStory.art_style} onValueChange={(v) => setAIStory({ ...aiStory, art_style: v, image_style: v })}>
+                          <SelectTrigger className="rounded-xl border-2">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="3d-pixar">🎬 3D Pixar / Disney Style</SelectItem>
+                            <SelectItem value="watercolour">🎨 Watercolour Painting</SelectItem>
+                            <SelectItem value="storybook">📖 Storybook Illustration</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                       
+                      {/* Create Button */}
                       <Button 
                         onClick={generateAIStory}
-                        disabled={generatingStory || credits < AI_STORY_COST}
-                        className={`w-full rounded-full py-6 ${credits < AI_STORY_COST ? 'bg-muted text-muted-foreground' : 'bg-accent hover:bg-accent/90'}`}
+                        disabled={generatingStory || (!trialStatus.in_trial && credits < AI_STORY_COST)}
+                        className={`w-full rounded-full py-6 text-lg ${(!trialStatus.in_trial && credits < AI_STORY_COST) ? 'bg-muted text-muted-foreground' : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'}`}
                       >
                         {generatingStory ? (
                           <>
                             <FiLoader className="mr-2 animate-spin" />
-                            Creating Your Story...
+                            Creating Your Magical Story...
                           </>
-                        ) : credits < AI_STORY_COST ? (
+                        ) : (!trialStatus.in_trial && credits < AI_STORY_COST) ? (
                           <>
                             <FiZap className="mr-2" />
                             Need {AI_STORY_COST - credits} More Credits
@@ -727,8 +719,7 @@ export default function Dashboard() {
                         ) : (
                           <>
                             <FiZap className="mr-2" />
-                            Generate Story ({AI_STORY_COST} credits)
-                            Generate Story
+                            Create My Story {trialStatus.in_trial ? '(Free Trial)' : `(${AI_STORY_COST} credits)`}
                           </>
                         )}
                       </Button>
