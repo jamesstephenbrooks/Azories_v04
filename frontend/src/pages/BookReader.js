@@ -61,6 +61,63 @@ export default function BookReader() {
   // Track which page audio has been played for - prevents duplicate playback
   const lastPlayedPageRef = useRef(-999);
   
+  // Cleanup tracking refs
+  const abortControllerRef = useRef(null);
+  const activeTimeoutsRef = useRef(new Set());
+  const mountedRef = useRef(true);
+  
+  // Helper to create tracked timeout
+  const safeTimeout = useCallback((callback, delay) => {
+    const timeoutId = setTimeout(() => {
+      activeTimeoutsRef.current.delete(timeoutId);
+      if (mountedRef.current) {
+        callback();
+      }
+    }, delay);
+    activeTimeoutsRef.current.add(timeoutId);
+    return timeoutId;
+  }, []);
+  
+  // Helper to clear all active timeouts
+  const clearAllTimeouts = useCallback(() => {
+    activeTimeoutsRef.current.forEach(id => clearTimeout(id));
+    activeTimeoutsRef.current.clear();
+  }, []);
+  
+  // Comprehensive cleanup function
+  const performFullCleanup = useCallback(() => {
+    console.log('[BookReader] Performing full cleanup...');
+    
+    // 1. Cancel any pending API requests
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    
+    // 2. Stop and destroy audio element
+    if (audioElement) {
+      audioElement.pause();
+      audioElement.src = '';
+      audioElement.onended = null;
+      audioElement.onerror = null;
+      audioElement.oncanplay = null;
+    }
+    
+    // 3. Clear audio cache
+    audioCache.current.clear();
+    preloadingPages.current.clear();
+    
+    // 4. Clear all timeouts
+    clearAllTimeouts();
+    
+    // 5. Reset refs
+    lastPlayedPageRef.current = -999;
+    autoReadRef.current = false;
+    shouldStartPlayingRef.current = false;
+    
+    console.log('[BookReader] Cleanup complete');
+  }, [audioElement, clearAllTimeouts]);
+
   const [allPages, setAllPages] = useState([]);
   const [narratorVoice, setNarratorVoice] = useState('');
   const [narratorVoiceLocked, setNarratorVoiceLocked] = useState(false);
