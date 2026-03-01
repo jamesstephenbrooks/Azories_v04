@@ -784,7 +784,7 @@ export default function Dashboard() {
                             value={aiStory.story_description}
                             onChange={(e) => setAIStory({ ...aiStory, story_description: e.target.value })}
                             placeholder="Finn gets lost in a magical forest and must find his way home by helping woodland creatures solve their problems. Along the way, he discovers the power of kindness and makes unlikely friendships."
-                            className="min-h-28 rounded-xl border-2"
+                            className={`min-h-28 rounded-xl border-2 transition-all duration-500 ${templateHighlight ? 'border-purple-500 bg-purple-500/10 ring-2 ring-purple-500/30' : ''}`}
                           />
                           <p className="text-xs text-muted-foreground">Describe what happens in your story</p>
                         </div>
