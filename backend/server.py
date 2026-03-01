@@ -687,6 +687,7 @@ ACTUAL_COSTS = {
     "video_generate": 0.50,    # $0.50 per video (5 second)
     "shots_generate": 0.25,    # $0.25 for 9 shots
     "expression_generate": 0.05, # $0.05 per expression
+    "ai_story_create": 0.50,   # $0.50 for story with images
 }
 
 # Note: VIP_USERS is now defined at the top of the file from environment variable
