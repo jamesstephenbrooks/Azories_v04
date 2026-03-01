@@ -5176,15 +5176,16 @@ Return ONLY the JSON object, no other text."""
             try:
                 cover_prompt = f"{style_desc}. Book cover for '{story_data['title']}'. {story_data['description']}. {main_char_desc if main_char_desc else ''}"
                 
-                image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
-                cover_results = await image_gen.generate_images(
+                # Use fal.ai FLUX for cover image generation
+                cover_result = await generate_image_flux(
                     prompt=cover_prompt,
-                    n=1,
-                    size="1024x1536"  # Portrait for book cover
+                    model="flux-dev",
+                    image_size="portrait_4_3",  # Portrait for book cover
+                    num_images=1
                 )
                 
-                if cover_results and len(cover_results) > 0:
-                    cover_url_raw = cover_results[0].get("url") or cover_results[0].get("b64_json")
+                if cover_result and cover_result.get("images") and len(cover_result["images"]) > 0:
+                    cover_url_raw = cover_result["images"][0].get("url", "")
                     
                     if cover_url_raw:
                         if CLOUDINARY_AVAILABLE and cloudinary:
