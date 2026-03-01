@@ -864,6 +864,13 @@ export default function BookReader() {
     }
 
     if (cachedAudio) {
+      // CRITICAL: Stop and cleanup the previous audio element before creating a new one
+      if (audioElement) {
+        audioElement.pause();
+        audioElement.src = ''; // Release the audio resource
+        audioElement.onended = null; // Remove event listener
+      }
+      
       let audio;
       if (cachedAudio.type === 'url') {
         // Use Cloudinary URL directly - much faster!
