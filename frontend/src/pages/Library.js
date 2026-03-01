@@ -405,6 +405,54 @@ export default function Library() {
     </div>
   );
 
+  // Newly Added Section - Horizontal scroll row
+  const NewlyAddedSection = () => {
+    if (newlyAddedBooks.length === 0) return null;
+    
+    return (
+      <div className="mb-12">
+        <div className="flex items-center gap-3 mb-6">
+          <span className="text-2xl">🆕</span>
+          <h2 className="font-heading text-2xl font-bold">Newly Added</h2>
+          <span className="text-sm text-muted-foreground">({newlyAddedBooks.length} new stories)</span>
+        </div>
+        <div className="relative">
+          <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent">
+            {newlyAddedBooks.map((book, index) => (
+              <div key={book.id} className="flex-shrink-0 w-48">
+                <BookCard book={book} index={index} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Coming Soon Section - Horizontal scroll row with blurred cards
+  const ComingSoonSection = () => {
+    if (comingSoonBooks.length === 0) return null;
+    
+    return (
+      <div className="mb-12">
+        <div className="flex items-center gap-3 mb-6">
+          <span className="text-2xl">👀</span>
+          <h2 className="font-heading text-2xl font-bold">Coming Soon</h2>
+          <span className="text-sm text-muted-foreground">Sneak peek at upcoming stories!</span>
+        </div>
+        <div className="relative">
+          <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent">
+            {comingSoonBooks.map((book, index) => (
+              <div key={book.id} className="flex-shrink-0 w-48">
+                <BookCard book={book} index={index} isComingSoon />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
