@@ -1672,14 +1672,14 @@ export default function BookEditor() {
                               })}
                             </div>
                           ) : (
-                            /* Book page preview - larger size */
+                            /* Book page preview - responsive size */
                             <div 
-                              className="rounded-2xl border-2 border-border bg-[#fdfbf7] dark:bg-[#2a2a30] overflow-hidden flex items-center justify-center relative shadow-lg"
+                              className="rounded-2xl border-2 border-border bg-[#fdfbf7] dark:bg-[#2a2a30] overflow-hidden flex items-center justify-center relative shadow-lg w-full max-w-xs lg:max-w-none"
                               data-testid="page-image-preview"
                               style={{
                                 aspectRatio: '3/4',
-                                height: '55vh',
-                                width: 'auto',
+                                height: 'auto',
+                                maxHeight: '40vh',
                                 boxShadow: 'inset -7px 0 30px -7px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.1)'
                               }}
                             >
