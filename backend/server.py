@@ -4964,7 +4964,7 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
         title_instruction = f'Use the title: "{request.title}"' if request.title.strip() else 'Create an engaging, memorable title'
         
         # Generate story structure using Emergent LLM Chat
-        story_prompt = f"""Create a children's story with these details:
+        story_prompt = f"""Create a children's story with EXACTLY {request.num_pages} pages.
 
 STORY IDEA: {story_idea}
 {character_context}
@@ -4972,34 +4972,34 @@ STORY IDEA: {story_idea}
 REQUIREMENTS:
 - Title: {title_instruction}
 - Target audience: {age_context}
-- Number of pages: {request.num_pages}
-- Words per page: EXACTLY {target_words} words (±10 words tolerance). COUNT CAREFULLY!
+- MUST have exactly {request.num_pages} pages - no more, no less
+- Each page MUST have exactly {target_words} words (±10 tolerance)
 
-CRITICAL WORD COUNT REQUIREMENT:
-Each page MUST contain EXACTLY {target_words} words. Count your words carefully for each page. This is essential.
+CRITICAL: You MUST generate exactly {request.num_pages} pages. The story should have a beginning, middle, and end spread across all {request.num_pages} pages.
 
-Return a JSON object with this structure:
+Return a JSON object with this EXACT structure:
 {{
     "title": "Story Title",
     "description": "Brief description for the book",
     "back_cover_text": "Engaging back cover summary (2-3 sentences)",
-    "main_character_description": "Detailed visual description of the main character: {request.character_description if request.character_description else 'describe based on the story'}",
+    "main_character_description": "Detailed visual description of the main character",
     "pages": [
-        {{
-            "page_number": 1,
-            "text": "Page text content with EXACTLY {target_words} words",
-            "image_prompt": "Detailed scene description for {final_style} style illustration (include main character, setting, action, mood)"
-        }}
+        {{"page_number": 1, "text": "First page text (~{target_words} words)", "image_prompt": "Scene description"}},
+        {{"page_number": 2, "text": "Second page text (~{target_words} words)", "image_prompt": "Scene description"}},
+        ... (continue for all {request.num_pages} pages)
     ]
 }}
 
-Guidelines:
-- Make it engaging and age-appropriate for {age_context}
-- NO inappropriate content, violence, or bad language
-- Include vivid, detailed image prompts suitable for {final_style} style
-- Each image prompt should describe: characters, setting, action, lighting, mood
-- Maintain character consistency in all image prompts
-- Each page text MUST be exactly {target_words} words (count carefully!)
+Story pacing guidelines for {request.num_pages} pages:
+- Pages 1-2: Introduction of character and setting
+- Middle pages: Main adventure/conflict
+- Final page(s): Resolution and happy ending
+
+IMPORTANT: 
+1. Generate EXACTLY {request.num_pages} pages in the pages array
+2. Each page text should be approximately {target_words} words
+3. Image prompts should be detailed for {final_style} style illustrations
+4. Keep content age-appropriate and positive
 
 Return ONLY the JSON object, no other text."""
         
