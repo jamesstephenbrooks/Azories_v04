@@ -488,6 +488,33 @@ export default function Dashboard() {
                         Describe your story idea and AI will create the entire book with text and visuals!
                       </DialogDescription>
                     </DialogHeader>
+                    
+                    {/* Credit Cost Banner */}
+                    <div className={`flex items-center justify-between p-3 rounded-xl ${credits >= AI_STORY_COST ? 'bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20' : 'bg-red-500/10 border border-red-500/30'}`}>
+                      <div className="flex items-center gap-2">
+                        <FiZap className={credits >= AI_STORY_COST ? 'text-amber-500' : 'text-red-500'} />
+                        <span className="text-sm font-medium">
+                          {credits >= AI_STORY_COST 
+                            ? `Cost: ${AI_STORY_COST} credits (You have ${credits})`
+                            : `Insufficient credits! Need ${AI_STORY_COST}, have ${credits}`
+                          }
+                        </span>
+                      </div>
+                      {credits < AI_STORY_COST && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-xs"
+                          onClick={() => {
+                            setIsAIStoryOpen(false);
+                            navigate('/credits');
+                          }}
+                        >
+                          Buy Credits
+                        </Button>
+                      )}
+                    </div>
+                    
                     <div className="space-y-5 pt-4">
                       <div className="space-y-2">
                         <Label className="font-ui">Your Story Idea</Label>
