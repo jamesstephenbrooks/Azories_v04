@@ -5048,35 +5048,38 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
             try:
                 cover_prompt = f"{style_desc}. Book cover for '{story_data['title']}'. {story_data['description']}. {main_char_desc if main_char_desc else ''}"
                 
-                from emergentintegrations.llm.gemini import generate_image_gemini
-                cover_result = await generate_image_gemini(
-                    api_key=EMERGENT_LLM_KEY,
+                image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
+                cover_results = await image_gen.generate_images(
                     prompt=cover_prompt,
-                    aspect_ratio="3:4"
+                    n=1,
+                    size="1024x1536"  # Portrait for book cover
                 )
                 
-                if cover_result and cover_result.get("url"):
-                    if CLOUDINARY_AVAILABLE and cloudinary:
-                        try:
-                            cloudinary_cover = cloudinary.uploader.upload(
-                                cover_result["url"],
-                                folder=f"azories/books/{book_id}",
-                                public_id="cover",
-                                resource_type="image"
-                            )
-                            cover_image_url = cloudinary_cover.get("secure_url", "")
-                        except Exception as cloud_err:
-                            logger.warning(f"Cloudinary upload failed for cover, using direct URL: {cloud_err}")
-                            cover_image_url = cover_result["url"]
-                    else:
-                        cover_image_url = cover_result["url"]
+                if cover_results and len(cover_results) > 0:
+                    cover_url_raw = cover_results[0].get("url") or cover_results[0].get("b64_json")
                     
-                    # Update book with cover
-                    await db.books.update_one(
-                        {"id": book_id},
-                        {"$set": {"cover_image": cover_image_url}}
-                    )
-                    logger.info("Generated cover image for book")
+                    if cover_url_raw:
+                        if CLOUDINARY_AVAILABLE and cloudinary:
+                            try:
+                                cloudinary_cover = cloudinary.uploader.upload(
+                                    cover_url_raw,
+                                    folder=f"azories/books/{book_id}",
+                                    public_id="cover",
+                                    resource_type="image"
+                                )
+                                cover_image_url = cloudinary_cover.get("secure_url", "")
+                            except Exception as cloud_err:
+                                logger.warning(f"Cloudinary upload failed for cover, using direct URL: {cloud_err}")
+                                cover_image_url = cover_url_raw
+                        else:
+                            cover_image_url = cover_url_raw
+                        
+                        # Update book with cover
+                        await db.books.update_one(
+                            {"id": book_id},
+                            {"$set": {"cover_image": cover_image_url}}
+                        )
+                        logger.info("Generated cover image for book")
                     
             except Exception as cover_error:
                 logger.error(f"Failed to generate cover: {str(cover_error)}")
