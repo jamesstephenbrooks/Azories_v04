@@ -2107,9 +2107,10 @@ export default function BookEditor() {
                           }}
                         >
                           <img 
-                            src={img.url} 
+                            src={getOptimizedThumbnail(img.url, 150)} 
                             alt={img.name} 
                             className="w-full aspect-square object-cover"
+                            loading="lazy"
                           />
                           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1">
                             <FiPlus className="w-5 h-5 text-white" />
