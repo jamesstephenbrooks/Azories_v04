@@ -659,6 +659,16 @@ async def admin_login(request: AdminLoginRequest):
         "expires_in": 7 * 24 * 60 * 60  # 7 days in seconds
     }
 
+
+@api_router.get("/admin/verify")
+async def verify_admin_token(admin: dict = Depends(get_admin_user)):
+    """Verify admin token is valid"""
+    return {
+        "valid": True,
+        "username": admin.get("username", "Admin"),
+        "role": "admin"
+    }
+
 # Age ratings
 AGE_RATINGS = ["All Ages", "5+", "8+", "12+", "16+"]
 
