@@ -1154,9 +1154,21 @@ export default function BookEditor() {
         </div>
       </div>
       
-      <div className="pt-20 flex h-[calc(100vh-5rem)]">
-        {/* Left Sidebar - Chapters & Pages */}
-        <div className="w-64 border-r border-border bg-card flex flex-col">
+      <div className="pt-14 lg:pt-20 flex flex-col lg:flex-row h-[calc(100vh-3.5rem)] lg:h-[calc(100vh-5rem)]">
+        {/* Left Sidebar - Chapters & Pages - Collapsible on mobile */}
+        <div className={`${mobileSidebarOpen ? 'fixed inset-0 z-50 bg-background' : 'hidden'} lg:relative lg:block w-full lg:w-64 border-r border-border bg-card flex flex-col`}>
+          {/* Mobile close button */}
+          <div className="lg:hidden flex items-center justify-between p-4 border-b border-border">
+            <h3 className="font-heading font-semibold">Pages & Chapters</h3>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setMobileSidebarOpen(false)}
+              className="rounded-full"
+            >
+              <FiX className="w-5 h-5" />
+            </Button>
+          </div>
           <div className="p-4 border-b border-border">
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-heading font-semibold">Chapters</h3>
