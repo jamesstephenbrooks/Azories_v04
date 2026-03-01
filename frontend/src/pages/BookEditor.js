@@ -871,8 +871,12 @@ export default function BookEditor() {
     setVideoUploadProgress(0);
     
     try {
+      const token = localStorage.getItem('azories-token');
       const res = await axios.post(`${API}/upload/video`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: { 
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`
+        },
         onUploadProgress: (progressEvent) => {
           const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
           setVideoUploadProgress(progress);
@@ -884,7 +888,8 @@ export default function BookEditor() {
         toast.success('Video uploaded!');
       }
     } catch (error) {
-      toast.error('Failed to upload video');
+      console.error('Video upload error:', error);
+      toast.error(error.response?.data?.detail || 'Failed to upload video');
     } finally {
       setIsUploading(false);
       setVideoUploadProgress(0);
@@ -899,8 +904,12 @@ export default function BookEditor() {
     formData.append('file', file);
     
     try {
+      const token = localStorage.getItem('azories-token');
       const res = await axios.post(`${API}/upload/image`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`
+        }
       });
       
       if (res.data.success) {
@@ -912,7 +921,8 @@ export default function BookEditor() {
         toast.success('Cover image uploaded!');
       }
     } catch (error) {
-      toast.error('Failed to upload image');
+      console.error('Cover upload error:', error);
+      toast.error(error.response?.data?.detail || 'Failed to upload image');
     }
   };
 
