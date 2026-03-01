@@ -5908,6 +5908,121 @@ async def generate_tts(request: TTSRequest):
         logger.error(f"Error generating TTS: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error generating TTS: {str(e)}")
 
+class BatchTTSRequest(BaseModel):
+    book_id: str
+    voice_id: Optional[str] = "21m00Tcm4TlvDq8ikWAM"
+
+@api_router.post("/tts/batch-prepare")
+async def batch_prepare_tts(request: BatchTTSRequest, background_tasks: BackgroundTasks):
+    """Pre-generate TTS audio for all pages in a book - runs in background for speed"""
+    import hashlib
+    import base64
+    
+    book = await db.books.find_one({"id": request.book_id}, {"_id": 0})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    # Get all pages with text content
+    pages = book.get("pages", [])
+    pages_to_process = [p for p in pages if p.get("text_content") and not p.get("audio_url")]
+    
+    if not pages_to_process:
+        return {"success": True, "message": "All pages already have audio", "pages_processed": 0}
+    
+    # Voice mapping
+    voice_mapping = {
+        "21m00Tcm4TlvDq8ikWAM": "nova",
+        "AZnzlk1XvdvUeBnXmlld": "shimmer",
+        "EXAVITQu4vr4xnSDxMaL": "alloy",
+        "ErXwobaYiN019PkySvjV": "onyx",
+        "MF3mGyEYCl7XYWbV9V6O": "coral",
+        "TxGEqnHWrfWFTfGW9XjX": "echo",
+        "VR6AewLTigWG4xSOukaG": "fable",
+        "pNInz6obpgDQGcFmaJgB": "sage",
+        "yoZ06aMxZJJ28mfd3POQ": "ash",
+    }
+    openai_voice = voice_mapping.get(request.voice_id, "nova")
+    
+    async def process_pages():
+        emergent_key = os.environ.get("EMERGENT_LLM_KEY")
+        if not emergent_key:
+            return
+            
+        tts = OpenAITextToSpeech(api_key=emergent_key)
+        processed = 0
+        
+        for page in pages_to_process:
+            try:
+                text = page.get("text_content", "")
+                if not text:
+                    continue
+                    
+                cache_key = hashlib.sha256(f"{text}:{openai_voice}".encode()).hexdigest()
+                
+                # Check cache first
+                cached = await db.audio_cache.find_one({"cache_key": cache_key})
+                if cached and cached.get("cloudinary_url"):
+                    # Update page with cached URL
+                    await db.books.update_one(
+                        {"id": request.book_id, "pages.page_number": page.get("page_number")},
+                        {"$set": {"pages.$.audio_url": cached["cloudinary_url"]}}
+                    )
+                    processed += 1
+                    continue
+                
+                # Generate new audio
+                audio_base64 = await tts.generate_speech_base64(
+                    text=text,
+                    model="tts-1",
+                    voice=openai_voice,
+                    response_format="mp3"
+                )
+                
+                # Upload to Cloudinary
+                audio_bytes = base64.b64decode(audio_base64)
+                upload_result = cloudinary.uploader.upload(
+                    audio_bytes,
+                    resource_type="video",
+                    folder=f"azories/audio/narration",
+                    public_id=f"tts_{cache_key[:16]}",
+                    format="mp3"
+                )
+                cloudinary_url = upload_result.get("secure_url")
+                
+                # Cache and update page
+                await db.audio_cache.update_one(
+                    {"cache_key": cache_key},
+                    {"$set": {
+                        "cache_key": cache_key,
+                        "cloudinary_url": cloudinary_url,
+                        "voice": openai_voice,
+                        "created_at": datetime.now(timezone.utc)
+                    }},
+                    upsert=True
+                )
+                
+                await db.books.update_one(
+                    {"id": request.book_id, "pages.page_number": page.get("page_number")},
+                    {"$set": {"pages.$.audio_url": cloudinary_url}}
+                )
+                processed += 1
+                logger.info(f"Batch TTS: Processed page {page.get('page_number')} for book {request.book_id}")
+                
+            except Exception as e:
+                logger.error(f"Batch TTS error for page {page.get('page_number')}: {e}")
+                continue
+        
+        logger.info(f"Batch TTS complete: {processed}/{len(pages_to_process)} pages for book {request.book_id}")
+    
+    # Run in background for instant response
+    background_tasks.add_task(process_pages)
+    
+    return {
+        "success": True,
+        "message": f"Started preparing audio for {len(pages_to_process)} pages",
+        "pages_to_process": len(pages_to_process)
+    }
+
 
 @api_router.post("/tts/generate-for-page/{page_id}")
 async def generate_tts_for_page(
