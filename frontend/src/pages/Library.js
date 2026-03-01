@@ -143,7 +143,7 @@ export default function Library() {
       setLoading(true);
       try {
         // Fetch all data in parallel for faster load
-        const [booksRes, featuredRes, newlyAddedRes, comingSoonRes, genresRes] = await Promise.all([
+        const results = await Promise.allSettled([
           axios.get(`${API}/books?published_only=true&limit=12`),
           axios.get(`${API}/books/featured`),
           axios.get(`${API}/books/newly-added`),
@@ -151,19 +151,33 @@ export default function Library() {
           axios.get(`${API}/genres`)
         ]);
         
-        // Set all state at once to minimize re-renders
-        setBooks(booksRes.data);
-        const featured = featuredRes.data.filter(b => b.is_featured);
-        const bestWeek = featuredRes.data.filter(b => b.is_best_of_week);
-        setFeaturedBooks(featured);
-        setBestOfWeek(bestWeek);
-        setNewlyAddedBooks(newlyAddedRes.data || []);
-        setComingSoonBooks(comingSoonRes.data || []);
-        setGenres(['All', ...genresRes.data.genres]);
+        // Process each result individually to handle partial failures
+        if (results[0].status === 'fulfilled') {
+          setBooks(results[0].value.data || []);
+          const coverUrls = (results[0].value.data || []).slice(0, 4).map(b => b.cover_image).filter(Boolean);
+          preloadImages(coverUrls, 'high');
+        }
         
-        // Preload only first 4 book covers for faster initial display
-        const coverUrls = booksRes.data.slice(0, 4).map(b => b.cover_image).filter(Boolean);
-        preloadImages(coverUrls, 'high');
+        if (results[1].status === 'fulfilled') {
+          const featuredData = results[1].value.data || [];
+          setFeaturedBooks(featuredData.filter(b => b.is_featured));
+          setBestOfWeek(featuredData.filter(b => b.is_best_of_week));
+        }
+        
+        if (results[2].status === 'fulfilled') {
+          setNewlyAddedBooks(results[2].value.data || []);
+        }
+        
+        if (results[3].status === 'fulfilled') {
+          setComingSoonBooks(results[3].value.data || []);
+        }
+        
+        if (results[4].status === 'fulfilled' && results[4].value.data?.genres) {
+          setGenres(['All', ...results[4].value.data.genres]);
+        } else {
+          setGenres(['All']); // Fallback
+        }
+        
       } catch (error) {
         console.error('Error loading library data:', error);
       } finally {
