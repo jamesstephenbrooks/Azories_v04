@@ -2054,7 +2054,7 @@ export default function BookEditor() {
                           className="rounded-full"
                         >
                           <FiZap className="mr-2" />
-                          Go to Art Studio
+                          Go to Creators
                         </Button>
                       </>
                     )}
