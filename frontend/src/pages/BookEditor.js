@@ -2165,6 +2165,7 @@ export default function BookEditor() {
                             } else {
                               addGalleryImageToPage(mediaUrl, activeImageSlot);
                             }
+                            setShowGalleryPicker(false);
                           }}
                           className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-purple-500 transition-all bg-muted"
                         >
