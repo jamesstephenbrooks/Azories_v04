@@ -734,8 +734,15 @@ export default function BookReader() {
 
   // Pre-load audio for first few pages when book is ready - START IMMEDIATELY
   useEffect(() => {
+    // Create new abort controller for this effect
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
+    
     const preloadFirstPages = async () => {
       if (allPages.length > 0 && narratorVoice && book?.id) {
+        // Check if aborted before starting
+        if (signal.aborted) return;
+        
         setNarrationPreparing(true);
         setNarrationReady(false);
         
@@ -744,10 +751,13 @@ export default function BookReader() {
           axios.post(`${API}/tts/batch-prepare`, {
             book_id: book.id,
             voice_id: narratorVoice
-          }).catch(() => {}); // Fire and forget - don't block
+          }, { signal }).catch(() => {}); // Fire and forget - don't block
         } catch (e) {
           // Ignore errors - this is optimization
         }
+        
+        // Check if aborted
+        if (signal.aborted) return;
         
         // Pre-load first 5 pages in parallel for instant start
         const preloadPromises = [];
@@ -765,9 +775,14 @@ export default function BookReader() {
               new Promise(resolve => setTimeout(resolve, 5000)) // 5s timeout (reduced from 10s)
             ]);
           } catch (e) {
-            console.log('Preload error (non-critical):', e);
+            if (!signal.aborted) {
+              console.log('Preload error (non-critical):', e);
+            }
           }
         }
+        
+        // Check if aborted before setting state
+        if (signal.aborted) return;
         
         setNarrationPreparing(false);
         setNarrationReady(true);
@@ -775,6 +790,13 @@ export default function BookReader() {
     };
     
     preloadFirstPages();
+    
+    // Cleanup: abort on unmount or dependency change
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
   }, [allPages.length, narratorVoice, preloadAudio, book?.id]);
 
   const playAudio = useCallback(async () => {
