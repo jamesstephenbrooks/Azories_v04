@@ -384,6 +384,21 @@ export default function BookReader() {
       setNarratorVoice(res.data.narrator_voice_id || '21m00Tcm4TlvDq8ikWAM');
       setNarratorVoiceLocked(res.data.narrator_voice_locked || false);
       
+      // Track book read event
+      try {
+        const token = localStorage.getItem('azories-token');
+        await axios.post(`${API}/analytics/track`, {
+          event_type: 'book_read',
+          book_id: bookId,
+          page: `/read/${bookId}`,
+          metadata: { title: res.data.title }
+        }, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
+      } catch (e) {
+        // Silently fail analytics
+      }
+      
       if (res.data.requires_auth) {
         setRequiresAuth(true);
         setAllPages([]);
