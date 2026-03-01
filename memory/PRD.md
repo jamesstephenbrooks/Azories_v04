@@ -115,5 +115,18 @@ PUT /api/books/{book_id}/coming-soon - Mark book as coming soon (admin)
 - [x] All API endpoints tested
 - [x] Frontend lint passed
 - [x] Backend running without errors
+- [x] Admin email notifications tested (March 1, 2026)
+  - User signup: ✅ Verified (Resend email ID received)
+  - Credit purchase: ✅ Verified (Resend email ID received)
+  - Book submission: ✅ Verified (Resend email ID received)
 
 ## Ready for Production Deployment ✅
+
+## Email Notification System
+- **Provider**: Resend (primary), Brevo (fallback)
+- **Admin Notification Email**: books@azories.com (configurable via ADMIN_NOTIFY_EMAIL)
+- **Events Covered**:
+  1. New user registration → admin notified with user details
+  2. Successful Stripe credit purchase → admin notified with purchase details
+  3. Book submission for review → admin notified with moderation results
+- **Rate Limit**: Resend allows 2 requests/second (sufficient for production usage)
