@@ -230,7 +230,11 @@ const Credits = () => {
 
           <div className="mt-8 pt-6 border-t border-gray-700">
             <h3 className="text-lg font-semibold text-white mb-4 text-center">Credit Costs</h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">AI Story:</span>
+                <span className="text-white font-semibold">{creditCosts.ai_story_create || 5} credits</span>
+              </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">FLUX Image:</span>
                 <span className="text-white font-semibold">{creditCosts.flux_generate || 1} credit</span>
@@ -254,6 +258,10 @@ const Credits = () => {
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Video:</span>
                 <span className="text-white font-semibold">{creditCosts.video_generate || 10} credits</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">9-Angle Shots:</span>
+                <span className="text-white font-semibold">{creditCosts.shots_generate || 5} credits</span>
               </div>
             </div>
           </div>
