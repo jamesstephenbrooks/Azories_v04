@@ -58,6 +58,8 @@ export default function Dashboard() {
   const [creating, setCreating] = useState(false);
   const [generatingStory, setGeneratingStory] = useState(false);
   const [subscription, setSubscription] = useState('free');
+  const [credits, setCredits] = useState(0);
+  const AI_STORY_COST = 5; // Cost in credits for AI story creation
   
   // Series state
   const [series, setSeries] = useState([]);
