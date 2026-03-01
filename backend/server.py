@@ -1197,7 +1197,7 @@ async def register(user_data: UserCreate, background_tasks: BackgroundTasks):
     # Send welcome email in background
     if email_configured():
         welcome_html = get_welcome_email_html(user_data.name)
-        background_tasks.add_task(send_email, user_data.email, "Welcome to Azories! 🎉", welcome_html)
+        background_tasks.add_task(send_email, user_data.email, "Welcome to Azories — your 3 free stories are waiting! 🐉", welcome_html)
         
         # Send admin notification for new user signup
         admin_email = os.environ.get("ADMIN_NOTIFY_EMAIL", "books@azories.com")
