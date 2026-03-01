@@ -1352,7 +1352,7 @@ export default function BookEditor() {
                         data-testid="add-cover-from-gallery"
                       >
                         <FiImage className="w-3 h-3 mr-1" />
-                        Art Studio
+                        Creators
                       </Button>
                     </div>
                     <input
@@ -1399,7 +1399,7 @@ export default function BookEditor() {
                         data-testid="add-back-cover-from-gallery"
                       >
                         <FiImage className="w-3 h-3 mr-1" />
-                        Art Studio
+                        Creators
                       </Button>
                     </div>
                     <input
