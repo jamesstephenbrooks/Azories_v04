@@ -652,6 +652,7 @@ class UserLogin(BaseModel):
     remember_me: bool = False  # Extended session (30 days) if True
 
 class UserResponse(BaseModel):
+    """User data response model - includes is_admin flag"""
     model_config = ConfigDict(extra="ignore")
     id: str
     email: str
