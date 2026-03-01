@@ -640,6 +640,16 @@ export default function Library() {
               ) : (
               /* Books Grid with Recommendations */
               <>
+              {/* Newly Added Section - Show at top when not searching */}
+              {!debouncedSearch && (
+                <NewlyAddedSection />
+              )}
+              
+              {/* Coming Soon Section - Show after Newly Added */}
+              {!debouncedSearch && (
+                <ComingSoonSection />
+              )}
+              
               {/* Recommendations Section - Hide when searching */}
               {!debouncedSearch && (
                 <div className="mb-12">
