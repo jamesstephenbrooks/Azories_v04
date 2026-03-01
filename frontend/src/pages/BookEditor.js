@@ -2198,9 +2198,10 @@ export default function BookEditor() {
                           ) : (
                             <>
                               <img 
-                                src={mediaUrl} 
+                                src={getOptimizedThumbnail(mediaUrl, 150)} 
                                 alt={img.name || 'Gallery image'}
                                 className="w-full h-full object-cover"
+                                loading="lazy"
                                 onError={(e) => {
                                   e.target.style.display = 'none';
                                   e.target.nextElementSibling?.classList.remove('hidden');
