@@ -7185,6 +7185,7 @@ async def stripe_webhook(request: Request):
             if transaction and transaction.get("payment_status") != "paid":
                 user_id = metadata.get("user_id")
                 credits = int(metadata.get("credits", 0))
+                amount = metadata.get("amount", "unknown")
                 
                 # Add credits
                 user = await db.users.find_one({"id": user_id})
@@ -7194,6 +7195,49 @@ async def stripe_webhook(request: Request):
                         {"id": user_id},
                         {"$set": {"credits": current_credits + credits}}
                     )
+                    
+                    # Send admin notification for credit purchase
+                    if email_configured():
+                        admin_email = os.environ.get("ADMIN_NOTIFY_EMAIL", "books@azories.com")
+                        user_email = user.get("email", "unknown")
+                        user_name = user.get("name", "Unknown")
+                        admin_subject = f"💰 Credit Purchase: {credits} credits by {user_name}"
+                        admin_html = f"""
+                        <html>
+                        <body style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+                            <div style="background: linear-gradient(135deg, #f59e0b, #d97706); padding: 20px; border-radius: 12px 12px 0 0;">
+                                <h1 style="color: white; margin: 0; font-size: 24px;">💰 New Credit Purchase!</h1>
+                            </div>
+                            <div style="background: #ffffff; padding: 20px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+                                <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+                                    <tr>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>User:</strong></td>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">{user_name}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>Email:</strong></td>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">{user_email}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>Credits:</strong></td>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">{credits} credits</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>Amount:</strong></td>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${amount}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>New Balance:</strong></td>
+                                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">{current_credits + credits} credits</td>
+                                    </tr>
+                                </table>
+                                <p style="color: #16a34a; font-weight: bold; margin-top: 20px;">✅ Payment processed successfully via Stripe</p>
+                            </div>
+                        </body>
+                        </html>
+                        """
+                        # Send in background (can't use background_tasks in webhook, use asyncio.create_task)
+                        asyncio.create_task(send_email(admin_email, admin_subject, admin_html))
                 
                 # Update transaction
                 await db.payment_transactions.update_one(
