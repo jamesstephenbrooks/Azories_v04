@@ -220,9 +220,9 @@ export default function Library() {
   // Initial data fetch - runs once on mount, uses cache if available
   useEffect(() => {
     const loadInitialData = async () => {
-      // Check cache first for instant display
+      // Check cache first for instant display - but ONLY if it has actual books
       const cached = getBookCache();
-      if (cached) {
+      if (cached && cached.books && cached.books.length > 0) {
         setBooks(cached.books || []);
         setFeaturedBooks(cached.featuredBooks || []);
         setBestOfWeek(cached.bestOfWeek || []);
@@ -243,11 +243,12 @@ export default function Library() {
         return; // Use cache, skip network fetch
       }
       
+      // No valid cache - fetch from server
       setLoading(true);
       try {
         // Fetch all data in parallel for faster load
         const results = await Promise.allSettled([
-          axios.get(`${API}/books?published_only=true&limit=12`),
+          axios.get(`${API}/books?published_only=true&limit=50`),
           axios.get(`${API}/books/featured`),
           axios.get(`${API}/books/newly-added`),
           axios.get(`${API}/books/coming-soon`),
