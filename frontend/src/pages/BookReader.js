@@ -710,9 +710,15 @@ export default function BookReader() {
     }
 
     // Check if audio is already cached
-    let audioBase64 = audioCache.current.get(pageIndex);
+    let cachedAudio = audioCache.current.get(pageIndex);
     
-    if (!audioBase64) {
+    // Check if page has pre-cached audio URL from database
+    if (!cachedAudio && pageData.audio_url && pageData.audio_url.startsWith('https://')) {
+      cachedAudio = { type: 'url', url: pageData.audio_url };
+      audioCache.current.set(pageIndex, cachedAudio);
+    }
+    
+    if (!cachedAudio) {
       // Not cached - need to generate
       setAudioLoading(true);
       try {
@@ -727,9 +733,15 @@ export default function BookReader() {
           return;
         }
 
-        audioBase64 = res.data.audio_base64;
-        if (audioBase64) {
-          audioCache.current.set(pageIndex, audioBase64); // Cache it
+        // Prefer Cloudinary URL for faster loading
+        if (res.data.audio_url) {
+          cachedAudio = { type: 'url', url: res.data.audio_url };
+        } else if (res.data.audio_base64) {
+          cachedAudio = { type: 'base64', data: res.data.audio_base64 };
+        }
+        
+        if (cachedAudio) {
+          audioCache.current.set(pageIndex, cachedAudio);
         }
       } catch (error) {
         console.error('TTS Error:', error.response?.data || error.message);
@@ -754,8 +766,15 @@ export default function BookReader() {
       return;
     }
 
-    if (audioBase64) {
-      const audio = new Audio(`data:audio/mpeg;base64,${audioBase64}`);
+    if (cachedAudio) {
+      let audio;
+      if (cachedAudio.type === 'url') {
+        // Use Cloudinary URL directly - much faster!
+        audio = new Audio(cachedAudio.url);
+      } else {
+        // Fallback to base64
+        audio = new Audio(`data:audio/mpeg;base64,${cachedAudio.data}`);
+      }
       audio.volume = volume[0] / 100;
       audio.playbackRate = playbackSpeed[0];
       
