@@ -5415,7 +5415,7 @@ Return ONLY the JSON array, no other text."""
 @api_router.post("/admin/add-back-covers")
 async def add_back_covers_to_books(current_user: dict = Depends(get_admin_user)):
     """Add Azories branded back cover to all books that don't have one"""
-    azories_back_cover_url = "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772281331/azories/back_covers/azories_standard_back.png"
+    azories_back_cover_url = "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772281331/azories/back_covers/the_dragons_secret_garden_back.png"
     
     # Find all books without back cover image
     books_without_back_cover = await db.books.find(
