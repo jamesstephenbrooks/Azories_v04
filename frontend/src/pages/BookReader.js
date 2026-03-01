@@ -393,6 +393,12 @@ export default function BookReader() {
   });
 
   useEffect(() => {
+    // Mark component as mounted
+    mountedRef.current = true;
+    
+    // Create new AbortController for this book session
+    abortControllerRef.current = new AbortController();
+    
     if (!authLoading) {
       // Ensure axios has the auth header set if user is logged in
       if (token && !axios.defaults.headers.common['Authorization']) {
@@ -406,14 +412,13 @@ export default function BookReader() {
       }
     }
     
-    // MINIMAL CLEANUP: Clear audio cache when leaving this book
-    // This prevents memory buildup from opening multiple books
+    // COMPREHENSIVE CLEANUP when leaving this book
     return () => {
-      audioCache.current.clear();
-      preloadingPages.current.clear();
-      lastPlayedPageRef.current = -999;
+      console.log('[BookReader] Component unmounting, running full cleanup');
+      mountedRef.current = false;
+      performFullCleanup();
     };
-  }, [bookId, user, authLoading, token]);
+  }, [bookId, user, authLoading, token, performFullCleanup]);
 
   // Ref to track if we should continue auto-reading
   // NOTE: Only update this ref explicitly, NOT on every render
