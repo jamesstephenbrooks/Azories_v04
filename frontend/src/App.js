@@ -133,10 +133,10 @@ function AppContent() {
           <Route path="/credits" element={<ProtectedRoute><Credits /></ProtectedRoute>} />
           <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
 
-          {/* Admin only — must be logged in AND is_admin = true */}
-          <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>} />
-          <Route path="/admin/cms" element={<ProtectedRoute requireAdmin><AdminCMS /></ProtectedRoute>} />
-          <Route path="/admin/analytics" element={<ProtectedRoute requireAdmin><AdminAnalytics /></ProtectedRoute>} />
+          {/* Admin routes — AdminDashboard handles its own authentication */}
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/cms" element={<AdminCMS />} />
+          <Route path="/admin/analytics" element={<AdminAnalytics />} />
 
           {/* 404 catch-all — must be last */}
           <Route path="*" element={<NotFound />} />
