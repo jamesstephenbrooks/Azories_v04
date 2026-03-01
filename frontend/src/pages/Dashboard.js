@@ -484,17 +484,23 @@ export default function Dashboard() {
   };
 
   const deleteBook = async (bookId) => {
-    if (!window.confirm('Are you sure you want to delete this book?')) return;
+    console.log('Delete book clicked:', bookId);
+    if (!window.confirm('Are you sure you want to delete this book? This action cannot be undone.')) {
+      console.log('Delete cancelled by user');
+      return;
+    }
     
     try {
+      console.log('Deleting book...', bookId);
       const token = localStorage.getItem('azories-token');
       await axios.delete(`${API}/books/${bookId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      toast.success('Book deleted');
+      toast.success('Book deleted successfully!');
       fetchMyBooks();
     } catch (error) {
-      toast.error('Failed to delete book');
+      console.error('Delete error:', error);
+      toast.error('Failed to delete book: ' + (error.response?.data?.detail || error.message));
     }
   };
 
