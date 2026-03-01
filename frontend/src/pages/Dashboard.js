@@ -342,18 +342,19 @@ export default function Dashboard() {
   };
 
   const generateAIStory = async () => {
-    if (!aiStory.idea.trim()) {
-      toast.error('Please enter a story idea');
+    if (!aiStory.story_description.trim()) {
+      toast.error('Please enter a story description');
       return;
     }
     
-    if (credits < AI_STORY_COST) {
+    // Check credits only if not in trial
+    if (!trialStatus.in_trial && credits < AI_STORY_COST) {
       toast.error(`Insufficient credits! You need ${AI_STORY_COST} credits.`);
       return;
     }
     
     setGeneratingStory(true);
-    toast.info('Generating your story... This may take a minute.');
+    toast.info('Creating your magical story... This may take a few minutes.');
     
     try {
       const token = localStorage.getItem('azories-token');
@@ -361,13 +362,21 @@ export default function Dashboard() {
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      // Update local credits after successful generation
-      setCredits(prev => prev - AI_STORY_COST);
+      // Update local credits after successful generation (only if not in trial)
+      if (!trialStatus.in_trial) {
+        setCredits(prev => prev - AI_STORY_COST);
+      }
       
       const imagesGenerated = res.data.images_generated || 0;
       toast.success(`Story "${res.data.title}" created with ${res.data.pages_created} pages and ${imagesGenerated} images!`);
       setIsAIStoryOpen(false);
-      setAIStory({ idea: '', genre: 'Adventure', age_rating: 'All Ages', num_pages: 5, generate_images: true, media_type: 'images', image_style: '3d-pixar', words_per_page: 'medium' });
+      // Reset form
+      setAIStory({ 
+        title: '', age_range: '5-8', num_pages: 8, words_per_page: 'medium',
+        character_name: '', character_description: '', story_description: '',
+        art_style: '3d-pixar', idea: '', genre: 'Adventure', age_rating: 'All Ages',
+        generate_images: true, media_type: 'images', image_style: '3d-pixar'
+      });
       navigate(`/editor/${res.data.book_id}`);
     } catch (error) {
       if (error.response?.status === 402) {
