@@ -762,6 +762,7 @@ export default function BookReader() {
 
   // Pre-load audio for upcoming pages in the background
   const preloadAudio = useCallback(async (pageIndex) => {
+    if (!mountedRef.current) return; // Component unmounted
     if (pageIndex < 0 || pageIndex >= allPages.length) return;
     if (audioCache.current.has(pageIndex)) return; // Already cached
     if (preloadingPages.current.has(pageIndex)) return; // Already loading
@@ -781,7 +782,12 @@ export default function BookReader() {
       const res = await axios.post(`${API}/tts/generate`, {
         text: pageData.text_content,
         voice_id: narratorVoice
+      }, {
+        signal: abortControllerRef.current?.signal
       });
+      
+      // Check if still mounted after async operation
+      if (!mountedRef.current) return;
       
       // Prefer Cloudinary URL over base64 for faster loading
       if (res.data.audio_url) {
@@ -790,6 +796,7 @@ export default function BookReader() {
         audioCache.current.set(pageIndex, { type: 'base64', data: res.data.audio_base64 });
       }
     } catch (error) {
+      // Ignore errors (including aborted requests)
     } finally {
       preloadingPages.current.delete(pageIndex);
     }
