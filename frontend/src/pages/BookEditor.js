@@ -2039,7 +2039,7 @@ export default function BookEditor() {
                   <div className="text-center py-12">
                     <FiImage className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
                     <h3 className="font-medium text-lg mb-2">
-                      {galleryTab === 'book' ? 'No images in this book yet' : 'No images in Art Studio'}
+                      {galleryTab === 'book' ? 'No images in this book yet' : 'No images in Creators'}
                     </h3>
                     {galleryTab === 'all' && (
                       <>
@@ -2448,7 +2448,7 @@ export default function BookEditor() {
                   <div className="text-center py-8">
                     <FiImage className="w-12 h-12 mx-auto text-muted-foreground/50 mb-4" />
                     <p className="text-muted-foreground">
-                      {galleryTab === 'book' ? 'No images in this book yet' : 'No images in Art Studio'}
+                      {galleryTab === 'book' ? 'No images in this book yet' : 'No images in Creators'}
                     </p>
                     {galleryTab === 'all' && (
                       <Button
