@@ -11,8 +11,9 @@ import {
   FiArrowLeft, FiChevronLeft, FiChevronRight, FiChevronUp, FiChevronDown,
   FiMaximize2, FiMinimize2, FiPlay, FiPause, FiVolume2, FiVolumeX, 
   FiSun, FiMoon, FiLock, FiBook, FiAward, FiTrendingUp, FiMic, FiX,
-  FiPrinter, FiDownload
+  FiPrinter, FiDownload, FiShare2
 } from 'react-icons/fi';
+import confetti from 'canvas-confetti';
 import { useTheme } from '@/context/ThemeContext';
 import AmbientSound from '@/components/AmbientSound';
 import AIReadingBuddy from '@/components/AIReadingBuddy';
