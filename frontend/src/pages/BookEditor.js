@@ -2086,7 +2086,15 @@ export default function BookEditor() {
                         <div 
                           key={img.id}
                           className="relative group cursor-pointer rounded-lg overflow-hidden border-2 border-transparent hover:border-amber-500 transition-all"
-                          onClick={() => setExpandedStarterImage(img)}
+                          onClick={() => {
+                            // Directly add image to page or cover
+                            if (img.forCover) {
+                              addCoverFromGallery(img.url || img.image_url);
+                            } else {
+                              addGalleryImageToPage(img.url || img.image_url, activeImageSlot);
+                            }
+                            setShowGalleryPicker(false);
+                          }}
                         >
                           <img 
                             src={img.url} 
@@ -2094,8 +2102,8 @@ export default function BookEditor() {
                             className="w-full aspect-square object-cover"
                           />
                           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1">
-                            <FiMaximize2 className="w-5 h-5 text-white" />
-                            <span className="text-white text-xs font-medium truncate px-1">{img.name}</span>
+                            <FiPlus className="w-5 h-5 text-white" />
+                            <span className="text-white text-xs font-medium truncate px-1">Add to Page</span>
                           </div>
                           <div className="absolute top-1 right-1 bg-amber-500 text-white text-[8px] px-1 rounded">
                             {img.category}
