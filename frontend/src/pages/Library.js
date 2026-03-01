@@ -194,6 +194,10 @@ export default function Library() {
     if (!initialLoadComplete) return; // Skip if initial load not done
     if (activeTab !== 'all') return; // Only fetch when on 'all' tab
     
+    // Skip if all filters are at default values (initial load already fetched this)
+    const hasActiveFilters = debouncedSearch || genre !== 'All' || ageRange !== 'All';
+    if (!hasActiveFilters) return;
+    
     const fetchFilteredBooks = async () => {
       try {
         setLoading(true);
@@ -205,7 +209,7 @@ export default function Library() {
         params.append('limit', '12');
         
         const res = await axios.get(`${API}/books?${params.toString()}`);
-        setBooks(res.data);
+        setBooks(res.data || []);
       } catch (error) {
         console.error('Error fetching filtered books:', error);
       } finally {
@@ -213,10 +217,7 @@ export default function Library() {
       }
     };
     
-    // Only fetch if filters actually changed from defaults
-    if (debouncedSearch || genre !== 'All' || ageRange !== 'All') {
-      fetchFilteredBooks();
-    }
+    fetchFilteredBooks();
   }, [debouncedSearch, genre, ageRange, activeTab, initialLoadComplete]);
 
   // Check if a book is new (published in last 7 days)
