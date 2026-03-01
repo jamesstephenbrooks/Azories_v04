@@ -1239,6 +1239,8 @@ async def login(user_data: UserLogin):
             trial_days_remaining = (expiry_date - now).days
     
     token = create_token(user["id"], user["email"], user["role"], user_data.remember_me)
+    is_admin_value = user.get("is_admin", False) or user.get("role") == "admin"
+    logger.info(f"Login: is_admin computed as {is_admin_value} for user {user['email']}")
     return TokenResponse(
         access_token=token,
         user=UserResponse(
@@ -1251,7 +1253,7 @@ async def login(user_data: UserLogin):
             pro_trial=pro_trial,
             pro_trial_expires_at=trial_expires,
             trial_days_remaining=trial_days_remaining,
-            is_admin=user.get("is_admin", False) or user.get("role") == "admin"
+            is_admin=is_admin_value
         )
     )
 
