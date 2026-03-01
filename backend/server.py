@@ -5436,10 +5436,29 @@ async def add_back_covers_to_books(current_user: dict = Depends(get_admin_user))
         updated_count += 1
         logger.info(f"Added back cover to book: {book['title']}")
     
+    # Also fix any books with the broken azories_standard_back URL
+    broken_url = "azories_standard_back"
+    books_with_broken_url = await db.books.find(
+        {"back_cover_image": {"$regex": broken_url}},
+        {"_id": 0, "id": 1, "title": 1, "description": 1}
+    ).to_list(1000)
+    
+    for book in books_with_broken_url:
+        back_cover_text = (book.get("description") or "")[:200]
+        await db.books.update_one(
+            {"id": book["id"]},
+            {"$set": {
+                "back_cover_image": azories_back_cover_url,
+                "back_cover_text": back_cover_text
+            }}
+        )
+        updated_count += 1
+        logger.info(f"Fixed broken back cover URL for book: {book['title']}")
+    
     return {
         "success": True,
         "books_updated": updated_count,
-        "message": f"Added Azories back cover to {updated_count} books"
+        "message": f"Added/Fixed Azories back cover for {updated_count} books"
     }
 
 class GenerateAllImagesRequest(BaseModel):
