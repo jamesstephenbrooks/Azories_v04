@@ -23,6 +23,11 @@ User wants to enhance their "Azories" digital book application with:
   - New user signup notifications via Resend
   - Credit purchase notifications via Resend  
   - Book submission notifications via Resend
+- **Admin Panel Fixed**: ✅ (March 1, 2026)
+  - `/api/admin/login` endpoint created
+  - `/api/admin/verify` endpoint created
+  - Admin authentication works independently from user auth
+  - Admin can access panel at /admin without user login
 
 ### P1 - High Priority
 - Monetization and tier gating (Stripe) ✅
@@ -33,7 +38,39 @@ User wants to enhance their "Azories" digital book application with:
 - Generate long-form stories for 17 books
 - Refactor server.py into modular route files
 
-## New Features Implemented (March 1, 2026)
+## Latest Updates (March 1, 2026)
+
+### Site Analytics System ✅ NEW
+- **Automatic page view tracking** on every route change
+- **Book read tracking** when users open books
+- **Signup/login event tracking**
+- **Admin dashboard** shows:
+  - Total users, new users (30 days)
+  - Total page views, unique visitors
+  - Popular books (most read)
+  - AI stories created
+  - Recent users list
+- **API Endpoints:**
+  - `POST /api/analytics/track` - Track events
+  - `GET /api/admin/site-analytics` - Get analytics summary
+  - `GET /api/admin/users` - Search/list all users
+  - `GET /api/admin/user/{user_id}` - Get user details
+
+### Printable PDF Feature ✅ NEW
+- **Landscape A4** format (297mm x 210mm)
+- Each page split into two A5 halves (left=illustration, right=text)
+- Includes cover, all story pages, and branded back cover
+- **5 credits** per download
+- Left-aligned text, 14pt font
+
+### Bug Fixes ✅
+- **Image upload fixed** - Added Authorization header
+- **Profile update fixed** - Added Authorization header  
+- **Book review emails fixed** - Changed from background_tasks to await
+- **Admin panel access fixed** - Removed ProtectedRoute wrapper
+- **Gallery "Add to Page" fixed** - Closes modal automatically after selection
+
+## New Features Implemented (Earlier)
 
 ### 1. Audio Caching System
 - TTS audio uploads to Cloudinary CDN
