@@ -3044,7 +3044,7 @@ export default function ArtStudio() {
                           referenceImage: characterReferenceImage
                         };
                         localStorage.setItem('artStudioExport', JSON.stringify(exportData));
-                        navigate('/art-studio/expert?import=character');
+                        navigate('/creators/expert?import=character');
                       }}
                       className="w-full border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/20"
                       data-testid="copy-to-expert-btn"
