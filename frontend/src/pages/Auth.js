@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { FiMail, FiLock, FiUser, FiArrowLeft, FiSend } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { trackEvent } from '@/hooks/useAnalytics';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
