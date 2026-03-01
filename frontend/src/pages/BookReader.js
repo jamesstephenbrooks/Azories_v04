@@ -57,7 +57,6 @@ export default function BookReader() {
   // Audio cache for pre-loading upcoming pages
   const audioCache = useRef(new Map()); // pageIndex -> audio base64
   const preloadingPages = useRef(new Set()); // pages currently being preloaded
-  const abortControllerRef = useRef(null); // For cancelling API requests on unmount
   
   // Track which page audio has been played for - prevents duplicate playback
   const lastPlayedPageRef = useRef(-999);
@@ -349,33 +348,6 @@ export default function BookReader() {
         fetchReadingStats();
       }
     }
-    
-    // CRITICAL: Cleanup function when component unmounts or bookId changes
-    return () => {
-      // Abort any pending API requests
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-        abortControllerRef.current = null;
-      }
-      
-      // Stop any playing audio
-      if (audioElement) {
-        audioElement.pause();
-        audioElement.src = '';
-      }
-      
-      // Clear audio cache to prevent memory leaks
-      audioCache.current.clear();
-      preloadingPages.current.clear();
-      
-      // Reset playback tracking
-      lastPlayedPageRef.current = -999;
-      
-      // Reset celebration flag
-      hasShownCelebrationRef.current = false;
-      
-      console.log('[BookReader] Cleanup: Cleared audio cache, aborted requests, stopped playback');
-    };
   }, [bookId, user, authLoading, token]);
 
   // Ref to track if we should continue auto-reading
@@ -734,15 +706,8 @@ export default function BookReader() {
 
   // Pre-load audio for first few pages when book is ready - START IMMEDIATELY
   useEffect(() => {
-    // Create new abort controller for this effect
-    abortControllerRef.current = new AbortController();
-    const signal = abortControllerRef.current.signal;
-    
     const preloadFirstPages = async () => {
       if (allPages.length > 0 && narratorVoice && book?.id) {
-        // Check if aborted before starting
-        if (signal.aborted) return;
-        
         setNarrationPreparing(true);
         setNarrationReady(false);
         
@@ -751,13 +716,10 @@ export default function BookReader() {
           axios.post(`${API}/tts/batch-prepare`, {
             book_id: book.id,
             voice_id: narratorVoice
-          }, { signal }).catch(() => {}); // Fire and forget - don't block
+          }).catch(() => {}); // Fire and forget - don't block
         } catch (e) {
           // Ignore errors - this is optimization
         }
-        
-        // Check if aborted
-        if (signal.aborted) return;
         
         // Pre-load first 5 pages in parallel for instant start
         const preloadPromises = [];
@@ -775,14 +737,9 @@ export default function BookReader() {
               new Promise(resolve => setTimeout(resolve, 5000)) // 5s timeout (reduced from 10s)
             ]);
           } catch (e) {
-            if (!signal.aborted) {
-              console.log('Preload error (non-critical):', e);
-            }
+            console.log('Preload error (non-critical):', e);
           }
         }
-        
-        // Check if aborted before setting state
-        if (signal.aborted) return;
         
         setNarrationPreparing(false);
         setNarrationReady(true);
@@ -790,13 +747,6 @@ export default function BookReader() {
     };
     
     preloadFirstPages();
-    
-    // Cleanup: abort on unmount or dependency change
-    return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-    };
   }, [allPages.length, narratorVoice, preloadAudio, book?.id]);
 
   const playAudio = useCallback(async () => {
@@ -893,13 +843,6 @@ export default function BookReader() {
     }
 
     if (cachedAudio) {
-      // CRITICAL: Stop and cleanup the previous audio element before creating a new one
-      if (audioElement) {
-        audioElement.pause();
-        audioElement.src = ''; // Release the audio resource
-        audioElement.onended = null; // Remove event listener
-      }
-      
       let audio;
       if (cachedAudio.type === 'url') {
         // Use Cloudinary URL directly - much faster!
@@ -1184,8 +1127,6 @@ export default function BookReader() {
     return () => {
       if (audioElement) {
         audioElement.pause();
-        audioElement.src = ''; // Release resources
-        audioElement.onended = null;
       }
     };
   }, [audioElement]);
@@ -1213,76 +1154,12 @@ export default function BookReader() {
 
   if (loading || authLoading) {
     return (
-      <motion.div 
-        className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden"
-        style={{ background: 'linear-gradient(to bottom, #6B21A8, #4C1D95, #1E1B4B)' }}
-        initial={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        {/* Sparkle particles */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {[...Array(20)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-1 h-1 bg-white rounded-full"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-              }}
-              animate={{
-                opacity: [0, 1, 0],
-                scale: [0, 1.5, 0],
-              }}
-              transition={{
-                duration: 2 + Math.random() * 2,
-                repeat: Infinity,
-                delay: Math.random() * 2,
-                ease: "easeInOut"
-              }}
-            />
-          ))}
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="font-body text-muted-foreground">Opening book...</p>
         </div>
-        
-        {/* Running Azora */}
-        <motion.img 
-          src={AZORA_ASSETS.runningTransparent}
-          alt="Azora running to your story"
-          className="w-40 h-48 object-contain mb-6 relative z-10"
-          animate={{ 
-            y: [0, -10, 0],
-          }}
-          transition={{ 
-            duration: 2, 
-            repeat: Infinity, 
-            ease: "easeInOut" 
-          }}
-        />
-        
-        {/* Text */}
-        <motion.h2 
-          className="text-xl font-bold text-white mb-3 relative z-10"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          Opening your story...
-        </motion.h2>
-        
-        {/* Subtle loading bar */}
-        <motion.div 
-          className="w-48 h-1 bg-white/20 rounded-full overflow-hidden relative z-10"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-        >
-          <motion.div 
-            className="h-full bg-gradient-to-r from-pink-400 to-purple-300 rounded-full"
-            animate={{ x: ["-100%", "100%"] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </motion.div>
-      </motion.div>
+      </div>
     );
   }
 
