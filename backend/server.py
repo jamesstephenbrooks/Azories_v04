@@ -2344,6 +2344,361 @@ async def download_book_pdf(book_id: str, current_user: dict = Depends(get_curre
         raise HTTPException(status_code=404, detail="Book not found")
     if book["author_id"] != current_user["id"] and current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Only the book creator can download")
+
+
+@api_router.get("/books/{book_id}/print-pdf")
+async def download_printable_pdf(book_id: str, current_user: dict = Depends(get_current_user)):
+    """
+    Download a printable A5 booklet PDF.
+    
+    Layout: Each A4 page is split into two A5 halves:
+    - Left half: Full illustration
+    - Right half: Story text
+    
+    When printed double-sided and folded, creates a real A5 picture book.
+    
+    Cost: 5 credits per download.
+    """
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.units import mm
+    from reportlab.pdfgen import canvas
+    from reportlab.lib.utils import ImageReader
+    from PIL import Image as PILImage
+    import aiohttp
+    import io
+    import base64
+    
+    # Check credits first
+    user_email = current_user.get("email", "").lower()
+    is_vip = user_email in [v.lower() for v in VIP_USERS]
+    is_admin = current_user.get("role") == "admin"
+    
+    # Credit cost for printable PDF
+    PRINT_PDF_COST = 5
+    
+    if not is_vip and not is_admin:
+        user_credits = current_user.get("credits", 0)
+        if user_credits < PRINT_PDF_COST:
+            raise HTTPException(
+                status_code=402, 
+                detail=f"Insufficient credits. You need {PRINT_PDF_COST} credits to download a printable PDF. You have {user_credits} credits."
+            )
+    
+    # Get book
+    book = await db.books.find_one({"id": book_id}, {"_id": 0})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    # Get all pages - try direct pages first (AI books), then chapters
+    pages = []
+    direct_pages = book.get("pages", [])
+    
+    if direct_pages and len(direct_pages) > 0:
+        # AI-generated books store pages directly
+        for idx, p in enumerate(direct_pages):
+            if not p.get("isBackCover", False):  # Skip back cover, we handle it separately
+                pages.append(p)
+    else:
+        # Traditional books with chapters
+        chapters = await db.chapters.find({"book_id": book_id}, {"_id": 0}).sort("order", 1).to_list(100)
+        for chapter in chapters:
+            chapter_pages = await db.pages.find({"chapter_id": chapter["id"]}, {"_id": 0}).sort("order", 1).to_list(100)
+            pages.extend(chapter_pages)
+    
+    if not pages:
+        raise HTTPException(status_code=400, detail="Book has no pages to print")
+    
+    # Deduct credits AFTER validation but BEFORE generating PDF
+    if not is_vip and not is_admin:
+        await db.users.update_one(
+            {"id": current_user["id"]},
+            {"$inc": {"credits": -PRINT_PDF_COST}}
+        )
+        # Log the purchase
+        await db.credit_usage.insert_one({
+            "id": str(uuid.uuid4()),
+            "user_id": current_user["id"],
+            "operation": "print_pdf",
+            "book_id": book_id,
+            "book_title": book.get("title", "Unknown"),
+            "credits_spent": PRINT_PDF_COST,
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        })
+        logger.info(f"User {current_user['id']} spent {PRINT_PDF_COST} credits for printable PDF of book {book_id}")
+    
+    # Helper to download image from URL
+    async def fetch_image(url: str) -> PILImage.Image:
+        """Fetch image from URL or base64 and return PIL Image."""
+        if not url:
+            return None
+        
+        try:
+            if url.startswith("data:image"):
+                # Base64 image
+                img_data = url.split(",")[1]
+                img_bytes = base64.b64decode(img_data)
+                return PILImage.open(io.BytesIO(img_bytes))
+            elif url.startswith("http"):
+                # URL image
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(url, timeout=aiohttp.ClientTimeout(total=30)) as resp:
+                        if resp.status == 200:
+                            img_bytes = await resp.read()
+                            return PILImage.open(io.BytesIO(img_bytes))
+            return None
+        except Exception as e:
+            logger.warning(f"Failed to fetch image {url[:50]}...: {e}")
+            return None
+    
+    # Create PDF buffer
+    pdf_buffer = io.BytesIO()
+    
+    # A4 dimensions
+    A4_WIDTH, A4_HEIGHT = A4  # 595.28 x 841.89 points
+    A5_WIDTH = A4_WIDTH / 2  # Each half is A5
+    
+    # Create canvas
+    c = canvas.Canvas(pdf_buffer, pagesize=A4)
+    
+    # Page margin and padding
+    MARGIN = 10 * mm
+    TEXT_PADDING = 5 * mm
+    
+    # Helper to draw text with word wrap
+    def draw_wrapped_text(canvas_obj, text, x, y, max_width, max_height, font_name="Helvetica", font_size=11):
+        """Draw text with word wrapping, centered vertically in the space."""
+        if not text:
+            return
+        
+        canvas_obj.setFont(font_name, font_size)
+        line_height = font_size * 1.4
+        
+        # Word wrap
+        words = text.split()
+        lines = []
+        current_line = ""
+        
+        for word in words:
+            test_line = current_line + (" " if current_line else "") + word
+            text_width = canvas_obj.stringWidth(test_line, font_name, font_size)
+            if text_width < max_width - (2 * TEXT_PADDING):
+                current_line = test_line
+            else:
+                if current_line:
+                    lines.append(current_line)
+                current_line = word
+        if current_line:
+            lines.append(current_line)
+        
+        # Calculate total text height and center vertically
+        total_text_height = len(lines) * line_height
+        start_y = y - (max_height - total_text_height) / 2
+        
+        # Ensure we don't overflow
+        available_lines = int(max_height / line_height)
+        lines = lines[:available_lines]
+        
+        # Draw lines
+        for i, line in enumerate(lines):
+            text_y = start_y - (i * line_height)
+            # Center each line horizontally
+            line_width = canvas_obj.stringWidth(line, font_name, font_size)
+            text_x = x + (max_width - line_width) / 2
+            canvas_obj.drawString(text_x, text_y, line)
+    
+    # Helper to draw an image filling the space
+    def draw_image_fill(canvas_obj, pil_img, x, y, width, height):
+        """Draw image filling the specified area, maintaining aspect ratio with center crop."""
+        if pil_img is None:
+            # Draw placeholder
+            canvas_obj.setFillColorRGB(0.95, 0.93, 0.90)
+            canvas_obj.rect(x, y, width, height, fill=1, stroke=0)
+            canvas_obj.setFillColorRGB(0.7, 0.7, 0.7)
+            canvas_obj.setFont("Helvetica", 10)
+            canvas_obj.drawCentredString(x + width/2, y + height/2, "No illustration")
+            return
+        
+        # Convert to RGB if needed
+        if pil_img.mode in ('RGBA', 'LA', 'P'):
+            background = PILImage.new('RGB', pil_img.size, (255, 255, 255))
+            if pil_img.mode == 'P':
+                pil_img = pil_img.convert('RGBA')
+            background.paste(pil_img, mask=pil_img.split()[-1] if pil_img.mode == 'RGBA' else None)
+            pil_img = background
+        
+        # Save to buffer
+        img_buffer = io.BytesIO()
+        pil_img.save(img_buffer, format='JPEG', quality=90)
+        img_buffer.seek(0)
+        
+        # Draw with aspect fill (cover)
+        canvas_obj.drawImage(
+            ImageReader(img_buffer), 
+            x, y, 
+            width=width, 
+            height=height, 
+            preserveAspectRatio=True, 
+            anchor='c'
+        )
+    
+    # ======== FRONT COVER ========
+    # Cover takes full A4 page, illustration on left A5, title/author on right A5
+    cover_img = await fetch_image(book.get("cover_image", ""))
+    
+    # Left half: Cover illustration
+    if cover_img:
+        draw_image_fill(c, cover_img, 0, 0, A5_WIDTH, A4_HEIGHT)
+    else:
+        # Gradient background for cover
+        c.setFillColorRGB(0.4, 0.3, 0.6)  # Purple-ish
+        c.rect(0, 0, A5_WIDTH, A4_HEIGHT, fill=1, stroke=0)
+    
+    # Right half: Title and author (styled)
+    c.setFillColorRGB(0.98, 0.97, 0.95)  # Cream background
+    c.rect(A5_WIDTH, 0, A5_WIDTH, A4_HEIGHT, fill=1, stroke=0)
+    
+    # Title
+    c.setFillColorRGB(0.2, 0.1, 0.3)
+    title = book.get("cover_title", book.get("title", "Untitled"))
+    c.setFont("Helvetica-Bold", 28)
+    
+    # Word wrap title
+    title_words = title.split()
+    title_lines = []
+    current_line = ""
+    for word in title_words:
+        test_line = current_line + (" " if current_line else "") + word
+        if c.stringWidth(test_line, "Helvetica-Bold", 28) < A5_WIDTH - 40:
+            current_line = test_line
+        else:
+            if current_line:
+                title_lines.append(current_line)
+            current_line = word
+    if current_line:
+        title_lines.append(current_line)
+    
+    title_y = A4_HEIGHT * 0.6
+    for i, line in enumerate(title_lines):
+        c.drawCentredString(A5_WIDTH + A5_WIDTH/2, title_y - i*35, line)
+    
+    # Subtitle if exists
+    if book.get("cover_subtitle"):
+        c.setFont("Helvetica", 14)
+        c.setFillColorRGB(0.4, 0.3, 0.5)
+        c.drawCentredString(A5_WIDTH + A5_WIDTH/2, title_y - len(title_lines)*35 - 20, book["cover_subtitle"])
+    
+    # Author
+    c.setFont("Helvetica-Oblique", 14)
+    c.setFillColorRGB(0.3, 0.3, 0.3)
+    c.drawCentredString(A5_WIDTH + A5_WIDTH/2, A4_HEIGHT * 0.3, f"By {book.get('author_name', 'Unknown')}")
+    
+    # Small Azories branding
+    c.setFont("Helvetica", 8)
+    c.setFillColorRGB(0.6, 0.6, 0.6)
+    c.drawCentredString(A5_WIDTH + A5_WIDTH/2, 30, "Created with Azories")
+    
+    c.showPage()
+    
+    # ======== CONTENT PAGES ========
+    # Each A4 page: Left = Illustration, Right = Text
+    for page_num, page in enumerate(pages):
+        image_url = page.get("image_url", "")
+        text_content = page.get("text_content", "") or page.get("text", "") or page.get("content", "")
+        
+        # Fetch image
+        page_img = await fetch_image(image_url)
+        
+        # Left A5: Illustration
+        if page_img:
+            draw_image_fill(c, page_img, 0, 0, A5_WIDTH, A4_HEIGHT)
+        else:
+            # Soft background
+            c.setFillColorRGB(0.96, 0.95, 0.93)
+            c.rect(0, 0, A5_WIDTH, A4_HEIGHT, fill=1, stroke=0)
+        
+        # Right A5: Text content
+        c.setFillColorRGB(0.99, 0.98, 0.96)  # Off-white
+        c.rect(A5_WIDTH, 0, A5_WIDTH, A4_HEIGHT, fill=1, stroke=0)
+        
+        # Text area with padding
+        text_x = A5_WIDTH + MARGIN
+        text_y = A4_HEIGHT - MARGIN
+        text_width = A5_WIDTH - (2 * MARGIN)
+        text_height = A4_HEIGHT - (2 * MARGIN) - 40  # Reserve space for page number
+        
+        # Draw the story text
+        c.setFillColorRGB(0.15, 0.1, 0.2)
+        draw_wrapped_text(c, text_content, text_x, text_y - 20, text_width, text_height, "Helvetica", 12)
+        
+        # Page number
+        c.setFont("Helvetica", 9)
+        c.setFillColorRGB(0.5, 0.5, 0.5)
+        c.drawCentredString(A5_WIDTH + A5_WIDTH/2, 25, f"— {page_num + 1} —")
+        
+        # Decorative element
+        c.setStrokeColorRGB(0.8, 0.75, 0.7)
+        c.setLineWidth(0.5)
+        c.line(A5_WIDTH + 50, 50, A5_WIDTH + A5_WIDTH - 50, 50)
+        
+        c.showPage()
+    
+    # ======== BACK COVER ========
+    # Back cover: branded Azories page
+    back_cover_url = book.get("back_cover_image", "")
+    back_cover_img = await fetch_image(back_cover_url)
+    
+    # Left half: Back cover image or gradient
+    if back_cover_img:
+        draw_image_fill(c, back_cover_img, 0, 0, A5_WIDTH, A4_HEIGHT)
+    else:
+        # Branded gradient
+        c.setFillColorRGB(0.1, 0.05, 0.18)  # Dark purple
+        c.rect(0, 0, A5_WIDTH, A4_HEIGHT, fill=1, stroke=0)
+        
+        # Azories logo/text
+        c.setFillColorRGB(0.9, 0.85, 0.95)
+        c.setFont("Helvetica-Bold", 24)
+        c.drawCentredString(A5_WIDTH/2, A4_HEIGHT/2 + 20, "Azories")
+        c.setFont("Helvetica", 12)
+        c.drawCentredString(A5_WIDTH/2, A4_HEIGHT/2 - 15, "Where Stories Come to Life")
+    
+    # Right half: Book description and branding
+    c.setFillColorRGB(0.98, 0.97, 0.95)
+    c.rect(A5_WIDTH, 0, A5_WIDTH, A4_HEIGHT, fill=1, stroke=0)
+    
+    # "The End" text
+    c.setFillColorRGB(0.3, 0.2, 0.4)
+    c.setFont("Helvetica-Bold", 20)
+    c.drawCentredString(A5_WIDTH + A5_WIDTH/2, A4_HEIGHT * 0.7, "The End")
+    
+    # Description if exists
+    if book.get("back_cover_text") or book.get("description"):
+        desc = book.get("back_cover_text") or book.get("description")
+        c.setFillColorRGB(0.3, 0.3, 0.3)
+        draw_wrapped_text(c, desc, A5_WIDTH + MARGIN, A4_HEIGHT * 0.55, A5_WIDTH - (2 * MARGIN), 200, "Helvetica", 10)
+    
+    # Branding
+    c.setFont("Helvetica", 9)
+    c.setFillColorRGB(0.5, 0.5, 0.5)
+    c.drawCentredString(A5_WIDTH + A5_WIDTH/2, 60, "Thank you for reading!")
+    c.drawCentredString(A5_WIDTH + A5_WIDTH/2, 45, f"{book.get('title', 'Untitled')} by {book.get('author_name', 'Unknown')}")
+    c.drawCentredString(A5_WIDTH + A5_WIDTH/2, 30, "www.azories.com")
+    
+    c.showPage()
+    c.save()
+    
+    pdf_buffer.seek(0)
+    
+    # Generate filename
+    safe_title = "".join(c if c.isalnum() or c in " -_" else "" for c in book.get("title", "book"))
+    safe_title = safe_title.strip().replace(" ", "_")[:50]
+    filename = f"{safe_title}_printable_a5_book.pdf"
+    
+    return StreamingResponse(
+        pdf_buffer,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
     
     # Get all chapters and pages
     chapters = await db.chapters.find({"book_id": book_id}, {"_id": 0}).sort("order", 1).to_list(100)
