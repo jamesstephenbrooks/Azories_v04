@@ -1212,7 +1212,7 @@ async def register(user_data: UserCreate, background_tasks: BackgroundTasks):
         )
     )
 
-@api_router.post("/auth/login", response_model=TokenResponse)
+@api_router.post("/auth/login", response_model=TokenResponse, response_model_exclude_unset=False)
 async def login(user_data: UserLogin):
     user = await db.users.find_one({"email": user_data.email}, {"_id": 0})
     if not user or not verify_password(user_data.password, user["password"]):
