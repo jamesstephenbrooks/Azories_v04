@@ -342,6 +342,36 @@ export default function Dashboard() {
     }
   };
 
+  // Handler for selecting a story template
+  const handleTemplateSelect = (template) => {
+    // Update the form fields
+    setAIStory(prev => ({
+      ...prev,
+      character_name: template.character_name || prev.character_name,
+      character_description: template.character_description,
+      story_description: template.story_description
+    }));
+    
+    // Trigger highlight animation
+    setTemplateHighlight(true);
+    
+    // Scroll to the character section after a brief delay
+    setTimeout(() => {
+      const characterSection = document.getElementById('ai-story-character-section');
+      if (characterSection) {
+        characterSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 100);
+    
+    // Remove highlight after animation completes
+    setTimeout(() => {
+      setTemplateHighlight(false);
+    }, 2000);
+    
+    // Show feedback toast
+    toast.success(`"${template.title}" template loaded! Edit the fields below if needed.`);
+  };
+
   const generateAIStory = async () => {
     if (!aiStory.story_description.trim()) {
       toast.error('Please enter a story description');
