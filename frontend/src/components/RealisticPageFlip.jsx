@@ -105,6 +105,57 @@ const preloadImage = (url) => {
   img.src = url;
 };
 
+// Scrollable text area with down arrow indicator when content overflows
+const ScrollableTextArea = ({ children, className = "" }) => {
+  const scrollRef = useRef(null);
+  const [showScrollIndicator, setShowScrollIndicator] = useState(false);
+  
+  useEffect(() => {
+    const checkScrollable = () => {
+      const el = scrollRef.current;
+      if (el) {
+        const hasOverflow = el.scrollHeight > el.clientHeight + 10;
+        const isAtBottom = el.scrollHeight - el.scrollTop <= el.clientHeight + 10;
+        setShowScrollIndicator(hasOverflow && !isAtBottom);
+      }
+    };
+    
+    checkScrollable();
+    
+    const el = scrollRef.current;
+    if (el) {
+      el.addEventListener('scroll', checkScrollable);
+      window.addEventListener('resize', checkScrollable);
+      return () => {
+        el.removeEventListener('scroll', checkScrollable);
+        window.removeEventListener('resize', checkScrollable);
+      };
+    }
+  }, [children]);
+  
+  return (
+    <div className="relative flex-1 overflow-hidden">
+      <div 
+        ref={scrollRef}
+        className={`h-full overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-muted-foreground/30 scrollbar-track-transparent ${className}`}
+      >
+        {children}
+      </div>
+      {/* Scroll indicator - shows when more content below */}
+      {showScrollIndicator && (
+        <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
+          <div className="h-12 bg-gradient-to-t from-[#fdfbf7] dark:from-[#1a1a2e] to-transparent" />
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex flex-col items-center">
+            <div className="animate-bounce bg-[#fdfbf7] dark:bg-[#1a1a2e] rounded-full p-1 shadow-sm">
+              <FiChevronDown className="w-4 h-4 text-purple-500/70" />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 // Individual page component with realistic styling
 const Page = forwardRef(({ pageNumber, children, isLeft, isCover, isBackCover }, ref) => {
   return (
