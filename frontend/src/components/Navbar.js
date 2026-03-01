@@ -2,10 +2,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
-import { FiUser, FiLogOut, FiMenu, FiX, FiZap, FiDroplet } from 'react-icons/fi';
-import { useState } from 'react';
+import { FiUser, FiLogOut, FiMenu, FiX, FiZap, FiDroplet, FiDollarSign } from 'react-icons/fi';
+import { useState, useEffect } from 'react';
 import { ThemeToggleCompact } from './ThemeToggle';
 import { StreakDisplay } from './ReadingStreaks';
+import { creditsAPI } from '@/services/api';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +19,16 @@ export const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [credits, setCredits] = useState(null);
+
+  // Fetch credits when user is logged in
+  useEffect(() => {
+    if (user) {
+      creditsAPI.getBalance()
+        .then(res => setCredits(res.data.credits || 0))
+        .catch(() => setCredits(null));
+    }
+  }, [user]);
 
   return (
     <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-6xl">
