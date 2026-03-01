@@ -2044,7 +2044,7 @@ export default function BookEditor() {
                     {galleryTab === 'all' && (
                       <>
                         <p className="text-sm text-muted-foreground mb-4">
-                          Create images in the Art Studio first.
+                          Create images in Creators first.
                         </p>
                         <Button
                           onClick={() => {
