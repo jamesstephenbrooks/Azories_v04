@@ -332,7 +332,7 @@ export default function BookEditor() {
     }
   };
   
-  // Use image from Art Studio gallery
+  // Use image from Creators gallery
   const addGalleryImageToPage = async (imageUrl, slot = 1) => {
     if (!selectedPage) {
       toast.error('Please select a page first');
