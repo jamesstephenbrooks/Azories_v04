@@ -5031,6 +5031,71 @@ Return ONLY the JSON object, no other text."""
             else:
                 raise HTTPException(status_code=500, detail="Failed to parse story data")
         
+        # CRITICAL: Validate page count and retry if wrong
+        actual_pages = len(story_data.get("pages", []))
+        expected_pages = request.num_pages
+        
+        logger.info(f"AI returned {actual_pages} pages, expected {expected_pages}")
+        
+        if actual_pages < expected_pages:
+            logger.warning(f"AI only generated {actual_pages} pages instead of {expected_pages}. Requesting additional pages...")
+            
+            # Request remaining pages
+            remaining_pages = expected_pages - actual_pages
+            existing_text = "\n".join([f"Page {p['page_number']}: {p['text']}" for p in story_data["pages"]])
+            
+            continuation_prompt = f"""Continue this children's story with {remaining_pages} more pages.
+
+EXISTING STORY:
+Title: {story_data.get('title', 'Story')}
+{existing_text}
+
+REQUIREMENTS:
+- Add exactly {remaining_pages} more pages
+- Continue from page {actual_pages + 1}
+- Words per page: EXACTLY {target_words} words (±10 words tolerance)
+- Maintain the same characters, style, and tone
+- Build toward a satisfying conclusion
+
+Return ONLY a JSON array of the new pages:
+[
+    {{
+        "page_number": {actual_pages + 1},
+        "text": "Page text with EXACTLY {target_words} words",
+        "image_prompt": "Detailed scene description for illustration"
+    }}
+]
+
+Return ONLY the JSON array, no other text."""
+
+            continuation_response = await chat.send_message(UserMessage(text=continuation_prompt))
+            
+            try:
+                cont_text = continuation_response.strip()
+                if cont_text.startswith("```json"):
+                    cont_text = cont_text[7:]
+                if cont_text.startswith("```"):
+                    cont_text = cont_text[3:]
+                if cont_text.endswith("```"):
+                    cont_text = cont_text[:-3]
+                
+                additional_pages = json.loads(cont_text.strip())
+                
+                # Handle if it returned an object with pages array
+                if isinstance(additional_pages, dict) and "pages" in additional_pages:
+                    additional_pages = additional_pages["pages"]
+                
+                if isinstance(additional_pages, list):
+                    story_data["pages"].extend(additional_pages)
+                    logger.info(f"Added {len(additional_pages)} continuation pages. Total: {len(story_data['pages'])}")
+            except Exception as cont_error:
+                logger.error(f"Failed to parse continuation pages: {cont_error}")
+                # Continue with what we have
+        
+        # Final count logging
+        final_page_count = len(story_data.get("pages", []))
+        logger.info(f"Final page count: {final_page_count} (requested: {expected_pages})")
+        
         # Create the book
         book_id = str(uuid.uuid4())
         now = datetime.now(timezone.utc).isoformat()
