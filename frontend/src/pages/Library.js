@@ -217,9 +217,32 @@ export default function Library() {
   // Age range options
   const AGE_RANGES = ['All', '0-3', '4-6', '7-9', '10-12', '13+'];
 
-  // Initial data fetch - runs once on mount
+  // Initial data fetch - runs once on mount, uses cache if available
   useEffect(() => {
     const loadInitialData = async () => {
+      // Check cache first for instant display
+      const cached = getBookCache();
+      if (cached) {
+        setBooks(cached.books || []);
+        setFeaturedBooks(cached.featuredBooks || []);
+        setBestOfWeek(cached.bestOfWeek || []);
+        setNewlyAddedBooks(cached.newlyAddedBooks || []);
+        setComingSoonBooks(cached.comingSoonBooks || []);
+        setGenres(cached.genres || ['All']);
+        setLoading(false);
+        setInitialLoadComplete(true);
+        
+        // Preload images from cache
+        const allCoverUrls = [
+          ...(cached.books || []).map(b => b.cover_image),
+          ...(cached.featuredBooks || []).map(b => b.cover_image),
+          ...(cached.newlyAddedBooks || []).map(b => b.cover_image),
+        ].filter(Boolean).slice(0, 12);
+        allCoverUrls.forEach(url => preloadAndCacheImage(url, 300));
+        
+        return; // Use cache, skip network fetch
+      }
+      
       setLoading(true);
       try {
         // Fetch all data in parallel for faster load
@@ -231,32 +254,60 @@ export default function Library() {
           axios.get(`${API}/genres`)
         ]);
         
+        const cacheData = {};
+        
         // Process each result individually to handle partial failures
         if (results[0].status === 'fulfilled') {
-          setBooks(results[0].value.data || []);
-          const coverUrls = (results[0].value.data || []).slice(0, 4).map(b => b.cover_image).filter(Boolean);
-          preloadImages(coverUrls, 'high');
+          const booksData = results[0].value.data || [];
+          setBooks(booksData);
+          cacheData.books = booksData;
+          // Preload and cache first 8 cover images
+          booksData.slice(0, 8).forEach(b => {
+            if (b.cover_image) preloadAndCacheImage(b.cover_image, 300);
+          });
         }
         
         if (results[1].status === 'fulfilled') {
           const featuredData = results[1].value.data || [];
-          setFeaturedBooks(featuredData.filter(b => b.is_featured));
-          setBestOfWeek(featuredData.filter(b => b.is_best_of_week));
+          const featured = featuredData.filter(b => b.is_featured);
+          const bestWeek = featuredData.filter(b => b.is_best_of_week);
+          setFeaturedBooks(featured);
+          setBestOfWeek(bestWeek);
+          cacheData.featuredBooks = featured;
+          cacheData.bestOfWeek = bestWeek;
+          // Preload featured images
+          featured.slice(0, 4).forEach(b => {
+            if (b.cover_image) preloadAndCacheImage(b.cover_image, 300);
+          });
         }
         
         if (results[2].status === 'fulfilled') {
-          setNewlyAddedBooks(results[2].value.data || []);
+          const newlyAdded = results[2].value.data || [];
+          setNewlyAddedBooks(newlyAdded);
+          cacheData.newlyAddedBooks = newlyAdded;
+          // Preload newly added images
+          newlyAdded.slice(0, 4).forEach(b => {
+            if (b.cover_image) preloadAndCacheImage(b.cover_image, 300);
+          });
         }
         
         if (results[3].status === 'fulfilled') {
-          setComingSoonBooks(results[3].value.data || []);
+          const comingSoon = results[3].value.data || [];
+          setComingSoonBooks(comingSoon);
+          cacheData.comingSoonBooks = comingSoon;
         }
         
         if (results[4].status === 'fulfilled' && results[4].value.data?.genres) {
-          setGenres(['All', ...results[4].value.data.genres]);
+          const genresData = ['All', ...results[4].value.data.genres];
+          setGenres(genresData);
+          cacheData.genres = genresData;
         } else {
           setGenres(['All']); // Fallback
+          cacheData.genres = ['All'];
         }
+        
+        // Save to cache for next navigation
+        setBookCache(cacheData);
         
       } catch (error) {
         console.error('Error loading library data:', error);
