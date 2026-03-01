@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiZap, FiCheck, FiImage, FiVideo, FiStar, FiCreditCard } from 'react-icons/fi';
+import { FiZap, FiCheck, FiImage, FiVideo, FiStar, FiCreditCard, FiArrowLeft } from 'react-icons/fi';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
