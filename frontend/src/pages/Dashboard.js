@@ -573,6 +573,7 @@ export default function Dashboard() {
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
+                              <SelectItem value="3d-pixar">🎬 3D Pixar / Disney Style</SelectItem>
                               <SelectItem value="illustration">🎨 Children's Illustration</SelectItem>
                               <SelectItem value="comic">💥 Comic Book Style</SelectItem>
                               <SelectItem value="realistic">📷 Realistic/Photographic</SelectItem>
@@ -581,10 +582,12 @@ export default function Dashboard() {
                               <SelectItem value="watercolor">🎨 Watercolor Painting</SelectItem>
                               <SelectItem value="anime">🌸 Anime / Manga Style</SelectItem>
                               <SelectItem value="fantasy">🏰 Fantasy Art</SelectItem>
-                              <SelectItem value="pixar">🎬 3D Pixar Style</SelectItem>
                               <SelectItem value="storybook">📖 Classic Storybook</SelectItem>
                             </SelectContent>
                           </Select>
+                          <p className="text-xs text-muted-foreground">
+                            💡 Tip: Mention a style in your idea (e.g., "Pixar-style" or "anime") to override this selection
+                          </p>
                         </div>
                       )}
                       
