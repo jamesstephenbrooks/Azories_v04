@@ -2699,14 +2699,14 @@ async def download_printable_pdf(book_id: str, current_user: dict = Depends(get_
         desc = book.get("back_cover_text") or book.get("description", "")
         if desc:
             c.setFillColorRGB(0.9, 0.88, 0.95)
-            c.setFont("Helvetica", 11)
+            c.setFont("Helvetica", 10)
             # Simple word wrap for description
             words = desc.split()
             lines = []
             current_line = ""
             for word in words:
                 test = current_line + (" " if current_line else "") + word
-                if c.stringWidth(test, "Helvetica", 11) < A5_WIDTH - 60:
+                if c.stringWidth(test, "Helvetica", 10) < HALF_WIDTH - 50:
                     current_line = test
                 else:
                     if current_line:
@@ -2716,58 +2716,58 @@ async def download_printable_pdf(book_id: str, current_user: dict = Depends(get_
                 lines.append(current_line)
             
             # Draw description lines
-            desc_y = A4_HEIGHT/2 + 20
-            for i, line in enumerate(lines[:6]):  # Max 6 lines
-                c.drawCentredString(A5_WIDTH/2, desc_y - i*16, line)
+            desc_y = HALF_HEIGHT/2 + 15
+            for i, line in enumerate(lines[:5]):  # Max 5 lines
+                c.drawCentredString(HALF_WIDTH/2, desc_y - i*14, line)
         
         # Decorative line at bottom
         c.setStrokeColorRGB(0.6, 0.4, 0.8)
-        c.line(50, 100, A5_WIDTH - 50, 100)
+        c.line(40, 70, HALF_WIDTH - 40, 70)
         
         # Website URL at bottom
         c.setFillColorRGB(1, 1, 1)
-        c.setFont("Helvetica-Bold", 12)
-        c.drawCentredString(A5_WIDTH/2, 60, "www.azories.com")
+        c.setFont("Helvetica-Bold", 11)
+        c.drawCentredString(HALF_WIDTH/2, 45, "www.azories.com")
         
         # Small copyright
-        c.setFont("Helvetica", 8)
+        c.setFont("Helvetica", 7)
         c.setFillColorRGB(0.7, 0.65, 0.8)
-        c.drawCentredString(A5_WIDTH/2, 40, "© Azories - Digital Stories for Young Readers")
+        c.drawCentredString(HALF_WIDTH/2, 28, "© Azories - Digital Stories for Young Readers")
     
     # RIGHT HALF: "The End" page with details
     c.setFillColorRGB(0.98, 0.97, 0.95)  # Cream background
-    c.rect(A5_WIDTH, 0, A5_WIDTH, A4_HEIGHT, fill=1, stroke=0)
+    c.rect(HALF_WIDTH, 0, HALF_WIDTH, HALF_HEIGHT, fill=1, stroke=0)
     
     # "The End" text - larger and more prominent
     c.setFillColorRGB(0.25, 0.15, 0.35)
-    c.setFont("Helvetica-Bold", 28)
-    c.drawCentredString(A5_WIDTH + A5_WIDTH/2, A4_HEIGHT * 0.65, "The End")
+    c.setFont("Helvetica-Bold", 22)
+    c.drawCentredString(HALF_WIDTH + HALF_WIDTH/2, HALF_HEIGHT * 0.65, "The End")
     
     # Decorative flourish
     c.setStrokeColorRGB(0.6, 0.5, 0.7)
     c.setLineWidth(1)
-    flourish_y = A4_HEIGHT * 0.60
-    c.line(A5_WIDTH + 80, flourish_y, A5_WIDTH + A5_WIDTH - 80, flourish_y)
+    flourish_y = HALF_HEIGHT * 0.58
+    c.line(HALF_WIDTH + 60, flourish_y, HALF_WIDTH + HALF_WIDTH - 60, flourish_y)
     
     # Thank you message
-    c.setFont("Helvetica-Oblique", 14)
+    c.setFont("Helvetica-Oblique", 12)
     c.setFillColorRGB(0.4, 0.35, 0.5)
-    c.drawCentredString(A5_WIDTH + A5_WIDTH/2, A4_HEIGHT * 0.50, "Thank you for reading!")
+    c.drawCentredString(HALF_WIDTH + HALF_WIDTH/2, HALF_HEIGHT * 0.48, "Thank you for reading!")
     
     # Book info
-    c.setFont("Helvetica", 12)
+    c.setFont("Helvetica", 11)
     c.setFillColorRGB(0.4, 0.4, 0.4)
-    c.drawCentredString(A5_WIDTH + A5_WIDTH/2, A4_HEIGHT * 0.35, f'"{book.get("title", "Untitled")}"')
-    c.drawCentredString(A5_WIDTH + A5_WIDTH/2, A4_HEIGHT * 0.30, f"by {book.get('author_name', 'Unknown')}")
+    c.drawCentredString(HALF_WIDTH + HALF_WIDTH/2, HALF_HEIGHT * 0.33, f'"{book.get("title", "Untitled")}"')
+    c.drawCentredString(HALF_WIDTH + HALF_WIDTH/2, HALF_HEIGHT * 0.27, f"by {book.get('author_name', 'Unknown')}")
     
     # Azories branding at bottom
-    c.setFont("Helvetica-Bold", 11)
+    c.setFont("Helvetica-Bold", 10)
     c.setFillColorRGB(0.5, 0.4, 0.6)
-    c.drawCentredString(A5_WIDTH + A5_WIDTH/2, 70, "Created with Azories")
+    c.drawCentredString(HALF_WIDTH + HALF_WIDTH/2, 55, "Created with Azories")
     
-    c.setFont("Helvetica", 10)
+    c.setFont("Helvetica", 9)
     c.setFillColorRGB(0.6, 0.6, 0.6)
-    c.drawCentredString(A5_WIDTH + A5_WIDTH/2, 50, "www.azories.com")
+    c.drawCentredString(HALF_WIDTH + HALF_WIDTH/2, 38, "www.azories.com")
     
     c.showPage()
     c.save()
