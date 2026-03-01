@@ -1287,7 +1287,10 @@ export default function BookEditor() {
                       ? 'bg-primary/10 text-primary' 
                       : 'hover:bg-muted'
                   }`}
-                  onClick={() => setSelectedPage(page)}
+                  onClick={() => {
+                    setSelectedPage(page);
+                    setMobileSidebarOpen(false); // Close sidebar on mobile
+                  }}
                   data-testid={`page-${page.id}`}
                 >
                   <div className="flex items-center gap-2">
