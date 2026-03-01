@@ -2459,7 +2459,7 @@ export default function BookEditor() {
                         className="mt-4 rounded-full"
                       >
                         <FiZap className="mr-2" />
-                        Go to Art Studio
+                        Go to Creators
                       </Button>
                     )}
                   </div>
