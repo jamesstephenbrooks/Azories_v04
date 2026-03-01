@@ -1847,6 +1847,86 @@ async def get_featured_books():
         result.append(BookResponse(**book))
     return result
 
+
+@api_router.get("/books/newly-added")
+async def get_newly_added_books():
+    """Get books published in the last 30 days, ordered by most recent first"""
+    thirty_days_ago = datetime.now(timezone.utc) - timedelta(days=30)
+    
+    query = {
+        "is_published": True, 
+        "hidden": {"$ne": True},
+        "coming_soon": {"$ne": True},
+        "$or": [
+            {"published_at": {"$gte": thirty_days_ago.isoformat()}},
+            {"created_at": {"$gte": thirty_days_ago.isoformat()}}
+        ]
+    }
+    
+    books = await db.books.find(query, {"_id": 0}).sort("published_at", -1).to_list(20)
+    
+    # If no published_at, fall back to sorting by created_at
+    if not books:
+        query_fallback = {
+            "is_published": True, 
+            "hidden": {"$ne": True},
+            "coming_soon": {"$ne": True},
+            "created_at": {"$gte": thirty_days_ago.isoformat()}
+        }
+        books = await db.books.find(query_fallback, {"_id": 0}).sort("created_at", -1).to_list(20)
+    
+    result = []
+    for book in books:
+        book = await get_book_with_counts(book)
+        result.append(book)
+    return result
+
+
+@api_router.get("/books/coming-soon")
+async def get_coming_soon_books():
+    """Get books marked as coming soon"""
+    query = {
+        "coming_soon": True,
+        "hidden": {"$ne": True}
+    }
+    
+    books = await db.books.find(query, {"_id": 0}).sort("coming_soon_order", 1).to_list(20)
+    result = []
+    for book in books:
+        book = await get_book_with_counts(book)
+        result.append(book)
+    return result
+
+
+@api_router.put("/books/{book_id}/coming-soon")
+async def set_book_coming_soon(
+    book_id: str,
+    coming_soon: bool = True,
+    coming_soon_label: str = "Coming Soon",
+    current_user: dict = Depends(get_current_user)
+):
+    """Mark a book as coming soon (admin only)"""
+    user_email = current_user.get("email", "").lower()
+    is_admin = current_user.get("role") == "admin" or user_email in [v.lower() for v in VIP_USERS]
+    
+    if not is_admin:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    result = await db.books.update_one(
+        {"id": book_id},
+        {"$set": {
+            "coming_soon": coming_soon,
+            "coming_soon_label": coming_soon_label,
+            "is_published": False if coming_soon else True
+        }}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    return {"success": True, "coming_soon": coming_soon}
+
+
 @api_router.get("/books/my", response_model=List[BookResponse])
 async def get_my_books(current_user: dict = Depends(get_current_user)):
     books = await db.books.find({"author_id": current_user["id"]}, {"_id": 0}).to_list(100)
