@@ -2453,16 +2453,20 @@ async def download_printable_pdf(book_id: str, current_user: dict = Depends(get_
     # Create PDF buffer
     pdf_buffer = io.BytesIO()
     
-    # A4 dimensions
-    A4_WIDTH, A4_HEIGHT = A4  # 595.28 x 841.89 points
-    A5_WIDTH = A4_WIDTH / 2  # Each half is A5
+    # A4 LANDSCAPE dimensions (297mm x 210mm)
+    # When rotated to landscape: width=841.89, height=595.28
+    PAGE_WIDTH, PAGE_HEIGHT = landscape(A4)  # 841.89 x 595.28 points
     
-    # Create canvas
-    c = canvas.Canvas(pdf_buffer, pagesize=A4)
+    # Each half is 148.5mm x 210mm (A5 portrait when folded)
+    HALF_WIDTH = PAGE_WIDTH / 2  # 420.94 points = 148.5mm
+    HALF_HEIGHT = PAGE_HEIGHT    # 595.28 points = 210mm
+    
+    # Create canvas with LANDSCAPE A4
+    c = canvas.Canvas(pdf_buffer, pagesize=landscape(A4))
     
     # Page margin and padding - increased for better readability
-    MARGIN = 15 * mm
-    TEXT_PADDING = 8 * mm
+    MARGIN = 12 * mm
+    TEXT_PADDING = 6 * mm
     
     # Helper to draw text with word wrap - LEFT ALIGNED, larger font
     def draw_wrapped_text_left(canvas_obj, text, x, y, max_width, max_height, font_name="Helvetica", font_size=14):
