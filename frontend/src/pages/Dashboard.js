@@ -522,6 +522,26 @@ export default function Dashboard() {
                         </Select>
                       </div>
                       
+                      {/* Words Per Page Selection */}
+                      <div className="space-y-2">
+                        <Label className="font-ui">Words Per Page</Label>
+                        <Select value={aiStory.words_per_page} onValueChange={(v) => setAIStory({ ...aiStory, words_per_page: v })}>
+                          <SelectTrigger className="rounded-full border-2">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="short">📝 Short (~50 words) - Quick reads</SelectItem>
+                            <SelectItem value="medium">📖 Medium (~100 words) - Standard</SelectItem>
+                            <SelectItem value="long">📚 Long (~150 words) - Detailed</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <p className="text-xs text-muted-foreground">
+                          {aiStory.words_per_page === 'short' && 'Perfect for younger readers (ages 3-5)'}
+                          {aiStory.words_per_page === 'medium' && 'Great for most children\'s books (ages 5-8)'}
+                          {aiStory.words_per_page === 'long' && 'Best for older readers (ages 8+)'}
+                        </p>
+                      </div>
+                      
                       {/* Visual Media Options */}
                       <div className="space-y-3 pt-2 border-t border-border">
                         <Label className="font-ui font-semibold">Visual Media for Pages</Label>
