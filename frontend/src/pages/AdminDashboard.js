@@ -255,13 +255,13 @@ export default function AdminDashboard() {
       const [pendingRes, booksRes, usersRes, analyticsRes] = await Promise.all([
         fetch(`${API}/api/admin/pending-reviews`, headers).then(r => r.json()).catch(() => ({ books: [] })),
         axios.get(`${API}/api/admin/books`, headers).catch(() => ({ data: [] })),
-        axios.get(`${API}/api/admin/users`, headers).catch(() => ({ data: [] })),
-        axios.get(`${API}/api/admin/analytics`, headers).catch(() => ({ data: null }))
+        axios.get(`${API}/api/admin/users`, headers).catch(() => ({ data: { users: [] } })),
+        axios.get(`${API}/api/admin/site-analytics?days=30`, headers).catch(() => ({ data: null }))
       ]);
       
       setPendingBooks(pendingRes.books || []);
       setAllBooks(booksRes.data || []);
-      setUsers(usersRes.data || []);
+      setUsers(usersRes.data?.users || usersRes.data || []);
       setAnalytics(analyticsRes.data);
     } catch (error) {
       console.error('Failed to fetch data:', error);
