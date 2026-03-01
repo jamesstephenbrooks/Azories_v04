@@ -961,6 +961,95 @@ export default function BookReader() {
     }
   }, [currentPage, playAudio, isMobilePortrait, isMobileLandscape]);
 
+  // Share book function - copy direct link to clipboard
+  const shareBook = useCallback(async () => {
+    const shareUrl = `${window.location.origin}/read/${bookId}`;
+    
+    // Try native share first (mobile)
+    if (navigator.share && book) {
+      try {
+        await navigator.share({
+          title: book.title,
+          text: `Check out "${book.title}" on Azories!`,
+          url: shareUrl
+        });
+        return;
+      } catch (e) {
+        // User cancelled or native share failed - fall through to clipboard
+      }
+    }
+    
+    // Fallback to clipboard
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success('Link copied! Share this story with friends 📚', {
+        duration: 3000,
+        icon: '🔗'
+      });
+    } catch (e) {
+      // Final fallback - show the URL
+      toast.info(`Share this link: ${shareUrl}`, {
+        duration: 5000
+      });
+    }
+  }, [bookId, book]);
+
+  // Trigger celebration when reaching the final page (back cover)
+  const triggerCelebration = useCallback(() => {
+    if (hasShownCelebrationRef.current) return;
+    hasShownCelebrationRef.current = true;
+    setShowCelebration(true);
+    
+    // Fire confetti from both sides
+    const duration = 3000;
+    const end = Date.now() + duration;
+    
+    const colors = ['#a855f7', '#ec4899', '#f59e0b', '#10b981', '#3b82f6'];
+    
+    (function frame() {
+      confetti({
+        particleCount: 3,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.7 },
+        colors: colors
+      });
+      confetti({
+        particleCount: 3,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.7 },
+        colors: colors
+      });
+      
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    })();
+    
+    // Show a congratulatory toast
+    toast.success('🎉 You finished the book! Amazing job!', {
+      duration: 5000,
+      icon: '🌟'
+    });
+    
+    // Hide celebration overlay after animation
+    setTimeout(() => setShowCelebration(false), duration);
+  }, []);
+
+  // Check if user reached the final page
+  useEffect(() => {
+    // Back cover is stored as currentPage === allPages.length - 1 (last item in allPages)
+    // OR it could be when the page has isBackCover: true
+    if (allPages.length > 0 && currentPage >= 0) {
+      const currentPageData = allPages[currentPage];
+      // Check if this is the back cover page
+      if (currentPageData?.isBackCover) {
+        triggerCelebration();
+      }
+    }
+  }, [currentPage, allPages, triggerCelebration]);
+
   // Track when flip ends to trigger audio playback
   const prevIsFlippingRef = useRef(isFlipping);
   
