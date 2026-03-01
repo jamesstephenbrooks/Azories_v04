@@ -52,7 +52,8 @@ export default function Dashboard() {
     num_pages: 5,
     generate_images: true,
     media_type: 'images',  // 'images', 'videos', 'cinemagraphs', 'none'
-    image_style: 'illustration'
+    image_style: '3d-pixar',  // Changed default to Pixar 3D
+    words_per_page: 'medium'  // 'short' (50), 'medium' (100), 'long' (150)
   });
   const [creating, setCreating] = useState(false);
   const [generatingStory, setGeneratingStory] = useState(false);
