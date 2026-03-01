@@ -4983,14 +4983,22 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
                     )
                     
                     if image_result and image_result.get("url"):
-                        # Upload to Cloudinary for permanent storage
-                        cloudinary_url = cloudinary.uploader.upload(
-                            image_result["url"],
-                            folder=f"azories/books/{book_id}/pages",
-                            public_id=f"page_{idx + 1}",
-                            resource_type="image"
-                        )
-                        image_url = cloudinary_url.get("secure_url", "")
+                        # Upload to Cloudinary for permanent storage if available
+                        if CLOUDINARY_AVAILABLE and cloudinary:
+                            try:
+                                cloudinary_result = cloudinary.uploader.upload(
+                                    image_result["url"],
+                                    folder=f"azories/books/{book_id}/pages",
+                                    public_id=f"page_{idx + 1}",
+                                    resource_type="image"
+                                )
+                                image_url = cloudinary_result.get("secure_url", "")
+                            except Exception as cloud_err:
+                                logger.warning(f"Cloudinary upload failed, using direct URL: {cloud_err}")
+                                image_url = image_result["url"]
+                        else:
+                            # Use direct fal.ai URL if cloudinary not available
+                            image_url = image_result["url"]
                         images_generated += 1
                         logger.info(f"Generated and uploaded image for page {idx + 1}")
                     
