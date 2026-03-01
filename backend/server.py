@@ -4804,13 +4804,44 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
         # Image style mapping for prompts
         style_prompts = {
             "3d-pixar": "Pixar 3D animation style, Disney quality, vibrant colors, expressive characters, magical lighting, cinematic composition",
+            "pixar": "Pixar 3D animation style, Disney quality, vibrant colors, expressive characters, magical lighting, cinematic composition",
             "illustration": "Professional children's book illustration, colorful, friendly, whimsical, hand-drawn feel",
             "comic": "Comic book panel style, bold outlines, dynamic poses, vibrant colors",
             "watercolor": "Soft watercolor illustration, gentle colors, dreamy atmosphere",
             "anime": "Anime style illustration, big expressive eyes, colorful, dynamic",
-            "realistic": "Photorealistic digital art, detailed, cinematic lighting"
+            "realistic": "Photorealistic digital art, detailed, cinematic lighting",
+            "scifi": "Futuristic sci-fi style, neon colors, advanced technology, space themes",
+            "sketch": "Pencil sketch illustration, hand-drawn, artistic, detailed linework",
+            "fantasy": "Fantasy art style, magical, ethereal, detailed environments",
+            "storybook": "Classic storybook illustration, warm colors, nostalgic, timeless"
         }
-        style_desc = style_prompts.get(request.image_style, style_prompts["3d-pixar"])
+        
+        # Detect style from the idea text (takes priority over dropdown)
+        idea_lower = request.idea.lower()
+        detected_style = None
+        style_keywords = {
+            "pixar": ["pixar", "3d", "disney", "animated movie"],
+            "anime": ["anime", "manga", "japanese", "studio ghibli"],
+            "comic": ["comic", "superhero", "marvel", "dc"],
+            "watercolor": ["watercolor", "painted", "painterly"],
+            "realistic": ["realistic", "photorealistic", "real", "photograph"],
+            "scifi": ["sci-fi", "scifi", "space", "futuristic", "robot"],
+            "sketch": ["sketch", "pencil", "drawn", "line art"],
+            "fantasy": ["fantasy", "magical", "enchanted", "fairy"],
+            "storybook": ["classic", "storybook", "traditional", "vintage"]
+        }
+        
+        for style, keywords in style_keywords.items():
+            if any(kw in idea_lower for kw in keywords):
+                detected_style = style
+                logger.info(f"Detected style '{style}' from idea text")
+                break
+        
+        # Use detected style if found, otherwise use the selected style
+        final_style = detected_style if detected_style else request.image_style
+        style_desc = style_prompts.get(final_style, style_prompts["illustration"])
+        
+        logger.info(f"Using style: {final_style} (detected: {detected_style}, selected: {request.image_style})")
         
         # Generate story structure using Emergent LLM Chat
         story_prompt = f"""Create a children's story based on this idea: "{request.idea}"
