@@ -8909,6 +8909,196 @@ async def admin_get_hidden_books(current_user: dict = Depends(get_current_user))
     return {"books": hidden_books, "count": len(hidden_books)}
 
 
+# ============ AUDIO CACHING / PRE-GENERATION ============
+
+@api_router.post("/admin/generate-narration-batch")
+async def admin_generate_narration_batch(
+    background_tasks: BackgroundTasks,
+    book_ids: Optional[List[str]] = None,
+    all_published: bool = False,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Pre-generate and cache narration for books (admin only).
+    - If book_ids provided: generate for those specific books
+    - If all_published=True: generate for all published books
+    """
+    user_email = current_user.get("email", "").lower()
+    is_admin = current_user.get("role") == "admin" or user_email in [v.lower() for v in VIP_USERS]
+    
+    if not is_admin:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    # Get books to process
+    if book_ids:
+        books = await db.books.find({"id": {"$in": book_ids}}, {"_id": 0}).to_list(100)
+    elif all_published:
+        books = await db.books.find(
+            {"is_published": True, "hidden": {"$ne": True}},
+            {"_id": 0}
+        ).to_list(100)
+    else:
+        raise HTTPException(status_code=400, detail="Provide book_ids or set all_published=True")
+    
+    # Schedule background task for narration generation
+    background_tasks.add_task(generate_narration_for_books, [b["id"] for b in books])
+    
+    return {
+        "success": True,
+        "message": f"Started narration generation for {len(books)} books",
+        "books_queued": len(books)
+    }
+
+
+async def generate_narration_for_books(book_ids: List[str]):
+    """Background task to generate narration for multiple books"""
+    import base64
+    
+    emergent_key = os.environ.get("EMERGENT_LLM_KEY")
+    if not emergent_key:
+        logger.error("EMERGENT_LLM_KEY not set, cannot generate narration")
+        return
+    
+    voice_mapping = {
+        "21m00Tcm4TlvDq8ikWAM": "nova",
+        "AZnzlk1XvdvUeBnXmlld": "shimmer",
+        "EXAVITQu4vr4xnSDxMaL": "alloy",
+        "ErXwobaYiN019PkySvjV": "onyx",
+        "MF3mGyEYCl7XYWbV9V6O": "coral",
+        "TxGEqnHWrfWFTfGW9XjX": "echo",
+        "VR6AewLTigWG4xSOukaG": "fable",
+        "pNInz6obpgDQGcFmaJgB": "sage",
+        "yoZ06aMxZJJ28mfd3POQ": "ash",
+    }
+    
+    total_pages = 0
+    cached_pages = 0
+    generated_pages = 0
+    errors = 0
+    
+    for book_id in book_ids:
+        try:
+            book = await db.books.find_one({"id": book_id})
+            if not book:
+                continue
+            
+            voice_id = book.get("narrator_voice_id", "21m00Tcm4TlvDq8ikWAM")
+            openai_voice = voice_mapping.get(voice_id, "nova")
+            
+            # Get all chapters for this book
+            chapters = await db.chapters.find({"book_id": book_id}).to_list(50)
+            
+            for chapter in chapters:
+                pages = await db.pages.find({"chapter_id": chapter["id"]}).to_list(100)
+                
+                for page in pages:
+                    total_pages += 1
+                    
+                    # Skip if already has audio
+                    if page.get("audio_url") and page["audio_url"].startswith("https://"):
+                        cached_pages += 1
+                        continue
+                    
+                    text = page.get("text_content", "").strip()
+                    if not text:
+                        continue
+                    
+                    try:
+                        # Generate TTS
+                        tts = OpenAITextToSpeech(api_key=emergent_key)
+                        audio_base64 = await tts.generate_speech_base64(
+                            text=text,
+                            model="tts-1",
+                            voice=openai_voice,
+                            response_format="mp3"
+                        )
+                        
+                        # Upload to Cloudinary
+                        audio_bytes = base64.b64decode(audio_base64)
+                        upload_result = cloudinary.uploader.upload(
+                            audio_bytes,
+                            resource_type="video",
+                            folder=f"azories/audio/books/{book_id}",
+                            public_id=f"page_{page['id']}",
+                            format="mp3"
+                        )
+                        cloudinary_url = upload_result.get("secure_url")
+                        
+                        # Update page with audio URL
+                        await db.pages.update_one(
+                            {"id": page["id"]},
+                            {"$set": {"audio_url": cloudinary_url}}
+                        )
+                        
+                        generated_pages += 1
+                        logger.info(f"Generated narration for page {page['id']} in book {book_id}")
+                        
+                        # Small delay to avoid rate limits
+                        await asyncio.sleep(0.5)
+                        
+                    except Exception as page_error:
+                        errors += 1
+                        logger.error(f"Error generating narration for page {page['id']}: {page_error}")
+                        
+        except Exception as book_error:
+            logger.error(f"Error processing book {book_id}: {book_error}")
+    
+    logger.info(f"Narration batch complete: {total_pages} total, {cached_pages} already cached, {generated_pages} generated, {errors} errors")
+
+
+@api_router.get("/admin/narration-status")
+async def admin_get_narration_status(current_user: dict = Depends(get_current_user)):
+    """Get narration caching status for all published books (admin only)"""
+    user_email = current_user.get("email", "").lower()
+    is_admin = current_user.get("role") == "admin" or user_email in [v.lower() for v in VIP_USERS]
+    
+    if not is_admin:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    # Get all published books
+    books = await db.books.find(
+        {"is_published": True, "hidden": {"$ne": True}},
+        {"_id": 0, "id": 1, "title": 1}
+    ).to_list(100)
+    
+    book_status = []
+    total_pages = 0
+    total_cached = 0
+    
+    for book in books:
+        chapters = await db.chapters.find({"book_id": book["id"]}).to_list(50)
+        book_pages = 0
+        book_cached = 0
+        
+        for chapter in chapters:
+            pages = await db.pages.find({"chapter_id": chapter["id"]}).to_list(100)
+            for page in pages:
+                if page.get("text_content", "").strip():
+                    book_pages += 1
+                    total_pages += 1
+                    if page.get("audio_url") and page["audio_url"].startswith("https://"):
+                        book_cached += 1
+                        total_cached += 1
+        
+        book_status.append({
+            "id": book["id"],
+            "title": book["title"],
+            "total_pages": book_pages,
+            "cached_pages": book_cached,
+            "percent_cached": round(book_cached / book_pages * 100, 1) if book_pages > 0 else 0
+        })
+    
+    return {
+        "total_books": len(books),
+        "total_pages": total_pages,
+        "total_cached": total_cached,
+        "percent_cached": round(total_cached / total_pages * 100, 1) if total_pages > 0 else 0,
+        "books": book_status
+    }
+
+
+
+
 class UpdatePageImageRequest(BaseModel):
     page_index: int
     image_url: str
