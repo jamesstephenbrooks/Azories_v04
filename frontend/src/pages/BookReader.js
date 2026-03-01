@@ -20,6 +20,7 @@ import AIReadingBuddy from '@/components/AIReadingBuddy';
 import { useSwipeGestures } from '@/hooks/useSwipeGestures';
 import RealisticPageFlip from '@/components/RealisticPageFlip';
 import PWAPrompt from '@/components/PWAPrompt';
+import { AZORA_ASSETS } from '@/components/AzoraMascot';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
