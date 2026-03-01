@@ -89,7 +89,7 @@ export default function BookEditor() {
   // Expanded image/video viewer
   const [expandedMedia, setExpandedMedia] = useState(null); // {type: 'image'|'video', url: string, name: string}
   
-  // Art Studio Gallery picker
+  // Creators Gallery picker
   const [showGalleryPicker, setShowGalleryPicker] = useState(false);
   const [galleryImages, setGalleryImages] = useState([]);
   const [generalGalleryImages, setGeneralGalleryImages] = useState([]);
