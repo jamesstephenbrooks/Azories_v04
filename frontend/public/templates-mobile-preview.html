@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Templates - Mobile vs Desktop</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 p-8">
+  <div class="max-w-4xl mx-auto space-y-8">
+    <h1 class="text-white text-2xl font-bold text-center">Story Templates - Responsive Design</h1>
+    
+    <!-- Mobile View -->
+    <div class="bg-gray-800 rounded-2xl p-6">
+      <h2 class="text-purple-400 text-lg font-semibold mb-4">📱 Mobile View (Dropdown)</h2>
+      <div class="max-w-sm mx-auto bg-gray-700 rounded-xl p-4">
+        <div class="flex items-center gap-2 mb-3">
+          <span>💡</span>
+          <span class="text-gray-300 text-sm">Need inspiration? Choose a template</span>
+        </div>
+        <select class="w-full p-3 rounded-xl bg-gray-800 border-2 border-gray-600 text-white">
+          <option>✨ Select a story template...</option>
+          <option>🧙 Magical Adventure</option>
+          <option>🦁 Animal Friends</option>
+          <option>🚀 Space Explorer</option>
+          <option>🌊 Under the Sea</option>
+          <option>🏫 School Days</option>
+          <option>🐉 Dragon Friend</option>
+        </select>
+      </div>
+    </div>
+    
+    <!-- Desktop View -->
+    <div class="bg-gray-800 rounded-2xl p-6">
+      <h2 class="text-purple-400 text-lg font-semibold mb-4">🖥️ Desktop View (Grid Cards)</h2>
+      <div class="flex items-center gap-2 mb-3">
+        <span>💡</span>
+        <span class="text-gray-300 text-sm">Need inspiration? Choose a template</span>
+      </div>
+      <div class="grid grid-cols-3 gap-3">
+        <div class="p-3 rounded-xl border-2 border-gray-600 hover:border-purple-500 cursor-pointer transition-all">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xl">🧙</span>
+            <span class="font-semibold text-white text-sm">Magical Adventure</span>
+          </div>
+          <p class="text-xs text-gray-400">Discovers a hidden door in their school...</p>
+        </div>
+        <div class="p-3 rounded-xl border-2 border-gray-600 hover:border-purple-500 cursor-pointer transition-all">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xl">🦁</span>
+            <span class="font-semibold text-white text-sm">Animal Friends</span>
+          </div>
+          <p class="text-xs text-gray-400">Leo is scared of the dark and learns...</p>
+        </div>
+        <div class="p-3 rounded-xl border-2 border-gray-600 hover:border-purple-500 cursor-pointer transition-all">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xl">🚀</span>
+            <span class="font-semibold text-white text-sm">Space Explorer</span>
+          </div>
+          <p class="text-xs text-gray-400">Crash lands on a friendly alien planet...</p>
+        </div>
+        <div class="p-3 rounded-xl border-2 border-gray-600 hover:border-purple-500 cursor-pointer transition-all">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xl">🌊</span>
+            <span class="font-semibold text-white text-sm">Under the Sea</span>
+          </div>
+          <p class="text-xs text-gray-400">Discovers a sunken treasure chest...</p>
+        </div>
+        <div class="p-3 rounded-xl border-2 border-gray-600 hover:border-purple-500 cursor-pointer transition-all">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xl">🏫</span>
+            <span class="font-semibold text-white text-sm">School Days</span>
+          </div>
+          <p class="text-xs text-gray-400">The new kid at school discovers a secret...</p>
+        </div>
+        <div class="p-3 rounded-xl border-2 border-gray-600 hover:border-purple-500 cursor-pointer transition-all">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xl">🐉</span>
+            <span class="font-semibold text-white text-sm">Dragon Friend</span>
+          </div>
+          <p class="text-xs text-gray-400">Finds a tiny lost dragon egg in the garden...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
