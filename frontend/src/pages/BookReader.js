@@ -348,6 +348,14 @@ export default function BookReader() {
         fetchReadingStats();
       }
     }
+    
+    // MINIMAL CLEANUP: Clear audio cache when leaving this book
+    // This prevents memory buildup from opening multiple books
+    return () => {
+      audioCache.current.clear();
+      preloadingPages.current.clear();
+      lastPlayedPageRef.current = -999;
+    };
   }, [bookId, user, authLoading, token]);
 
   // Ref to track if we should continue auto-reading
