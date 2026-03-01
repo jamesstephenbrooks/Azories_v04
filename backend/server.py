@@ -923,14 +923,29 @@ class UpgradeRequest(BaseModel):
     subscription: str
 
 class AIStoryRequest(BaseModel):
-    idea: str
+    # Story Details
+    title: str = ""  # Optional - AI will generate if empty
+    age_range: str = "5-8"  # 3-5, 5-8, 8-12
+    num_pages: int = 8
+    words_per_page: str = "medium"  # short (50), medium (100), long (150)
+    
+    # Main Character
+    character_name: str = ""
+    character_description: str = ""
+    
+    # Story
+    story_description: str = ""  # Main story idea/description
+    
+    # Style
+    art_style: str = "3d-pixar"  # 3d-pixar, watercolour, storybook
+    
+    # Legacy fields for backwards compatibility
+    idea: str = ""  # Will be derived from story_description if not provided
     genre: str = "Adventure"
     age_rating: str = "All Ages"
-    num_pages: int = 5
     generate_images: bool = True
-    media_type: str = "images"  # images, videos, cinemagraphs, none
-    image_style: str = "3d-pixar"  # Changed default to Pixar 3D
-    words_per_page: str = "medium"  # short (50), medium (100), long (150)
+    media_type: str = "images"
+    image_style: str = "3d-pixar"
 
 class SummaryGenerateRequest(BaseModel):
     book_id: str
