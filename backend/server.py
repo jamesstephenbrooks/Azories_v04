@@ -1176,8 +1176,8 @@ async def register(user_data: UserCreate, background_tasks: BackgroundTasks):
     user_id = str(uuid.uuid4())
     now = datetime.now(timezone.utc)
     now_iso = now.isoformat()
-    # 30-day free Pro trial for all new users
-    trial_expires = (now + timedelta(days=30)).isoformat()
+    # 3-day free Pro trial for all new users
+    trial_expires = (now + timedelta(days=3)).isoformat()
     
     user = {
         "id": user_id,
@@ -1223,7 +1223,7 @@ async def register(user_data: UserCreate, background_tasks: BackgroundTasks):
                         <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">{now_iso}</td>
                     </tr>
                 </table>
-                <p style="color: #6b7280; margin-top: 20px;">User has a 30-day Pro trial active.</p>
+                <p style="color: #6b7280; margin-top: 20px;">User has a 3-day Pro trial active.</p>
             </div>
         </body>
         </html>
@@ -1242,7 +1242,7 @@ async def register(user_data: UserCreate, background_tasks: BackgroundTasks):
             created_at=now_iso,
             pro_trial=True,
             pro_trial_expires_at=trial_expires,
-            trial_days_remaining=30
+            trial_days_remaining=3
         )
     )
 
