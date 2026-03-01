@@ -815,16 +815,19 @@ class BookResponse(BaseModel):
     is_best_of_week: bool
     layout_mode: str
     narrator_voice_id: str
-    narrator_voice_locked: Optional[bool] = False  # Added - was missing from response
+    narrator_voice_locked: Optional[bool] = False
     age_rating: str
-    publish_status: str = "draft"  # draft, pending_review, published, rejected
+    publish_status: str = "draft"
     moderation_flags: Optional[List[str]] = []
     created_at: str
     updated_at: str
+    published_at: Optional[str] = None
     chapter_count: int = 0
     total_pages: int = 0
     view_count: int = 0
     read_count: int = 0
+    coming_soon: Optional[bool] = False
+    coming_soon_label: Optional[str] = None
 
 class ChapterCreate(BaseModel):
     title: str
