@@ -4917,15 +4917,58 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
         }
         await db.chapters.insert_one(chapter)
         
-        # Create pages
+        # Get main character description for consistent images
+        main_char_desc = story_data.get("main_character_description", "")
+        
+        # Create pages and generate images if requested
         pages_created = []
+        images_generated = 0
+        
         for idx, page_data in enumerate(story_data["pages"]):
             page_id = str(uuid.uuid4())
+            image_url = ""
+            
+            # Generate image for this page if requested
+            if request.generate_images and request.media_type == "images":
+                try:
+                    # Build comprehensive image prompt
+                    base_prompt = page_data.get("image_prompt", page_data["text"])
+                    full_prompt = f"{style_desc}. {base_prompt}"
+                    if main_char_desc:
+                        full_prompt = f"{style_desc}. Main character: {main_char_desc}. Scene: {base_prompt}"
+                    
+                    logger.info(f"Generating image for page {idx + 1}: {full_prompt[:100]}...")
+                    
+                    # Use Gemini Nano Banana for image generation
+                    from emergentintegrations.llm.gemini import generate_image_gemini
+                    
+                    image_result = await generate_image_gemini(
+                        api_key=EMERGENT_LLM_KEY,
+                        prompt=full_prompt,
+                        aspect_ratio="3:4"  # Portrait for book pages
+                    )
+                    
+                    if image_result and image_result.get("url"):
+                        # Upload to Cloudinary for permanent storage
+                        cloudinary_url = cloudinary.uploader.upload(
+                            image_result["url"],
+                            folder=f"azories/books/{book_id}/pages",
+                            public_id=f"page_{idx + 1}",
+                            resource_type="image"
+                        )
+                        image_url = cloudinary_url.get("secure_url", "")
+                        images_generated += 1
+                        logger.info(f"Generated and uploaded image for page {idx + 1}")
+                    
+                except Exception as img_error:
+                    logger.error(f"Failed to generate image for page {idx + 1}: {str(img_error)}")
+                    # Continue without image - user can generate later
+            
             page = {
                 "id": page_id,
                 "chapter_id": chapter_id,
                 "text_content": page_data["text"],
-                "image_url": "",
+                "image_url": image_url,
                 "image_url_2": "",
                 "image_url_3": "",
                 "image_url_4": "",
@@ -4934,23 +4977,58 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
                 "order": idx + 1,
                 "layout_type": "single",
                 "created_at": now,
-                "image_prompt": page_data["image_prompt"]  # Store for image generation
+                "image_prompt": page_data.get("image_prompt", "")
             }
             await db.pages.insert_one(page)
             pages_created.append({
                 "page_id": page_id,
                 "order": idx + 1,
                 "text": page_data["text"],
-                "image_prompt": page_data["image_prompt"]
+                "image_prompt": page_data.get("image_prompt", ""),
+                "image_url": image_url
             })
+        
+        # Generate cover image if images were requested
+        cover_image_url = ""
+        if request.generate_images and request.media_type == "images" and images_generated > 0:
+            try:
+                cover_prompt = f"{style_desc}. Book cover for '{story_data['title']}'. {story_data['description']}. {main_char_desc if main_char_desc else ''}"
+                
+                from emergentintegrations.llm.gemini import generate_image_gemini
+                cover_result = await generate_image_gemini(
+                    api_key=EMERGENT_LLM_KEY,
+                    prompt=cover_prompt,
+                    aspect_ratio="3:4"
+                )
+                
+                if cover_result and cover_result.get("url"):
+                    cloudinary_cover = cloudinary.uploader.upload(
+                        cover_result["url"],
+                        folder=f"azories/books/{book_id}",
+                        public_id="cover",
+                        resource_type="image"
+                    )
+                    cover_image_url = cloudinary_cover.get("secure_url", "")
+                    
+                    # Update book with cover
+                    await db.books.update_one(
+                        {"id": book_id},
+                        {"$set": {"cover_image": cover_image_url}}
+                    )
+                    logger.info(f"Generated cover image for book")
+                    
+            except Exception as cover_error:
+                logger.error(f"Failed to generate cover: {str(cover_error)}")
         
         return {
             "success": True,
             "book_id": book_id,
             "title": story_data["title"],
             "pages_created": len(pages_created),
+            "images_generated": images_generated,
+            "cover_image": cover_image_url,
             "pages": pages_created,
-            "message": "Story created! Navigate to editor to generate images."
+            "message": f"Story created with {images_generated} images!" if images_generated > 0 else "Story created! Navigate to editor to generate images."
         }
         
     except Exception as e:
