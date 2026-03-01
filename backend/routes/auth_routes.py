@@ -267,7 +267,8 @@ async def login(user_data: UserLogin):
             created_at=user["created_at"],
             pro_trial=pro_trial,
             pro_trial_expires_at=user.get("pro_trial_expires_at"),
-            trial_days_remaining=trial_days_remaining
+            trial_days_remaining=trial_days_remaining,
+            is_admin=user.get("is_admin", False) or user.get("role") == "admin"
         )
     )
 
