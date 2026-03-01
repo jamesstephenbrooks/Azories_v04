@@ -2800,6 +2800,59 @@ export default function BookEditor() {
           </div>
         </div>
       )}
+      
+      {/* Mobile Floating Bottom Bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-lg border-t border-border px-4 py-3 safe-area-bottom">
+        <div className="flex items-center justify-between gap-2">
+          {/* Pages Button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setMobileSidebarOpen(true)}
+            className="flex-1 flex flex-col items-center gap-1 h-auto py-2"
+          >
+            <FiLayers className="w-5 h-5" />
+            <span className="text-xs">Pages</span>
+          </Button>
+          
+          {/* Preview Button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(`/read/${bookId}`)}
+            className="flex-1 flex flex-col items-center gap-1 h-auto py-2"
+          >
+            <FiBook className="w-5 h-5" />
+            <span className="text-xs">Preview</span>
+          </Button>
+          
+          {/* Save Button - Highlighted */}
+          <Button
+            onClick={savePage}
+            disabled={saving || !selectedPage}
+            size="sm"
+            className={`flex-1 flex flex-col items-center gap-1 h-auto py-2 ${
+              hasUnsavedChanges 
+                ? 'bg-amber-500 hover:bg-amber-600 text-white' 
+                : 'bg-primary hover:bg-primary/90'
+            }`}
+          >
+            <FiSave className="w-5 h-5" />
+            <span className="text-xs">{saving ? 'Saving' : 'Save'}</span>
+          </Button>
+          
+          {/* Download Button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={downloadBook}
+            className="flex-1 flex flex-col items-center gap-1 h-auto py-2"
+          >
+            <FiDownload className="w-5 h-5" />
+            <span className="text-xs">PDF</span>
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
