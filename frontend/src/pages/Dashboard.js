@@ -102,6 +102,7 @@ export default function Dashboard() {
       fetchAgeRatings();
       fetchSeries();
       fetchCredits();
+      fetchTrialStatus();
     }
   }, [user]);
 
@@ -114,6 +115,18 @@ export default function Dashboard() {
       setCredits(res.data.credits || 0);
     } catch (error) {
       console.error('Failed to fetch credits:', error);
+    }
+  };
+
+  const fetchTrialStatus = async () => {
+    try {
+      const token = localStorage.getItem('azories-token');
+      const res = await axios.get(`${API}/auth/ai-story-trial`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setTrialStatus(res.data);
+    } catch (error) {
+      console.error('Failed to fetch trial status:', error);
     }
   };
 
