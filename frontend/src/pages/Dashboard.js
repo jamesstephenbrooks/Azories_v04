@@ -411,6 +411,15 @@ export default function Dashboard() {
         art_style: '3d-pixar', idea: '', genre: 'Adventure', age_rating: 'All Ages',
         generate_images: true, media_type: 'images', image_style: '3d-pixar'
       });
+      
+      // Show a delayed toast explaining next steps
+      setTimeout(() => {
+        toast.info(
+          '📚 Your story is saved as a draft. When you\'re ready, click "Publish" in My Books to share it with the world!',
+          { duration: 8000 }
+        );
+      }, 2000);
+      
       navigate(`/editor/${res.data.book_id}`);
     } catch (error) {
       if (error.response?.status === 402) {
