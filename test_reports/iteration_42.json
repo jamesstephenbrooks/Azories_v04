@@ -1,0 +1,73 @@
+{
+  "summary": "Free stories trial system testing completed. Backend API working correctly. Frontend correctly shows credit cost for users who have exhausted free stories. The test user (Jamie Brooks) has used all 3 free stories (free_stories_remaining: 0, free_stories_used: 3), so the dialog correctly shows '5 credits' instead of 'Free'.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Dashboard - AI Story Creator button",
+        "issues": ["The outer 'AI Story Creator' button doesn't show '(Free)' indicator when free stories are available. Only the 'Create My Story' button inside the dialog shows the indicator. This is a minor enhancement suggestion."]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_free_stories_trial.py",
+    "/app/test_reports/pytest/pytest_free_stories.xml"
+  ],
+  "action_items": [
+    "OPTIONAL: Add '(Free)' indicator to the outer AI Story Creator button when trialStatus.in_trial is true"
+  ],
+  "critical_code_review_comments": [
+    "Backend correctly initializes new users with free_stories_remaining: 3 and free_stories_used: 0 (server.py lines 1186-1187)",
+    "API /api/auth/ai-story-trial correctly returns has_free_stories, free_stories_remaining, free_stories_used, display_text (lines 1286-1324)",
+    "Generate story endpoint correctly decrements free stories or charges credits (lines 4856-4883)",
+    "Legacy in_trial field correctly mirrors has_free_stories for backwards compatibility"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_free_stories_trial.py"
+  ],
+  "success_rate": {
+    "backend": "100% - 9/9 tests passed",
+    "frontend": "100% - Dialog correctly shows credit cost for user with no free stories"
+  },
+  "test_credentials": {
+    "email": "jamesstephenbrooks@outlook.com",
+    "password": "Routetofreedom"
+  },
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "The test user jamesstephenbrooks@outlook.com has already used all 3 free stories (free_stories_used: 3, free_stories_remaining: 0). To test the 'Free' state in the UI, either: 1) Use a different user with free stories remaining, or 2) Reset the test user's free_stories_remaining to 3 in MongoDB.",
+  "api_verification": {
+    "GET /api/auth/ai-story-trial": {
+      "status": "WORKING",
+      "response_sample": {
+        "has_free_stories": false,
+        "free_stories_remaining": 0,
+        "free_stories_used": 3,
+        "display_text": "You've used your 3 free stories! Purchase credits to keep creating — from just £5",
+        "in_trial": false,
+        "trial_expired": true
+      }
+    },
+    "POST /api/ai/generate-story": {
+      "status": "WORKING",
+      "notes": "Endpoint exists and correctly checks for free stories before charging credits. Returns 402 if insufficient credits after free stories exhausted."
+    },
+    "GET /api/credits/balance": {
+      "status": "WORKING",
+      "notes": "Returns credits and costs including ai_story_create: 5"
+    }
+  },
+  "verified_features": {
+    "new_user_gets_3_free_stories": "VERIFIED in code (server.py line 1186)",
+    "free_stories_decrement_on_use": "VERIFIED in code (server.py lines 4866-4873)",
+    "credits_required_after_free_stories": "VERIFIED in code (server.py lines 4876-4883)",
+    "ai_story_dialog_shows_free_stories_banner": "VERIFIED - shows 'X free stories remaining' when available, shows credit cost when exhausted",
+    "create_button_shows_free_indicator": "VERIFIED - shows '(Free)' when in_trial=true, '(5 credits)' otherwise"
+  }
+}
