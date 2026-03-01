@@ -4984,34 +4984,35 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
                     
                     logger.info(f"Generating image for page {idx + 1}: {full_prompt[:100]}...")
                     
-                    # Use Gemini Nano Banana for image generation
-                    from emergentintegrations.llm.gemini import generate_image_gemini
-                    
-                    image_result = await generate_image_gemini(
-                        api_key=EMERGENT_LLM_KEY,
+                    # Use OpenAI Image Generation (GPT Image 1)
+                    image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
+                    image_results = await image_gen.generate_images(
                         prompt=full_prompt,
-                        aspect_ratio="3:4"  # Portrait for book pages
+                        n=1,
+                        size="1024x1536"  # Portrait for book pages
                     )
                     
-                    if image_result and image_result.get("url"):
-                        # Upload to Cloudinary for permanent storage if available
-                        if CLOUDINARY_AVAILABLE and cloudinary:
-                            try:
-                                cloudinary_result = cloudinary.uploader.upload(
-                                    image_result["url"],
-                                    folder=f"azories/books/{book_id}/pages",
-                                    public_id=f"page_{idx + 1}",
-                                    resource_type="image"
-                                )
-                                image_url = cloudinary_result.get("secure_url", "")
-                            except Exception as cloud_err:
-                                logger.warning(f"Cloudinary upload failed, using direct URL: {cloud_err}")
-                                image_url = image_result["url"]
-                        else:
-                            # Use direct fal.ai URL if cloudinary not available
-                            image_url = image_result["url"]
-                        images_generated += 1
-                        logger.info(f"Generated and uploaded image for page {idx + 1}")
+                    if image_results and len(image_results) > 0:
+                        image_url_raw = image_results[0].get("url") or image_results[0].get("b64_json")
+                        
+                        if image_url_raw:
+                            # Upload to Cloudinary for permanent storage if available
+                            if CLOUDINARY_AVAILABLE and cloudinary:
+                                try:
+                                    cloudinary_result = cloudinary.uploader.upload(
+                                        image_url_raw,
+                                        folder=f"azories/books/{book_id}/pages",
+                                        public_id=f"page_{idx + 1}",
+                                        resource_type="image"
+                                    )
+                                    image_url = cloudinary_result.get("secure_url", "")
+                                except Exception as cloud_err:
+                                    logger.warning(f"Cloudinary upload failed, using direct URL: {cloud_err}")
+                                    image_url = image_url_raw
+                            else:
+                                image_url = image_url_raw
+                            images_generated += 1
+                            logger.info(f"Generated and uploaded image for page {idx + 1}")
                     
                 except Exception as img_error:
                     logger.error(f"Failed to generate image for page {idx + 1}: {str(img_error)}")
