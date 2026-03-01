@@ -2561,20 +2561,20 @@ async def download_printable_pdf(book_id: str, current_user: dict = Depends(get_
         )
     
     # ======== FRONT COVER ========
-    # Cover takes full A4 page, illustration on left A5, title/author on right A5
+    # Cover takes full A4 LANDSCAPE page, illustration on left half, title/author on right half
     cover_img = await fetch_image(book.get("cover_image", ""))
     
     # Left half: Cover illustration - FILLS ENTIRE LEFT HALF
-    draw_image_cover(c, cover_img, 0, 0, A5_WIDTH, A4_HEIGHT)
+    draw_image_cover(c, cover_img, 0, 0, HALF_WIDTH, HALF_HEIGHT)
     
     # Right half: Title and author (styled)
     c.setFillColorRGB(0.98, 0.97, 0.95)  # Cream background
-    c.rect(A5_WIDTH, 0, A5_WIDTH, A4_HEIGHT, fill=1, stroke=0)
+    c.rect(HALF_WIDTH, 0, HALF_WIDTH, HALF_HEIGHT, fill=1, stroke=0)
     
     # Title
     c.setFillColorRGB(0.2, 0.1, 0.3)
     title = book.get("cover_title", book.get("title", "Untitled"))
-    c.setFont("Helvetica-Bold", 28)
+    c.setFont("Helvetica-Bold", 24)
     
     # Word wrap title
     title_words = title.split()
@@ -2582,7 +2582,7 @@ async def download_printable_pdf(book_id: str, current_user: dict = Depends(get_
     current_line = ""
     for word in title_words:
         test_line = current_line + (" " if current_line else "") + word
-        if c.stringWidth(test_line, "Helvetica-Bold", 28) < A5_WIDTH - 40:
+        if c.stringWidth(test_line, "Helvetica-Bold", 24) < HALF_WIDTH - 40:
             current_line = test_line
         else:
             if current_line:
@@ -2591,30 +2591,30 @@ async def download_printable_pdf(book_id: str, current_user: dict = Depends(get_
     if current_line:
         title_lines.append(current_line)
     
-    title_y = A4_HEIGHT * 0.6
+    title_y = HALF_HEIGHT * 0.6
     for i, line in enumerate(title_lines):
-        c.drawCentredString(A5_WIDTH + A5_WIDTH/2, title_y - i*35, line)
+        c.drawCentredString(HALF_WIDTH + HALF_WIDTH/2, title_y - i*30, line)
     
     # Subtitle if exists
     if book.get("cover_subtitle"):
-        c.setFont("Helvetica", 14)
+        c.setFont("Helvetica", 12)
         c.setFillColorRGB(0.4, 0.3, 0.5)
-        c.drawCentredString(A5_WIDTH + A5_WIDTH/2, title_y - len(title_lines)*35 - 20, book["cover_subtitle"])
+        c.drawCentredString(HALF_WIDTH + HALF_WIDTH/2, title_y - len(title_lines)*30 - 15, book["cover_subtitle"])
     
     # Author
-    c.setFont("Helvetica-Oblique", 16)
+    c.setFont("Helvetica-Oblique", 14)
     c.setFillColorRGB(0.3, 0.3, 0.3)
-    c.drawCentredString(A5_WIDTH + A5_WIDTH/2, A4_HEIGHT * 0.3, f"By {book.get('author_name', 'Unknown')}")
+    c.drawCentredString(HALF_WIDTH + HALF_WIDTH/2, HALF_HEIGHT * 0.3, f"By {book.get('author_name', 'Unknown')}")
     
     # Small Azories branding
-    c.setFont("Helvetica", 9)
+    c.setFont("Helvetica", 8)
     c.setFillColorRGB(0.6, 0.6, 0.6)
-    c.drawCentredString(A5_WIDTH + A5_WIDTH/2, 30, "Created with Azories")
+    c.drawCentredString(HALF_WIDTH + HALF_WIDTH/2, 25, "Created with Azories")
     
     c.showPage()
     
     # ======== CONTENT PAGES ========
-    # Each A4 page: Left = Illustration (fills entire half), Right = Text (left-aligned)
+    # Each A4 LANDSCAPE page: Left half = Illustration, Right half = Text (left-aligned)
     for page_num, page in enumerate(pages):
         image_url = page.get("image_url", "")
         text_content = page.get("text_content", "") or page.get("text", "") or page.get("content", "")
@@ -2622,42 +2622,41 @@ async def download_printable_pdf(book_id: str, current_user: dict = Depends(get_
         # Fetch image
         page_img = await fetch_image(image_url)
         
-        # Left A5: Illustration - FILLS ENTIRE LEFT HALF (no white space)
-        draw_image_cover(c, page_img, 0, 0, A5_WIDTH, A4_HEIGHT)
+        # Left half: Illustration - FILLS ENTIRE LEFT HALF (no white space)
+        draw_image_cover(c, page_img, 0, 0, HALF_WIDTH, HALF_HEIGHT)
         
-        # Right A5: Text content
+        # Right half: Text content
         c.setFillColorRGB(0.99, 0.98, 0.96)  # Off-white
-        c.rect(A5_WIDTH, 0, A5_WIDTH, A4_HEIGHT, fill=1, stroke=0)
+        c.rect(HALF_WIDTH, 0, HALF_WIDTH, HALF_HEIGHT, fill=1, stroke=0)
         
         # Text area with padding
-        text_x = A5_WIDTH + MARGIN
-        text_y = A4_HEIGHT - MARGIN - 30
-        text_width = A5_WIDTH - (2 * MARGIN)
-        text_height = A4_HEIGHT - (2 * MARGIN) - 60  # Reserve space for page number
+        text_x = HALF_WIDTH + MARGIN
+        text_y = HALF_HEIGHT - MARGIN - 20
+        text_width = HALF_WIDTH - (2 * MARGIN)
+        text_height = HALF_HEIGHT - (2 * MARGIN) - 50  # Reserve space for page number
         
         # Draw the story text - LEFT ALIGNED, 14pt font
         c.setFillColorRGB(0.15, 0.1, 0.2)
         draw_wrapped_text_left(c, text_content, text_x, text_y, text_width, text_height, "Helvetica", 14)
         
         # Page number
-        c.setFont("Helvetica", 10)
+        c.setFont("Helvetica", 9)
         c.setFillColorRGB(0.5, 0.5, 0.5)
-        c.drawCentredString(A5_WIDTH + A5_WIDTH/2, 25, f"— {page_num + 1} —")
+        c.drawCentredString(HALF_WIDTH + HALF_WIDTH/2, 20, f"— {page_num + 1} —")
         
         # Decorative element
         c.setStrokeColorRGB(0.8, 0.75, 0.7)
         c.setLineWidth(0.5)
-        c.line(A5_WIDTH + 50, 50, A5_WIDTH + A5_WIDTH - 50, 50)
+        c.line(HALF_WIDTH + 40, 40, HALF_WIDTH + HALF_WIDTH - 40, 40)
         
         c.showPage()
     
     # ======== BACK COVER ========
-    # Back cover: LEFT = Branded Azories purple page with Azora, RIGHT = The End + details
+    # Back cover: LEFT = Branded Azories purple page, RIGHT = The End + details
     
     # LEFT HALF: Branded Azories back cover (purple with branding)
-    # Draw purple gradient background
     c.setFillColorRGB(0.25, 0.08, 0.38)  # Rich purple (#3F1461)
-    c.rect(0, 0, A5_WIDTH, A4_HEIGHT, fill=1, stroke=0)
+    c.rect(0, 0, HALF_WIDTH, HALF_HEIGHT, fill=1, stroke=0)
     
     # Try to load back cover image if available
     back_cover_url = book.get("back_cover_image", "")
@@ -2665,36 +2664,36 @@ async def download_printable_pdf(book_id: str, current_user: dict = Depends(get_
     
     if back_cover_img:
         # Draw the branded back cover image filling the space
-        draw_image_cover(c, back_cover_img, 0, 0, A5_WIDTH, A4_HEIGHT)
+        draw_image_cover(c, back_cover_img, 0, 0, HALF_WIDTH, HALF_HEIGHT)
     else:
         # Create a branded Azories back cover with text
         # Purple background already drawn above
         
         # "Azories" title at top
         c.setFillColorRGB(1, 1, 1)  # White
-        c.setFont("Helvetica-Bold", 32)
-        c.drawCentredString(A5_WIDTH/2, A4_HEIGHT - 80, "Azories")
+        c.setFont("Helvetica-Bold", 26)
+        c.drawCentredString(HALF_WIDTH/2, HALF_HEIGHT - 60, "Azories")
         
         # Tagline
-        c.setFont("Helvetica", 14)
+        c.setFont("Helvetica", 12)
         c.setFillColorRGB(0.85, 0.8, 0.95)
-        c.drawCentredString(A5_WIDTH/2, A4_HEIGHT - 110, "Where Stories Come to Life")
+        c.drawCentredString(HALF_WIDTH/2, HALF_HEIGHT - 85, "Where Stories Come to Life")
         
         # Decorative line
         c.setStrokeColorRGB(0.6, 0.4, 0.8)
         c.setLineWidth(1)
-        c.line(50, A4_HEIGHT/2 + 150, A5_WIDTH - 50, A4_HEIGHT/2 + 150)
+        c.line(40, HALF_HEIGHT/2 + 100, HALF_WIDTH - 40, HALF_HEIGHT/2 + 100)
         
         # Book title
         c.setFillColorRGB(1, 1, 1)
-        c.setFont("Helvetica-Bold", 18)
+        c.setFont("Helvetica-Bold", 16)
         book_title = book.get("title", "Untitled")
-        c.drawCentredString(A5_WIDTH/2, A4_HEIGHT/2 + 100, book_title)
+        c.drawCentredString(HALF_WIDTH/2, HALF_HEIGHT/2 + 70, book_title)
         
         # Author
-        c.setFont("Helvetica-Oblique", 14)
+        c.setFont("Helvetica-Oblique", 12)
         c.setFillColorRGB(0.85, 0.8, 0.95)
-        c.drawCentredString(A5_WIDTH/2, A4_HEIGHT/2 + 70, f"by {book.get('author_name', 'Unknown')}")
+        c.drawCentredString(HALF_WIDTH/2, HALF_HEIGHT/2 + 50, f"by {book.get('author_name', 'Unknown')}")
         
         # Description/summary if available
         desc = book.get("back_cover_text") or book.get("description", "")
