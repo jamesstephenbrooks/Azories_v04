@@ -719,7 +719,7 @@ export default function Dashboard() {
                         ) : (
                           <>
                             <FiZap className="mr-2" />
-                            Create My Story {trialStatus.in_trial ? '(Free Trial)' : `(${AI_STORY_COST} credits)`}
+                            Create My Story {trialStatus.in_trial ? '(Free)' : `(${AI_STORY_COST} credits)`}
                           </>
                         )}
                       </Button>
