@@ -12,99 +12,126 @@ User wants to enhance their "Azories" digital book application with:
 
 ### P0 - Critical
 - **Book Reader Experience**: Must be fully optimized for mobile and desktop ✅
-- **Art/Pro Studio Mobile**: Core creation tools usable on mobile
-- **Character Thumbnail Generation**: Auto-generate when character created
-- **Consistent Layout**: Image LEFT, text RIGHT for every page ✅
-- **Data Consistency**: Immediate updates, permanent image storage ✅
-- **Content Quality**: No text baked into illustrations ✅ (Feb 28)
-- **AI Story Creator Free Stories**: New users get 3 free story creations ✅ (Mar 1)
+- **Art/Pro Studio Mobile**: Core creation tools usable on mobile ✅
+- **AI Story Creator Page Count**: Must create exact number of pages requested ✅ (Mar 1)
+- **AI Story Creator Images**: Each page must have fal.ai generated image ✅ (Mar 1)
+- **Free Stories Trial**: New users get 3 free story creations ✅ (Mar 1)
+- **BookEditor Mobile Layout**: Responsive design matching ProStudio/Creators ✅ (Mar 1)
 
 ### P1 - High Priority
 - Monetization and tier gating (Stripe) ✅
 - Generate long-form stories for 17 books with short text
 - Update text for 8 books (awaiting .docx files)
 - Ingest Batch 3C books (5 new books)
-- Production deployment for 24/7 uptime
+- Production deployment for 24/7 uptime ✅ READY
 - **Regenerate covers** for 25 books (to match interior Pixar style)
 
 ### P2 - Medium Priority
 - Refactor server.py into modular route files
 - Refactor large frontend components (ProStudio.js, BookEditor.js)
-- Save planning documents to /app/memory/
 - Audio caching for faster narration startup
 
 ## Current State (March 1, 2026)
 
 ### Completed ✅
-- **Free Stories Trial System** - 3 free AI story creations for new users (Mar 1, 2026)
+- **AI Story Creator Page Count Fix** - Now creates exact number of requested pages (Mar 1)
+- **AI Story Creator Images** - All pages get fal.ai images uploaded to Cloudinary (Mar 1)
+- **BookEditor Mobile Layout** - Responsive design with Visual/Text tabs, floating bottom bar (Mar 1)
+- **Free Stories Trial System** - 3 free AI story creations for new users (Mar 1)
 - **Credits System** - Full Stripe integration for credit purchases
-- **AI Story Creator** - Complete form redesign with fal.ai image generation
 - **249 page images regenerated** - Pixar style, portrait, no text (Feb 27-28)
 - **25 books now visible** in public library
-- **"Opening book..." bug fixed** - Auth issue resolved
 - Page turning buttons working
 - Text displaying on right page
 - 80% viewport height on desktop
 - Images fill left page properly
 - "Art Studio" renamed to "Creators"
-- Back button added to Credits page
+
+### Production Ready ✅
+Deployment agent verified:
+- All environment variables properly configured
+- CORS allows all origins
+- MongoDB connection reads from environment
+- Supervisor configuration valid
+- No hardcoded secrets
 
 ### Pending Tasks 🔴
 - **Regenerate covers for 25 books** (still old watercolor style)
 - **17 books need story text expansion** (short placeholder → full stories)
 - **8 books need text from .docx files**
 - **5 new books to ingest** (Batch 3C)
-- End-to-end test of AI Story Creator with image generation
-- Verify mobile back cover display fix
 
-### Books Status
-- **44 visible** in library (including all 25 regenerated books)
-- **20 hidden** (various issues)
+## AI Story Creator Technical Details
 
-## Free Stories Trial System (Mar 1, 2026)
+### Page Count Fix Implementation
+```python
+# After AI generates story, validate page count
+actual_pages = len(story_data.get("pages", []))
+expected_pages = request.num_pages
 
-### Implementation Details
-- New users get `free_stories_remaining: 3` and `free_stories_used: 0` on registration
-- Existing users without these fields get 3 free stories automatically
-- API `/api/auth/ai-story-trial` returns:
-  - `has_free_stories`: boolean
-  - `free_stories_remaining`: int
-  - `free_stories_used`: int
-  - `display_text`: string (e.g., "3 free stories remaining")
-  - `in_trial`: boolean (legacy compatibility)
-- When story is created:
-  - If free stories available: decrement `free_stories_remaining`, increment `free_stories_used`
-  - If no free stories: deduct 5 credits (402 error if insufficient)
+if actual_pages < expected_pages:
+    # Send continuation prompt for remaining pages
+    remaining_pages = expected_pages - actual_pages
+    continuation_prompt = f"Continue with {remaining_pages} more pages..."
+    additional_pages = await chat.send_message(continuation_prompt)
+    story_data["pages"].extend(additional_pages)
+```
 
-### Test Coverage
-- 9/9 backend tests passed
-- Frontend correctly shows free stories banner or credit cost
-- Test file: `/app/backend/tests/test_free_stories_trial.py`
+### Image Generation Flow
+1. Story text generated via Emergent LLM Chat (GPT)
+2. For each page, image prompt sent to fal.ai
+3. Generated image uploaded to Cloudinary
+4. Cloudinary URL stored in page document
+
+## BookEditor Mobile Responsive Pattern
+
+### State Management
+```javascript
+const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+const [mobileActivePanel, setMobileActivePanel] = useState('visual');
+```
+
+### Layout Breakpoints
+- **Mobile (<1024px)**: Visual/Text toggle tabs, stacked panels, floating bottom bar
+- **Desktop (≥1024px)**: Side-by-side panels, fixed sidebar
+
+### Key CSS Classes
+- `lg:hidden` - Mobile-only elements
+- `hidden lg:flex` - Desktop-only elements  
+- `flex-col lg:flex-row` - Stacking on mobile, row on desktop
+- `safe-area-bottom` - iPhone notch compatibility
 
 ## Tech Stack
 - Frontend: React with react-pageflip library
 - Backend: FastAPI (Python)
-- Database: MongoDB (test_database)
+- Database: MongoDB (azories)
 - Image Storage: Cloudinary
-- AI: OpenAI (TTS, thumbnails), fal.ai (image gen)
+- AI: fal.ai (images), OpenAI (TTS)
 - Payments: Stripe
 
 ## Key Files
-- /app/frontend/src/pages/Dashboard.js - AI Story Creator dialog
-- /app/frontend/src/pages/BookReader.js
-- /app/frontend/src/components/RealisticPageFlip.jsx
-- /app/backend/server.py - Main API with free stories logic
-- /app/backend/tests/test_free_stories_trial.py
+- `/app/backend/server.py`: Core API logic
+- `/app/frontend/src/pages/Dashboard.js`: AI Story Creator dialog
+- `/app/frontend/src/pages/BookEditor.js`: Mobile-responsive book editor
+- `/app/frontend/src/pages/BookReader.js`: Reading experience
+
+## Test Reports
+- `/app/test_reports/iteration_42.json` - Free stories trial tests
+- `/app/test_reports/iteration_43.json` - Page count and mobile layout tests
+- `/app/backend/tests/test_free_stories_trial.py`
+- `/app/backend/tests/test_ai_story_page_count.py`
 
 ## Test Credentials
 - Admin: jamesstephenbrooks@outlook.com / Routetofreedom
 
 ## Next Session Tasks (Priority Order)
-1. End-to-end test of AI Story Creator (create story, verify images generated)
-2. Verify mobile back cover display fix
-3. Regenerate covers for 25 books (match Pixar interior style)
-4. Generate long-form text for 17 books
-5. Update text for 8 books from .docx files
-6. Ingest 5 new books (Batch 3C)
-7. Audio caching implementation
-8. Refactor server.py
+1. ~~AI Story Creator page count fix~~ ✅
+2. ~~End-to-end test with 5 pages~~ ✅
+3. ~~BookEditor mobile layout~~ ✅
+4. ~~Deploy to production~~ READY
+5. Regenerate covers for 25 books (match Pixar interior style)
+6. Generate long-form text for 17 books
+7. Update text for 8 books from .docx files
+8. Ingest 5 new books (Batch 3C)
+9. Audio caching implementation
+10. Refactor server.py
