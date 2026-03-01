@@ -2280,9 +2280,10 @@ export default function BookEditor() {
                               className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-pink-500 transition-all bg-muted/30"
                             >
                               <img 
-                                src={img.image_url} 
+                                src={getOptimizedThumbnail(img.image_url, 120)} 
                                 alt={`${char.name} image`}
-                                className="w-full h-full object-contain"
+                                className="w-full h-full object-cover"
+                                loading="lazy"
                                 onError={(e) => {
                                   e.target.onerror = null;
                                   e.target.src = '/placeholder-character.svg';
