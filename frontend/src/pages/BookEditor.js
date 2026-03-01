@@ -2439,7 +2439,7 @@ export default function BookEditor() {
               </ScrollArea>
             )}
             
-            {/* Book & Art Studio images for cover */}
+            {/* Book & Creators images for cover */}
             {(galleryTab === 'book' || galleryTab === 'all') && (() => {
               const currentImages = galleryTab === 'book' ? galleryImages : generalGalleryImages;
               
