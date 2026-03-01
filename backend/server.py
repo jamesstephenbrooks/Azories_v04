@@ -5381,6 +5381,20 @@ Return ONLY the JSON array, no other text."""
             except Exception as cover_error:
                 logger.error(f"Failed to generate cover: {str(cover_error)}")
         
+        # Add Azories branded back cover to every AI-created book
+        # Use the standard Azories back cover template
+        azories_back_cover_url = "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772281331/azories/back_covers/azories_standard_back.png"
+        back_cover_text = story_data.get("description", request.story_description)[:200]
+        
+        await db.books.update_one(
+            {"id": book_id},
+            {"$set": {
+                "back_cover_image": azories_back_cover_url,
+                "back_cover_text": back_cover_text
+            }}
+        )
+        logger.info("Added Azories branded back cover to AI-created book")
+        
         return {
             "success": True,
             "book_id": book_id,
@@ -5388,6 +5402,7 @@ Return ONLY the JSON array, no other text."""
             "pages_created": len(pages_created),
             "images_generated": images_generated,
             "cover_image": cover_image_url,
+            "back_cover_image": azories_back_cover_url,
             "pages": pages_created,
             "message": f"Story created with {images_generated} images!" if images_generated > 0 else "Story created! Navigate to editor to generate images."
         }
