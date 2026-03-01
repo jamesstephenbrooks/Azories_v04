@@ -1401,8 +1401,15 @@ async def forgot_password(request: ForgotPasswordRequest, background_tasks: Back
     # Send reset email (with unhashed token)
     if email_configured():
         reset_html = get_password_reset_email_html(user["name"], reset_token, reset_url)
-        background_tasks.add_task(send_email, request.email, "Reset Your Azories Password", reset_html)
-        logger.info(f"Password reset email queued for {request.email}")
+        # Send email directly (not in background) to ensure delivery
+        try:
+            result = await send_email(request.email, "Reset Your Azories Password", reset_html)
+            if result.get("success"):
+                logger.info(f"Password reset email sent to {request.email}, email_id: {result.get('email_id')}")
+            else:
+                logger.error(f"Password reset email failed for {request.email}: {result.get('error')}")
+        except Exception as e:
+            logger.error(f"Password reset email error for {request.email}: {str(e)}")
     else:
         logger.warning(f"Email not configured - reset token for {request.email}: {reset_token}")
     
