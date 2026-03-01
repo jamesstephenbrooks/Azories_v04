@@ -2349,17 +2349,17 @@ async def download_book_pdf(book_id: str, current_user: dict = Depends(get_curre
 @api_router.get("/books/{book_id}/print-pdf")
 async def download_printable_pdf(book_id: str, current_user: dict = Depends(get_current_user)):
     """
-    Download a printable A5 booklet PDF.
+    Download a printable A5 booklet PDF in LANDSCAPE orientation.
     
-    Layout: Each A4 page is split into two A5 halves:
-    - Left half: Full illustration (fills entire half, cropped to fit)
-    - Right half: Story text (left-aligned, 14pt font)
+    Layout: Each A4 LANDSCAPE page (297mm x 210mm) is split into two A5 portrait halves:
+    - Left half (148.5mm x 210mm): Full illustration (fills entire half, cropped to fit)
+    - Right half (148.5mm x 210mm): Story text (left-aligned, 14pt font)
     
-    When printed double-sided and folded, creates a real A5 picture book.
+    When printed on A4 landscape and folded in half, creates a proper A5 portrait picture book.
     
     Cost: 5 credits per download.
     """
-    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.pagesizes import A4, landscape
     from reportlab.lib.units import mm
     from reportlab.pdfgen import canvas
     from reportlab.lib.utils import ImageReader
