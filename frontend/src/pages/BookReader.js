@@ -84,17 +84,12 @@ export default function BookReader() {
     activeTimeoutsRef.current.clear();
   }, []);
   
-  // Comprehensive cleanup function
+  // Comprehensive cleanup function (called on unmount)
+  // NOTE: Does NOT abort controller - that's handled separately to avoid race conditions
   const performFullCleanup = useCallback(() => {
     console.log('[BookReader] Performing full cleanup...');
     
-    // 1. Cancel any pending API requests
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-      abortControllerRef.current = null;
-    }
-    
-    // 2. Stop and destroy audio element
+    // 1. Stop and destroy audio element
     if (audioElement) {
       audioElement.pause();
       audioElement.src = '';
@@ -103,14 +98,14 @@ export default function BookReader() {
       audioElement.oncanplay = null;
     }
     
-    // 3. Clear audio cache
+    // 2. Clear audio cache
     audioCache.current.clear();
     preloadingPages.current.clear();
     
-    // 4. Clear all timeouts
+    // 3. Clear all timeouts
     clearAllTimeouts();
     
-    // 5. Reset refs
+    // 4. Reset refs
     lastPlayedPageRef.current = -999;
     autoReadRef.current = false;
     shouldStartPlayingRef.current = false;
