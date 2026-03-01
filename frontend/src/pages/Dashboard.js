@@ -1227,7 +1227,10 @@ export default function Dashboard() {
                             variant="outline" 
                             size="icon" 
                             className="rounded-full text-destructive hover:bg-destructive hover:text-destructive-foreground"
-                            onClick={() => deleteBook(book.id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteBook(book.id);
+                            }}
                             data-testid={`delete-book-${book.id}`}
                           >
                             <FiTrash2 className="w-4 h-4" />
