@@ -9547,6 +9547,38 @@ async def unpublish_book(book_id: str, current_user: dict = Depends(get_current_
     
     return {"success": True, "message": "Book unpublished and returned to draft status"}
 
+
+@api_router.get("/admin/books")
+async def admin_get_all_books(
+    limit: int = 100,
+    skip: int = 0,
+    status: Optional[str] = None,
+    admin: dict = Depends(get_admin_user)
+):
+    """Get all books for admin (with optional status filter)"""
+    query = {}
+    if status:
+        if status == "published":
+            query["is_published"] = True
+        elif status == "draft":
+            query["publish_status"] = "draft"
+        elif status == "pending":
+            query["publish_status"] = "pending_review"
+    
+    total = await db.books.count_documents(query)
+    books = await db.books.find(
+        query,
+        {"_id": 0}
+    ).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    
+    return {
+        "books": books,
+        "total": total,
+        "limit": limit,
+        "skip": skip
+    }
+
+
 @api_router.post("/admin/books/{book_id}/approve")
 async def admin_approve_book(book_id: str, background_tasks: BackgroundTasks, admin: dict = Depends(get_admin_user)):
     """Admin endpoint to approve a book for publication"""
