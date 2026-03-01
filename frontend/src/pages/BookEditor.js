@@ -1051,24 +1051,38 @@ export default function BookEditor() {
 
   if (!user) return null;
 
+  // Mobile sidebar state
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [mobileActivePanel, setMobileActivePanel] = useState('visual'); // 'visual' | 'text'
+  
   return (
     <div className="min-h-screen bg-background">
       {/* Top Bar */}
-      <div className="glass fixed top-0 left-0 right-0 z-40 px-4 py-3">
+      <div className="glass fixed top-0 left-0 right-0 z-40 px-3 lg:px-4 py-2 lg:py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 lg:gap-4">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => navigate('/dashboard')}
-              className="rounded-full"
+              className="rounded-full w-8 h-8 lg:w-10 lg:h-10"
               data-testid="back-to-dashboard"
             >
-              <FiArrowLeft className="w-5 h-5" />
+              <FiArrowLeft className="w-4 h-4 lg:w-5 lg:h-5" />
             </Button>
-            <div>
+            {/* Mobile sidebar toggle */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+              className="rounded-full w-8 h-8 lg:hidden"
+              data-testid="toggle-sidebar-mobile"
+            >
+              <FiLayers className="w-4 h-4" />
+            </Button>
+            <div className="hidden sm:block">
               <div className="flex items-center gap-2">
-                <h1 className="font-heading text-lg font-semibold">
+                <h1 className="font-heading text-base lg:text-lg font-semibold line-clamp-1">
                   {book?.title || 'Book Editor'}
                 </h1>
                 {isComicMode && (
@@ -1077,56 +1091,64 @@ export default function BookEditor() {
                   </span>
                 )}
               </div>
-              <p className="font-body text-sm text-muted-foreground">
+              <p className="font-body text-xs lg:text-sm text-muted-foreground line-clamp-1">
                 {selectedChapter?.title || 'No chapter selected'}
               </p>
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
-            {/* Collaborative Writing Button */}
-            <CollaborativeWriting 
-              bookId={bookId} 
-              isOwner={book?.author_id === user?.id}
-              currentCollaborators={book?.collaborators || []}
-              onUpdate={() => fetchBook()}
-            />
+          <div className="flex items-center gap-1 lg:gap-2">
+            {/* Collaborative Writing Button - hidden on small screens */}
+            <div className="hidden md:block">
+              <CollaborativeWriting 
+                bookId={bookId} 
+                isOwner={book?.author_id === user?.id}
+                currentCollaborators={book?.collaborators || []}
+                onUpdate={() => fetchBook()}
+              />
+            </div>
             
+            {/* PDF button - icon only on mobile */}
             <Button
               variant="outline"
-              className="rounded-full"
+              size="icon"
+              className="rounded-full w-8 h-8 lg:w-auto lg:h-auto lg:px-4"
               onClick={downloadBook}
               data-testid="download-book-btn"
             >
-              <FiDownload className="mr-2 w-4 h-4" />
-              PDF
+              <FiDownload className="w-4 h-4 lg:mr-2" />
+              <span className="hidden lg:inline">PDF</span>
             </Button>
             
+            {/* Preview button - icon only on mobile */}
             <Button
               variant="outline"
+              size="icon"
               onClick={() => navigate(`/read/${bookId}`)}
-              className="rounded-full"
+              className="rounded-full w-8 h-8 lg:w-auto lg:h-auto lg:px-4"
               data-testid="preview-book"
             >
-              <FiBook className="mr-2 w-4 h-4" />
-              Preview
+              <FiBook className="w-4 h-4 lg:mr-2" />
+              <span className="hidden lg:inline">Preview</span>
             </Button>
             
-            {/* Unsaved changes indicator */}
+            {/* Unsaved changes indicator - smaller on mobile */}
             {hasUnsavedChanges && (
-              <span className="px-2 py-1 text-xs bg-amber-500/20 text-amber-500 rounded-full animate-pulse">
-                Unsaved changes
+              <span className="hidden sm:inline px-2 py-1 text-xs bg-amber-500/20 text-amber-500 rounded-full animate-pulse">
+                Unsaved
               </span>
             )}
             
+            {/* Save button */}
             <Button
               onClick={savePage}
               disabled={saving || !selectedPage}
-              className={`rounded-full ${hasUnsavedChanges ? 'bg-amber-500 hover:bg-amber-600' : ''}`}
+              size="icon"
+              className={`rounded-full w-8 h-8 lg:w-auto lg:h-auto lg:px-4 ${hasUnsavedChanges ? 'bg-amber-500 hover:bg-amber-600' : ''}`}
               data-testid="save-page"
             >
-              <FiSave className="mr-2 w-4 h-4" />
-              {saving ? 'Saving...' : 'Save'}
+              <FiSave className="w-4 h-4 lg:mr-2" />
+              <span className="hidden lg:inline">{saving ? 'Saving...' : 'Save'}</span>
             </Button>
           </div>
         </div>
