@@ -747,8 +747,11 @@ export default function Dashboard() {
                       </div>
                       
                       {/* Main Character Section */}
-                      <div className="space-y-4 pt-4 border-t border-border">
-                        <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Main Character</h3>
+                      <div id="ai-story-character-section" className="space-y-4 pt-4 border-t border-border">
+                        <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide flex items-center gap-2">
+                          Main Character
+                          {templateHighlight && <span className="text-xs text-purple-500 animate-pulse">✨ Template loaded!</span>}
+                        </h3>
                         
                         <div className="space-y-2">
                           <Label className="font-ui">Character Name</Label>
@@ -756,7 +759,7 @@ export default function Dashboard() {
                             value={aiStory.character_name}
                             onChange={(e) => setAIStory({ ...aiStory, character_name: e.target.value })}
                             placeholder="Finn"
-                            className="rounded-xl border-2"
+                            className={`rounded-xl border-2 transition-all duration-500 ${templateHighlight ? 'border-purple-500 bg-purple-500/10 ring-2 ring-purple-500/30' : ''}`}
                           />
                         </div>
                         
@@ -766,7 +769,7 @@ export default function Dashboard() {
                             value={aiStory.character_description}
                             onChange={(e) => setAIStory({ ...aiStory, character_description: e.target.value })}
                             placeholder="A small brave fox with orange fur and big curious eyes who loves exploring"
-                            className="min-h-20 rounded-xl border-2"
+                            className={`min-h-20 rounded-xl border-2 transition-all duration-500 ${templateHighlight ? 'border-purple-500 bg-purple-500/10 ring-2 ring-purple-500/30' : ''}`}
                           />
                         </div>
                       </div>
