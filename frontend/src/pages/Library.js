@@ -436,6 +436,11 @@ export default function Library() {
 
   // Newly Added Section - Horizontal scroll row
   const NewlyAddedSection = () => {
+    // Show skeleton while loading
+    if (loading && newlyAddedBooks.length === 0) {
+      return <SectionSkeleton title="Newly Added" icon="🆕" />;
+    }
+    
     if (newlyAddedBooks.length === 0) return null;
     
     return (
@@ -460,6 +465,11 @@ export default function Library() {
 
   // Coming Soon Section - Horizontal scroll row with blurred cards
   const ComingSoonSection = () => {
+    // Show skeleton while loading
+    if (loading && comingSoonBooks.length === 0) {
+      return <SectionSkeleton title="Coming Soon" icon="👀" />;
+    }
+    
     if (comingSoonBooks.length === 0) return null;
     
     return (
