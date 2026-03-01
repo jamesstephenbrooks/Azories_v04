@@ -4853,26 +4853,27 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
     if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Pro subscription required")
     
-    # Check if user is in free trial period (48 hours from signup)
-    trial_start = current_user.get("trial_start_date") or current_user.get("created_at")
-    is_in_trial = False
-    trial_remaining_hours = 0
+    # Check if user has free stories remaining (3 free stories for new users)
+    free_stories_remaining = current_user.get("free_stories_remaining")
+    free_stories_used = current_user.get("free_stories_used", 0)
     
-    if trial_start:
-        try:
-            if isinstance(trial_start, str):
-                trial_start = datetime.fromisoformat(trial_start.replace('Z', '+00:00'))
-            trial_end = trial_start + timedelta(hours=48)
-            now = datetime.now(timezone.utc)
-            if now < trial_end:
-                is_in_trial = True
-                trial_remaining_hours = (trial_end - now).total_seconds() / 3600
-                logger.info(f"User {current_user['id']} is in trial period ({trial_remaining_hours:.1f} hours remaining)")
-        except Exception as e:
-            logger.warning(f"Trial check error: {e}")
+    # For existing users without the field, give them 3 free stories
+    if free_stories_remaining is None:
+        free_stories_remaining = max(0, 3 - free_stories_used)
     
-    # Only deduct credits if NOT in trial
-    if not is_in_trial:
+    has_free_stories = free_stories_remaining > 0
+    
+    if has_free_stories:
+        # Use a free story - decrement remaining and increment used
+        new_remaining = free_stories_remaining - 1
+        new_used = free_stories_used + 1
+        await db.users.update_one(
+            {"id": current_user["id"]},
+            {"$set": {"free_stories_remaining": new_remaining, "free_stories_used": new_used}}
+        )
+        logger.info(f"User {current_user['id']} using free story ({new_remaining} remaining)")
+    else:
+        # No free stories left - deduct credits
         if not await deduct_credits(current_user["id"], "ai_story_create"):
             current_credits = current_user.get("credits", 0)
             required_credits = CREDIT_COSTS.get("ai_story_create", 5)
@@ -4880,8 +4881,6 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
                 status_code=402, 
                 detail=f"Insufficient credits. You have {current_credits} credits but need {required_credits}. Please purchase more credits to continue."
             )
-    else:
-        logger.info(f"Trial user - skipping credit deduction for story creation")
     
     try:
         if not EMERGENT_LLM_KEY:
