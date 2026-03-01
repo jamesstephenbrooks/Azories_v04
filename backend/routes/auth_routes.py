@@ -81,6 +81,7 @@ class UserResponse(BaseModel):
     pro_trial: bool = False
     pro_trial_expires_at: Optional[str] = None
     trial_days_remaining: Optional[int] = None
+    is_admin: bool = False
 
 class TokenResponse(BaseModel):
     access_token: str
