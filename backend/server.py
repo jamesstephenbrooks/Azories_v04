@@ -104,17 +104,22 @@ except ImportError as e:
 import asyncio
 
 def get_mongo_connection():
-    """Get MongoDB connection from environment."""
+    """Get MongoDB connection from environment with timeouts for K8s deployment."""
     mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
     db_name = os.environ.get('DB_NAME', 'azories')
     
-    # Log connection info (mask credentials)
-    # if 'mongodb+srv' in mongo_url or 'mongodb.net' in mongo_url:
-    #     logging.info(f"MongoDB: Using managed Atlas connection, database: {db_name}")
-    # else:
-    #     logging.info(f"MongoDB: Using local connection ({mongo_url}), database: {db_name}")
+    # Add connection timeouts for faster failure detection in K8s
+    # This prevents long hangs during health checks
+    client = AsyncIOMotorClient(
+        mongo_url,
+        serverSelectionTimeoutMS=5000,  # 5s to select server
+        connectTimeoutMS=5000,           # 5s to connect
+        socketTimeoutMS=10000,           # 10s for socket operations
+        maxPoolSize=50,                  # Connection pool size
+        retryWrites=True
+    )
     
-    return AsyncIOMotorClient(mongo_url), db_name
+    return client, db_name
 
 # Initialize MongoDB connection
 client, db_name = get_mongo_connection()
