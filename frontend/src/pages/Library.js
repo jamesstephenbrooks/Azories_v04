@@ -159,7 +159,8 @@ const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 300
 };
 
 // Lazy load the 3D component
-const ImmersiveLibrary3D = lazy(() => import('@/components/ImmersiveLibrary3D'));
+// 3D Library TEMPORARILY DISABLED - causing production issues
+// const ImmersiveLibrary3D = lazy(() => import('@/components/ImmersiveLibrary3D'));
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
