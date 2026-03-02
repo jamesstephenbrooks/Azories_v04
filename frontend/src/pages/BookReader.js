@@ -431,10 +431,24 @@ export default function BookReader() {
     // Create new AbortController for THIS book session
     abortControllerRef.current = new AbortController();
     
+    // RESET ALL STATE for fresh book load - critical for multi-book navigation
+    setBook(null);
+    setLoading(true);
+    setCurrentPage(-1);
+    setAllPages([]);
+    setAudioElement(null);
+    setIsPlaying(false);
+    setAudioLoading(false);
+    setNarrationPreparing(false);
+    setNarrationReady(false);
+    setRequiresAuth(false);
+    
     // Clear previous book's cache immediately when bookId changes
     audioCache.current.clear();
     preloadingPages.current.clear();
     lastPlayedPageRef.current = -999;
+    autoReadRef.current = false;
+    shouldStartPlayingRef.current = false;
     
     if (!authLoading) {
       // Ensure axios has the auth header set if user is logged in
