@@ -2799,131 +2799,117 @@ export default function ArtStudio() {
                         </div>
                       )}
                       
-                      {filteredGallery.length === 0 ? (
-                        <div className="text-center py-12">
-                          {galleryTypeFilter === 'animations' ? (
-                            <>
-                              <FiVideo className="w-16 h-16 text-white/20 mx-auto mb-4" />
-                              <p className="text-white/50">No animations yet. Create some in the Animate tab!</p>
-                            </>
-                          ) : (
-                            <>
-                              <FiImage className="w-16 h-16 text-white/20 mx-auto mb-4" />
-                              <p className="text-white/50">
-                                {galleryFilter === 'all' 
-                                  ? 'No images yet. Start creating!' 
-                                  : 'No images for this book yet.'}
-                              </p>
-                            </>
-                          )}
-                        </div>
-                      ) : (
-                        <div className="space-y-4">
-                          {/* Pro Studio Section */}
-                          {proStudioItems.length > 0 && (
-                            <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-xl border border-yellow-500/20 overflow-hidden">
-                              <button
-                                onClick={() => setProStudioExpanded(!proStudioExpanded)}
-                                className="w-full px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-colors"
-                              >
-                                <div className="flex items-center gap-2">
-                                  <div className="w-6 h-6 rounded bg-gradient-to-r from-yellow-500 to-orange-500 flex items-center justify-center">
-                                    <FiStar className="w-3 h-3 text-white" />
-                                  </div>
-                                  <span className="text-sm font-semibold text-yellow-300">Pro Studio</span>
-                                  <span className="text-xs text-yellow-400/60">
-                                    ({proStudioItems.filter(i => i.type !== 'animation').length} images, {proStudioItems.filter(i => i.type === 'animation').length} films)
-                                  </span>
-                                </div>
-                                <FiChevronDown className={`w-4 h-4 text-yellow-400 transition-transform ${proStudioExpanded ? 'rotate-180' : ''}`} />
-                              </button>
-                              {proStudioExpanded && (
-                                <div className="p-4 pt-0">
-                                  {/* Images sub-section */}
-                                  {proStudioItems.filter(i => i.type !== 'animation').length > 0 && (
-                                    <div className="mb-4">
-                                      <div className="flex items-center gap-2 mb-2">
-                                        <FiImage className="w-3 h-3 text-yellow-400" />
-                                        <span className="text-xs font-medium text-yellow-300">Images</span>
-                                      </div>
-                                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                        {proStudioItems.filter(i => i.type !== 'animation').map(renderGalleryItem)}
-                                      </div>
-                                    </div>
-                                  )}
-                                  {/* Films sub-section */}
-                                  {proStudioItems.filter(i => i.type === 'animation').length > 0 && (
-                                    <div>
-                                      <div className="flex items-center gap-2 mb-2">
-                                        <FiVideo className="w-3 h-3 text-orange-400" />
-                                        <span className="text-xs font-medium text-orange-300">Films</span>
-                                      </div>
-                                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                        {proStudioItems.filter(i => i.type === 'animation').map(renderGalleryItem)}
-                                      </div>
-                                    </div>
-                                  )}
-                                  {proStudioItems.length === 0 && (
-                                    <p className="text-white/40 text-xs text-center py-4">No items yet</p>
-                                  )}
-                                </div>
-                              )}
+                      {/* Creator Studio Section - Always visible */}
+                      <div className="bg-purple-500/10 rounded-xl border border-purple-500/20 overflow-hidden mb-4">
+                        <button
+                          onClick={() => setArtStudioExpanded(!artStudioExpanded)}
+                          className="w-full px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-colors"
+                        >
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                              <FiImage className="w-3 h-3 text-white" />
                             </div>
-                          )}
-                          
-                          {/* Creator Studio Section (was Art Studio / Creators) */}
-                          {artStudioItems.length > 0 && (
-                            <div className="bg-purple-500/10 rounded-xl border border-purple-500/20 overflow-hidden">
-                              <button
-                                onClick={() => setArtStudioExpanded(!artStudioExpanded)}
-                                className="w-full px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-colors"
-                              >
-                                <div className="flex items-center gap-2">
-                                  <div className="w-6 h-6 rounded bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
-                                    <FiImage className="w-3 h-3 text-white" />
+                            <span className="text-sm font-semibold text-purple-300">Creator Studio</span>
+                            <span className="text-xs text-purple-400/60">
+                              ({artStudioItems.filter(i => i.type !== 'animation').length} images, {artStudioItems.filter(i => i.type === 'animation').length} videos)
+                            </span>
+                          </div>
+                          <FiChevronDown className={`w-4 h-4 text-purple-400 transition-transform ${artStudioExpanded ? 'rotate-180' : ''}`} />
+                        </button>
+                        {artStudioExpanded && (
+                          <div className="p-4 pt-0">
+                            {artStudioItems.length > 0 ? (
+                              <>
+                                {/* Images sub-section */}
+                                {artStudioItems.filter(i => i.type !== 'animation').length > 0 && (
+                                  <div className="mb-4">
+                                    <div className="flex items-center gap-2 mb-2">
+                                      <FiImage className="w-3 h-3 text-purple-400" />
+                                      <span className="text-xs font-medium text-purple-300">Images</span>
+                                    </div>
+                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                                      {artStudioItems.filter(i => i.type !== 'animation').map(renderGalleryItem)}
+                                    </div>
                                   </div>
-                                  <span className="text-sm font-semibold text-purple-300">Creator Studio</span>
-                                  <span className="text-xs text-purple-400/60">
-                                    ({artStudioItems.filter(i => i.type !== 'animation').length} images, {artStudioItems.filter(i => i.type === 'animation').length} films)
-                                  </span>
-                                </div>
-                                <FiChevronDown className={`w-4 h-4 text-purple-400 transition-transform ${artStudioExpanded ? 'rotate-180' : ''}`} />
-                              </button>
-                              {artStudioExpanded && (
-                                <div className="p-4 pt-0">
-                                  {/* Images sub-section */}
-                                  {artStudioItems.filter(i => i.type !== 'animation').length > 0 && (
-                                    <div className="mb-4">
-                                      <div className="flex items-center gap-2 mb-2">
-                                        <FiImage className="w-3 h-3 text-purple-400" />
-                                        <span className="text-xs font-medium text-purple-300">Images</span>
-                                      </div>
-                                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                        {artStudioItems.filter(i => i.type !== 'animation').map(renderGalleryItem)}
-                                      </div>
+                                )}
+                                {/* Videos sub-section */}
+                                {artStudioItems.filter(i => i.type === 'animation').length > 0 && (
+                                  <div>
+                                    <div className="flex items-center gap-2 mb-2">
+                                      <FiVideo className="w-3 h-3 text-pink-400" />
+                                      <span className="text-xs font-medium text-pink-300">Videos</span>
                                     </div>
-                                  )}
-                                  {/* Films sub-section */}
-                                  {artStudioItems.filter(i => i.type === 'animation').length > 0 && (
-                                    <div>
-                                      <div className="flex items-center gap-2 mb-2">
-                                        <FiVideo className="w-3 h-3 text-pink-400" />
-                                        <span className="text-xs font-medium text-pink-300">Films</span>
-                                      </div>
-                                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                        {artStudioItems.filter(i => i.type === 'animation').map(renderGalleryItem)}
-                                      </div>
+                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                                      {artStudioItems.filter(i => i.type === 'animation').map(renderGalleryItem)}
                                     </div>
-                                  )}
-                                  {artStudioItems.length === 0 && (
-                                    <p className="text-white/40 text-xs text-center py-4">No items yet</p>
-                                  )}
-                                </div>
-                              )}
+                                  </div>
+                                )}
+                              </>
+                            ) : (
+                              <div className="text-center py-6">
+                                <FiImage className="w-10 h-10 text-purple-400/30 mx-auto mb-2" />
+                                <p className="text-purple-300/50 text-xs">No creations yet. Use the Character, Scene, or Animate tabs to start creating!</p>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Pro Studio Section - Always visible */}
+                      <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-xl border border-yellow-500/20 overflow-hidden">
+                        <button
+                          onClick={() => setProStudioExpanded(!proStudioExpanded)}
+                          className="w-full px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-colors"
+                        >
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded bg-gradient-to-r from-yellow-500 to-orange-500 flex items-center justify-center">
+                              <FiStar className="w-3 h-3 text-white" />
                             </div>
-                          )}
-                        </div>
-                      )}
+                            <span className="text-sm font-semibold text-yellow-300">Pro Studio</span>
+                            <span className="text-xs text-yellow-400/60">
+                              ({proStudioItems.filter(i => i.type !== 'animation').length} images, {proStudioItems.filter(i => i.type === 'animation').length} videos)
+                            </span>
+                          </div>
+                          <FiChevronDown className={`w-4 h-4 text-yellow-400 transition-transform ${proStudioExpanded ? 'rotate-180' : ''}`} />
+                        </button>
+                        {proStudioExpanded && (
+                          <div className="p-4 pt-0">
+                            {proStudioItems.length > 0 ? (
+                              <>
+                                {/* Images sub-section */}
+                                {proStudioItems.filter(i => i.type !== 'animation').length > 0 && (
+                                  <div className="mb-4">
+                                    <div className="flex items-center gap-2 mb-2">
+                                      <FiImage className="w-3 h-3 text-yellow-400" />
+                                      <span className="text-xs font-medium text-yellow-300">Images</span>
+                                    </div>
+                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                                      {proStudioItems.filter(i => i.type !== 'animation').map(renderGalleryItem)}
+                                    </div>
+                                  </div>
+                                )}
+                                {/* Videos sub-section */}
+                                {proStudioItems.filter(i => i.type === 'animation').length > 0 && (
+                                  <div>
+                                    <div className="flex items-center gap-2 mb-2">
+                                      <FiVideo className="w-3 h-3 text-orange-400" />
+                                      <span className="text-xs font-medium text-orange-300">Videos</span>
+                                    </div>
+                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                                      {proStudioItems.filter(i => i.type === 'animation').map(renderGalleryItem)}
+                                    </div>
+                                  </div>
+                                )}
+                              </>
+                            ) : (
+                              <div className="text-center py-6">
+                                <FiStar className="w-10 h-10 text-yellow-400/30 mx-auto mb-2" />
+                                <p className="text-yellow-300/50 text-xs">No Pro Studio creations yet. Visit Pro Studio to create professional content!</p>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </>
                   );
                 })()}
