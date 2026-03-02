@@ -862,22 +862,21 @@ export default function Library() {
                 </div>
               )}
               
-              {/* Immersive 3D Gothic Library View */}
+              {/* Immersive 3D Gothic Library View - TEMPORARILY DISABLED */}
               {viewMode === 'immersive' ? (
-                <Suspense fallback={
-                  <div className="w-full h-[700px] rounded-3xl bg-black flex items-center justify-center">
-                    <div className="text-center space-y-4">
-                      <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-                      <p className="text-white text-lg">Loading Gothic Library...</p>
-                      <p className="text-white/60 text-sm">Preparing an immersive experience</p>
-                    </div>
+                <div className="w-full h-[700px] rounded-3xl bg-gradient-to-b from-purple-900/50 to-black flex items-center justify-center">
+                  <div className="text-center space-y-4 p-8">
+                    <div className="text-6xl mb-4">🏰</div>
+                    <p className="text-white text-2xl font-bold">Grand Library Upgrade in Progress</p>
+                    <p className="text-white/60 text-lg max-w-md">We're enhancing the 3D experience for better performance. Check back soon!</p>
+                    <button 
+                      onClick={() => setViewMode('grid')}
+                      className="mt-4 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-colors"
+                    >
+                      Return to Library
+                    </button>
                   </div>
-                }>
-                  <ImmersiveLibrary3D 
-                    books={books}
-                    onClose={() => setViewMode('grid')}
-                    onSelectBook={(book) => navigate(`/read/${book.id}`)}
-                  />
+                </div>
                 </Suspense>
               ) : (
               /* Books Grid with Recommendations */
