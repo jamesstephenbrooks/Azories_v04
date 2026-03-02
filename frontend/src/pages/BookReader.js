@@ -1320,7 +1320,7 @@ export default function BookReader() {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => navigate('/library')}
+                onClick={handleBackToLibrary}
                 className={`rounded-full flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10`}
               >
                 <FiArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
