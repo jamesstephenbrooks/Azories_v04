@@ -1346,10 +1346,10 @@ export default function ProStudio() {
         
         // Handle non-OK responses
         if (!response.ok) {
-          // Handle gateway errors (502, 504) - retry silently
-          if (response.status === 502 || response.status === 504 || response.status === 503) {
+          // Handle gateway errors (502, 503, 504) and Cloudflare timeout (524) - retry silently
+          if (response.status === 502 || response.status === 503 || response.status === 504 || response.status === 524) {
             consecutiveErrors++;
-            console.log(`Task ${taskId}: Gateway error ${response.status}, retry ${consecutiveErrors}/10`);
+            console.log(`Task ${taskId}: Gateway/timeout error ${response.status}, retry ${consecutiveErrors}/10`);
             if (consecutiveErrors >= 10) {
               throw new Error('Server temporarily unavailable. The task may still be processing - please check the Gallery later.');
             }
@@ -1453,8 +1453,8 @@ export default function ProStudio() {
       });
 
       if (!startResponse.ok) {
-        // Handle gateway errors
-        if (startResponse.status === 502 || startResponse.status === 504) {
+        // Handle gateway errors and Cloudflare timeout
+        if (startResponse.status === 502 || startResponse.status === 503 || startResponse.status === 504 || startResponse.status === 524) {
           throw new Error('Server is busy. Please try again in a moment.');
         }
         // Try to parse error response

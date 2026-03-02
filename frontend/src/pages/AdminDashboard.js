@@ -14,8 +14,12 @@ import {
   FiShield, FiBook, FiCheck, FiX, FiAlertTriangle, 
   FiEye, FiEyeOff, FiClock, FiUser, FiArrowLeft, FiLogIn, FiSearch, FiRefreshCw,
   FiUsers, FiBarChart2, FiStar, FiAward, FiTrash2, FiLock, FiLogOut, FiDatabase, FiFilter, FiImage,
-  FiChevronLeft, FiChevronRight, FiSettings, FiKey, FiSave
+  FiChevronLeft, FiChevronRight, FiSettings, FiKey, FiSave, FiCalendar, FiTrendingUp
 } from 'react-icons/fi';
+import {
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+  ResponsiveContainer, AreaChart, Area
+} from 'recharts';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -176,6 +180,12 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [analytics, setAnalytics] = useState(null);
   
+  // Charts State
+  const [timeseriesData, setTimeseriesData] = useState(null);
+  const [timeseriesPeriod, setTimeseriesPeriod] = useState('daily');
+  const [timeseriesDays, setTimeseriesDays] = useState(30);
+  const [loadingTimeseries, setLoadingTimeseries] = useState(false);
+  
   // Check if admin token exists
   useEffect(() => {
     const token = localStorage.getItem('azories-admin-token');
@@ -183,6 +193,34 @@ export default function AdminDashboard() {
       verifyAdminToken(token);
     }
   }, []);
+
+  // Fetch timeseries when period or days change
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchTimeseriesData();
+    }
+  }, [timeseriesPeriod, timeseriesDays, isLoggedIn]);
+
+  const fetchTimeseriesData = async () => {
+    const adminToken = localStorage.getItem('azories-admin-token');
+    if (!adminToken) return;
+
+    setLoadingTimeseries(true);
+    try {
+      const res = await fetch(
+        `${API}/api/admin/analytics-timeseries?period=${timeseriesPeriod}&days=${timeseriesDays}`,
+        { headers: { Authorization: `Bearer ${adminToken}` } }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setTimeseriesData(data);
+      }
+    } catch (error) {
+      console.error('Error fetching timeseries:', error);
+    } finally {
+      setLoadingTimeseries(false);
+    }
+  };
 
   const verifyAdminToken = async (token) => {
     try {
@@ -650,18 +688,21 @@ export default function AdminDashboard() {
 
         {/* Tabs */}
         <Tabs defaultValue="reviews" className="space-y-6">
-          <TabsList className="bg-white/5 border border-white/10 p-1 rounded-full">
+          <TabsList className="bg-white/5 border border-white/10 p-1 rounded-full flex-wrap">
             <TabsTrigger value="reviews" className="rounded-full data-[state=active]:bg-purple-600 text-white">
-              <FiClock className="w-4 h-4 mr-2" /> Pending Reviews ({pendingBooks.length})
+              <FiClock className="w-4 h-4 mr-2" /> Pending ({pendingBooks.length})
             </TabsTrigger>
             <TabsTrigger value="books" className="rounded-full data-[state=active]:bg-purple-600 text-white">
-              <FiBook className="w-4 h-4 mr-2" /> All Books ({allBooks.length})
+              <FiBook className="w-4 h-4 mr-2" /> Books ({allBooks.length})
             </TabsTrigger>
             <TabsTrigger value="users" className="rounded-full data-[state=active]:bg-purple-600 text-white">
               <FiUsers className="w-4 h-4 mr-2" /> Users ({users.length})
             </TabsTrigger>
             <TabsTrigger value="analytics" className="rounded-full data-[state=active]:bg-purple-600 text-white">
               <FiBarChart2 className="w-4 h-4 mr-2" /> Analytics
+            </TabsTrigger>
+            <TabsTrigger value="charts" className="rounded-full data-[state=active]:bg-purple-600 text-white">
+              <FiTrendingUp className="w-4 h-4 mr-2" /> Charts
             </TabsTrigger>
             <TabsTrigger value="settings" className="rounded-full data-[state=active]:bg-purple-600 text-white">
               <FiSettings className="w-4 h-4 mr-2" /> Settings
@@ -1189,6 +1230,192 @@ export default function AdminDashboard() {
                 <p>Loading analytics...</p>
               </div>
             )}
+          </TabsContent>
+
+          {/* Charts Tab */}
+          <TabsContent value="charts">
+            <div className="space-y-6">
+              {/* Time Period Controls */}
+              <Card className="bg-white/5 border-white/10">
+                <CardContent className="pt-6">
+                  <div className="flex flex-wrap items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <FiCalendar className="text-white/60" />
+                      <span className="text-white font-medium">Period:</span>
+                      <div className="flex gap-1">
+                        {['daily', 'weekly', 'monthly'].map(p => (
+                          <button
+                            key={p}
+                            onClick={() => setTimeseriesPeriod(p)}
+                            className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+                              timeseriesPeriod === p
+                                ? 'bg-purple-600 text-white'
+                                : 'bg-white/10 text-white/60 hover:bg-white/20'
+                            }`}
+                          >
+                            {p.charAt(0).toUpperCase() + p.slice(1)}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-white font-medium">Days:</span>
+                      <select
+                        value={timeseriesDays}
+                        onChange={(e) => setTimeseriesDays(Number(e.target.value))}
+                        className="px-3 py-1.5 rounded border border-white/20 bg-white/10 text-white text-sm"
+                      >
+                        <option value={7}>Last 7 days</option>
+                        <option value={14}>Last 14 days</option>
+                        <option value={30}>Last 30 days</option>
+                        <option value={60}>Last 60 days</option>
+                        <option value={90}>Last 90 days</option>
+                      </select>
+                    </div>
+                    {loadingTimeseries && (
+                      <div className="w-5 h-5 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {timeseriesData && timeseriesData.data?.length > 0 ? (
+                <>
+                  {/* Page Views & Visitors Chart */}
+                  <Card className="bg-white/5 border-white/10">
+                    <CardHeader>
+                      <CardTitle className="text-white text-lg flex items-center gap-2">
+                        <FiEye className="text-blue-400" />
+                        Page Views & Visitors
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ResponsiveContainer width="100%" height={300}>
+                        <AreaChart data={timeseriesData.data}>
+                          <defs>
+                            <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
+                              <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
+                            </linearGradient>
+                            <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8}/>
+                              <stop offset="95%" stopColor="#82ca9d" stopOpacity={0}/>
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                          <XAxis 
+                            dataKey={timeseriesPeriod === 'weekly' ? 'week_label' : timeseriesPeriod === 'monthly' ? 'month_label' : 'date'} 
+                            tick={{ fontSize: 12, fill: '#999' }}
+                            tickFormatter={(val) => timeseriesPeriod === 'daily' ? val?.slice(5) : val}
+                          />
+                          <YAxis tick={{ fontSize: 12, fill: '#999' }} />
+                          <Tooltip 
+                            contentStyle={{ backgroundColor: '#1e1e2e', borderRadius: '8px', border: '1px solid #333', color: '#fff' }}
+                            labelStyle={{ color: '#fff' }}
+                          />
+                          <Legend />
+                          <Area type="monotone" dataKey="page_views" name="Page Views" stroke="#8884d8" fillOpacity={1} fill="url(#colorViews)" />
+                          <Area type="monotone" dataKey="unique_visitors" name="Unique Visitors" stroke="#82ca9d" fillOpacity={1} fill="url(#colorVisitors)" />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </CardContent>
+                  </Card>
+
+                  {/* User Activity Chart */}
+                  <Card className="bg-white/5 border-white/10">
+                    <CardHeader>
+                      <CardTitle className="text-white text-lg flex items-center gap-2">
+                        <FiUsers className="text-green-400" />
+                        User Activity
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ResponsiveContainer width="100%" height={300}>
+                        <LineChart data={timeseriesData.data}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                          <XAxis 
+                            dataKey={timeseriesPeriod === 'weekly' ? 'week_label' : timeseriesPeriod === 'monthly' ? 'month_label' : 'date'} 
+                            tick={{ fontSize: 12, fill: '#999' }}
+                            tickFormatter={(val) => timeseriesPeriod === 'daily' ? val?.slice(5) : val}
+                          />
+                          <YAxis tick={{ fontSize: 12, fill: '#999' }} />
+                          <Tooltip 
+                            contentStyle={{ backgroundColor: '#1e1e2e', borderRadius: '8px', border: '1px solid #333', color: '#fff' }}
+                            labelStyle={{ color: '#fff' }}
+                          />
+                          <Legend />
+                          <Line type="monotone" dataKey="signups" name="New Signups" stroke="#10b981" strokeWidth={2} dot={{ r: 4 }} />
+                          <Line type="monotone" dataKey="book_reads" name="Book Reads" stroke="#f59e0b" strokeWidth={2} dot={{ r: 4 }} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </CardContent>
+                  </Card>
+
+                  {/* Content Creation Chart */}
+                  <Card className="bg-white/5 border-white/10">
+                    <CardHeader>
+                      <CardTitle className="text-white text-lg flex items-center gap-2">
+                        <FiBook className="text-purple-400" />
+                        Content Creation
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ResponsiveContainer width="100%" height={300}>
+                        <LineChart data={timeseriesData.data}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                          <XAxis 
+                            dataKey={timeseriesPeriod === 'weekly' ? 'week_label' : timeseriesPeriod === 'monthly' ? 'month_label' : 'date'} 
+                            tick={{ fontSize: 12, fill: '#999' }}
+                            tickFormatter={(val) => timeseriesPeriod === 'daily' ? val?.slice(5) : val}
+                          />
+                          <YAxis tick={{ fontSize: 12, fill: '#999' }} />
+                          <Tooltip 
+                            contentStyle={{ backgroundColor: '#1e1e2e', borderRadius: '8px', border: '1px solid #333', color: '#fff' }}
+                            labelStyle={{ color: '#fff' }}
+                          />
+                          <Legend />
+                          <Line type="monotone" dataKey="ai_stories" name="AI Stories Created" stroke="#8b5cf6" strokeWidth={2} dot={{ r: 4 }} />
+                          <Line type="monotone" dataKey="books_created" name="Books Created" stroke="#ec4899" strokeWidth={2} dot={{ r: 4 }} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </CardContent>
+                  </Card>
+
+                  {/* Summary Stats */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="bg-gradient-to-r from-purple-600 to-purple-700 rounded-xl p-4 text-white">
+                      <div className="text-2xl font-bold">
+                        {timeseriesData.data.reduce((sum, d) => sum + (d.page_views || 0), 0).toLocaleString()}
+                      </div>
+                      <div className="text-purple-200 text-sm">Total Page Views</div>
+                    </div>
+                    <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-4 text-white">
+                      <div className="text-2xl font-bold">
+                        {timeseriesData.data.reduce((sum, d) => sum + (d.signups || 0), 0).toLocaleString()}
+                      </div>
+                      <div className="text-green-200 text-sm">New Signups</div>
+                    </div>
+                    <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-4 text-white">
+                      <div className="text-2xl font-bold">
+                        {timeseriesData.data.reduce((sum, d) => sum + (d.book_reads || 0), 0).toLocaleString()}
+                      </div>
+                      <div className="text-blue-200 text-sm">Book Reads</div>
+                    </div>
+                    <div className="bg-gradient-to-r from-pink-600 to-pink-700 rounded-xl p-4 text-white">
+                      <div className="text-2xl font-bold">
+                        {timeseriesData.data.reduce((sum, d) => sum + (d.ai_stories || 0), 0).toLocaleString()}
+                      </div>
+                      <div className="text-pink-200 text-sm">AI Stories</div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="text-center py-12 text-white/60">
+                  <FiTrendingUp className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                  <p>{loadingTimeseries ? 'Loading charts...' : 'No chart data available'}</p>
+                </div>
+              )}
+            </div>
           </TabsContent>
 
           {/* Settings Tab */}

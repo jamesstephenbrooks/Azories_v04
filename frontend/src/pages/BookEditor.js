@@ -19,6 +19,7 @@ import {
   FiUsers, FiUser, FiLayers, FiX, FiMaximize2
 } from 'react-icons/fi';
 import CollaborativeWriting from '@/components/CollaborativeWriting';
+import { MediaGalleryPicker } from '@/components/MediaGallery';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 

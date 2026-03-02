@@ -20,8 +20,6 @@ const BookEditor = lazy(() => import("@/pages/BookEditor"));
 const MySeries = lazy(() => import("@/pages/MySeries"));
 const Auth = lazy(() => import("@/pages/Auth"));
 const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
-const AdminCMS = lazy(() => import("@/pages/AdminCMS"));
-const AdminAnalytics = lazy(() => import("@/pages/AdminAnalytics"));
 const AdminDashboard = lazy(() => import("@/pages/AdminDashboard"));
 const UserProfile = lazy(() => import("@/pages/UserProfile"));
 const Creators = lazy(() => import("@/pages/ArtStudio"));
@@ -135,8 +133,6 @@ function AppContent() {
 
           {/* Admin routes — AdminDashboard handles its own authentication */}
           <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/cms" element={<AdminCMS />} />
-          <Route path="/admin/analytics" element={<AdminAnalytics />} />
 
           {/* 404 catch-all — must be last */}
           <Route path="*" element={<NotFound />} />
