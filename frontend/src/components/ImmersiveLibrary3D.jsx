@@ -15,12 +15,11 @@ const getOptimizedImageUrl = (url, { width = 256, quality = 'auto', format = 'au
   return getThumbnailUrl(url, width);
 };
 
-// Gothic Library Model URL - v16 with Draco compression (5MB, down from 20MB)
-// Compression only - no mesh simplification to preserve collisions and positions
-const LIBRARY_MODEL_URL = '/models/gothic_library_optimized.glb';
+// Gothic Library Model URL - Hosted on Cloudinary for reliable production delivery
+const LIBRARY_MODEL_URL = 'https://res.cloudinary.com/dlbmjqmoy/raw/upload/v1772481395/azories/models/gothic_library_optimized.glb';
 
-// Azora Mascot Model URL - no plinth version (3.5MB)
-const AZORA_MODEL_URL = '/models/azora_no_plinth.glb';
+// Azora Mascot Model URL - Hosted on Cloudinary
+const AZORA_MODEL_URL = 'https://res.cloudinary.com/dlbmjqmoy/raw/upload/v1772481403/azories/models/azora_no_plinth.glb';
 
 // Library boundaries (will be set after model loads)
 const DEFAULT_BOUNDS = {
