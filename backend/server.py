@@ -471,11 +471,6 @@ async def _create_indexes_background():
         logger.info("✅ Audio cache indexes created")
     except Exception as e:
         logger.warning(f"Audio cache index creation: {e}")
-    # Shutdown: cancel cleanup task and close DB
-    if _cleanup_task:
-        _cleanup_task.cancel()
-    client.close()
-    logger.info("Database connection closed")
 
 
 async def _load_fal_key_from_db():
