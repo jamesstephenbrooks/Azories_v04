@@ -265,27 +265,37 @@ export default function Library() {
     setLoadError(false);
     
     try {
-      // Fetch all data in parallel for faster load
-      const results = await Promise.allSettled([
-          axios.get(`${API}/books?published_only=true&limit=50`),
+      // OPTIMIZATION: Fetch main books first for instant display, then others
+      // This reduces perceived load time significantly
+      const mainBooksPromise = axios.get(`${API}/books?published_only=true&limit=50`);
+      const secondaryPromises = Promise.allSettled([
           axios.get(`${API}/books/featured`),
           axios.get(`${API}/books/newly-added`),
           axios.get(`${API}/books/coming-soon`),
           axios.get(`${API}/genres`)
         ]);
-        
-        const cacheData = {};
-        
-        // Process each result individually to handle partial failures
-        if (results[0].status === 'fulfilled') {
-          const booksData = results[0].value.data || [];
-          setBooks(booksData);
-          cacheData.books = booksData;
-          // Preload and cache first 8 cover images
-          booksData.slice(0, 8).forEach(b => {
-            if (b.cover_image) preloadAndCacheImage(b.cover_image, 300);
-          });
-        }
+      
+      const cacheData = {};
+      
+      // Process main books IMMEDIATELY when they arrive
+      try {
+        const mainBooksRes = await mainBooksPromise;
+        const booksData = mainBooksRes.data || [];
+        setBooks(booksData);
+        cacheData.books = booksData;
+        // Set loading false AS SOON AS main books arrive
+        setLoading(false);
+        // Preload first 8 cover images
+        booksData.slice(0, 8).forEach(b => {
+          if (b.cover_image) preloadAndCacheImage(b.cover_image, 300);
+        });
+      } catch (mainError) {
+        console.error('Main books fetch failed:', mainError);
+        setLoadError(true);
+      }
+      
+      // Process secondary data in background (doesn't block initial render)
+      const results = await secondaryPromises;
         
         if (results[1].status === 'fulfilled') {
           const featuredData = results[1].value.data || [];
