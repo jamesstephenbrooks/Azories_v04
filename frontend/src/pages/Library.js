@@ -804,10 +804,17 @@ export default function Library() {
               </div>
               
               {/* 3D Grand Library Promotional Card - Only show in grid view when not searching */}
+              {/* TEMPORARILY DISABLED: 3D model causing server issues */}
               {viewMode === 'grid' && !debouncedSearch && (
                 <div 
                   className="mb-8 relative overflow-hidden rounded-3xl cursor-pointer group"
-                  onClick={() => setViewMode('immersive')}
+                  onClick={() => {
+                    // 3D view temporarily disabled for performance
+                    toast.info('Grand Library 3D experience is being upgraded! Check back soon.', {
+                      duration: 4000,
+                      icon: '🏰'
+                    });
+                  }}
                   data-testid="grand-library-promo"
                 >
                   <div className="relative h-40 sm:h-48 md:h-64 overflow-hidden">
@@ -825,7 +832,7 @@ export default function Library() {
                       <div className="max-w-lg">
                         <div className="flex items-center gap-2 mb-2 sm:mb-3">
                           <span className="px-2 sm:px-3 py-1 bg-purple-500/30 backdrop-blur-sm rounded-full text-purple-300 text-[10px] sm:text-xs font-medium">
-                            IMMERSIVE
+                            COMING SOON
                           </span>
                         </div>
                         <h3 className="text-lg sm:text-2xl md:text-4xl font-serif font-bold text-white mb-1 sm:mb-3">
