@@ -244,15 +244,17 @@ const CoverPage = forwardRef(({ book }, ref) => {
           boxShadow: '5px 0 15px rgba(0,0,0,0.3)',
         }}
       >
-        {/* Azora placeholder while cover image loads */}
+        {/* Azora placeholder background while cover image loads */}
         {book?.cover_image && !imageLoaded && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <img 
-              src="https://res.cloudinary.com/dlbmjqmoy/image/upload/e_background_removal/v1772279585/azories/mascot/azora_pose2_running.png"
-              alt="Loading..."
-              className="w-72 h-72 object-contain opacity-80"
-            />
-          </div>
+          <div 
+            className="absolute inset-0 flex items-center justify-center"
+            style={{
+              backgroundImage: `url(https://res.cloudinary.com/dlbmjqmoy/image/upload/e_background_removal/v1772279585/azories/mascot/azora_pose2_running.png)`,
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              backgroundSize: '60%',
+            }}
+          />
         )}
         
         {/* Cover image - title is already part of the cover artwork */}
