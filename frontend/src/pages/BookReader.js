@@ -1354,10 +1354,10 @@ export default function BookReader() {
   }
 
   return (
-    <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#1a1a2e]' : 'bg-[#f8f5f0]'}`}>
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#1a1a2e]' : 'bg-[#f8f5f0]'} ${currentPageData?.isBackCover ? '!bg-[#1a0a2e]' : ''}`}>
       {/* Header - Hidden in landscape mode for maximum book space */}
       {!isMobileLandscape && (
-        <div className={`fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border`}>
+        <div className={`fixed top-0 left-0 right-0 z-40 ${currentPageData?.isBackCover ? 'bg-[#1a0a2e]/80' : 'bg-background/80'} backdrop-blur-xl border-b ${currentPageData?.isBackCover ? 'border-white/10' : 'border-border'}`}>
           <div className={`max-w-7xl mx-auto px-2 sm:px-4 py-1.5 sm:py-3 flex items-center justify-between`}>
             <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
               <Button
@@ -1627,9 +1627,12 @@ export default function BookReader() {
               </div>
             ) : isMobilePortrait && !isCover && currentPage >= 0 ? (
               <div className="flex flex-col w-full max-w-md mx-auto" style={{ height: `calc(100vh - 140px)` }}>
-                {/* Back Cover - Full page image */}
+                {/* Back Cover - Full page with dark background extending to edges */}
                 {currentPageData?.isBackCover ? (
-                  <div className="relative flex-1 rounded-2xl overflow-hidden shadow-lg">
+                  <div 
+                    className="fixed inset-0 z-10"
+                    style={{ backgroundColor: '#1a0a2e' }}
+                  >
                     <img 
                       src={currentPageData.image_url}
                       alt="Back Cover"
@@ -1640,23 +1643,9 @@ export default function BookReader() {
                         width: '100%',
                         height: '100%',
                         objectFit: 'contain',
-                        objectPosition: 'center',
-                        backgroundColor: '#1a0a2e'
+                        objectPosition: 'center'
                       }}
                     />
-                    {/* Read Again Button Overlay */}
-                    <div className="absolute bottom-8 left-0 right-0 flex justify-center">
-                      <button
-                        onClick={() => {
-                          console.log('[BackCover Mobile] Read Again clicked');
-                          setCurrentPage(-1);
-                        }}
-                        className="px-8 py-3 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white font-semibold flex items-center gap-2 shadow-lg"
-                        data-testid="read-again-btn-mobile"
-                      >
-                        Read Again <FiPlay className="w-5 h-5" />
-                      </button>
-                    </div>
                   </div>
                 ) : (
                 <>
@@ -1923,7 +1912,7 @@ export default function BookReader() {
       
       {/* Bottom Controls - Hidden in landscape (edge arrows are used instead) */}
       {!isMobileLandscape && (
-        <div className={`fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-xl border-t border-border z-[100] transition-transform duration-300 ${hideControls ? 'translate-y-full' : ''}`}>
+        <div className={`fixed bottom-0 left-0 right-0 ${currentPageData?.isBackCover ? 'bg-[#1a0a2e]/90' : 'bg-background/90'} backdrop-blur-xl border-t ${currentPageData?.isBackCover ? 'border-white/10' : 'border-border'} z-[100] transition-transform duration-300 ${hideControls ? 'translate-y-full' : ''}`}>
           <div className={`max-w-4xl mx-auto px-2 sm:px-4 py-3 sm:py-4`}>
             {/* Navigation - LARGE touch targets for mobile, instant response */}
             <div className={`flex items-center justify-center gap-4 sm:gap-4 mb-2 sm:mb-4`}>
