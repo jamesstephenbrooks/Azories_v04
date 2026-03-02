@@ -225,8 +225,10 @@ const Page = forwardRef(({ pageNumber, children, isLeft, isCover, isBackCover },
 Page.displayName = 'Page';
 
 // Cover page component - simple cover without hover overlay (buttons are external)
-// Enhanced with lazy loading for cover image
+// Enhanced with lazy loading for cover image and Azora placeholder
 const CoverPage = forwardRef(({ book }, ref) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  
   return (
     <div 
       ref={ref}
@@ -242,13 +244,24 @@ const CoverPage = forwardRef(({ book }, ref) => {
           boxShadow: '5px 0 15px rgba(0,0,0,0.3)',
         }}
       >
+        {/* Azora placeholder while cover image loads */}
+        {book?.cover_image && !imageLoaded && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <img 
+              src="https://res.cloudinary.com/dlbmjqmoy/image/upload/e_background_removal/v1772279585/azories/mascot/azora_pose2_running.png"
+              alt="Loading..."
+              className="w-24 h-24 object-contain opacity-80"
+            />
+          </div>
+        )}
+        
         {/* Cover image - title is already part of the cover artwork */}
         {book?.cover_image && (
-          <LazyImage 
+          <img 
             src={book.cover_image}
             alt={book.title}
-            className="absolute inset-0 w-full h-full object-cover"
-            priority={true}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+            onLoad={() => setImageLoaded(true)}
           />
         )}
         
