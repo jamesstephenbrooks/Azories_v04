@@ -413,46 +413,66 @@ from contextlib import asynccontextmanager
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Handle startup and shutdown events"""
+    """Handle startup and shutdown events - optimized for K8s deployment."""
     global _cleanup_task
-    # Startup: start periodic cleanup
+    
+    # Startup: start periodic cleanup (non-blocking)
     _cleanup_task = asyncio.create_task(periodic_cleanup())
     logger.info("Started periodic task cleanup")
     
-    # Load FAL_KEY from database if not set or invalid in .env
-    await _load_fal_key_from_db()
+    # Load FAL_KEY from database - run in background to not block startup
+    asyncio.create_task(_safe_load_fal_key())
     
     # AUTO-SEED: Run in background so app starts immediately
     # This prevents startup timeouts when fetching from preview
     asyncio.create_task(background_seed())
     logger.info("🌱 Background seed task scheduled")
     
-    # Create indexes for audio cache collection
+    # Create indexes in background - don't block startup
+    asyncio.create_task(_create_indexes_background())
+    
+    # App is ready to serve requests
+    logger.info("✅ Application startup complete - ready for health checks")
+    
+    yield
+    
+    # Shutdown
+    if _cleanup_task:
+        _cleanup_task.cancel()
+        try:
+            await _cleanup_task
+        except asyncio.CancelledError:
+            pass
+    logger.info("Application shutdown complete")
+
+
+async def _safe_load_fal_key():
+    """Load FAL key in background with error handling."""
     try:
+        await _load_fal_key_from_db()
+        # Validate FAL_KEY after loading
+        if validate_fal_key_on_startup:
+            try:
+                fal_status = await validate_fal_key_on_startup()
+                if fal_status.get("valid") == False:
+                    logger.warning(f"⚠️ FAL_KEY invalid: {fal_status.get('error_message', 'Unknown')}")
+                elif fal_status.get("valid") == True:
+                    logger.info("✅ FAL_KEY validated - fal.ai features ready")
+            except Exception as e:
+                logger.warning(f"⚠️ FAL_KEY validation error: {str(e)[:100]}")
+    except Exception as e:
+        logger.warning(f"FAL key loading error (non-fatal): {e}")
+
+
+async def _create_indexes_background():
+    """Create database indexes in background."""
+    try:
+        await asyncio.sleep(2)  # Wait a bit for DB connection to stabilize
         await db.audio_cache.create_index("cache_key", unique=True)
-        await db.audio_cache.create_index("expires_at", expireAfterSeconds=0)  # TTL index
+        await db.audio_cache.create_index("expires_at", expireAfterSeconds=0)
         logger.info("✅ Audio cache indexes created")
     except Exception as e:
         logger.warning(f"Audio cache index creation: {e}")
-    
-    # Validate FAL_KEY on startup
-    if validate_fal_key_on_startup:
-        try:
-            fal_status = await validate_fal_key_on_startup()
-            if fal_status.get("valid") == False:
-                logger.warning("=" * 60)
-                logger.warning("⚠️  FAL_KEY VALIDATION FAILED")
-                logger.warning(f"   Error: {fal_status.get('error_message', 'Unknown')}")
-                logger.warning("   Pro Studio image generation will use Emergent Key (more expensive)")
-                logger.warning("   To fix: Update key via Admin Dashboard > Settings")
-                logger.warning("   Or get a new key from https://fal.ai/dashboard/keys")
-                logger.warning("=" * 60)
-            elif fal_status.get("valid") == True:
-                logger.info("✅ FAL_KEY validated - fal.ai features ready")
-        except Exception as e:
-            logger.warning(f"⚠️ FAL_KEY validation error: {str(e)[:100]}")
-    
-    yield
     # Shutdown: cancel cleanup task and close DB
     if _cleanup_task:
         _cleanup_task.cancel()
