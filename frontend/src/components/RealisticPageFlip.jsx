@@ -247,7 +247,7 @@ const CoverPage = forwardRef(({ book }, ref) => {
         {/* Azora placeholder background while cover image loads */}
         {book?.cover_image && !imageLoaded && (
           <div 
-            className="absolute inset-0 flex items-center justify-center"
+            className="absolute inset-0 flex items-center justify-center bg-white"
             style={{
               backgroundImage: `url(https://res.cloudinary.com/dlbmjqmoy/image/upload/e_background_removal/v1772279585/azories/mascot/azora_pose2_running.png)`,
               backgroundPosition: 'center',
