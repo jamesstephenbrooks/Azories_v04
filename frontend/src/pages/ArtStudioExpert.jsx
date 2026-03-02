@@ -38,11 +38,26 @@ const NodeDeleteButton = ({ onDelete }) => (
       e.stopPropagation();
       onDelete?.();
     }}
-    className="absolute top-0.5 right-0.5 w-3 h-3 rounded-full bg-red-500/80 hover:bg-red-500 flex items-center justify-center transition-colors z-10"
+    className="absolute top-1 right-1 w-5 h-5 sm:w-4 sm:h-4 rounded-full bg-red-500/80 hover:bg-red-500 flex items-center justify-center transition-colors z-10"
     title="Delete node"
     data-testid="node-delete-btn"
   >
-    <FiX className="w-2 h-2 text-white" />
+    <FiX className="w-2.5 h-2.5 sm:w-2 sm:h-2 text-white" />
+  </button>
+);
+
+// Copy button component for consistent styling across nodes
+const NodeCopyButton = ({ onCopy }) => (
+  <button
+    onClick={(e) => {
+      e.stopPropagation();
+      onCopy?.();
+    }}
+    className="absolute top-1 right-8 sm:right-7 w-5 h-5 sm:w-4 sm:h-4 rounded-full bg-blue-500/80 hover:bg-blue-500 flex items-center justify-center transition-colors z-10"
+    title="Duplicate node"
+    data-testid="node-copy-btn"
+  >
+    <FiCopy className="w-2.5 h-2.5 sm:w-2 sm:h-2 text-white" />
   </button>
 );
 
@@ -52,19 +67,7 @@ const CharacterNode = ({ data, selected }) => {
     <div className={`relative bg-gradient-to-br from-purple-900/90 to-purple-800/90 rounded-xl border-2 ${selected ? 'border-purple-400' : 'border-purple-600/50'} shadow-xl backdrop-blur-sm w-[250px] h-[260px]`}>
       <Handle type="target" position={Position.Left} className="!bg-purple-400 !w-3 !h-3" />
       <NodeDeleteButton onDelete={data.onDelete} />
-      
-      {/* Copy button */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          data.onCopyNode?.();
-        }}
-        className="absolute top-0.5 right-5 w-4 h-4 rounded bg-blue-500/80 hover:bg-blue-500 flex items-center justify-center transition-colors z-10"
-        title="Duplicate node"
-        data-testid="character-node-copy-btn"
-      >
-        <FiCopy className="w-2.5 h-2.5 text-white" />
-      </button>
+      <NodeCopyButton onCopy={data.onCopyNode} />
       
       <div className="p-2 border-b border-purple-600/30 flex items-center gap-2">
         <div className="w-6 h-6 rounded-lg bg-purple-500/30 flex items-center justify-center flex-shrink-0">
@@ -139,19 +142,7 @@ const SceneNode = ({ data, selected }) => {
     <div className={`relative bg-gradient-to-br from-emerald-900/90 to-emerald-800/90 rounded-xl border-2 ${selected ? 'border-emerald-400' : 'border-emerald-600/50'} shadow-xl backdrop-blur-sm w-[250px] h-[240px]`}>
       <Handle type="target" position={Position.Left} className="!bg-emerald-400 !w-3 !h-3" />
       <NodeDeleteButton onDelete={data.onDelete} />
-      
-      {/* Copy button */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          data.onCopyNode?.();
-        }}
-        className="absolute top-0.5 right-5 w-4 h-4 rounded bg-blue-500/80 hover:bg-blue-500 flex items-center justify-center transition-colors z-10"
-        title="Duplicate node"
-        data-testid="scene-node-copy-btn"
-      >
-        <FiCopy className="w-2.5 h-2.5 text-white" />
-      </button>
+      <NodeCopyButton onCopy={data.onCopyNode} />
       
       <div className="p-2 border-b border-emerald-600/30 flex items-center gap-2">
         <div className="w-6 h-6 rounded-lg bg-emerald-500/30 flex items-center justify-center flex-shrink-0">
@@ -297,19 +288,7 @@ const StyleNode = ({ data, selected }) => {
     <div className={`relative bg-gradient-to-br from-amber-900/90 to-amber-800/90 rounded-xl border-2 ${selected ? 'border-amber-400' : 'border-amber-600/50'} shadow-xl backdrop-blur-sm min-w-[200px]`}>
       <Handle type="target" position={Position.Left} className="!bg-amber-400 !w-3 !h-3" />
       <NodeDeleteButton onDelete={data.onDelete} />
-      
-      {/* Copy button */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          data.onCopyNode?.();
-        }}
-        className="absolute top-0.5 right-5 w-4 h-4 rounded bg-blue-500/80 hover:bg-blue-500 flex items-center justify-center transition-colors z-10"
-        title="Duplicate node"
-        data-testid="style-node-copy-btn"
-      >
-        <FiCopy className="w-2.5 h-2.5 text-white" />
-      </button>
+      <NodeCopyButton onCopy={data.onCopyNode} />
       
       <div className="p-2 border-b border-amber-600/30 flex items-center gap-2">
         <div className="w-6 h-6 rounded-lg bg-amber-500/30 flex items-center justify-center flex-shrink-0">
@@ -402,19 +381,7 @@ const ReferenceNode = ({ data, selected }) => {
     <div className={`relative bg-gradient-to-br from-cyan-900/90 to-cyan-800/90 rounded-xl border-2 ${selected ? 'border-cyan-400' : 'border-cyan-600/50'} shadow-xl backdrop-blur-sm w-[160px] h-[180px]`}>
       <Handle type="target" position={Position.Left} className="!bg-cyan-400 !w-3 !h-3" />
       <NodeDeleteButton onDelete={data.onDelete} />
-      
-      {/* Copy button */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          data.onCopyNode?.();
-        }}
-        className="absolute top-0.5 right-5 w-4 h-4 rounded bg-blue-500/80 hover:bg-blue-500 flex items-center justify-center transition-colors z-10"
-        title="Duplicate node"
-        data-testid="reference-node-copy-btn"
-      >
-        <FiCopy className="w-2.5 h-2.5 text-white" />
-      </button>
+      <NodeCopyButton onCopy={data.onCopyNode} />
       
       <div className="p-2 border-b border-cyan-600/30 flex items-center gap-2">
         <div className="w-5 h-5 rounded-lg bg-cyan-500/30 flex items-center justify-center flex-shrink-0">
@@ -475,19 +442,7 @@ const PromptNode = ({ data, selected }) => {
     <div className={`relative bg-gradient-to-br from-rose-900/90 to-rose-800/90 rounded-xl border-2 ${selected ? 'border-rose-400' : 'border-rose-600/50'} shadow-xl min-w-[280px] backdrop-blur-sm`}>
       <Handle type="target" position={Position.Left} className="!bg-rose-400 !w-3 !h-3" />
       <NodeDeleteButton onDelete={data.onDelete} />
-      
-      {/* Copy button */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          data.onCopyNode?.();
-        }}
-        className="absolute top-0.5 right-5 w-4 h-4 rounded bg-blue-500/80 hover:bg-blue-500 flex items-center justify-center transition-colors z-10"
-        title="Duplicate node"
-        data-testid="prompt-node-copy-btn"
-      >
-        <FiCopy className="w-2.5 h-2.5 text-white" />
-      </button>
+      <NodeCopyButton onCopy={data.onCopyNode} />
       
       <div className="p-3 border-b border-rose-600/30 flex items-center gap-2">
         <div className="w-8 h-8 rounded-lg bg-rose-500/30 flex items-center justify-center">
@@ -560,19 +515,7 @@ const ImageNode = ({ data, selected }) => {
     <div className={`relative bg-gradient-to-br from-yellow-900/90 to-orange-800/90 rounded-xl border-2 ${selected ? 'border-yellow-400' : 'border-yellow-600/50'} shadow-xl backdrop-blur-sm w-[180px]`}>
       <Handle type="target" position={Position.Left} className="!bg-yellow-400 !w-3 !h-3" />
       <NodeDeleteButton onDelete={data.onDelete} />
-      
-      {/* Copy button */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          data.onCopyNode?.();
-        }}
-        className="absolute top-0.5 right-5 w-4 h-4 rounded bg-blue-500/80 hover:bg-blue-500 flex items-center justify-center transition-colors z-10"
-        title="Duplicate node"
-        data-testid="image-node-copy-btn"
-      >
-        <FiCopy className="w-2.5 h-2.5 text-white" />
-      </button>
+      <NodeCopyButton onCopy={data.onCopyNode} />
       
       <div className="p-2 border-b border-yellow-600/30 flex items-center gap-2">
         <div className="w-5 h-5 rounded-lg bg-yellow-500/30 flex items-center justify-center flex-shrink-0">
@@ -682,11 +625,11 @@ const OutputNode = ({ data, selected }) => {
             e.stopPropagation();
             data.onCopyNode?.();
           }}
-          className="absolute top-0.5 right-5 w-5 h-5 rounded bg-blue-500/80 hover:bg-blue-500 flex items-center justify-center transition-colors z-10"
+          className="absolute top-1 right-8 sm:right-7 w-5 h-5 sm:w-4 sm:h-4 rounded-full bg-blue-500/80 hover:bg-blue-500 flex items-center justify-center transition-colors z-10"
           title="Duplicate this output node"
           data-testid="output-node-copy-btn"
         >
-          <FiCopy className="w-3 h-3 text-white" />
+          <FiCopy className="w-2.5 h-2.5 sm:w-2 sm:h-2 text-white" />
         </button>
       )}
       
