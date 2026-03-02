@@ -1344,24 +1344,36 @@ export default function BookReader() {
 
   if (loading || authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-amber-50 via-orange-50 to-yellow-100">
-        <div className="text-center">
-          {/* Azora Running Mascot */}
-          <div className="relative mb-6">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-900/95 to-slate-900">
+        {/* Book-shaped loading card */}
+        <div className="relative w-[280px] sm:w-[320px] aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-amber-100 via-orange-50 to-yellow-100">
+          {/* Decorative book spine shadow */}
+          <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-black/20 to-transparent" />
+          
+          {/* Content */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
+            {/* Azora Running Mascot */}
             <img 
               src="https://res.cloudinary.com/dlbmjqmoy/image/upload/e_background_removal/v1772279585/azories/mascot/azora_pose2_running.png"
               alt="Azora"
-              className="w-32 h-32 mx-auto object-contain animate-bounce"
+              className="w-32 h-32 object-contain animate-bounce mb-4"
             />
+            
+            {/* Loading text */}
+            <p className="font-heading text-xl text-amber-800 font-semibold mb-2 text-center">Opening your story...</p>
+            <p className="font-body text-amber-600/70 text-sm text-center">Get ready for an adventure!</p>
+            
+            {/* Animated dots loader */}
+            <div className="flex justify-center gap-2 mt-4">
+              <div className="w-2 h-2 bg-amber-500 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
+              <div className="w-2 h-2 bg-amber-500 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
+              <div className="w-2 h-2 bg-amber-500 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
+            </div>
           </div>
-          {/* Loading text with brand colors */}
-          <p className="font-heading text-xl text-amber-800 font-semibold mb-2">Opening your story...</p>
-          <p className="font-body text-amber-600/70 text-sm">Get ready for an adventure!</p>
-          {/* Subtle loading indicator */}
-          <div className="flex justify-center gap-1 mt-4">
-            <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" style={{animationDelay: '0ms'}}></div>
-            <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" style={{animationDelay: '150ms'}}></div>
-            <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" style={{animationDelay: '300ms'}}></div>
+          
+          {/* Bottom branding */}
+          <div className="absolute bottom-4 left-0 right-0 text-center">
+            <p className="text-amber-700/50 text-xs font-medium tracking-wider">AZORIES</p>
           </div>
         </div>
       </div>
