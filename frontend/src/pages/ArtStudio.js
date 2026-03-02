@@ -3431,7 +3431,7 @@ export default function ArtStudio() {
                 {starterLibrary.length > 0 && (
                   <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 rounded-xl border border-amber-500/20 overflow-hidden">
                     <button
-                      onClick={() => setStarterExpanded(!starterExpanded)}
+                      onClick={() => setStarterLibraryExpanded(!starterLibraryExpanded)}
                       className="w-full px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-colors"
                     >
                       <div className="flex items-center gap-2">
@@ -3441,9 +3441,9 @@ export default function ArtStudio() {
                         <span className="text-sm font-semibold text-amber-300">Starter Library</span>
                         <span className="text-xs text-amber-400/60">({starterLibrary.length} images)</span>
                       </div>
-                      <FiChevronDown className={`w-4 h-4 text-amber-400 transition-transform ${starterExpanded ? 'rotate-180' : ''}`} />
+                      <FiChevronDown className={`w-4 h-4 text-amber-400 transition-transform ${starterLibraryExpanded ? 'rotate-180' : ''}`} />
                     </button>
-                    {starterExpanded && (
+                    {starterLibraryExpanded && (
                       <div className="p-4 pt-0">
                         <div className="grid grid-cols-4 md:grid-cols-5 gap-2 max-h-48 overflow-y-auto">
                           {starterLibrary.map((item) => (
