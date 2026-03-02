@@ -583,38 +583,17 @@ security = HTTPBearer(auto_error=False)
 @api_router.get("/health")
 async def health_check():
     """
-    Health check endpoint with optional deep checks.
+    Health check endpoint - MUST respond quickly for K8s liveness/readiness probes.
     
-    Query params:
-    - deep=true: Include fal.ai key status (for monitoring alerts)
-    
-    Returns degraded status if fal.ai key is invalid, allowing UptimeRobot to alert.
+    Returns immediately with basic status. Deep checks are optional via ?deep=true.
     """
     from datetime import datetime
     
+    # Basic response - always return quickly
     result = {
         "status": "ok",
         "timestamp": datetime.utcnow().isoformat()
     }
-    
-    # Check if deep health check requested (for UptimeRobot monitoring)
-    from fastapi import Query
-    # Always include fal.ai status for comprehensive monitoring
-    if FAL_AVAILABLE:
-        fal_status = get_fal_key_status()
-        result["fal_ai"] = {
-            "valid": fal_status.get("valid"),
-            "last_checked": fal_status.get("last_checked")
-        }
-        
-        # If fal.ai key is explicitly invalid, mark as degraded
-        if fal_status.get("valid") is False:
-            result["status"] = "degraded"
-            result["fal_ai"]["error"] = fal_status.get("error_message", "Key invalid or expired")
-            result["fal_ai"]["action_required"] = "Update fal.ai key via Admin Dashboard > Settings"
-    else:
-        result["fal_ai"] = {"valid": False, "error": "fal.ai service not configured"}
-        result["status"] = "degraded"
     
     return result
 
