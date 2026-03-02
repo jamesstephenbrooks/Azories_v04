@@ -297,8 +297,8 @@ export default function Library() {
       // Process secondary data in background (doesn't block initial render)
       const results = await secondaryPromises;
         
-        if (results[1].status === 'fulfilled') {
-          const featuredData = results[1].value.data || [];
+        if (results[0].status === 'fulfilled') {
+          const featuredData = results[0].value.data || [];
           const featured = featuredData.filter(b => b.is_featured);
           const bestWeek = featuredData.filter(b => b.is_best_of_week);
           setFeaturedBooks(featured);
@@ -311,8 +311,8 @@ export default function Library() {
           });
         }
         
-        if (results[2].status === 'fulfilled') {
-          const newlyAdded = results[2].value.data || [];
+        if (results[1].status === 'fulfilled') {
+          const newlyAdded = results[1].value.data || [];
           setNewlyAddedBooks(newlyAdded);
           cacheData.newlyAddedBooks = newlyAdded;
           // Preload newly added images
@@ -321,14 +321,14 @@ export default function Library() {
           });
         }
         
-        if (results[3].status === 'fulfilled') {
-          const comingSoon = results[3].value.data || [];
+        if (results[2].status === 'fulfilled') {
+          const comingSoon = results[2].value.data || [];
           setComingSoonBooks(comingSoon);
           cacheData.comingSoonBooks = comingSoon;
         }
         
-        if (results[4].status === 'fulfilled' && results[4].value.data?.genres) {
-          const genresData = ['All', ...results[4].value.data.genres];
+        if (results[3].status === 'fulfilled' && results[3].value.data?.genres) {
+          const genresData = ['All', ...results[3].value.data.genres];
           setGenres(genresData);
           cacheData.genres = genresData;
         } else {
@@ -361,7 +361,8 @@ export default function Library() {
           setLoadError(true);
         }
       } finally {
-        setLoading(false);
+        // Loading already set to false when main books arrived
+        // Just ensure initialLoadComplete is set
         setInitialLoadComplete(true);
       }
   }, []);
