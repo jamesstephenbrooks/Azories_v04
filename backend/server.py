@@ -402,8 +402,11 @@ async def background_seed():
     Run seed in background so it doesn't block app startup.
     Waits a few seconds for the app to fully initialize first.
     """
-    await asyncio.sleep(5)  # Wait for app to be ready
-    await seed_if_empty()
+    try:
+        await asyncio.sleep(5)  # Wait for app to be ready
+        await seed_if_empty()
+    except Exception as e:
+        logger.error(f"Background seed error (non-fatal): {str(e)[:200]}")
 
 
 # Lifespan context manager (modern FastAPI approach)
