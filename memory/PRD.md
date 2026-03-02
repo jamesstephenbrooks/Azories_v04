@@ -38,7 +38,22 @@ User wants to enhance their "Azories" digital book application with:
 - Generate long-form stories for 17 books
 - Refactor server.py into modular route files
 
-## Latest Session Updates (March 1, 2026)
+## Latest Session Updates (March 2, 2026)
+
+### UI/UX Fixes Completed ✅
+1. **Book Cover Loading Placeholder Reverted** - Removed incorrect white background with Azora image
+   - Now uses shimmer animation placeholder while cover loads
+   - File: `RealisticPageFlip.jsx` - CoverPage component
+2. **AI Reading Buddy Button Z-Index Fixed** - Azora chat button now appears above audio controls
+   - Changed z-index from `z-40` to `z-[110]` (controls bar is `z-[100]`)
+   - Also moved button position from `bottom-24` to `bottom-28`
+   - File: `AIReadingBuddy.jsx`
+3. **Back Cover Image Display Fixed** - Text no longer gets cropped
+   - Changed `objectFit: 'cover'` to `objectFit: 'contain'` for back cover image
+   - Ensures full back cover including text/logo is visible
+   - File: `RealisticPageFlip.jsx` - BackCoverPage component
+
+## Previous Session Updates (March 1, 2026)
 
 ### P0 Fixes Completed ✅
 1. **AI Book Back Cover** - Verified: AI-created books get Azories branded back cover URL

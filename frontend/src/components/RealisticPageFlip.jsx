@@ -244,17 +244,11 @@ const CoverPage = forwardRef(({ book }, ref) => {
           boxShadow: '5px 0 15px rgba(0,0,0,0.3)',
         }}
       >
-        {/* Azora placeholder background while cover image loads */}
+        {/* Shimmer placeholder while cover image loads */}
         {book?.cover_image && !imageLoaded && (
-          <div 
-            className="absolute inset-0 flex items-center justify-center bg-white"
-            style={{
-              backgroundImage: `url(https://res.cloudinary.com/dlbmjqmoy/image/upload/e_background_removal/v1772279585/azories/mascot/azora_pose2_running.png)`,
-              backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat',
-              backgroundSize: '60%',
-            }}
-          />
+          <div className="absolute inset-0 bg-gradient-to-r from-muted/30 via-muted/50 to-muted/30 animate-shimmer overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-shimmer-slide" />
+          </div>
         )}
         
         {/* Cover image - title is already part of the cover artwork */}
@@ -323,7 +317,7 @@ const BackCoverPage = forwardRef(({ book }, ref) => {
               left: 0,
               width: '100%',
               height: '100%',
-              objectFit: 'cover',
+              objectFit: 'contain',
               objectPosition: 'center',
               opacity: imageLoaded ? 1 : 0,
               transition: 'opacity 0.3s ease'

@@ -142,7 +142,7 @@ export default function AIReadingBuddy({ book, currentPage, isOpen, onToggle }) 
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={onToggle}
-        className="fixed bottom-24 right-4 z-40 w-14 h-14 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-lg flex items-center justify-center text-white"
+        className="fixed bottom-28 right-4 z-[110] w-14 h-14 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-lg flex items-center justify-center text-white"
         data-testid="ai-buddy-toggle"
       >
         <FiMessageCircle className="w-6 h-6" />
@@ -162,7 +162,7 @@ export default function AIReadingBuddy({ book, currentPage, isOpen, onToggle }) 
           height: isMinimized ? 'auto' : '500px'
         }}
         exit={{ opacity: 0, y: 100, scale: 0.9 }}
-        className="fixed bottom-4 right-4 z-50 w-80 sm:w-96 bg-background border rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+        className="fixed bottom-4 right-4 z-[110] w-80 sm:w-96 bg-background border rounded-2xl shadow-2xl overflow-hidden flex flex-col"
         data-testid="ai-buddy-panel"
       >
         {/* Header */}
