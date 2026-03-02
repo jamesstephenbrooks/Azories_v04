@@ -92,8 +92,7 @@ const setBookCache = (data) => {
 
 // Lazy-loaded image component with intersection observer, caching, and purple shimmer
 const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 300 }) => {
-  const [isLoaded, setIsLoaded] = useState(() => imageCache.has(src));
-  const [isInView, setIsInView] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const imgRef = useRef(null);
 
@@ -102,32 +101,7 @@ const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 300
     return getOptimizedThumbnailUrl(src, thumbnailWidth);
   }, [src, thumbnailWidth]);
 
-  useEffect(() => {
-    // If already cached, show immediately
-    if (imageCache.has(src)) {
-      setIsLoaded(true);
-      setIsInView(true);
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsInView(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: '200px', threshold: 0.01 }  // Larger rootMargin for earlier loading
-    );
-
-    if (imgRef.current) {
-      observer.observe(imgRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, [src]);
-
-  // Handle successful image load - cache it
+  // Handle successful image load
   const handleLoad = useCallback(() => {
     setIsLoaded(true);
     imageCache.set(src, true);
@@ -151,7 +125,7 @@ const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 300
   return (
     <div ref={imgRef} className={`relative ${className}`}>
       {/* Purple shimmer skeleton placeholder */}
-      {!isLoaded && (
+      {!isLoaded && !hasError && (
         <div className={`absolute inset-0 bg-gradient-to-br ${getPlaceholderGradient()} overflow-hidden`}>
           {/* Animated shimmer effect */}
           <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
@@ -161,8 +135,8 @@ const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 300
         </div>
       )}
       
-      {/* Actual image - only load when in view, use optimized URL */}
-      {isInView && !hasError && (
+      {/* Actual image - always render, use native lazy loading */}
+      {!hasError && (
         <img
           src={optimizedSrc}
           alt={alt}
