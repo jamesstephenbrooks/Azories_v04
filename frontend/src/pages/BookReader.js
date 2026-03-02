@@ -924,6 +924,11 @@ export default function BookReader() {
   }, [allPages.length, narratorVoice, preloadAudio, book?.id]);
 
   const playAudio = useCallback(async () => {
+    // CRITICAL: Don't play if component is unmounting or unmounted
+    if (!mountedRef.current) {
+      return;
+    }
+    
     // Skip chapter title pages - handled by useEffect
     if (allPages[currentPageRef.current]?.isChapterTitle) {
       return;
