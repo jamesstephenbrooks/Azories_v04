@@ -1016,8 +1016,8 @@ export default function BookReader() {
       }
     }
 
-    // FINAL CHECK: Make sure we're still on the same page before playing
-    if (currentPageRef.current !== pageIndex) {
+    // FINAL CHECK: Make sure we're still on the same page AND component is mounted
+    if (currentPageRef.current !== pageIndex || !mountedRef.current) {
       return;
     }
 
@@ -1034,50 +1034,64 @@ export default function BookReader() {
       audio.playbackRate = playbackSpeed[0];
       
       // Pre-load next 3 pages while this one plays (more aggressive preloading)
-      preloadAudio(pageIndex + 1);
-      preloadAudio(pageIndex + 2);
-      preloadAudio(pageIndex + 3);
+      if (mountedRef.current) {
+        preloadAudio(pageIndex + 1);
+        preloadAudio(pageIndex + 2);
+        preloadAudio(pageIndex + 3);
+      }
       
       audio.onended = () => {
+        // Check mounted before updating state
+        if (!mountedRef.current) return;
         setIsPlaying(false);
         // Continue to next page when audio finishes in auto-read mode
         if (autoReadRef.current && currentPageRef.current < allPages.length - 1) {
           // Reset lastPlayedPage to allow next page to play
           lastPlayedPageRef.current = -999;
           setTimeout(() => {
-            if (autoReadRef.current) {
+            if (autoReadRef.current && mountedRef.current) {
               goToPage(currentPageRef.current + 1, 'next');
             }
           }, 200);
         }
       };
       
-      // Double-check we're still on the correct page before playing
-      if (currentPageRef.current === pageIndex) {
+      // Double-check we're still on the correct page AND mounted before playing
+      if (currentPageRef.current === pageIndex && mountedRef.current) {
         // On iOS/iPad, we need to handle audio context unlocking
         const playPromise = audio.play();
         if (playPromise !== undefined) {
           playPromise
             .then(() => {
-              setAudioElement(audio);
-              setIsPlaying(true);
+              if (mountedRef.current) {
+                setAudioElement(audio);
+                setIsPlaying(true);
+              } else {
+                // Component unmounted during play - cleanup
+                audio.pause();
+                audio.src = '';
+              }
             })
             .catch(e => {
               console.error('Audio play failed:', e);
               // On iOS/iPad, audio fails without user interaction
               // Show a friendly tip message
-              if (e.name === 'NotAllowedError') {
+              if (e.name === 'NotAllowedError' && mountedRef.current) {
                 toast.info('Tap the 🔊 button to hear the story read aloud', {
                   duration: 4000,
                   icon: '💡',
                 });
               }
-              setIsPlaying(false);
-              lastPlayedPageRef.current = -999; // Allow retry
+              if (mountedRef.current) {
+                setIsPlaying(false);
+                lastPlayedPageRef.current = -999; // Allow retry
+              }
             });
         } else {
-          setAudioElement(audio);
-          setIsPlaying(true);
+          if (mountedRef.current) {
+            setAudioElement(audio);
+            setIsPlaying(true);
+          }
         }
       }
     }
