@@ -2158,55 +2158,153 @@ export default function ArtStudio() {
                       </div>
                     )}
                     
-                    {/* Gallery Preview for Selection */}
-                    <div className="bg-black/20 rounded-xl p-4 max-h-[250px] overflow-y-auto">
-                      <p className="text-xs text-white/50 mb-3">Or select from Gallery ({gallery.filter(g => g.type !== 'animation').length} images)</p>
-                      {gallery.filter(g => g.type !== 'animation').length === 0 ? (
-                        <p className="text-white/40 text-sm text-center py-4">No images yet. Create some or upload above!</p>
-                      ) : (
-                        <div className="grid grid-cols-4 gap-2">
-                          {gallery.filter(g => g.type !== 'animation').map((item) => (
-                            <button
-                              key={item._id}
-                              onClick={() => {
-                                setAnimatingImage(item.image_url);
-                                setAnimatingImageData(item);
-                                // Auto-populate motion prompt from original generation data
-                                if (item.prompt || item.name) {
-                                  const basePrompt = item.prompt || item.name || '';
-                                  const motionSuggestion = basePrompt.includes('portrait') || basePrompt.includes('character')
-                                    ? 'gentle breathing, subtle head movement, soft blinking, hair gently flowing'
-                                    : basePrompt.includes('scene') || basePrompt.includes('landscape')
-                                    ? 'gentle camera pan, soft light changes, subtle environmental movement'
-                                    : 'gentle breathing, subtle movement, natural animation';
-                                  setAnimationMotion(motionSuggestion);
-                                }
-                                // Set style to match original if available
-                                if (item.style) {
-                                  const styleMap = {
-                                    'fantasy': 'natural',
-                                    'cinematic': 'dramatic',
-                                    'anime': 'dramatic',
-                                    'realistic': 'natural',
-                                    'subtle': 'subtle'
-                                  };
-                                  setAnimationStyle(styleMap[item.style] || 'natural');
-                                }
-                              }}
-                              className={`relative rounded-lg overflow-hidden border-2 transition-all ${
-                                animatingImage === item.image_url ? 'border-pink-500' : 'border-transparent hover:border-white/30'
-                              }`}
-                            >
-                              <img src={item.image_url} alt={item.name} className="w-full aspect-square object-cover" />
-                              {item.name && (
-                                <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-1 py-0.5">
-                                  <p className="text-white text-[10px] truncate">{item.name}</p>
-                                </div>
-                              )}
-                            </button>
-                          ))}
+                    {/* Gallery Preview for Selection - Three Categories */}
+                    <div className="bg-black/20 rounded-xl p-4 max-h-[400px] overflow-y-auto space-y-3">
+                      <p className="text-xs text-white/50 mb-2">Or select from Gallery</p>
+                      
+                      {/* Starter Library Section */}
+                      {starterLibrary.length > 0 && (
+                        <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 rounded-lg border border-amber-500/20 overflow-hidden">
+                          <button
+                            onClick={() => setStarterLibraryExpanded(!starterLibraryExpanded)}
+                            className="w-full px-3 py-2 flex items-center justify-between hover:bg-white/5 transition-colors"
+                          >
+                            <div className="flex items-center gap-2">
+                              <span className="text-amber-300 text-xs">⭐</span>
+                              <span className="text-xs font-medium text-amber-300">Starter Library</span>
+                              <span className="text-[10px] text-amber-400/60">({starterLibrary.length})</span>
+                            </div>
+                            <FiChevronDown className={`w-3 h-3 text-amber-400 transition-transform ${starterLibraryExpanded ? 'rotate-180' : ''}`} />
+                          </button>
+                          {starterLibraryExpanded && (
+                            <div className="px-3 pb-3">
+                              <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 max-h-32 overflow-y-auto">
+                                {starterLibrary.slice(0, 20).map((item) => (
+                                  <button
+                                    key={item._id || item.id}
+                                    onClick={() => {
+                                      setAnimatingImage(item.url || item.image_url);
+                                      setAnimatingImageData(item);
+                                      setAnimationMotion('gentle breathing, subtle movement, natural animation');
+                                    }}
+                                    className={`relative rounded-lg overflow-hidden border-2 transition-all ${
+                                      animatingImage === (item.url || item.image_url) ? 'border-pink-500' : 'border-transparent hover:border-amber-500'
+                                    }`}
+                                  >
+                                    <img src={item.url || item.image_url || item.thumbnail_url} alt={item.name} className="w-full aspect-square object-cover" loading="lazy" />
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       )}
+                      
+                      {/* Creator Studio Section */}
+                      <div className="bg-purple-500/10 rounded-lg border border-purple-500/20 overflow-hidden">
+                        <button
+                          onClick={() => setArtStudioExpanded(!artStudioExpanded)}
+                          className="w-full px-3 py-2 flex items-center justify-between hover:bg-white/5 transition-colors"
+                        >
+                          <div className="flex items-center gap-2">
+                            <FiImage className="w-3 h-3 text-purple-400" />
+                            <span className="text-xs font-medium text-purple-300">Creator Studio</span>
+                            <span className="text-[10px] text-purple-400/60">({artStudioItems.filter(i => i.type !== 'animation').length})</span>
+                          </div>
+                          <FiChevronDown className={`w-3 h-3 text-purple-400 transition-transform ${artStudioExpanded ? 'rotate-180' : ''}`} />
+                        </button>
+                        {artStudioExpanded && (
+                          <div className="px-3 pb-3">
+                            {artStudioItems.filter(i => i.type !== 'animation').length > 0 ? (
+                              <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 max-h-32 overflow-y-auto">
+                                {artStudioItems.filter(i => i.type !== 'animation').map((item) => (
+                                  <button
+                                    key={item._id}
+                                    onClick={() => {
+                                      setAnimatingImage(item.image_url);
+                                      setAnimatingImageData(item);
+                                      if (item.prompt || item.name) {
+                                        const basePrompt = item.prompt || item.name || '';
+                                        const motionSuggestion = basePrompt.includes('portrait') || basePrompt.includes('character')
+                                          ? 'gentle breathing, subtle head movement, soft blinking, hair gently flowing'
+                                          : basePrompt.includes('scene') || basePrompt.includes('landscape')
+                                          ? 'gentle camera pan, soft light changes, subtle environmental movement'
+                                          : 'gentle breathing, subtle movement, natural animation';
+                                        setAnimationMotion(motionSuggestion);
+                                      }
+                                      if (item.style) {
+                                        const styleMap = { 'fantasy': 'natural', 'cinematic': 'dramatic', 'anime': 'dramatic', 'realistic': 'natural', 'subtle': 'subtle' };
+                                        setAnimationStyle(styleMap[item.style] || 'natural');
+                                      }
+                                    }}
+                                    className={`relative rounded-lg overflow-hidden border-2 transition-all ${
+                                      animatingImage === item.image_url ? 'border-pink-500' : 'border-transparent hover:border-purple-500'
+                                    }`}
+                                  >
+                                    <img src={item.image_url} alt={item.name} className="w-full aspect-square object-cover" loading="lazy" />
+                                    {item.name && (
+                                      <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-1 py-0.5">
+                                        <p className="text-white text-[8px] truncate">{item.name}</p>
+                                      </div>
+                                    )}
+                                  </button>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-purple-300/50 text-[10px] text-center py-2">No images yet</p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Pro Studio Section */}
+                      <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-lg border border-yellow-500/20 overflow-hidden">
+                        <button
+                          onClick={() => setProStudioExpanded(!proStudioExpanded)}
+                          className="w-full px-3 py-2 flex items-center justify-between hover:bg-white/5 transition-colors"
+                        >
+                          <div className="flex items-center gap-2">
+                            <FiStar className="w-3 h-3 text-yellow-400" />
+                            <span className="text-xs font-medium text-yellow-300">Pro Studio</span>
+                            <span className="text-[10px] text-yellow-400/60">({proStudioItems.filter(i => i.type !== 'animation').length})</span>
+                          </div>
+                          <FiChevronDown className={`w-3 h-3 text-yellow-400 transition-transform ${proStudioExpanded ? 'rotate-180' : ''}`} />
+                        </button>
+                        {proStudioExpanded && (
+                          <div className="px-3 pb-3">
+                            {proStudioItems.filter(i => i.type !== 'animation').length > 0 ? (
+                              <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 max-h-32 overflow-y-auto">
+                                {proStudioItems.filter(i => i.type !== 'animation').map((item) => (
+                                  <button
+                                    key={item._id}
+                                    onClick={() => {
+                                      setAnimatingImage(item.image_url);
+                                      setAnimatingImageData(item);
+                                      setAnimationMotion('gentle breathing, subtle movement, natural animation');
+                                      if (item.style) {
+                                        const styleMap = { 'fantasy': 'natural', 'cinematic': 'dramatic', 'anime': 'dramatic', 'realistic': 'natural', 'subtle': 'subtle' };
+                                        setAnimationStyle(styleMap[item.style] || 'natural');
+                                      }
+                                    }}
+                                    className={`relative rounded-lg overflow-hidden border-2 transition-all ${
+                                      animatingImage === item.image_url ? 'border-pink-500' : 'border-transparent hover:border-yellow-500'
+                                    }`}
+                                  >
+                                    <img src={item.image_url} alt={item.name} className="w-full aspect-square object-cover" loading="lazy" />
+                                    {item.name && (
+                                      <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-1 py-0.5">
+                                        <p className="text-white text-[8px] truncate">{item.name}</p>
+                                      </div>
+                                    )}
+                                  </button>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-yellow-300/50 text-[10px] text-center py-2">No Pro Studio images yet</p>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
                     
                     {/* Auto-populated info from selected gallery image */}
