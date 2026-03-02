@@ -767,6 +767,7 @@ class UserResponse(BaseModel):
     pro_trial: Optional[bool] = False
     pro_trial_expires_at: Optional[str] = None
     trial_days_remaining: Optional[int] = None
+    trial_hours_remaining: Optional[int] = None  # For 48-hour trial timer
     is_admin: Optional[bool] = False
     
 # Credit costs for Pro Studio features
@@ -1279,8 +1280,8 @@ async def register(user_data: UserCreate, background_tasks: BackgroundTasks):
     user_id = str(uuid.uuid4())
     now = datetime.now(timezone.utc)
     now_iso = now.isoformat()
-    # 3-day free Pro trial for all new users
-    trial_expires = (now + timedelta(days=3)).isoformat()
+    # 48-hour (2-day) free Pro trial for all new users
+    trial_expires = (now + timedelta(hours=48)).isoformat()
     
     user = {
         "id": user_id,
@@ -1360,6 +1361,7 @@ async def login(user_data: UserLogin):
     pro_trial = user.get("pro_trial", False)
     trial_expires = user.get("pro_trial_expires_at")
     trial_days_remaining = None
+    trial_hours_remaining = None
     
     if pro_trial and trial_expires:
         expiry_date = datetime.fromisoformat(trial_expires.replace('Z', '+00:00'))
@@ -1373,7 +1375,13 @@ async def login(user_data: UserLogin):
             )
             pro_trial = False
         else:
-            trial_days_remaining = (expiry_date - now).days
+            # Calculate time remaining
+            time_remaining = expiry_date - now
+            total_hours = int(time_remaining.total_seconds() / 3600)
+            if total_hours >= 24:
+                trial_days_remaining = time_remaining.days
+            else:
+                trial_hours_remaining = max(1, total_hours)  # At least 1 hour
     
     token = create_token(user["id"], user["email"], user["role"], user_data.remember_me)
     is_admin_value = user.get("is_admin", False) or user.get("role") == "admin"
@@ -1390,6 +1398,7 @@ async def login(user_data: UserLogin):
             pro_trial=pro_trial,
             pro_trial_expires_at=trial_expires,
             trial_days_remaining=trial_days_remaining,
+            trial_hours_remaining=trial_hours_remaining,
             is_admin=is_admin_value
         )
     )
@@ -1401,6 +1410,7 @@ async def get_me(current_user: dict = Depends(get_current_user)):
     pro_trial = current_user.get("pro_trial", False)
     trial_expires = current_user.get("pro_trial_expires_at")
     trial_days_remaining = None
+    trial_hours_remaining = None
     
     if pro_trial and trial_expires:
         expiry_date = datetime.fromisoformat(trial_expires.replace('Z', '+00:00'))
@@ -1409,7 +1419,13 @@ async def get_me(current_user: dict = Depends(get_current_user)):
             subscription = "free"
             pro_trial = False
         else:
-            trial_days_remaining = (expiry_date - now).days
+            # Calculate time remaining
+            time_remaining = expiry_date - now
+            total_hours = int(time_remaining.total_seconds() / 3600)
+            if total_hours >= 24:
+                trial_days_remaining = time_remaining.days
+            else:
+                trial_hours_remaining = max(1, total_hours)  # At least 1 hour
     
     return UserResponse(
         id=current_user["id"],
@@ -1422,6 +1438,7 @@ async def get_me(current_user: dict = Depends(get_current_user)):
         pro_trial=pro_trial,
         pro_trial_expires_at=trial_expires,
         trial_days_remaining=trial_days_remaining,
+        trial_hours_remaining=trial_hours_remaining,
         is_admin=current_user.get("is_admin", False) or current_user.get("role") == "admin"
     )
 

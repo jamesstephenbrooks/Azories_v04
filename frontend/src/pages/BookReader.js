@@ -1805,42 +1805,57 @@ export default function BookReader() {
                     
                     {/* Right Page: Text with vertical centering */}
                     <div 
-                      className="flex-1 bg-[#fdfbf7] dark:bg-[#2a2a30] rounded-r-lg overflow-hidden flex flex-col"
+                      className="flex-1 bg-[#fdfbf7] rounded-r-lg overflow-hidden flex flex-col relative"
                       style={{ 
                         boxShadow: '-4px 0 15px -5px rgba(0,0,0,0.1)'
                       }}
                     >
                       {/* Book/Chapter header - subtle */}
                       <div className="px-4 pt-2 pb-1 flex items-center justify-between">
-                        <span className="text-[9px] uppercase tracking-widest text-muted-foreground/60 font-medium">
+                        <span className="text-[9px] uppercase tracking-widest text-gray-400 font-medium">
                           {currentPageData?.chapterTitle || book?.title}
                         </span>
-                        <span className="text-[9px] text-muted-foreground/50">
+                        <span className="text-[9px] text-gray-400">
                           {currentPage + 1}
                         </span>
                       </div>
                       
-                      {/* Text content - vertically centered with larger font */}
-                      <div className="flex-1 flex flex-col justify-center px-5 py-2">
+                      {/* Text content - scrollable with indicator */}
+                      <div 
+                        ref={textScrollRef}
+                        className="flex-1 overflow-y-auto px-5 py-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+                      >
                         {(currentPageData?.text_content || currentPageData?.text || currentPageData?.content) ? (
-                          <p className="font-reader text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap text-center">
+                          <p className="font-reader text-sm leading-relaxed text-gray-800 whitespace-pre-wrap text-center">
                             {currentPageData.text_content || currentPageData.text || currentPageData.content}
                           </p>
                         ) : currentPageData?.isChapterTitle ? (
                           <div className="text-center">
-                            <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
+                            <p className="text-[10px] uppercase tracking-widest text-gray-500 mb-1">
                               Chapter {currentPageData.chapterNumber || ''}
                             </p>
-                            <h3 className="font-heading text-base font-bold text-foreground">
+                            <h3 className="font-heading text-base font-bold text-gray-900">
                               {currentPageData.chapterTitle}
                             </h3>
                           </div>
                         ) : (
-                          <p className="text-muted-foreground/60 text-xs italic text-center">
+                          <p className="text-gray-400 text-xs italic text-center">
                             Tap edges to navigate
                           </p>
                         )}
                       </div>
+                      
+                      {/* Scroll down indicator - shown when more text below */}
+                      {showScrollIndicator && (
+                        <div className="absolute bottom-12 left-0 right-0 pointer-events-none">
+                          <div className="h-8 bg-gradient-to-t from-[#fdfbf7] to-transparent" />
+                          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center">
+                            <div className="animate-bounce bg-[#fdfbf7] rounded-full p-1 shadow-sm">
+                              <FiChevronDown className="w-4 h-4 text-purple-500/70" />
+                            </div>
+                          </div>
+                        </div>
+                      )}
                       
                       {/* Decorative footer element */}
                       <div className="px-4 pb-2 flex justify-center">

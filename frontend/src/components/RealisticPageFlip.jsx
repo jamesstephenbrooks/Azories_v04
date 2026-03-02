@@ -144,9 +144,9 @@ const ScrollableTextArea = ({ children, className = "" }) => {
       {/* Scroll indicator - shows when more content below */}
       {showScrollIndicator && (
         <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
-          <div className="h-12 bg-gradient-to-t from-[#fdfbf7] dark:from-[#1a1a2e] to-transparent" />
+          <div className="h-12 bg-gradient-to-t from-[#fdfbf7] to-transparent" />
           <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex flex-col items-center">
-            <div className="animate-bounce bg-[#fdfbf7] dark:bg-[#1a1a2e] rounded-full p-1 shadow-sm">
+            <div className="animate-bounce bg-[#fdfbf7] rounded-full p-1 shadow-sm">
               <FiChevronDown className="w-4 h-4 text-purple-500/70" />
             </div>
           </div>
@@ -166,7 +166,7 @@ const Page = forwardRef(({ pageNumber, children, isLeft, isCover, isBackCover },
     >
       <div 
         className={`
-          absolute inset-0 bg-[#fdfbf7] dark:bg-[#2a2a30]
+          absolute inset-0 bg-[#fdfbf7]
           ${isCover ? 'rounded-r-lg' : isBackCover ? 'rounded-l-lg' : ''}
           overflow-hidden
         `}
@@ -198,7 +198,7 @@ const Page = forwardRef(({ pageNumber, children, isLeft, isCover, isBackCover },
         
         {/* Page number */}
         {!isCover && !isBackCover && pageNumber && (
-          <div className={`absolute bottom-4 ${isLeft ? 'left-6' : 'right-6'} text-sm text-muted-foreground/60`}>
+          <div className={`absolute bottom-4 ${isLeft ? 'left-6' : 'right-6'} text-sm text-gray-400`}>
             {pageNumber}
           </div>
         )}
@@ -353,15 +353,15 @@ const ChapterTitlePage = forwardRef(({ chapter, chapterNumber, totalChapters, is
   return (
     <Page ref={ref} isLeft={isLeft}>
       <div className="h-full flex flex-col items-center justify-center">
-        <span className="text-sm font-ui text-muted-foreground mb-4 tracking-widest uppercase">
+        <span className="text-sm font-ui text-gray-500 mb-4 tracking-widest uppercase">
           Chapter {chapterNumber} of {totalChapters}
         </span>
-        <h2 className="font-heading text-2xl md:text-3xl font-bold text-center leading-tight">
+        <h2 className="font-heading text-2xl md:text-3xl font-bold text-center leading-tight text-gray-900">
           {chapter?.title || `Chapter ${chapterNumber}`}
         </h2>
         <div className="mt-8 flex gap-2">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="w-2 h-2 rounded-full bg-primary/30" />
+            <div key={i} className="w-2 h-2 rounded-full bg-purple-300" />
           ))}
         </div>
       </div>
@@ -388,7 +388,7 @@ const ImagePage = forwardRef(({ page, pageNumber, isCurrentPage = false, onImage
     >
       {/* Full-page media container - Portrait 3:4 aspect ratio with overflow hidden */}
       <div 
-        className="absolute inset-0 bg-[#fdfbf7] dark:bg-[#2a2a30]"
+        className="absolute inset-0 bg-[#fdfbf7]"
         style={{
           overflow: 'hidden',
           boxShadow: 'inset -7px 0 30px -7px rgba(0,0,0,0.12)',
@@ -492,11 +492,11 @@ const TextPage = forwardRef(({ page, pageNumber, isFirstOfChapter }, ref) => {
       <div className="h-full flex flex-col overflow-hidden px-4 sm:px-6 lg:px-8 py-4">
         {/* Chapter title header for first page of chapter */}
         {isFirstOfChapter && page?.chapterTitle && (
-          <div className="mb-3 pb-2 border-b border-muted-foreground/20 flex-shrink-0">
-            <span className="text-xs font-ui text-muted-foreground tracking-widest uppercase">
+          <div className="mb-3 pb-2 border-b border-gray-300 flex-shrink-0">
+            <span className="text-xs font-ui text-gray-500 tracking-widest uppercase">
               Chapter {page.chapterNumber}
             </span>
-            <h3 className="font-heading text-lg lg:text-xl font-bold text-foreground mt-1">
+            <h3 className="font-heading text-lg lg:text-xl font-bold text-gray-900 mt-1">
               {page.chapterTitle}
             </h3>
           </div>
@@ -504,12 +504,12 @@ const TextPage = forwardRef(({ page, pageNumber, isFirstOfChapter }, ref) => {
         
         {hasText ? (
           <ScrollableTextArea>
-            <p className={`${getFontClass()} ${getTextSizeClass()} ${getAlignClass()} whitespace-pre-wrap text-foreground/90`}>
+            <p className={`${getFontClass()} ${getTextSizeClass()} ${getAlignClass()} whitespace-pre-wrap text-gray-800`}>
               {page.text_content}
             </p>
           </ScrollableTextArea>
         ) : (
-          <div className="h-full flex items-center justify-center text-muted-foreground/40">
+          <div className="h-full flex items-center justify-center text-gray-400">
             <span className="text-base italic">This page has no text</span>
           </div>
         )}

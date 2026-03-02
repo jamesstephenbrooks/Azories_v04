@@ -11,42 +11,48 @@ export default function TrialBanner() {
   if (!user.pro_trial) return null;
   
   const daysRemaining = user.trial_days_remaining;
+  const hoursRemaining = user.trial_hours_remaining;
   
-  // Determine urgency colors
+  // Determine urgency colors based on time remaining
   let bgClass = 'from-purple-500/20 to-pink-500/20 border-purple-500/30';
   let textClass = 'text-purple-300';
   let iconClass = 'text-purple-400';
   
-  if (daysRemaining !== null && daysRemaining <= 7) {
-    bgClass = 'from-orange-500/20 to-red-500/20 border-orange-500/30';
-    textClass = 'text-orange-300';
-    iconClass = 'text-orange-400';
-  }
-  if (daysRemaining !== null && daysRemaining <= 3) {
+  // If showing hours (less than 1 day), use urgent colors
+  if (hoursRemaining !== null && hoursRemaining !== undefined) {
+    bgClass = 'from-red-500/20 to-pink-500/20 border-red-500/30';
+    textClass = 'text-red-300';
+    iconClass = 'text-red-400';
+  } else if (daysRemaining !== null && daysRemaining <= 1) {
     bgClass = 'from-red-500/20 to-pink-500/20 border-red-500/30';
     textClass = 'text-red-300';
     iconClass = 'text-red-400';
   }
+  
+  // Format the time remaining display
+  const getTimeDisplay = () => {
+    if (hoursRemaining !== null && hoursRemaining !== undefined) {
+      return <><span className="font-bold">{hoursRemaining} hour{hoursRemaining !== 1 ? 's' : ''}</span> remaining</>;
+    }
+    if (daysRemaining !== null) {
+      return <><span className="font-bold">{daysRemaining} day{daysRemaining !== 1 ? 's' : ''}</span> remaining</>;
+    }
+    return null;
+  };
   
   return (
     <div className={`bg-gradient-to-r ${bgClass} border rounded-xl p-3 mb-4`}>
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-3">
           <div className={`p-2 rounded-lg bg-white/10 ${iconClass}`}>
-            <FiStar className="w-4 h-4" />
+            <FiClock className="w-4 h-4" />
           </div>
           <div>
             <p className={`text-sm font-medium ${textClass}`}>
-              {daysRemaining !== null ? (
-                <>
-                  Pro Trial: <span className="font-bold">{daysRemaining} days</span> remaining
-                </>
-              ) : (
-                'Pro Trial Active'
-              )}
+              Pro Trial: {getTimeDisplay() || 'Active'}
             </p>
             <p className="text-xs text-white/50">
-              Enjoy unlimited access to all Pro features!
+              48-hour access to all Pro features!
             </p>
           </div>
         </div>
