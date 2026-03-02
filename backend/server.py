@@ -414,34 +414,40 @@ async def lifespan(app: FastAPI):
     """Handle startup and shutdown events - optimized for K8s deployment."""
     global _cleanup_task
     
-    # Startup: start periodic cleanup (non-blocking)
-    _cleanup_task = asyncio.create_task(periodic_cleanup())
-    logger.info("Started periodic task cleanup")
-    
-    # Load FAL_KEY from database - run in background to not block startup
-    asyncio.create_task(_safe_load_fal_key())
-    
-    # AUTO-SEED: Run in background so app starts immediately
-    # This prevents startup timeouts when fetching from preview
-    asyncio.create_task(background_seed())
-    logger.info("🌱 Background seed task scheduled")
-    
-    # Create indexes in background - don't block startup
-    asyncio.create_task(_create_indexes_background())
-    
-    # App is ready to serve requests
-    logger.info("✅ Application startup complete - ready for health checks")
+    try:
+        # Startup: start periodic cleanup (non-blocking)
+        _cleanup_task = asyncio.create_task(periodic_cleanup())
+        logger.info("Started periodic task cleanup")
+        
+        # Load FAL_KEY from database - run in background to not block startup
+        asyncio.create_task(_safe_load_fal_key())
+        
+        # AUTO-SEED: Run in background so app starts immediately
+        # This prevents startup timeouts when fetching from preview
+        asyncio.create_task(background_seed())
+        logger.info("🌱 Background seed task scheduled")
+        
+        # Create indexes in background - don't block startup
+        asyncio.create_task(_create_indexes_background())
+        
+        # App is ready to serve requests
+        logger.info("✅ Application startup complete - ready for health checks")
+    except Exception as e:
+        logger.error(f"Startup error (non-fatal): {e}")
     
     yield
     
     # Shutdown
-    if _cleanup_task:
-        _cleanup_task.cancel()
-        try:
-            await _cleanup_task
-        except asyncio.CancelledError:
-            pass
-    logger.info("Application shutdown complete")
+    try:
+        if _cleanup_task:
+            _cleanup_task.cancel()
+            try:
+                await _cleanup_task
+            except asyncio.CancelledError:
+                pass
+        logger.info("Application shutdown complete")
+    except Exception as e:
+        logger.error(f"Shutdown error: {e}")
 
 
 async def _safe_load_fal_key():
