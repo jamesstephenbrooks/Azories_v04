@@ -1292,7 +1292,7 @@ export default function ProStudio() {
     }
   };
 
-  // Generate shots (9 angles from 1 image)
+  // Generate shots (6 angles from 1 image)
   // Helper to resize image to reduce payload size
   const resizeImageForAPI = async (imageData, maxSize = 1024) => {
     return new Promise((resolve) => {
@@ -1489,7 +1489,7 @@ export default function ProStudio() {
         throw new Error('No task ID returned from server');
       }
       
-      setLoadingMessage('Generating 9 angles... This may take a few minutes.');
+      setLoadingMessage('Generating 6 angles... This may take 1-2 minutes.');
       
       // Poll for completion
       const result = await pollTaskStatus(task_id, (progress) => {
@@ -1497,8 +1497,8 @@ export default function ProStudio() {
         if (progress < 20) {
           setLoadingMessage('Analyzing source image...');
         } else if (progress < 100) {
-          const shotNum = Math.ceil((progress - 20) / 9);
-          setLoadingMessage(`Generating shot ${Math.min(shotNum, 9)} of 9...`);
+          const shotNum = Math.ceil((progress - 20) / 13);
+          setLoadingMessage(`Generating shot ${Math.min(shotNum, 6)} of 6...`);
         }
       });
       
@@ -4070,7 +4070,7 @@ export default function ProStudio() {
                   <FiGrid className="text-purple-400" /> Shots App
                 </h2>
                 <p className="text-gray-400 text-xs sm:text-sm mb-4">
-                  Upload one image and generate 9 different angles - front, side profiles, 3/4 views, and more.
+                  Upload one image and generate 6 different angles - front, side profile, 3/4 views, and more.
                 </p>
 
                 <div className="border-2 border-dashed border-purple-500/30 rounded-lg p-4 sm:p-8 text-center mb-4 min-h-[120px] flex items-center justify-center">
@@ -4252,14 +4252,14 @@ export default function ProStudio() {
                 {/* Generate Button - Hidden on mobile (floating button used instead) */}
                 <Button 
                   onClick={() => {
-                    if (!checkCreditsOrRedirect(9, 'Generate 9 Shots')) return;
+                    if (!checkCreditsOrRedirect(6, 'Generate 6 Shots')) return;
                     generateShots();
                   }}
                   disabled={isLoading || !shotsSourceImage}
                   className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 min-h-[48px] text-base hidden sm:flex"
                   data-testid="generate-shots-btn"
                 >
-                  <FiGrid className="mr-2" /> Generate 9 Shots
+                  <FiGrid className="mr-2" /> Generate 6 Shots
                 </Button>
               </div>
 

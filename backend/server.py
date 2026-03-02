@@ -778,7 +778,7 @@ CREDIT_COSTS = {
     "lora_training": 50,       # Train LoRA model
     "lora_generate": 2,        # Generate with trained LoRA
     "video_generate": 10,      # Video generation
-    "shots_generate": 5,       # 9 angle shots generation
+    "shots_generate": 5,       # 6 angle shots generation
     "expression_generate": 2,  # Expression generation
     "ai_story_create": 5,      # AI Story Creator (covers all page images)
 }
@@ -791,7 +791,7 @@ ACTUAL_COSTS = {
     "lora_training": 2.00,     # $2.00 per training
     "lora_generate": 0.05,     # $0.05 per image
     "video_generate": 0.50,    # $0.50 per video (5 second)
-    "shots_generate": 0.25,    # $0.25 for 9 shots
+    "shots_generate": 0.25,    # $0.25 for 6 shots
     "expression_generate": 0.05, # $0.05 per expression
     "ai_story_create": 0.50,   # $0.50 for story with images
 }
@@ -1749,7 +1749,7 @@ async def get_task_status(task_id: str, current_user: dict = Depends(get_current
     )
 
 async def run_shots_generation_task(task_id: str, user_id: str, source_image: str, character_id: Optional[str], style: str = "realistic", character_style: Optional[str] = None):
-    """Background task to generate 9 shots with specified art style"""
+    """Background task to generate 6 shots with specified art style"""
     try:
         from emergentintegrations.llm.openai import LlmChat, UserMessage, ImageContent
         
@@ -1837,7 +1837,7 @@ async def run_shots_generation_task(task_id: str, user_id: str, source_image: st
         logger.info(f"Task {task_id}: Image analysis complete: {base_description[:100]}...")
         TASK_STORE[task_id]["progress"] = 20
         
-        # Generate 9 shots
+        # Generate 6 shots
         shots = []
         image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
         
@@ -1869,7 +1869,7 @@ async def run_shots_generation_task(task_id: str, user_id: str, source_image: st
                     return
                 continue
             
-            TASK_STORE[task_id]["progress"] = 20 + int((i + 1) * 80 / 9)
+            TASK_STORE[task_id]["progress"] = 20 + int((i + 1) * 80 / 6)
         
         logger.info(f"Task {task_id}: Completed with {len(shots)} shots")
         TASK_STORE[task_id]["status"] = "completed"
@@ -3841,11 +3841,8 @@ SHOT_TYPE_PROMPTS = [
     "three quarter view from left, slight turn",
     "three quarter view from right, slight turn",
     "side profile view from left, looking left",
-    "side profile view from right, looking right",
     "looking upward, low angle perspective",
-    "looking downward, high angle perspective",
-    "over the shoulder view, back partially visible",
-    "back view, showing from behind"
+    "over the shoulder view, back partially visible"
 ]
 
 @api_router.get("/pro-studio/characters")
