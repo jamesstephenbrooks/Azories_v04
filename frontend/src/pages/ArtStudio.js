@@ -3404,7 +3404,7 @@ export default function ArtStudio() {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-[#1a1520] rounded-xl border border-white/10 p-6 max-w-2xl w-full max-h-[80vh] overflow-auto"
+              className="bg-[#1a1520] rounded-xl border border-white/10 p-6 max-w-3xl w-full max-h-[85vh] overflow-auto"
               onClick={e => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4">
@@ -3426,42 +3426,159 @@ export default function ArtStudio() {
                 </button>
               </div>
               
-              {gallery.length === 0 ? (
-                <div className="text-center py-12">
-                  <FiImage className="w-16 h-16 text-white/20 mx-auto mb-4" />
-                  <p className="text-white/50">No images in your gallery yet</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-3 gap-3">
-                  {gallery.map((item) => (
+              <div className="space-y-4">
+                {/* Starter Library Section */}
+                {starterLibrary.length > 0 && (
+                  <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 rounded-xl border border-amber-500/20 overflow-hidden">
                     <button
-                      key={item._id}
-                      onClick={() => {
-                        if (galleryPickerTarget === 'style') {
-                          setStyleReferenceImage(item.image_url);
-                        } else {
-                          setCharacterReferenceImage(item.image_url);
-                        }
-                        setShowGalleryPicker(false);
-                      }}
-                      className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-colors group ${
-                        galleryPickerTarget === 'style' 
-                          ? 'border-transparent hover:border-purple-500' 
-                          : 'border-transparent hover:border-pink-500'
-                      }`}
+                      onClick={() => setStarterExpanded(!starterExpanded)}
+                      className="w-full px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-colors"
                     >
-                      <img
-                        src={item.image_url}
-                        alt={item.name}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <span className="text-white font-medium">Use as {galleryPickerTarget === 'style' ? 'Style' : 'Character'}</span>
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded bg-gradient-to-r from-amber-500 to-orange-500 flex items-center justify-center">
+                          <span className="text-white text-xs">⭐</span>
+                        </div>
+                        <span className="text-sm font-semibold text-amber-300">Starter Library</span>
+                        <span className="text-xs text-amber-400/60">({starterLibrary.length} images)</span>
                       </div>
+                      <FiChevronDown className={`w-4 h-4 text-amber-400 transition-transform ${starterExpanded ? 'rotate-180' : ''}`} />
                     </button>
-                  ))}
+                    {starterExpanded && (
+                      <div className="p-4 pt-0">
+                        <div className="grid grid-cols-4 md:grid-cols-5 gap-2 max-h-48 overflow-y-auto">
+                          {starterLibrary.map((item) => (
+                            <button
+                              key={item._id || item.id}
+                              onClick={() => {
+                                if (galleryPickerTarget === 'style') {
+                                  setStyleReferenceImage(item.image_url);
+                                } else {
+                                  setCharacterReferenceImage(item.image_url);
+                                }
+                                setShowGalleryPicker(false);
+                              }}
+                              className="relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-amber-500 transition-colors group"
+                            >
+                              <img
+                                src={item.image_url}
+                                alt={item.name}
+                                className="w-full h-full object-cover"
+                              />
+                              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <span className="text-white text-xs font-medium">Select</span>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {/* Creator Studio Section */}
+                <div className="bg-purple-500/10 rounded-xl border border-purple-500/20 overflow-hidden">
+                  <button
+                    onClick={() => setArtStudioExpanded(!artStudioExpanded)}
+                    className="w-full px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                        <FiImage className="w-3 h-3 text-white" />
+                      </div>
+                      <span className="text-sm font-semibold text-purple-300">Creator Studio</span>
+                      <span className="text-xs text-purple-400/60">({artStudioItems.filter(i => i.type !== 'animation').length} images)</span>
+                    </div>
+                    <FiChevronDown className={`w-4 h-4 text-purple-400 transition-transform ${artStudioExpanded ? 'rotate-180' : ''}`} />
+                  </button>
+                  {artStudioExpanded && (
+                    <div className="p-4 pt-0">
+                      {artStudioItems.filter(i => i.type !== 'animation').length > 0 ? (
+                        <div className="grid grid-cols-4 md:grid-cols-5 gap-2 max-h-48 overflow-y-auto">
+                          {artStudioItems.filter(i => i.type !== 'animation').map((item) => (
+                            <button
+                              key={item._id}
+                              onClick={() => {
+                                if (galleryPickerTarget === 'style') {
+                                  setStyleReferenceImage(item.image_url);
+                                } else {
+                                  setCharacterReferenceImage(item.image_url);
+                                }
+                                setShowGalleryPicker(false);
+                              }}
+                              className="relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-purple-500 transition-colors group"
+                            >
+                              <img
+                                src={item.image_url}
+                                alt={item.name}
+                                className="w-full h-full object-cover"
+                              />
+                              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <span className="text-white text-xs font-medium">Select</span>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-4">
+                          <p className="text-purple-300/50 text-xs">No creations yet</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-              )}
+                
+                {/* Pro Studio Section */}
+                <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-xl border border-yellow-500/20 overflow-hidden">
+                  <button
+                    onClick={() => setProStudioExpanded(!proStudioExpanded)}
+                    className="w-full px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded bg-gradient-to-r from-yellow-500 to-orange-500 flex items-center justify-center">
+                        <FiStar className="w-3 h-3 text-white" />
+                      </div>
+                      <span className="text-sm font-semibold text-yellow-300">Pro Studio</span>
+                      <span className="text-xs text-yellow-400/60">({proStudioItems.filter(i => i.type !== 'animation').length} images)</span>
+                    </div>
+                    <FiChevronDown className={`w-4 h-4 text-yellow-400 transition-transform ${proStudioExpanded ? 'rotate-180' : ''}`} />
+                  </button>
+                  {proStudioExpanded && (
+                    <div className="p-4 pt-0">
+                      {proStudioItems.filter(i => i.type !== 'animation').length > 0 ? (
+                        <div className="grid grid-cols-4 md:grid-cols-5 gap-2 max-h-48 overflow-y-auto">
+                          {proStudioItems.filter(i => i.type !== 'animation').map((item) => (
+                            <button
+                              key={item._id}
+                              onClick={() => {
+                                if (galleryPickerTarget === 'style') {
+                                  setStyleReferenceImage(item.image_url);
+                                } else {
+                                  setCharacterReferenceImage(item.image_url);
+                                }
+                                setShowGalleryPicker(false);
+                              }}
+                              className="relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-yellow-500 transition-colors group"
+                            >
+                              <img
+                                src={item.image_url}
+                                alt={item.name}
+                                className="w-full h-full object-cover"
+                              />
+                              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <span className="text-white text-xs font-medium">Select</span>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-4">
+                          <p className="text-yellow-300/50 text-xs">No Pro Studio creations yet</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
             </motion.div>
           </motion.div>
         )}
