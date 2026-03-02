@@ -665,8 +665,7 @@ async def get_admin_user(credentials: HTTPAuthorizationCredentials = Depends(sec
 
 # ============ ADMIN LOGIN ============
 # Separate admin login endpoint for the admin dashboard
-ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "Admin")
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "Routetofreedom")
+# ADMIN_USERNAME and ADMIN_PASSWORD are defined at module level (lines ~148-151)
 
 class AdminLoginRequest(BaseModel):
     username: str
