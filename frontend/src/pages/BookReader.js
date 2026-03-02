@@ -449,13 +449,26 @@ export default function BookReader() {
       }
     }
     
-    // CLEANUP when leaving this book - but DON'T abort here (we do it above)
+    // CLEANUP when component unmounts or bookId changes
     return () => {
-      console.log('[BookReader] Component unmounting, running cleanup');
+      console.log('[BookReader] Component unmounting or bookId changing, running cleanup');
       mountedRef.current = false;
+      
+      // Stop all audio immediately
+      if (audioRef.current) {
+        try {
+          audioRef.current.pause();
+          audioRef.current.src = '';
+        } catch (e) {}
+      }
+      
+      // Clear all caches and timeouts
+      audioCache.current.clear();
+      preloadingPages.current.clear();
       clearAllTimeouts();
-      // Don't abort here - we abort at the START of the next effect
-      // This prevents aborting the NEW book's requests
+      
+      // Abort pending requests for THIS book (not the next one)
+      // The next effect iteration will create a fresh controller
     };
   }, [bookId, user, authLoading, token, clearAllTimeouts]);
 
