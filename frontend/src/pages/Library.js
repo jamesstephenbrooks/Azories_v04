@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, lazy, Suspense, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -159,8 +159,8 @@ const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 300
 };
 
 // Lazy load the 3D component
-// 3D Library TEMPORARILY DISABLED - causing production issues
-// const ImmersiveLibrary3D = lazy(() => import('@/components/ImmersiveLibrary3D'));
+// 3D Library - Re-enabled
+const ImmersiveLibrary3D = lazy(() => import('@/components/ImmersiveLibrary3D'));
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -805,17 +805,10 @@ export default function Library() {
               </div>
               
               {/* 3D Grand Library Promotional Card - Only show in grid view when not searching */}
-              {/* TEMPORARILY DISABLED: 3D model causing server issues */}
               {viewMode === 'grid' && !debouncedSearch && (
                 <div 
                   className="mb-8 relative overflow-hidden rounded-3xl cursor-pointer group"
-                  onClick={() => {
-                    // 3D view temporarily disabled for performance
-                    toast.info('Grand Library 3D experience is being upgraded! Check back soon.', {
-                      duration: 4000,
-                      icon: '🏰'
-                    });
-                  }}
+                  onClick={() => setViewMode('immersive')}
                   data-testid="grand-library-promo"
                 >
                   <div className="relative h-40 sm:h-48 md:h-64 overflow-hidden">
@@ -833,7 +826,7 @@ export default function Library() {
                       <div className="max-w-lg">
                         <div className="flex items-center gap-2 mb-2 sm:mb-3">
                           <span className="px-2 sm:px-3 py-1 bg-purple-500/30 backdrop-blur-sm rounded-full text-purple-300 text-[10px] sm:text-xs font-medium">
-                            COMING SOON
+                            IMMERSIVE
                           </span>
                         </div>
                         <h3 className="text-lg sm:text-2xl md:text-4xl font-serif font-bold text-white mb-1 sm:mb-3">
@@ -862,21 +855,23 @@ export default function Library() {
                 </div>
               )}
               
-              {/* Immersive 3D Gothic Library View - TEMPORARILY DISABLED */}
+              {/* Immersive 3D Gothic Library View */}
               {viewMode === 'immersive' ? (
-                <div className="w-full h-[700px] rounded-3xl bg-gradient-to-b from-purple-900/50 to-black flex items-center justify-center">
-                  <div className="text-center space-y-4 p-8">
-                    <div className="text-6xl mb-4">🏰</div>
-                    <p className="text-white text-2xl font-bold">Grand Library Upgrade in Progress</p>
-                    <p className="text-white/60 text-lg max-w-md">We're enhancing the 3D experience for better performance. Check back soon!</p>
-                    <button 
-                      onClick={() => setViewMode('grid')}
-                      className="mt-4 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-colors"
-                    >
-                      Return to Library
-                    </button>
+                <Suspense fallback={
+                  <div className="w-full h-[700px] rounded-3xl bg-black flex items-center justify-center">
+                    <div className="text-center space-y-4">
+                      <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+                      <p className="text-white text-lg">Loading Gothic Library...</p>
+                      <p className="text-white/60 text-sm">Preparing an immersive experience</p>
+                    </div>
                   </div>
-                </div>
+                }>
+                  <ImmersiveLibrary3D 
+                    books={books}
+                    onClose={() => setViewMode('grid')}
+                    onSelectBook={(book) => navigate(`/read/${book.id}`)}
+                  />
+                </Suspense>
               ) : (
               /* Books Grid with Recommendations */
               <>
