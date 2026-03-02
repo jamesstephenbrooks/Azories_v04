@@ -5536,23 +5536,13 @@ async def generate_consistent_character_image(
 
 @api_router.post("/ai/generate-story")
 async def generate_story(request: AIStoryRequest, current_user: dict = Depends(get_current_user)):
-    """Generate a complete story from an idea using AI, with images"""
-    # Check subscription: allow pro, trial users, and admins
-    is_pro = current_user.get("subscription", "free") == "pro"
-    is_trial = current_user.get("pro_trial", False)
-    is_admin = current_user.get("role") == "admin"
+    """Generate a complete story from an idea using AI, with images
     
-    # Check if trial has expired
-    if is_trial:
-        trial_expires = current_user.get("pro_trial_expires_at")
-        if trial_expires:
-            expiry_date = datetime.fromisoformat(trial_expires.replace('Z', '+00:00'))
-            if datetime.now(timezone.utc) > expiry_date:
-                is_trial = False  # Trial expired
-    
-    if not is_pro and not is_trial and not is_admin:
-        raise HTTPException(status_code=403, detail="Pro subscription required")
-    
+    Business Logic:
+    - First 3 stories are FREE for all users
+    - After 3 free stories, users pay with credits
+    - No pro subscription required
+    """
     # Check if user has free stories remaining (3 free stories for new users)
     free_stories_remaining = current_user.get("free_stories_remaining")
     free_stories_used = current_user.get("free_stories_used", 0)
