@@ -250,7 +250,7 @@ const CoverPage = forwardRef(({ book }, ref) => {
             <img 
               src="https://res.cloudinary.com/dlbmjqmoy/image/upload/e_background_removal/v1772279585/azories/mascot/azora_pose2_running.png"
               alt="Loading..."
-              className="w-24 h-24 object-contain opacity-80"
+              className="w-72 h-72 object-contain opacity-80"
             />
           </div>
         )}
