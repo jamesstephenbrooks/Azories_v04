@@ -2434,7 +2434,8 @@ export default function ArtStudio() {
                                   video_url: videoData,
                                   name: `Animation ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`,
                                   motion_prompt: String(animationMotion || 'animation'),
-                                  style: String(animationStyle || 'natural')
+                                  style: String(animationStyle || 'natural'),
+                                  thumbnail_url: animatingImage  // Source image as thumbnail
                                 });
                                 
                                 const saveResponse = await fetch(`${API_URL}/api/art-studio/save-animation`, {
@@ -2642,17 +2643,29 @@ export default function ArtStudio() {
                       onClick={() => setSelectedGalleryItem(item)}
                     >
                       {item.type === 'animation' ? (
-                        <video
-                          src={item.image_url}
-                          className="w-full aspect-square object-cover"
-                          muted
-                          loop
-                          onMouseEnter={(e) => e.target.play()}
-                          onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
-                        />
+                        // For videos, show thumbnail image by default, play video on hover
+                        <div className="relative w-full aspect-square">
+                          {item.thumbnail_url ? (
+                            <img
+                              src={item.thumbnail_url}
+                              alt={item.name}
+                              className="w-full h-full object-cover absolute inset-0 group-hover:opacity-0 transition-opacity"
+                            />
+                          ) : null}
+                          <video
+                            src={item.image_url}
+                            className={`w-full h-full object-cover ${item.thumbnail_url ? 'opacity-0 group-hover:opacity-100' : ''} transition-opacity`}
+                            muted
+                            loop
+                            playsInline
+                            preload="metadata"
+                            onMouseEnter={(e) => e.target.play()}
+                            onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
+                          />
+                        </div>
                       ) : (
                         <img
-                          src={item.image_url}
+                          src={item.thumbnail_url || item.image_url}
                           alt={item.name}
                           className="w-full aspect-square object-cover"
                         />

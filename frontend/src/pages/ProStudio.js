@@ -2548,9 +2548,9 @@ export default function ProStudio() {
               {/* Generated Images (Character Folder) */}
               <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4">
                 <h3 className="text-white font-medium mb-3 flex items-center gap-2">
-                  <FiFolder className="text-purple-400" /> Character Folder ({characterGallery.length} images)
+                  <FiFolder className="text-purple-400" /> Character Folder ({characterGallery.filter(img => img.image_url && (img.image_url.startsWith('http') || img.image_url.startsWith('data:'))).length} images)
                 </h3>
-                {characterGallery.length === 0 ? (
+                {characterGallery.filter(img => img.image_url && (img.image_url.startsWith('http') || img.image_url.startsWith('data:'))).length === 0 ? (
                   <div className="text-center py-8 text-gray-500">
                     <FiImage className="w-12 h-12 mx-auto mb-3 opacity-50" />
                     <p>No generated images yet</p>
@@ -2558,7 +2558,9 @@ export default function ProStudio() {
                   </div>
                 ) : (
                   <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                    {characterGallery.map((img) => (
+                    {characterGallery
+                      .filter(img => img.image_url && (img.image_url.startsWith('http') || img.image_url.startsWith('data:')))
+                      .map((img) => (
                       <div 
                         key={img.id}
                         className="relative group cursor-pointer"
@@ -2567,7 +2569,8 @@ export default function ProStudio() {
                         <img 
                           src={img.image_url} 
                           alt={img.prompt || 'Generated'}
-                          className="w-full aspect-square object-cover rounded-lg hover:ring-2 hover:ring-purple-500 transition-all"
+                          className="w-full aspect-square object-cover rounded-lg hover:ring-2 hover:ring-purple-500 transition-all bg-gray-800"
+                          onError={(e) => { e.target.style.display = 'none'; }}
                         />
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
                           <Button 

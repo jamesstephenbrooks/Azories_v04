@@ -9258,6 +9258,7 @@ class SaveAnimationRequest(BaseModel):
     name: str
     motion_prompt: Optional[str] = ""
     style: Optional[str] = "natural"
+    thumbnail_url: Optional[str] = None  # Source image used for animation
 
 @api_router.post("/art-studio/save-animation")
 async def save_animation(request: SaveAnimationRequest, current_user: dict = Depends(get_current_user)):
@@ -9299,6 +9300,7 @@ async def save_animation(request: SaveAnimationRequest, current_user: dict = Dep
         gallery_item = {
             "user_id": user["id"],
             "image_url": video_url,  # Store video URL in image_url field for compatibility
+            "thumbnail_url": request.thumbnail_url,  # Source image as thumbnail
             "name": request.name,
             "type": "animation",
             "style": request.style,
