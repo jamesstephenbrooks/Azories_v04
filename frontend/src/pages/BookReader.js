@@ -1344,10 +1344,25 @@ export default function BookReader() {
 
   if (loading || authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-amber-50 via-orange-50 to-yellow-100">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="font-body text-muted-foreground">Opening book...</p>
+          {/* Azora Running Mascot */}
+          <div className="relative mb-6">
+            <img 
+              src="https://res.cloudinary.com/dlbmjqmoy/image/upload/e_background_removal/v1772279585/azories/mascot/azora_pose2_running.png"
+              alt="Azora"
+              className="w-32 h-32 mx-auto object-contain animate-bounce"
+            />
+          </div>
+          {/* Loading text with brand colors */}
+          <p className="font-heading text-xl text-amber-800 font-semibold mb-2">Opening your story...</p>
+          <p className="font-body text-amber-600/70 text-sm">Get ready for an adventure!</p>
+          {/* Subtle loading indicator */}
+          <div className="flex justify-center gap-1 mt-4">
+            <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" style={{animationDelay: '0ms'}}></div>
+            <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" style={{animationDelay: '150ms'}}></div>
+            <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" style={{animationDelay: '300ms'}}></div>
+          </div>
         </div>
       </div>
     );
