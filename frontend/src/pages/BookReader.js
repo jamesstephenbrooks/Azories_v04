@@ -84,34 +84,65 @@ export default function BookReader() {
     activeTimeoutsRef.current.clear();
   }, []);
   
-  // Comprehensive cleanup function (called on unmount)
-  // NOTE: Does NOT abort controller - that's handled separately to avoid race conditions
+  // Comprehensive cleanup function (called on unmount AND before navigation)
+  // This is CRITICAL for preventing memory leaks when navigating between books
   const performFullCleanup = useCallback(() => {
     console.log('[BookReader] Performing full cleanup...');
     
-    // 1. Stop and destroy audio element
-    if (audioElement) {
-      audioElement.pause();
-      audioElement.src = '';
-      audioElement.onended = null;
-      audioElement.onerror = null;
-      audioElement.oncanplay = null;
+    // 1. Abort ALL pending API requests immediately
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
     }
     
-    // 2. Clear audio cache
+    // 2. Stop and destroy audio element completely
+    if (audioElement) {
+      try {
+        audioElement.pause();
+        audioElement.src = '';
+        audioElement.load(); // Force release of audio resources
+        audioElement.onended = null;
+        audioElement.onerror = null;
+        audioElement.oncanplay = null;
+        audioElement.onloadeddata = null;
+      } catch (e) {
+        console.log('[BookReader] Audio cleanup error (safe to ignore):', e);
+      }
+    }
+    
+    // 3. Clear ALL cached audio objects (these can hold memory)
+    audioCache.current.forEach((cached) => {
+      if (cached && cached.audio) {
+        try {
+          cached.audio.pause();
+          cached.audio.src = '';
+        } catch (e) {}
+      }
+    });
     audioCache.current.clear();
     preloadingPages.current.clear();
     
-    // 3. Clear all timeouts
+    // 4. Clear all timeouts
     clearAllTimeouts();
     
-    // 4. Reset refs
+    // 5. Reset ALL refs to prevent stale callbacks
     lastPlayedPageRef.current = -999;
     autoReadRef.current = false;
     shouldStartPlayingRef.current = false;
+    mountedRef.current = false;
     
     console.log('[BookReader] Cleanup complete');
   }, [audioElement, clearAllTimeouts]);
+
+  // Handler for navigating back to library - MUST cleanup before navigation
+  const handleBackToLibrary = useCallback(() => {
+    console.log('[BookReader] Back button clicked - cleaning up before navigation');
+    performFullCleanup();
+    // Small delay to ensure cleanup completes before React unmounts
+    setTimeout(() => {
+      navigate('/library');
+    }, 10);
+  }, [performFullCleanup, navigate]);
 
   const [allPages, setAllPages] = useState([]);
   const [narratorVoice, setNarratorVoice] = useState('');
