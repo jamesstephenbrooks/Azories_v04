@@ -1,10 +1,9 @@
-# New Starter Library - 50 AI-Generated Images
+# New Starter Library - 100 AI-Generated Images
 # Categories: Characters, Scenes, Objects, Actions
 # Art Styles: Watercolour, Cartoon/Pixar, Realistic Illustrated, Storybook Classic
 
 STARTER_LIBRARY_PROMPTS = [
-    # === CHARACTERS (15 images) ===
-    # Watercolour style characters (4)
+    # === BATCH 1: CHARACTERS (15 images) ===
     {"id": "char_001", "name": "Adventure Girl Maya", "category": "character", "art_style": "watercolour",
      "prompt": "watercolour illustration of a cheerful young girl with curly brown hair, wearing explorer outfit with backpack, bright curious eyes, soft pastel colors, children's book style, white background"},
     {"id": "char_002", "name": "Friendly Dragon Pip", "category": "character", "art_style": "watercolour",
@@ -13,8 +12,6 @@ STARTER_LIBRARY_PROMPTS = [
      "prompt": "watercolour illustration of a wise owl wearing tiny round glasses, soft brown feathers, kind expression, perched on branch, gentle watercolor style, children's book art, white background"},
     {"id": "char_004", "name": "Princess Lily", "category": "character", "art_style": "watercolour",
      "prompt": "watercolour illustration of a young princess with flowing golden hair, sparkly tiara, pink flowing dress, gentle smile, soft dreamy watercolors, fairy tale style, white background"},
-    
-    # Cartoon/Pixar style characters (4)
     {"id": "char_005", "name": "Robot Buddy Bolt", "category": "character", "art_style": "cartoon",
      "prompt": "3D Pixar style illustration of a friendly small robot with big expressive eyes, shiny blue metal body, cute antenna, warm smile, vibrant colors, children's animation style, white background"},
     {"id": "char_006", "name": "Superhero Sam", "category": "character", "art_style": "cartoon",
@@ -23,8 +20,6 @@ STARTER_LIBRARY_PROMPTS = [
      "prompt": "3D Pixar style illustration of a cute magical unicorn with rainbow mane, sparkly horn, big dreamy eyes, pastel colors, whimsical and magical, children's animation style, white background"},
     {"id": "char_008", "name": "Pirate Captain Penny", "category": "character", "art_style": "cartoon",
      "prompt": "3D Pixar style illustration of a young girl pirate captain with pirate hat, eye patch, confident smile, adventurous pose, vibrant colors, children's animation style, white background"},
-    
-    # Realistic illustrated characters (4)
     {"id": "char_009", "name": "Young Astronaut Alex", "category": "character", "art_style": "realistic",
      "prompt": "detailed realistic illustration of a young child astronaut in white spacesuit, helmet under arm, dreamy starry-eyed expression, soft lighting, inspiring and hopeful, children's book quality, white background"},
     {"id": "char_010", "name": "Forest Fairy Fern", "category": "character", "art_style": "realistic",
@@ -33,8 +28,6 @@ STARTER_LIBRARY_PROMPTS = [
      "prompt": "detailed realistic illustration of a young knight in shining silver armor, holding small sword, brave determined expression, medieval fantasy style, children's book quality, white background"},
     {"id": "char_012", "name": "Ocean Mermaid Marina", "category": "character", "art_style": "realistic",
      "prompt": "detailed realistic illustration of a young mermaid with flowing aqua hair, shimmering tail, friendly wave, underwater magical feeling, detailed fantasy art, children's book style, white background"},
-    
-    # Storybook classic characters (3)
     {"id": "char_013", "name": "Teddy Bear Theodore", "category": "character", "art_style": "storybook",
      "prompt": "classic storybook illustration of a cuddly brown teddy bear with button eyes, red bow tie, soft fuzzy texture, warm nostalgic feel, vintage children's book style, white background"},
     {"id": "char_014", "name": "Bunny Rabbit Bella", "category": "character", "art_style": "storybook",
@@ -42,8 +35,7 @@ STARTER_LIBRARY_PROMPTS = [
     {"id": "char_015", "name": "Little Red Riding Hood", "category": "character", "art_style": "storybook",
      "prompt": "classic storybook illustration of Little Red Riding Hood, young girl in red hooded cape, carrying basket, innocent expression, fairy tale style, vintage children's book art, white background"},
     
-    # === SCENES/SETTINGS (15 images) ===
-    # Watercolour scenes (4)
+    # === BATCH 1: SCENES (15 images) ===
     {"id": "scene_001", "name": "Enchanted Forest", "category": "scene", "art_style": "watercolour",
      "prompt": "watercolour illustration of an enchanted forest with tall magical trees, soft sunlight filtering through, glowing mushrooms, fairy lights, dreamy atmosphere, children's book background, soft colors"},
     {"id": "scene_002", "name": "Cozy Treehouse", "category": "scene", "art_style": "watercolour",
@@ -52,8 +44,6 @@ STARTER_LIBRARY_PROMPTS = [
      "prompt": "watercolour illustration of a beautiful sunny beach with soft waves, sandcastle, seashells, palm trees, bright cheerful day, children's book background, soft watercolor washes"},
     {"id": "scene_004", "name": "Magical Garden", "category": "scene", "art_style": "watercolour",
      "prompt": "watercolour illustration of a magical flower garden with oversized colorful flowers, butterflies, winding path, sparkles in air, whimsical children's book style, soft dreamy colors"},
-    
-    # Cartoon/Pixar scenes (4)
     {"id": "scene_005", "name": "Space Station", "category": "scene", "art_style": "cartoon",
      "prompt": "3D Pixar style illustration of a colorful space station interior, round windows showing stars, control panels with blinking lights, futuristic but friendly, children's animation background"},
     {"id": "scene_006", "name": "Underwater Kingdom", "category": "scene", "art_style": "cartoon",
@@ -62,8 +52,6 @@ STARTER_LIBRARY_PROMPTS = [
      "prompt": "3D Pixar style illustration of whimsical candy land with lollipop trees, chocolate river, gummy bear mountains, cotton candy clouds, bright sugary colors, children's animation background"},
     {"id": "scene_008", "name": "Dinosaur Valley", "category": "scene", "art_style": "cartoon",
      "prompt": "3D Pixar style illustration of prehistoric valley with volcanoes, palm trees, dinosaur footprints, warm sunset colors, adventure feeling, children's animation style background"},
-    
-    # Realistic illustrated scenes (4)
     {"id": "scene_009", "name": "Castle Kingdom", "category": "scene", "art_style": "realistic",
      "prompt": "detailed realistic illustration of a grand fairy tale castle on hilltop, towers with flags, beautiful gardens, blue sky with fluffy clouds, fantasy kingdom, children's book quality background"},
     {"id": "scene_010", "name": "Winter Wonderland", "category": "scene", "art_style": "realistic",
@@ -72,8 +60,6 @@ STARTER_LIBRARY_PROMPTS = [
      "prompt": "detailed realistic illustration of a wooden pirate ship on sparkling ocean, billowing sails, treasure map flag, adventure awaits feeling, children's book quality, vibrant colors"},
     {"id": "scene_012", "name": "Jungle Adventure", "category": "scene", "art_style": "realistic",
      "prompt": "detailed realistic illustration of lush tropical jungle, ancient temple ruins, vines and exotic flowers, parrots in trees, adventure atmosphere, children's book background"},
-    
-    # Storybook classic scenes (3)
     {"id": "scene_013", "name": "Cozy Cottage", "category": "scene", "art_style": "storybook",
      "prompt": "classic storybook illustration of a cozy thatched cottage with flower garden, picket fence, smoking chimney, warm sunset, nostalgic fairy tale feeling, vintage children's book style"},
     {"id": "scene_014", "name": "Village Square", "category": "scene", "art_style": "storybook",
@@ -81,7 +67,7 @@ STARTER_LIBRARY_PROMPTS = [
     {"id": "scene_015", "name": "Grandma's Kitchen", "category": "scene", "art_style": "storybook",
      "prompt": "classic storybook illustration of warm cozy kitchen with wood stove, pie cooling on windowsill, checkered curtains, homey feeling, vintage children's book style, nostalgic"},
     
-    # === OBJECTS (10 images) ===
+    # === BATCH 1: OBJECTS (10 images) ===
     {"id": "obj_001", "name": "Magic Wand", "category": "object", "art_style": "cartoon",
      "prompt": "3D Pixar style illustration of a sparkly magic wand with glowing star tip, magical sparkles around it, purple and gold colors, children's animation style, white background"},
     {"id": "obj_002", "name": "Treasure Chest", "category": "object", "art_style": "realistic",
@@ -103,7 +89,7 @@ STARTER_LIBRARY_PROMPTS = [
     {"id": "obj_010", "name": "Magic Lamp", "category": "object", "art_style": "cartoon",
      "prompt": "3D Pixar style illustration of a golden genie lamp with magical smoke coming out, sparkles, Arabian style, wish-granting feel, children's animation style, white background"},
     
-    # === ACTIONS/POSES (10 images) ===
+    # === BATCH 1: ACTIONS (10 images) ===
     {"id": "act_001", "name": "Child Reading Book", "category": "action", "art_style": "watercolour",
      "prompt": "watercolour illustration of a happy child sitting cross-legged reading a colorful book, lost in imagination, soft lighting, peaceful scene, children's book style, white background"},
     {"id": "act_002", "name": "Kids Playing Together", "category": "action", "art_style": "cartoon",
@@ -124,7 +110,116 @@ STARTER_LIBRARY_PROMPTS = [
      "prompt": "classic storybook illustration of a child blowing soap bubbles, rainbow bubbles floating in air, wonder and delight expression, vintage children's book style, soft lighting"},
     {"id": "act_010", "name": "Making Wish", "category": "action", "art_style": "cartoon",
      "prompt": "3D Pixar style illustration of a child blowing on dandelion seeds, eyes closed making wish, magical sparkles, hopeful moment, children's animation style, white background"},
+
+    # === BATCH 2: MORE CHARACTERS (15 images) - Story-friendly ===
+    {"id": "char_016", "name": "Curious Cat Whiskers", "category": "character", "art_style": "cartoon",
+     "prompt": "3D Pixar style illustration of an adorable orange tabby cat with big curious green eyes, fluffy tail, playful stance, cute and expressive, children's animation style, white background"},
+    {"id": "char_017", "name": "Grandpa with Glasses", "category": "character", "art_style": "watercolour",
+     "prompt": "watercolour illustration of a kind elderly grandfather with round glasses, warm smile, cozy sweater, white beard, gentle loving expression, children's book style, white background"},
+    {"id": "char_018", "name": "Grandma with Apron", "category": "character", "art_style": "storybook",
+     "prompt": "classic storybook illustration of a sweet grandmother wearing floral apron, gray hair in bun, warm welcoming smile, holding fresh baked cookies, vintage children's book style, white background"},
+    {"id": "char_019", "name": "Friendly Giant", "category": "character", "art_style": "cartoon",
+     "prompt": "3D Pixar style illustration of a gentle friendly giant with kind eyes, messy brown hair, patched clothes, shy gentle smile, big but harmless, children's animation style, white background"},
+    {"id": "char_020", "name": "Mischievous Monkey", "category": "character", "art_style": "cartoon",
+     "prompt": "3D Pixar style illustration of a playful brown monkey with cheeky grin, bright eyes, curly tail, mischievous expression, fun and energetic, children's animation style, white background"},
+    {"id": "char_021", "name": "Wise Wizard", "category": "character", "art_style": "realistic",
+     "prompt": "detailed realistic illustration of a kind old wizard with long white beard, purple starred robe, pointy hat, twinkling eyes, holding staff, magical and wise, children's book quality, white background"},
+    {"id": "char_022", "name": "Silly Clown", "category": "character", "art_style": "cartoon",
+     "prompt": "3D Pixar style illustration of a happy silly clown with red nose, colorful outfit, big floppy shoes, rainbow hair, juggling balls, fun circus style, children's animation, white background"},
+    {"id": "char_023", "name": "Brave Firefighter", "category": "character", "art_style": "realistic",
+     "prompt": "detailed realistic illustration of a brave young firefighter in red uniform and helmet, confident smile, holding hose, heroic pose, community helper theme, children's book quality, white background"},
+    {"id": "char_024", "name": "Kind Doctor", "category": "character", "art_style": "cartoon",
+     "prompt": "3D Pixar style illustration of a friendly female doctor with white coat, stethoscope, warm reassuring smile, diverse representation, caring expression, children's animation style, white background"},
+    {"id": "char_025", "name": "Playful Puppy", "category": "character", "art_style": "watercolour",
+     "prompt": "watercolour illustration of an adorable golden retriever puppy, floppy ears, wagging tail, happy tongue out, playful pose, soft warm colors, children's book style, white background"},
+    {"id": "char_026", "name": "Shy Hedgehog", "category": "character", "art_style": "storybook",
+     "prompt": "classic storybook illustration of a cute shy hedgehog with soft spines, tiny paws, bashful expression, holding small flower, gentle woodland creature, vintage children's book style, white background"},
+    {"id": "char_027", "name": "Jolly Snowman", "category": "character", "art_style": "cartoon",
+     "prompt": "3D Pixar style illustration of a cheerful snowman with carrot nose, coal buttons, top hat, striped scarf, stick arms waving, winter joy, children's animation style, white background"},
+    {"id": "char_028", "name": "Tooth Fairy", "category": "character", "art_style": "watercolour",
+     "prompt": "watercolour illustration of a tiny sparkling tooth fairy with delicate wings, pink tutu dress, holding tiny wand, glittery magic dust, sweet and magical, children's book style, white background"},
+    {"id": "char_029", "name": "Grumpy Troll", "category": "character", "art_style": "cartoon",
+     "prompt": "3D Pixar style illustration of a grumpy but lovable troll with green skin, messy hair, crossed arms, pouty expression but secretly kind eyes, funny character, children's animation style, white background"},
+    {"id": "char_030", "name": "Easter Bunny", "category": "character", "art_style": "storybook",
+     "prompt": "classic storybook illustration of the Easter bunny with basket of colorful eggs, fluffy white fur, pink bow tie, happy hopping pose, spring celebration, vintage children's book style, white background"},
+
+    # === BATCH 2: MORE SCENES (15 images) - Story settings ===
+    {"id": "scene_016", "name": "Child's Bedroom Night", "category": "scene", "art_style": "watercolour",
+     "prompt": "watercolour illustration of a cozy child's bedroom at night, soft nightlight glow, toys on shelves, starry mobile, window showing moon, peaceful bedtime atmosphere, children's book style"},
+    {"id": "scene_017", "name": "Sunny Playground", "category": "scene", "art_style": "cartoon",
+     "prompt": "3D Pixar style illustration of a colorful playground with swings, slide, sandbox, bright sunny day, fun and inviting, children's animation style background"},
+    {"id": "scene_018", "name": "Rainy Day Window", "category": "scene", "art_style": "watercolour",
+     "prompt": "watercolour illustration of view through window on rainy day, raindrops on glass, cozy indoor feeling, gray sky outside, warm inside atmosphere, children's book style, soft colors"},
+    {"id": "scene_019", "name": "Birthday Party Room", "category": "scene", "art_style": "cartoon",
+     "prompt": "3D Pixar style illustration of a festive birthday party room with balloons, streamers, cake on table, presents, colorful decorations, celebration atmosphere, children's animation background"},
+    {"id": "scene_020", "name": "School Classroom", "category": "scene", "art_style": "realistic",
+     "prompt": "detailed realistic illustration of a friendly school classroom with desks, chalkboard with ABC, colorful posters, sunny windows, welcoming learning environment, children's book quality"},
+    {"id": "scene_021", "name": "Farm Barn", "category": "scene", "art_style": "storybook",
+     "prompt": "classic storybook illustration of a red wooden barn on farm, hay bales, farm animals peeking out, rolling green hills, blue sky, pastoral countryside, vintage children's book style"},
+    {"id": "scene_022", "name": "Spooky Forest Path", "category": "scene", "art_style": "watercolour",
+     "prompt": "watercolour illustration of a mysterious forest path at twilight, twisted trees, glowing eyes in shadows, not too scary but adventurous, children's book style, purple and blue tones"},
+    {"id": "scene_023", "name": "Circus Big Top", "category": "scene", "art_style": "cartoon",
+     "prompt": "3D Pixar style illustration of a colorful circus big top tent interior, spotlights, trapeze, circus ring, exciting and magical atmosphere, children's animation style background"},
+    {"id": "scene_024", "name": "Hospital Room", "category": "scene", "art_style": "cartoon",
+     "prompt": "3D Pixar style illustration of a friendly hospital room with bed, get well balloons, sunny window, not scary but reassuring, medical equipment simplified, children's animation style"},
+    {"id": "scene_025", "name": "Tree House Interior", "category": "scene", "art_style": "realistic",
+     "prompt": "detailed realistic illustration of inside a wooden treehouse, rope ladder hole, cushions, lantern light, adventure maps on wall, secret hideout feeling, children's book quality"},
+    {"id": "scene_026", "name": "Snowy Mountain", "category": "scene", "art_style": "watercolour",
+     "prompt": "watercolour illustration of a snowy mountain peak with pine trees, soft falling snow, distant village below, winter adventure setting, children's book style, cool blue and white tones"},
+    {"id": "scene_027", "name": "Pet Shop", "category": "scene", "art_style": "cartoon",
+     "prompt": "3D Pixar style illustration of a cheerful pet shop interior with puppies, kittens, fish tanks, bird cages, colorful and lively, children's animation style background"},
+    {"id": "scene_028", "name": "Library Reading Corner", "category": "scene", "art_style": "storybook",
+     "prompt": "classic storybook illustration of a cozy library reading corner with tall bookshelves, comfy armchair, soft lamp light, magical books, quiet peaceful atmosphere, vintage children's book style"},
+    {"id": "scene_029", "name": "Rainbow Sky", "category": "scene", "art_style": "watercolour",
+     "prompt": "watercolour illustration of a beautiful rainbow arcing across sky after rain, fluffy clouds, green meadow below, birds flying, hopeful joyful atmosphere, children's book style"},
+    {"id": "scene_030", "name": "Campfire Night", "category": "scene", "art_style": "realistic",
+     "prompt": "detailed realistic illustration of a cozy campfire scene at night, crackling fire, log seats, marshmallows roasting, starry sky, tent in background, camping adventure, children's book quality"},
+
+    # === BATCH 2: MORE OBJECTS (10 images) - Story props ===
+    {"id": "obj_011", "name": "Birthday Cake", "category": "object", "art_style": "cartoon",
+     "prompt": "3D Pixar style illustration of a beautiful birthday cake with colorful frosting, lit candles, sprinkles, celebration feel, delicious looking, children's animation style, white background"},
+    {"id": "obj_012", "name": "School Backpack", "category": "object", "art_style": "realistic",
+     "prompt": "detailed realistic illustration of a colorful school backpack with pockets, pencils sticking out, notebook visible, ready for school, children's book quality, white background"},
+    {"id": "obj_013", "name": "Magic Mirror", "category": "object", "art_style": "storybook",
+     "prompt": "classic storybook illustration of an ornate magical mirror with golden frame, mystical glow, swirling mist in reflection, fairy tale prop, vintage style, white background"},
+    {"id": "obj_014", "name": "Pirate Sword", "category": "object", "art_style": "cartoon",
+     "prompt": "3D Pixar style illustration of a toy pirate sword with curved blade, golden handle, safe and playful looking, adventure prop, children's animation style, white background"},
+    {"id": "obj_015", "name": "Hot Air Balloon", "category": "object", "art_style": "watercolour",
+     "prompt": "watercolour illustration of a colorful striped hot air balloon floating in sky, wicker basket, adventure and freedom feeling, soft dreamy colors, children's book style, white background"},
+    {"id": "obj_016", "name": "Magical Key", "category": "object", "art_style": "realistic",
+     "prompt": "detailed realistic illustration of an ornate golden key with magical glow, intricate design, sparkles around it, mysterious and important feeling, children's book quality, white background"},
+    {"id": "obj_017", "name": "Fairy Wings", "category": "object", "art_style": "watercolour",
+     "prompt": "watercolour illustration of delicate sparkly fairy wings, iridescent colors, glittery edges, magical and beautiful, dress-up prop, children's book style, white background"},
+    {"id": "obj_018", "name": "Superhero Mask", "category": "object", "art_style": "cartoon",
+     "prompt": "3D Pixar style illustration of a colorful superhero mask, red and blue, heroic design, exciting and powerful feeling, costume prop, children's animation style, white background"},
+    {"id": "obj_019", "name": "Snow Globe", "category": "object", "art_style": "storybook",
+     "prompt": "classic storybook illustration of a magical snow globe with tiny winter scene inside, snowflakes swirling, glass dome on decorative base, enchanting, vintage style, white background"},
+    {"id": "obj_020", "name": "Compass", "category": "object", "art_style": "realistic",
+     "prompt": "detailed realistic illustration of an antique brass compass with detailed face, pointing north, adventure and exploration symbol, navigation tool, children's book quality, white background"},
+
+    # === BATCH 2: MORE ACTIONS (10 images) - Story moments ===
+    {"id": "act_011", "name": "Opening Present", "category": "action", "art_style": "cartoon",
+     "prompt": "3D Pixar style illustration of an excited child opening a wrapped present, surprise expression, colorful wrapping paper flying, birthday excitement, children's animation style, white background"},
+    {"id": "act_012", "name": "First Day of School", "category": "action", "art_style": "watercolour",
+     "prompt": "watercolour illustration of a child with backpack waving goodbye at school door, mix of nervous and excited, parent in background, first day feelings, children's book style"},
+    {"id": "act_013", "name": "Catching Fireflies", "category": "action", "art_style": "realistic",
+     "prompt": "detailed realistic illustration of a child in summer night catching fireflies in jar, magical glowing bugs, wonder in eyes, twilight setting, children's book quality"},
+    {"id": "act_014", "name": "Building Sandcastle", "category": "action", "art_style": "cartoon",
+     "prompt": "3D Pixar style illustration of a child building elaborate sandcastle on beach, bucket and shovel, focused creative expression, sunny beach day, children's animation style"},
+    {"id": "act_015", "name": "Sharing Cookie", "category": "action", "art_style": "storybook",
+     "prompt": "classic storybook illustration of two children sharing a cookie, friendship moment, kind expressions, warm heartfelt scene, sharing and caring theme, vintage children's book style"},
+    {"id": "act_016", "name": "Riding Bicycle", "category": "action", "art_style": "watercolour",
+     "prompt": "watercolour illustration of a happy child riding bicycle with streamers, helmet on, sunny day, freedom and joy, learning to ride theme, children's book style, soft colors"},
+    {"id": "act_017", "name": "Planting Seeds", "category": "action", "art_style": "storybook",
+     "prompt": "classic storybook illustration of a child planting seeds in garden, small shovel, watering can nearby, spring gardening, growth and nature theme, vintage children's book style"},
+    {"id": "act_018", "name": "Looking Through Telescope", "category": "action", "art_style": "realistic",
+     "prompt": "detailed realistic illustration of a child looking through telescope at night sky, wonder and curiosity, stars visible, dream of space exploration, children's book quality"},
+    {"id": "act_019", "name": "Baking with Mom", "category": "action", "art_style": "cartoon",
+     "prompt": "3D Pixar style illustration of a child and mother baking together, flour on faces, mixing bowl, happy bonding moment, kitchen scene, children's animation style"},
+    {"id": "act_020", "name": "Saying Goodnight", "category": "action", "art_style": "watercolour",
+     "prompt": "watercolour illustration of a parent tucking child into bed, goodnight kiss, cozy bedroom, bedtime routine, loving family moment, children's book style, warm soft colors"},
 ]
 
 # Will be populated with actual Cloudinary URLs after generation
 STARTER_LIBRARY_GENERATED = []
+
