@@ -10167,6 +10167,172 @@ async def get_site_analytics(
     }
 
 
+@api_router.get("/admin/analytics-timeseries")
+async def get_analytics_timeseries(
+    period: str = "daily",  # daily, weekly, monthly
+    days: int = 30,
+    admin: dict = Depends(get_admin_user)
+):
+    """
+    Get time-series analytics data for line graphs (admin only)
+    Returns data grouped by day/week/month for various metrics
+    """
+    from_date = datetime.now(timezone.utc) - timedelta(days=days)
+    from_date_str = from_date.strftime("%Y-%m-%d")
+    
+    # Helper to generate date range
+    def generate_date_range(start_date, num_days):
+        dates = []
+        for i in range(num_days):
+            d = start_date + timedelta(days=i)
+            dates.append(d.strftime("%Y-%m-%d"))
+        return dates
+    
+    date_range = generate_date_range(from_date, days)
+    
+    # Initialize data structure with all dates (to fill gaps)
+    daily_data = {d: {
+        "date": d,
+        "page_views": 0,
+        "unique_visitors": 0,
+        "signups": 0,
+        "book_reads": 0,
+        "ai_stories": 0,
+        "books_created": 0
+    } for d in date_range}
+    
+    # Get page views by day
+    page_views_pipeline = [
+        {"$match": {"date": {"$gte": from_date_str}, "event_type": "page_view"}},
+        {"$group": {
+            "_id": "$date",
+            "count": {"$sum": 1},
+            "unique_ips": {"$addToSet": "$ip_hash"}
+        }}
+    ]
+    page_views = await db.site_analytics.aggregate(page_views_pipeline).to_list(100)
+    for pv in page_views:
+        if pv["_id"] in daily_data:
+            daily_data[pv["_id"]]["page_views"] = pv["count"]
+            daily_data[pv["_id"]]["unique_visitors"] = len(pv.get("unique_ips", []))
+    
+    # Get signups by day
+    signups_pipeline = [
+        {"$match": {"date": {"$gte": from_date_str}, "event_type": "signup"}},
+        {"$group": {"_id": "$date", "count": {"$sum": 1}}}
+    ]
+    signups = await db.site_analytics.aggregate(signups_pipeline).to_list(100)
+    for s in signups:
+        if s["_id"] in daily_data:
+            daily_data[s["_id"]]["signups"] = s["count"]
+    
+    # Get book reads by day
+    reads_pipeline = [
+        {"$match": {"date": {"$gte": from_date_str}, "event_type": "book_read"}},
+        {"$group": {"_id": "$date", "count": {"$sum": 1}}}
+    ]
+    reads = await db.site_analytics.aggregate(reads_pipeline).to_list(100)
+    for r in reads:
+        if r["_id"] in daily_data:
+            daily_data[r["_id"]]["book_reads"] = r["count"]
+    
+    # Get AI stories created by day
+    ai_pipeline = [
+        {"$match": {"date": {"$gte": from_date_str}, "event_type": "ai_story_create"}},
+        {"$group": {"_id": "$date", "count": {"$sum": 1}}}
+    ]
+    ai_stories = await db.site_analytics.aggregate(ai_pipeline).to_list(100)
+    for a in ai_stories:
+        if a["_id"] in daily_data:
+            daily_data[a["_id"]]["ai_stories"] = a["count"]
+    
+    # Get books created by day (from books collection)
+    books_pipeline = [
+        {"$match": {"created_at": {"$gte": from_date_str}}},
+        {"$project": {"date": {"$substr": ["$created_at", 0, 10]}}},
+        {"$group": {"_id": "$date", "count": {"$sum": 1}}}
+    ]
+    books_created = await db.books.aggregate(books_pipeline).to_list(100)
+    for b in books_created:
+        if b["_id"] in daily_data:
+            daily_data[b["_id"]]["books_created"] = b["count"]
+    
+    # Convert to sorted list
+    daily_list = sorted(daily_data.values(), key=lambda x: x["date"])
+    
+    # Aggregate by week if requested
+    if period == "weekly":
+        weekly_data = {}
+        for d in daily_list:
+            week_start = datetime.strptime(d["date"], "%Y-%m-%d")
+            week_start = week_start - timedelta(days=week_start.weekday())
+            week_key = week_start.strftime("%Y-%m-%d")
+            
+            if week_key not in weekly_data:
+                weekly_data[week_key] = {
+                    "date": week_key,
+                    "week_label": f"Week of {week_start.strftime('%b %d')}",
+                    "page_views": 0,
+                    "unique_visitors": 0,
+                    "signups": 0,
+                    "book_reads": 0,
+                    "ai_stories": 0,
+                    "books_created": 0
+                }
+            
+            weekly_data[week_key]["page_views"] += d["page_views"]
+            weekly_data[week_key]["unique_visitors"] += d["unique_visitors"]
+            weekly_data[week_key]["signups"] += d["signups"]
+            weekly_data[week_key]["book_reads"] += d["book_reads"]
+            weekly_data[week_key]["ai_stories"] += d["ai_stories"]
+            weekly_data[week_key]["books_created"] += d["books_created"]
+        
+        return {
+            "period": "weekly",
+            "days": days,
+            "data": sorted(weekly_data.values(), key=lambda x: x["date"])
+        }
+    
+    # Aggregate by month if requested
+    elif period == "monthly":
+        monthly_data = {}
+        for d in daily_list:
+            month_key = d["date"][:7]  # YYYY-MM
+            month_label = datetime.strptime(d["date"], "%Y-%m-%d").strftime("%B %Y")
+            
+            if month_key not in monthly_data:
+                monthly_data[month_key] = {
+                    "date": month_key,
+                    "month_label": month_label,
+                    "page_views": 0,
+                    "unique_visitors": 0,
+                    "signups": 0,
+                    "book_reads": 0,
+                    "ai_stories": 0,
+                    "books_created": 0
+                }
+            
+            monthly_data[month_key]["page_views"] += d["page_views"]
+            monthly_data[month_key]["unique_visitors"] += d["unique_visitors"]
+            monthly_data[month_key]["signups"] += d["signups"]
+            monthly_data[month_key]["book_reads"] += d["book_reads"]
+            monthly_data[month_key]["ai_stories"] += d["ai_stories"]
+            monthly_data[month_key]["books_created"] += d["books_created"]
+        
+        return {
+            "period": "monthly",
+            "days": days,
+            "data": sorted(monthly_data.values(), key=lambda x: x["date"])
+        }
+    
+    # Default: daily
+    return {
+        "period": "daily",
+        "days": days,
+        "data": daily_list
+    }
+
+
 @api_router.get("/admin/users")
 async def get_all_users(
     search: Optional[str] = None,

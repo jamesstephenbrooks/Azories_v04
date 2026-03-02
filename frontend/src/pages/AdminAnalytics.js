@@ -3,9 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   FiUsers, FiBook, FiDollarSign, FiZap, FiTrendingUp, 
-  FiActivity, FiArrowLeft, FiRefreshCw, FiBarChart2, FiPieChart
+  FiActivity, FiArrowLeft, FiRefreshCw, FiBarChart2, FiPieChart,
+  FiCalendar, FiEye
 } from 'react-icons/fi';
 import { toast } from 'sonner';
+import {
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+  ResponsiveContainer, AreaChart, Area
+} from 'recharts';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -15,10 +20,39 @@ const AdminAnalytics = () => {
   const [vipUsage, setVipUsage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
+  const [timeseriesData, setTimeseriesData] = useState(null);
+  const [timeseriesPeriod, setTimeseriesPeriod] = useState('daily');
+  const [timeseriesDays, setTimeseriesDays] = useState(30);
+  const [loadingTimeseries, setLoadingTimeseries] = useState(false);
 
   useEffect(() => {
     fetchAnalytics();
   }, []);
+
+  useEffect(() => {
+    fetchTimeseriesData();
+  }, [timeseriesPeriod, timeseriesDays]);
+
+  const fetchTimeseriesData = async () => {
+    const token = localStorage.getItem('azories-token');
+    if (!token) return;
+
+    setLoadingTimeseries(true);
+    try {
+      const res = await fetch(
+        `${API_URL}/api/admin/analytics-timeseries?period=${timeseriesPeriod}&days=${timeseriesDays}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setTimeseriesData(data);
+      }
+    } catch (error) {
+      console.error('Error fetching timeseries:', error);
+    } finally {
+      setLoadingTimeseries(false);
+    }
+  };
 
   const fetchAnalytics = async () => {
     const token = localStorage.getItem('azories-token');
@@ -114,8 +148,8 @@ const AdminAnalytics = () => {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-8">
-          {['overview', 'revenue', 'vip-costs', 'users'].map(tab => (
+        <div className="flex gap-2 mb-8 flex-wrap">
+          {['overview', 'charts', 'revenue', 'vip-costs', 'users'].map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -125,10 +159,174 @@ const AdminAnalytics = () => {
                   : 'bg-white text-gray-600 hover:bg-gray-100'
               }`}
             >
-              {tab.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+              {tab === 'charts' ? '📊 Charts' : tab.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
             </button>
           ))}
         </div>
+
+        {/* Charts Tab */}
+        {activeTab === 'charts' && (
+          <div className="space-y-6">
+            {/* Time Period Controls */}
+            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+              <div className="flex flex-wrap items-center gap-4 mb-4">
+                <div className="flex items-center gap-2">
+                  <FiCalendar className="text-gray-500" />
+                  <span className="text-gray-700 font-medium">Period:</span>
+                  <div className="flex gap-1">
+                    {['daily', 'weekly', 'monthly'].map(p => (
+                      <button
+                        key={p}
+                        onClick={() => setTimeseriesPeriod(p)}
+                        className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+                          timeseriesPeriod === p
+                            ? 'bg-purple-600 text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                      >
+                        {p.charAt(0).toUpperCase() + p.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-700 font-medium">Days:</span>
+                  <select
+                    value={timeseriesDays}
+                    onChange={(e) => setTimeseriesDays(Number(e.target.value))}
+                    className="px-3 py-1.5 rounded border border-gray-200 text-sm"
+                  >
+                    <option value={7}>Last 7 days</option>
+                    <option value={14}>Last 14 days</option>
+                    <option value={30}>Last 30 days</option>
+                    <option value={60}>Last 60 days</option>
+                    <option value={90}>Last 90 days</option>
+                  </select>
+                </div>
+                {loadingTimeseries && (
+                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-purple-500 border-t-transparent"></div>
+                )}
+              </div>
+            </div>
+
+            {timeseriesData && (
+              <>
+                {/* Page Views & Visitors Chart */}
+                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <FiEye className="text-blue-500" />
+                    Page Views & Visitors
+                  </h3>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <AreaChart data={timeseriesData.data}>
+                      <defs>
+                        <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
+                        </linearGradient>
+                        <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#82ca9d" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis 
+                        dataKey={timeseriesPeriod === 'weekly' ? 'week_label' : timeseriesPeriod === 'monthly' ? 'month_label' : 'date'} 
+                        tick={{ fontSize: 12 }}
+                        tickFormatter={(val) => timeseriesPeriod === 'daily' ? val.slice(5) : val}
+                      />
+                      <YAxis tick={{ fontSize: 12 }} />
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #e5e7eb' }}
+                      />
+                      <Legend />
+                      <Area type="monotone" dataKey="page_views" name="Page Views" stroke="#8884d8" fillOpacity={1} fill="url(#colorViews)" />
+                      <Area type="monotone" dataKey="unique_visitors" name="Unique Visitors" stroke="#82ca9d" fillOpacity={1} fill="url(#colorVisitors)" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* Signups & Activity Chart */}
+                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <FiUsers className="text-green-500" />
+                    User Activity
+                  </h3>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={timeseriesData.data}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis 
+                        dataKey={timeseriesPeriod === 'weekly' ? 'week_label' : timeseriesPeriod === 'monthly' ? 'month_label' : 'date'} 
+                        tick={{ fontSize: 12 }}
+                        tickFormatter={(val) => timeseriesPeriod === 'daily' ? val.slice(5) : val}
+                      />
+                      <YAxis tick={{ fontSize: 12 }} />
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #e5e7eb' }}
+                      />
+                      <Legend />
+                      <Line type="monotone" dataKey="signups" name="New Signups" stroke="#10b981" strokeWidth={2} dot={{ r: 4 }} />
+                      <Line type="monotone" dataKey="book_reads" name="Book Reads" stroke="#f59e0b" strokeWidth={2} dot={{ r: 4 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* Content Creation Chart */}
+                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <FiBook className="text-purple-500" />
+                    Content Creation
+                  </h3>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={timeseriesData.data}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis 
+                        dataKey={timeseriesPeriod === 'weekly' ? 'week_label' : timeseriesPeriod === 'monthly' ? 'month_label' : 'date'} 
+                        tick={{ fontSize: 12 }}
+                        tickFormatter={(val) => timeseriesPeriod === 'daily' ? val.slice(5) : val}
+                      />
+                      <YAxis tick={{ fontSize: 12 }} />
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #e5e7eb' }}
+                      />
+                      <Legend />
+                      <Line type="monotone" dataKey="ai_stories" name="AI Stories Created" stroke="#8b5cf6" strokeWidth={2} dot={{ r: 4 }} />
+                      <Line type="monotone" dataKey="books_created" name="Books Created" stroke="#ec4899" strokeWidth={2} dot={{ r: 4 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* Summary Stats for Period */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl p-4 text-white">
+                    <div className="text-2xl font-bold">
+                      {timeseriesData.data.reduce((sum, d) => sum + d.page_views, 0).toLocaleString()}
+                    </div>
+                    <div className="text-purple-200 text-sm">Total Page Views</div>
+                  </div>
+                  <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-4 text-white">
+                    <div className="text-2xl font-bold">
+                      {timeseriesData.data.reduce((sum, d) => sum + d.signups, 0).toLocaleString()}
+                    </div>
+                    <div className="text-green-200 text-sm">New Signups</div>
+                  </div>
+                  <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-4 text-white">
+                    <div className="text-2xl font-bold">
+                      {timeseriesData.data.reduce((sum, d) => sum + d.book_reads, 0).toLocaleString()}
+                    </div>
+                    <div className="text-blue-200 text-sm">Book Reads</div>
+                  </div>
+                  <div className="bg-gradient-to-r from-pink-500 to-pink-600 rounded-xl p-4 text-white">
+                    <div className="text-2xl font-bold">
+                      {timeseriesData.data.reduce((sum, d) => sum + d.ai_stories, 0).toLocaleString()}
+                    </div>
+                    <div className="text-pink-200 text-sm">AI Stories</div>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        )}
 
         {activeTab === 'overview' && analytics && (
           <>
