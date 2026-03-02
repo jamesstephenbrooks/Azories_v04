@@ -3958,68 +3958,72 @@ export default function ArtStudio() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] bg-black/90 flex items-center justify-center p-4"
+            className="fixed inset-0 z-[60] bg-black/95 flex items-center justify-center p-2 sm:p-4"
             onClick={() => setExpandedStarterImage(null)}
           >
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
+              initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              className="relative max-w-4xl max-h-[90vh] flex flex-col"
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative w-full max-w-md sm:max-w-2xl max-h-[95vh] flex flex-col bg-gray-900 rounded-xl overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Close button */}
-              <button
-                onClick={() => setExpandedStarterImage(null)}
-                className="absolute -top-10 right-0 p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
-              >
-                <FiX className="w-5 h-5" />
-              </button>
-              
-              {/* Image */}
-              <img
-                src={expandedStarterImage.url}
-                alt={expandedStarterImage.name || 'Starter library image'}
-                className="max-w-full max-h-[70vh] object-contain rounded-lg shadow-2xl"
-              />
-              
-              {/* Image info and actions */}
-              <div className="mt-4 flex items-center justify-between bg-white/5 rounded-lg p-4">
-                <div>
-                  <h3 className="text-white text-lg font-semibold">{expandedStarterImage.name}</h3>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-amber-400 text-sm capitalize">{expandedStarterImage.category}</span>
+              {/* Header with close button */}
+              <div className="flex items-center justify-between p-3 sm:p-4 border-b border-white/10">
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-white text-sm sm:text-lg font-semibold truncate">{expandedStarterImage.name}</h3>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-amber-400 text-xs sm:text-sm capitalize">{expandedStarterImage.category}</span>
                     {expandedStarterImage.art_style && (
-                      <span className="text-white/40 text-sm">• {expandedStarterImage.art_style}</span>
+                      <span className="text-white/40 text-xs sm:text-sm">• {expandedStarterImage.art_style}</span>
                     )}
                   </div>
                 </div>
-                
-                {/* Action buttons */}
-                <div className="flex gap-2">
-                  <Button
-                    onClick={() => {
-                      setStyleReferenceImage(expandedStarterImage.url);
-                      toast.success(`${expandedStarterImage.name} set as style reference!`);
-                      setExpandedStarterImage(null);
-                    }}
-                    className="bg-purple-600 hover:bg-purple-700"
-                  >
-                    <FiImage className="w-4 h-4 mr-2" />
-                    Use as Style
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      setCharacterReferenceImage(expandedStarterImage.url);
-                      toast.success(`${expandedStarterImage.name} set as character reference!`);
-                      setExpandedStarterImage(null);
-                    }}
-                    className="bg-blue-600 hover:bg-blue-700"
-                  >
-                    <FiUser className="w-4 h-4 mr-2" />
-                    Use as Character
-                  </Button>
-                </div>
+                <button
+                  onClick={() => setExpandedStarterImage(null)}
+                  className="flex-shrink-0 ml-2 p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
+                >
+                  <FiX className="w-5 h-5" />
+                </button>
+              </div>
+              
+              {/* Image container */}
+              <div className="flex-1 flex items-center justify-center p-2 sm:p-4 overflow-hidden bg-black/50">
+                <img
+                  src={expandedStarterImage.url || expandedStarterImage.image_url || expandedStarterImage.thumbnail_url}
+                  alt={expandedStarterImage.name || 'Starter library image'}
+                  className="max-w-full max-h-[50vh] sm:max-h-[60vh] object-contain rounded-lg"
+                  onError={(e) => {
+                    console.error('Image failed to load:', expandedStarterImage.url);
+                    e.target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect fill="%23333" width="200" height="200"/><text fill="%23999" font-size="14" x="50%" y="50%" text-anchor="middle" dy=".3em">Image unavailable</text></svg>';
+                  }}
+                />
+              </div>
+              
+              {/* Action buttons - stacked on mobile */}
+              <div className="p-3 sm:p-4 border-t border-white/10 flex flex-col sm:flex-row gap-2">
+                <Button
+                  onClick={() => {
+                    setStyleReferenceImage(expandedStarterImage.url || expandedStarterImage.image_url);
+                    toast.success(`Set as style reference!`);
+                    setExpandedStarterImage(null);
+                  }}
+                  className="flex-1 bg-purple-600 hover:bg-purple-700 text-sm"
+                >
+                  <FiImage className="w-4 h-4 mr-2" />
+                  Use as Style
+                </Button>
+                <Button
+                  onClick={() => {
+                    setCharacterReferenceImage(expandedStarterImage.url || expandedStarterImage.image_url);
+                    toast.success(`Set as character reference!`);
+                    setExpandedStarterImage(null);
+                  }}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-sm"
+                >
+                  <FiUser className="w-4 h-4 mr-2" />
+                  Use as Character
+                </Button>
               </div>
             </motion.div>
           </motion.div>
