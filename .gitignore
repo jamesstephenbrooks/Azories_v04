@@ -148,3 +148,4 @@ frontend/build/downloads/mongodb_export.zip
 *.env.*
 frontend/node_modules/.cache/default-development/15.pack
 frontend/node_modules/.cache/default-development/13.pack
+frontend/node_modules/.cache/default-development/4.pack
