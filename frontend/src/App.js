@@ -37,42 +37,24 @@ const NotFound = lazy(() => import("@/pages/NotFound"));
 const TermsOfService = lazy(() => import("@/pages/Legal").then(m => ({ default: m.TermsOfService })));
 const PrivacyPolicy = lazy(() => import("@/pages/Legal").then(m => ({ default: m.PrivacyPolicy })));
 
-// Loading screen with book-shaped card and Azora mascot
+// Loading screen with Azora mascot and dragon spinner
 function PageLoader() {
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-b from-purple-900/95 to-slate-900">
-      {/* Book-shaped loading card */}
-      <div className="relative w-[280px] sm:w-[320px] aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-amber-100 via-orange-50 to-yellow-100">
-        {/* Decorative book spine shadow */}
-        <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-black/20 to-transparent" />
-        
-        {/* Content */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
-          {/* Azora Running Mascot */}
-          <img 
-            src="https://res.cloudinary.com/dlbmjqmoy/image/upload/e_background_removal/v1772279585/azories/mascot/azora_pose2_running.png"
-            alt="Azora running"
-            className="w-36 h-36 object-contain mb-4"
-            style={{ animation: 'bounce 1s ease-in-out infinite' }}
-          />
-          
-          {/* Loading text */}
-          <h2 className="text-xl font-bold text-amber-800 mb-2 text-center">Welcome to Azories</h2>
-          <p className="text-amber-600/70 text-sm text-center">Loading magical adventures...</p>
-          
-          {/* Animated dots loader */}
-          <div className="flex gap-2 mt-4">
-            <div className="w-2 h-2 bg-amber-500 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
-            <div className="w-2 h-2 bg-amber-500 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
-            <div className="w-2 h-2 bg-amber-500 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
-          </div>
-        </div>
-        
-        {/* Bottom branding */}
-        <div className="absolute bottom-4 left-0 right-0 text-center">
-          <p className="text-amber-700/50 text-xs font-medium tracking-wider">AZORIES</p>
-        </div>
-      </div>
+      <img 
+        src={AZORA_ASSETS.pointing}
+        alt="Azora welcomes you"
+        className="w-36 h-44 object-contain mb-6"
+        style={{ animation: 'float 2s ease-in-out infinite' }}
+      />
+      <h2 className="text-xl font-bold text-white mb-3">Welcome to Azories</h2>
+      <p className="text-white/60 text-sm mb-6">Loading magical adventures...</p>
+      <img 
+        src={AZORA_ASSETS.dragonIcon}
+        alt="Loading"
+        className="w-12 h-12 object-contain rounded-full"
+        style={{ animation: 'spin-slow 2s linear infinite, pulse 1s ease-in-out infinite' }}
+      />
     </div>
   );
 }
