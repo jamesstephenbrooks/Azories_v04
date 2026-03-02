@@ -707,6 +707,10 @@ export default function ArtStudio() {
   const [showStarterInGallery, setShowStarterInGallery] = useState(true);
   const [expandedStarterImage, setExpandedStarterImage] = useState(null); // For lightbox preview
   
+  // Computed gallery items by source (for use in Gallery Picker modal and Animate section)
+  const artStudioItems = gallery.filter(g => g.source !== 'pro_studio');
+  const proStudioItems = gallery.filter(g => g.source === 'pro_studio');
+  
   // Load gallery and books on mount
   useEffect(() => {
     if (token) {
@@ -2725,9 +2729,9 @@ export default function ArtStudio() {
                   const imageCount = gallery.filter(g => g.type !== 'animation').length;
                   const animationCount = gallery.filter(g => g.type === 'animation').length;
                   
-                  // Group by source
-                  const artStudioItems = filteredGallery.filter(g => g.source !== 'pro_studio');
-                  const proStudioItems = filteredGallery.filter(g => g.source === 'pro_studio');
+                  // Group filtered items by source (local scope for filtered view)
+                  const filteredArtStudioItems = filteredGallery.filter(g => g.source !== 'pro_studio');
+                  const filteredProStudioItems = filteredGallery.filter(g => g.source === 'pro_studio');
                   
                   // Gallery item renderer
                   const renderGalleryItem = (item) => (
@@ -2909,36 +2913,36 @@ export default function ArtStudio() {
                             </div>
                             <span className="text-sm font-semibold text-purple-300">Creator Studio</span>
                             <span className="text-xs text-purple-400/60">
-                              ({artStudioItems.filter(i => i.type !== 'animation').length} images, {artStudioItems.filter(i => i.type === 'animation').length} videos)
+                              ({filteredArtStudioItems.filter(i => i.type !== 'animation').length} images, {filteredArtStudioItems.filter(i => i.type === 'animation').length} videos)
                             </span>
                           </div>
                           <FiChevronDown className={`w-4 h-4 text-purple-400 transition-transform ${artStudioExpanded ? 'rotate-180' : ''}`} />
                         </button>
                         {artStudioExpanded && (
                           <div className="p-4 pt-0">
-                            {artStudioItems.length > 0 ? (
+                            {filteredArtStudioItems.length > 0 ? (
                               <>
                                 {/* Images sub-section */}
-                                {artStudioItems.filter(i => i.type !== 'animation').length > 0 && (
+                                {filteredArtStudioItems.filter(i => i.type !== 'animation').length > 0 && (
                                   <div className="mb-4">
                                     <div className="flex items-center gap-2 mb-2">
                                       <FiImage className="w-3 h-3 text-purple-400" />
                                       <span className="text-xs font-medium text-purple-300">Images</span>
                                     </div>
                                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                                      {artStudioItems.filter(i => i.type !== 'animation').map(renderGalleryItem)}
+                                      {filteredArtStudioItems.filter(i => i.type !== 'animation').map(renderGalleryItem)}
                                     </div>
                                   </div>
                                 )}
                                 {/* Videos sub-section */}
-                                {artStudioItems.filter(i => i.type === 'animation').length > 0 && (
+                                {filteredArtStudioItems.filter(i => i.type === 'animation').length > 0 && (
                                   <div>
                                     <div className="flex items-center gap-2 mb-2">
                                       <FiVideo className="w-3 h-3 text-pink-400" />
                                       <span className="text-xs font-medium text-pink-300">Videos</span>
                                     </div>
                                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                                      {artStudioItems.filter(i => i.type === 'animation').map(renderGalleryItem)}
+                                      {filteredArtStudioItems.filter(i => i.type === 'animation').map(renderGalleryItem)}
                                     </div>
                                   </div>
                                 )}
@@ -2965,36 +2969,36 @@ export default function ArtStudio() {
                             </div>
                             <span className="text-sm font-semibold text-yellow-300">Pro Studio</span>
                             <span className="text-xs text-yellow-400/60">
-                              ({proStudioItems.filter(i => i.type !== 'animation').length} images, {proStudioItems.filter(i => i.type === 'animation').length} videos)
+                              ({filteredProStudioItems.filter(i => i.type !== 'animation').length} images, {filteredProStudioItems.filter(i => i.type === 'animation').length} videos)
                             </span>
                           </div>
                           <FiChevronDown className={`w-4 h-4 text-yellow-400 transition-transform ${proStudioExpanded ? 'rotate-180' : ''}`} />
                         </button>
                         {proStudioExpanded && (
                           <div className="p-4 pt-0">
-                            {proStudioItems.length > 0 ? (
+                            {filteredProStudioItems.length > 0 ? (
                               <>
                                 {/* Images sub-section */}
-                                {proStudioItems.filter(i => i.type !== 'animation').length > 0 && (
+                                {filteredProStudioItems.filter(i => i.type !== 'animation').length > 0 && (
                                   <div className="mb-4">
                                     <div className="flex items-center gap-2 mb-2">
                                       <FiImage className="w-3 h-3 text-yellow-400" />
                                       <span className="text-xs font-medium text-yellow-300">Images</span>
                                     </div>
                                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                                      {proStudioItems.filter(i => i.type !== 'animation').map(renderGalleryItem)}
+                                      {filteredProStudioItems.filter(i => i.type !== 'animation').map(renderGalleryItem)}
                                     </div>
                                   </div>
                                 )}
                                 {/* Videos sub-section */}
-                                {proStudioItems.filter(i => i.type === 'animation').length > 0 && (
+                                {filteredProStudioItems.filter(i => i.type === 'animation').length > 0 && (
                                   <div>
                                     <div className="flex items-center gap-2 mb-2">
                                       <FiVideo className="w-3 h-3 text-orange-400" />
                                       <span className="text-xs font-medium text-orange-300">Videos</span>
                                     </div>
                                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                                      {proStudioItems.filter(i => i.type === 'animation').map(renderGalleryItem)}
+                                      {filteredProStudioItems.filter(i => i.type === 'animation').map(renderGalleryItem)}
                                     </div>
                                   </div>
                                 )}
