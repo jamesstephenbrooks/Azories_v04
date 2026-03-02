@@ -197,7 +197,30 @@ export default function Library() {
   const [viewMode, setViewMode] = useState('grid'); // 'grid', '3d', or 'immersive'
   const [selectedBook, setSelectedBook] = useState(null);
   const [summaryBook, setSummaryBook] = useState(null);
+  const [showBackToTop, setShowBackToTop] = useState(false);
   const navigate = useNavigate();
+
+  // Handle scroll to show/hide back to top button
+  useEffect(() => {
+    const handleScroll = () => {
+      // Check both window scroll and body scroll for compatibility
+      const scrollPos = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop;
+      setShowBackToTop(scrollPos > 500);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    document.body.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      document.body.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  // Scroll to top function
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.body.scrollTo({ top: 0, behavior: 'smooth' });
+    document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Age range options
   const AGE_RANGES = ['All', '0-3', '4-6', '7-9', '10-12', '13+'];
@@ -1060,6 +1083,29 @@ export default function Library() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Back to Top Button */}
+      {showBackToTop && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 z-50 p-4 bg-purple-600 hover:bg-purple-700 text-white rounded-full shadow-lg transition-colors"
+          data-testid="back-to-top-btn"
+          aria-label="Back to top"
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            className="h-6 w-6" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+          </svg>
+        </motion.button>
+      )}
     </div>
   );
 }
