@@ -901,17 +901,19 @@ export default function BookReader() {
         }
         
         // Wait for at least the first page to be ready (with shorter timeout)
+        // But don't block the user for too long - they can start listening while audio loads
         if (preloadPromises.length > 0) {
           try {
             await Promise.race([
               preloadPromises[0], // Wait for first page at minimum
-              new Promise(resolve => setTimeout(resolve, 5000)) // 5s timeout (reduced from 10s)
+              new Promise(resolve => setTimeout(resolve, 2000)) // 2s timeout - quick user experience
             ]);
           } catch (e) {
             console.log('Preload error (non-critical):', e);
           }
         }
         
+        // Always mark as ready after timeout - audio will generate on-demand if needed
         setNarrationPreparing(false);
         setNarrationReady(true);
       }
@@ -1139,15 +1141,30 @@ export default function BookReader() {
       // For mobile portrait/landscape, we use direct state update (no pageflip library)
       if (isMobilePortrait || isMobileLandscape) {
         setCurrentPage(0);
-        // Audio will play via the auto-read effect when page changes
+        // CRITICAL: Directly trigger audio playback after a short delay for mobile
+        // This ensures audio plays even if the useEffect doesn't catch the change
+        setTimeout(() => {
+          if (autoReadRef.current && mountedRef.current) {
+            lastPlayedPageRef.current = -999; // Reset to allow playback
+            playAudio();
+          }
+        }, 300);
       } else if (realisticFlipRef.current) {
         realisticFlipRef.current.nextPage();
       } else {
         // Fallback: directly set page
         setCurrentPage(0);
+        // Also trigger audio for fallback case
+        setTimeout(() => {
+          if (autoReadRef.current && mountedRef.current) {
+            lastPlayedPageRef.current = -999;
+            playAudio();
+          }
+        }, 300);
       }
     } else {
       // Already on a content page - start playing immediately
+      lastPlayedPageRef.current = -999; // Reset to allow playback
       playAudio();
     }
   }, [currentPage, playAudio, isMobilePortrait, isMobileLandscape]);
@@ -1976,13 +1993,15 @@ export default function BookReader() {
               {isCover ? (
                 <button
                   onClick={startListening}
-                  disabled={narrationPreparing}
-                  className={`min-h-[56px] px-6 rounded-full ${narrationPreparing ? 'bg-purple-400' : 'bg-purple-600 hover:bg-purple-500 active:bg-purple-700'} text-white font-medium flex items-center justify-center gap-2 touch-manipulation`}
+                  disabled={narrationPreparing || audioLoading}
+                  className={`min-h-[56px] px-6 rounded-full ${(narrationPreparing || audioLoading) ? 'bg-purple-400' : 'bg-purple-600 hover:bg-purple-500 active:bg-purple-700'} text-white font-medium flex items-center justify-center gap-2 touch-manipulation`}
                   style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                   data-testid="cover-start-listening-btn"
                 >
                   {narrationPreparing ? (
-                    <><div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> Preparing narration...</>
+                    <><div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> Preparing...</>
+                  ) : audioLoading ? (
+                    <><div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> Loading...</>
                   ) : (
                     <><FiPlay className="w-5 h-5" /> Listen</>
                   )}
