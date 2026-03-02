@@ -1359,6 +1359,14 @@ export default function BookReader() {
     }
   }, [currentPage, currentPageData]);
 
+  // Scroll text content to top when page changes (mobile portrait/landscape)
+  useEffect(() => {
+    if ((isMobilePortrait || isMobileLandscape) && textScrollRef.current) {
+      // Scroll the text container back to top when navigating to a new page
+      textScrollRef.current.scrollTop = 0;
+    }
+  }, [currentPage, isMobilePortrait, isMobileLandscape]);
+
   if (loading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-900/95 to-slate-900">
