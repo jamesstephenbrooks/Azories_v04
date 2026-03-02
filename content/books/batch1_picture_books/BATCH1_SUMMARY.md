@@ -91,7 +91,7 @@ Generated: February 26, 2026
 
 ## Preview URLs
 
-Base URL: https://book-reader-fix.preview.emergentagent.com
+Base URL: https://ai-book-updates.preview.emergentagent.com
 
 ### Book Covers:
 - Book 1: /book-previews/batch1/book1_luna_moonbeam/covers/cover_front.png
