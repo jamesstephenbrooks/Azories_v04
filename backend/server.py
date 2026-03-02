@@ -149,8 +149,6 @@ ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD")
 if not ADMIN_USERNAME or not ADMIN_PASSWORD:
     raise RuntimeError("ADMIN_USERNAME and ADMIN_PASSWORD environment variables are required")
-    ADMIN_USERNAME = ADMIN_USERNAME or "Admin"
-    ADMIN_PASSWORD = ADMIN_PASSWORD or "change_me_in_production"
 
 # VIP users - loaded from environment variable for security
 VIP_USERS = [e.strip() for e in os.environ.get("VIP_USERS", "").split(",") if e.strip()]
