@@ -3451,18 +3451,19 @@ export default function ArtStudio() {
                               key={item._id || item.id}
                               onClick={() => {
                                 if (galleryPickerTarget === 'style') {
-                                  setStyleReferenceImage(item.image_url);
+                                  setStyleReferenceImage(item.url || item.image_url);
                                 } else {
-                                  setCharacterReferenceImage(item.image_url);
+                                  setCharacterReferenceImage(item.url || item.image_url);
                                 }
                                 setShowGalleryPicker(false);
                               }}
                               className="relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-amber-500 transition-colors group"
                             >
                               <img
-                                src={item.image_url}
+                                src={item.url || item.image_url || item.thumbnail_url}
                                 alt={item.name}
                                 className="w-full h-full object-cover"
+                                loading="lazy"
                               />
                               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                 <span className="text-white text-xs font-medium">Select</span>
