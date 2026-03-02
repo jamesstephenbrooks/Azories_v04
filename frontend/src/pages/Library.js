@@ -877,7 +877,6 @@ export default function Library() {
                     </button>
                   </div>
                 </div>
-                </Suspense>
               ) : (
               /* Books Grid with Recommendations */
               <>
