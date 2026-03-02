@@ -3156,23 +3156,57 @@ export default function ProStudio() {
                           selectedCharacter?.id === char.id 
                             ? 'border-purple-500 bg-purple-900/30' 
                             : 'border-gray-700 hover:border-purple-500/50'
-                        } p-4`}
+                        } p-3 sm:p-4`}
                         data-testid={`character-card-${char.id}`}
                       >
-                        <div className="flex items-center gap-4">
-                          {/* Clickable thumbnail to view character */}
-                          <div className="relative group">
-                            <img 
-                              src={char.thumbnail || char.reference_images?.[0] || '/placeholder-character.png'} 
-                              alt={char.name}
-                              className="w-16 h-16 rounded-full object-cover cursor-pointer hover:ring-2 hover:ring-purple-500 transition-all"
-                              onClick={() => openCharacterView(char)}
-                            />
-                            <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                              <FiEye className="text-white" size={16} />
+                        {/* Mobile: Stack layout, Desktop: Row layout */}
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                          {/* Top row on mobile: Thumbnail + Name + Select */}
+                          <div className="flex items-center gap-3 sm:contents">
+                            {/* Clickable thumbnail to view character */}
+                            <div className="relative group flex-shrink-0">
+                              <img 
+                                src={char.thumbnail || char.reference_images?.[0] || '/placeholder-character.png'} 
+                                alt={char.name}
+                                className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover cursor-pointer hover:ring-2 hover:ring-purple-500 transition-all"
+                                onClick={() => openCharacterView(char)}
+                              />
+                              <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <FiEye className="text-white" size={16} />
+                              </div>
+                            </div>
+                            
+                            {/* Name and status - grows on mobile */}
+                            <div className="flex-1 min-w-0 sm:hidden">
+                              <div className="flex items-center gap-2">
+                                <p className="text-white font-medium truncate text-sm">{char.name}</p>
+                                {char.lora_status === 'completed' && (
+                                  <span className="text-[10px] bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded-full flex items-center gap-0.5 flex-shrink-0">
+                                    <FiCheck size={8} /> LoRA
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-gray-500 text-xs truncate">{char.style} • {char.genre}</p>
+                            </div>
+                            
+                            {/* Select button on mobile - in the header row */}
+                            <div className="sm:hidden flex-shrink-0">
+                              <Button
+                                size="sm"
+                                variant={selectedCharacter?.id === char.id ? "default" : "outline"}
+                                onClick={() => setSelectedCharacter(char)}
+                                className={`text-xs px-2 py-1 h-7 ${selectedCharacter?.id === char.id 
+                                  ? "bg-purple-600 text-white" 
+                                  : "border-purple-400/50 text-purple-300"
+                                }`}
+                              >
+                                {selectedCharacter?.id === char.id ? <FiCheck size={12} /> : 'Select'}
+                              </Button>
                             </div>
                           </div>
-                          <div className="flex-1 min-w-0">
+                          
+                          {/* Desktop: Full info column */}
+                          <div className="hidden sm:block flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
                               <p className="text-white font-medium truncate">{char.name}</p>
                               {char.lora_status === 'completed' && (
@@ -3187,7 +3221,6 @@ export default function ProStudio() {
                               )}
                             </div>
                             <p className="text-gray-500 text-xs">{char.style} • {char.genre}</p>
-                            {/* Reference images count */}
                             <p className="text-xs mt-1">
                               <span className={`${(char.reference_images?.length || 0) >= 3 ? 'text-green-400' : 'text-amber-400'}`}>
                                 {char.reference_images?.length || 0}/3 refs
@@ -3198,8 +3231,52 @@ export default function ProStudio() {
                             </p>
                           </div>
                           
-                          <div className="flex items-center gap-1 flex-shrink-0">
-                            {/* Edit button */}
+                          {/* Mobile: Bottom row with refs and actions */}
+                          <div className="flex items-center justify-between sm:hidden">
+                            <p className="text-xs">
+                              <span className={`${(char.reference_images?.length || 0) >= 3 ? 'text-green-400' : 'text-amber-400'}`}>
+                                {char.reference_images?.length || 0}/3 refs
+                              </span>
+                              {(char.reference_images?.length || 0) < 3 && (
+                                <span className="text-gray-600 ml-1 text-[10px]">(need 3 for LoRA)</span>
+                              )}
+                            </p>
+                            <div className="flex items-center gap-1">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => openEditModal(char)}
+                                className="text-gray-400 hover:text-white p-1.5 h-7 w-7"
+                                title="Edit"
+                              >
+                                <FiEdit3 size={12} />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => openCharacterView(char)}
+                                className="text-purple-400 hover:text-purple-300 p-1.5 h-7 w-7"
+                                title="View folder"
+                              >
+                                <FiFolder size={12} />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteCharacter(char.id);
+                                }}
+                                className="text-red-400 hover:text-red-300 p-1.5 h-7 w-7"
+                                title="Delete"
+                              >
+                                <FiTrash2 size={12} />
+                              </Button>
+                            </div>
+                          </div>
+                          
+                          {/* Desktop: Action buttons */}
+                          <div className="hidden sm:flex items-center gap-1 flex-shrink-0">
                             <Button
                               size="sm"
                               variant="ghost"
@@ -3209,8 +3286,6 @@ export default function ProStudio() {
                             >
                               <FiEdit3 size={14} />
                             </Button>
-                            
-                            {/* View Folder button */}
                             <Button
                               size="sm"
                               variant="ghost"
@@ -3220,8 +3295,6 @@ export default function ProStudio() {
                             >
                               <FiFolder size={14} />
                             </Button>
-                            
-                            {/* Delete button */}
                             <Button
                               size="sm"
                               variant="ghost"
@@ -3235,8 +3308,6 @@ export default function ProStudio() {
                             >
                               <FiTrash2 size={14} />
                             </Button>
-                            
-                            {/* Select button */}
                             <Button
                               size="sm"
                               variant={selectedCharacter?.id === char.id ? "default" : "outline"}
@@ -4799,14 +4870,22 @@ export default function ProStudio() {
                       {/* Media Preview */}
                       {isVideo ? (
                         <div className="relative w-full aspect-square bg-gray-900">
-                          {/* Video thumbnail placeholder - shown by default on mobile */}
-                          <div className="video-thumbnail absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 flex flex-col items-center justify-center">
-                            <FiFilm className="w-10 h-10 text-purple-400 mb-2" />
-                            <span className="text-xs text-gray-400">Tap to play</span>
-                          </div>
+                          {/* Video thumbnail - use saved thumbnail or show placeholder */}
+                          {item.thumbnail_url ? (
+                            <img 
+                              src={item.thumbnail_url}
+                              alt="Video thumbnail"
+                              className="video-thumbnail absolute inset-0 w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="video-thumbnail absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 flex flex-col items-center justify-center">
+                              <FiFilm className="w-10 h-10 text-purple-400 mb-2" />
+                              <span className="text-xs text-gray-400">Tap to play</span>
+                            </div>
+                          )}
                           <video 
                             src={item.image_url || item.url} 
-                            className="w-full h-full object-cover absolute inset-0" 
+                            className="w-full h-full object-cover absolute inset-0 opacity-0 hover:opacity-100 transition-opacity" 
                             muted 
                             playsInline 
                             loop
@@ -4814,36 +4893,29 @@ export default function ProStudio() {
                             onMouseEnter={(e) => {
                               // Only auto-play on non-touch devices
                               if (!('ontouchstart' in window)) {
+                                e.target.style.opacity = '1';
                                 e.target.play().catch(() => {});
                               }
                             }}
                             onMouseLeave={(e) => { 
+                              e.target.style.opacity = '0';
                               e.target.pause(); 
                               e.target.currentTime = 0; 
                             }}
                             onClick={(e) => {
                               // Toggle play/pause on click for mobile
                               if (e.target.paused) {
+                                e.target.style.opacity = '1';
                                 e.target.play().catch(() => {});
-                                e.target.parentElement.querySelector('.video-thumbnail')?.classList.add('hidden');
                               } else {
                                 e.target.pause();
+                                e.target.style.opacity = '0';
                               }
-                            }}
-                            onLoadedData={(e) => { 
-                              e.target.currentTime = 0.1; 
-                              e.target.parentElement.querySelector('.video-thumbnail')?.classList.add('hidden');
                             }}
                             onError={(e) => {
                               e.target.style.display = 'none';
-                              e.target.parentElement.querySelector('.video-fallback')?.classList.remove('hidden');
-                              e.target.parentElement.querySelector('.video-thumbnail')?.classList.add('hidden');
                             }}
                           />
-                          <div className="video-fallback hidden w-full h-full bg-gray-800 flex flex-col items-center justify-center absolute inset-0">
-                            <FiVideo className="w-10 h-10 text-purple-400 mb-2" />
-                            <span className="text-xs text-gray-400">Video unavailable</span>
-                          </div>
                           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                             <div className="bg-black/50 rounded-full p-2">
                               <FiPlay className="w-6 h-6 text-white" />
