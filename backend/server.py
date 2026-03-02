@@ -9100,18 +9100,156 @@ from data.starter_library_batch1 import BATCH_1_CHARACTERS
 from data.starter_library_batch2 import BATCH_2_SETTINGS
 from data.starter_library_batch3 import BATCH_3_OBJECTS
 from data.starter_library_batch4 import BATCH_4_ACTIONS
+from data.starter_library_new import STARTER_LIBRARY_PROMPTS
 
-# Complete library contains 200 images total
-STARTER_LIBRARY_IMAGES = BATCH_1_CHARACTERS + BATCH_2_SETTINGS + BATCH_3_OBJECTS + BATCH_4_ACTIONS
+# Complete library contains 200 images total (old format)
+STARTER_LIBRARY_IMAGES_OLD = BATCH_1_CHARACTERS + BATCH_2_SETTINGS + BATCH_3_OBJECTS + BATCH_4_ACTIONS
+
+# New starter library - stored in database after generation
+async def get_starter_library_from_db():
+    """Get generated starter library images from database"""
+    images = await db.starter_library.find({}, {"_id": 0}).to_list(100)
+    return images
+
 @api_router.get("/starter-library")
 async def get_starter_library(category: Optional[str] = None):
     """Get starter library images for new users - no auth required"""
-    images = STARTER_LIBRARY_IMAGES
+    # Try to get from database first (generated images)
+    db_images = await get_starter_library_from_db()
+    
+    if db_images and len(db_images) > 0:
+        images = db_images
+    else:
+        # Fallback to old placeholder data
+        images = STARTER_LIBRARY_IMAGES_OLD
     
     if category:
         images = [img for img in images if img.get("category") == category]
     
     return {"images": images, "total": len(images)}
+
+@api_router.post("/admin/generate-starter-library")
+async def generate_starter_library_images(
+    background_tasks: BackgroundTasks,
+    current_user: dict = Depends(get_current_user),
+    batch_size: int = 5,
+    start_index: int = 0
+):
+    """
+    Admin endpoint to generate starter library images using fal.ai
+    Generates images in batches and uploads to Cloudinary
+    """
+    # Admin only
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    if not FAL_AVAILABLE:
+        raise HTTPException(status_code=500, detail="fal.ai service not available")
+    
+    # Get prompts to generate
+    prompts_to_generate = STARTER_LIBRARY_PROMPTS[start_index:start_index + batch_size]
+    
+    if not prompts_to_generate:
+        return {"message": "No more images to generate", "total_prompts": len(STARTER_LIBRARY_PROMPTS)}
+    
+    results = []
+    errors = []
+    
+    for item in prompts_to_generate:
+        try:
+            logger.info(f"Generating starter library image: {item['id']} - {item['name']}")
+            
+            # Generate image using fal.ai flux-dev
+            image_result = await generate_image_flux(
+                prompt=item['prompt'],
+                model="flux-dev",
+                image_size="square_hd",
+                num_images=1
+            )
+            
+            if image_result and image_result.get('images'):
+                image_url = image_result['images'][0].get('url')
+                
+                # Upload to Cloudinary for permanent storage
+                cloudinary_url = None
+                if image_url and CLOUDINARY_AVAILABLE:
+                    try:
+                        # Download image and upload to Cloudinary
+                        async with aiohttp.ClientSession() as session:
+                            async with session.get(image_url) as resp:
+                                if resp.status == 200:
+                                    image_data = await resp.read()
+                                    upload_result = cloudinary.uploader.upload(
+                                        image_data,
+                                        folder=f"azories/starter_library/{item['category']}",
+                                        public_id=item['id'],
+                                        resource_type="image"
+                                    )
+                                    cloudinary_url = upload_result.get("secure_url")
+                                    logger.info(f"Uploaded to Cloudinary: {cloudinary_url}")
+                    except Exception as upload_error:
+                        logger.warning(f"Cloudinary upload failed: {upload_error}")
+                        cloudinary_url = image_url  # Use fal.ai URL as fallback
+                
+                final_url = cloudinary_url or image_url
+                
+                # Store in database
+                library_item = {
+                    "id": item['id'],
+                    "name": item['name'],
+                    "category": item['category'],
+                    "art_style": item['art_style'],
+                    "url": final_url,
+                    "thumbnail_url": final_url,
+                    "tags": [item['category'], item['art_style']],
+                    "created_at": datetime.now(timezone.utc).isoformat()
+                }
+                
+                await db.starter_library.update_one(
+                    {"id": item['id']},
+                    {"$set": library_item},
+                    upsert=True
+                )
+                
+                results.append({
+                    "id": item['id'],
+                    "name": item['name'],
+                    "url": final_url,
+                    "status": "success"
+                })
+            else:
+                errors.append({"id": item['id'], "error": "No image generated"})
+                
+        except Exception as e:
+            logger.error(f"Error generating {item['id']}: {str(e)}")
+            errors.append({"id": item['id'], "error": str(e)})
+    
+    return {
+        "message": f"Generated {len(results)} images",
+        "batch_start": start_index,
+        "batch_size": batch_size,
+        "next_index": start_index + batch_size,
+        "total_prompts": len(STARTER_LIBRARY_PROMPTS),
+        "remaining": len(STARTER_LIBRARY_PROMPTS) - (start_index + batch_size),
+        "results": results,
+        "errors": errors
+    }
+
+@api_router.get("/admin/starter-library-status")
+async def get_starter_library_status(current_user: dict = Depends(get_current_user)):
+    """Check status of starter library generation"""
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    generated = await db.starter_library.count_documents({})
+    total = len(STARTER_LIBRARY_PROMPTS)
+    
+    return {
+        "generated": generated,
+        "total": total,
+        "remaining": total - generated,
+        "percent_complete": round((generated / total) * 100, 1) if total > 0 else 0
+    }
 
 
 
