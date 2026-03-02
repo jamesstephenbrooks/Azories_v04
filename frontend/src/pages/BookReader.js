@@ -92,7 +92,7 @@ export default function BookReader() {
     // 1. Abort ALL pending API requests immediately
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
-      abortControllerRef.current = null;
+      // Don't set to null - let the next useEffect create a fresh one
     }
     
     // 2. Stop and destroy audio element completely
@@ -125,11 +125,8 @@ export default function BookReader() {
     // 4. Clear all timeouts
     clearAllTimeouts();
     
-    // 5. Reset ALL refs to prevent stale callbacks
+    // 5. Reset tracking refs to prevent stale callbacks
     lastPlayedPageRef.current = -999;
-    autoReadRef.current = false;
-    shouldStartPlayingRef.current = false;
-    mountedRef.current = false;
     
     console.log('[BookReader] Cleanup complete');
   }, [audioElement, clearAllTimeouts]);
