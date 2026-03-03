@@ -12191,6 +12191,92 @@ async def import_from_remote_url(
         raise HTTPException(status_code=500, detail=f"Import failed: {str(e)}")
 
 
+@api_router.delete("/admin/delete-test-accounts")
+async def delete_test_accounts(admin: dict = Depends(get_admin_user)):
+    """
+    Delete all test accounts from the database.
+    
+    Test accounts are identified by:
+    - Email containing "test" (case-insensitive)
+    - Email ending with "@example.com"
+    - Name containing "Test User" or "Test Author" etc.
+    
+    Protected accounts (will NOT be deleted):
+    - jamesstephenbrooks@outlook.com
+    - stories@azories.com
+    - arianamillyb@icloud.com
+    - palmbeach@hotmail.co.uk
+    - dales.preloved.shop@gmail.com
+    - mandybrooks151@hotmail.co.uk
+    """
+    protected_emails = [
+        "jamesstephenbrooks@outlook.com",
+        "stories@azories.com",
+        "arianamillyb@icloud.com",
+        "palmbeach@hotmail.co.uk",
+        "dales.preloved.shop@gmail.com",
+        "mandybrooks151@hotmail.co.uk"
+    ]
+    
+    results = {
+        "deleted_count": 0,
+        "deleted_users": [],
+        "protected_count": 0,
+        "errors": []
+    }
+    
+    try:
+        # Find all test accounts
+        test_query = {
+            "$and": [
+                {"email": {"$nin": protected_emails}},  # Not in protected list
+                {"$or": [
+                    {"email": {"$regex": "test", "$options": "i"}},  # Email contains "test"
+                    {"email": {"$regex": "@example\\.com$", "$options": "i"}},  # @example.com emails
+                    {"name": {"$regex": "^test", "$options": "i"}},  # Name starts with "test"
+                    {"name": {"$regex": "test user", "$options": "i"}},  # Name contains "test user"
+                ]}
+            ]
+        }
+        
+        # Get list of test users first
+        test_users = await db.users.find(test_query, {"_id": 0, "id": 1, "email": 1, "name": 1}).to_list(500)
+        
+        if not test_users:
+            return {"message": "No test accounts found", **results}
+        
+        # Delete each test user and their associated data
+        for user in test_users:
+            user_id = user.get("id")
+            user_email = user.get("email", "Unknown")
+            
+            try:
+                # Delete user's books
+                await db.books.delete_many({"author_id": user_id})
+                # Delete user's chapters (via book_id relationship would need more complex query)
+                # Delete user's reading progress
+                await db.reading_progress.delete_many({"user_id": user_id})
+                # Delete user's book images
+                await db.book_images.delete_many({"user_id": user_id})
+                # Delete user's art studio gallery
+                await db.art_studio_gallery.delete_many({"user_id": user_id})
+                # Delete the user
+                await db.users.delete_one({"id": user_id})
+                
+                results["deleted_users"].append({"email": user_email, "name": user.get("name", "")})
+                results["deleted_count"] += 1
+                
+            except Exception as e:
+                results["errors"].append(f"Error deleting {user_email}: {str(e)}")
+        
+        logger.info(f"Deleted {results['deleted_count']} test accounts")
+        return results
+        
+    except Exception as e:
+        logger.error(f"Error in delete_test_accounts: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @api_router.post("/admin/seed-from-preview")
 async def seed_from_preview(
     import_key: str = Query(..., description="Admin import key for security"),

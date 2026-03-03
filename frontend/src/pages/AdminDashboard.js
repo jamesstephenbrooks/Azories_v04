@@ -186,6 +186,36 @@ export default function AdminDashboard() {
   const [timeseriesDays, setTimeseriesDays] = useState(30);
   const [loadingTimeseries, setLoadingTimeseries] = useState(false);
   
+  // Delete Test Accounts State
+  const [deletingTestAccounts, setDeletingTestAccounts] = useState(false);
+  
+  // Delete Test Accounts Function
+  const deleteTestAccounts = async () => {
+    if (!window.confirm('Are you sure you want to delete ALL test accounts? This cannot be undone.')) {
+      return;
+    }
+    
+    setDeletingTestAccounts(true);
+    try {
+      const token = localStorage.getItem('azories-admin-token');
+      const response = await axios.delete(`${API}/api/admin/delete-test-accounts`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      const data = response.data;
+      toast.success(`Deleted ${data.deleted_count} test accounts!`);
+      
+      // Refresh users list
+      fetchDashboardData();
+      
+    } catch (error) {
+      console.error('Error deleting test accounts:', error);
+      toast.error('Failed to delete test accounts');
+    } finally {
+      setDeletingTestAccounts(false);
+    }
+  };
+  
   // Check if admin token exists
   useEffect(() => {
     const token = localStorage.getItem('azories-admin-token');
@@ -1053,9 +1083,9 @@ export default function AdminDashboard() {
 
           {/* Users Tab */}
           <TabsContent value="users">
-            {/* User Search */}
-            <div className="mb-4 p-4 bg-white/5 rounded-xl border border-white/10">
-              <div className="relative max-w-md">
+            {/* User Search and Actions */}
+            <div className="mb-4 p-4 bg-white/5 rounded-xl border border-white/10 flex flex-wrap gap-4 items-center justify-between">
+              <div className="relative flex-1 max-w-md">
                 <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 w-4 h-4" />
                 <Input
                   placeholder="Search users by name or email..."
@@ -1065,6 +1095,18 @@ export default function AdminDashboard() {
                   data-testid="user-search-input"
                 />
               </div>
+              
+              {/* Delete Test Accounts Button */}
+              <Button
+                variant="destructive"
+                onClick={deleteTestAccounts}
+                disabled={deletingTestAccounts}
+                className="bg-red-600 hover:bg-red-700 text-white"
+                data-testid="delete-test-accounts-btn"
+              >
+                <FiTrash2 className={`w-4 h-4 mr-2 ${deletingTestAccounts ? 'animate-spin' : ''}`} />
+                {deletingTestAccounts ? 'Deleting...' : 'Delete Test Accounts'}
+              </Button>
             </div>
             
             <div className="bg-white/5 backdrop-blur rounded-2xl border border-white/10 overflow-hidden">
