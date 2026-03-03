@@ -181,12 +181,16 @@ export default function ProStudio() {
   
   // Unified Gallery state - contains ALL Pro Studio content
   const [gallery, setGallery] = useState([]);
-  const [galleryFilter, setGalleryFilter] = useState('all'); // 'all', 'images', 'videos', 'characters', 'books'
+  const [galleryFilter, setGalleryFilter] = useState('all'); // 'all', 'images', 'videos', 'characters', 'books', 'starter', 'creators'
   const [galleryPickerCallback, setGalleryPickerCallback] = useState(null); // Function to call when image selected
   
   // My Book Library state (images from user's books)
   const [myBookLibrary, setMyBookLibrary] = useState([]);
   const [myBookLibraryLoaded, setMyBookLibraryLoaded] = useState(false);
+  
+  // Starter Library and Creators Gallery
+  const [starterLibrary, setStarterLibrary] = useState([]);
+  const [creatorsGallery, setCreatorsGallery] = useState([]);
   
   // Load user's characters on mount
   useEffect(() => {
@@ -200,8 +204,38 @@ export default function ProStudio() {
       loadSceneOptions();
       loadScenes();
       loadMyBookLibrary();
+      loadStarterLibrary();
+      loadCreatorsGallery();
     }
   }, [isAuthenticated]);
+  
+  // Load Starter Library (free assets)
+  const loadStarterLibrary = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/starter-library`);
+      if (res.ok) {
+        const data = await res.json();
+        setStarterLibrary(data.images || []);
+      }
+    } catch (error) {
+      console.error('Failed to load starter library:', error);
+    }
+  };
+  
+  // Load Creators Gallery (general images from Art Studio)
+  const loadCreatorsGallery = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/art-studio/gallery`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setCreatorsGallery(data.images || []);
+      }
+    } catch (error) {
+      console.error('Failed to load creators gallery:', error);
+    }
+  };
   
   // Load user's private book library images
   const loadMyBookLibrary = async () => {
@@ -519,9 +553,10 @@ export default function ProStudio() {
     }
   }, [galleryFilter, isAuthenticated, activeTab]);
   
-  // Gallery items - include book library when filter is 'books'
-  const filteredGallery = galleryFilter === 'books' 
-    ? myBookLibrary.map(img => ({
+  // Gallery items - handle different filter types
+  const filteredGallery = (() => {
+    if (galleryFilter === 'books') {
+      return myBookLibrary.map(img => ({
         id: img.id,
         image_url: img.image_url,
         url: img.image_url,
@@ -530,8 +565,32 @@ export default function ProStudio() {
         book_title: img.book_title,
         type: img.type,
         source: 'book_library'
-      }))
-    : gallery;
+      }));
+    }
+    if (galleryFilter === 'starter') {
+      return starterLibrary.map(img => ({
+        id: img.id || img.image_url,
+        image_url: img.image_url || img.url,
+        url: img.image_url || img.url,
+        prompt: img.name || img.category || '',
+        character_name: '',
+        type: 'starter',
+        source: 'starter_library'
+      }));
+    }
+    if (galleryFilter === 'creators') {
+      return creatorsGallery.map(img => ({
+        id: img.id,
+        image_url: img.image_url || img.url,
+        url: img.image_url || img.url,
+        prompt: img.prompt || '',
+        character_name: '',
+        type: 'creator',
+        source: 'creators_gallery'
+      }));
+    }
+    return gallery;
+  })();
   
   // Open gallery picker with a callback for selection
   const openGalleryPicker = (mode, callback) => {
@@ -5257,34 +5316,42 @@ export default function ProStudio() {
                   onClick={() => setGalleryFilter('all')}
                   className={`text-xs ${galleryFilter === 'all' ? 'bg-purple-600' : 'border-gray-600 text-gray-300'}`}
                 >
-                  All
-                </Button>
-                <Button
-                  size="sm"
-                  variant={galleryFilter === 'images' ? 'default' : 'outline'}
-                  onClick={() => setGalleryFilter('images')}
-                  className={`text-xs ${galleryFilter === 'images' ? 'bg-purple-600' : 'border-gray-600 text-gray-300'}`}
-                >
-                  Images Only
+                  Pro Studio
                 </Button>
                 <Button
                   size="sm"
                   variant={galleryFilter === 'characters' ? 'default' : 'outline'}
                   onClick={() => setGalleryFilter('characters')}
-                  className={`text-xs ${galleryFilter === 'characters' ? 'bg-purple-600' : 'border-gray-600 text-gray-300'}`}
+                  className={`text-xs ${galleryFilter === 'characters' ? 'bg-pink-600' : 'border-gray-600 text-gray-300'}`}
                 >
-                  Characters
+                  <FiUser className="w-3 h-3 mr-1" /> Characters
                 </Button>
                 {galleryPickerMode !== 'video' && (
                   <Button
                     size="sm"
                     variant={galleryFilter === 'videos' ? 'default' : 'outline'}
                     onClick={() => setGalleryFilter('videos')}
-                    className={`text-xs ${galleryFilter === 'videos' ? 'bg-purple-600' : 'border-gray-600 text-gray-300'}`}
+                    className={`text-xs ${galleryFilter === 'videos' ? 'bg-blue-600' : 'border-gray-600 text-gray-300'}`}
                   >
-                    Videos
+                    <FiVideo className="w-3 h-3 mr-1" /> Videos
                   </Button>
                 )}
+                <Button
+                  size="sm"
+                  variant={galleryFilter === 'creators' ? 'default' : 'outline'}
+                  onClick={() => setGalleryFilter('creators')}
+                  className={`text-xs ${galleryFilter === 'creators' ? 'bg-orange-600' : 'border-orange-600/50 text-orange-300'}`}
+                >
+                  <FiZap className="w-3 h-3 mr-1" /> Creators ({creatorsGallery.length})
+                </Button>
+                <Button
+                  size="sm"
+                  variant={galleryFilter === 'starter' ? 'default' : 'outline'}
+                  onClick={() => setGalleryFilter('starter')}
+                  className={`text-xs ${galleryFilter === 'starter' ? 'bg-cyan-600' : 'border-cyan-600/50 text-cyan-300'}`}
+                >
+                  <FiStar className="w-3 h-3 mr-1" /> Starter ({starterLibrary.length})
+                </Button>
                 {myBookLibrary.length > 0 && (
                   <Button
                     size="sm"
@@ -5292,7 +5359,7 @@ export default function ProStudio() {
                     onClick={() => setGalleryFilter('books')}
                     className={`text-xs ${galleryFilter === 'books' ? 'bg-emerald-600' : 'border-emerald-600/50 text-emerald-300'}`}
                   >
-                    My Books ({myBookLibrary.length})
+                    <FiBook className="w-3 h-3 mr-1" /> My Books ({myBookLibrary.length})
                   </Button>
                 )}
                 
@@ -5412,6 +5479,21 @@ export default function ProStudio() {
                           {(item.type === 'video' || item.is_animation) && (
                             <span className="bg-purple-500 text-white text-[9px] px-1 py-0.5 rounded flex items-center gap-0.5">
                               <FiVideo size={8} />
+                            </span>
+                          )}
+                          {item.source === 'book_library' && (
+                            <span className="bg-emerald-500/90 text-white text-[9px] px-1 py-0.5 rounded truncate max-w-[80px]">
+                              {item.book_title || 'My Book'}
+                            </span>
+                          )}
+                          {item.source === 'starter_library' && (
+                            <span className="bg-cyan-500/90 text-white text-[9px] px-1 py-0.5 rounded">
+                              Starter
+                            </span>
+                          )}
+                          {item.source === 'creators_gallery' && (
+                            <span className="bg-orange-500/90 text-white text-[9px] px-1 py-0.5 rounded">
+                              Creators
                             </span>
                           )}
                         </div>
