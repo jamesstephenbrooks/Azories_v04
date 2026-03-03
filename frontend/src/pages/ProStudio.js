@@ -1698,7 +1698,6 @@ export default function ProStudio() {
           prompt: `${selectedCharacter.name} - ${expressionData.name} expression`
         };
         setGeneratedImages(prev => [newImage, ...prev]);
-        toast.success(`${expressionData.name} expression generated!`);
         loadCredits(); // Refresh credits
         
         // Auto-save to character folder
@@ -1709,7 +1708,23 @@ export default function ProStudio() {
             `${expressionData.name} expression - ${prompt || 'portrait'}`,
             'expression'
           );
+          // Refresh character gallery
+          loadCharacterGallery(selectedCharacter.id);
         }
+        
+        // Show the generation preview popup with save options
+        setGenerationPreviewData({
+          image: { url: data.image_url, id: Date.now() },
+          type: 'character',
+          characterId: selectedCharacter.id,
+          characterName: selectedCharacter.name,
+          prompt: `${expressionData.name} expression - ${prompt || 'portrait'}`,
+          method: 'expression',
+          autoSaved: true // Mark that it was already saved
+        });
+        setShowGenerationPreview(true);
+        
+        toast.success(`${expressionData.name} expression generated and saved!`);
       } else {
         const error = await response.json();
         if (response.status === 402) {
@@ -2476,13 +2491,25 @@ export default function ProStudio() {
               className="relative max-w-5xl max-h-[90vh]"
               onClick={e => e.stopPropagation()}
             >
-              <img 
-                src={previewImage.url} 
-                alt={previewImage.prompt || 'Preview'} 
-                className="max-w-full max-h-[85vh] object-contain rounded-lg"
-              />
+              {previewImage.isVideo ? (
+                // Video player
+                <video 
+                  src={previewImage.url} 
+                  className="max-w-full max-h-[85vh] object-contain rounded-lg"
+                  controls
+                  autoPlay
+                  loop
+                />
+              ) : (
+                // Image
+                <img 
+                  src={previewImage.url} 
+                  alt={previewImage.prompt || 'Preview'} 
+                  className="max-w-full max-h-[85vh] object-contain rounded-lg"
+                />
+              )}
               <div className="absolute bottom-0 left-0 right-0 bg-black/80 p-4 rounded-b-lg">
-                <p className="text-white text-sm mb-2">{previewImage.prompt || previewImage.character || 'Generated image'}</p>
+                <p className="text-white text-sm mb-2">{previewImage.prompt || previewImage.character || (previewImage.isVideo ? 'Character animation' : 'Generated image')}</p>
                 <div className="flex gap-2">
                   <Button 
                     size="sm" 
@@ -2491,7 +2518,9 @@ export default function ProStudio() {
                       // Create download link
                       const link = document.createElement('a');
                       link.href = previewImage.url;
-                      link.download = `character-image-${Date.now()}.png`;
+                      link.download = previewImage.isVideo 
+                        ? `character-video-${Date.now()}.mp4`
+                        : `character-image-${Date.now()}.png`;
                       link.target = '_blank';
                       document.body.appendChild(link);
                       link.click();
@@ -2502,17 +2531,18 @@ export default function ProStudio() {
                   >
                     <FiDownload className="mr-1" /> Download
                   </Button>
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    onClick={async (e) => {
-                      e.stopPropagation();
-                      // Save to main art studio gallery
-                      try {
-                        const token = localStorage.getItem('azories-token');
-                        const response = await fetch(`${API_URL}/api/art-studio/gallery`, {
-                          method: 'POST',
-                          headers: {
+                  {!previewImage.isVideo && (
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        // Save to main art studio gallery
+                        try {
+                          const token = localStorage.getItem('azories-token');
+                          const response = await fetch(`${API_URL}/api/art-studio/gallery`, {
+                            method: 'POST',
+                            headers: {
                             'Content-Type': 'application/json',
                             Authorization: `Bearer ${token}`
                           },
@@ -2536,7 +2566,8 @@ export default function ProStudio() {
                   >
                     <FiSave className="mr-1" /> Save to Gallery
                   </Button>
-                  {selectedCharacter && (
+                  )}
+                  {selectedCharacter && !previewImage.isVideo && (
                     <>
                       <Button 
                         size="sm" 
@@ -2687,7 +2718,7 @@ export default function ProStudio() {
               {/* Generated Images (Character Folder) */}
               <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4">
                 <h3 className="text-white font-medium mb-3 flex items-center gap-2">
-                  <FiFolder className="text-purple-400" /> Character Folder ({characterGallery.filter(img => img.image_url && (img.image_url.startsWith('http') || img.image_url.startsWith('data:'))).length} images)
+                  <FiFolder className="text-purple-400" /> Character Folder ({characterGallery.filter(img => img.image_url && (img.image_url.startsWith('http') || img.image_url.startsWith('data:'))).length} items)
                 </h3>
                 {characterGallery.filter(img => img.image_url && (img.image_url.startsWith('http') || img.image_url.startsWith('data:'))).length === 0 ? (
                   <div className="text-center py-8 text-gray-500">
@@ -2699,55 +2730,104 @@ export default function ProStudio() {
                   <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                     {characterGallery
                       .filter(img => img.image_url && (img.image_url.startsWith('http') || img.image_url.startsWith('data:')))
-                      .map((img) => (
-                      <div 
-                        key={img.id}
-                        className="relative group cursor-pointer"
-                        onClick={() => setPreviewImage({ url: img.image_url, prompt: img.prompt })}
-                      >
-                        <img 
-                          src={img.image_url} 
-                          alt={img.prompt || 'Generated'}
-                          className="w-full aspect-square object-cover rounded-lg hover:ring-2 hover:ring-purple-500 transition-all bg-gray-800"
-                          onError={(e) => { e.target.style.display = 'none'; }}
-                        />
-                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
-                          <Button 
-                            size="sm" 
-                            variant="ghost"
-                            onClick={(e) => { 
-                              e.stopPropagation(); 
-                              // Add to reference images for LoRA training
-                              addImageToReferences(viewingCharacter?.id, img.image_url);
-                            }}
-                            title="Add to References for LoRA"
-                            className="bg-green-600/80 hover:bg-green-600 active:bg-green-700 active:scale-95"
+                      .map((img) => {
+                        // Check if this is a video item
+                        const isVideo = img.type === 'video' || img.type === 'animation' || 
+                          img.image_url?.includes('.mp4') || img.image_url?.includes('.webm');
+                        const thumbnailUrl = img.thumbnail_url || 
+                          (isVideo && img.image_url?.includes('cloudinary.com') 
+                            ? img.image_url.replace('/upload/', '/upload/so_0,w_300,h_300,c_fill/').replace('.mp4', '.jpg').replace('.webm', '.jpg')
+                            : null);
+                        
+                        return (
+                          <div 
+                            key={img.id}
+                            className="relative group cursor-pointer"
+                            onClick={() => isVideo 
+                              ? setPreviewImage({ url: img.image_url, prompt: img.prompt, isVideo: true })
+                              : setPreviewImage({ url: img.image_url, prompt: img.prompt })
+                            }
                           >
-                            <FiPlus className="text-white" size={14} />
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="ghost"
-                            onClick={(e) => { e.stopPropagation(); openCropModal(img.image_url, 'character', viewingCharacter?.id); }}
-                            title="Crop Image"
-                          >
-                            <FiCrop className="text-white" size={14} />
-                          </Button>
-                          <FiMaximize2 className="text-white" size={18} />
-                        </div>
-                        {img.type && (
-                          <span className="absolute bottom-1 left-1 text-xs bg-purple-500/80 text-white px-1.5 py-0.5 rounded">
-                            {img.type}
-                          </span>
-                        )}
-                        {/* Show if already in references */}
-                        {viewingCharacter?.reference_images?.includes(img.image_url) && (
-                          <span className="absolute top-1 right-1 text-[10px] bg-green-500 text-white px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
-                            <FiCheck size={10} /> Ref
-                          </span>
-                        )}
-                      </div>
-                    ))}
+                            {isVideo ? (
+                              // Video thumbnail
+                              <div className="w-full aspect-square bg-gray-800 rounded-lg relative overflow-hidden hover:ring-2 hover:ring-purple-500 transition-all">
+                                {thumbnailUrl ? (
+                                  <img 
+                                    src={thumbnailUrl} 
+                                    alt={img.prompt || 'Video'}
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                  />
+                                ) : (
+                                  <video 
+                                    src={img.image_url}
+                                    className="w-full h-full object-cover"
+                                    muted
+                                    preload="metadata"
+                                    onLoadedMetadata={(e) => { e.target.currentTime = 0.1; }}
+                                  />
+                                )}
+                                {/* Video play icon overlay */}
+                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                  <div className="w-10 h-10 rounded-full bg-purple-500/80 flex items-center justify-center">
+                                    <FiPlay className="text-white w-5 h-5 ml-0.5" />
+                                  </div>
+                                </div>
+                              </div>
+                            ) : (
+                              // Regular image
+                              <img 
+                                src={img.image_url} 
+                                alt={img.prompt || 'Generated'}
+                                className="w-full aspect-square object-cover rounded-lg hover:ring-2 hover:ring-purple-500 transition-all bg-gray-800"
+                                onError={(e) => { e.target.style.display = 'none'; }}
+                              />
+                            )}
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
+                              {!isVideo && (
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost"
+                                  onClick={(e) => { 
+                                    e.stopPropagation(); 
+                                    // Add to reference images for LoRA training
+                                    addImageToReferences(viewingCharacter?.id, img.image_url);
+                                  }}
+                                  title="Add to References for LoRA"
+                                  className="bg-green-600/80 hover:bg-green-600 active:bg-green-700 active:scale-95"
+                                >
+                                  <FiPlus className="text-white" size={14} />
+                                </Button>
+                              )}
+                              {!isVideo && (
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost"
+                                  onClick={(e) => { e.stopPropagation(); openCropModal(img.image_url, 'character', viewingCharacter?.id); }}
+                                  title="Crop Image"
+                                >
+                                  <FiCrop className="text-white" size={14} />
+                                </Button>
+                              )}
+                              <FiMaximize2 className="text-white" size={18} />
+                            </div>
+                            {/* Type badge */}
+                            {img.type && (
+                              <span className={`absolute bottom-1 left-1 text-xs px-1.5 py-0.5 rounded ${
+                                isVideo ? 'bg-blue-500/80' : 'bg-purple-500/80'
+                              } text-white`}>
+                                {isVideo ? 'video' : img.type}
+                              </span>
+                            )}
+                            {/* Show if already in references */}
+                            {!isVideo && viewingCharacter?.reference_images?.includes(img.image_url) && (
+                              <span className="absolute top-1 right-1 text-[10px] bg-green-500 text-white px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                                <FiCheck size={10} /> Ref
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })}
                   </div>
                 )}
               </div>
@@ -5701,9 +5781,17 @@ export default function ProStudio() {
               
               {/* Actions */}
               <div className="p-4 border-t border-gray-800 bg-gray-900/80">
+                {/* Auto-saved indicator */}
+                {generationPreviewData.autoSaved && (
+                  <div className="flex items-center justify-center gap-2 mb-3 text-emerald-400">
+                    <FiCheck className="w-4 h-4" />
+                    <span className="text-sm">Automatically saved to {generationPreviewData.characterName}'s folder</span>
+                  </div>
+                )}
+                
                 <div className="flex flex-wrap gap-3 justify-center">
-                  {/* Save to Character Folder */}
-                  {generationPreviewData.characterId && (
+                  {/* Save to Character Folder (hide if already auto-saved to this character) */}
+                  {generationPreviewData.characterId && !generationPreviewData.autoSaved && (
                     <Button
                       onClick={async () => {
                         await saveToCharacterFolder(
@@ -5718,6 +5806,32 @@ export default function ProStudio() {
                       className="bg-purple-600 hover:bg-purple-700 active:bg-purple-800 active:scale-95"
                     >
                       <FiUser className="mr-2" /> Save to {generationPreviewData.characterName}
+                    </Button>
+                  )}
+                  
+                  {/* Save to a DIFFERENT character */}
+                  {characters.length > 0 && (
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        // Open character picker to save to a different character
+                        setShowGalleryPicker(true);
+                        setGalleryPickerMode('character-save');
+                        setGalleryPickerCallback((selectedItem) => {
+                          if (selectedItem?.character_id || selectedItem?.id) {
+                            const charId = selectedItem.character_id || selectedItem.id;
+                            const char = characters.find(c => c.id === charId);
+                            if (char) {
+                              saveToCharacterFolder(charId, generationPreviewData.image.url, generationPreviewData.prompt, 'saved');
+                              toast.success(`Saved to ${char.name}'s folder!`);
+                              loadCharacterGallery(charId);
+                            }
+                          }
+                        });
+                      }}
+                      className="border-purple-500/50 text-purple-400 hover:bg-purple-500/20"
+                    >
+                      <FiUser className="mr-2" /> Save to Other Character
                     </Button>
                   )}
                   
