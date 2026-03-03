@@ -3379,18 +3379,40 @@ async def get_continue_reading(current_user: dict = Depends(get_current_user)):
     """Get books the user is currently reading (in-progress, not completed)
     
     Returns book details with reading progress for "Continue Reading" section.
+    Each book appears only once with the most recent reading progress.
     """
-    # Get reading progress for in-progress books, sorted by last_read
-    progress_cursor = db.reading_progress.find(
+    # Use aggregation to get the most recent progress entry per book
+    pipeline = [
         {
-            "user_id": current_user["id"],
-            "completed": {"$ne": True},
-            "current_page": {"$gt": 0}  # Must have started reading
+            "$match": {
+                "user_id": current_user["id"],
+                "completed": {"$ne": True},
+                "current_page": {"$gt": 0}  # Must have started reading
+            }
         },
-        {"_id": 0}
-    ).sort("last_read", -1).limit(10)
+        {
+            "$sort": {"last_read": -1}  # Most recent first
+        },
+        {
+            "$group": {
+                "_id": "$book_id",  # Group by book_id to deduplicate
+                "book_id": {"$first": "$book_id"},
+                "current_page": {"$first": "$current_page"},
+                "total_pages": {"$first": "$total_pages"},
+                "progress_percent": {"$first": "$progress_percent"},
+                "last_read": {"$first": "$last_read"},
+                "completed": {"$first": "$completed"}
+            }
+        },
+        {
+            "$sort": {"last_read": -1}  # Sort again after grouping
+        },
+        {
+            "$limit": 10
+        }
+    ]
     
-    progress_list = await progress_cursor.to_list(10)
+    progress_list = await db.reading_progress.aggregate(pipeline).to_list(10)
     
     if not progress_list:
         return {"books": [], "total": 0}
