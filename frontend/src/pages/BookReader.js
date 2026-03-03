@@ -1589,7 +1589,7 @@ export default function BookReader() {
                   </button>
                   <button
                     onClick={startListening}
-                    className="px-5 py-2.5 rounded-full bg-purple-600 hover:bg-purple-500 text-white font-medium flex items-center gap-2 transition-colors shadow-lg text-sm"
+                    className="px-5 py-2.5 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 active:scale-95 text-white font-medium flex items-center gap-2 transition-colors shadow-lg text-sm"
                     data-testid="cover-listen-overlay-btn"
                   >
                     <FiPlay className="w-4 h-4" />
@@ -1642,7 +1642,7 @@ export default function BookReader() {
                   </button>
                   <button
                     onClick={startListening}
-                    className={`${isMobileLandscape ? 'px-6 py-3' : 'px-5 py-2.5'} rounded-full bg-purple-600 hover:bg-purple-500 text-white font-medium flex items-center gap-2 transition-colors shadow-lg text-sm`}
+                    className={`${isMobileLandscape ? 'px-6 py-3' : 'px-5 py-2.5'} rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 active:scale-95 text-white font-medium flex items-center gap-2 transition-colors shadow-lg text-sm`}
                     data-testid="cover-listen-overlay-btn"
                   >
                     <FiPlay className="w-4 h-4" />
@@ -1775,7 +1775,7 @@ export default function BookReader() {
                             console.log('[BackCover Landscape] Read Again clicked');
                             setCurrentPage(-1);
                           }}
-                          className="px-8 py-3 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white font-semibold flex items-center gap-2 shadow-lg"
+                          className="px-8 py-3 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 active:scale-95 active:bg-purple-700 text-white font-semibold flex items-center gap-2 shadow-lg"
                           data-testid="read-again-btn-landscape"
                         >
                           Read Again <FiPlay className="w-5 h-5" />
@@ -1965,7 +1965,7 @@ export default function BookReader() {
                         setCurrentPage(-1);
                       }
                     }}
-                    className="min-h-[56px] px-6 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white font-medium flex items-center justify-center gap-2 touch-manipulation"
+                    className="min-h-[56px] px-6 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 active:scale-95 active:bg-purple-700 text-white font-medium flex items-center justify-center gap-2 touch-manipulation"
                     style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                     data-testid="read-again-btn"
                   >
@@ -2011,7 +2011,7 @@ export default function BookReader() {
                 <button
                   onClick={startListening}
                   disabled={narrationPreparing || audioLoading}
-                  className={`min-h-[56px] px-6 rounded-full ${(narrationPreparing || audioLoading) ? 'bg-purple-400' : 'bg-purple-600 hover:bg-purple-500 active:bg-purple-700'} text-white font-medium flex items-center justify-center gap-2 touch-manipulation`}
+                  className={`min-h-[56px] px-6 rounded-full ${(narrationPreparing || audioLoading) ? 'bg-purple-400' : 'bg-purple-600 hover:bg-purple-500 active:bg-purple-700 active:scale-95 active:bg-purple-700'} text-white font-medium flex items-center justify-center gap-2 touch-manipulation`}
                   style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                   data-testid="cover-start-listening-btn"
                 >
@@ -2224,7 +2224,7 @@ export default function BookReader() {
                 </Button>
                 <Button
                   onClick={handlePrintBook}
-                  className="flex-1 rounded-full bg-purple-600 hover:bg-purple-500"
+                  className="flex-1 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 active:scale-95"
                   disabled={isPrinting}
                   data-testid="confirm-print-btn"
                 >

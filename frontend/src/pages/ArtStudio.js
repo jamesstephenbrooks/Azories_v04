@@ -1272,7 +1272,7 @@ export default function ArtStudio() {
         <div className="text-center">
           <h2 className="text-2xl font-bold text-white mb-4">Pro Feature</h2>
           <p className="text-white/60 mb-6">Sign in to access Creators</p>
-          <Button onClick={() => navigate('/login')} className="bg-purple-600 hover:bg-purple-700">
+          <Button onClick={() => navigate('/login')} className="bg-purple-600 hover:bg-purple-700 active:bg-purple-800 active:scale-95">
             Sign In
           </Button>
         </div>
@@ -2140,7 +2140,7 @@ export default function ArtStudio() {
                       <div className="border-2 border-dashed border-white/20 rounded-xl p-6 text-center">
                         <FiImage className="w-10 h-10 text-white/30 mx-auto mb-3" />
                         <p className="text-white/50 mb-3 text-sm">Select from gallery or upload an image</p>
-                        <label className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg cursor-pointer text-white text-sm transition-colors">
+                        <label className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 active:scale-95 rounded-lg cursor-pointer text-white text-sm transition-colors">
                           <FiUpload className="w-4 h-4" />
                           Upload Image
                           <input
@@ -2586,7 +2586,7 @@ export default function ArtStudio() {
                                 toast.error('Failed to save: ' + errMessage);
                               }
                             }}
-                            className="bg-green-600 hover:bg-green-700"
+                            className="bg-green-600 hover:bg-green-700 active:bg-green-800 active:scale-95"
                             data-testid="save-animation-btn"
                           >
                             <FiSave className="w-4 h-4 mr-2" />
@@ -2637,7 +2637,7 @@ export default function ArtStudio() {
                                 window.open(animatedVideo, '_blank');
                               }
                             }}
-                            className="bg-purple-600 hover:bg-purple-700"
+                            className="bg-purple-600 hover:bg-purple-700 active:bg-purple-800 active:scale-95"
                             data-testid="download-animation-btn"
                           >
                             <FiDownload className="w-4 h-4 mr-2" />
@@ -3070,7 +3070,7 @@ export default function ArtStudio() {
                             <button
                               onClick={() => extractPromptFromImage(styleReferenceImage, 'style')}
                               disabled={isExtractingPrompt}
-                              className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 rounded-lg text-xs text-white flex items-center gap-1"
+                              className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 active:scale-95 rounded-lg text-xs text-white flex items-center gap-1"
                             >
                               <FiZap className="w-3 h-3" />
                               {isExtractingPrompt ? 'Analyzing...' : 'Extract Style'}
@@ -3137,7 +3137,7 @@ export default function ArtStudio() {
                             <button
                               onClick={() => extractPromptFromImage(characterReferenceImage, 'character')}
                               disabled={isExtractingPrompt}
-                              className="px-3 py-1.5 bg-pink-600 hover:bg-pink-700 rounded-lg text-xs text-white flex items-center gap-1"
+                              className="px-3 py-1.5 bg-pink-600 hover:bg-pink-700 active:bg-pink-800 active:scale-95 rounded-lg text-xs text-white flex items-center gap-1"
                             >
                               <FiZap className="w-3 h-3" />
                               {isExtractingPrompt ? 'Analyzing...' : 'Extract Char'}
@@ -3468,7 +3468,7 @@ export default function ArtStudio() {
                   
                   <Button
                     onClick={() => downloadImage(selectedGalleryItem.image_url, `${selectedGalleryItem.name}.${selectedGalleryItem.type === 'animation' ? 'mp4' : 'png'}`)}
-                    className="w-full bg-green-600 hover:bg-green-700"
+                    className="w-full bg-green-600 hover:bg-green-700 active:bg-green-800 active:scale-95"
                     data-testid="download-gallery-image-btn"
                   >
                     <FiDownload className="w-4 h-4 mr-2" />
@@ -4038,7 +4038,7 @@ export default function ArtStudio() {
                     toast.success(`Set as style reference!`);
                     setExpandedStarterImage(null);
                   }}
-                  className="flex-1 bg-purple-600 hover:bg-purple-700 text-sm"
+                  className="flex-1 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 active:scale-95 text-sm"
                 >
                   <FiImage className="w-4 h-4 mr-2" />
                   Use as Style
@@ -4049,7 +4049,7 @@ export default function ArtStudio() {
                     toast.success(`Set as character reference!`);
                     setExpandedStarterImage(null);
                   }}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-sm"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 active:scale-95 text-sm"
                 >
                   <FiUser className="w-4 h-4 mr-2" />
                   Use as Character

@@ -2218,7 +2218,7 @@ export default function ProStudio() {
         <div className="text-center text-white">
           <h1 className="text-3xl font-bold mb-4">Pro Studio</h1>
           <p className="text-gray-400 mb-6">Please sign in to access the Pro Studio</p>
-          <Button onClick={() => navigate('/auth')} className="bg-purple-600 hover:bg-purple-700">
+          <Button onClick={() => navigate('/auth')} className="bg-purple-600 hover:bg-purple-700 active:bg-purple-800 active:scale-95">
             Sign In
           </Button>
         </div>
@@ -2359,7 +2359,7 @@ export default function ProStudio() {
                       document.body.removeChild(link);
                       toast.success('Download started');
                     }}
-                    className="bg-purple-600 hover:bg-purple-700"
+                    className="bg-purple-600 hover:bg-purple-700 active:bg-purple-800 active:scale-95"
                   >
                     <FiDownload className="mr-1" /> Download
                   </Button>
@@ -2512,7 +2512,7 @@ export default function ProStudio() {
                   </Button>
                   <Button 
                     onClick={() => { setSelectedCharacter(viewingCharacter); closeCharacterView(); }}
-                    className="bg-purple-600 hover:bg-purple-700 text-white"
+                    className="bg-purple-600 hover:bg-purple-700 active:bg-purple-800 active:scale-95 text-white"
                   >
                     <FiZap className="mr-2" /> Use for Generation
                   </Button>
@@ -2713,7 +2713,7 @@ export default function ProStudio() {
                 </Button>
                 <Button 
                   onClick={saveCharacterEdits}
-                  className="bg-purple-600 hover:bg-purple-700"
+                  className="bg-purple-600 hover:bg-purple-700 active:bg-purple-800 active:scale-95"
                 >
                   Save Changes
                 </Button>
@@ -2758,7 +2758,7 @@ export default function ProStudio() {
                 <div className="flex gap-2">
                   <Button 
                     onClick={() => { setSelectedScene(viewingScene); closeSceneView(); }}
-                    className="bg-purple-600 hover:bg-purple-700"
+                    className="bg-purple-600 hover:bg-purple-700 active:bg-purple-800 active:scale-95"
                   >
                     <FiZap className="mr-2" /> Use for Generation
                   </Button>
@@ -5328,7 +5328,7 @@ export default function ProStudio() {
                     Cancel
                   </Button>
                   {galleryPickerMode === 'character' && (
-                    <Button onClick={() => setShowGalleryPicker(false)} className="bg-purple-600 hover:bg-purple-700">
+                    <Button onClick={() => setShowGalleryPicker(false)} className="bg-purple-600 hover:bg-purple-700 active:bg-purple-800 active:scale-95">
                       Done ({characterImages.length} selected)
                     </Button>
                   )}
@@ -5413,7 +5413,7 @@ export default function ProStudio() {
                               toast.success('Saved to gallery!');
                               loadGallery();
                             }}
-                            className="bg-purple-600 hover:bg-purple-700"
+                            className="bg-purple-600 hover:bg-purple-700 active:bg-purple-800 active:scale-95"
                           >
                             <FiSave className="mr-1" /> Save
                           </Button>
@@ -5430,7 +5430,7 @@ export default function ProStudio() {
                               );
                               toast.success(`Saved to ${selectedCharacter.name}'s folder!`);
                             }}
-                            className="bg-blue-600 hover:bg-blue-700"
+                            className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 active:scale-95"
                           >
                             <FiUser className="mr-1" /> Save to {selectedCharacter.name}
                           </Button>
@@ -5524,7 +5524,7 @@ export default function ProStudio() {
                         toast.success(`Saved to ${generationPreviewData.characterName}'s folder!`);
                         loadCharacterGallery(generationPreviewData.characterId);
                       }}
-                      className="bg-purple-600 hover:bg-purple-700"
+                      className="bg-purple-600 hover:bg-purple-700 active:bg-purple-800 active:scale-95"
                     >
                       <FiUser className="mr-2" /> Save to {generationPreviewData.characterName}
                     </Button>
@@ -5544,7 +5544,7 @@ export default function ProStudio() {
                         toast.success(`Saved to ${generationPreviewData.sceneName}!`);
                         loadSceneGallery(generationPreviewData.sceneId);
                       }}
-                      className="bg-blue-600 hover:bg-blue-700"
+                      className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 active:scale-95"
                     >
                       <FiGrid className="mr-2" /> Save to {generationPreviewData.sceneName}
                     </Button>
@@ -5911,7 +5911,7 @@ export default function ProStudio() {
                   <Button 
                     onClick={handleSaveCroppedImage}
                     disabled={isLoading}
-                    className="bg-purple-600 hover:bg-purple-700"
+                    className="bg-purple-600 hover:bg-purple-700 active:bg-purple-800 active:scale-95"
                   >
                     <FiSave className="mr-2" /> Save Cropped Image
                   </Button>
