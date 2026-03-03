@@ -846,6 +846,54 @@ export default function ProStudio() {
     }
   };
 
+  // Add image from character folder to reference images for LoRA training
+  const addImageToReferences = async (characterId, imageUrl) => {
+    if (!characterId || !imageUrl) {
+      toast.error('Missing character or image');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('azories-token');
+      const response = await fetch(`${API_URL}/api/pro-studio/characters/${characterId}/add-reference`, {
+        method: 'POST',
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ image_url: imageUrl })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        toast.success('Image added to references!');
+        
+        // Update the local character state
+        setCharacters(prev => prev.map(c => 
+          c.id === characterId 
+            ? { ...c, reference_images: data.reference_images }
+            : c
+        ));
+        
+        // Update viewing character if it's the same one
+        if (viewingCharacter?.id === characterId) {
+          setViewingCharacter(prev => ({ ...prev, reference_images: data.reference_images }));
+        }
+        
+        // Update selected character if it's the same one
+        if (selectedCharacter?.id === characterId) {
+          setSelectedCharacter(prev => ({ ...prev, reference_images: data.reference_images }));
+        }
+      } else {
+        const error = await response.json();
+        toast.error(error.detail || 'Failed to add reference image');
+      }
+    } catch (error) {
+      toast.error('Error adding reference image');
+      console.error(error);
+    }
+  };
+
   // Edit character details
   const [editingCharacter, setEditingCharacter] = useState(null);
   const [editForm, setEditForm] = useState({});
@@ -2576,6 +2624,19 @@ export default function ProStudio() {
                           <Button 
                             size="sm" 
                             variant="ghost"
+                            onClick={(e) => { 
+                              e.stopPropagation(); 
+                              // Add to reference images for LoRA training
+                              addImageToReferences(viewingCharacter?.id, img.image_url);
+                            }}
+                            title="Add to References for LoRA"
+                            className="bg-green-600/80 hover:bg-green-600 active:bg-green-700 active:scale-95"
+                          >
+                            <FiPlus className="text-white" size={14} />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="ghost"
                             onClick={(e) => { e.stopPropagation(); openCropModal(img.image_url, 'character', viewingCharacter?.id); }}
                             title="Crop Image"
                           >
@@ -2586,6 +2647,12 @@ export default function ProStudio() {
                         {img.type && (
                           <span className="absolute bottom-1 left-1 text-xs bg-purple-500/80 text-white px-1.5 py-0.5 rounded">
                             {img.type}
+                          </span>
+                        )}
+                        {/* Show if already in references */}
+                        {viewingCharacter?.reference_images?.includes(img.image_url) && (
+                          <span className="absolute top-1 right-1 text-[10px] bg-green-500 text-white px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                            <FiCheck size={10} /> Ref
                           </span>
                         )}
                       </div>
