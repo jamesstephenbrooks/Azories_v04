@@ -4323,6 +4323,7 @@ async def add_reference_image(character_id: str, request: dict, current_user: di
     
     return {
         "success": True,
+        "reference_images": ref_images,
         "reference_images_count": len(ref_images),
         "can_train_lora": can_train_lora,
         "message": f"Reference image added. {len(ref_images)}/3 images for LoRA training." if len(ref_images) < 3 else "You can now train a LoRA model for this character!"
