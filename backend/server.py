@@ -1327,12 +1327,17 @@ async def register(user_data: UserCreate, background_tasks: BackgroundTasks):
                         <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">{now_iso}</td>
                     </tr>
                 </table>
-                <p style="color: #6b7280; margin-top: 20px;">User has a 3-day Pro trial active.</p>
+                <p style="color: #6b7280; margin-top: 20px;">User has a 48-hour Pro trial active.</p>
             </div>
         </body>
         </html>
         """
         background_tasks.add_task(send_email, admin_email, admin_subject, admin_html)
+        
+        # Also send to backup admin
+        backup_admin = os.environ.get("BACKUP_ADMIN_EMAIL")
+        if backup_admin and backup_admin != admin_email:
+            background_tasks.add_task(send_email, backup_admin, admin_subject, admin_html)
     
     token = create_token(user_id, user_data.email, "user")
     return TokenResponse(
