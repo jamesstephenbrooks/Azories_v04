@@ -15,7 +15,7 @@ import { toast } from 'sonner';
 import { 
   FiPlus, FiEdit2, FiTrash2, FiBook, FiEye, FiEyeOff, FiZap, FiStar, FiAward, 
   FiCheck, FiBarChart2, FiLoader, FiLayers, FiLink, FiX, FiSearch, FiChevronDown, FiChevronUp, FiGlobe,
-  FiClock, FiSend, FiImage, FiDownload, FiCopy
+  FiClock, FiSend, FiImage, FiDownload, FiCopy, FiRefreshCw
 } from 'react-icons/fi';
 import Navbar from '@/components/Navbar';
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
@@ -186,6 +186,27 @@ export default function Dashboard() {
       fetchLibraryImages();
     }
   }, [activeTab]);
+  
+  // Sync library - extract all images from all books
+  const [syncingLibrary, setSyncingLibrary] = useState(false);
+  const syncLibrary = async () => {
+    setSyncingLibrary(true);
+    try {
+      const token = localStorage.getItem('azories-token');
+      const res = await axios.post(`${API}/user/image-library/sync`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = res.data;
+      toast.success(`Library synced! Added ${data.images_added} new images from ${data.books_scanned} books`);
+      // Refresh the library
+      fetchLibraryImages();
+    } catch (error) {
+      console.error('Failed to sync library:', error);
+      toast.error('Failed to sync library');
+    } finally {
+      setSyncingLibrary(false);
+    }
+  };
   
   const createSeries = async () => {
     if (!newSeries.name.trim()) {
@@ -1375,8 +1396,21 @@ export default function Dashboard() {
                     <p className="text-sm text-muted-foreground">All images from your books - reuse them anywhere!</p>
                   </div>
                   
-                  {/* Type Filter */}
-                  <div className="flex gap-2 flex-wrap">
+                  <div className="flex gap-2 items-center flex-wrap">
+                    {/* Sync Button */}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="rounded-full border-emerald-500 text-emerald-500 hover:bg-emerald-500/10"
+                      onClick={syncLibrary}
+                      disabled={syncingLibrary}
+                      data-testid="sync-library-btn"
+                    >
+                      <FiRefreshCw className={`mr-2 w-4 h-4 ${syncingLibrary ? 'animate-spin' : ''}`} />
+                      {syncingLibrary ? 'Syncing...' : 'Sync from Books'}
+                    </Button>
+                    
+                    {/* Type Filter */}
                     {['all', 'character', 'scene', 'cover'].map((type) => (
                       <Button
                         key={type}

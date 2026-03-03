@@ -52,13 +52,22 @@ User wants to enhance their "Azories" digital book application with:
 - Returns statistics on processed items
 - File: `backend/server.py`
 
-### Feature 3: Book Image Library ✅
+### Feature 3: Book Image Library - ENHANCED ✅
 - **CLARIFIED**: This is a **private library** showing images from the **logged-in user's own books only** (not all users)
+- **NEW: Auto-sync feature** - `POST /api/user/image-library/sync` extracts ALL images from ALL user's books:
+  - Scans all books owned by user
+  - Extracts cover images
+  - Extracts all page images (image_url, image_url_2, image_url_3, image_url_4)
+  - Automatically categorizes as 'cover', 'scene', or 'character'
+  - Skips duplicates
+  - **Test result: Synced 57 images from 11 books, 11 chapters, 51 pages**
 - **Backend**: 
   - `GET /api/user/image-library` - Returns all images from user's books with pagination and type filters
+  - `POST /api/user/image-library/sync` - **NEW** Extracts images from all books into library
   - `POST /api/user/image-library/copy-to-book` - Copy an image to another book
 - **Frontend Dashboard**: 
   - Added "My Library" tab next to "My Books", "Analytics", "My Series"
+  - **NEW: "Sync from Books" button** - Click to extract all images from all your books
   - Shows grid of images with type filters (all, character, scene, cover)
   - Image preview dialog with copy URL and download options
 - **Frontend Art Studio**: Added "My Book Library" section in gallery picker

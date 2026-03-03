@@ -2576,6 +2576,126 @@ async def copy_image_to_book(
     return {"success": True, "image": new_image}
 
 
+@api_router.post("/user/image-library/sync")
+async def sync_image_library(current_user: dict = Depends(get_current_user)):
+    """
+    Scan ALL of the user's books and extract all images into the book_images collection.
+    
+    This populates the "My Library" with all images from:
+    - Book pages (image_url, image_url_2, image_url_3, image_url_4)
+    - Book covers (cover_image)
+    - Character images from pages
+    
+    Skips images that are already in the library to avoid duplicates.
+    """
+    results = {
+        "books_scanned": 0,
+        "chapters_scanned": 0,
+        "pages_scanned": 0,
+        "images_found": 0,
+        "images_added": 0,
+        "images_skipped": 0,  # Already in library
+        "errors": []
+    }
+    
+    try:
+        user_id = current_user["id"]
+        
+        # Get all user's books
+        books = await db.books.find({"author_id": user_id}, {"_id": 0}).to_list(500)
+        results["books_scanned"] = len(books)
+        
+        # Get existing image URLs to avoid duplicates
+        existing_images = await db.book_images.find(
+            {"user_id": user_id},
+            {"image_url": 1, "_id": 0}
+        ).to_list(10000)
+        existing_urls = set(img.get("image_url", "") for img in existing_images)
+        
+        images_to_insert = []
+        
+        for book in books:
+            book_id = book.get("id")
+            book_title = book.get("title", "Unknown Book")
+            
+            # Extract cover image
+            cover_image = book.get("cover_image", "")
+            if cover_image and cover_image.startswith("http") and cover_image not in existing_urls:
+                images_to_insert.append({
+                    "id": str(uuid.uuid4()),
+                    "book_id": book_id,
+                    "user_id": user_id,
+                    "image_url": cover_image,
+                    "name": f"{book_title} - Cover",
+                    "type": "cover",
+                    "book_title": book_title,
+                    "created_at": datetime.now(timezone.utc).isoformat()
+                })
+                existing_urls.add(cover_image)
+                results["images_found"] += 1
+            
+            # Get all chapters for this book
+            chapters = await db.chapters.find({"book_id": book_id}, {"_id": 0}).to_list(100)
+            results["chapters_scanned"] += len(chapters)
+            
+            for chapter in chapters:
+                chapter_id = chapter.get("id")
+                
+                # Get all pages for this chapter
+                pages = await db.pages.find({"chapter_id": chapter_id}, {"_id": 0}).to_list(500)
+                results["pages_scanned"] += len(pages)
+                
+                for page in pages:
+                    page_num = page.get("page_number", page.get("order", 0))
+                    
+                    # Extract all image URLs from the page
+                    image_fields = ["image_url", "image_url_2", "image_url_3", "image_url_4"]
+                    for i, field in enumerate(image_fields):
+                        img_url = page.get(field, "")
+                        
+                        # Skip empty, base64, or already-added images
+                        if not img_url or not img_url.startswith("http") or img_url in existing_urls:
+                            if img_url and img_url.startswith("http") and img_url in existing_urls:
+                                results["images_skipped"] += 1
+                            continue
+                        
+                        # Determine image type based on content
+                        image_type = "scene"
+                        image_name = f"{book_title} - Page {page_num}"
+                        if i > 0:
+                            image_name += f" (Image {i+1})"
+                        
+                        # Check if it looks like a character image
+                        if "character" in img_url.lower() or page.get("is_character_page"):
+                            image_type = "character"
+                        
+                        images_to_insert.append({
+                            "id": str(uuid.uuid4()),
+                            "book_id": book_id,
+                            "user_id": user_id,
+                            "image_url": img_url,
+                            "name": image_name,
+                            "type": image_type,
+                            "book_title": book_title,
+                            "page_number": page_num,
+                            "created_at": datetime.now(timezone.utc).isoformat()
+                        })
+                        existing_urls.add(img_url)
+                        results["images_found"] += 1
+        
+        # Bulk insert all new images
+        if images_to_insert:
+            await db.book_images.insert_many(images_to_insert)
+            results["images_added"] = len(images_to_insert)
+        
+        logger.info(f"Image library sync complete for user {user_id}: {results}")
+        return results
+        
+    except Exception as e:
+        logger.error(f"Error syncing image library: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to sync image library: {str(e)}")
+
+
 @api_router.get("/books/{book_id}/download")
 async def download_book_pdf(book_id: str, current_user: dict = Depends(get_current_user)):
     """Download a book as interactive PDF (for the creator only)"""
