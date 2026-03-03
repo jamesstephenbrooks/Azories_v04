@@ -11,7 +11,7 @@ import {
   FiArrowLeft, FiChevronLeft, FiChevronRight, FiChevronUp, FiChevronDown,
   FiMaximize2, FiMinimize2, FiPlay, FiPause, FiVolume2, FiVolumeX, 
   FiSun, FiMoon, FiLock, FiBook, FiAward, FiTrendingUp, FiMic, FiX,
-  FiPrinter, FiDownload, FiShare2
+  FiPrinter, FiDownload, FiShare2, FiHome
 } from 'react-icons/fi';
 import confetti from 'canvas-confetti';
 import { useTheme } from '@/context/ThemeContext';
@@ -1937,13 +1937,22 @@ export default function BookReader() {
       
       {/* Bottom Controls - Hidden in landscape (edge arrows are used instead) */}
       {!isMobileLandscape && (
-        <div className={`fixed bottom-0 left-0 right-0 ${currentPageData?.isBackCover ? 'bg-[#1a0a2e]/90' : 'bg-background/90'} backdrop-blur-xl border-t ${currentPageData?.isBackCover ? 'border-white/10' : 'border-border'} z-[100] transition-transform duration-300 ${hideControls ? 'translate-y-full' : ''}`}>
+        <div className={`fixed bottom-0 left-0 right-0 ${currentPageData?.isBackCover ? 'bg-[#1a0a2e]/90' : 'bg-background/90'} backdrop-blur-xl border-t ${currentPageData?.isBackCover ? 'border-white/10' : 'border-border'} z-[100] transition-transform duration-300 ${hideControls && !currentPageData?.isBackCover ? 'translate-y-full' : ''}`}>
           <div className={`max-w-4xl mx-auto px-2 sm:px-4 py-3 sm:py-4`}>
             {/* Navigation - LARGE touch targets for mobile, instant response */}
             <div className={`flex items-center justify-center gap-4 sm:gap-4 mb-2 sm:mb-4`}>
-              {/* Back Cover: Show Read Again + Back button */}
+              {/* Back Cover: Show Read Again + Library + Back button */}
               {currentPageData?.isBackCover ? (
                 <>
+                  <button
+                    onClick={() => navigate('/library')}
+                    className="min-w-[56px] min-h-[56px] px-4 sm:px-5 rounded-full border-2 border-purple-400 bg-purple-600/20 hover:bg-purple-600/40 active:bg-purple-600/60 text-purple-300 flex items-center justify-center gap-2 touch-manipulation"
+                    style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                    data-testid="back-to-library-btn"
+                  >
+                    <FiHome className="w-5 h-5" />
+                    <span className="hidden sm:inline">Library</span>
+                  </button>
                   <button
                     onClick={() => {
                       console.log('[BackCover] Read Again clicked, going to front cover');

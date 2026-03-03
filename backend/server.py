@@ -9682,6 +9682,12 @@ async def request_book_publish(book_id: str, background_tasks: BackgroundTasks, 
             # Send to admin email
             await send_email(admin_email, subject, html_content)
             logging.info(f"Admin notification email sent for book {book_id} to {admin_email}")
+            
+            # Also send to backup admin if configured
+            backup_admin = os.environ.get("BACKUP_ADMIN_EMAIL")
+            if backup_admin and backup_admin != admin_email:
+                await send_email(backup_admin, subject, html_content)
+                logging.info(f"Backup admin notification sent for book {book_id} to {backup_admin}")
         except Exception as e:
             logging.error(f"Failed to send admin email for book {book_id}: {e}")
         
