@@ -2734,10 +2734,18 @@ export default function ProStudio() {
                         // Check if this is a video item
                         const isVideo = img.type === 'video' || img.type === 'animation' || 
                           img.image_url?.includes('.mp4') || img.image_url?.includes('.webm');
-                        const thumbnailUrl = img.thumbnail_url || 
-                          (isVideo && img.image_url?.includes('cloudinary.com') 
-                            ? img.image_url.replace('/upload/', '/upload/so_0,w_300,h_300,c_fill/').replace('.mp4', '.jpg').replace('.webm', '.jpg')
-                            : null);
+                        
+                        // Generate thumbnail URL for videos
+                        let thumbnailUrl = img.thumbnail_url;
+                        if (isVideo && !thumbnailUrl && img.image_url?.includes('cloudinary.com')) {
+                          // Try Cloudinary video thumbnail transformation
+                          thumbnailUrl = img.image_url
+                            .replace('/upload/', '/upload/so_0,w_300,h_300,c_fill/')
+                            .replace('.mp4', '.jpg')
+                            .replace('.webm', '.jpg');
+                        }
+                        // Fallback to character's first reference image if no thumbnail
+                        const fallbackThumbnail = viewingCharacter?.reference_images?.[0] || viewingCharacter?.thumbnail;
                         
                         return (
                           <div 
@@ -2751,25 +2759,43 @@ export default function ProStudio() {
                             {isVideo ? (
                               // Video thumbnail
                               <div className="w-full aspect-square bg-gray-800 rounded-lg relative overflow-hidden hover:ring-2 hover:ring-purple-500 transition-all">
-                                {thumbnailUrl ? (
+                                {/* Try multiple fallback sources */}
+                                {(thumbnailUrl || fallbackThumbnail) ? (
                                   <img 
-                                    src={thumbnailUrl} 
+                                    src={thumbnailUrl || fallbackThumbnail}
                                     alt={img.prompt || 'Video'}
                                     className="w-full h-full object-cover"
-                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                    onError={(e) => { 
+                                      // If thumbnail fails, try using the video element instead
+                                      e.target.style.display = 'none';
+                                      const fallbackDiv = e.target.nextElementSibling;
+                                      if (fallbackDiv) fallbackDiv.style.display = 'flex';
+                                    }}
                                   />
-                                ) : (
+                                ) : null}
+                                {/* Fallback: video element or gradient placeholder */}
+                                <div 
+                                  className={`w-full h-full ${thumbnailUrl || fallbackThumbnail ? 'hidden' : 'flex'} items-center justify-center bg-gradient-to-br from-purple-900/60 to-pink-900/60`}
+                                  style={{ display: (thumbnailUrl || fallbackThumbnail) ? 'none' : 'flex' }}
+                                >
                                   <video 
                                     src={img.image_url}
                                     className="w-full h-full object-cover"
                                     muted
                                     preload="metadata"
-                                    onLoadedMetadata={(e) => { e.target.currentTime = 0.1; }}
+                                    onLoadedMetadata={(e) => { 
+                                      e.target.currentTime = 0.1;
+                                    }}
+                                    onError={(e) => {
+                                      // If video fails too, show film icon
+                                      e.target.style.display = 'none';
+                                    }}
                                   />
-                                )}
+                                  <FiFilm className="absolute w-8 h-8 text-purple-300/50" />
+                                </div>
                                 {/* Video play icon overlay */}
                                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                  <div className="w-10 h-10 rounded-full bg-purple-500/80 flex items-center justify-center">
+                                  <div className="w-10 h-10 rounded-full bg-purple-500/80 flex items-center justify-center shadow-lg">
                                     <FiPlay className="text-white w-5 h-5 ml-0.5" />
                                   </div>
                                 </div>

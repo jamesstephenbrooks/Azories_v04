@@ -156,9 +156,9 @@ export const VIDEO_MODELS = [
     provider: 'Google DeepMind',
     description: 'Ultra-realistic video with natural motion',
     strengths: ['Human motion', 'Facial expressions', 'Lighting'],
-    maxDuration: 16,
+    maxDuration: 8,
     aspectRatios: ['16:9', '9:16', '1:1'],
-    available: false, // Coming Soon - API not yet integrated
+    available: true, // Now integrated with Google Gemini API
     creditsPerSecond: 12
   },
   {

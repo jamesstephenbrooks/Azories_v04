@@ -99,6 +99,107 @@ except ImportError as e:
     is_cloudinary_configured = lambda: False
     cloudinary = None
 
+# Google Veo 3 video generation service
+VEO3_AVAILABLE = False
+veo3_client = None
+try:
+    from google import genai
+    from google.genai import types
+    GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY') or os.environ.get('EMERGENT_LLM_KEY')
+    if GOOGLE_API_KEY:
+        veo3_client = genai.Client(api_key=GOOGLE_API_KEY)
+        VEO3_AVAILABLE = True
+        logging.info("Google Veo 3 video service initialized")
+    else:
+        logging.warning("Google Veo 3 not available - no API key configured")
+except ImportError as e:
+    logging.warning(f"Google Veo 3 service not available: {e}")
+
+async def generate_video_with_veo3(prompt: str, duration_seconds: int = 8, aspect_ratio: str = "16:9") -> dict:
+    """
+    Generate video using Google Veo 3.1 model.
+    Returns dict with video_url or error.
+    """
+    if not VEO3_AVAILABLE or not veo3_client:
+        return {"success": False, "error": "Veo 3 service not available"}
+    
+    try:
+        # Map aspect ratio to Veo format
+        veo_aspect = aspect_ratio.replace(":", ":")  # Already in correct format
+        
+        # Configure generation parameters
+        config = types.GenerateVideosConfig(
+            duration_seconds=min(duration_seconds, 8),  # Veo 3.1 max is 8 seconds
+            aspect_ratio=veo_aspect,
+            enhance_prompt=True,
+            number_of_videos=1
+        )
+        
+        # Submit video generation request
+        logging.info(f"Starting Veo 3.1 video generation: {prompt[:50]}...")
+        operation = veo3_client.models.generate_videos(
+            model="veo-3.1-generate-preview",
+            prompt=prompt,
+            config=config
+        )
+        
+        # Poll for completion (Veo is async)
+        import time
+        max_wait = 300  # 5 minutes max
+        poll_interval = 10  # Check every 10 seconds
+        waited = 0
+        
+        while waited < max_wait:
+            try:
+                # Check operation status
+                op_result = veo3_client.operations.get(operation.name)
+                
+                if op_result.done:
+                    if op_result.response and op_result.response.generated_videos:
+                        video = op_result.response.generated_videos[0]
+                        
+                        # Get video URL or save video bytes
+                        video_url = None
+                        if hasattr(video.video, 'uri') and video.video.uri:
+                            video_url = video.video.uri
+                        elif hasattr(video.video, 'video_bytes'):
+                            # Save video bytes to Cloudinary
+                            import base64
+                            video_bytes = video.video.video_bytes
+                            video_base64 = base64.b64encode(video_bytes).decode('utf-8')
+                            if CLOUDINARY_AVAILABLE:
+                                upload_result = cloudinary.uploader.upload(
+                                    f"data:video/mp4;base64,{video_base64}",
+                                    resource_type="video",
+                                    folder="azories/veo3_videos"
+                                )
+                                video_url = upload_result.get("secure_url")
+                        
+                        if video_url:
+                            logging.info(f"Veo 3.1 video generated: {video_url[:60]}...")
+                            return {"success": True, "video_url": video_url, "model": "veo-3.1"}
+                        else:
+                            return {"success": False, "error": "No video URL in response"}
+                    else:
+                        return {"success": False, "error": "No video generated"}
+                
+                # Still processing - wait and poll again
+                await asyncio.sleep(poll_interval)
+                waited += poll_interval
+                logging.info(f"Veo 3.1 still processing... ({waited}s)")
+                
+            except Exception as poll_error:
+                logging.warning(f"Veo 3 polling error: {poll_error}")
+                await asyncio.sleep(poll_interval)
+                waited += poll_interval
+        
+        return {"success": False, "error": "Video generation timed out"}
+        
+    except Exception as e:
+        error_msg = str(e)
+        logging.error(f"Veo 3.1 generation error: {error_msg}")
+        return {"success": False, "error": error_msg}
+
 # MongoDB connection - uses Emergent's managed database
 # In production, MONGO_URL is set by Emergent's deployment pipeline
 import asyncio
@@ -5328,7 +5429,7 @@ async def generate_expression(request: GenerateExpressionRequest, current_user: 
 
 @api_router.post("/pro-studio/animate-hero")
 async def animate_hero_frame(request: AnimateHeroRequest, background_tasks: BackgroundTasks, current_user: dict = Depends(get_current_user)):
-    """Animate a hero frame to video using fal.ai Kling - returns task_id for polling"""
+    """Animate a hero frame to video using multiple models - returns task_id for polling"""
     if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Pro subscription required")
     
@@ -5337,8 +5438,17 @@ async def animate_hero_frame(request: AnimateHeroRequest, background_tasks: Back
         credits_needed = CREDIT_COSTS.get("video_generate", 10)
         raise HTTPException(status_code=402, detail=f"Insufficient credits. Video generation requires {credits_needed} credits.")
     
-    if not FAL_AVAILABLE:
-        raise HTTPException(status_code=503, detail="Video generation service not available (fal.ai not configured)")
+    # Check which video generation service is available for the requested model
+    model = request.model.lower()
+    
+    # Veo 3.1 uses Google's API
+    if model in ("veo-3.1", "veo-3", "veo3"):
+        if not VEO3_AVAILABLE:
+            raise HTTPException(status_code=503, detail="Veo 3.1 video service not available (Google API key not configured)")
+    else:
+        # Other models (sora-2, kling) use fal.ai
+        if not FAL_AVAILABLE:
+            raise HTTPException(status_code=503, detail="Video generation service not available (fal.ai not configured)")
     
     # Create task and return immediately
     task_id = str(uuid.uuid4())
@@ -5346,13 +5456,14 @@ async def animate_hero_frame(request: AnimateHeroRequest, background_tasks: Back
         "status": "pending",
         "user_id": current_user["id"],
         "type": "video",
+        "model": model,
         "created_at": datetime.now(timezone.utc),
         "progress": 0,
         "result": None,
         "error": None
     }
     
-    logger.info(f"Video generation task {task_id} created for user {current_user['id']}")
+    logger.info(f"Video generation task {task_id} created for user {current_user['id']} with model {model}")
     
     # Start background task
     background_tasks.add_task(
@@ -5361,41 +5472,64 @@ async def animate_hero_frame(request: AnimateHeroRequest, background_tasks: Back
         current_user["id"],
         request.image_url,
         request.motion_prompt,
-        request.duration
+        request.duration,
+        model
     )
     
-    return {"task_id": task_id, "status": "pending", "message": "Video generation started. Poll /api/tasks/{task_id} for status."}
+    return {"task_id": task_id, "status": "pending", "message": f"Video generation started with {model}. Poll /api/tasks/{task_id} for status."}
 
-async def run_video_generation_task(task_id: str, user_id: str, image_url: str, motion_prompt: str, duration: int):
-    """Background task to generate video with Kling"""
+async def run_video_generation_task(task_id: str, user_id: str, image_url: str, motion_prompt: str, duration: int, model: str = "kling"):
+    """Background task to generate video with multiple model support"""
     try:
         TASK_STORE[task_id]["status"] = "processing"
         TASK_STORE[task_id]["progress"] = 10
         
-        logger.info(f"Task {task_id}: Starting Kling video generation")
+        result = None
         
-        result = await generate_video_from_image(
-            image_url=image_url,
-            prompt=motion_prompt or "gentle breathing, subtle natural movement, soft hair motion",
-            duration=min(duration, 10),
-            aspect_ratio="16:9",
-            model="kling"
-        )
+        # Route to correct video generation service based on model
+        if model in ("veo-3.1", "veo-3", "veo3"):
+            # Use Google Veo 3.1
+            logger.info(f"Task {task_id}: Starting Veo 3.1 video generation")
+            TASK_STORE[task_id]["progress"] = 20
+            
+            # Veo 3.1 is text-to-video, so we need to describe the scene
+            # Combine the motion prompt with scene description
+            full_prompt = motion_prompt or "cinematic shot with subtle natural movement"
+            if "movement" not in full_prompt.lower() and "motion" not in full_prompt.lower():
+                full_prompt = f"{full_prompt}, smooth cinematic movement"
+            
+            result = await generate_video_with_veo3(
+                prompt=full_prompt,
+                duration_seconds=min(duration, 8),  # Veo 3.1 max is 8 seconds
+                aspect_ratio="16:9"
+            )
+        else:
+            # Use fal.ai (Kling or other models)
+            logger.info(f"Task {task_id}: Starting {model} video generation via fal.ai")
+            
+            result = await generate_video_from_image(
+                image_url=image_url,
+                prompt=motion_prompt or "gentle breathing, subtle natural movement, soft hair motion",
+                duration=min(duration, 10),
+                aspect_ratio="16:9",
+                model=model if model != "sora-2" else "kling"  # Map sora-2 to kling for now
+            )
         
         TASK_STORE[task_id]["progress"] = 90
         
-        if result.get("success") and result.get("video_url"):
+        if result and result.get("success") and result.get("video_url"):
             TASK_STORE[task_id]["status"] = "completed"
             TASK_STORE[task_id]["result"] = {
                 "video_url": result["video_url"],
-                "model": "kling"
+                "model": result.get("model", model)
             }
             TASK_STORE[task_id]["progress"] = 100
-            logger.info(f"Task {task_id}: Video generation completed")
+            logger.info(f"Task {task_id}: Video generation completed with {model}")
         else:
+            error_msg = result.get("error", "No video URL returned") if result else "No result from video service"
             TASK_STORE[task_id]["status"] = "failed"
-            TASK_STORE[task_id]["error"] = "No video URL returned"
-            logger.error(f"Task {task_id}: No video URL returned")
+            TASK_STORE[task_id]["error"] = error_msg
+            logger.error(f"Task {task_id}: {error_msg}")
             
     except Exception as e:
         error_msg = str(e)
