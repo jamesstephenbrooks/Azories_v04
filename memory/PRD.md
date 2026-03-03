@@ -40,6 +40,41 @@ User wants to enhance their "Azories" digital book application with:
 
 ## Latest Session Updates (March 3, 2026)
 
+### Session 2 - Veo 3 Integration & Pro Studio Fixes
+
+### Feature 1: Veo 3.1 Video Generation Integration ✅ NEW
+- **Backend**: Added Google Veo 3.1 video generation service using google-genai SDK
+  - Installed `google-genai>=1.0.0` package
+  - Added `generate_video_with_veo3()` async function with polling for completion
+  - Modified `animate_hero_frame` endpoint to support multiple models (sora-2, veo-3.1, kling)
+  - Task-based async processing returns task_id for polling
+- **Frontend**: Enabled Veo 3.1 in video model dropdown
+  - Updated `ProStudioConfig.js`: `available: true` for veo-3.1 model
+  - Changed maxDuration from 16 to 8 seconds (Veo 3.1 API limit)
+- **Files**: `backend/server.py`, `frontend/src/config/ProStudioConfig.js`, `backend/requirements.txt`
+- **Testing**: Backend API test passed - returns task_id when veo-3.1 model requested
+
+### Feature 2: Expression Generation Pop-out Modal ✅ VERIFIED
+- When generating character expressions, image now:
+  1. Shows in a full-screen preview modal
+  2. Displays "Automatically saved to [character name]'s folder" message
+  3. Auto-saves to character folder without user action
+  4. Still shows additional save options (save to different character, gallery)
+- **Code**: `generateExpression()` function in ProStudio.js (lines 1666-1744)
+- **Status**: Already implemented in previous session, verified working
+
+### Feature 3: Video Thumbnail Fallback Logic ✅ IMPROVED
+- Fixed empty grey boxes in character gallery for videos without thumbnails
+- Implemented multi-layer fallback chain:
+  1. `thumbnail_url` from database
+  2. Cloudinary video transform (so_0,w_300,h_300,c_fill)
+  3. Character reference images
+  4. Video element with preload="metadata"
+  5. Gradient placeholder with film icon
+- **File**: `frontend/src/pages/ProStudio.js` (lines 2759-2802)
+
+### Session 1 - Book Image Library & Continue Reading (Earlier)
+
 ### Feature 1: Bookmark/Continue Reading ✅
 - Backend: Added `/api/continue-reading` endpoint that returns books user is currently reading with progress
 - Frontend (BookReader): Added "Welcome Back!" modal that prompts users to continue from saved page or start over
