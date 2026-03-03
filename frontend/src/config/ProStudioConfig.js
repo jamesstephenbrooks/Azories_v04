@@ -158,7 +158,7 @@ export const VIDEO_MODELS = [
     strengths: ['Human motion', 'Facial expressions', 'Lighting'],
     maxDuration: 16,
     aspectRatios: ['16:9', '9:16', '1:1'],
-    available: true,
+    available: false, // Coming Soon - API not yet integrated
     creditsPerSecond: 12
   },
   {
@@ -169,7 +169,7 @@ export const VIDEO_MODELS = [
     strengths: ['Character consistency', 'Dialogue', 'Natural expressions'],
     maxDuration: 10,
     aspectRatios: ['16:9', '9:16', '1:1', '4:3', '3:4'],
-    available: true,
+    available: false, // Coming Soon - API not yet integrated
     creditsPerSecond: 8
   },
   {
@@ -180,7 +180,7 @@ export const VIDEO_MODELS = [
     strengths: ['Speed', 'Motion control', 'Style transfer'],
     maxDuration: 10,
     aspectRatios: ['16:9', '9:16', '1:1'],
-    available: true,
+    available: false, // Coming Soon - API not yet integrated
     creditsPerSecond: 6
   },
   {
@@ -191,7 +191,7 @@ export const VIDEO_MODELS = [
     strengths: ['Artistic styles', 'Animation', 'Lip sync'],
     maxDuration: 8,
     aspectRatios: ['16:9', '9:16', '1:1'],
-    available: true,
+    available: false, // Coming Soon - API not yet integrated
     creditsPerSecond: 5
   }
 ];

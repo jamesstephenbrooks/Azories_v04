@@ -4659,11 +4659,16 @@ export default function ProStudio() {
                       </SelectTrigger>
                       <SelectContent className="bg-gray-800 border-gray-700">
                         {VIDEO_MODELS.map((model) => (
-                          <SelectItem key={model.id} value={model.id} className="text-white hover:bg-gray-700 min-h-[44px]">
-                            <div className="flex items-center justify-between w-full">
+                          <SelectItem 
+                            key={model.id} 
+                            value={model.id} 
+                            className={`text-white hover:bg-gray-700 min-h-[44px] ${!model.available ? 'opacity-60' : ''}`}
+                            disabled={!model.available}
+                          >
+                            <div className="flex items-center justify-between w-full gap-2">
                               <span>{model.name}</span>
                               {!model.available && (
-                                <span className="text-xs text-amber-400 ml-2">(Coming Soon)</span>
+                                <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full">Coming Soon</span>
                               )}
                             </div>
                           </SelectItem>
