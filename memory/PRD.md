@@ -40,7 +40,26 @@ User wants to enhance their "Azories" digital book application with:
 
 ## Latest Session Updates (March 3, 2026)
 
-### P0 Feature Completed ✅
+### Feature 1: Bookmark/Continue Reading ✅
+- Backend: Added `/api/continue-reading` endpoint that returns books user is currently reading with progress
+- Frontend (BookReader): Added "Welcome Back!" modal that prompts users to continue from saved page or start over
+- Frontend (Library): Added "Continue Reading" section showing in-progress books with progress bars
+- Files: `backend/server.py`, `frontend/src/pages/BookReader.js`, `frontend/src/pages/Library.js`
+
+### Feature 2: Backfill Video Thumbnails ✅  
+- Added admin endpoint: `POST /api/admin/backfill-video-thumbnails`
+- Generates thumbnails for videos/animations without them using Cloudinary transformations
+- Returns statistics on processed items
+- File: `backend/server.py`
+
+### Feature 3: Book Image Library ✅
+- Backend: Added `/api/user/image-library` endpoint - unified view of all images across user's books
+- Backend: Added `/api/user/image-library/copy-to-book` endpoint for reusing images
+- Frontend: Added "My Book Library" section to MediaGallery component
+- Shows images from all user's books with book titles and type filters
+- Files: `backend/server.py`, `frontend/src/components/MediaGallery.jsx`
+
+### Previous Work (March 3, 2026)
 1. **Add to LoRA References Feature** - Users can now add images from character folder to reference images for LoRA training
    - Backend endpoint: `POST /api/pro-studio/characters/{character_id}/add-reference`
    - Fixed to return `reference_images` array along with count for proper frontend state updates

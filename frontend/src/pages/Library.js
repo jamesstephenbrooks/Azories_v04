@@ -6,13 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FiSearch, FiBook, FiHeadphones, FiUser, FiStar, FiAward, FiTrendingUp, FiGrid, FiInfo, FiRefreshCw } from 'react-icons/fi';
+import { FiSearch, FiBook, FiHeadphones, FiUser, FiStar, FiAward, FiTrendingUp, FiGrid, FiInfo, FiRefreshCw, FiBookOpen } from 'react-icons/fi';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import Navbar from '@/components/Navbar';
 import BookRecommendations from '@/components/BookRecommendations';
 import { getThumbnailUrl, preloadImages } from '@/utils/imageOptimizer';
 import { AZORA_ASSETS } from '@/components/AzoraMascot';
+import { useAuth } from '@/context/AuthContext';
 
 // ============================================
 // THUMBNAIL CACHING UTILITIES
@@ -185,6 +186,7 @@ export default function Library() {
   const [bestOfWeek, setBestOfWeek] = useState([]);
   const [newlyAddedBooks, setNewlyAddedBooks] = useState([]);
   const [comingSoonBooks, setComingSoonBooks] = useState([]);
+  const [continueReadingBooks, setContinueReadingBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
@@ -199,6 +201,31 @@ export default function Library() {
   const [summaryBook, setSummaryBook] = useState(null);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const navigate = useNavigate();
+  const { user, token } = useAuth();
+
+  // Fetch Continue Reading books for logged-in users
+  const fetchContinueReading = useCallback(async () => {
+    if (!user || !token) {
+      setContinueReadingBooks([]);
+      return;
+    }
+    try {
+      const res = await axios.get(`${API}/continue-reading`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setContinueReadingBooks(res.data.books || []);
+    } catch (error) {
+      console.error('Error fetching continue reading:', error);
+      setContinueReadingBooks([]);
+    }
+  }, [user, token]);
+
+  // Fetch continue reading when user logs in
+  useEffect(() => {
+    if (user && token) {
+      fetchContinueReading();
+    }
+  }, [user, token, fetchContinueReading]);
 
   // Handle scroll to show/hide back to top button
   useEffect(() => {
@@ -898,6 +925,62 @@ export default function Library() {
               ) : (
               /* Books Grid with Recommendations */
               <>
+              {/* Continue Reading Section - Show only for logged-in users with progress */}
+              {!debouncedSearch && user && continueReadingBooks.length > 0 && (
+                <div className="mb-10" data-testid="continue-reading-section">
+                  <div className="flex items-center gap-3 mb-5">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
+                      <FiBookOpen className="w-5 h-5 text-white" />
+                    </div>
+                    <h2 className="text-xl sm:text-2xl font-heading font-bold">Continue Reading</h2>
+                  </div>
+                  
+                  {/* Horizontal scroll container */}
+                  <div className="relative">
+                    <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
+                      {continueReadingBooks.map((item, index) => (
+                        <div 
+                          key={item.book_id}
+                          className="flex-shrink-0 w-48 sm:w-56 snap-start cursor-pointer group"
+                          onClick={() => navigate(`/read/${item.book_id}`)}
+                          data-testid={`continue-book-${item.book_id}`}
+                        >
+                          <div className="relative rounded-2xl overflow-hidden bg-card border border-border shadow-lg transition-all duration-300 group-hover:shadow-xl group-hover:-translate-y-1">
+                            {/* Cover Image */}
+                            <div className="aspect-[3/4] relative">
+                              <img
+                                src={getOptimizedThumbnailUrl(item.cover_image, 220)}
+                                alt={item.title}
+                                className="w-full h-full object-cover"
+                                loading={index < 3 ? 'eager' : 'lazy'}
+                              />
+                              {/* Progress overlay */}
+                              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-3 pt-8">
+                                <div className="w-full bg-white/20 rounded-full h-1.5 mb-1">
+                                  <div 
+                                    className="bg-gradient-to-r from-emerald-400 to-teal-400 h-1.5 rounded-full transition-all"
+                                    style={{ width: `${item.progress_percent}%` }}
+                                  />
+                                </div>
+                                <p className="text-white/80 text-xs">
+                                  Page {item.current_page + 1} of {item.total_pages}
+                                </p>
+                              </div>
+                            </div>
+                            
+                            {/* Book Info */}
+                            <div className="p-3">
+                              <h3 className="font-semibold text-sm line-clamp-1 mb-0.5">{item.title}</h3>
+                              <p className="text-xs text-muted-foreground line-clamp-1">{item.author_name}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+              
               {/* Newly Added Section - Show at top when not searching */}
               {!debouncedSearch && (
                 <NewlyAddedSection />

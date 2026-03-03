@@ -11,7 +11,7 @@ import {
   FiArrowLeft, FiChevronLeft, FiChevronRight, FiChevronUp, FiChevronDown,
   FiMaximize2, FiMinimize2, FiPlay, FiPause, FiVolume2, FiVolumeX, 
   FiSun, FiMoon, FiLock, FiBook, FiAward, FiTrendingUp, FiMic, FiX,
-  FiPrinter, FiDownload, FiShare2, FiHome
+  FiPrinter, FiDownload, FiShare2, FiHome, FiBookmark
 } from 'react-icons/fi';
 import confetti from 'canvas-confetti';
 import { useTheme } from '@/context/ThemeContext';
@@ -43,6 +43,10 @@ export default function BookReader() {
   const [forceLandscapeTest, setForceLandscapeTest] = useState(false); // TEMP: For testing landscape mode
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
   const textScrollRef = useRef(null);
+  
+  // Continue Reading state
+  const [showContinuePrompt, setShowContinuePrompt] = useState(false);
+  const [savedPageNumber, setSavedPageNumber] = useState(0);
   
   // Audio state
   const [isPlaying, setIsPlaying] = useState(false);
@@ -455,7 +459,13 @@ export default function BookReader() {
       fetchBook();
       fetchVoices();
       if (user) {
-        fetchReadingProgress();
+        // Check for saved reading progress and prompt to continue
+        fetchReadingProgress().then((savedPage) => {
+          if (savedPage > 0) {
+            setSavedPageNumber(savedPage);
+            setShowContinuePrompt(true);
+          }
+        });
         fetchReadingStats();
       }
     }
@@ -654,8 +664,11 @@ export default function BookReader() {
       const res = await axios.get(`${API}/reading-progress/${bookId}`);
       if (res.data.current_page > 0) {
         setReadingProgress(res.data.progress_percent);
+        // Return the saved page so we can resume
+        return res.data.current_page;
       }
     } catch {}
+    return 0;
   };
 
   const fetchReadingStats = async () => {
@@ -2130,6 +2143,65 @@ export default function BookReader() {
               Sign In to Continue
             </Button>
           </div>
+        </div>
+      )}
+      
+      {/* Continue Reading Prompt */}
+      {showContinuePrompt && savedPageNumber > 0 && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="bg-background rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden"
+            data-testid="continue-reading-modal"
+          >
+            {/* Header */}
+            <div className="bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-4 text-white">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                  <FiBookmark className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="font-heading text-lg font-bold">Welcome Back!</h2>
+                  <p className="text-white/80 text-sm">Continue where you left off?</p>
+                </div>
+              </div>
+            </div>
+            
+            {/* Content */}
+            <div className="p-5">
+              <p className="text-muted-foreground text-sm mb-4">
+                You were on <span className="font-semibold text-foreground">page {savedPageNumber + 1}</span> of this book.
+              </p>
+              
+              {/* Buttons */}
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => {
+                    setShowContinuePrompt(false);
+                    // Start from beginning (cover)
+                  }}
+                  data-testid="start-from-beginning-btn"
+                >
+                  Start Over
+                </Button>
+                <Button
+                  className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white"
+                  onClick={() => {
+                    setShowContinuePrompt(false);
+                    // Jump to saved page
+                    goToPage(savedPageNumber, 'next', true);
+                  }}
+                  data-testid="continue-reading-btn"
+                >
+                  Continue
+                </Button>
+              </div>
+            </div>
+          </motion.div>
         </div>
       )}
       

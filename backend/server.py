@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, UploadFile, File, Form, BackgroundTasks, Request, Response, Query
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, UploadFile, File, Form, BackgroundTasks, Request, Response, Query, Body
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.responses import StreamingResponse
 from dotenv import load_dotenv
@@ -2454,6 +2454,128 @@ async def delete_book_image(book_id: str, image_id: str, current_user: dict = De
     
     return {"success": True}
 
+@api_router.get("/user/image-library")
+async def get_user_image_library(
+    page: int = 1,
+    limit: int = 50,
+    book_id: Optional[str] = None,
+    image_type: Optional[str] = None,  # 'character', 'scene', 'cover', etc.
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Get all images from the user's book library.
+    
+    This is a unified view of all images across ALL of a user's books,
+    allowing easy re-use of assets in new projects.
+    
+    Parameters:
+    - page: Page number for pagination
+    - limit: Items per page (max 100)
+    - book_id: Optional filter by specific book
+    - image_type: Optional filter by image type (character, scene, cover, etc.)
+    """
+    skip = (page - 1) * limit
+    limit = min(limit, 100)  # Cap at 100
+    
+    # Build query
+    query = {"user_id": current_user["id"]}
+    if book_id:
+        query["book_id"] = book_id
+    if image_type:
+        query["type"] = image_type
+    
+    try:
+        # Get total count
+        total = await db.book_images.count_documents(query)
+        
+        # Get paginated images with book info
+        images_cursor = db.book_images.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit)
+        images = await images_cursor.to_list(limit)
+        
+        # Get unique book IDs to fetch book titles
+        book_ids = list(set(img.get("book_id") for img in images if img.get("book_id")))
+        books = await db.books.find(
+            {"id": {"$in": book_ids}},
+            {"_id": 0, "id": 1, "title": 1}
+        ).to_list(len(book_ids))
+        book_map = {b["id"]: b["title"] for b in books}
+        
+        # Enrich images with book title
+        for img in images:
+            img["book_title"] = book_map.get(img.get("book_id"), "Unknown Book")
+        
+        # Get available image types for filtering
+        types = await db.book_images.distinct("type", {"user_id": current_user["id"]})
+        
+        return {
+            "images": images,
+            "total": total,
+            "page": page,
+            "limit": limit,
+            "total_pages": (total + limit - 1) // limit,
+            "available_types": types
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching user image library: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch image library")
+
+
+@api_router.post("/user/image-library/copy-to-book")
+async def copy_image_to_book(
+    source_image_id: str = Body(...),
+    target_book_id: str = Body(...),
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Copy an image from the user's library to a specific book.
+    
+    Allows re-using images across different books without re-uploading.
+    """
+    # Verify source image belongs to user
+    source_image = await db.book_images.find_one({
+        "id": source_image_id,
+        "user_id": current_user["id"]
+    })
+    
+    if not source_image:
+        raise HTTPException(status_code=404, detail="Source image not found")
+    
+    # Verify target book belongs to user or user is collaborator
+    target_book = await db.books.find_one({"id": target_book_id})
+    if not target_book:
+        raise HTTPException(status_code=404, detail="Target book not found")
+    
+    is_author = target_book["author_id"] == current_user["id"]
+    collaborators = target_book.get("collaborators", [])
+    is_collaborator = any(c.get("user_id") == current_user["id"] for c in collaborators)
+    
+    if not is_author and not is_collaborator:
+        raise HTTPException(status_code=403, detail="Not authorized to add images to this book")
+    
+    # Create new image entry for target book
+    new_image = {
+        "id": str(uuid.uuid4()),
+        "book_id": target_book_id,
+        "user_id": current_user["id"],
+        "image_url": source_image["image_url"],
+        "name": source_image.get("name", "Copied Image"),
+        "type": source_image.get("type", "scene"),
+        "style": source_image.get("style", ""),
+        "metadata": {
+            **source_image.get("metadata", {}),
+            "copied_from": source_image_id,
+            "original_book_id": source_image.get("book_id")
+        },
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.book_images.insert_one(new_image)
+    new_image.pop("_id", None)
+    
+    return {"success": True, "image": new_image}
+
+
 @api_router.get("/books/{book_id}/download")
 async def download_book_pdf(book_id: str, current_user: dict = Depends(get_current_user)):
     """Download a book as interactive PDF (for the creator only)"""
@@ -3131,6 +3253,56 @@ async def get_reading_stats(current_user: dict = Depends(get_current_user)):
         "total_reading_days": len(streak_data.get("reading_days", [])) if streak_data else 0,
         "recent_books": all_progress[:5]
     }
+
+@api_router.get("/continue-reading")
+async def get_continue_reading(current_user: dict = Depends(get_current_user)):
+    """Get books the user is currently reading (in-progress, not completed)
+    
+    Returns book details with reading progress for "Continue Reading" section.
+    """
+    # Get reading progress for in-progress books, sorted by last_read
+    progress_cursor = db.reading_progress.find(
+        {
+            "user_id": current_user["id"],
+            "completed": {"$ne": True},
+            "current_page": {"$gt": 0}  # Must have started reading
+        },
+        {"_id": 0}
+    ).sort("last_read", -1).limit(10)
+    
+    progress_list = await progress_cursor.to_list(10)
+    
+    if not progress_list:
+        return {"books": [], "total": 0}
+    
+    # Get book details for each in-progress book
+    book_ids = [p["book_id"] for p in progress_list]
+    books = await db.books.find(
+        {"id": {"$in": book_ids}},
+        {"_id": 0, "id": 1, "title": 1, "cover_image": 1, "author_name": 1, "genre": 1}
+    ).to_list(10)
+    
+    # Create a lookup map
+    books_map = {b["id"]: b for b in books}
+    
+    # Combine book details with progress
+    result = []
+    for progress in progress_list:
+        book = books_map.get(progress["book_id"])
+        if book:
+            result.append({
+                "book_id": book["id"],
+                "title": book["title"],
+                "cover_image": book.get("cover_image", ""),
+                "author_name": book.get("author_name", ""),
+                "genre": book.get("genre", ""),
+                "current_page": progress["current_page"],
+                "total_pages": progress["total_pages"],
+                "progress_percent": progress.get("progress_percent", 0),
+                "last_read": progress.get("last_read", "")
+            })
+    
+    return {"books": result, "total": len(result)}
 
 # ============ ANALYTICS ============
 
@@ -9378,6 +9550,85 @@ async def get_all_user_videos(current_user: dict = Depends(get_current_user)):
     except Exception as e:
         logging.error(f"Error fetching user videos: {e}")
         return {"videos": []}
+
+
+@api_router.post("/admin/backfill-video-thumbnails")
+async def backfill_video_thumbnails(admin: dict = Depends(get_admin_user)):
+    """
+    Admin endpoint to generate thumbnails for existing videos/animations that don't have them.
+    
+    This is a one-time migration script to backfill thumbnail_url for older videos.
+    Uses the video's first frame or a placeholder image.
+    """
+    results = {
+        "total_videos": 0,
+        "missing_thumbnails": 0,
+        "updated": 0,
+        "failed": 0,
+        "errors": []
+    }
+    
+    try:
+        # Find all animation items without thumbnails
+        videos_without_thumbnails = await db.art_studio_gallery.find({
+            "type": "animation",
+            "$or": [
+                {"thumbnail_url": {"$exists": False}},
+                {"thumbnail_url": None},
+                {"thumbnail_url": ""}
+            ]
+        }).to_list(500)
+        
+        results["total_videos"] = await db.art_studio_gallery.count_documents({"type": "animation"})
+        results["missing_thumbnails"] = len(videos_without_thumbnails)
+        
+        logger.info(f"Found {len(videos_without_thumbnails)} videos without thumbnails out of {results['total_videos']} total")
+        
+        for video in videos_without_thumbnails:
+            try:
+                video_url = video.get("image_url", "")
+                video_id = video.get("_id")
+                
+                # Skip if no video URL
+                if not video_url:
+                    continue
+                
+                # Try to generate a thumbnail from the video
+                thumbnail_url = None
+                
+                # Option 1: If it's a Cloudinary video, generate thumbnail via Cloudinary transformation
+                if "cloudinary.com" in video_url:
+                    # Cloudinary can generate thumbnails from videos by changing the extension
+                    # /video/upload/... -> /video/upload/so_0/...jpg
+                    thumbnail_url = video_url.replace("/upload/", "/upload/so_0,w_400,h_300,c_fill/")
+                    # Change extension to jpg
+                    if ".mp4" in thumbnail_url:
+                        thumbnail_url = thumbnail_url.replace(".mp4", ".jpg")
+                    elif ".webm" in thumbnail_url:
+                        thumbnail_url = thumbnail_url.replace(".webm", ".jpg")
+                    
+                # Option 2: Use a default placeholder thumbnail
+                if not thumbnail_url:
+                    thumbnail_url = "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1/azories/placeholders/video_thumbnail_placeholder.png"
+                
+                # Update the document
+                await db.art_studio_gallery.update_one(
+                    {"_id": video_id},
+                    {"$set": {"thumbnail_url": thumbnail_url}}
+                )
+                results["updated"] += 1
+                
+            except Exception as e:
+                results["failed"] += 1
+                results["errors"].append(f"Video {video_id}: {str(e)[:100]}")
+                logger.error(f"Error backfilling thumbnail for video {video_id}: {e}")
+        
+        logger.info(f"Backfill complete: {results['updated']} updated, {results['failed']} failed")
+        return results
+        
+    except Exception as e:
+        logger.error(f"Backfill video thumbnails error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @api_router.get("/pro-studio/gallery/unified")

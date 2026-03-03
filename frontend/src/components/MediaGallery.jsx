@@ -55,17 +55,20 @@ export default function MediaGallery({
   const [starterLibrary, setStarterLibrary] = useState([]);
   const [creatorStudio, setCreatorStudio] = useState([]);
   const [proStudio, setProStudio] = useState([]);
+  const [myLibrary, setMyLibrary] = useState([]); // Images from all user's books
   const [loading, setLoading] = useState(true);
   
   // Section expand state
   const [starterExpanded, setStarterExpanded] = useState(true);
   const [creatorExpanded, setCreatorExpanded] = useState(true);
   const [proExpanded, setProExpanded] = useState(true);
+  const [myLibraryExpanded, setMyLibraryExpanded] = useState(false);
   
   // Media type filter per section
   const [starterFilter, setStarterFilter] = useState('images'); // 'images' | 'videos'
   const [creatorFilter, setCreatorFilter] = useState('images');
   const [proFilter, setProFilter] = useState('images');
+  const [myLibraryFilter, setMyLibraryFilter] = useState('all'); // 'all' | 'character' | 'scene' | 'cover'
   
   // Category filter for starter library
   const [starterCategory, setStarterCategory] = useState('all');
@@ -94,10 +97,31 @@ export default function MediaGallery({
       await Promise.all([
         loadStarterLibrary(),
         loadCreatorStudio(),
-        loadProStudio()
+        loadProStudio(),
+        loadMyLibrary()
       ]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Load images from all user's books
+  const loadMyLibrary = async () => {
+    if (!user) return;
+    try {
+      const response = await fetch(`${API_URL}/api/user/image-library?limit=100`, {
+        headers: getAuthHeaders()
+      });
+      if (response.ok) {
+        const data = await response.json();
+        // Filter out images from the current book (if bookId is provided)
+        const images = bookId 
+          ? (data.images || []).filter(img => img.book_id !== bookId)
+          : (data.images || []);
+        setMyLibrary(images);
+      }
+    } catch (error) {
+      console.error('Failed to load my library:', error);
     }
   };
 
@@ -452,6 +476,90 @@ export default function MediaGallery({
         'pro',
         'bg-gradient-to-r from-yellow-500/10 to-orange-500/10',
         'text-yellow-300'
+      )}
+      
+      {/* My Library Section - Images from all user's books */}
+      {myLibrary.length > 0 && (
+        <div className="bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-xl border border-emerald-500/30 overflow-hidden" data-testid="my-library-section">
+          <button
+            onClick={() => setMyLibraryExpanded(!myLibraryExpanded)}
+            className="w-full px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded bg-gradient-to-r from-emerald-500 to-teal-500 flex items-center justify-center">
+                <FiFolder className="w-3 h-3 text-white" />
+              </div>
+              <span className="text-sm font-semibold text-emerald-300">My Book Library</span>
+              <span className="text-xs text-emerald-400/60">
+                {myLibrary.length} images from your books
+              </span>
+            </div>
+            <FiChevronDown className={`w-4 h-4 text-emerald-400 transition-transform ${myLibraryExpanded ? 'rotate-180' : ''}`} />
+          </button>
+          
+          {myLibraryExpanded && (
+            <div className="p-4 pt-0">
+              {/* Type filter */}
+              <div className="flex items-center gap-2 mb-3 flex-wrap">
+                {['all', 'character', 'scene', 'cover'].map((type) => (
+                  <button
+                    key={type}
+                    onClick={() => setMyLibraryFilter(type)}
+                    className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+                      myLibraryFilter === type 
+                        ? 'bg-emerald-500 text-white' 
+                        : 'bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30'
+                    }`}
+                  >
+                    {type.charAt(0).toUpperCase() + type.slice(1)}
+                  </button>
+                ))}
+              </div>
+              
+              {/* Image grid */}
+              <div className={`grid gap-2 ${compact ? 'grid-cols-4 sm:grid-cols-6' : 'grid-cols-3 sm:grid-cols-4 md:grid-cols-5'}`}>
+                {myLibrary
+                  .filter(img => myLibraryFilter === 'all' || img.type === myLibraryFilter)
+                  .map((item) => {
+                    const isSelected = selectedItem?.id === item.id;
+                    return (
+                      <div
+                        key={item.id}
+                        className={`relative aspect-square rounded-lg overflow-hidden cursor-pointer group ${
+                          isSelected ? 'ring-2 ring-emerald-400' : ''
+                        }`}
+                        onClick={() => handleItemClick(item, 'library')}
+                      >
+                        <img
+                          src={getOptimizedThumbnail(item.image_url, compact ? 150 : 200)}
+                          alt={item.name || 'Library image'}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                        
+                        {/* Book title badge */}
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <p className="text-[10px] text-white truncate">{item.book_title}</p>
+                        </div>
+                        
+                        {/* Type badge */}
+                        <div className="absolute top-1 left-1 px-1.5 py-0.5 bg-emerald-500/80 rounded text-[9px] text-white capitalize">
+                          {item.type || 'image'}
+                        </div>
+                        
+                        {/* Selected checkmark */}
+                        {isSelected && mode === 'picker' && (
+                          <div className="absolute top-1 right-1 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center">
+                            <FiCheck className="w-3 h-3 text-white" />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+          )}
+        </div>
       )}
       
       {/* Preview Modal */}
