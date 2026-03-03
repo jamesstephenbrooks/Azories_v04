@@ -2182,8 +2182,12 @@ export default function ArtStudio() {
                           </button>
                           {starterLibraryExpanded && (
                             <div className="px-3 pb-3">
-                              <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 max-h-32 overflow-y-auto">
-                                {starterLibrary.slice(0, 20).map((item) => (
+                              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 max-h-32 overflow-y-auto">
+                                {starterLibrary.slice(0, 20).map((item) => {
+                                  const thumbUrl = item.url?.includes('cloudinary.com')
+                                    ? item.url.replace('/upload/', '/upload/f_auto,q_auto,w_100,c_fill/')
+                                    : (item.url || item.thumbnail_url);
+                                  return (
                                   <button
                                     key={item._id || item.id}
                                     onClick={() => {
@@ -2195,9 +2199,16 @@ export default function ArtStudio() {
                                       animatingImage === (item.url || item.image_url) ? 'border-pink-500' : 'border-transparent hover:border-amber-500'
                                     }`}
                                   >
-                                    <img src={item.url || item.image_url || item.thumbnail_url} alt={item.name} className="w-full aspect-square object-cover" loading="lazy" />
+                                    <img 
+                                      src={thumbUrl} 
+                                      alt={item.name} 
+                                      className="w-full aspect-square object-cover bg-gray-800" 
+                                      loading="lazy"
+                                      onError={(e) => { if (e.target.src !== item.url) e.target.src = item.url; }}
+                                    />
                                   </button>
-                                ))}
+                                  );
+                                })}
                               </div>
                             </div>
                           )}
@@ -2871,20 +2882,32 @@ export default function ArtStudio() {
                                 ))}
                               </div>
                               
-                              <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 max-h-60 overflow-y-auto">
+                              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 max-h-60 overflow-y-auto">
                                 {starterLibrary
                                   .filter(img => !starterLibraryFilter || starterLibraryFilter === 'all' || img.category === starterLibraryFilter)
-                                  .map((img) => (
+                                  .map((img) => {
+                                  // Optimize Cloudinary URL for thumbnails
+                                  const thumbnailUrl = img.url?.includes('cloudinary.com') 
+                                    ? img.url.replace('/upload/', '/upload/f_auto,q_auto,w_150,c_fill/')
+                                    : (img.url || img.thumbnail_url);
+                                  
+                                  return (
                                   <div
                                     key={img.id}
                                     className="relative group rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-amber-500 transition-all"
                                     onClick={() => setExpandedStarterImage(img)}
                                   >
                                     <img
-                                      src={img.url || img.thumbnail_url}
+                                      src={thumbnailUrl}
                                       alt={img.name}
-                                      className="w-full aspect-square object-cover"
+                                      className="w-full aspect-square object-cover bg-gray-800"
                                       loading="lazy"
+                                      onError={(e) => {
+                                        // Fallback to original URL if optimized fails
+                                        if (e.target.src !== img.url) {
+                                          e.target.src = img.url || img.thumbnail_url;
+                                        }
+                                      }}
                                     />
                                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1">
                                       <FiMaximize2 className="w-4 h-4 text-white" />
@@ -2894,7 +2917,8 @@ export default function ArtStudio() {
                                       {img.category}
                                     </div>
                                   </div>
-                                ))}
+                                  );
+                                })}
                               </div>
                             </div>
                           )}
@@ -3547,8 +3571,12 @@ export default function ArtStudio() {
                     </button>
                     {starterLibraryExpanded && (
                       <div className="p-4 pt-0">
-                        <div className="grid grid-cols-4 md:grid-cols-5 gap-2 max-h-48 overflow-y-auto">
-                          {starterLibrary.map((item) => (
+                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 max-h-48 overflow-y-auto">
+                          {starterLibrary.map((item) => {
+                            const thumbUrl = item.url?.includes('cloudinary.com')
+                              ? item.url.replace('/upload/', '/upload/f_auto,q_auto,w_120,c_fill/')
+                              : (item.url || item.thumbnail_url);
+                            return (
                             <button
                               key={item._id || item.id}
                               onClick={() => {
@@ -3562,16 +3590,18 @@ export default function ArtStudio() {
                               className="relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-amber-500 transition-colors group"
                             >
                               <img
-                                src={item.url || item.image_url || item.thumbnail_url}
+                                src={thumbUrl}
                                 alt={item.name}
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-cover bg-gray-800"
                                 loading="lazy"
+                                onError={(e) => { if (e.target.src !== item.url) e.target.src = item.url; }}
                               />
                               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                 <span className="text-white text-xs font-medium">Select</span>
                               </div>
                             </button>
-                          ))}
+                            );
+                          })}
                         </div>
                       </div>
                     )}
