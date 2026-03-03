@@ -12,7 +12,7 @@ import {
   FiTrash2, FiPlus, FiZap, FiSliders, FiDroplet, FiRefreshCw,
   FiArrowLeft, FiFolder, FiStar, FiCopy, FiEdit2, FiEdit3, FiUpload, FiBook, FiCheck,
   FiEye, FiMaximize2, FiSettings, FiX, FiChevronDown, FiChevronUp, FiSearch,
-  FiPlay, FiVideo
+  FiPlay, FiVideo, FiLoader
 } from 'react-icons/fi';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -492,6 +492,11 @@ export default function ArtStudio() {
   const [starterLibraryExpanded, setStarterLibraryExpanded] = useState(true);
   const [starterLibraryFilter, setStarterLibraryFilter] = useState('all');
   
+  // My Book Library state (images from user's books)
+  const [myBookLibrary, setMyBookLibrary] = useState([]);
+  const [myBookLibraryExpanded, setMyBookLibraryExpanded] = useState(false);
+  const [myBookLibraryLoading, setMyBookLibraryLoading] = useState(false);
+  
   // Apply a quick template (one-click setup)
   const applyQuickTemplate = (template) => {
     setSelectedTemplate(template.id);
@@ -719,8 +724,27 @@ export default function ArtStudio() {
       loadPromptHistory();
       loadCharacterProfiles();
       loadStarterLibrary();
+      loadMyBookLibrary();
     }
   }, [token]);
+  
+  // Load user's private book library images
+  const loadMyBookLibrary = async () => {
+    setMyBookLibraryLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/user/image-library?limit=100`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setMyBookLibrary(data.images || []);
+      }
+    } catch (error) {
+      console.error('Failed to load book library:', error);
+    } finally {
+      setMyBookLibraryLoading(false);
+    }
+  };
   
   const loadStarterLibrary = async () => {
     try {
@@ -3711,6 +3735,68 @@ export default function ArtStudio() {
                     </div>
                   )}
                 </div>
+                
+                {/* My Book Library Section */}
+                {myBookLibrary.length > 0 && (
+                  <div className="bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-xl border border-emerald-500/20 overflow-hidden">
+                    <button
+                      onClick={() => setMyBookLibraryExpanded(!myBookLibraryExpanded)}
+                      className="w-full px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-colors"
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded bg-gradient-to-r from-emerald-500 to-teal-500 flex items-center justify-center">
+                          <FiBook className="w-3 h-3 text-white" />
+                        </div>
+                        <span className="text-sm font-semibold text-emerald-300">My Book Library</span>
+                        <span className="text-xs text-emerald-400/60">({myBookLibrary.length} images from your books)</span>
+                      </div>
+                      <FiChevronDown className={`w-4 h-4 text-emerald-400 transition-transform ${myBookLibraryExpanded ? 'rotate-180' : ''}`} />
+                    </button>
+                    {myBookLibraryExpanded && (
+                      <div className="p-4 pt-0">
+                        {myBookLibraryLoading ? (
+                          <div className="text-center py-4">
+                            <FiLoader className="w-5 h-5 animate-spin mx-auto text-emerald-400" />
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-4 md:grid-cols-5 gap-2 max-h-48 overflow-y-auto">
+                            {myBookLibrary.map((item) => (
+                              <button
+                                key={item.id}
+                                onClick={() => {
+                                  if (galleryPickerTarget === 'style') {
+                                    setStyleReferenceImage(item.image_url);
+                                  } else {
+                                    setCharacterReferenceImage(item.image_url);
+                                  }
+                                  setShowGalleryPicker(false);
+                                }}
+                                className="relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-emerald-500 transition-colors group"
+                              >
+                                <img
+                                  src={item.image_url?.includes('cloudinary.com')
+                                    ? item.image_url.replace('/upload/', '/upload/f_auto,q_auto,w_120,c_fill/')
+                                    : item.image_url}
+                                  alt={item.name || 'Book image'}
+                                  className="w-full h-full object-cover"
+                                  loading="lazy"
+                                />
+                                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center">
+                                  <span className="text-white text-xs font-medium">Select</span>
+                                  <span className="text-white/60 text-[9px] mt-0.5 px-1 truncate max-w-full">{item.book_title}</span>
+                                </div>
+                                {/* Type badge */}
+                                <div className="absolute top-1 left-1 px-1 py-0.5 bg-emerald-500/80 rounded text-[8px] text-white capitalize">
+                                  {item.type || 'img'}
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </motion.div>
           </motion.div>

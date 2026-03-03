@@ -15,7 +15,7 @@ import { toast } from 'sonner';
 import { 
   FiPlus, FiEdit2, FiTrash2, FiBook, FiEye, FiEyeOff, FiZap, FiStar, FiAward, 
   FiCheck, FiBarChart2, FiLoader, FiLayers, FiLink, FiX, FiSearch, FiChevronDown, FiChevronUp, FiGlobe,
-  FiClock, FiSend
+  FiClock, FiSend, FiImage, FiDownload, FiCopy
 } from 'react-icons/fi';
 import Navbar from '@/components/Navbar';
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
@@ -87,7 +87,13 @@ export default function Dashboard() {
   const [expandedSeries, setExpandedSeries] = useState(null);  // To view books in a series
   const [newSeries, setNewSeries] = useState({ name: '', description: '' });
   const [creatingSeries, setCreatingSeries] = useState(false);
-  const [activeTab, setActiveTab] = useState('books');  // 'books' or 'analytics'
+  const [activeTab, setActiveTab] = useState('books');  // 'books', 'library', 'analytics', or 'series'
+  
+  // Image Library state
+  const [libraryImages, setLibraryImages] = useState([]);
+  const [libraryLoading, setLibraryLoading] = useState(false);
+  const [libraryFilter, setLibraryFilter] = useState('all'); // 'all', 'character', 'scene', 'cover'
+  const [selectedLibraryImage, setSelectedLibraryImage] = useState(null);
 
   useEffect(() => {
     if (!authLoading && !user && !localStorage.getItem('azories-token')) {
@@ -156,6 +162,30 @@ export default function Dashboard() {
       console.error('Failed to load series');
     }
   };
+  
+  // Fetch user's private image library
+  const fetchLibraryImages = async () => {
+    setLibraryLoading(true);
+    try {
+      const token = localStorage.getItem('azories-token');
+      const res = await axios.get(`${API}/user/image-library?limit=200`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setLibraryImages(res.data.images || []);
+    } catch (error) {
+      console.error('Failed to load image library:', error);
+      setLibraryImages([]);
+    } finally {
+      setLibraryLoading(false);
+    }
+  };
+  
+  // Load library images when switching to library tab
+  useEffect(() => {
+    if (activeTab === 'library' && libraryImages.length === 0) {
+      fetchLibraryImages();
+    }
+  }, [activeTab]);
   
   const createSeries = async () => {
     if (!newSeries.name.trim()) {
@@ -1087,10 +1117,14 @@ export default function Dashboard() {
               setActiveTab(value);
             }
           }} className="w-full">
-            <TabsList className="grid w-full max-w-lg grid-cols-3 mb-6 h-auto">
+            <TabsList className="grid w-full max-w-2xl grid-cols-4 mb-6 h-auto">
               <TabsTrigger value="books" className="rounded-full py-2.5 min-h-[44px]" data-testid="tab-my-books">
                 <FiBook className="w-4 h-4 mr-1 sm:mr-2" />
                 <span className="text-xs sm:text-sm">My Books</span>
+              </TabsTrigger>
+              <TabsTrigger value="library" className="rounded-full py-2.5 min-h-[44px]" data-testid="tab-my-library">
+                <FiImage className="w-4 h-4 mr-1 sm:mr-2" />
+                <span className="text-xs sm:text-sm">My Library</span>
               </TabsTrigger>
               <TabsTrigger value="analytics" className="rounded-full py-2.5 min-h-[44px]" data-testid="tab-analytics">
                 <FiBarChart2 className="w-4 h-4 mr-1 sm:mr-2" />
@@ -1331,12 +1365,236 @@ export default function Dashboard() {
           )}
             </TabsContent>
             
+            {/* My Library Tab - All images from user's books */}
+            <TabsContent value="library">
+              <div className="space-y-6">
+                {/* Header */}
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <div>
+                    <h2 className="text-xl font-heading font-bold">My Image Library</h2>
+                    <p className="text-sm text-muted-foreground">All images from your books - reuse them anywhere!</p>
+                  </div>
+                  
+                  {/* Type Filter */}
+                  <div className="flex gap-2 flex-wrap">
+                    {['all', 'character', 'scene', 'cover'].map((type) => (
+                      <Button
+                        key={type}
+                        variant={libraryFilter === type ? "default" : "outline"}
+                        size="sm"
+                        className="rounded-full capitalize"
+                        onClick={() => setLibraryFilter(type)}
+                      >
+                        {type}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Images Grid */}
+                {libraryLoading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <FiLoader className="w-8 h-8 animate-spin text-primary" />
+                  </div>
+                ) : libraryImages.length === 0 ? (
+                  <Card className="p-12 text-center">
+                    <FiImage className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
+                    <h3 className="font-heading text-lg mb-2">No images yet</h3>
+                    <p className="text-muted-foreground text-sm mb-4">
+                      Create AI stories or add images to your books to build your library
+                    </p>
+                    <Button onClick={() => setIsAIStoryOpen(true)} className="rounded-full">
+                      <FiZap className="mr-2" /> Create AI Story
+                    </Button>
+                  </Card>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                    {libraryImages
+                      .filter(img => libraryFilter === 'all' || img.type === libraryFilter)
+                      .map((image) => (
+                        <motion.div
+                          key={image.id}
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          className="group relative aspect-square rounded-xl overflow-hidden bg-muted cursor-pointer border-2 border-transparent hover:border-primary transition-all"
+                          onClick={() => setSelectedLibraryImage(image)}
+                          data-testid={`library-image-${image.id}`}
+                        >
+                          <img
+                            src={image.image_url?.includes('cloudinary.com') 
+                              ? image.image_url.replace('/upload/', '/upload/f_auto,q_auto,w_300,c_limit/')
+                              : image.image_url}
+                            alt={image.name || 'Library image'}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                          
+                          {/* Overlay with info */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="absolute bottom-0 left-0 right-0 p-3">
+                              <p className="text-white text-xs font-medium truncate">{image.book_title}</p>
+                              <p className="text-white/60 text-[10px] capitalize">{image.type || 'image'}</p>
+                            </div>
+                          </div>
+                          
+                          {/* Type badge */}
+                          <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/60 rounded-full text-[10px] text-white capitalize">
+                            {image.type || 'image'}
+                          </div>
+                        </motion.div>
+                      ))}
+                  </div>
+                )}
+                
+                {/* Stats */}
+                {libraryImages.length > 0 && (
+                  <div className="flex gap-4 justify-center text-sm text-muted-foreground">
+                    <span>{libraryImages.length} total images</span>
+                    <span>•</span>
+                    <span>{libraryImages.filter(i => i.type === 'character').length} characters</span>
+                    <span>•</span>
+                    <span>{libraryImages.filter(i => i.type === 'scene').length} scenes</span>
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+            
             <TabsContent value="analytics">
               <AnalyticsDashboard books={books} />
+            </TabsContent>
+            
+            <TabsContent value="series">
+              {/* Series content moved here */}
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h2 className="text-xl font-heading font-bold">My Series</h2>
+                    <p className="text-sm text-muted-foreground">Organize your books into collections</p>
+                  </div>
+                  <Button onClick={() => setIsSeriesOpen(true)} className="rounded-full">
+                    <FiPlus className="mr-2" /> New Series
+                  </Button>
+                </div>
+                
+                {series.length === 0 ? (
+                  <Card className="p-12 text-center">
+                    <FiLayers className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
+                    <h3 className="font-heading text-lg mb-2">No series yet</h3>
+                    <p className="text-muted-foreground text-sm mb-4">
+                      Create a series to organize related books together
+                    </p>
+                    <Button onClick={() => setIsSeriesOpen(true)} className="rounded-full">
+                      <FiPlus className="mr-2" /> Create Series
+                    </Button>
+                  </Card>
+                ) : (
+                  <div className="grid gap-4">
+                    {series.map((s) => (
+                      <Card key={s.id} className="p-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <h3 className="font-heading font-semibold">{s.name}</h3>
+                            {s.description && <p className="text-sm text-muted-foreground">{s.description}</p>}
+                            <p className="text-xs text-muted-foreground mt-1">{s.book_count || 0} books</p>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => setExpandedSeries(expandedSeries === s.id ? null : s.id)}
+                            >
+                              {expandedSeries === s.id ? <FiChevronUp /> : <FiChevronDown />}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-destructive hover:text-destructive"
+                              onClick={() => deleteSeries(s.id)}
+                            >
+                              <FiTrash2 />
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        {/* Expanded series books */}
+                        {expandedSeries === s.id && s.books && s.books.length > 0 && (
+                          <div className="mt-4 pt-4 border-t grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            {s.books.map((book) => (
+                              <div 
+                                key={book.id}
+                                className="aspect-[3/4] rounded-lg overflow-hidden bg-muted cursor-pointer hover:opacity-80"
+                                onClick={() => navigate(`/editor/${book.id}`)}
+                              >
+                                {book.cover_image ? (
+                                  <img src={book.cover_image} alt={book.title} className="w-full h-full object-cover" />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center">
+                                    <FiBook className="w-8 h-8 text-muted-foreground" />
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </div>
             </TabsContent>
           </Tabs>
         </div>
       </div>
+      
+      {/* Image Preview Dialog */}
+      <Dialog open={!!selectedLibraryImage} onOpenChange={() => setSelectedLibraryImage(null)}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="font-heading flex items-center gap-2">
+              <FiImage className="text-primary" />
+              {selectedLibraryImage?.name || 'Image Preview'}
+            </DialogTitle>
+          </DialogHeader>
+          {selectedLibraryImage && (
+            <div className="space-y-4">
+              <div className="rounded-xl overflow-hidden bg-muted">
+                <img
+                  src={selectedLibraryImage.image_url}
+                  alt={selectedLibraryImage.name}
+                  className="w-full max-h-[60vh] object-contain"
+                />
+              </div>
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-sm font-medium">From: {selectedLibraryImage.book_title}</p>
+                  <p className="text-xs text-muted-foreground capitalize">Type: {selectedLibraryImage.type || 'image'}</p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full"
+                    onClick={() => {
+                      navigator.clipboard.writeText(selectedLibraryImage.image_url);
+                      toast.success('Image URL copied!');
+                    }}
+                  >
+                    <FiCopy className="mr-2 w-4 h-4" /> Copy URL
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full"
+                    onClick={() => window.open(selectedLibraryImage.image_url, '_blank')}
+                  >
+                    <FiDownload className="mr-2 w-4 h-4" /> Download
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
       
       {/* Series Management Dialog */}
       <Dialog open={isSeriesOpen} onOpenChange={setIsSeriesOpen}>

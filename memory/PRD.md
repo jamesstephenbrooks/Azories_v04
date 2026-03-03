@@ -53,11 +53,17 @@ User wants to enhance their "Azories" digital book application with:
 - File: `backend/server.py`
 
 ### Feature 3: Book Image Library ✅
-- Backend: Added `/api/user/image-library` endpoint - unified view of all images across user's books
-- Backend: Added `/api/user/image-library/copy-to-book` endpoint for reusing images
-- Frontend: Added "My Book Library" section to MediaGallery component
-- Shows images from all user's books with book titles and type filters
-- Files: `backend/server.py`, `frontend/src/components/MediaGallery.jsx`
+- **CLARIFIED**: This is a **private library** showing images from the **logged-in user's own books only** (not all users)
+- **Backend**: 
+  - `GET /api/user/image-library` - Returns all images from user's books with pagination and type filters
+  - `POST /api/user/image-library/copy-to-book` - Copy an image to another book
+- **Frontend Dashboard**: 
+  - Added "My Library" tab next to "My Books", "Analytics", "My Series"
+  - Shows grid of images with type filters (all, character, scene, cover)
+  - Image preview dialog with copy URL and download options
+- **Frontend Art Studio**: Added "My Book Library" section in gallery picker
+- **Frontend Pro Studio**: Added "My Books" filter button showing user's book images
+- Files: `backend/server.py`, `frontend/src/pages/Dashboard.js`, `frontend/src/pages/ArtStudio.js`, `frontend/src/pages/ProStudio.js`, `frontend/src/components/MediaGallery.jsx`
 
 ### Previous Work (March 3, 2026)
 1. **Add to LoRA References Feature** - Users can now add images from character folder to reference images for LoRA training

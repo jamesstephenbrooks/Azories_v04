@@ -181,8 +181,12 @@ export default function ProStudio() {
   
   // Unified Gallery state - contains ALL Pro Studio content
   const [gallery, setGallery] = useState([]);
-  const [galleryFilter, setGalleryFilter] = useState('all'); // 'all', 'images', 'videos', 'characters'
+  const [galleryFilter, setGalleryFilter] = useState('all'); // 'all', 'images', 'videos', 'characters', 'books'
   const [galleryPickerCallback, setGalleryPickerCallback] = useState(null); // Function to call when image selected
+  
+  // My Book Library state (images from user's books)
+  const [myBookLibrary, setMyBookLibrary] = useState([]);
+  const [myBookLibraryLoaded, setMyBookLibraryLoaded] = useState(false);
   
   // Load user's characters on mount
   useEffect(() => {
@@ -195,8 +199,25 @@ export default function ProStudio() {
       loadCharacterOptions();
       loadSceneOptions();
       loadScenes();
+      loadMyBookLibrary();
     }
   }, [isAuthenticated]);
+  
+  // Load user's private book library images
+  const loadMyBookLibrary = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/user/image-library?limit=100`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setMyBookLibrary(data.images || []);
+        setMyBookLibraryLoaded(true);
+      }
+    } catch (error) {
+      console.error('Failed to load book library:', error);
+    }
+  };
 
   // Load character styles and genres
   const loadCharacterOptions = async () => {
@@ -498,8 +519,19 @@ export default function ProStudio() {
     }
   }, [galleryFilter, isAuthenticated, activeTab]);
   
-  // Gallery items are now pre-filtered from API, just use directly
-  const filteredGallery = gallery;
+  // Gallery items - include book library when filter is 'books'
+  const filteredGallery = galleryFilter === 'books' 
+    ? myBookLibrary.map(img => ({
+        id: img.id,
+        image_url: img.image_url,
+        url: img.image_url,
+        prompt: img.name || '',
+        character_name: '',
+        book_title: img.book_title,
+        type: img.type,
+        source: 'book_library'
+      }))
+    : gallery;
   
   // Open gallery picker with a callback for selection
   const openGalleryPicker = (mode, callback) => {
@@ -5251,6 +5283,16 @@ export default function ProStudio() {
                     className={`text-xs ${galleryFilter === 'videos' ? 'bg-purple-600' : 'border-gray-600 text-gray-300'}`}
                   >
                     Videos
+                  </Button>
+                )}
+                {myBookLibrary.length > 0 && (
+                  <Button
+                    size="sm"
+                    variant={galleryFilter === 'books' ? 'default' : 'outline'}
+                    onClick={() => setGalleryFilter('books')}
+                    className={`text-xs ${galleryFilter === 'books' ? 'bg-emerald-600' : 'border-emerald-600/50 text-emerald-300'}`}
+                  >
+                    My Books ({myBookLibrary.length})
                   </Button>
                 )}
                 
