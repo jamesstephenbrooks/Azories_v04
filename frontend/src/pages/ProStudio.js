@@ -75,6 +75,7 @@ export default function ProStudio() {
   const [trainingProgress, setTrainingProgress] = useState(null);
   const [falAvailable, setFalAvailable] = useState(false);
   const [falKeyError, setFalKeyError] = useState(null); // Track if fal.ai key has issues
+  const loraTrainingRef = useRef({ intervalId: null, timeoutId: null, pollCount: 0, jobId: null });
   
   // Credits state
   const [credits, setCredits] = useState(0);
@@ -207,6 +208,16 @@ export default function ProStudio() {
       loadStarterLibrary();
       loadCreatorsGallery();
     }
+    
+    // Cleanup LoRA training polling on unmount
+    return () => {
+      if (loraTrainingRef.current.intervalId) {
+        clearInterval(loraTrainingRef.current.intervalId);
+      }
+      if (loraTrainingRef.current.timeoutId) {
+        clearTimeout(loraTrainingRef.current.timeoutId);
+      }
+    };
   }, [isAuthenticated]);
   
   // Load Starter Library (free assets)
@@ -747,6 +758,7 @@ export default function ProStudio() {
     }
 
     setIsTrainingLora(true);
+    setTrainingProgress({ status: 'starting', message: 'Starting LoRA training...' });
     setLoadingMessage('Starting LoRA training (this takes 5-15 minutes)...');
 
     try {
@@ -761,6 +773,7 @@ export default function ProStudio() {
       if (response.ok) {
         const data = await response.json();
         toast.success('LoRA training started! This will take 5-15 minutes.');
+        loraTrainingRef.current.jobId = data.job_id;
         
         // Start polling for training status
         pollTrainingStatus(data.job_id, characterId);
@@ -768,18 +781,65 @@ export default function ProStudio() {
         const error = await response.json();
         toast.error(error.detail || 'Failed to start LoRA training');
         setIsTrainingLora(false);
+        setTrainingProgress(null);
+        setLoadingMessage('');
       }
     } catch (error) {
       toast.error('Error starting LoRA training');
       console.error(error);
       setIsTrainingLora(false);
+      setTrainingProgress(null);
+      setLoadingMessage('');
     }
   };
 
-  // Poll training status
+  // Cancel LoRA training polling
+  const cancelLoraTraining = () => {
+    // Clear intervals and timeouts
+    if (loraTrainingRef.current.intervalId) {
+      clearInterval(loraTrainingRef.current.intervalId);
+      loraTrainingRef.current.intervalId = null;
+    }
+    if (loraTrainingRef.current.timeoutId) {
+      clearTimeout(loraTrainingRef.current.timeoutId);
+      loraTrainingRef.current.timeoutId = null;
+    }
+    
+    // Reset state
+    loraTrainingRef.current.pollCount = 0;
+    loraTrainingRef.current.jobId = null;
+    setIsTrainingLora(false);
+    setTrainingProgress(null);
+    setLoadingMessage('');
+    toast.info('Training cancelled. Note: The training may still continue on the server.');
+  };
+
+  // Poll training status with proper cleanup
   const pollTrainingStatus = async (jobId, characterId) => {
     const token = localStorage.getItem('azories-token');
+    const MAX_POLLS = 120; // 20 minutes at 10s intervals
+    loraTrainingRef.current.pollCount = 0;
+    
+    // Clear any existing interval
+    if (loraTrainingRef.current.intervalId) {
+      clearInterval(loraTrainingRef.current.intervalId);
+    }
+    
     const pollInterval = setInterval(async () => {
+      loraTrainingRef.current.pollCount++;
+      const pollCount = loraTrainingRef.current.pollCount;
+      
+      // Hard stop after max polls
+      if (pollCount >= MAX_POLLS) {
+        clearInterval(pollInterval);
+        loraTrainingRef.current.intervalId = null;
+        setIsTrainingLora(false);
+        setLoadingMessage('');
+        setTrainingProgress({ status: 'timeout', message: 'Training timed out after 20 minutes' });
+        toast.error('Training timed out. The job may still be running - check back later.');
+        return;
+      }
+      
       try {
         const response = await fetch(`${API_URL}/api/fal/training-status/${jobId}`, {
           headers: { Authorization: `Bearer ${token}` }
@@ -787,10 +847,24 @@ export default function ProStudio() {
 
         if (response.ok) {
           const data = await response.json();
-          setTrainingProgress(data);
+          
+          // Calculate elapsed time
+          const elapsedMinutes = Math.floor((pollCount * 10) / 60);
+          const elapsedSeconds = (pollCount * 10) % 60;
+          const timeStr = `${elapsedMinutes}m ${elapsedSeconds}s`;
+          
+          // Update progress with more info
+          setTrainingProgress({
+            ...data,
+            pollCount,
+            maxPolls: MAX_POLLS,
+            elapsed: timeStr
+          });
 
           if (data.status === 'completed') {
             clearInterval(pollInterval);
+            loraTrainingRef.current.intervalId = null;
+            loraTrainingRef.current.pollCount = 0;
             toast.success('LoRA training complete! Your character is now ready for consistent generation.');
             setIsTrainingLora(false);
             setLoadingMessage('');
@@ -798,27 +872,57 @@ export default function ProStudio() {
             loadCharacters();
           } else if (data.status === 'failed') {
             clearInterval(pollInterval);
-            toast.error('LoRA training failed. Please try again.');
+            loraTrainingRef.current.intervalId = null;
+            loraTrainingRef.current.pollCount = 0;
+            toast.error(data.error || 'LoRA training failed. Please try again.');
             setIsTrainingLora(false);
             setLoadingMessage('');
+          } else if (data.status === 'queued') {
+            setLoadingMessage(`Queued... waiting to start (${timeStr})`);
+          } else if (data.status === 'in_progress') {
+            const logMsg = data.logs?.[0] || '';
+            setLoadingMessage(`Training in progress (${timeStr})... ${logMsg}`);
+          } else if (data.status === 'timeout') {
+            // Backend timeout on status check - keep polling
+            setLoadingMessage(`Checking status... (${timeStr})`);
           } else {
-            setLoadingMessage(`Training in progress... ${data.logs?.[0] || ''}`);
+            setLoadingMessage(`Status: ${data.status || 'unknown'} (${timeStr})`);
           }
+        } else {
+          // API error - log but continue polling
+          console.error('Training status API error:', response.status);
+          const elapsedMinutes = Math.floor((pollCount * 10) / 60);
+          setLoadingMessage(`Checking status... (${elapsedMinutes}m elapsed)`);
         }
       } catch (error) {
         console.error('Polling error:', error);
+        // Network error - continue polling but log
+        const elapsedMinutes = Math.floor((pollCount * 10) / 60);
+        setLoadingMessage(`Connection issue, retrying... (${elapsedMinutes}m elapsed)`);
       }
     }, 10000); // Poll every 10 seconds
+    
+    // Store interval ID for cleanup
+    loraTrainingRef.current.intervalId = pollInterval;
 
-    // Timeout after 20 minutes
-    setTimeout(() => {
-      clearInterval(pollInterval);
-      if (isTrainingLora) {
-        setIsTrainingLora(false);
-        setLoadingMessage('');
-        toast.error('Training timed out. Please check later.');
+    // Backup timeout after 25 minutes (gives 5 min buffer past max polls)
+    const timeoutId = setTimeout(() => {
+      if (loraTrainingRef.current.intervalId) {
+        clearInterval(loraTrainingRef.current.intervalId);
+        loraTrainingRef.current.intervalId = null;
       }
-    }, 1200000);
+      // Only update state if still training
+      setIsTrainingLora(prev => {
+        if (prev) {
+          setLoadingMessage('');
+          setTrainingProgress({ status: 'timeout', message: 'Training timed out' });
+          toast.error('Training timed out. Please check the character later.');
+        }
+        return false;
+      });
+    }, 1500000); // 25 minutes
+    
+    loraTrainingRef.current.timeoutId = timeoutId;
   };
 
   // Generate consistent character image
@@ -3117,6 +3221,68 @@ export default function ProStudio() {
                   <p className="text-gray-400 text-sm mt-2">{loadingProgress}% complete</p>
                 </div>
               )}
+            </div>
+          </motion.div>
+        )}
+        
+        {/* LoRA Training Overlay - separate from regular loading */}
+        {isTrainingLora && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center"
+          >
+            <div className="text-center max-w-md bg-gray-900/80 rounded-2xl p-6 border border-purple-500/30">
+              <div className="w-16 h-16 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+              <h3 className="text-white text-xl font-semibold mb-2">LoRA Training in Progress</h3>
+              <p className="text-gray-300 mb-3">{loadingMessage}</p>
+              
+              {/* Training progress info */}
+              {trainingProgress && (
+                <div className="mb-4 text-sm">
+                  <div className="flex justify-between text-gray-400 mb-1">
+                    <span>Status: <span className={`capitalize ${
+                      trainingProgress.status === 'completed' ? 'text-green-400' :
+                      trainingProgress.status === 'failed' ? 'text-red-400' :
+                      trainingProgress.status === 'in_progress' ? 'text-amber-400' :
+                      trainingProgress.status === 'queued' ? 'text-blue-400' :
+                      'text-gray-300'
+                    }`}>{trainingProgress.status?.replace('_', ' ') || 'unknown'}</span></span>
+                    <span>{trainingProgress.elapsed || ''}</span>
+                  </div>
+                  
+                  {/* Progress bar based on poll count */}
+                  {trainingProgress.pollCount && trainingProgress.maxPolls && (
+                    <div className="w-full bg-gray-700 rounded-full h-2 overflow-hidden mt-2">
+                      <div 
+                        className="bg-gradient-to-r from-amber-500 to-orange-500 h-full transition-all duration-500"
+                        style={{ width: `${Math.min((trainingProgress.pollCount / trainingProgress.maxPolls) * 100, 100)}%` }}
+                      />
+                    </div>
+                  )}
+                  
+                  {/* Latest log if available */}
+                  {trainingProgress.logs && trainingProgress.logs.length > 0 && (
+                    <p className="text-xs text-gray-500 mt-2 truncate">
+                      {trainingProgress.logs[trainingProgress.logs.length - 1]}
+                    </p>
+                  )}
+                </div>
+              )}
+              
+              <p className="text-gray-500 text-xs mb-4">
+                Training typically takes 5-15 minutes. You can cancel polling below, but the server-side training will continue.
+              </p>
+              
+              <Button
+                onClick={cancelLoraTraining}
+                variant="outline"
+                className="border-red-500/50 text-red-400 hover:bg-red-500/20 hover:border-red-400"
+                data-testid="cancel-lora-training"
+              >
+                <FiX className="mr-2" /> Cancel Training
+              </Button>
             </div>
           </motion.div>
         )}
