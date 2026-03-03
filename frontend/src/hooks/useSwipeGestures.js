@@ -7,23 +7,66 @@ export function useSwipeGestures({
   onSwipeUp,
   onSwipeDown,
   threshold = 50,
-  enabled = true
+  enabled = true,
+  ignoreScrollableElements = true  // New option to ignore swipes that start in scrollable areas
 }) {
   const touchStartRef = useRef({ x: 0, y: 0 });
   const touchEndRef = useRef({ x: 0, y: 0 });
+  const isScrollingRef = useRef(false);
+  const startedInScrollableRef = useRef(false);
+
+  // Check if an element or its parents are scrollable
+  const isInScrollableElement = useCallback((element) => {
+    let current = element;
+    while (current && current !== document.body) {
+      const style = window.getComputedStyle(current);
+      const overflowY = style.overflowY;
+      const overflowX = style.overflowX;
+      
+      // Check if element has scrollable content
+      if ((overflowY === 'auto' || overflowY === 'scroll') && current.scrollHeight > current.clientHeight) {
+        return { element: current, direction: 'vertical' };
+      }
+      if ((overflowX === 'auto' || overflowX === 'scroll') && current.scrollWidth > current.clientWidth) {
+        return { element: current, direction: 'horizontal' };
+      }
+      current = current.parentElement;
+    }
+    return null;
+  }, []);
 
   const handleTouchStart = useCallback((e) => {
     touchStartRef.current = {
       x: e.touches[0].clientX,
       y: e.touches[0].clientY
     };
-  }, []);
+    isScrollingRef.current = false;
+    
+    // Check if touch started in a scrollable element
+    if (ignoreScrollableElements) {
+      const scrollable = isInScrollableElement(e.target);
+      startedInScrollableRef.current = scrollable;
+    } else {
+      startedInScrollableRef.current = null;
+    }
+  }, [ignoreScrollableElements, isInScrollableElement]);
 
   const handleTouchMove = useCallback((e) => {
     touchEndRef.current = {
       x: e.touches[0].clientX,
       y: e.touches[0].clientY
     };
+    
+    // If we started in a scrollable element and are moving vertically, mark as scrolling
+    if (startedInScrollableRef.current) {
+      const deltaY = Math.abs(touchEndRef.current.y - touchStartRef.current.y);
+      const deltaX = Math.abs(touchEndRef.current.x - touchStartRef.current.x);
+      
+      // If vertical movement is greater than horizontal, user is likely scrolling
+      if (deltaY > deltaX && deltaY > 10) {
+        isScrollingRef.current = true;
+      }
+    }
   }, []);
 
   const handleTouchEnd = useCallback(() => {
@@ -35,17 +78,42 @@ export function useSwipeGestures({
     const absDeltaY = Math.abs(deltaY);
 
     // Only trigger if swipe distance exceeds threshold
-    if (Math.max(absDeltaX, absDeltaY) < threshold) return;
+    if (Math.max(absDeltaX, absDeltaY) < threshold) {
+      // Reset
+      touchStartRef.current = { x: 0, y: 0 };
+      touchEndRef.current = { x: 0, y: 0 };
+      return;
+    }
+
+    // If user was scrolling in a scrollable element, don't trigger page swipes
+    if (isScrollingRef.current && startedInScrollableRef.current) {
+      // Reset
+      touchStartRef.current = { x: 0, y: 0 };
+      touchEndRef.current = { x: 0, y: 0 };
+      isScrollingRef.current = false;
+      startedInScrollableRef.current = null;
+      return;
+    }
+
+    // For horizontal swipes (page turns), require horizontal movement to be 
+    // significantly greater than vertical to avoid conflicts with scrolling
+    const isHorizontalSwipe = absDeltaX > absDeltaY * 1.5; // Horizontal must be 1.5x vertical
+    const isVerticalSwipe = absDeltaY > absDeltaX * 1.5;   // Vertical must be 1.5x horizontal
 
     // Determine swipe direction
-    if (absDeltaX > absDeltaY) {
-      // Horizontal swipe
-      if (deltaX > 0) {
-        onSwipeRight?.();
-      } else {
-        onSwipeLeft?.();
+    if (isHorizontalSwipe && absDeltaX > threshold) {
+      // Horizontal swipe - only if started outside scrollable or scrollable is horizontal
+      const canSwipeHorizontal = !startedInScrollableRef.current || 
+                                  startedInScrollableRef.current.direction === 'horizontal';
+      
+      if (canSwipeHorizontal || absDeltaX > threshold * 2) { // Allow strong horizontal swipes anywhere
+        if (deltaX > 0) {
+          onSwipeRight?.();
+        } else {
+          onSwipeLeft?.();
+        }
       }
-    } else {
+    } else if (isVerticalSwipe && absDeltaY > threshold) {
       // Vertical swipe
       if (deltaY > 0) {
         onSwipeDown?.();
@@ -57,6 +125,8 @@ export function useSwipeGestures({
     // Reset
     touchStartRef.current = { x: 0, y: 0 };
     touchEndRef.current = { x: 0, y: 0 };
+    isScrollingRef.current = false;
+    startedInScrollableRef.current = null;
   }, [enabled, threshold, onSwipeLeft, onSwipeRight, onSwipeUp, onSwipeDown]);
 
   return {
