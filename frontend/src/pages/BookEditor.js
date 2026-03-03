@@ -108,8 +108,9 @@ export default function BookEditor() {
   const [proStudioScenes, setProStudioScenes] = useState([]);
   const [proStudioVideos, setProStudioVideos] = useState([]);
   const [starterLibraryImages, setStarterLibraryImages] = useState([]);
+  const [myBookLibraryImages, setMyBookLibraryImages] = useState([]); // Images from user's books
   const [expandedStarterImage, setExpandedStarterImage] = useState(null); // For lightbox preview
-  const [galleryTab, setGalleryTab] = useState('book'); // 'book', 'all', 'characters', 'scenes', 'videos', 'starter'
+  const [galleryTab, setGalleryTab] = useState('book'); // 'book', 'all', 'characters', 'scenes', 'videos', 'starter', 'mybooks'
   
   // Cover Gallery picker
   const [showCoverGalleryPicker, setShowCoverGalleryPicker] = useState(false);
@@ -166,6 +167,7 @@ export default function BookEditor() {
       fetchBookGallery();
       fetchGalleryImages();
       fetchStarterLibrary();
+      fetchMyBookLibrary();
     }
   }, [user, bookId]);
 
@@ -197,6 +199,23 @@ export default function BookEditor() {
     } catch (error) {
       console.error('Failed to load starter library');
       setStarterLibraryImages([]);
+    }
+  };
+  
+  // Fetch user's personal book library images
+  const fetchMyBookLibrary = async () => {
+    const token = localStorage.getItem('azories-token');
+    if (!token) return;
+    try {
+      const res = await axios.get(`${API}/user/image-library?limit=200`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      // Exclude images from current book to avoid duplicates
+      const images = (res.data.images || []).filter(img => img.book_id !== bookId);
+      setMyBookLibraryImages(images);
+    } catch (error) {
+      console.error('Failed to load my book library');
+      setMyBookLibraryImages([]);
     }
   };
 
@@ -2076,6 +2095,18 @@ export default function BookEditor() {
               <FiVideo className="inline mr-1" />
               Videos ({proStudioVideos.length})
             </button>
+            {myBookLibraryImages.length > 0 && (
+              <button
+                onClick={() => setGalleryTab('mybooks')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  galleryTab === 'mybooks' 
+                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white' 
+                    : 'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-600'
+                }`}
+              >
+                📚 My Book Library ({myBookLibraryImages.length})
+              </button>
+            )}
           </div>
           
           <div className="mt-4">
@@ -2446,6 +2477,50 @@ export default function BookEditor() {
                 </ScrollArea>
               )
             )}
+            
+            {/* My Book Library Tab */}
+            {galleryTab === 'mybooks' && (
+              <ScrollArea className="h-[50vh]">
+                <p className="text-sm text-muted-foreground mb-4">
+                  Reuse images from your other books! Click any image to add it to your page.
+                </p>
+                <div className="grid grid-cols-4 md:grid-cols-5 gap-3">
+                  {myBookLibraryImages.map((img) => (
+                    <div 
+                      key={img.id}
+                      className="relative group cursor-pointer rounded-lg overflow-hidden border-2 border-transparent hover:border-emerald-500 transition-all"
+                      onClick={() => {
+                        addGalleryImageToPage(img.image_url, activeImageSlot);
+                        setShowGalleryPicker(false);
+                      }}
+                    >
+                      <img 
+                        src={img.image_url?.includes('cloudinary.com') 
+                          ? img.image_url.replace('/upload/', '/upload/f_auto,q_auto,w_150,c_fill/')
+                          : img.image_url} 
+                        alt={img.name} 
+                        className="w-full aspect-square object-cover"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1">
+                        <FiPlus className="w-5 h-5 text-white" />
+                        <span className="text-white text-xs font-medium">Add to Page</span>
+                      </div>
+                      {/* Book title badge */}
+                      <div className="absolute bottom-1 left-1 right-1">
+                        <span className="bg-emerald-600/90 text-white text-[8px] px-1.5 py-0.5 rounded truncate block">
+                          {img.book_title || 'My Book'}
+                        </span>
+                      </div>
+                      {/* Type badge */}
+                      <div className="absolute top-1 left-1 bg-emerald-500 text-white text-[8px] px-1 rounded capitalize">
+                        {img.type || 'image'}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            )}
           </div>
         </DialogContent>
       </Dialog>
@@ -2512,6 +2587,18 @@ export default function BookEditor() {
             >
               Pro Scenes ({proStudioScenes.reduce((sum, s) => sum + s.gallery.length, 0)})
             </button>
+            {myBookLibraryImages.length > 0 && (
+              <button
+                onClick={() => setGalleryTab('mybooks')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  galleryTab === 'mybooks' 
+                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white' 
+                    : 'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-600'
+                }`}
+              >
+                📚 My Book Library ({myBookLibraryImages.length})
+              </button>
+            )}
           </div>
           
           <div className="mt-4">
@@ -2744,6 +2831,50 @@ export default function BookEditor() {
                   ))}
                 </ScrollArea>
               )
+            )}
+            
+            {/* My Book Library Tab for Cover */}
+            {galleryTab === 'mybooks' && (
+              <ScrollArea className="h-[50vh]">
+                <p className="text-sm text-muted-foreground mb-4">
+                  Use images from your other books as a cover!
+                </p>
+                <div className="grid grid-cols-3 md:grid-cols-4 gap-3 p-1">
+                  {myBookLibraryImages.map((img) => (
+                    <div 
+                      key={img.id}
+                      className="relative group cursor-pointer rounded-lg overflow-hidden border-2 border-transparent hover:border-emerald-500 transition-all"
+                      onClick={() => {
+                        addCoverFromGallery(img.image_url);
+                        setShowCoverGalleryPicker(false);
+                      }}
+                    >
+                      <img 
+                        src={img.image_url?.includes('cloudinary.com') 
+                          ? img.image_url.replace('/upload/', '/upload/f_auto,q_auto,w_150,c_fill/')
+                          : img.image_url} 
+                        alt={img.name} 
+                        className="w-full aspect-[3/4] object-cover"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1">
+                        <FiPlus className="w-5 h-5 text-white" />
+                        <span className="text-white text-xs font-medium">Use as Cover</span>
+                      </div>
+                      {/* Book title badge */}
+                      <div className="absolute bottom-1 left-1 right-1">
+                        <span className="bg-emerald-600/90 text-white text-[8px] px-1.5 py-0.5 rounded truncate block">
+                          {img.book_title || 'My Book'}
+                        </span>
+                      </div>
+                      {/* Type badge */}
+                      <div className="absolute top-1 left-1 bg-emerald-500 text-white text-[8px] px-1 rounded capitalize">
+                        {img.type || 'image'}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
             )}
           </div>
         </DialogContent>
