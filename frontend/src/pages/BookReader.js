@@ -48,15 +48,22 @@ export default function BookReader() {
   // FRESH APPROACH: Completely block ALL touch events from text area
   // This prevents ANY touch interaction in the text area from reaching the page turner
   useEffect(() => {
-    const setupTouchBlock = (textEl) => {
-      if (!textEl) return null;
+    const setupTouchBlock = (textEl, name) => {
+      if (!textEl) {
+        console.log(`[TouchBlock] ${name}: Element not found`);
+        return null;
+      }
+      
+      console.log(`[TouchBlock] ${name}: Setting up touch blocking`);
       
       // Tell browser this element only scrolls vertically
       textEl.style.touchAction = 'pan-y';
       textEl.style.webkitOverflowScrolling = 'touch';
+      textEl.style.overflowY = 'auto';
       
       // Stop ALL touch events from reaching the page turner
       const stopPropagation = (e) => {
+        console.log(`[TouchBlock] ${name}: Blocking ${e.type} event`);
         e.stopPropagation();
       };
       
@@ -64,7 +71,10 @@ export default function BookReader() {
       textEl.addEventListener('touchmove', stopPropagation, { passive: true });
       textEl.addEventListener('touchend', stopPropagation, { passive: true });
       
+      console.log(`[TouchBlock] ${name}: Event listeners attached`);
+      
       return () => {
+        console.log(`[TouchBlock] ${name}: Cleaning up`);
         textEl.removeEventListener('touchstart', stopPropagation);
         textEl.removeEventListener('touchmove', stopPropagation);
         textEl.removeEventListener('touchend', stopPropagation);
@@ -72,8 +82,8 @@ export default function BookReader() {
     };
     
     // Set up touch blocking for both portrait and landscape text refs
-    const cleanupPortrait = setupTouchBlock(textScrollRef.current);
-    const cleanupLandscape = setupTouchBlock(textScrollRefLandscape.current);
+    const cleanupPortrait = setupTouchBlock(textScrollRef.current, 'Portrait');
+    const cleanupLandscape = setupTouchBlock(textScrollRefLandscape.current, 'Landscape');
     
     return () => {
       cleanupPortrait?.();
@@ -441,6 +451,7 @@ export default function BookReader() {
   // CSS touch-action handles scroll vs swipe differentiation on iPad
   const swipeHandlers = useSwipeGestures({
     onSwipeLeft: () => {
+      console.log('[SwipeHandler] onSwipeLeft triggered');
       if (currentPage < totalPages - 1 && !isFlipping) {
         setSwipeHint('next');
         setTimeout(() => setSwipeHint(null), 300);
@@ -448,6 +459,7 @@ export default function BookReader() {
       }
     },
     onSwipeRight: () => {
+      console.log('[SwipeHandler] onSwipeRight triggered');
       if (currentPage > -1 && !isFlipping) {
         setSwipeHint('prev');
         setTimeout(() => setSwipeHint(null), 300);

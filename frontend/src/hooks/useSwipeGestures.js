@@ -27,6 +27,8 @@ export function useSwipeGestures({
     const scrollableParent = target.closest('[data-scrollable="true"]');
     isScrollableAreaRef.current = !!scrollableParent;
     
+    console.log('[SwipeGestures] touchstart - scrollableArea:', isScrollableAreaRef.current, 'target:', target.className);
+    
     touchStartRef.current = {
       x: e.touches[0].clientX,
       y: e.touches[0].clientY,
@@ -45,6 +47,8 @@ export function useSwipeGestures({
   }, []);
 
   const handleTouchEnd = useCallback(() => {
+    console.log('[SwipeGestures] touchend - enabled:', enabled, 'moved:', touchMovedRef.current);
+    
     if (!enabled) return;
 
     // If no movement occurred, reset and exit
@@ -59,6 +63,8 @@ export function useSwipeGestures({
     const deltaY = touchEndRef.current.y - touchStartRef.current.y;
     const absDeltaX = Math.abs(deltaX);
     const absDeltaY = Math.abs(deltaY);
+    
+    console.log('[SwipeGestures] touchend - deltaX:', deltaX, 'deltaY:', deltaY, 'scrollable:', isScrollableAreaRef.current);
 
     // IPAD FIX: If started in scrollable area AND movement is more vertical than horizontal
     // then DO NOT trigger swipe - user is scrolling text
