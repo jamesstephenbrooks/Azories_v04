@@ -414,21 +414,23 @@ textarea:focus {
 }
 
 
-/* iPad/iOS touch handling - CSS-first approach for scroll vs swipe */
-/* Text containers should ONLY allow vertical scrolling */
+/* iPad/iOS touch handling - FRESH APPROACH */
+/* Text containers: vertical scroll ONLY, completely isolated from page turner */
 .text-scroll-container,
 [data-scrollable="true"] {
   touch-action: pan-y !important;
   -webkit-overflow-scrolling: touch !important;
   overscroll-behavior: contain;
+  /* Ensure the container captures all touch events */
+  pointer-events: auto !important;
 }
 
-/* Page turn containers should ONLY allow horizontal swiping */
-#book-container {
-  touch-action: pan-x !important;
-}
+/* Image containers: horizontal swipe for page turns */
+/* Applied inline via swipeHandlers - no global rule needed */
 
-/* Prevent any touch-action inheritance issues on nested elements */
-.text-scroll-container * {
+/* Ensure text container children don't interfere */
+.text-scroll-container *,
+[data-scrollable="true"] * {
   touch-action: inherit;
+  pointer-events: auto;
 }

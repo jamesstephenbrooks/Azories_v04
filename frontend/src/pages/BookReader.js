@@ -43,6 +43,43 @@ export default function BookReader() {
   const [forceLandscapeTest, setForceLandscapeTest] = useState(false); // TEMP: For testing landscape mode
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
   const textScrollRef = useRef(null);
+  const textScrollRefLandscape = useRef(null); // Separate ref for landscape text container
+  
+  // FRESH APPROACH: Completely block ALL touch events from text area
+  // This prevents ANY touch interaction in the text area from reaching the page turner
+  useEffect(() => {
+    const setupTouchBlock = (textEl) => {
+      if (!textEl) return null;
+      
+      // Tell browser this element only scrolls vertically
+      textEl.style.touchAction = 'pan-y';
+      textEl.style.webkitOverflowScrolling = 'touch';
+      
+      // Stop ALL touch events from reaching the page turner
+      const stopPropagation = (e) => {
+        e.stopPropagation();
+      };
+      
+      textEl.addEventListener('touchstart', stopPropagation, { passive: true });
+      textEl.addEventListener('touchmove', stopPropagation, { passive: true });
+      textEl.addEventListener('touchend', stopPropagation, { passive: true });
+      
+      return () => {
+        textEl.removeEventListener('touchstart', stopPropagation);
+        textEl.removeEventListener('touchmove', stopPropagation);
+        textEl.removeEventListener('touchend', stopPropagation);
+      };
+    };
+    
+    // Set up touch blocking for both portrait and landscape text refs
+    const cleanupPortrait = setupTouchBlock(textScrollRef.current);
+    const cleanupLandscape = setupTouchBlock(textScrollRefLandscape.current);
+    
+    return () => {
+      cleanupPortrait?.();
+      cleanupLandscape?.();
+    };
+  }, [currentPage, isMobilePortrait, isMobileLandscape]); // Re-run when page or mode changes
   
   // Continue Reading state
   const [showContinuePrompt, setShowContinuePrompt] = useState(false);
@@ -1627,8 +1664,6 @@ export default function BookReader() {
         } px-1 sm:px-2 flex items-center justify-center min-h-screen transition-all duration-300 ${
           isFullscreen ? 'bg-black/95 fixed inset-0 z-50 pt-4 sm:pt-6 pb-4 sm:pb-6' : ''
         }`}
-        {...swipeHandlers}
-        style={{ touchAction: 'pan-x' }}
         data-testid="book-container"
       >
         {/* Swipe hint indicators */}
@@ -1779,9 +1814,11 @@ export default function BookReader() {
                 ) : (
                 <>
                 {/* Top: Illustration - 55% of available height with portrait crop */}
+                {/* SWIPE HANDLERS ON IMAGE ONLY - text area is completely blocked */}
                 <div 
                   className="relative flex-shrink-0 rounded-t-2xl overflow-hidden shadow-lg"
-                  style={{ height: '55%' }}
+                  style={{ height: '55%', touchAction: 'pan-x' }}
+                  {...swipeHandlers}
                 >
                   {currentPageData?.image_url ? (
                     <img 
@@ -1816,7 +1853,6 @@ export default function BookReader() {
                     ref={textScrollRef}
                     className="h-full overflow-y-auto px-5 py-4 pb-8 text-scroll-container"
                     data-scrollable="true"
-                    style={{ touchAction: 'pan-y', WebkitOverflowScrolling: 'touch' }}
                   >
                     {(currentPageData?.text_content || currentPageData?.text || currentPageData?.content) ? (
                       <p className="font-reader text-base leading-relaxed text-foreground/90 whitespace-pre-wrap">
@@ -1905,11 +1941,14 @@ export default function BookReader() {
                     style={{ height: 'calc(100vh - 24px)' }}
                   >
                     {/* Left Page: Illustration with portrait crop */}
+                    {/* SWIPE HANDLERS ON IMAGE ONLY - text area is completely blocked */}
                     <div 
                       className="relative flex-1 rounded-l-lg overflow-hidden"
                       style={{ 
-                        boxShadow: '4px 0 15px -5px rgba(0,0,0,0.2)'
+                        boxShadow: '4px 0 15px -5px rgba(0,0,0,0.2)',
+                        touchAction: 'pan-x'
                       }}
+                      {...swipeHandlers}
                     >
                       {currentPageData?.image_url ? (
                         <img 
@@ -1951,10 +1990,9 @@ export default function BookReader() {
                       
                       {/* Text content - scrollable with indicator */}
                       <div 
-                        ref={textScrollRef}
+                        ref={textScrollRefLandscape}
                         className="flex-1 overflow-y-auto px-5 py-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent text-scroll-container"
                         data-scrollable="true"
-                        style={{ touchAction: 'pan-y', WebkitOverflowScrolling: 'touch' }}
                       >
                         {(currentPageData?.text_content || currentPageData?.text || currentPageData?.content) ? (
                           <p className="font-reader text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap text-center">
