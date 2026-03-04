@@ -412,16 +412,21 @@ export default function BookReader() {
   
   // FRESH APPROACH v2: Completely block ALL touch events from text area
   // Using capture phase and direct DOM manipulation for maximum reliability on iPad
+  // FULLSCREEN FIX: Re-attach touch listeners when fullscreen changes
+  // The DOM may re-render and lose event listeners when entering/exiting fullscreen
   useEffect(() => {
+    addDebug(`🔄 Setup: fullscreen=${isFullscreen}, page=${currentPage}`);
+    
     // Get refs to both text containers
     const portraitTextEl = textScrollRef.current;
     const landscapeTextEl = textScrollRefLandscape.current;
     
+    addDebug(`📍 Refs: portrait=${!!portraitTextEl}, landscape=${!!landscapeTextEl}`);
+    
     // Simple stopPropagation function that blocks touch events from bubbling
     const blockTouch = (e) => {
       e.stopPropagation();
-      // Log for debugging on iPad
-      console.log('[TextBlock] Blocked:', e.type, 'on', e.currentTarget.className?.slice(0,30));
+      addDebug(`🛑 BLOCKED ${e.type} in text`);
     };
     
     // Set up blocking on portrait text container
@@ -434,7 +439,7 @@ export default function BookReader() {
       portraitTextEl.addEventListener('touchstart', blockTouch, { capture: true, passive: true });
       portraitTextEl.addEventListener('touchmove', blockTouch, { capture: true, passive: true });
       portraitTextEl.addEventListener('touchend', blockTouch, { capture: true, passive: true });
-      console.log('[TextBlock] Portrait text container: listeners attached');
+      addDebug('✅ Portrait listeners attached');
     }
     
     // Set up blocking on landscape text container
@@ -446,7 +451,7 @@ export default function BookReader() {
       landscapeTextEl.addEventListener('touchstart', blockTouch, { capture: true, passive: true });
       landscapeTextEl.addEventListener('touchmove', blockTouch, { capture: true, passive: true });
       landscapeTextEl.addEventListener('touchend', blockTouch, { capture: true, passive: true });
-      console.log('[TextBlock] Landscape text container: listeners attached');
+      addDebug('✅ Landscape listeners attached');
     }
     
     return () => {
@@ -460,21 +465,27 @@ export default function BookReader() {
         landscapeTextEl.removeEventListener('touchmove', blockTouch, { capture: true });
         landscapeTextEl.removeEventListener('touchend', blockTouch, { capture: true });
       }
+      addDebug('🧹 Cleanup listeners');
     };
-  }, []); // Empty deps - only run once on mount
+  }, [isFullscreen, currentPage, addDebug]); // RE-RUN when fullscreen or page changes
   
-  // Re-attach when page changes (refs might point to new elements)
+  // Additional safety: Re-apply CSS touch-action after any render
   useEffect(() => {
-    const portraitTextEl = textScrollRef.current;
-    const landscapeTextEl = textScrollRefLandscape.current;
+    // Small delay to ensure DOM is updated after fullscreen toggle
+    const timer = setTimeout(() => {
+      const portraitTextEl = textScrollRef.current;
+      const landscapeTextEl = textScrollRefLandscape.current;
+      
+      if (portraitTextEl) {
+        portraitTextEl.style.touchAction = 'pan-y';
+      }
+      if (landscapeTextEl) {
+        landscapeTextEl.style.touchAction = 'pan-y';
+      }
+    }, 100);
     
-    if (portraitTextEl) {
-      portraitTextEl.style.touchAction = 'pan-y';
-    }
-    if (landscapeTextEl) {
-      landscapeTextEl.style.touchAction = 'pan-y';
-    }
-  }, [currentPage]);
+    return () => clearTimeout(timer);
+  }, [isFullscreen]);
   
   const isCover = currentPage === -1;
   const isBackCover = currentPage === -2;
@@ -1775,10 +1786,12 @@ export default function BookReader() {
       >
         {/* DEBUG OVERLAY - Shows touch events on iPad without console */}
         <div 
-          className="fixed top-20 left-2 right-2 z-[9999] bg-black/80 text-green-400 text-xs font-mono p-2 rounded-lg max-h-32 overflow-hidden"
+          className="fixed top-20 left-2 right-2 z-[9999] bg-black/80 text-green-400 text-xs font-mono p-2 rounded-lg max-h-36 overflow-hidden"
           style={{ pointerEvents: 'none' }}
         >
-          <div className="text-yellow-400 mb-1">🔍 iPad Debug v2 - Touch the screen</div>
+          <div className="text-yellow-400 mb-1">
+            🔍 Debug v3 | FS: {isFullscreen ? '✅ON' : '❌OFF'} | Page: {currentPage}
+          </div>
           {debugMessages.length === 0 ? (
             <div className="text-gray-400">Waiting for touch events...</div>
           ) : (
