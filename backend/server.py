@@ -10515,6 +10515,65 @@ async def get_starter_library_status(current_user: dict = Depends(get_current_us
     }
 
 
+class StarterLibraryImportItem(BaseModel):
+    id: str
+    name: str
+    category: str
+    art_style: Optional[str] = None
+    tags: Optional[List[str]] = []
+    url: str
+    thumbnail_url: Optional[str] = None
+    created_at: Optional[str] = None
+
+class StarterLibraryImportRequest(BaseModel):
+    images: List[StarterLibraryImportItem]
+
+@api_router.post("/admin/import-starter-library")
+async def import_starter_library(request: StarterLibraryImportRequest, current_user: dict = Depends(get_current_user)):
+    """
+    Admin endpoint to bulk import starter library images.
+    Use this to copy starter library data from preview to production.
+    """
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    imported = 0
+    skipped = 0
+    errors = []
+    
+    for item in request.images:
+        try:
+            # Check if already exists
+            existing = await db.starter_library.find_one({"id": item.id})
+            if existing:
+                skipped += 1
+                continue
+            
+            # Insert new item
+            doc = {
+                "id": item.id,
+                "name": item.name,
+                "category": item.category,
+                "art_style": item.art_style,
+                "tags": item.tags or [],
+                "url": item.url,
+                "thumbnail_url": item.thumbnail_url or item.url,
+                "created_at": datetime.now(timezone.utc)
+            }
+            await db.starter_library.insert_one(doc)
+            imported += 1
+            
+        except Exception as e:
+            errors.append(f"{item.id}: {str(e)[:50]}")
+    
+    return {
+        "message": f"Import complete",
+        "imported": imported,
+        "skipped": skipped,
+        "total_in_db": await db.starter_library.count_documents({}),
+        "errors": errors[:10] if errors else []
+    }
+
 
 class SaveAnimationRequest(BaseModel):
     video_url: str
