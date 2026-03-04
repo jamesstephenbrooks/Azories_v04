@@ -10118,6 +10118,7 @@ async def art_studio_gallery(
                 "_id": str(item["_id"]),
                 "id": str(item["_id"]),
                 "image_url": item["image_url"],
+                "thumbnail_url": item.get("thumbnail_url"),  # For video thumbnails
                 "name": item.get("name", "Untitled"),
                 "type": item.get("type", "character"),
                 "style": item.get("style", "fantasy"),
@@ -10370,16 +10371,19 @@ async def get_starter_library(category: Optional[str] = None):
     if db_images and len(db_images) > 0:
         images = db_images
     else:
-        # Fallback to old placeholder data with placeholder URLs
-        # Note: OLD data has relative URLs that won't work - convert to placeholders
+        # Fallback to old placeholder data with proper placeholder URLs
+        # OLD data has relative URLs that won't work - generate working Cloudinary placeholders
         images = []
         for img in STARTER_LIBRARY_IMAGES_OLD:
-            # Check if url is valid (starts with http)
             img_copy = img.copy()
             if not img_copy.get("url", "").startswith("http"):
-                # Use a placeholder Cloudinary URL - a gradient placeholder
-                img_copy["url"] = f"https://res.cloudinary.com/dlbmjqmoy/image/upload/c_fill,w_500,h_500,co_rgb:9333ea,b_rgb:7c3aed/v1/placeholder_{img_copy.get('id', 'unknown')}.png"
-                img_copy["thumbnail_url"] = img_copy["url"]
+                # Use Cloudinary's text overlay feature to create a branded placeholder
+                # This creates a purple square with category name - works without uploading any image
+                category = img_copy.get("category", "image")[:15]  # Limit text length
+                name = img_copy.get("name", "")[:20]  # Limit text length
+                placeholder_url = f"https://res.cloudinary.com/dlbmjqmoy/image/upload/w_400,h_400,c_fill/co_white,l_text:Arial_16_bold:{category}/fl_layer_apply,g_center,y_-20/co_white,l_text:Arial_12:{name.replace(' ', '%20')}/fl_layer_apply,g_center,y_20/c_fill,w_400,h_400,b_rgb:7c3aed/sample.jpg"
+                img_copy["url"] = placeholder_url
+                img_copy["thumbnail_url"] = placeholder_url
             images.append(img_copy)
     
     if category:
@@ -10600,6 +10604,7 @@ async def get_all_user_videos(current_user: dict = Depends(get_current_user)):
             all_videos.append({
                 "id": str(video["_id"]),
                 "video_url": video.get("image_url", ""),
+                "thumbnail_url": video.get("thumbnail_url"),  # Video thumbnail
                 "name": video.get("name", "Animation"),
                 "source": "art_studio",
                 "style": video.get("style", ""),
@@ -10622,6 +10627,7 @@ async def get_all_user_videos(current_user: dict = Depends(get_current_user)):
                 all_videos.append({
                     "id": str(video["_id"]),
                     "video_url": video.get("image_url", ""),
+                    "thumbnail_url": video.get("thumbnail_url"),  # Video thumbnail
                     "name": f"{char.get('name', 'Character')} - Video",
                     "source": "character",
                     "character_name": char.get("name", ""),
