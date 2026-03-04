@@ -1550,10 +1550,10 @@ export default function BookReader() {
           {/* Floating page counter - bottom right */}
           {totalPages > 0 && (
             <div 
-              className="fixed bottom-20 right-3 z-50 px-3 py-1.5 rounded-full bg-black/30 backdrop-blur-md shadow-lg"
+              className="fixed bottom-6 right-3 z-50 px-2.5 py-1 rounded-full bg-black/40 backdrop-blur-md shadow-lg"
               data-testid="mobile-page-counter"
             >
-              <span className="text-white/90 text-xs font-medium">
+              <span className="text-white/80 text-[10px] font-medium">
                 {currentPage < 0 ? (currentPage === -2 ? 'Back' : 'Cover') : `${currentPage + 1} / ${totalPages}`}
               </span>
             </div>
