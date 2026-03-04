@@ -57,6 +57,7 @@ export default function BookReader() {
   const [autoRead, setAutoRead] = useState(false);  // OFF by default - user clicks Read/Listen to enable
   const [narrationPreparing, setNarrationPreparing] = useState(false); // Show "Preparing narration..." message
   const [narrationReady, setNarrationReady] = useState(false); // First few pages are cached
+  const [audioProgress, setAudioProgress] = useState(0); // 0 to 1 - for auto-scroll sync
   
   // Audio cache for pre-loading upcoming pages
   const audioCache = useRef(new Map()); // pageIndex -> audio base64
@@ -1370,6 +1371,57 @@ export default function BookReader() {
     };
   }, [audioElement]);
 
+  // Auto-scroll text during narration (karaoke-style reading)
+  useEffect(() => {
+    if (!audioElement || !isPlaying) {
+      return;
+    }
+    
+    const handleTimeUpdate = () => {
+      if (audioElement.duration && audioElement.duration > 0) {
+        const progress = audioElement.currentTime / audioElement.duration;
+        setAudioProgress(progress);
+        
+        // Auto-scroll the text container based on audio progress
+        const textContainer = textScrollRef.current;
+        if (textContainer) {
+          const scrollableHeight = textContainer.scrollHeight - textContainer.clientHeight;
+          if (scrollableHeight > 0) {
+            // Use a slight ease-out curve for more natural scrolling
+            // Don't scroll all the way - leave some buffer at the end
+            const targetScroll = Math.min(progress * 1.1, 1) * scrollableHeight;
+            
+            // Smooth scroll with requestAnimationFrame for performance
+            const currentScroll = textContainer.scrollTop;
+            const diff = targetScroll - currentScroll;
+            
+            // Only scroll if difference is significant (avoid jitter)
+            if (Math.abs(diff) > 2) {
+              // Smooth interpolation - move 15% of the way each update
+              textContainer.scrollTop = currentScroll + (diff * 0.15);
+            }
+          }
+        }
+      }
+    };
+    
+    // Listen to timeupdate events
+    audioElement.addEventListener('timeupdate', handleTimeUpdate);
+    
+    return () => {
+      audioElement.removeEventListener('timeupdate', handleTimeUpdate);
+    };
+  }, [audioElement, isPlaying]);
+
+  // Reset audio progress and scroll when page changes
+  useEffect(() => {
+    setAudioProgress(0);
+    // Reset scroll position when page changes
+    if (textScrollRef.current) {
+      textScrollRef.current.scrollTop = 0;
+    }
+  }, [currentPage]);
+
   // Scroll indicator for mobile text container
   useEffect(() => {
     const checkScrollable = () => {
@@ -1390,14 +1442,6 @@ export default function BookReader() {
       return () => el.removeEventListener('scroll', checkScrollable);
     }
   }, [currentPage, currentPageData]);
-
-  // Scroll text content to top when page changes (mobile portrait/landscape)
-  useEffect(() => {
-    if ((isMobilePortrait || isMobileLandscape) && textScrollRef.current) {
-      // Scroll the text container back to top when navigating to a new page
-      textScrollRef.current.scrollTop = 0;
-    }
-  }, [currentPage, isMobilePortrait, isMobileLandscape]);
 
   if (loading || authLoading) {
     return (
@@ -1764,7 +1808,7 @@ export default function BookReader() {
                     )}
                   </div>
                   {/* Scroll indicator - shows when more content below */}
-                  {showScrollIndicator && (
+                  {showScrollIndicator && !isPlaying && (
                     <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
                       <div className="h-16 bg-gradient-to-t from-[#fdfbf7] dark:from-[#2a2a30] to-transparent" />
                       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center">
@@ -1772,6 +1816,15 @@ export default function BookReader() {
                           <FiChevronDown className="w-4 h-4 text-purple-500/70" />
                         </div>
                       </div>
+                    </div>
+                  )}
+                  {/* Narration progress bar - shows during audio playback */}
+                  {isPlaying && audioProgress > 0 && (
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-purple-200/30 dark:bg-purple-900/30">
+                      <div 
+                        className="h-full bg-purple-500/60 transition-all duration-300 ease-out"
+                        style={{ width: `${audioProgress * 100}%` }}
+                      />
                     </div>
                   )}
                 </div>
@@ -1896,7 +1949,7 @@ export default function BookReader() {
                       </div>
                       
                       {/* Scroll down indicator - shown when more text below */}
-                      {showScrollIndicator && (
+                      {showScrollIndicator && !isPlaying && (
                         <div className="absolute bottom-12 left-0 right-0 pointer-events-none">
                           <div className="h-8 bg-gradient-to-t from-[#fdfbf7] dark:from-[#2a2a30] to-transparent" />
                           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center">
@@ -1904,6 +1957,15 @@ export default function BookReader() {
                               <FiChevronDown className="w-4 h-4 text-purple-500/70" />
                             </div>
                           </div>
+                        </div>
+                      )}
+                      {/* Narration progress bar - landscape */}
+                      {isPlaying && audioProgress > 0 && (
+                        <div className="absolute bottom-12 left-0 right-0 h-1 bg-purple-200/30 dark:bg-purple-900/30">
+                          <div 
+                            className="h-full bg-purple-500/60 transition-all duration-300 ease-out"
+                            style={{ width: `${audioProgress * 100}%` }}
+                          />
                         </div>
                       )}
                       

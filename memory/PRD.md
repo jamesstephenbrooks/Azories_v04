@@ -48,6 +48,21 @@ User wants to enhance their "Azories" digital book application with:
 - **Fix**: Added explicit `playAudio()` call with 400ms delay after page transition in `audio.onended`
 - **File**: `frontend/src/pages/BookReader.js` (lines 1055-1088)
 
+### Bug Fix 3: Auto-Scroll Text During Narration ✅ NEW
+- **Feature**: Karaoke-style reading - text automatically scrolls as narration plays
+- **Implementation**:
+  - Added `audioProgress` state (0 to 1) tracking audio playback position
+  - Added `timeupdate` event listener on audio element
+  - Smooth scroll interpolation (15% per frame) for natural movement
+  - Progress bar at bottom of text container shows narration position
+- **Behaviors**:
+  - Scroll position tracks audio progress proportionally
+  - Scroll stops when audio is paused
+  - Scroll resets to top on page change
+  - Works on both iPad and desktop
+- **Files**: `frontend/src/pages/BookReader.js` (lines 1374-1418)
+- **Visual**: Purple progress bar at bottom of text area during playback
+
 ### Bug Fix 2: iPad Scroll Triggers Page Turn ✅
 - **Issue**: Scrolling text was incorrectly detected as horizontal swipe, triggering page turns
 - **Root Cause**: Swipe detection ratio was too lenient (1.5x) and didn't aggressively block scrolling
