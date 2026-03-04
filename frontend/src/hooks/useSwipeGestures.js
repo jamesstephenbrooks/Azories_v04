@@ -1,6 +1,7 @@
 import { useRef, useEffect, useCallback } from 'react';
 
 // Hook for swipe gesture detection
+// CRITICAL FOR IPAD: This hook must completely block page turns when user is scrolling text
 export function useSwipeGestures({
   onSwipeLeft,
   onSwipeRight,
@@ -15,29 +16,34 @@ export function useSwipeGestures({
   const isScrollingRef = useRef(false);
   const startedInScrollableRef = useRef(false);
   const touchMovedRef = useRef(false); // Track if any movement occurred
+  const completelyBlockedRef = useRef(false); // If true, NO swipe will trigger
 
-  // Check if an element or its parents are scrollable
+  // Check if an element or its parents are scrollable text containers
   const isInScrollableElement = useCallback((element) => {
     let current = element;
     while (current && current !== document.body) {
+      // CRITICAL CHECK: If this is a text-scroll-container, ALWAYS block swipes
+      // This is the primary fix for iPad scroll-triggering-page-turn bug
+      if (current.classList?.contains('text-scroll-container') || 
+          current.dataset?.scrollable === 'true') {
+        return { 
+          element: current, 
+          direction: 'vertical', 
+          canScroll: true, 
+          isTextContainer: true  // Special flag for text containers
+        };
+      }
+      
       const style = window.getComputedStyle(current);
       const overflowY = style.overflowY;
       const overflowX = style.overflowX;
       
       // Check if element has scrollable content
       if ((overflowY === 'auto' || overflowY === 'scroll') && current.scrollHeight > current.clientHeight) {
-        return { element: current, direction: 'vertical', canScroll: true };
+        return { element: current, direction: 'vertical', canScroll: true, isTextContainer: false };
       }
       if ((overflowX === 'auto' || overflowX === 'scroll') && current.scrollWidth > current.clientWidth) {
-        return { element: current, direction: 'horizontal', canScroll: true };
-      }
-      
-      // Also check for explicit scroll classes or data attributes (for text containers)
-      if (current.dataset?.scrollable === 'true' || 
-          current.classList?.contains('overflow-y-auto') ||
-          current.classList?.contains('overflow-y-scroll') ||
-          current.classList?.contains('text-scroll-container')) {
-        return { element: current, direction: 'vertical', canScroll: current.scrollHeight > current.clientHeight };
+        return { element: current, direction: 'horizontal', canScroll: true, isTextContainer: false };
       }
       
       current = current.parentElement;
@@ -53,16 +59,25 @@ export function useSwipeGestures({
     touchEndRef.current = { x: 0, y: 0 };
     isScrollingRef.current = false;
     touchMovedRef.current = false;
+    completelyBlockedRef.current = false;
     
     // Check if touch started in a scrollable element
     if (ignoreScrollableElements) {
       const scrollable = isInScrollableElement(e.target);
       startedInScrollableRef.current = scrollable;
       
-      // If started in a scrollable vertical container, immediately mark as potential scroll
-      // This is crucial for iPad where scroll detection needs to be more aggressive
+      // CRITICAL FIX FOR IPAD: If touch started in a text container, 
+      // completely block ALL swipe gestures regardless of direction
+      if (scrollable && scrollable.isTextContainer) {
+        completelyBlockedRef.current = true;
+        isScrollingRef.current = true;
+        console.log('[SwipeGestures] Touch in text container - ALL swipes blocked');
+        return;
+      }
+      
+      // If started in a scrollable vertical container, mark as potential scroll
       if (scrollable && scrollable.direction === 'vertical' && scrollable.canScroll) {
-        isScrollingRef.current = true; // Assume scrolling until proven otherwise
+        isScrollingRef.current = true;
       }
     } else {
       startedInScrollableRef.current = null;
@@ -101,12 +116,26 @@ export function useSwipeGestures({
   const handleTouchEnd = useCallback(() => {
     if (!enabled) return;
 
+    // CRITICAL: If touch was in text container, completely block ALL swipes
+    if (completelyBlockedRef.current) {
+      console.log('[SwipeGestures] Swipe blocked - was in text container');
+      // Reset all
+      touchStartRef.current = { x: 0, y: 0 };
+      touchEndRef.current = { x: 0, y: 0 };
+      isScrollingRef.current = false;
+      startedInScrollableRef.current = null;
+      touchMovedRef.current = false;
+      completelyBlockedRef.current = false;
+      return;
+    }
+
     // If no movement occurred, reset and exit
     if (!touchMovedRef.current) {
       touchStartRef.current = { x: 0, y: 0 };
       touchEndRef.current = { x: 0, y: 0 };
       isScrollingRef.current = false;
       startedInScrollableRef.current = null;
+      completelyBlockedRef.current = false;
       return;
     }
 
@@ -123,6 +152,7 @@ export function useSwipeGestures({
       isScrollingRef.current = false;
       startedInScrollableRef.current = null;
       touchMovedRef.current = false;
+      completelyBlockedRef.current = false;
       return;
     }
 
@@ -134,6 +164,7 @@ export function useSwipeGestures({
       isScrollingRef.current = false;
       startedInScrollableRef.current = null;
       touchMovedRef.current = false;
+      completelyBlockedRef.current = false;
       return;
     }
 
@@ -172,6 +203,7 @@ export function useSwipeGestures({
     isScrollingRef.current = false;
     startedInScrollableRef.current = null;
     touchMovedRef.current = false;
+    completelyBlockedRef.current = false;
   }, [enabled, threshold, onSwipeLeft, onSwipeRight, onSwipeUp, onSwipeDown]);
 
   return {

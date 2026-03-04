@@ -48,6 +48,10 @@ export default function BookReader() {
   const [showContinuePrompt, setShowContinuePrompt] = useState(false);
   const [savedPageNumber, setSavedPageNumber] = useState(0);
   
+  // iPad scroll detection - prevents page turns while scrolling text
+  const isScrollingTextRef = useRef(false);
+  const textTouchStartRef = useRef(null);
+  
   // Audio state
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioLoading, setAudioLoading] = useState(false);
@@ -401,8 +405,14 @@ export default function BookReader() {
     : (currentPage === -2 && allPages.length > 0 ? allPages[allPages.length - 1] : null);
   
   // Swipe gestures for page navigation
+  // CRITICAL: Check isScrollingTextRef to prevent page turns while scrolling on iPad
   const swipeHandlers = useSwipeGestures({
     onSwipeLeft: () => {
+      // Block page turn if user is scrolling text
+      if (isScrollingTextRef.current) {
+        console.log('[Swipe] Blocked - user is scrolling text');
+        return;
+      }
       if (currentPage < totalPages - 1 && !isFlipping) {
         setSwipeHint('next');
         setTimeout(() => setSwipeHint(null), 300);
@@ -410,6 +420,11 @@ export default function BookReader() {
       }
     },
     onSwipeRight: () => {
+      // Block page turn if user is scrolling text
+      if (isScrollingTextRef.current) {
+        console.log('[Swipe] Blocked - user is scrolling text');
+        return;
+      }
       if (currentPage > -1 && !isFlipping) {
         setSwipeHint('prev');
         setTimeout(() => setSwipeHint(null), 300);
@@ -417,8 +432,41 @@ export default function BookReader() {
       }
     },
     threshold: 50,
-    enabled: !isFlipping
+    enabled: !isFlipping && !isScrollingTextRef.current,
+    ignoreScrollableElements: true
   });
+  
+  // Text container touch handlers - completely capture touch events to prevent page turns
+  const textContainerTouchHandlers = {
+    onTouchStart: (e) => {
+      // Mark that touch started in text area - this blocks ALL page turn gestures
+      isScrollingTextRef.current = true;
+      textTouchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      // CRITICAL: Stop propagation to prevent swipe handler from seeing this touch
+      e.stopPropagation();
+      console.log('[TextScroll] Touch started in text area - blocking page turns');
+    },
+    onTouchMove: (e) => {
+      // Keep blocking while touch is active in text area
+      isScrollingTextRef.current = true;
+      // Stop propagation to ensure swipe handler never sees movement
+      e.stopPropagation();
+    },
+    onTouchEnd: (e) => {
+      // Small delay before re-enabling page turns to prevent accidental triggers
+      setTimeout(() => {
+        isScrollingTextRef.current = false;
+        textTouchStartRef.current = null;
+        console.log('[TextScroll] Touch ended - page turns re-enabled');
+      }, 100);
+      e.stopPropagation();
+    },
+    onTouchCancel: (e) => {
+      isScrollingTextRef.current = false;
+      textTouchStartRef.current = null;
+      e.stopPropagation();
+    }
+  };
 
   useEffect(() => {
     // Mark component as mounted
@@ -1788,7 +1836,7 @@ export default function BookReader() {
                     ref={textScrollRef}
                     className="h-full overflow-y-auto px-5 py-4 pb-8 text-scroll-container"
                     data-scrollable="true"
-                    onTouchStart={(e) => e.stopPropagation()}
+                    {...textContainerTouchHandlers}
                   >
                     {(currentPageData?.text_content || currentPageData?.text || currentPageData?.content) ? (
                       <p className="font-reader text-base leading-relaxed text-foreground/90 whitespace-pre-wrap">
@@ -1926,7 +1974,7 @@ export default function BookReader() {
                         ref={textScrollRef}
                         className="flex-1 overflow-y-auto px-5 py-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent text-scroll-container"
                         data-scrollable="true"
-                        onTouchStart={(e) => e.stopPropagation()}
+                        {...textContainerTouchHandlers}
                       >
                         {(currentPageData?.text_content || currentPageData?.text || currentPageData?.content) ? (
                           <p className="font-reader text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap text-center">
