@@ -5276,17 +5276,25 @@ export default function ProStudio() {
                     <div key={item.id} className="relative group rounded-lg overflow-hidden bg-gray-800 border border-gray-700 hover:border-purple-500/50 transition-colors">
                       {/* Media Preview */}
                       {isVideo ? (
-                        <div className="relative w-full aspect-square bg-gray-900">
+                        <div className="relative w-full aspect-square bg-purple-900/50">
                           {/* Video thumbnail - use saved thumbnail or show placeholder */}
                           <img 
                             src={item.thumbnail_url || getVideoThumbnailUrl(item.image_url || item.url) || AZORIES_VIDEO_PLACEHOLDER}
                             alt="Video thumbnail"
                             className="video-thumbnail absolute inset-0 w-full h-full object-cover"
                             onError={(e) => handleImageError(e, true)}
+                            onLoad={(e) => { e.target.style.opacity = '1'; }}
+                            style={{ opacity: 0.01, transition: 'opacity 0.2s' }}
                           />
+                          {/* Fallback play icon always visible behind thumbnail */}
+                          <div className="absolute inset-0 flex items-center justify-center bg-purple-900/50 -z-10">
+                            <div className="w-12 h-12 rounded-full bg-purple-500/60 flex items-center justify-center">
+                              <FiPlay className="w-6 h-6 text-white ml-1" />
+                            </div>
+                          </div>
                           <video 
                             src={item.image_url || item.url} 
-                            className="w-full h-full object-cover absolute inset-0 opacity-0 hover:opacity-100 transition-opacity" 
+                            className="w-full h-full object-cover absolute inset-0 opacity-0 hover:opacity-100 transition-opacity z-10" 
                             muted 
                             playsInline 
                             loop

@@ -2214,16 +2214,25 @@ export default function ArtStudio() {
                             <div className="px-3 pb-3">
                               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 max-h-32 overflow-y-auto">
                                 {starterLibrary.slice(0, 20).map((item) => {
-                                  const thumbUrl = item.url?.includes('cloudinary.com')
-                                    ? item.url.replace('/upload/', '/upload/f_auto,q_auto,w_100,c_fill/')
-                                    : (item.url || item.thumbnail_url);
+                                  // Get valid thumbnail URL - must be absolute URL (starts with http)
+                                  const imgUrl = item.url || item.thumbnail_url || item.image_url;
+                                  let thumbUrl = null;
+                                  if (imgUrl && imgUrl.startsWith('http')) {
+                                    thumbUrl = imgUrl.includes('cloudinary.com')
+                                      ? imgUrl.replace('/upload/', '/upload/f_auto,q_auto,w_100,c_fill/')
+                                      : imgUrl;
+                                  }
                                   return (
                                   <button
                                     key={item._id || item.id}
                                     onClick={() => {
-                                      setAnimatingImage(item.url || item.image_url);
-                                      setAnimatingImageData(item);
-                                      setAnimationMotion('gentle breathing, subtle movement, natural animation');
+                                      // Only use URL if it's valid
+                                      const validUrl = (item.url && item.url.startsWith('http')) ? item.url : (item.image_url || null);
+                                      if (validUrl) {
+                                        setAnimatingImage(validUrl);
+                                        setAnimatingImageData(item);
+                                        setAnimationMotion('gentle breathing, subtle movement, natural animation');
+                                      }
                                     }}
                                     className={`relative rounded-lg overflow-hidden border-2 transition-all ${
                                       animatingImage === (item.url || item.image_url) ? 'border-pink-500' : 'border-transparent hover:border-amber-500'
@@ -2916,10 +2925,17 @@ export default function ArtStudio() {
                                 {starterLibrary
                                   .filter(img => !starterLibraryFilter || starterLibraryFilter === 'all' || img.category === starterLibraryFilter)
                                   .map((img) => {
-                                  // Optimize Cloudinary URL for thumbnails
-                                  const thumbnailUrl = img.url?.includes('cloudinary.com') 
-                                    ? img.url.replace('/upload/', '/upload/f_auto,q_auto,w_150,c_fill/')
-                                    : (img.url || img.thumbnail_url);
+                                  // Get valid thumbnail URL - must be absolute URL (starts with http)
+                                  let thumbnailUrl = null;
+                                  const imgUrl = img.url || img.thumbnail_url || img.image_url;
+                                  
+                                  if (imgUrl && imgUrl.startsWith('http')) {
+                                    // Valid absolute URL - optimize if Cloudinary
+                                    thumbnailUrl = imgUrl.includes('cloudinary.com') 
+                                      ? imgUrl.replace('/upload/', '/upload/f_auto,q_auto,w_150,c_fill/')
+                                      : imgUrl;
+                                  }
+                                  // If no valid URL, thumbnailUrl stays null and fallback will be used
                                   
                                   return (
                                   <div
@@ -3598,17 +3614,25 @@ export default function ArtStudio() {
                       <div className="p-4 pt-0">
                         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 max-h-48 overflow-y-auto">
                           {starterLibrary.map((item) => {
-                            const thumbUrl = item.url?.includes('cloudinary.com')
-                              ? item.url.replace('/upload/', '/upload/f_auto,q_auto,w_120,c_fill/')
-                              : (item.url || item.thumbnail_url);
+                            // Get valid thumbnail URL - must be absolute URL (starts with http)
+                            const imgUrl = item.url || item.thumbnail_url || item.image_url;
+                            let thumbUrl = null;
+                            if (imgUrl && imgUrl.startsWith('http')) {
+                              thumbUrl = imgUrl.includes('cloudinary.com')
+                                ? imgUrl.replace('/upload/', '/upload/f_auto,q_auto,w_120,c_fill/')
+                                : imgUrl;
+                            }
                             return (
                             <button
                               key={item._id || item.id}
                               onClick={() => {
+                                // Only use URL if it's valid
+                                const validUrl = (item.url && item.url.startsWith('http')) ? item.url : null;
+                                if (!validUrl) return;
                                 if (galleryPickerTarget === 'style') {
-                                  setStyleReferenceImage(item.url || item.image_url);
+                                  setStyleReferenceImage(validUrl);
                                 } else {
-                                  setCharacterReferenceImage(item.url || item.image_url);
+                                  setCharacterReferenceImage(validUrl);
                                 }
                                 setShowGalleryPicker(false);
                               }}

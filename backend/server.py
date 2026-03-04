@@ -10370,8 +10370,17 @@ async def get_starter_library(category: Optional[str] = None):
     if db_images and len(db_images) > 0:
         images = db_images
     else:
-        # Fallback to old placeholder data
-        images = STARTER_LIBRARY_IMAGES_OLD
+        # Fallback to old placeholder data with placeholder URLs
+        # Note: OLD data has relative URLs that won't work - convert to placeholders
+        images = []
+        for img in STARTER_LIBRARY_IMAGES_OLD:
+            # Check if url is valid (starts with http)
+            img_copy = img.copy()
+            if not img_copy.get("url", "").startswith("http"):
+                # Use a placeholder Cloudinary URL - a gradient placeholder
+                img_copy["url"] = f"https://res.cloudinary.com/dlbmjqmoy/image/upload/c_fill,w_500,h_500,co_rgb:9333ea,b_rgb:7c3aed/v1/placeholder_{img_copy.get('id', 'unknown')}.png"
+                img_copy["thumbnail_url"] = img_copy["url"]
+            images.append(img_copy)
     
     if category:
         images = [img for img in images if img.get("category") == category]

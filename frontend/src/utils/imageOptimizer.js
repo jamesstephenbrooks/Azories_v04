@@ -180,47 +180,12 @@ export const getVideoThumbnailUrl = (videoUrl, options = {}) => {
 };
 
 /**
- * Azories branded placeholder SVG as data URI
- * Purple gradient with book icon - used when images fail to load
+ * Azories branded placeholder images as inline data URIs
+ * Using simple, browser-compatible SVGs
  */
-export const AZORIES_PLACEHOLDER = `data:image/svg+xml,${encodeURIComponent(`
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-  <defs>
-    <linearGradient id="purpleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#7c3aed;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
-    </linearGradient>
-  </defs>
-  <rect width="200" height="200" fill="url(#purpleGradient)"/>
-  <g transform="translate(60, 50)" fill="rgba(255,255,255,0.3)">
-    <path d="M0 10C0 4.477 4.477 0 10 0h60c5.523 0 10 4.477 10 10v80c0 5.523-4.477 10-10 10H10c-5.523 0-10-4.477-10-10V10z"/>
-    <path d="M10 5h60v90H10V5z" fill="rgba(255,255,255,0.2)"/>
-    <path d="M20 25h40v5H20v-5zM20 40h40v5H20v-5zM20 55h25v5H20v-5z" fill="rgba(255,255,255,0.4)"/>
-  </g>
-  <text x="100" y="165" font-family="system-ui, sans-serif" font-size="14" fill="rgba(255,255,255,0.5)" text-anchor="middle">Azories</text>
-</svg>
-`)}`;
+export const AZORIES_PLACEHOLDER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect fill='%237c3aed' width='200' height='200'/%3E%3Ctext x='100' y='90' fill='%23fff' font-family='Arial' font-size='16' text-anchor='middle'%3EAzories%3C/text%3E%3Crect x='70' y='105' width='60' height='50' rx='5' fill='%23ffffff33'/%3E%3C/svg%3E";
 
-/**
- * Azories branded video placeholder SVG as data URI
- * Purple gradient with film/play icon
- */
-export const AZORIES_VIDEO_PLACEHOLDER = `data:image/svg+xml,${encodeURIComponent(`
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-  <defs>
-    <linearGradient id="videoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#7c3aed;stop-opacity:1" />
-      <stop offset="50%" style="stop-color:#a855f7;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#ec4899;stop-opacity:1" />
-    </linearGradient>
-  </defs>
-  <rect width="200" height="200" fill="url(#videoGradient)"/>
-  <circle cx="100" cy="85" r="35" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.3)" stroke-width="3"/>
-  <polygon points="90,70 90,100 115,85" fill="rgba(255,255,255,0.5)"/>
-  <text x="100" y="145" font-family="system-ui, sans-serif" font-size="12" fill="rgba(255,255,255,0.5)" text-anchor="middle">Video</text>
-  <text x="100" y="165" font-family="system-ui, sans-serif" font-size="14" fill="rgba(255,255,255,0.5)" text-anchor="middle">Azories</text>
-</svg>
-`)}`;
+export const AZORIES_VIDEO_PLACEHOLDER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect fill='%237c3aed' width='200' height='200'/%3E%3Ccircle cx='100' cy='85' r='30' fill='%23ffffff33'/%3E%3Cpolygon points='90,70 90,100 115,85' fill='%23fff'/%3E%3Ctext x='100' y='150' fill='%23fff' font-family='Arial' font-size='14' text-anchor='middle'%3EAzories%3C/text%3E%3C/svg%3E";
 
 /**
  * Handle image load error with branded fallback
@@ -231,8 +196,9 @@ export const handleImageError = (event, isVideo = false) => {
   const fallback = isVideo ? AZORIES_VIDEO_PLACEHOLDER : AZORIES_PLACEHOLDER;
   
   // Prevent infinite loop if fallback also fails
-  if (target.src === fallback) return;
+  if (target.dataset.fallbackSet === 'true') return;
   
+  target.dataset.fallbackSet = 'true';
   target.src = fallback;
   target.onerror = null; // Prevent further error handling
 };
