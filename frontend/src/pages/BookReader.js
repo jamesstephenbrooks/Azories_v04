@@ -21,6 +21,7 @@ import { useSwipeGestures } from '@/hooks/useSwipeGestures';
 import RealisticPageFlip from '@/components/RealisticPageFlip';
 import PWAPrompt from '@/components/PWAPrompt';
 import { AZORA_ASSETS } from '@/components/AzoraMascot';
+import PrintOrderModal from '@/components/PrintOrderModal';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -179,6 +180,9 @@ export default function BookReader() {
   // Printable PDF state
   const [showPrintDialog, setShowPrintDialog] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
+  
+  // Print-on-Demand order modal state (Gelato integration)
+  const [showPrintOrderModal, setShowPrintOrderModal] = useState(false);
   
   // Book completion celebration state
   const [showCelebration, setShowCelebration] = useState(false);
@@ -438,7 +442,6 @@ export default function BookReader() {
   // CSS touch-action handles scroll vs swipe differentiation on iPad
   const swipeHandlers = useSwipeGestures({
     onSwipeLeft: () => {
-      addDebug('⚡ SWIPE LEFT - Page turn!');
       console.log('[SwipeHandler] onSwipeLeft triggered');
       if (currentPage < totalPages - 1 && !isFlipping) {
         setSwipeHint('next');
@@ -447,7 +450,6 @@ export default function BookReader() {
       }
     },
     onSwipeRight: () => {
-      addDebug('⚡ SWIPE RIGHT - Page turn!');
       console.log('[SwipeHandler] onSwipeRight triggered');
       if (currentPage > -1 && !isFlipping) {
         setSwipeHint('prev');
@@ -457,8 +459,7 @@ export default function BookReader() {
     },
     threshold: 50,
     enabled: !isFlipping,
-    ignoreScrollableElements: false, // CSS touch-action handles scroll vs swipe now
-    onDebug: addDebug // Pass debug function to hook
+    ignoreScrollableElements: false // CSS touch-action handles scroll vs swipe now
   });
 
   useEffect(() => {
@@ -2521,10 +2522,51 @@ export default function BookReader() {
                   )}
                 </Button>
               </div>
+              
+              {/* Divider */}
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-border" />
+                </div>
+                <div className="relative flex justify-center">
+                  <span className="bg-background px-3 text-xs text-muted-foreground uppercase tracking-wide">or</span>
+                </div>
+              </div>
+              
+              {/* Order Physical Copy Option */}
+              <button
+                onClick={() => {
+                  setShowPrintDialog(false);
+                  setShowPrintOrderModal(true);
+                }}
+                className="w-full p-4 rounded-xl border-2 border-dashed border-purple-300 dark:border-purple-700 hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all group"
+                data-testid="order-physical-book-btn"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/50 dark:to-pink-900/50 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <FiBook className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                  </div>
+                  <div className="text-left flex-1">
+                    <p className="font-semibold text-foreground">Order a Real Printed Book</p>
+                    <p className="text-xs text-muted-foreground">Premium 8x8" photobook delivered to your door</p>
+                  </div>
+                  <div className="px-2 py-1 bg-purple-100 dark:bg-purple-900/40 rounded-full">
+                    <span className="text-xs font-medium text-purple-600 dark:text-purple-400">Coming Soon</span>
+                  </div>
+                </div>
+              </button>
             </div>
           </motion.div>
         </div>
       )}
+      
+      {/* Print Order Modal (Coming Soon) */}
+      <PrintOrderModal
+        isOpen={showPrintOrderModal}
+        onClose={() => setShowPrintOrderModal(false)}
+        book={book}
+        comingSoon={true}
+      />
       
       {/* AI Reading Buddy */}
       {book && user && (

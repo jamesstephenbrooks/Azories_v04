@@ -7,6 +7,7 @@ Each module handles a specific domain of functionality.
 Modules:
 - admin.py: Admin dashboard and management endpoints
 - auth_routes.py: Authentication, login, registration, password reset
+- print_orders.py: Print on demand via Gelato
 
 Usage:
     from routes import setup_routes
@@ -18,11 +19,13 @@ from fastapi import FastAPI
 # Import routers
 from .admin import router as admin_router
 from .auth_routes import router as auth_router, setup as setup_auth
+from .print_orders import router as print_router
 
 # List of all routers
 routers = [
     admin_router,
     auth_router,
+    print_router,
 ]
 
 

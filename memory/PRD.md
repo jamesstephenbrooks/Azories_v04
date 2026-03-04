@@ -39,9 +39,41 @@ User wants to enhance their "Azories" digital book application with:
 - Generate long-form stories for 17 books
 - Refactor server.py into modular route files
 
-## Latest Session Updates (March 4, 2026)
+## Latest Session Updates (March 5, 2026)
 
-### Session 7 - Thumbnail Bug Fix ✅ NEW
+### Session 8 - Gelato Print on Demand "Coming Soon" UI ✅ NEW
+
+### Feature: Print-on-Demand Coming Soon Modal
+- **Purpose**: Implement placeholder UI for upcoming Gelato Print-on-Demand feature
+- **Solution**: Added "Order a Real Printed Book" option in the existing Print dialog
+- **UI Flow**:
+  1. User clicks Print button in BookReader header
+  2. Print Dialog shows two options:
+     - **Download PDF** (existing feature - 5 credits)
+     - **Order a Real Printed Book** (Coming Soon badge)
+  3. Clicking "Order a Real Printed Book" opens styled Coming Soon modal with:
+     - Package/gift icon in purple circle
+     - "Coming Soon!" heading
+     - Description of the service
+     - Product specs: "Premium 8x8" Photobook, Softcover with matt lamination"
+     - Pricing preview: "Starting from £14.99 / $19.99"
+     - "Got it!" button to close
+
+### Files Modified:
+- `BookReader.js`:
+  - Added import for `PrintOrderModal` component
+  - Added `showPrintOrderModal` state
+  - Added "Order a Real Printed Book" option in Print Dialog with divider
+  - Added `PrintOrderModal` component with `comingSoon={true}`
+  - Fixed `addDebug` undefined error (removed debug references)
+- `PrintOrderModal.jsx`: Already had Coming Soon UI built (used as-is)
+
+### Bug Fixed:
+- **`addDebug` is not defined**: Removed debug function references that were left behind when debug panel was removed in previous session
+
+## Previous Session Updates (March 4, 2026)
+
+### Session 7 - Thumbnail Bug Fix ✅
 
 ### Fix: Starter Library & Video Thumbnails Fallback System
 - **Problem**: Thumbnails were showing broken image icons when failing to load
