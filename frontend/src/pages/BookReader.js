@@ -454,75 +454,14 @@ export default function BookReader() {
     });
     
     if (containers.length > 0) {
-      addDebug(`✅ CSS applied to ${containers.length}`);
+      addDebug(`✅ CSS to ${containers.length}`);
     }
     
-    // SAFARI FIX: Document-level touch interceptor
-    // This catches touches BEFORE the page flip library sees them (capture phase)
-    let touchStartY = 0;
-    let touchStartX = 0;
-    let isInScrollArea = false;
-    let isScrolling = false; // Track if we're in a scroll gesture
+    // No more document-level listeners - rely on:
+    // 1. CSS touch-action: pan-y on text containers
+    // 2. High swipeDistance (200px) on page flip library
+    addDebug('🎯 CSS-only mode');
     
-    const handleDocTouchStart = (e) => {
-      const target = e.target;
-      isInScrollArea = !!(
-        target.closest('[data-scrollable="true"]') || 
-        target.closest('.text-scroll-container') ||
-        target.closest('.overflow-y-auto')
-      );
-      isScrolling = false;
-      
-      if (isInScrollArea) {
-        touchStartY = e.touches[0].clientY;
-        touchStartX = e.touches[0].clientX;
-        addDebug(`📱 Touch in text`);
-      }
-    };
-    
-    const handleDocTouchMove = (e) => {
-      if (!isInScrollArea) return;
-      
-      const deltaY = Math.abs(e.touches[0].clientY - touchStartY);
-      const deltaX = Math.abs(e.touches[0].clientX - touchStartX);
-      
-      // Once we detect vertical scroll, ALWAYS block page flip for this gesture
-      if (!isScrolling && deltaY > 3) {
-        isScrolling = true;
-        addDebug(`📜 Scrolling started`);
-      }
-      
-      // If scrolling OR more vertical than horizontal, block page flip
-      if (isScrolling || (deltaY > deltaX)) {
-        e.stopPropagation();
-        // Also prevent default to stop page flip library completely
-        // But only if we're clearly scrolling (not a tap)
-        if (deltaY > 10) {
-          e.stopImmediatePropagation();
-        }
-      }
-    };
-    
-    const handleDocTouchEnd = () => {
-      if (isInScrollArea && isScrolling) {
-        addDebug(`✋ Scroll ended`);
-      }
-      isInScrollArea = false;
-      isScrolling = false;
-    };
-    
-    // Add listeners with CAPTURE phase to intercept before page flip library
-    document.addEventListener('touchstart', handleDocTouchStart, { capture: true, passive: true });
-    document.addEventListener('touchmove', handleDocTouchMove, { capture: true, passive: false });
-    document.addEventListener('touchend', handleDocTouchEnd, { capture: true, passive: true });
-    
-    addDebug('📡 Doc listeners ON');
-    
-    return () => {
-      document.removeEventListener('touchstart', handleDocTouchStart, { capture: true });
-      document.removeEventListener('touchmove', handleDocTouchMove, { capture: true });
-      document.removeEventListener('touchend', handleDocTouchEnd, { capture: true });
-    };
   }, [isFullscreen, currentPage, addDebug]);
   
   // Additional safety: Re-run after delay to catch late-rendered elements

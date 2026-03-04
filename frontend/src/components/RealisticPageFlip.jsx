@@ -877,7 +877,7 @@ const RealisticPageFlip = forwardRef(({
           usePortrait={isMobilePortrait}
           disableFlipByClick={false}
           useMouseEvents={true}
-          swipeDistance={isMobilePortrait ? 20 : 30}
+          swipeDistance={200}
           showPageCorners={!isMobilePortrait}
           clickEventForward={true}
         >
