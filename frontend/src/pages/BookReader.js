@@ -48,9 +48,13 @@ export default function BookReader() {
   const [showContinuePrompt, setShowContinuePrompt] = useState(false);
   const [savedPageNumber, setSavedPageNumber] = useState(0);
   
-  // iPad scroll detection - prevents page turns while scrolling text
-  const isScrollingTextRef = useRef(false);
-  const textTouchStartRef = useRef(null);
+  // iPad touch direction detection - determines if gesture is scroll or page turn
+  const touchDirectionRef = useRef({
+    startX: 0,
+    startY: 0,
+    locked: null, // null = not determined, 'scroll' = vertical, 'swipe' = horizontal
+    threshold: 10 // pixels of movement before locking direction
+  });
   
   // Audio state
   const [isPlaying, setIsPlaying] = useState(false);
@@ -405,12 +409,12 @@ export default function BookReader() {
     : (currentPage === -2 && allPages.length > 0 ? allPages[allPages.length - 1] : null);
   
   // Swipe gestures for page navigation
-  // CRITICAL: Check isScrollingTextRef to prevent page turns while scrolling on iPad
+  // CRITICAL: Check if direction is locked to scroll to prevent page turns
   const swipeHandlers = useSwipeGestures({
     onSwipeLeft: () => {
-      // Block page turn if user is scrolling text
-      if (isScrollingTextRef.current) {
-        console.log('[Swipe] Blocked - user is scrolling text');
+      // Block page turn if direction was locked to scroll
+      if (touchDirectionRef.current.locked === 'scroll') {
+        console.log('[Swipe] Blocked - direction locked to scroll');
         return;
       }
       if (currentPage < totalPages - 1 && !isFlipping) {
@@ -420,9 +424,9 @@ export default function BookReader() {
       }
     },
     onSwipeRight: () => {
-      // Block page turn if user is scrolling text
-      if (isScrollingTextRef.current) {
-        console.log('[Swipe] Blocked - user is scrolling text');
+      // Block page turn if direction was locked to scroll
+      if (touchDirectionRef.current.locked === 'scroll') {
+        console.log('[Swipe] Blocked - direction locked to scroll');
         return;
       }
       if (currentPage > -1 && !isFlipping) {
@@ -432,39 +436,63 @@ export default function BookReader() {
       }
     },
     threshold: 50,
-    enabled: !isFlipping && !isScrollingTextRef.current,
-    ignoreScrollableElements: true
+    enabled: !isFlipping,
+    ignoreScrollableElements: false // We handle this ourselves now
   });
   
-  // Text container touch handlers - completely capture touch events to prevent page turns
+  // Text container touch handlers with direction locking
+  // Key insight: First 10px of movement determines if it's scroll or swipe
   const textContainerTouchHandlers = {
     onTouchStart: (e) => {
-      // Mark that touch started in text area - this blocks ALL page turn gestures
-      isScrollingTextRef.current = true;
-      textTouchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-      // CRITICAL: Stop propagation to prevent swipe handler from seeing this touch
-      e.stopPropagation();
-      console.log('[TextScroll] Touch started in text area - blocking page turns');
+      // Record starting position
+      touchDirectionRef.current = {
+        startX: e.touches[0].clientX,
+        startY: e.touches[0].clientY,
+        locked: null,
+        threshold: 10
+      };
+      // Don't stop propagation yet - let direction be determined first
     },
     onTouchMove: (e) => {
-      // Keep blocking while touch is active in text area
-      isScrollingTextRef.current = true;
-      // Stop propagation to ensure swipe handler never sees movement
-      e.stopPropagation();
+      const touch = e.touches[0];
+      const deltaX = Math.abs(touch.clientX - touchDirectionRef.current.startX);
+      const deltaY = Math.abs(touch.clientY - touchDirectionRef.current.startY);
+      
+      // Lock direction once we've moved past threshold
+      if (touchDirectionRef.current.locked === null) {
+        const totalDelta = Math.max(deltaX, deltaY);
+        if (totalDelta > touchDirectionRef.current.threshold) {
+          if (deltaY > deltaX) {
+            // More vertical movement = SCROLL
+            touchDirectionRef.current.locked = 'scroll';
+            console.log('[Touch] Direction locked: SCROLL (vertical)');
+          } else {
+            // More horizontal movement = SWIPE (page turn)
+            touchDirectionRef.current.locked = 'swipe';
+            console.log('[Touch] Direction locked: SWIPE (horizontal)');
+          }
+        }
+      }
+      
+      // If locked to swipe, prevent text scrolling
+      if (touchDirectionRef.current.locked === 'swipe') {
+        e.preventDefault();
+        // Don't stop propagation - let swipe handler see it
+      }
+      // If locked to scroll, allow text scrolling, block swipe handler
+      else if (touchDirectionRef.current.locked === 'scroll') {
+        e.stopPropagation();
+        // Don't prevent default - allow natural scrolling
+      }
     },
-    onTouchEnd: (e) => {
-      // Small delay before re-enabling page turns to prevent accidental triggers
+    onTouchEnd: () => {
+      // Reset after a small delay to prevent race conditions
       setTimeout(() => {
-        isScrollingTextRef.current = false;
-        textTouchStartRef.current = null;
-        console.log('[TextScroll] Touch ended - page turns re-enabled');
-      }, 100);
-      e.stopPropagation();
+        touchDirectionRef.current.locked = null;
+      }, 50);
     },
-    onTouchCancel: (e) => {
-      isScrollingTextRef.current = false;
-      textTouchStartRef.current = null;
-      e.stopPropagation();
+    onTouchCancel: () => {
+      touchDirectionRef.current.locked = null;
     }
   };
 
