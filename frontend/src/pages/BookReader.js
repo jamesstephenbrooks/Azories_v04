@@ -60,6 +60,11 @@ export default function BookReader() {
   const [narrationReady, setNarrationReady] = useState(false); // First few pages are cached
   const [audioProgress, setAudioProgress] = useState(0); // 0 to 1 - for auto-scroll sync
   
+  // IPAD FIX: Persistent audio element - created once on user interaction, reused for all pages
+  // This preserves the "user interaction" permission that iPad Safari requires for autoplay
+  const persistentAudioRef = useRef(null);
+  const audioUnlockedRef = useRef(false); // Track if audio has been unlocked by user tap
+  
   // Audio cache for pre-loading upcoming pages
   const audioCache = useRef(new Map()); // pageIndex -> audio base64
   const preloadingPages = useRef(new Set()); // pages currently being preloaded
@@ -101,12 +106,10 @@ export default function BookReader() {
       // Don't set to null - let the next useEffect create a fresh one
     }
     
-    // 2. Stop and destroy audio element completely
+    // 2. Stop audio but don't destroy persistent element (for iPad compatibility)
     if (audioElement) {
       try {
         audioElement.pause();
-        audioElement.src = '';
-        audioElement.load(); // Force release of audio resources
         audioElement.onended = null;
         audioElement.onerror = null;
         audioElement.oncanplay = null;
@@ -114,6 +117,14 @@ export default function BookReader() {
       } catch (e) {
         console.log('[BookReader] Audio cleanup error (safe to ignore):', e);
       }
+    }
+    
+    // Also stop persistent audio if it exists
+    if (persistentAudioRef.current) {
+      try {
+        persistentAudioRef.current.pause();
+        persistentAudioRef.current.onended = null;
+      } catch (e) {}
     }
     
     // 3. Clear ALL cached audio objects (these can hold memory)
@@ -1086,14 +1097,28 @@ export default function BookReader() {
     }
 
     if (cachedAudio) {
-      let audio;
-      if (cachedAudio.type === 'url') {
-        // Use Cloudinary URL directly - much faster!
-        audio = new Audio(cachedAudio.url);
-      } else {
-        // Fallback to base64
-        audio = new Audio(`data:audio/mpeg;base64,${cachedAudio.data}`);
+      // IPAD FIX: Reuse persistent audio element to preserve user interaction permission
+      // iPad Safari only allows audio.play() if the Audio element was created/interacted with by user tap
+      let audio = persistentAudioRef.current;
+      
+      // Create audio element only if it doesn't exist yet
+      if (!audio) {
+        audio = new Audio();
+        persistentAudioRef.current = audio;
+        console.log('[Audio iPad] Created new persistent Audio element');
       }
+      
+      // Stop any currently playing audio
+      audio.pause();
+      audio.currentTime = 0;
+      
+      // Set the new source - changing src doesn't lose the user interaction permission
+      if (cachedAudio.type === 'url') {
+        audio.src = cachedAudio.url;
+      } else {
+        audio.src = `data:audio/mpeg;base64,${cachedAudio.data}`;
+      }
+      
       audio.volume = volume[0] / 100;
       audio.playbackRate = playbackSpeed[0];
       
@@ -1104,20 +1129,22 @@ export default function BookReader() {
         preloadAudio(pageIndex + 3);
       }
       
+      // Clear previous onended handler and set new one
       audio.onended = () => {
         // Check mounted before updating state
         if (!mountedRef.current) return;
+        console.log('[Audio iPad] onended fired, autoRead:', autoReadRef.current);
         setIsPlaying(false);
-        setAudioElement(null); // Clear the audio element
+        setAudioElement(null); // Clear the audio element state (but keep persistentAudioRef)
         
         // Continue to next page when audio finishes in auto-read mode
         if (autoReadRef.current && currentPageRef.current < allPages.length - 1) {
           // Reset lastPlayedPage to allow next page to play
           lastPlayedPageRef.current = -999;
           
-          // For iPad landscape, we need to ensure audio plays after page transition
-          // Use a longer delay to ensure page state is fully updated
+          // For iPad, we need to ensure audio plays after page transition
           const nextPageIndex = currentPageRef.current + 1;
+          console.log('[Audio iPad] Auto-continuing to page', nextPageIndex);
           
           setTimeout(() => {
             if (autoReadRef.current && mountedRef.current) {
@@ -1125,11 +1152,12 @@ export default function BookReader() {
               goToPage(nextPageIndex, 'next');
               
               // CRITICAL FIX FOR IPAD: Explicitly trigger playAudio after page change
-              // The useEffect may not catch it reliably on iPad Safari
+              // Using the same persistent audio element preserves user interaction permission
               setTimeout(() => {
                 if (autoReadRef.current && mountedRef.current && currentPageRef.current === nextPageIndex) {
                   // Double-check we haven't already started playing
                   if (lastPlayedPageRef.current !== nextPageIndex) {
+                    console.log('[Audio iPad] Triggering playAudio for page', nextPageIndex);
                     playAudio();
                   }
                 }
@@ -1141,22 +1169,28 @@ export default function BookReader() {
       
       // Double-check we're still on the correct page AND mounted before playing
       if (currentPageRef.current === pageIndex && mountedRef.current) {
+        console.log('[Audio iPad] Attempting to play, audioUnlocked:', audioUnlockedRef.current);
+        
+        // Load the new source
+        audio.load();
+        
         // On iOS/iPad, we need to handle audio context unlocking
         const playPromise = audio.play();
         if (playPromise !== undefined) {
           playPromise
             .then(() => {
               if (mountedRef.current) {
+                console.log('[Audio iPad] Play succeeded');
+                audioUnlockedRef.current = true; // Mark audio as unlocked
                 setAudioElement(audio);
                 setIsPlaying(true);
               } else {
-                // Component unmounted during play - cleanup
+                // Component unmounted during play - just pause, don't destroy
                 audio.pause();
-                audio.src = '';
               }
             })
             .catch(e => {
-              console.error('Audio play failed:', e);
+              console.error('[Audio iPad] Play failed:', e.name, e.message);
               // On iOS/iPad, audio fails without user interaction
               // Show a friendly tip message
               if (e.name === 'NotAllowedError' && mountedRef.current) {
@@ -1172,6 +1206,7 @@ export default function BookReader() {
             });
         } else {
           if (mountedRef.current) {
+            audioUnlockedRef.current = true;
             setAudioElement(audio);
             setIsPlaying(true);
           }
@@ -1181,14 +1216,25 @@ export default function BookReader() {
   }, [allPages, narratorVoice, volume, playbackSpeed, audioElement, preloadAudio, goToPage]);
 
   const toggleAudio = () => {
+    // IPAD FIX: Create persistent audio element on first user tap
+    // This must happen during user interaction to get autoplay permission
+    if (!persistentAudioRef.current) {
+      persistentAudioRef.current = new Audio();
+      console.log('[Audio iPad] Created persistent audio on user tap');
+    }
+    
     // On iOS, we need to unlock audio context on first user interaction
     if (!iosAudioUnlocked) {
-      // Create and play a silent audio to unlock
-      const silentAudio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
-      silentAudio.play().then(() => {
+      // Play silent audio using the persistent element to unlock it
+      const audio = persistentAudioRef.current;
+      audio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+      audio.play().then(() => {
         setIosAudioUnlocked(true);
-        silentAudio.pause();
-      }).catch(() => {});
+        audioUnlockedRef.current = true;
+        console.log('[Audio iPad] Audio unlocked via user tap');
+      }).catch((e) => {
+        console.log('[Audio iPad] Silent audio unlock failed:', e);
+      });
     }
     
     if (isPlaying && audioElement) {
@@ -1216,6 +1262,26 @@ export default function BookReader() {
 
   // Start listening - flip to first page and enable auto-read with audio
   const startListening = useCallback(() => {
+    // IPAD FIX: Create persistent audio element on first user tap
+    // This must happen during user interaction to get autoplay permission
+    if (!persistentAudioRef.current) {
+      persistentAudioRef.current = new Audio();
+      console.log('[Audio iPad] Created persistent audio on Listen tap');
+    }
+    
+    // Unlock audio immediately on user tap
+    if (!audioUnlockedRef.current) {
+      const audio = persistentAudioRef.current;
+      audio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+      audio.play().then(() => {
+        audioUnlockedRef.current = true;
+        setIosAudioUnlocked(true);
+        console.log('[Audio iPad] Audio unlocked via Listen tap');
+      }).catch((e) => {
+        console.log('[Audio iPad] Silent unlock failed:', e);
+      });
+    }
+    
     // Enable auto-read - update BOTH state AND ref synchronously
     setAutoRead(true);
     autoReadRef.current = true; // Sync update for immediate checks
