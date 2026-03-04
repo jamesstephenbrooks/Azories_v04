@@ -13497,6 +13497,24 @@ async def seed_from_preview(
 
 
 # Include the router
+# Import print PDF generator
+from services.print_pdf_generator import generate_print_preview_pdf
+
+@api_router.get("/print/preview-bonus-pages")
+async def download_bonus_pages_preview():
+    """Download a preview PDF of all bonus pages."""
+    preview_path = await generate_print_preview_pdf("/tmp/bonus_pages_preview.pdf")
+    
+    def iter_file():
+        with open(preview_path, 'rb') as f:
+            yield from f
+    
+    return StreamingResponse(
+        iter_file(),
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=azories_bonus_pages_preview.pdf"}
+    )
+
 app.include_router(api_router)
 
 app.add_middleware(
