@@ -410,103 +410,40 @@ export default function BookReader() {
   const isMobileLandscape = forceLandscapeTest || (isMobile && isLandscapeOrientation);
   const isMobilePortrait = !forceLandscapeTest && isMobile && !isLandscapeOrientation;
   
-  // UNIVERSAL FIX: Apply CSS touch-action to text containers
-  // AND disable flip book pointer events while scrolling
+  // PURE CSS APPROACH - No JavaScript event handling
+  // Just set CSS properties and let the browser handle scroll natively
   useEffect(() => {
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     addDebug(`🔄 Touch:${isTouchDevice ? 'Y' : 'N'} FS:${isFullscreen ? 'Y' : 'N'}`);
     
-    // Find text containers
-    const findTextContainers = () => {
-      const containers = [];
-      document.querySelectorAll('[data-scrollable="true"], .text-scroll-container, #book-container .overflow-y-auto').forEach(el => {
-        if (!containers.includes(el)) containers.push(el);
-      });
-      return containers;
-    };
-    
-    const containers = findTextContainers();
+    // Find ALL scrollable text containers
+    const selectors = '[data-scrollable="true"], .text-scroll-container, .overflow-y-auto, [class*="overflow-y"]';
+    const containers = document.querySelectorAll(selectors);
     addDebug(`📍 ${containers.length} text areas`);
     
-    // Apply CSS - IMPORTANT: set pointer-events: auto on text containers
+    // Apply ONLY CSS - no event blocking
     containers.forEach((el) => {
-      el.style.touchAction = 'pan-y';
-      el.style.overflowY = 'auto';
-      el.style.webkitOverflowScrolling = 'touch';
-      el.style.pointerEvents = 'auto'; // Ensure text always receives events
-      el.setAttribute('data-scrollable', 'true');
+      el.style.cssText += `
+        touch-action: pan-y !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        pointer-events: auto !important;
+        overscroll-behavior: contain !important;
+      `;
     });
     
-    // Find the flip book canvas/container (the part that handles swipe)
-    const getFlipBookEl = () => {
-      // Target the canvas element that handles flip, not the content wrapper
-      return document.querySelector('.stf__wrapper canvas') || 
-             document.querySelector('.stf__wrapper');
-    };
+    addDebug('✅ CSS only - no JS');
     
-    let startY = 0;
-    let isInTextArea = false;
-    let flipBookEl = null;
-    
-    const isTextElement = (el) => {
-      if (!el) return false;
-      return !!(
-        el.closest('[data-scrollable="true"]') ||
-        el.closest('.text-scroll-container') ||
-        el.closest('.overflow-y-auto')
-      );
-    };
-    
-    const handleTouchStart = (e) => {
-      isInTextArea = isTextElement(e.target);
-      startY = e.touches[0].clientY;
-      
-      if (isInTextArea) {
-        addDebug('📱 Text touch');
-        // Find and disable the flip canvas, but keep text container active
-        flipBookEl = getFlipBookEl();
-        if (flipBookEl) {
-          flipBookEl.style.pointerEvents = 'none';
-          addDebug('🚫 Canvas off');
-        }
-        // Ensure the touched text container stays active
-        const textContainer = e.target.closest('[data-scrollable="true"]') || 
-                              e.target.closest('.text-scroll-container') ||
-                              e.target.closest('.overflow-y-auto');
-        if (textContainer) {
-          textContainer.style.pointerEvents = 'auto';
-        }
-      }
-    };
-    
-    const handleTouchEnd = () => {
-      if (flipBookEl) {
-        flipBookEl.style.pointerEvents = 'auto';
-        addDebug('✅ Canvas on');
-      }
-      isInTextArea = false;
-      flipBookEl = null;
-    };
-    
-    document.addEventListener('touchstart', handleTouchStart, { capture: true, passive: true });
-    document.addEventListener('touchend', handleTouchEnd, { capture: true, passive: true });
-    document.addEventListener('touchcancel', handleTouchEnd, { capture: true, passive: true });
-    
-    addDebug('✅ Ready');
-    
-    return () => {
-      document.removeEventListener('touchstart', handleTouchStart, { capture: true });
-      document.removeEventListener('touchend', handleTouchEnd, { capture: true });
-      document.removeEventListener('touchcancel', handleTouchEnd, { capture: true });
-    };
   }, [isFullscreen, currentPage, addDebug]);
   
-  // Re-apply CSS after delay
+  // Re-apply CSS after delay for late elements
   useEffect(() => {
     const timer = setTimeout(() => {
-      document.querySelectorAll('[data-scrollable="true"], .text-scroll-container, .overflow-y-auto').forEach(el => {
+      const selectors = '[data-scrollable="true"], .text-scroll-container, .overflow-y-auto';
+      document.querySelectorAll(selectors).forEach(el => {
         el.style.touchAction = 'pan-y';
         el.style.pointerEvents = 'auto';
+        el.style.overflowY = 'auto';
       });
     }, 500);
     return () => clearTimeout(timer);
