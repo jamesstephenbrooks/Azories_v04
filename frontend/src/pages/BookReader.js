@@ -404,51 +404,71 @@ export default function BookReader() {
   const isMobileLandscape = forceLandscapeTest || (isMobile && isLandscapeOrientation);
   const isMobilePortrait = !forceLandscapeTest && isMobile && !isLandscapeOrientation;
   
-  // FRESH APPROACH: Completely block ALL touch events from text area
-  // This prevents ANY touch interaction in the text area from reaching the page turner
+  // FRESH APPROACH v2: Completely block ALL touch events from text area
+  // Using capture phase and direct DOM manipulation for maximum reliability on iPad
   useEffect(() => {
-    const setupTouchBlock = (textEl, name) => {
-      if (!textEl) {
-        console.log(`[TouchBlock] ${name}: Element not found`);
-        return null;
-      }
-      
-      console.log(`[TouchBlock] ${name}: Setting up touch blocking`);
-      
-      // Tell browser this element only scrolls vertically
-      textEl.style.touchAction = 'pan-y';
-      textEl.style.webkitOverflowScrolling = 'touch';
-      textEl.style.overflowY = 'auto';
-      
-      // Stop ALL touch events from reaching the page turner
-      const stopPropagation = (e) => {
-        console.log(`[TouchBlock] ${name}: Blocking ${e.type} event`);
-        e.stopPropagation();
-      };
-      
-      textEl.addEventListener('touchstart', stopPropagation, { passive: true });
-      textEl.addEventListener('touchmove', stopPropagation, { passive: true });
-      textEl.addEventListener('touchend', stopPropagation, { passive: true });
-      
-      console.log(`[TouchBlock] ${name}: Event listeners attached`);
-      
-      return () => {
-        console.log(`[TouchBlock] ${name}: Cleaning up`);
-        textEl.removeEventListener('touchstart', stopPropagation);
-        textEl.removeEventListener('touchmove', stopPropagation);
-        textEl.removeEventListener('touchend', stopPropagation);
-      };
+    // Get refs to both text containers
+    const portraitTextEl = textScrollRef.current;
+    const landscapeTextEl = textScrollRefLandscape.current;
+    
+    // Simple stopPropagation function that blocks touch events from bubbling
+    const blockTouch = (e) => {
+      e.stopPropagation();
+      // Log for debugging on iPad
+      console.log('[TextBlock] Blocked:', e.type, 'on', e.currentTarget.className?.slice(0,30));
     };
     
-    // Set up touch blocking for both portrait and landscape text refs
-    const cleanupPortrait = setupTouchBlock(textScrollRef.current, 'Portrait');
-    const cleanupLandscape = setupTouchBlock(textScrollRefLandscape.current, 'Landscape');
+    // Set up blocking on portrait text container
+    if (portraitTextEl) {
+      portraitTextEl.style.touchAction = 'pan-y';
+      portraitTextEl.style.overflowY = 'auto';
+      portraitTextEl.style.webkitOverflowScrolling = 'touch';
+      
+      // Use capture:true to intercept events BEFORE they reach other handlers
+      portraitTextEl.addEventListener('touchstart', blockTouch, { capture: true, passive: true });
+      portraitTextEl.addEventListener('touchmove', blockTouch, { capture: true, passive: true });
+      portraitTextEl.addEventListener('touchend', blockTouch, { capture: true, passive: true });
+      console.log('[TextBlock] Portrait text container: listeners attached');
+    }
+    
+    // Set up blocking on landscape text container
+    if (landscapeTextEl) {
+      landscapeTextEl.style.touchAction = 'pan-y';
+      landscapeTextEl.style.overflowY = 'auto';
+      landscapeTextEl.style.webkitOverflowScrolling = 'touch';
+      
+      landscapeTextEl.addEventListener('touchstart', blockTouch, { capture: true, passive: true });
+      landscapeTextEl.addEventListener('touchmove', blockTouch, { capture: true, passive: true });
+      landscapeTextEl.addEventListener('touchend', blockTouch, { capture: true, passive: true });
+      console.log('[TextBlock] Landscape text container: listeners attached');
+    }
     
     return () => {
-      cleanupPortrait?.();
-      cleanupLandscape?.();
+      if (portraitTextEl) {
+        portraitTextEl.removeEventListener('touchstart', blockTouch, { capture: true });
+        portraitTextEl.removeEventListener('touchmove', blockTouch, { capture: true });
+        portraitTextEl.removeEventListener('touchend', blockTouch, { capture: true });
+      }
+      if (landscapeTextEl) {
+        landscapeTextEl.removeEventListener('touchstart', blockTouch, { capture: true });
+        landscapeTextEl.removeEventListener('touchmove', blockTouch, { capture: true });
+        landscapeTextEl.removeEventListener('touchend', blockTouch, { capture: true });
+      }
     };
-  }, [currentPage, isMobilePortrait, isMobileLandscape]); // Re-run when page or mode changes
+  }, []); // Empty deps - only run once on mount
+  
+  // Re-attach when page changes (refs might point to new elements)
+  useEffect(() => {
+    const portraitTextEl = textScrollRef.current;
+    const landscapeTextEl = textScrollRefLandscape.current;
+    
+    if (portraitTextEl) {
+      portraitTextEl.style.touchAction = 'pan-y';
+    }
+    if (landscapeTextEl) {
+      landscapeTextEl.style.touchAction = 'pan-y';
+    }
+  }, [currentPage]);
   
   const isCover = currentPage === -1;
   const isBackCover = currentPage === -2;

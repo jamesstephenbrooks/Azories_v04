@@ -24,10 +24,27 @@ export function useSwipeGestures({
   const handleTouchStart = useCallback((e) => {
     // Check if touch started in a scrollable element
     const target = e.target;
-    const scrollableParent = target.closest('[data-scrollable="true"]');
-    isScrollableAreaRef.current = !!scrollableParent;
     
-    console.log('[SwipeGestures] touchstart - scrollableArea:', isScrollableAreaRef.current, 'target:', target.className);
+    // DEFENSIVE CHECK: Multiple ways to detect scrollable area
+    const hasDataScrollable = target.closest('[data-scrollable="true"]');
+    const hasTextScrollClass = target.closest('.text-scroll-container');
+    const isInScrollableArea = !!(hasDataScrollable || hasTextScrollClass);
+    
+    isScrollableAreaRef.current = isInScrollableArea;
+    
+    console.log('[SwipeGestures] touchstart - scrollable:', isInScrollableArea, 
+                'dataAttr:', !!hasDataScrollable, 'class:', !!hasTextScrollClass,
+                'target:', target.tagName, target.className?.slice(0,40));
+    
+    // If touch started in scrollable area, DON'T even record touch start
+    // This prevents any chance of triggering a swipe
+    if (isInScrollableArea) {
+      console.log('[SwipeGestures] BLOCKING - touch started in scrollable area');
+      touchStartRef.current = { x: 0, y: 0, target: null };
+      touchEndRef.current = { x: 0, y: 0 };
+      touchMovedRef.current = false;
+      return;
+    }
     
     touchStartRef.current = {
       x: e.touches[0].clientX,
@@ -39,6 +56,11 @@ export function useSwipeGestures({
   }, []);
 
   const handleTouchMove = useCallback((e) => {
+    // If we determined touch started in scrollable area, don't track movement
+    if (isScrollableAreaRef.current) {
+      return;
+    }
+    
     touchMovedRef.current = true;
     touchEndRef.current = {
       x: e.touches[0].clientX,
