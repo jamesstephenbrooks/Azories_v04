@@ -451,10 +451,9 @@ export default function BookReader() {
     });
     
     // AGGRESSIVE DOCUMENT-LEVEL INTERCEPTOR
-    // Catches ALL touch events and blocks page flip when in text area
+    // Block BOTH touch AND pointer events when in text area
     let touchStartY = 0;
     let touchStartX = 0;
-    let touchStartTarget = null;
     let isInTextArea = false;
     
     const isTextElement = (el) => {
@@ -466,47 +465,69 @@ export default function BookReader() {
       );
     };
     
+    // TOUCH EVENTS
     const handleTouchStart = (e) => {
-      touchStartTarget = e.target;
       isInTextArea = isTextElement(e.target);
       touchStartX = e.touches[0].clientX;
       touchStartY = e.touches[0].clientY;
-      
-      if (isInTextArea) {
-        addDebug('📱 Touch TEXT');
-      }
+      if (isInTextArea) addDebug('📱 T-start');
     };
     
     const handleTouchMove = (e) => {
       if (!isInTextArea) return;
-      
-      const deltaX = Math.abs(e.touches[0].clientX - touchStartX);
-      const deltaY = Math.abs(e.touches[0].clientY - touchStartY);
-      
-      // If in text area, ALWAYS block horizontal movement from reaching page flip
-      // This is aggressive but necessary for iPad Safari
-      if (deltaX > 5 || deltaY > 5) {
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+    };
+    
+    const handleTouchEnd = (e) => {
+      if (isInTextArea) {
+        e.stopPropagation();
         e.stopImmediatePropagation();
-        addDebug('🛑 Blocked');
+        addDebug('📱 T-end');
       }
-    };
-    
-    const handleTouchEnd = () => {
       isInTextArea = false;
-      touchStartTarget = null;
     };
     
-    // Use CAPTURE phase with highest priority
+    // POINTER EVENTS (used by many libraries instead of touch)
+    const handlePointerDown = (e) => {
+      isInTextArea = isTextElement(e.target);
+      touchStartX = e.clientX;
+      touchStartY = e.clientY;
+      if (isInTextArea) addDebug('👆 P-down');
+    };
+    
+    const handlePointerMove = (e) => {
+      if (!isInTextArea) return;
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+    };
+    
+    const handlePointerUp = (e) => {
+      if (isInTextArea) {
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        addDebug('👆 P-up');
+      }
+      isInTextArea = false;
+    };
+    
+    // Add ALL event listeners with CAPTURE phase
     document.addEventListener('touchstart', handleTouchStart, { capture: true, passive: true });
     document.addEventListener('touchmove', handleTouchMove, { capture: true, passive: false });
-    document.addEventListener('touchend', handleTouchEnd, { capture: true, passive: true });
+    document.addEventListener('touchend', handleTouchEnd, { capture: true, passive: false });
+    document.addEventListener('pointerdown', handlePointerDown, { capture: true });
+    document.addEventListener('pointermove', handlePointerMove, { capture: true });
+    document.addEventListener('pointerup', handlePointerUp, { capture: true });
     
-    addDebug('✅ Swipe ON, text blocked');
+    addDebug('✅ Touch+Pointer blocked');
     
     return () => {
       document.removeEventListener('touchstart', handleTouchStart, { capture: true });
       document.removeEventListener('touchmove', handleTouchMove, { capture: true });
       document.removeEventListener('touchend', handleTouchEnd, { capture: true });
+      document.removeEventListener('pointerdown', handlePointerDown, { capture: true });
+      document.removeEventListener('pointermove', handlePointerMove, { capture: true });
+      document.removeEventListener('pointerup', handlePointerUp, { capture: true });
     };
   }, [isFullscreen, currentPage, addDebug]);
   
