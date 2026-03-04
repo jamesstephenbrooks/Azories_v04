@@ -2328,6 +2328,27 @@ export default function ProStudio() {
     }
   };
 
+  // Delete image from character folder
+  const deleteFromCharacterFolder = async (characterId, imageId) => {
+    try {
+      const token = localStorage.getItem('azories-token');
+      const response = await fetch(`${API_URL}/api/pro-studio/characters/${characterId}/gallery/${imageId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.ok) {
+        toast.success('Image deleted from character folder');
+        // Refresh gallery
+        loadCharacterGallery(characterId);
+      } else {
+        toast.error('Failed to delete image');
+      }
+    } catch (error) {
+      console.error('Error deleting from character folder:', error);
+      toast.error('Failed to delete image');
+    }
+  };
+
   // View character details with gallery
   const openCharacterView = async (character) => {
     setViewingCharacter(character);
@@ -2914,6 +2935,20 @@ export default function ProStudio() {
                                   <FiCrop className="text-white" size={14} />
                                 </Button>
                               )}
+                              <Button 
+                                size="sm" 
+                                variant="ghost"
+                                onClick={(e) => { 
+                                  e.stopPropagation(); 
+                                  if (window.confirm('Delete this image from the character folder?')) {
+                                    deleteFromCharacterFolder(viewingCharacter?.id, img.id);
+                                  }
+                                }}
+                                title="Delete from Character Folder"
+                                className="bg-red-600/80 hover:bg-red-600 active:bg-red-700 active:scale-95"
+                              >
+                                <FiTrash2 className="text-white" size={14} />
+                              </Button>
                               <FiMaximize2 className="text-white" size={18} />
                             </div>
                             {/* Type badge */}

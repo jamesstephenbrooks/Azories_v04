@@ -162,6 +162,7 @@ export const proStudioAPI = {
   updateCharacter: (characterId, data) => api.put(`/pro-studio/characters/${characterId}`, data),
   deleteCharacter: (characterId) => api.delete(`/pro-studio/characters/${characterId}`),
   getCharacterGallery: (characterId) => api.get(`/pro-studio/characters/${characterId}/gallery`),
+  deleteFromCharacterGallery: (characterId, imageId) => api.delete(`/pro-studio/characters/${characterId}/gallery/${imageId}`),
   generateConsistent: (characterId, formData) => 
     api.post(`/pro-studio/characters/${characterId}/generate-consistent`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
