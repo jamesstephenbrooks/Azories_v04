@@ -137,7 +137,9 @@ const ScrollableTextArea = ({ children, className = "" }) => {
     <div className="relative flex-1 overflow-hidden">
       <div 
         ref={scrollRef}
-        className={`h-full overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-muted-foreground/30 scrollbar-track-transparent ${className}`}
+        className={`h-full overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-muted-foreground/30 scrollbar-track-transparent text-scroll-container ${className}`}
+        data-scrollable="true"
+        style={{ touchAction: 'pan-y', WebkitOverflowScrolling: 'touch' }}
       >
         {children}
       </div>

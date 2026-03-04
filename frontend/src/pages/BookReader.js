@@ -410,82 +410,84 @@ export default function BookReader() {
   const isMobileLandscape = forceLandscapeTest || (isMobile && isLandscapeOrientation);
   const isMobilePortrait = !forceLandscapeTest && isMobile && !isLandscapeOrientation;
   
-  // FRESH APPROACH v2: Completely block ALL touch events from text area
-  // Using capture phase and direct DOM manipulation for maximum reliability on iPad
-  // FULLSCREEN FIX: Re-attach touch listeners when fullscreen changes
-  // The DOM may re-render and lose event listeners when entering/exiting fullscreen
+  // UNIVERSAL FIX: Use querySelector to find text containers regardless of render mode
+  // iPad Safari browser uses desktop RealisticPageFlip, not mobile views with refs
+  // This approach finds ALL scrollable text areas and blocks touch events on them
   useEffect(() => {
-    addDebug(`🔄 Setup: fullscreen=${isFullscreen}, page=${currentPage}`);
+    addDebug(`🔄 Setup: FS=${isFullscreen}, pg=${currentPage}`);
     
-    // Get refs to both text containers
-    const portraitTextEl = textScrollRef.current;
-    const landscapeTextEl = textScrollRefLandscape.current;
-    
-    addDebug(`📍 Refs: portrait=${!!portraitTextEl}, landscape=${!!landscapeTextEl}`);
-    
-    // Simple stopPropagation function that blocks touch events from bubbling
-    const blockTouch = (e) => {
-      e.stopPropagation();
-      addDebug(`🛑 BLOCKED ${e.type} in text`);
+    // Use multiple methods to find text containers - works for both mobile and desktop views
+    const findTextContainers = () => {
+      const containers = [];
+      
+      // Method 1: By ref (mobile views)
+      if (textScrollRef.current) containers.push(textScrollRef.current);
+      if (textScrollRefLandscape.current) containers.push(textScrollRefLandscape.current);
+      
+      // Method 2: By data attribute (all views)
+      document.querySelectorAll('[data-scrollable="true"]').forEach(el => {
+        if (!containers.includes(el)) containers.push(el);
+      });
+      
+      // Method 3: By class name (fallback)
+      document.querySelectorAll('.text-scroll-container').forEach(el => {
+        if (!containers.includes(el)) containers.push(el);
+      });
+      
+      // Method 4: Find any overflow-y-auto inside book container (catches desktop view)
+      document.querySelectorAll('#book-container .overflow-y-auto, #book-container [class*="overflow-y"]').forEach(el => {
+        if (!containers.includes(el)) containers.push(el);
+      });
+      
+      return containers;
     };
     
-    // Set up blocking on portrait text container
-    if (portraitTextEl) {
-      portraitTextEl.style.touchAction = 'pan-y';
-      portraitTextEl.style.overflowY = 'auto';
-      portraitTextEl.style.webkitOverflowScrolling = 'touch';
-      
-      // Use capture:true to intercept events BEFORE they reach other handlers
-      portraitTextEl.addEventListener('touchstart', blockTouch, { capture: true, passive: true });
-      portraitTextEl.addEventListener('touchmove', blockTouch, { capture: true, passive: true });
-      portraitTextEl.addEventListener('touchend', blockTouch, { capture: true, passive: true });
-      addDebug('✅ Portrait listeners attached');
-    }
+    const containers = findTextContainers();
+    addDebug(`📍 Found ${containers.length} text containers`);
     
-    // Set up blocking on landscape text container
-    if (landscapeTextEl) {
-      landscapeTextEl.style.touchAction = 'pan-y';
-      landscapeTextEl.style.overflowY = 'auto';
-      landscapeTextEl.style.webkitOverflowScrolling = 'touch';
+    // Block touch function
+    const blockTouch = (e) => {
+      e.stopPropagation();
+      addDebug(`🛑 BLOCKED ${e.type}`);
+    };
+    
+    // Attach listeners to ALL found containers
+    containers.forEach((el) => {
+      el.style.touchAction = 'pan-y';
+      el.style.overflowY = 'auto';
+      el.style.webkitOverflowScrolling = 'touch';
       
-      landscapeTextEl.addEventListener('touchstart', blockTouch, { capture: true, passive: true });
-      landscapeTextEl.addEventListener('touchmove', blockTouch, { capture: true, passive: true });
-      landscapeTextEl.addEventListener('touchend', blockTouch, { capture: true, passive: true });
-      addDebug('✅ Landscape listeners attached');
+      el.addEventListener('touchstart', blockTouch, { capture: true, passive: true });
+      el.addEventListener('touchmove', blockTouch, { capture: true, passive: true });
+      el.addEventListener('touchend', blockTouch, { capture: true, passive: true });
+    });
+    
+    if (containers.length > 0) {
+      addDebug(`✅ ${containers.length} listeners OK`);
+    } else {
+      addDebug(`⚠️ No containers!`);
     }
     
     return () => {
-      if (portraitTextEl) {
-        portraitTextEl.removeEventListener('touchstart', blockTouch, { capture: true });
-        portraitTextEl.removeEventListener('touchmove', blockTouch, { capture: true });
-        portraitTextEl.removeEventListener('touchend', blockTouch, { capture: true });
-      }
-      if (landscapeTextEl) {
-        landscapeTextEl.removeEventListener('touchstart', blockTouch, { capture: true });
-        landscapeTextEl.removeEventListener('touchmove', blockTouch, { capture: true });
-        landscapeTextEl.removeEventListener('touchend', blockTouch, { capture: true });
-      }
-      addDebug('🧹 Cleanup listeners');
+      containers.forEach(el => {
+        el.removeEventListener('touchstart', blockTouch, { capture: true });
+        el.removeEventListener('touchmove', blockTouch, { capture: true });
+        el.removeEventListener('touchend', blockTouch, { capture: true });
+      });
     };
-  }, [isFullscreen, currentPage, addDebug]); // RE-RUN when fullscreen or page changes
+  }, [isFullscreen, currentPage, addDebug]);
   
-  // Additional safety: Re-apply CSS touch-action after any render
+  // Additional safety: Re-run after delay to catch late-rendered elements
   useEffect(() => {
-    // Small delay to ensure DOM is updated after fullscreen toggle
     const timer = setTimeout(() => {
-      const portraitTextEl = textScrollRef.current;
-      const landscapeTextEl = textScrollRefLandscape.current;
-      
-      if (portraitTextEl) {
-        portraitTextEl.style.touchAction = 'pan-y';
-      }
-      if (landscapeTextEl) {
-        landscapeTextEl.style.touchAction = 'pan-y';
-      }
-    }, 100);
+      document.querySelectorAll('[data-scrollable="true"], .text-scroll-container, #book-container .overflow-y-auto').forEach(el => {
+        el.style.touchAction = 'pan-y';
+      });
+      addDebug('🔁 Delayed CSS applied');
+    }, 500);
     
     return () => clearTimeout(timer);
-  }, [isFullscreen]);
+  }, [isFullscreen, currentPage, addDebug]);
   
   const isCover = currentPage === -1;
   const isBackCover = currentPage === -2;
