@@ -332,7 +332,7 @@ async def periodic_cleanup():
 # ============================================================
 
 # Auto-seed configuration (loaded from environment for flexibility)
-PREVIEW_URL = os.environ.get('SEED_PREVIEW_URL', 'https://ai-book-updates.preview.emergentagent.com')
+PREVIEW_URL = os.environ.get('SEED_PREVIEW_URL', 'https://kids-mode-demo.preview.emergentagent.com')
 SEED_IMPORT_KEY = os.environ.get('SEED_IMPORT_KEY', 'azories-import-2026')
 LOCAL_EXPORTS_PATH = "/app/exports/collections"
 
@@ -10179,11 +10179,16 @@ async def add_to_art_studio_gallery(request: dict, current_user: dict = Depends(
         
         # Initialize URLs
         final_url = image_url
-        thumbnail_url = None
+        thumbnail_url = request.get("thumbnail_url")  # Accept thumbnail from request (for videos)
         medium_url = None
         
+        # For videos, use the provided thumbnail_url (source image)
+        item_type = request.get("type", "image")
+        if item_type == "animation" and thumbnail_url:
+            # Keep the provided thumbnail for videos
+            logging.info(f"Using provided thumbnail for video: {thumbnail_url[:50]}...")
         # If image is base64, upload it to fal.ai CDN with thumbnails
-        if image_url.startswith('data:image') and FAL_AVAILABLE:
+        elif image_url.startswith('data:image') and FAL_AVAILABLE:
             try:
                 logging.info("Uploading base64 image to fal.ai CDN with thumbnails...")
                 result = await upload_image_with_thumbnails(image_url)
@@ -13417,7 +13422,7 @@ async def delete_test_accounts(admin: dict = Depends(get_admin_user)):
 @api_router.post("/admin/seed-from-preview")
 async def seed_from_preview(
     import_key: str = Query(..., description="Admin import key for security"),
-    preview_url: str = Query(default="https://ai-book-updates.preview.emergentagent.com", description="Preview environment URL")
+    preview_url: str = Query(default="https://kids-mode-demo.preview.emergentagent.com", description="Preview environment URL")
 ):
     """
     Seed the production database with essential collections from the preview environment.

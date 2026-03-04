@@ -1977,8 +1977,8 @@ export default function ProStudio() {
           }
         }
         
-        // Also save to general gallery
-        await saveToGallery(result.video_url, enhancedPrompt || 'Generated video', 'video');
+        // Also save to general gallery with source image as thumbnail
+        await saveToGallery(result.video_url, enhancedPrompt || 'Generated video', 'video', sourceImageUrl);
       } else {
         toast.error('No video URL returned');
       }
@@ -2086,7 +2086,7 @@ export default function ProStudio() {
   };
 
   // Save to gallery - enhanced to handle different input formats
-  const saveToGallery = async (imageUrlOrItem, promptOrName = '', type = 'image') => {
+  const saveToGallery = async (imageUrlOrItem, promptOrName = '', type = 'image', thumbnailUrl = null) => {
     try {
       const token = localStorage.getItem('azories-token');
       
@@ -2094,6 +2094,8 @@ export default function ProStudio() {
       const imageUrl = typeof imageUrlOrItem === 'string' ? imageUrlOrItem : imageUrlOrItem?.url;
       const name = typeof imageUrlOrItem === 'object' ? (imageUrlOrItem?.name || imageUrlOrItem?.prompt || promptOrName) : promptOrName;
       const prompt = typeof imageUrlOrItem === 'object' ? (imageUrlOrItem?.prompt || '') : promptOrName;
+      // Get thumbnail from object or use provided thumbnailUrl
+      const thumb = typeof imageUrlOrItem === 'object' ? (imageUrlOrItem?.thumbnail_url || imageUrlOrItem?.sourceImage || thumbnailUrl) : thumbnailUrl;
       
       const response = await fetch(`${API_URL}/api/art-studio/gallery`, {
         method: 'POST',
@@ -2107,7 +2109,8 @@ export default function ProStudio() {
           prompt: prompt,
           style: type,
           type: type === 'video' ? 'animation' : 'image',
-          source: 'pro_studio'  // Mark as Pro Studio item
+          source: 'pro_studio',  // Mark as Pro Studio item
+          thumbnail_url: thumb  // Include thumbnail for videos
         })
       });
 
