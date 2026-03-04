@@ -10704,79 +10704,187 @@ async def get_all_user_videos(current_user: dict = Depends(get_current_user)):
 @api_router.post("/admin/backfill-video-thumbnails")
 async def backfill_video_thumbnails(admin: dict = Depends(get_admin_user)):
     """
-    Admin endpoint to generate thumbnails for existing videos/animations that don't have them.
+    Admin endpoint to generate thumbnails for existing videos/animations.
     
-    This is a one-time migration script to backfill thumbnail_url for older videos.
-    Uses the video's first frame or a placeholder image.
+    For fal.media and other external videos, downloads first frame using ffmpeg
+    and uploads to Cloudinary. For Cloudinary videos, uses video transformation.
     """
+    import tempfile
+    import subprocess
+    import os
+    
     results = {
         "total_videos": 0,
         "missing_thumbnails": 0,
         "updated": 0,
         "failed": 0,
+        "skipped": 0,
         "errors": []
     }
     
     try:
-        # Find all animation items without thumbnails
-        videos_without_thumbnails = await db.art_studio_gallery.find({
-            "type": "animation",
-            "$or": [
-                {"thumbnail_url": {"$exists": False}},
-                {"thumbnail_url": None},
-                {"thumbnail_url": ""}
-            ]
+        # Find all animation items
+        videos = await db.art_studio_gallery.find({
+            "type": "animation"
         }).to_list(500)
         
-        results["total_videos"] = await db.art_studio_gallery.count_documents({"type": "animation"})
-        results["missing_thumbnails"] = len(videos_without_thumbnails)
+        results["total_videos"] = len(videos)
         
-        logger.info(f"Found {len(videos_without_thumbnails)} videos without thumbnails out of {results['total_videos']} total")
-        
-        for video in videos_without_thumbnails:
+        for video in videos:
             try:
                 video_url = video.get("image_url", "")
                 video_id = video.get("_id")
+                existing_thumb = video.get("thumbnail_url", "")
                 
                 # Skip if no video URL
                 if not video_url:
+                    results["skipped"] += 1
                     continue
                 
-                # Try to generate a thumbnail from the video
+                # Check if existing thumbnail is valid (not a placeholder that 404s)
+                if existing_thumb and "placeholders/" not in existing_thumb and existing_thumb.startswith("https://res.cloudinary.com"):
+                    # Verify it's not a placeholder
+                    results["skipped"] += 1
+                    continue
+                
+                results["missing_thumbnails"] += 1
                 thumbnail_url = None
                 
-                # Option 1: If it's a Cloudinary video, generate thumbnail via Cloudinary transformation
-                if "cloudinary.com" in video_url:
-                    # Cloudinary can generate thumbnails from videos by changing the extension
-                    # /video/upload/... -> /video/upload/so_0/...jpg
-                    thumbnail_url = video_url.replace("/upload/", "/upload/so_0,w_400,h_300,c_fill/")
-                    # Change extension to jpg
+                # Option 1: If it's a Cloudinary video, generate thumbnail via transformation
+                if "cloudinary.com" in video_url and "/video/" in video_url:
+                    thumbnail_url = video_url.replace("/upload/", "/upload/so_0,w_400,h_400,c_fill/")
                     if ".mp4" in thumbnail_url:
                         thumbnail_url = thumbnail_url.replace(".mp4", ".jpg")
                     elif ".webm" in thumbnail_url:
                         thumbnail_url = thumbnail_url.replace(".webm", ".jpg")
-                    
-                # Option 2: Use a default placeholder thumbnail
-                if not thumbnail_url:
-                    thumbnail_url = "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1/azories/placeholders/video_thumbnail_placeholder.png"
                 
-                # Update the document
-                await db.art_studio_gallery.update_one(
-                    {"_id": video_id},
-                    {"$set": {"thumbnail_url": thumbnail_url}}
-                )
-                results["updated"] += 1
+                # Option 2: For external videos, use ffmpeg to extract frame and upload to Cloudinary
+                elif video_url.startswith("http"):
+                    try:
+                        with tempfile.TemporaryDirectory() as tmpdir:
+                            output_path = os.path.join(tmpdir, "thumbnail.jpg")
+                            
+                            # Use ffmpeg to extract first frame
+                            cmd = [
+                                "ffmpeg", "-y",
+                                "-i", video_url,
+                                "-vframes", "1",
+                                "-ss", "0",
+                                "-vf", "scale=400:400:force_original_aspect_ratio=decrease,pad=400:400:(ow-iw)/2:(oh-ih)/2",
+                                "-q:v", "2",
+                                output_path
+                            ]
+                            
+                            result = subprocess.run(cmd, capture_output=True, timeout=30)
+                            
+                            if result.returncode == 0 and os.path.exists(output_path):
+                                # Upload to Cloudinary
+                                upload_result = cloudinary.uploader.upload(
+                                    output_path,
+                                    folder="azories/video_thumbnails",
+                                    public_id=f"thumb_{str(video_id)}",
+                                    overwrite=True
+                                )
+                                thumbnail_url = upload_result.get("secure_url")
+                                logger.info(f"Uploaded thumbnail for video {video_id}: {thumbnail_url}")
+                            else:
+                                logger.warning(f"FFmpeg failed for video {video_id}: {result.stderr[:200] if result.stderr else 'unknown'}")
+                    except subprocess.TimeoutExpired:
+                        logger.warning(f"FFmpeg timeout for video {video_id}")
+                    except Exception as ffmpeg_error:
+                        logger.warning(f"FFmpeg error for video {video_id}: {ffmpeg_error}")
+                
+                # Update the document if we have a thumbnail
+                if thumbnail_url:
+                    await db.art_studio_gallery.update_one(
+                        {"_id": video_id},
+                        {"$set": {"thumbnail_url": thumbnail_url}}
+                    )
+                    results["updated"] += 1
+                    logger.info(f"Updated thumbnail for video {video_id}")
+                else:
+                    results["failed"] += 1
+                    results["errors"].append(f"Could not generate thumbnail for {str(video_id)}")
                 
             except Exception as e:
                 results["failed"] += 1
                 results["errors"].append(f"Video {video_id}: {str(e)[:100]}")
                 logger.error(f"Error backfilling thumbnail for video {video_id}: {e}")
         
-        logger.info(f"Backfill complete: {results['updated']} updated, {results['failed']} failed")
+        logger.info(f"Backfill complete: {results['updated']} updated, {results['failed']} failed, {results['skipped']} skipped")
         return results
         
     except Exception as e:
         logger.error(f"Backfill video thumbnails error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+class SetVideoThumbnailRequest(BaseModel):
+    video_id: str
+    thumbnail_url: str
+
+@api_router.post("/admin/set-video-thumbnail")
+async def set_video_thumbnail(request: SetVideoThumbnailRequest, current_user: dict = Depends(get_current_user)):
+    """
+    Admin endpoint to manually set a video thumbnail URL.
+    """
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    try:
+        from bson import ObjectId
+        video_id = ObjectId(request.video_id)
+        
+        result = await db.art_studio_gallery.update_one(
+            {"_id": video_id},
+            {"$set": {"thumbnail_url": request.thumbnail_url}}
+        )
+        
+        if result.modified_count > 0:
+            return {"success": True, "message": f"Thumbnail updated for video {request.video_id}"}
+        else:
+            return {"success": False, "message": "Video not found or thumbnail already set"}
+            
+    except Exception as e:
+        logger.error(f"Error setting video thumbnail: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+class SetVideoThumbnailsBulkRequest(BaseModel):
+    thumbnails: dict  # {video_id: thumbnail_url}
+
+@api_router.post("/admin/set-video-thumbnails-bulk")
+async def set_video_thumbnails_bulk(request: SetVideoThumbnailsBulkRequest, current_user: dict = Depends(get_current_user)):
+    """
+    Admin endpoint to bulk set video thumbnail URLs.
+    """
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    updated = 0
+    failed = 0
+    
+    try:
+        from bson import ObjectId
+        
+        for video_id, thumbnail_url in request.thumbnails.items():
+            try:
+                result = await db.art_studio_gallery.update_one(
+                    {"_id": ObjectId(video_id)},
+                    {"$set": {"thumbnail_url": thumbnail_url}}
+                )
+                if result.modified_count > 0:
+                    updated += 1
+                else:
+                    failed += 1
+            except Exception as e:
+                logger.error(f"Error updating thumbnail for {video_id}: {e}")
+                failed += 1
+        
+        return {"success": True, "updated": updated, "failed": failed}
+        
+    except Exception as e:
+        logger.error(f"Error bulk setting video thumbnails: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
