@@ -37,12 +37,26 @@ TEAL = HexColor('#2DD4BF')
 CREAM = HexColor('#FDF8F3')
 WHITE = HexColor('#FFFFFF')
 
-# Pre-generated Azora illustrations
+# Official Azora mascot images from Cloudinary
 AZORA_IMAGES = {
-    "main": "https://static.prod-images.emergentagent.com/jobs/4af6f97e-24f1-4ec7-85ad-1d3eaff29056/images/e9a94b3bc7fb87f62396825d3b6276cde34f9547ec869d865c0ce274d331421c.png",
-    "reading": "https://static.prod-images.emergentagent.com/jobs/4af6f97e-24f1-4ec7-85ad-1d3eaff29056/images/1fd2e14da76a81949633328b3abc78713d7ff4c25c224ec55461fb7b31dd2888.png",
-    "the_end": "https://static.prod-images.emergentagent.com/jobs/4af6f97e-24f1-4ec7-85ad-1d3eaff29056/images/890187311a353072ba8618978949fa9fbe1a9bf5c818ab28c030c52de6f12078.png",
-    "back_cover": "https://static.prod-images.emergentagent.com/jobs/4af6f97e-24f1-4ec7-85ad-1d3eaff29056/images/8c0070fbb3a7d1358eea880287dbaca1f70a1ce343d8108c92bbe869ca43bd6a.png"
+    # The End page - friendly goodbye wave
+    "the_end": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279875/azories/mascot/azora_waving_hello.jpg",
+    # About Azories page - confident professional pose
+    "about": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279581/azories/mascot/azora_pose1_confident.jpg",
+    # Story of Azora page - reading in library
+    "story": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279589/azories/mascot/azora_pose3_reading.jpg",
+    # Draw Your Scene - small corner icon
+    "icon": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279877/azories/mascot/dragon_icon_solo.jpg",
+    # What Happens Next - encouraging pointing pose
+    "pointing": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772280556/azories/mascot/azora_pointing_v2.jpg",
+    # Reading Journal - cozy reading scene
+    "reading_cozy": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279866/azories/mascot/azora_reading_cozy.jpg",
+    # Your Turn! page - pointing at prompts
+    "your_turn": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279592/azories/mascot/azora_pose4_pointing.jpg",
+    # Back Cover - friendly brand image
+    "back_cover": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279875/azories/mascot/azora_waving_hello.jpg",
+    # Avatar for small uses
+    "avatar": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279871/azories/mascot/azora_avatar_face.jpg"
 }
 
 # Cache for fetched images
@@ -245,29 +259,46 @@ def draw_stars(c, count=15):
 # ============== BONUS PAGES ==============
 
 async def draw_bonus_page_the_end(c, book_title=""):
-    """Page B1 - 'The End' - full page AI art."""
-    the_end_img = await get_azora_image("the_end")
-    if the_end_img:
-        draw_image_cover(c, the_end_img, 0, 0, PAGE_WIDTH, PAGE_HEIGHT)
-    else:
-        c.setFillColor(PURPLE_DARK)
-        c.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, fill=1, stroke=0)
-        c.setFillColor(GOLD)
-        c.setFont("Helvetica-Bold", 42)
-        c.drawCentredString(PAGE_WIDTH/2, PAGE_HEIGHT/2, "The End")
+    """Page B1 - 'The End' - Azora waving goodbye."""
+    # Purple background
+    c.setFillColor(PURPLE_DARK)
+    c.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, fill=1, stroke=0)
     
+    # Lighter purple circle in center
+    c.setFillColor(PURPLE_MID)
+    c.circle(PAGE_WIDTH/2, PAGE_HEIGHT/2 + 10*mm, 65*mm, fill=1, stroke=0)
+    
+    # Draw stars
+    draw_stars(c, 12)
+    
+    # "The End" title at top
+    c.setFillColor(GOLD)
+    c.setFont("Helvetica-Bold", 36)
+    c.drawCentredString(PAGE_WIDTH/2, PAGE_HEIGHT - 35*mm, "The End")
+    
+    # Decorative line
+    c.setStrokeColor(GOLD)
+    c.setLineWidth(2)
+    c.line(50*mm, PAGE_HEIGHT - 45*mm, PAGE_WIDTH - 50*mm, PAGE_HEIGHT - 45*mm)
+    
+    # Azora waving image in center
+    azora_img = await get_azora_image("the_end")
+    if azora_img:
+        draw_image_contain(c, azora_img, PAGE_WIDTH/2 - 40*mm, PAGE_HEIGHT/2 - 50*mm, 80*mm, 90*mm)
+    
+    # Book title at bottom
     if book_title:
         c.setFillColor(Color(0.2, 0.1, 0.3, alpha=0.8))
-        c.rect(0, 0, PAGE_WIDTH, 30*mm, fill=1, stroke=0)
+        c.rect(0, 0, PAGE_WIDTH, 35*mm, fill=1, stroke=0)
         c.setFillColor(GOLD_LIGHT)
-        c.setFont("Helvetica-Oblique", 12)
-        c.drawCentredString(PAGE_WIDTH/2, 12*mm, f'"{book_title}"')
+        c.setFont("Helvetica-Oblique", 13)
+        c.drawCentredString(PAGE_WIDTH/2, 15*mm, f'"{book_title}"')
     
     c.showPage()
 
 
 async def draw_bonus_page_about_azories(c):
-    """Page B2 - About Azories with Azora illustration."""
+    """Page B2 - About Azories with confident Azora pose."""
     c.setFillColor(CREAM)
     c.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, fill=1, stroke=0)
     
@@ -278,10 +309,10 @@ async def draw_bonus_page_about_azories(c):
     c.setFont("Helvetica-Bold", 24)
     c.drawCentredString(PAGE_WIDTH/2, PAGE_HEIGHT - 25*mm, "About Azories")
     
-    # Azora illustration on left
-    azora_img = await get_azora_image("main")
+    # Azora confident pose on left
+    azora_img = await get_azora_image("about")
     if azora_img:
-        draw_image_contain(c, azora_img, 10*mm, PAGE_HEIGHT/2 - 35*mm, 60*mm, 70*mm)
+        draw_image_contain(c, azora_img, 8*mm, PAGE_HEIGHT/2 - 45*mm, 65*mm, 85*mm)
     
     # Text on right
     text_x = 78*mm
@@ -311,7 +342,7 @@ Visit us at azories.com"""
 
 
 async def draw_bonus_page_azora_story(c):
-    """Page B3 - The Story of Azora with reading illustration."""
+    """Page B3 - The Story of Azora with reading pose."""
     c.setFillColor(PURPLE_DARK)
     c.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, fill=1, stroke=0)
     
@@ -324,9 +355,9 @@ async def draw_bonus_page_azora_story(c):
     c.line(50*mm, PAGE_HEIGHT - 34*mm, PAGE_WIDTH - 50*mm, PAGE_HEIGHT - 34*mm)
     
     # Azora reading illustration
-    azora_img = await get_azora_image("reading")
+    azora_img = await get_azora_image("story")
     if azora_img:
-        draw_image_contain(c, azora_img, PAGE_WIDTH/2 - 35*mm, PAGE_HEIGHT - 100*mm, 70*mm, 60*mm)
+        draw_image_contain(c, azora_img, PAGE_WIDTH/2 - 35*mm, PAGE_HEIGHT - 105*mm, 70*mm, 65*mm)
     
     # Story text
     story_text = """Azora is a small but mighty dragon who lives in the Grand Library — a magical place where every book ever written floats on golden shelves that stretch up to the clouds.
@@ -349,7 +380,7 @@ She believes that every child deserves a story that belongs to them. And she nev
 
 
 async def draw_bonus_page_draw_scene(c):
-    """Page B4 - Draw Your Favourite Scene activity."""
+    """Page B4 - Draw Your Favourite Scene activity with dragon icon."""
     c.setFillColor(CREAM)
     c.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, fill=1, stroke=0)
     draw_decorative_border(c, 12*mm, PURPLE_MID)
@@ -377,6 +408,11 @@ async def draw_bonus_page_draw_scene(c):
         c.line(bx, by, bx + dx*8*mm, by)
         c.line(bx, by, bx, by + dy*8*mm)
     
+    # Small dragon icon in corner
+    icon_img = await get_azora_image("icon")
+    if icon_img:
+        draw_image_contain(c, icon_img, PAGE_WIDTH - 45*mm, PAGE_HEIGHT - 40*mm, 25*mm, 25*mm)
+    
     # Prompt
     c.setFillColor(PURPLE_MID)
     c.setFont("Helvetica-Oblique", 10)
@@ -386,7 +422,7 @@ async def draw_bonus_page_draw_scene(c):
 
 
 async def draw_bonus_page_what_happens_next(c):
-    """Page B5 - What Happens Next? writing activity."""
+    """Page B5 - What Happens Next? writing activity with pointing Azora."""
     c.setFillColor(CREAM)
     c.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, fill=1, stroke=0)
     draw_decorative_border(c, 12*mm, TEAL)
@@ -409,16 +445,16 @@ async def draw_bonus_page_what_happens_next(c):
         c.line(line_x, y, line_end, y)
         y -= 9*mm
     
-    # Small Azora
-    azora_img = await get_azora_image("main")
+    # Azora pointing in corner
+    azora_img = await get_azora_image("pointing")
     if azora_img:
-        draw_image_contain(c, azora_img, PAGE_WIDTH - 50*mm, 12*mm, 30*mm, 30*mm)
+        draw_image_contain(c, azora_img, PAGE_WIDTH - 55*mm, 8*mm, 38*mm, 45*mm)
     
     c.showPage()
 
 
 async def draw_bonus_page_reading_journal(c):
-    """Page B6 - My Reading Journal."""
+    """Page B6 - My Reading Journal with cozy reading Azora."""
     c.setFillColor(CREAM)
     c.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, fill=1, stroke=0)
     draw_decorative_border(c, 12*mm, GOLD)
@@ -426,6 +462,11 @@ async def draw_bonus_page_reading_journal(c):
     c.setFillColor(PURPLE_DARK)
     c.setFont("Helvetica-Bold", 20)
     c.drawCentredString(PAGE_WIDTH/2, PAGE_HEIGHT - 28*mm, "My Reading Journal")
+    
+    # Cozy reading Azora in top right corner
+    azora_img = await get_azora_image("reading_cozy")
+    if azora_img:
+        draw_image_contain(c, azora_img, PAGE_WIDTH - 52*mm, PAGE_HEIGHT - 55*mm, 35*mm, 40*mm)
     
     fields = [
         ("I read this book on:", 22*mm),
@@ -443,7 +484,7 @@ async def draw_bonus_page_reading_journal(c):
         c.drawString(margin, y, label)
         c.setStrokeColor(PURPLE_LIGHT)
         c.setLineWidth(0.8)
-        c.line(margin, y - 10*mm, PAGE_WIDTH - margin, y - 10*mm)
+        c.line(margin, y - 10*mm, PAGE_WIDTH - margin - 40*mm, y - 10*mm)
         y -= spacing
     
     # Star rating
@@ -463,7 +504,7 @@ async def draw_bonus_page_reading_journal(c):
 
 
 async def draw_bonus_page_create_story(c):
-    """Page B7 - Your Turn! Create your own story prompts."""
+    """Page B7 - Your Turn! Create your own story with pointing Azora."""
     c.setFillColor(CREAM)
     c.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, fill=1, stroke=0)
     
@@ -498,45 +539,69 @@ async def draw_bonus_page_create_story(c):
     c.setFont("Helvetica-Bold", 9)
     c.drawCentredString(PAGE_WIDTH/2, 28*mm, "Visit azories.com to turn your idea into a real illustrated book!")
     
-    # Azora
-    azora_img = await get_azora_image("main")
+    # Azora pointing at the prompts
+    azora_img = await get_azora_image("your_turn")
     if azora_img:
-        draw_image_contain(c, azora_img, PAGE_WIDTH - 52*mm, 10*mm, 35*mm, 35*mm)
+        draw_image_contain(c, azora_img, PAGE_WIDTH - 58*mm, 5*mm, 45*mm, 55*mm)
     
     c.showPage()
 
 
 async def draw_bonus_page_back_cover(c, book_title="", book_summary="", author_name=""):
-    """Page B8 - Back cover with full Azories branding."""
-    back_cover_img = await get_azora_image("back_cover")
-    if back_cover_img:
-        draw_image_cover(c, back_cover_img, 0, 0, PAGE_WIDTH, PAGE_HEIGHT)
-    else:
-        c.setFillColor(PURPLE_DARK)
-        c.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, fill=1, stroke=0)
+    """Page B8 - Back cover with waving Azora and full branding."""
+    # Purple background
+    c.setFillColor(PURPLE_DARK)
+    c.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, fill=1, stroke=0)
     
-    # Overlay with book info at bottom
-    c.setFillColor(Color(0.2, 0.1, 0.3, alpha=0.85))
+    # Lighter circle
+    c.setFillColor(PURPLE_MID)
+    c.circle(PAGE_WIDTH/2, PAGE_HEIGHT/2 + 20*mm, 55*mm, fill=1, stroke=0)
+    
+    # Azories logo at top
+    c.setFillColor(GOLD)
+    c.setFont("Helvetica-Bold", 32)
+    c.drawCentredString(PAGE_WIDTH/2, PAGE_HEIGHT - 30*mm, "Azories")
+    
+    # Tagline
+    c.setFillColor(CREAM)
+    c.setFont("Helvetica-Oblique", 10)
+    c.drawCentredString(PAGE_WIDTH/2, PAGE_HEIGHT - 43*mm, "Where every child is the hero of their own story")
+    
+    # Decorative line
+    c.setStrokeColor(GOLD)
+    c.setLineWidth(1)
+    c.line(45*mm, PAGE_HEIGHT - 50*mm, PAGE_WIDTH - 45*mm, PAGE_HEIGHT - 50*mm)
+    
+    # Azora waving in center
+    azora_img = await get_azora_image("back_cover")
+    if azora_img:
+        draw_image_contain(c, azora_img, PAGE_WIDTH/2 - 40*mm, PAGE_HEIGHT/2 - 35*mm, 80*mm, 90*mm)
+    
+    # Book info at bottom
+    c.setFillColor(Color(0.15, 0.08, 0.25, alpha=0.9))
     c.rect(0, 0, PAGE_WIDTH, 55*mm, fill=1, stroke=0)
     
     if book_title:
         c.setFillColor(GOLD)
-        c.setFont("Helvetica-Bold", 14)
-        c.drawCentredString(PAGE_WIDTH/2, 40*mm, f'"{book_title}"')
+        c.setFont("Helvetica-Bold", 13)
+        c.drawCentredString(PAGE_WIDTH/2, 42*mm, f'"{book_title}"')
     
     if author_name:
         c.setFillColor(CREAM)
         c.setFont("Helvetica-Oblique", 10)
-        c.drawCentredString(PAGE_WIDTH/2, 30*mm, f"by {author_name}")
+        c.drawCentredString(PAGE_WIDTH/2, 32*mm, f"by {author_name}")
     
     # Website
     c.setFillColor(GOLD)
     c.setFont("Helvetica-Bold", 11)
     c.drawCentredString(PAGE_WIDTH/2, 18*mm, "azories.com")
     
-    c.setFillColor(CREAM)
+    c.setFillColor(PURPLE_LIGHT)
     c.setFont("Helvetica", 7)
     c.drawCentredString(PAGE_WIDTH/2, 8*mm, f"Created with Azories | {datetime.now().year}")
+    
+    # Draw stars
+    draw_stars(c, 8)
     
     c.showPage()
 
