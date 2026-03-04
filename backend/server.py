@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo import MongoClient
+from enum import Enum
 import os
 import logging
 import secrets
@@ -235,6 +236,9 @@ except Exception as e:
 
 # Emergent LLM Key for AI features
 EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY')
+
+# Resend API Key for email notifications
+RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
 
 # JWT settings - REQUIRED, no defaults for security
 JWT_SECRET = os.environ.get('JWT_SECRET')
@@ -1137,7 +1141,7 @@ class AIStoryRequest(BaseModel):
     title: str = ""  # Optional - AI will generate if empty
     age_range: str = "5-8"  # 3-5, 5-8, 8-12
     num_pages: int = 8
-    words_per_page: str = "medium"  # short (50), medium (100), long (150)
+    words_per_page: str = "medium"  # short (50), medium (100), long (150), long_adult (200)
     
     # Main Character
     character_name: str = ""
@@ -1146,16 +1150,63 @@ class AIStoryRequest(BaseModel):
     # Story
     story_description: str = ""  # Main story idea/description
     
+    # Advanced Story Options (Story Studio mode)
+    genre: str = "Adventure"  # Adventure, Fantasy, Mystery, Romance, Sci-Fi, Horror, Drama, Comedy
+    tone: str = ""  # Optional: dark, light, humorous, serious, emotional
+    plot_summary: str = ""  # Optional: detailed plot for advanced users
+    chapter_structure: bool = False  # For longer books (30+ pages)
+    
     # Style
-    art_style: str = "3d-pixar"  # 3d-pixar, watercolour, storybook
+    art_style: str = "3d-pixar"  # Expanded art styles
+    
+    # Mode
+    creator_mode: str = "kids"  # 'kids' or 'studio' (Story Studio for older readers)
     
     # Legacy fields for backwards compatibility
     idea: str = ""  # Will be derived from story_description if not provided
-    genre: str = "Adventure"
     age_rating: str = "All Ages"
     generate_images: bool = True
     media_type: str = "images"
     image_style: str = "3d-pixar"
+
+# Credit costs based on page count
+AI_STORY_PAGE_CREDITS = {
+    5: 5,    # 5 pages = 5 credits
+    10: 8,   # 10 pages = 8 credits
+    15: 12,  # 15 pages = 12 credits
+    20: 15,  # 20 pages = 15 credits
+    30: 20,  # 30 pages = 20 credits
+    50: 30,  # 50 pages = 30 credits (novel length)
+}
+
+# Story Generation Job Status
+class StoryJobStatus(str, Enum):
+    PENDING = "pending"
+    GENERATING_STORY = "generating_story"
+    GENERATING_IMAGES = "generating_images"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    PARTIAL = "partial"  # Some images failed but story is saved
+
+class StoryJobProgress(BaseModel):
+    job_id: str
+    status: StoryJobStatus
+    user_id: str
+    book_id: Optional[str] = None  # Set when book is created
+    progress_percent: int = 0
+    current_step: str = "Starting..."
+    total_pages: int = 0
+    pages_completed: int = 0
+    story_text_done: bool = False
+    images_status: dict = {}  # {page_num: "pending"|"generating"|"done"|"failed"}
+    error_message: Optional[str] = None
+    created_at: datetime = None
+    updated_at: datetime = None
+    completed_at: Optional[datetime] = None
+    request_data: dict = {}  # Store original request for retry
+
+# In-memory job store for active jobs (also persisted to MongoDB)
+STORY_JOBS = {}
 
 class SummaryGenerateRequest(BaseModel):
     book_id: str
@@ -1588,6 +1639,56 @@ async def get_ai_story_trial_status(current_user: dict = Depends(get_current_use
             "in_trial": False,
             "trial_expired": True
         }
+
+
+@api_router.get("/ai/story-pricing")
+async def get_story_pricing():
+    """Get credit costs for different page counts"""
+    return {
+        "page_credits": AI_STORY_PAGE_CREDITS,
+        "free_story_pages": 5,  # Only 5-page stories are free
+        "free_story_mode": "kids",  # Only Kids Mode stories are free
+        "art_styles": {
+            "kids": [
+                {"id": "3d-pixar", "name": "3D Pixar Animation", "emoji": "🎬"},
+                {"id": "watercolour", "name": "Watercolour Illustration", "emoji": "🎨"},
+                {"id": "comic-book", "name": "Comic Book", "emoji": "💥"},
+                {"id": "hand-drawn", "name": "Hand Drawn / Sketch", "emoji": "✏️"}
+            ],
+            "studio": [
+                {"id": "3d-pixar", "name": "3D Pixar Animation", "emoji": "🎬"},
+                {"id": "watercolour", "name": "Watercolour Illustration", "emoji": "🎨"},
+                {"id": "pencil-sketch", "name": "Pencil Sketch / Hand Drawn", "emoji": "✏️"},
+                {"id": "comic-book", "name": "Comic Book / Graphic Novel", "emoji": "💥"},
+                {"id": "realistic", "name": "Realistic Digital Art", "emoji": "🖼️"},
+                {"id": "anime", "name": "Anime / Manga", "emoji": "🎌"},
+                {"id": "oil-painting", "name": "Oil Painting", "emoji": "🖌️"},
+                {"id": "vintage-storybook", "name": "Vintage Storybook", "emoji": "📜"},
+                {"id": "dark-fantasy", "name": "Dark Fantasy Art", "emoji": "🌙"},
+                {"id": "photorealistic", "name": "Photorealistic", "emoji": "📷"}
+            ]
+        },
+        "age_ranges": {
+            "kids": [
+                {"id": "0-2", "name": "0-2 (Baby/Toddler)", "emoji": "👶"},
+                {"id": "3-5", "name": "3-5 (Early Years)", "emoji": "🧒"},
+                {"id": "6-8", "name": "6-8 (Early Readers)", "emoji": "📖"},
+                {"id": "9-12", "name": "9-12 (Middle Grade)", "emoji": "📚"}
+            ],
+            "studio": [
+                {"id": "13-16", "name": "13-16 (Young Adult)", "emoji": "🎭"},
+                {"id": "17+", "name": "17+ (Adult Fiction)", "emoji": "📕"}
+            ]
+        },
+        "page_options": {
+            "kids": [5, 10, 15],
+            "studio": [5, 10, 15, 20, 30, 50]
+        },
+        "genres": [
+            "Adventure", "Fantasy", "Mystery", "Romance", "Sci-Fi", 
+            "Horror", "Drama", "Comedy", "Thriller", "Historical"
+        ]
+    }
 
 
 # ============ PASSWORD RESET ============
@@ -5985,16 +6086,648 @@ async def generate_consistent_character_image(
 # ==================== END FAL.AI ENDPOINTS ====================
 
 
+# ==================== ASYNC STORY GENERATION SYSTEM ====================
+
+async def update_job_status(job_id: str, updates: dict):
+    """Update job status in both memory and database"""
+    updates["updated_at"] = datetime.now(timezone.utc)
+    
+    if job_id in STORY_JOBS:
+        STORY_JOBS[job_id].update(updates)
+    
+    await db.story_jobs.update_one(
+        {"job_id": job_id},
+        {"$set": updates}
+    )
+
+async def send_story_ready_email(user_email: str, user_name: str, book_title: str, book_id: str):
+    """Send email notification when story is ready"""
+    try:
+        if not RESEND_API_KEY:
+            logger.warning("Resend API key not configured, skipping email notification")
+            return
+        
+        import resend
+        resend.api_key = RESEND_API_KEY
+        
+        book_url = f"https://azories.com/read/{book_id}"
+        
+        html_content = f"""
+        <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h1 style="color: #7c3aed; margin: 0;">Your Story is Ready! 🐉</h1>
+            </div>
+            
+            <p style="font-size: 16px; color: #333;">Hi {user_name or 'there'},</p>
+            
+            <p style="font-size: 16px; color: #333;">
+                Great news! Azora has finished creating your story <strong>"{book_title}"</strong>!
+            </p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="{book_url}" style="display: inline-block; background: linear-gradient(135deg, #7c3aed, #ec4899); color: white; padding: 15px 30px; text-decoration: none; border-radius: 30px; font-weight: bold; font-size: 16px;">
+                    📚 Read Your Story Now
+                </a>
+            </div>
+            
+            <p style="font-size: 14px; color: #666;">
+                Your book is waiting in your library, complete with beautiful illustrations!
+            </p>
+            
+            <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+            
+            <p style="font-size: 12px; color: #999; text-align: center;">
+                Happy reading! 📖<br>
+                The Azories Team
+            </p>
+        </div>
+        """
+        
+        await asyncio.get_event_loop().run_in_executor(
+            None,
+            lambda: resend.Emails.send({
+                "from": "Azories <stories@azories.com>",
+                "to": user_email,
+                "subject": f"🐉 Your story \"{book_title}\" is ready!",
+                "html": html_content
+            })
+        )
+        logger.info(f"Story ready email sent to {user_email}")
+    except Exception as e:
+        logger.error(f"Failed to send story ready email: {e}")
+
+async def run_story_generation_job(job_id: str, request_data: dict, user_data: dict):
+    """Background worker for story generation"""
+    try:
+        logger.info(f"Starting story generation job {job_id}")
+        
+        # Update status to generating story
+        await update_job_status(job_id, {
+            "status": StoryJobStatus.GENERATING_STORY.value,
+            "current_step": "Azora is writing your story...",
+            "progress_percent": 5
+        })
+        
+        # Reconstruct request from data
+        request = AIStoryRequest(**request_data)
+        num_pages = request.num_pages
+        
+        # Initialize images status
+        images_status = {str(i): "pending" for i in range(1, num_pages + 1)}
+        await update_job_status(job_id, {"images_status": images_status, "total_pages": num_pages})
+        
+        # ============ STEP 1: Generate Story Text ============
+        try:
+            story_data = await generate_story_text(request, user_data)
+            
+            await update_job_status(job_id, {
+                "story_text_done": True,
+                "current_step": "Story written! Now creating illustrations...",
+                "progress_percent": 20
+            })
+            logger.info(f"Job {job_id}: Story text generated successfully")
+        except Exception as e:
+            logger.error(f"Job {job_id}: Story text generation failed: {e}")
+            await update_job_status(job_id, {
+                "status": StoryJobStatus.FAILED.value,
+                "error_message": f"Failed to generate story: {str(e)}",
+                "current_step": "Story generation failed"
+            })
+            # Refund credits
+            await refund_story_credits(user_data["id"], num_pages)
+            return
+        
+        # ============ STEP 2: Create Book in Database ============
+        book_id = str(uuid.uuid4())
+        now = datetime.now(timezone.utc)
+        
+        # Use the selected art style
+        selected_style = request.art_style or request.image_style or "3d-pixar"
+        style_prompts = get_style_prompts()
+        style_desc = style_prompts.get(selected_style, style_prompts["3d-pixar"])
+        
+        # Create book document
+        book = {
+            "id": book_id,
+            "user_id": user_data["id"],
+            "title": story_data.get("title", "Untitled Story"),
+            "description": story_data.get("description", ""),
+            "back_cover_text": story_data.get("back_cover_text", ""),
+            "main_character_description": story_data.get("main_character_description", ""),
+            "genre": request.genre,
+            "age_rating": request.age_range,
+            "art_style": selected_style,
+            "is_published": False,
+            "status": "generating",  # Mark as generating until images done
+            "created_at": now,
+            "updated_at": now,
+            "generation_job_id": job_id
+        }
+        
+        await db.books.insert_one({k: v for k, v in book.items() if k != "_id"})
+        
+        await update_job_status(job_id, {
+            "book_id": book_id,
+            "current_step": "Book created, generating cover...",
+            "progress_percent": 25
+        })
+        
+        # ============ STEP 3: Generate Cover Image ============
+        try:
+            cover_prompt = f"Book cover illustration for '{story_data.get('title', 'Story')}'. {story_data.get('main_character_description', '')}. {style_desc}. Professional book cover design, centered composition, appealing to readers."
+            
+            cover_url = await generate_single_image(cover_prompt, style_desc)
+            
+            await db.books.update_one(
+                {"id": book_id},
+                {"$set": {"cover_image_url": cover_url, "updated_at": datetime.now(timezone.utc)}}
+            )
+            
+            await update_job_status(job_id, {
+                "current_step": "Cover done! Creating page illustrations...",
+                "progress_percent": 30
+            })
+        except Exception as e:
+            logger.warning(f"Job {job_id}: Cover generation failed: {e}")
+            # Continue without cover
+        
+        # ============ STEP 4: Generate Page Images ============
+        pages = story_data.get("pages", [])
+        total_pages = len(pages)
+        images_completed = 0
+        failed_pages = []
+        
+        # Calculate progress per page (from 30% to 95%)
+        progress_per_page = 65 / total_pages if total_pages > 0 else 0
+        
+        for page in pages:
+            page_num = page.get("page_number", 0)
+            
+            # Update status for this page
+            images_status[str(page_num)] = "generating"
+            await update_job_status(job_id, {
+                "images_status": images_status,
+                "current_step": f"Creating illustration for page {page_num} of {total_pages}..."
+            })
+            
+            try:
+                # Generate image for this page
+                image_prompt = page.get("image_prompt", "")
+                if not image_prompt:
+                    image_prompt = f"Illustration for: {page.get('text', '')[:100]}"
+                
+                # Add character and style to prompt
+                char_desc = story_data.get("main_character_description", "")
+                full_prompt = f"{image_prompt}. {char_desc}. {style_desc}"
+                
+                image_url = await generate_single_image(full_prompt, style_desc)
+                
+                # Create page document
+                page_doc = {
+                    "id": str(uuid.uuid4()),
+                    "book_id": book_id,
+                    "page_number": page_num,
+                    "text_content": page.get("text", ""),
+                    "image_url": image_url,
+                    "image_prompt": image_prompt,
+                    "chapter_title": page.get("chapter_title"),
+                    "created_at": now,
+                    "updated_at": now
+                }
+                
+                await db.pages.insert_one({k: v for k, v in page_doc.items() if k != "_id"})
+                
+                images_status[str(page_num)] = "done"
+                images_completed += 1
+                
+                # Update progress
+                current_progress = 30 + (images_completed * progress_per_page)
+                await update_job_status(job_id, {
+                    "images_status": images_status,
+                    "pages_completed": images_completed,
+                    "progress_percent": int(current_progress)
+                })
+                
+                logger.info(f"Job {job_id}: Page {page_num}/{total_pages} completed")
+                
+            except Exception as e:
+                logger.error(f"Job {job_id}: Page {page_num} image failed: {e}")
+                images_status[str(page_num)] = "failed"
+                failed_pages.append(page_num)
+                
+                # Still create page with placeholder
+                page_doc = {
+                    "id": str(uuid.uuid4()),
+                    "book_id": book_id,
+                    "page_number": page_num,
+                    "text_content": page.get("text", ""),
+                    "image_url": None,  # No image
+                    "image_prompt": page.get("image_prompt", ""),
+                    "image_failed": True,
+                    "created_at": now,
+                    "updated_at": now
+                }
+                await db.pages.insert_one({k: v for k, v in page_doc.items() if k != "_id"})
+                
+                images_completed += 1
+                current_progress = 30 + (images_completed * progress_per_page)
+                await update_job_status(job_id, {
+                    "images_status": images_status,
+                    "pages_completed": images_completed,
+                    "progress_percent": int(current_progress)
+                })
+        
+        # ============ STEP 5: Finalize ============
+        # Update book status
+        final_status = "draft" if failed_pages else "draft"  # Book is ready
+        await db.books.update_one(
+            {"id": book_id},
+            {"$set": {"status": final_status, "updated_at": datetime.now(timezone.utc)}}
+        )
+        
+        # Handle partial completion
+        if failed_pages:
+            # Refund credits for failed pages
+            failed_count = len(failed_pages)
+            credits_per_page = AI_STORY_PAGE_CREDITS.get(num_pages, 5) / num_pages
+            refund_amount = int(failed_count * credits_per_page)
+            
+            if refund_amount > 0:
+                await db.users.update_one(
+                    {"id": user_data["id"]},
+                    {"$inc": {"credits": refund_amount}}
+                )
+                logger.info(f"Job {job_id}: Refunded {refund_amount} credits for {failed_count} failed pages")
+            
+            await update_job_status(job_id, {
+                "status": StoryJobStatus.PARTIAL.value,
+                "current_step": f"Story complete! {len(failed_pages)} images failed.",
+                "progress_percent": 100,
+                "completed_at": datetime.now(timezone.utc),
+                "error_message": f"Some illustrations couldn't be generated. Refunded {refund_amount} credits."
+            })
+        else:
+            await update_job_status(job_id, {
+                "status": StoryJobStatus.COMPLETED.value,
+                "current_step": "Your story is ready! 🎉",
+                "progress_percent": 100,
+                "completed_at": datetime.now(timezone.utc)
+            })
+        
+        # Send email notification
+        await send_story_ready_email(
+            user_data.get("email", ""),
+            user_data.get("name", ""),
+            story_data.get("title", "Your Story"),
+            book_id
+        )
+        
+        logger.info(f"Job {job_id}: Story generation completed. Book ID: {book_id}")
+        
+    except Exception as e:
+        logger.error(f"Job {job_id}: Unexpected error: {e}")
+        await update_job_status(job_id, {
+            "status": StoryJobStatus.FAILED.value,
+            "error_message": f"Unexpected error: {str(e)}",
+            "current_step": "Generation failed"
+        })
+        # Refund all credits
+        await refund_story_credits(user_data["id"], request_data.get("num_pages", 5))
+
+async def refund_story_credits(user_id: str, num_pages: int):
+    """Refund credits for a failed story generation"""
+    credits_to_refund = AI_STORY_PAGE_CREDITS.get(num_pages, 5)
+    await db.users.update_one(
+        {"id": user_id},
+        {"$inc": {"credits": credits_to_refund}}
+    )
+    logger.info(f"Refunded {credits_to_refund} credits to user {user_id}")
+
+def get_style_prompts():
+    """Get style prompt mappings"""
+    return {
+        "3d-pixar": "Pixar 3D animation style, Disney quality, vibrant colors, expressive characters, magical lighting, cinematic composition",
+        "pixar": "Pixar 3D animation style, Disney quality, vibrant colors, expressive characters, magical lighting, cinematic composition",
+        "watercolour": "Soft watercolor illustration, gentle colors, dreamy atmosphere, hand-painted feel, children's book quality",
+        "watercolor": "Soft watercolor illustration, gentle colors, dreamy atmosphere, hand-painted feel",
+        "pencil-sketch": "Pencil sketch illustration, hand-drawn feel, artistic linework, detailed textures, warm and inviting",
+        "hand-drawn": "Hand-drawn illustration, artistic linework, warm colors, whimsical style",
+        "comic-book": "Comic book style, bold outlines, dynamic poses, vibrant colors, graphic novel aesthetic",
+        "storybook": "Classic storybook illustration, warm colors, nostalgic, timeless, whimsical, vintage children's book",
+        "realistic": "Photorealistic digital art, detailed, cinematic lighting, dramatic composition",
+        "photorealistic": "Photorealistic style, hyper-detailed, professional photography quality, dramatic lighting",
+        "anime": "Anime/manga style illustration, big expressive eyes, colorful, dynamic, Japanese animation quality",
+        "manga": "Manga style, detailed linework, dramatic shading, Japanese comic aesthetic",
+        "oil-painting": "Classical oil painting style, rich colors, dramatic brushwork, museum quality, fine art aesthetic",
+        "vintage-storybook": "Vintage storybook illustration, aged paper texture, classic fairy tale style, ornate details",
+        "dark-fantasy": "Dark fantasy art, moody atmosphere, dramatic lighting, gothic elements, epic fantasy style",
+        "illustration": "Professional children's book illustration, colorful, friendly, whimsical, hand-drawn feel",
+        "comic": "Comic book panel style, bold outlines, dynamic poses, vibrant colors",
+        "sketch": "Pencil sketch illustration, hand-drawn, artistic, detailed linework",
+        "fantasy": "Fantasy art style, magical, ethereal, detailed environments",
+        "scifi": "Futuristic sci-fi style, neon colors, advanced technology, space themes"
+    }
+
+async def generate_single_image(prompt: str, style_desc: str) -> str:
+    """Generate a single image and return its URL"""
+    if not EMERGENT_LLM_KEY:
+        raise Exception("Image generation not available")
+    
+    image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
+    images = await image_gen.generate_images(
+        prompt=prompt,
+        model="gpt-image-1",
+        number_of_images=1
+    )
+    
+    if images and len(images) > 0:
+        # Upload to Cloudinary if available
+        if CLOUDINARY_AVAILABLE:
+            image_bytes = images[0]
+            image_base64 = base64.b64encode(image_bytes).decode('utf-8')
+            upload_result = cloudinary.uploader.upload(
+                f"data:image/png;base64,{image_base64}",
+                folder="azories/story_pages"
+            )
+            return upload_result.get("secure_url")
+        else:
+            # Return as data URL
+            image_base64 = base64.b64encode(images[0]).decode('utf-8')
+            return f"data:image/png;base64,{image_base64}"
+    
+    raise Exception("No image generated")
+
+async def generate_story_text(request: AIStoryRequest, user_data: dict) -> dict:
+    """Generate just the story text (no images)"""
+    # Build the story idea
+    story_idea = request.story_description or request.plot_summary or request.idea
+    if not story_idea.strip():
+        raise Exception("Please provide a story description")
+    
+    # Build character context
+    character_context = ""
+    if request.character_name and request.character_description:
+        character_context = f"The main character is {request.character_name}: {request.character_description}."
+    elif request.character_name:
+        character_context = f"The main character is named {request.character_name}."
+    
+    # Age-appropriate context
+    age_mapping = {
+        "0-2": "babies and toddlers (ages 0-2) - extremely simple words, very short sentences",
+        "3-5": "preschoolers (ages 3-5) - simple words and short sentences, playful tone",
+        "6-8": "early readers (ages 6-8) - engaging vocabulary, adventurous plots",
+        "9-12": "middle grade readers (ages 9-12) - more complex narrative and vocabulary",
+        "13-16": "young adult readers (ages 13-16) - complex vocabulary, deeper themes",
+        "17+": "adult fiction readers (17+) - full literary fiction quality"
+    }
+    age_context = age_mapping.get(request.age_range, age_mapping["6-8"])
+    
+    # Word count
+    word_counts = {"short": 50, "medium": 100, "long": 150, "long_adult": 200}
+    target_words = word_counts.get(request.words_per_page, 100)
+    
+    is_story_studio = request.creator_mode == "studio" or request.age_range in ["13-16", "17+"]
+    if is_story_studio and request.words_per_page == "long":
+        target_words = 200
+    
+    # Title instruction
+    title_instruction = f'Use the title: "{request.title}"' if request.title.strip() else 'Create an engaging, memorable title'
+    
+    # System message based on mode
+    if is_story_studio and request.age_range == "17+":
+        system_message = "You are a literary fiction author. Create engaging, sophisticated stories."
+    elif is_story_studio:
+        system_message = "You are a young adult fiction author. Create engaging stories with emotional depth."
+    else:
+        system_message = "You are a children's book author. Create engaging, safe, age-appropriate stories."
+    
+    # Generate story
+    story_prompt = f"""Create a story with EXACTLY {request.num_pages} pages.
+
+STORY IDEA: {story_idea}
+{character_context}
+
+REQUIREMENTS:
+- Title: {title_instruction}
+- Target audience: {age_context}
+- MUST have exactly {request.num_pages} pages
+- Each page should have approximately {target_words} words
+
+Return a JSON object:
+{{
+    "title": "Story Title",
+    "description": "Brief description",
+    "back_cover_text": "Back cover summary",
+    "main_character_description": "Visual description of main character",
+    "pages": [
+        {{"page_number": 1, "text": "Page text", "image_prompt": "Scene description"}},
+        ... (exactly {request.num_pages} pages)
+    ]
+}}
+
+Return ONLY valid JSON."""
+
+    chat = LlmChat(
+        api_key=EMERGENT_LLM_KEY,
+        session_id=f"story-{user_data['id']}-{str(uuid.uuid4())[:8]}",
+        system_message=system_message
+    ).with_model("openai", "gpt-4o")
+    
+    response = await chat.send_message(UserMessage(text=story_prompt))
+    
+    # Parse JSON
+    response_text = response.strip()
+    if response_text.startswith("```json"):
+        response_text = response_text[7:]
+    if response_text.startswith("```"):
+        response_text = response_text[3:]
+    if response_text.endswith("```"):
+        response_text = response_text[:-3]
+    
+    try:
+        story_data = json.loads(response_text.strip())
+    except json.JSONDecodeError:
+        import re
+        json_match = re.search(r'\{[\s\S]*\}', response)
+        if json_match:
+            story_data = json.loads(json_match.group())
+        else:
+            raise Exception("Failed to parse story data")
+    
+    return story_data
+
+
+@api_router.post("/ai/generate-story-async")
+async def generate_story_async(request: AIStoryRequest, background_tasks: BackgroundTasks, current_user: dict = Depends(get_current_user)):
+    """Start async story generation - returns job_id immediately
+    
+    The story will be generated in the background. Poll /api/jobs/{job_id}/status for progress.
+    """
+    # Calculate credits needed
+    page_count = request.num_pages
+    credits_needed = AI_STORY_PAGE_CREDITS.get(page_count, 5)
+    
+    # Check free stories (only for Kids Mode, 5 pages)
+    free_stories_remaining = current_user.get("free_stories_remaining")
+    free_stories_used = current_user.get("free_stories_used", 0)
+    
+    if free_stories_remaining is None:
+        free_stories_remaining = max(0, 3 - free_stories_used)
+    
+    is_kids_mode = request.creator_mode == "kids"
+    is_free_eligible = is_kids_mode and page_count <= 5
+    has_free_stories = free_stories_remaining > 0 and is_free_eligible
+    
+    if has_free_stories:
+        # Use free story
+        new_remaining = free_stories_remaining - 1
+        new_used = free_stories_used + 1
+        await db.users.update_one(
+            {"id": current_user["id"]},
+            {"$set": {"free_stories_remaining": new_remaining, "free_stories_used": new_used}}
+        )
+        logger.info(f"User {current_user['id']} using free story ({new_remaining} remaining)")
+    else:
+        # Check and deduct credits
+        current_credits = current_user.get("credits", 0)
+        if current_credits < credits_needed:
+            raise HTTPException(
+                status_code=402,
+                detail=f"Insufficient credits. Need {credits_needed} credits for {page_count} pages, have {current_credits}."
+            )
+        
+        await db.users.update_one(
+            {"id": current_user["id"]},
+            {"$inc": {"credits": -credits_needed}}
+        )
+    
+    # Create job
+    job_id = str(uuid.uuid4())
+    now = datetime.now(timezone.utc)
+    
+    job_data = {
+        "job_id": job_id,
+        "status": StoryJobStatus.PENDING.value,
+        "user_id": current_user["id"],
+        "book_id": None,
+        "progress_percent": 0,
+        "current_step": "Starting your story...",
+        "total_pages": page_count,
+        "pages_completed": 0,
+        "story_text_done": False,
+        "images_status": {},
+        "error_message": None,
+        "created_at": now,
+        "updated_at": now,
+        "completed_at": None,
+        "request_data": request.dict(),
+        "credits_charged": credits_needed if not has_free_stories else 0,
+        "used_free_story": has_free_stories
+    }
+    
+    # Store in memory and database
+    STORY_JOBS[job_id] = job_data
+    await db.story_jobs.insert_one({k: v for k, v in job_data.items() if k != "_id"})
+    
+    # Start background task
+    background_tasks.add_task(
+        run_story_generation_job,
+        job_id,
+        request.dict(),
+        {
+            "id": current_user["id"],
+            "email": current_user.get("email"),
+            "name": current_user.get("name")
+        }
+    )
+    
+    logger.info(f"Story generation job {job_id} created for user {current_user['id']}")
+    
+    return {
+        "job_id": job_id,
+        "status": "pending",
+        "message": "Story generation started. Poll /api/jobs/{job_id}/status for progress.",
+        "estimated_time_minutes": max(2, page_count // 3)  # Rough estimate
+    }
+
+
+@api_router.get("/jobs/{job_id}/status")
+async def get_job_status(job_id: str, current_user: dict = Depends(get_current_user)):
+    """Get the current status of a story generation job"""
+    
+    # Check memory first
+    if job_id in STORY_JOBS:
+        job = STORY_JOBS[job_id]
+    else:
+        # Check database
+        job = await db.story_jobs.find_one({"job_id": job_id}, {"_id": 0})
+    
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    
+    # Verify user owns this job
+    if job.get("user_id") != current_user["id"]:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    return {
+        "job_id": job_id,
+        "status": job.get("status"),
+        "progress_percent": job.get("progress_percent", 0),
+        "current_step": job.get("current_step", ""),
+        "book_id": job.get("book_id"),
+        "total_pages": job.get("total_pages", 0),
+        "pages_completed": job.get("pages_completed", 0),
+        "story_text_done": job.get("story_text_done", False),
+        "images_status": job.get("images_status", {}),
+        "error_message": job.get("error_message"),
+        "created_at": job.get("created_at"),
+        "completed_at": job.get("completed_at")
+    }
+
+
+@api_router.get("/jobs/active")
+async def get_active_jobs(current_user: dict = Depends(get_current_user)):
+    """Get all active/pending jobs for the current user"""
+    
+    active_statuses = [StoryJobStatus.PENDING.value, StoryJobStatus.GENERATING_STORY.value, StoryJobStatus.GENERATING_IMAGES.value]
+    
+    jobs = await db.story_jobs.find(
+        {"user_id": current_user["id"], "status": {"$in": active_statuses}},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(10)
+    
+    return {"jobs": jobs}
+
+
+@api_router.get("/jobs/history")
+async def get_job_history(current_user: dict = Depends(get_current_user)):
+    """Get recent job history for the current user"""
+    
+    jobs = await db.story_jobs.find(
+        {"user_id": current_user["id"]},
+        {"_id": 0, "request_data": 0}  # Don't return full request data
+    ).sort("created_at", -1).to_list(20)
+    
+    return {"jobs": jobs}
+
+# ==================== END ASYNC STORY GENERATION ====================
+
+
 @api_router.post("/ai/generate-story")
 async def generate_story(request: AIStoryRequest, current_user: dict = Depends(get_current_user)):
     """Generate a complete story from an idea using AI, with images
     
     Business Logic:
-    - First 3 stories are FREE for all users
-    - After 3 free stories, users pay with credits
-    - No pro subscription required
+    - First 3 stories are FREE for all users (Kids Mode only, max 5 pages)
+    - After free stories, credits scale with page count
+    - Story Studio mode always requires credits
     """
+    # Calculate credits needed based on page count
+    page_count = request.num_pages
+    credits_needed = AI_STORY_PAGE_CREDITS.get(page_count, 5)
+    
     # Check if user has free stories remaining (3 free stories for new users)
+    # Free stories only available for Kids Mode and 5 pages
     free_stories_remaining = current_user.get("free_stories_remaining")
     free_stories_used = current_user.get("free_stories_used", 0)
     
@@ -6002,7 +6735,10 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
     if free_stories_remaining is None:
         free_stories_remaining = max(0, 3 - free_stories_used)
     
-    has_free_stories = free_stories_remaining > 0
+    # Free stories only for Kids Mode with 5 pages
+    is_kids_mode = request.creator_mode == "kids"
+    is_free_eligible = is_kids_mode and page_count <= 5
+    has_free_stories = free_stories_remaining > 0 and is_free_eligible
     
     if has_free_stories:
         # Use a free story - decrement remaining and increment used
@@ -6014,21 +6750,27 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
         )
         logger.info(f"User {current_user['id']} using free story ({new_remaining} remaining)")
     else:
-        # No free stories left - deduct credits
-        if not await deduct_credits(current_user["id"], "ai_story_create"):
-            current_credits = current_user.get("credits", 0)
-            required_credits = CREDIT_COSTS.get("ai_story_create", 5)
+        # Deduct credits based on page count
+        current_credits = current_user.get("credits", 0)
+        if current_credits < credits_needed:
             raise HTTPException(
                 status_code=402, 
-                detail=f"Insufficient credits. You have {current_credits} credits but need {required_credits}. Please purchase more credits to continue."
+                detail=f"Insufficient credits. You have {current_credits} credits but need {credits_needed} for {page_count} pages. Please purchase more credits to continue."
             )
+        
+        # Deduct credits manually (not using standard deduct_credits since cost varies)
+        await db.users.update_one(
+            {"id": current_user["id"]},
+            {"$inc": {"credits": -credits_needed}}
+        )
+        logger.info(f"User {current_user['id']} charged {credits_needed} credits for {page_count}-page story")
     
     try:
         if not EMERGENT_LLM_KEY:
             raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
         
         # Build the story idea from new fields
-        story_idea = request.story_description or request.idea
+        story_idea = request.story_description or request.plot_summary or request.idea
         if not story_idea.strip():
             raise HTTPException(status_code=400, detail="Please provide a story description")
         
@@ -6039,36 +6781,62 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
         elif request.character_name:
             character_context = f"The main character is named {request.character_name}."
         
-        # Build age-appropriate context
+        # Expanded age-appropriate context with tone guidance
         age_mapping = {
-            "3-5": "preschoolers (ages 3-5) - use simple words and short sentences",
-            "5-8": "early readers (ages 5-8) - engaging vocabulary appropriate for the age",
-            "8-12": "middle grade readers (ages 8-12) - more complex narrative and vocabulary"
+            # Kids Mode ages
+            "0-2": "babies and toddlers (ages 0-2) - extremely simple words, very short sentences (3-5 words), repetitive patterns, sensory descriptions, gentle and soothing tone",
+            "3-5": "preschoolers (ages 3-5) - simple words and short sentences, playful tone, clear morals, happy endings",
+            "6-8": "early readers (ages 6-8) - engaging vocabulary appropriate for the age, adventurous plots, relatable characters",
+            "9-12": "middle grade readers (ages 9-12) - more complex narrative and vocabulary, character growth, exciting adventures",
+            # Story Studio ages
+            "13-16": "young adult readers (ages 13-16) - complex vocabulary, deeper themes and character development, can include mild peril, romance, complex emotions, less simplified sentence structure",
+            "17+": "adult fiction readers (17+) - full literary fiction quality, complex plots and subplots, mature themes (not explicit), sophisticated prose, novel-style chapter structure for longer books"
         }
-        age_context = age_mapping.get(request.age_range, age_mapping["5-8"])
+        age_context = age_mapping.get(request.age_range, age_mapping["6-8"])
         
-        # Word count mapping
+        # Determine if this is Story Studio mode (for teens/adults)
+        is_story_studio = request.creator_mode == "studio" or request.age_range in ["13-16", "17+"]
+        
+        # Word count mapping - expanded
         word_counts = {
             "short": 50,
             "medium": 100,
-            "long": 150
+            "long": 150,
+            "long_adult": 200  # For adult fiction
         }
         target_words = word_counts.get(request.words_per_page, 100)
         
-        # Image style mapping for prompts
+        # Adjust for Story Studio mode
+        if is_story_studio and request.words_per_page == "long":
+            target_words = 200  # Adult fiction gets more words per page
+        
+        # Expanded image style mapping for prompts
         style_prompts = {
+            # Kids Mode styles
             "3d-pixar": "Pixar 3D animation style, Disney quality, vibrant colors, expressive characters, magical lighting, cinematic composition",
             "pixar": "Pixar 3D animation style, Disney quality, vibrant colors, expressive characters, magical lighting, cinematic composition",
-            "watercolour": "Soft watercolor illustration, gentle colors, dreamy atmosphere, hand-painted feel",
+            "watercolour": "Soft watercolor illustration, gentle colors, dreamy atmosphere, hand-painted feel, children's book quality",
             "watercolor": "Soft watercolor illustration, gentle colors, dreamy atmosphere, hand-painted feel",
-            "storybook": "Classic storybook illustration, warm colors, nostalgic, timeless, whimsical",
+            "pencil-sketch": "Pencil sketch illustration, hand-drawn feel, artistic linework, detailed textures, warm and inviting",
+            "hand-drawn": "Hand-drawn illustration, artistic linework, warm colors, whimsical style",
+            "comic-book": "Comic book style, bold outlines, dynamic poses, vibrant colors, graphic novel aesthetic",
+            "storybook": "Classic storybook illustration, warm colors, nostalgic, timeless, whimsical, vintage children's book",
+            
+            # Story Studio styles (for older readers)
+            "realistic": "Photorealistic digital art, detailed, cinematic lighting, dramatic composition",
+            "photorealistic": "Photorealistic style, hyper-detailed, professional photography quality, dramatic lighting",
+            "anime": "Anime/manga style illustration, big expressive eyes, colorful, dynamic, Japanese animation quality",
+            "manga": "Manga style, detailed linework, dramatic shading, Japanese comic aesthetic",
+            "oil-painting": "Classical oil painting style, rich colors, dramatic brushwork, museum quality, fine art aesthetic",
+            "vintage-storybook": "Vintage storybook illustration, aged paper texture, classic fairy tale style, ornate details",
+            "dark-fantasy": "Dark fantasy art, moody atmosphere, dramatic lighting, gothic elements, epic fantasy style",
+            
+            # Legacy fallbacks
             "illustration": "Professional children's book illustration, colorful, friendly, whimsical, hand-drawn feel",
             "comic": "Comic book panel style, bold outlines, dynamic poses, vibrant colors",
-            "anime": "Anime style illustration, big expressive eyes, colorful, dynamic",
-            "realistic": "Photorealistic digital art, detailed, cinematic lighting",
-            "scifi": "Futuristic sci-fi style, neon colors, advanced technology, space themes",
             "sketch": "Pencil sketch illustration, hand-drawn, artistic, detailed linework",
-            "fantasy": "Fantasy art style, magical, ethereal, detailed environments"
+            "fantasy": "Fantasy art style, magical, ethereal, detailed environments",
+            "scifi": "Futuristic sci-fi style, neon colors, advanced technology, space themes"
         }
         
         # Use the art_style from request, fallback to image_style for backwards compatibility
@@ -6104,17 +6872,44 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
         # Build the title instruction
         title_instruction = f'Use the title: "{request.title}"' if request.title.strip() else 'Create an engaging, memorable title'
         
+        # Build genre and tone context for Story Studio mode
+        genre_context = ""
+        tone_context = ""
+        chapter_instruction = ""
+        
+        if is_story_studio:
+            if request.genre:
+                genre_context = f"\n- Genre: {request.genre}"
+            if request.tone:
+                tone_context = f"\n- Tone: {request.tone}"
+            if request.chapter_structure and request.num_pages >= 20:
+                chapter_instruction = f"""
+CHAPTER STRUCTURE (for {request.num_pages} pages):
+- Organize the story into chapters
+- Include chapter titles in the JSON
+- Each chapter should have 3-8 pages
+- Use "chapter_title" field for pages that start a new chapter"""
+        
+        # Different system messages based on mode
+        if is_story_studio and request.age_range == "17+":
+            system_message = "You are a literary fiction author. Create engaging, sophisticated stories with complex characters and themes. Write at a professional novel quality level. Always respond with valid JSON only."
+        elif is_story_studio and request.age_range == "13-16":
+            system_message = "You are a young adult fiction author. Create engaging stories with relatable characters, emotional depth, and appropriate themes for teenagers. Always respond with valid JSON only."
+        else:
+            system_message = "You are a children's book author. Create engaging, safe, age-appropriate stories. Always respond with valid JSON only. Pay careful attention to word count requirements."
+        
         # Generate story structure using Emergent LLM Chat
-        story_prompt = f"""Create a children's story with EXACTLY {request.num_pages} pages.
+        story_prompt = f"""Create a {'literary' if is_story_studio else "children's"} story with EXACTLY {request.num_pages} pages.
 
 STORY IDEA: {story_idea}
 {character_context}
 
 REQUIREMENTS:
 - Title: {title_instruction}
-- Target audience: {age_context}
+- Target audience: {age_context}{genre_context}{tone_context}
 - MUST have exactly {request.num_pages} pages - no more, no less
-- Each page MUST have exactly {target_words} words (±10 tolerance)
+- Each page MUST have approximately {target_words} words (±15 tolerance)
+{chapter_instruction}
 
 CRITICAL: You MUST generate exactly {request.num_pages} pages. The story should have a beginning, middle, and end spread across all {request.num_pages} pages.
 
@@ -6125,29 +6920,33 @@ Return a JSON object with this EXACT structure:
     "back_cover_text": "Engaging back cover summary (2-3 sentences)",
     "main_character_description": "Detailed visual description of the main character",
     "pages": [
-        {{"page_number": 1, "text": "First page text (~{target_words} words)", "image_prompt": "Scene description"}},
+        {{"page_number": 1, "text": "First page text (~{target_words} words)", "image_prompt": "Scene description"{', "chapter_title": "Chapter 1 Title"' if request.chapter_structure else ''}}},
         {{"page_number": 2, "text": "Second page text (~{target_words} words)", "image_prompt": "Scene description"}},
         ... (continue for all {request.num_pages} pages)
     ]
 }}
 
 Story pacing guidelines for {request.num_pages} pages:
-- Pages 1-2: Introduction of character and setting
+{f'''- This is a longer form story - use proper story arc with rising action, climax, and resolution
+- Pages 1-3: Opening hook and character establishment  
+- Pages 4-{request.num_pages // 2}: Rising action and conflict development
+- Pages {request.num_pages // 2 + 1}-{request.num_pages - 2}: Climax and turning point
+- Final pages: Resolution and conclusion''' if request.num_pages >= 20 else '''- Pages 1-2: Introduction of character and setting
 - Middle pages: Main adventure/conflict
-- Final page(s): Resolution and happy ending
+- Final page(s): Resolution and happy ending'''}
 
 IMPORTANT: 
 1. Generate EXACTLY {request.num_pages} pages in the pages array
 2. Each page text should be approximately {target_words} words
 3. Image prompts should be detailed for {final_style} style illustrations
-4. Keep content age-appropriate and positive
+4. {'Content can include mild peril, romance, and complex emotions appropriate for the age group' if is_story_studio else 'Keep content age-appropriate and positive'}
 
 Return ONLY the JSON object, no other text."""
         
         chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"story-gen-{current_user['id']}-{str(uuid.uuid4())[:8]}",
-            system_message="You are a children's book author. Create engaging, safe, age-appropriate stories. Always respond with valid JSON only. Pay careful attention to word count requirements."
+            system_message=system_message
         ).with_model("openai", "gpt-4o")
         
         response = await chat.send_message(UserMessage(text=story_prompt))

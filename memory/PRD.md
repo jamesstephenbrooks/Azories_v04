@@ -40,6 +40,35 @@ User wants to enhance their "Azories" digital book application with:
 
 ## Latest Session Updates (March 3, 2026)
 
+### Session 4 - Background Job System for Story Generation ✅ NEW
+
+### Feature: Async Story Generation with Background Jobs
+- **Purpose**: Enable long-running story generation (20-50 pages) without blocking the UI
+- **Implementation**:
+  - New endpoint: `POST /api/ai/generate-story-async` - Returns job_id immediately
+  - New endpoint: `GET /api/jobs/{job_id}/status` - Poll for progress
+  - New endpoint: `GET /api/jobs/active` - Get user's active jobs
+  - New endpoint: `GET /api/jobs/history` - Get recent job history
+  - Background worker: `run_story_generation_job()` - Handles story + image generation
+  - Email notification: Sends "Your story is ready!" email on completion
+  
+- **Progress Tracking**:
+  - Status: pending → generating_story → generating_images → completed/partial/failed
+  - Progress percent: 0% → 5% (start) → 20% (story done) → 30-95% (images) → 100%
+  - Per-page image status: pending/generating/done/failed
+  - Elapsed time and current step messages
+  
+- **Error Handling**:
+  - Partial completion: If some images fail, book is still created
+  - Credit refunds: Credits refunded for failed pages
+  - Graceful degradation: Story text saved even if images fail
+  
+- **Database**:
+  - New collection: `story_jobs` - Tracks all job state
+  - Jobs persisted so users can close tab and return later
+  
+- **Files**: `backend/server.py` (lines 6085-6500)
+
 ### Session 3 - iPad Bug Fixes
 
 ### Bug Fix 1: iPad Narration Continuation ✅
