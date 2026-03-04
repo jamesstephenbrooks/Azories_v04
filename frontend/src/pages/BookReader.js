@@ -411,33 +411,24 @@ export default function BookReader() {
   const isMobilePortrait = !forceLandscapeTest && isMobile && !isLandscapeOrientation;
   
   // UNIVERSAL FIX: Apply CSS touch-action to text containers
-  // AND add document-level touch interception for Safari
+  // AND disable flip book pointer events while scrolling
   useEffect(() => {
-    // Detect touch device
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     addDebug(`🔄 Touch:${isTouchDevice ? 'Y' : 'N'} FS:${isFullscreen ? 'Y' : 'N'}`);
     
-    // Use multiple methods to find text containers
+    // Find text containers
     const findTextContainers = () => {
       const containers = [];
-      
-      document.querySelectorAll('[data-scrollable="true"]').forEach(el => {
+      document.querySelectorAll('[data-scrollable="true"], .text-scroll-container, #book-container .overflow-y-auto').forEach(el => {
         if (!containers.includes(el)) containers.push(el);
       });
-      document.querySelectorAll('.text-scroll-container').forEach(el => {
-        if (!containers.includes(el)) containers.push(el);
-      });
-      document.querySelectorAll('#book-container .overflow-y-auto').forEach(el => {
-        if (!containers.includes(el)) containers.push(el);
-      });
-      
       return containers;
     };
     
     const containers = findTextContainers();
     addDebug(`📍 ${containers.length} text areas`);
     
-    // Apply CSS to ALL found containers
+    // Apply CSS
     containers.forEach((el) => {
       el.style.touchAction = 'pan-y';
       el.style.overflowY = 'auto';
@@ -445,11 +436,16 @@ export default function BookReader() {
       el.setAttribute('data-scrollable', 'true');
     });
     
-    // Track touch state
-    let startX = 0;
+    // Find the flip book canvas/container
+    const getFlipBookEl = () => {
+      return document.querySelector('.stf__wrapper') || 
+             document.querySelector('[class*="flipbook"]') ||
+             document.querySelector('.book-flipbook');
+    };
+    
     let startY = 0;
     let isInTextArea = false;
-    let isScrollingVertically = false;
+    let flipBookEl = null;
     
     const isTextElement = (el) => {
       if (!el) return false;
@@ -462,53 +458,43 @@ export default function BookReader() {
     
     const handleTouchStart = (e) => {
       isInTextArea = isTextElement(e.target);
-      startX = e.touches[0].clientX;
       startY = e.touches[0].clientY;
-      isScrollingVertically = false;
-      if (isInTextArea) addDebug('📱 Touch');
-    };
-    
-    const handleTouchMove = (e) => {
-      if (!isInTextArea) return;
       
-      const deltaX = Math.abs(e.touches[0].clientX - startX);
-      const deltaY = Math.abs(e.touches[0].clientY - startY);
-      
-      // Determine scroll direction on first significant move
-      if (!isScrollingVertically && (deltaX > 10 || deltaY > 10)) {
-        isScrollingVertically = deltaY > deltaX;
-        addDebug(isScrollingVertically ? '↕️ Scroll' : '↔️ Swipe');
-      }
-      
-      // If scrolling vertically in text area, block horizontal page flip
-      // But DON'T stop the event entirely - let vertical scroll happen
-      if (isScrollingVertically) {
-        // Only stop propagation, not immediate propagation
-        // This allows the scroll to work but blocks the flip book
-        e.stopPropagation();
+      if (isInTextArea) {
+        addDebug('📱 Touch text');
+        // DISABLE flip book pointer events immediately
+        flipBookEl = getFlipBookEl();
+        if (flipBookEl) {
+          flipBookEl.style.pointerEvents = 'none';
+          addDebug('🚫 Flip disabled');
+        }
       }
     };
     
     const handleTouchEnd = () => {
+      if (isInTextArea && flipBookEl) {
+        // RE-ENABLE flip book pointer events
+        flipBookEl.style.pointerEvents = 'auto';
+        addDebug('✅ Flip enabled');
+      }
       isInTextArea = false;
-      isScrollingVertically = false;
+      flipBookEl = null;
     };
     
-    // Add touch listeners - NOT pointer events (those block scroll)
     document.addEventListener('touchstart', handleTouchStart, { capture: true, passive: true });
-    document.addEventListener('touchmove', handleTouchMove, { capture: true, passive: false });
     document.addEventListener('touchend', handleTouchEnd, { capture: true, passive: true });
+    document.addEventListener('touchcancel', handleTouchEnd, { capture: true, passive: true });
     
-    addDebug('✅ Vertical scroll OK');
+    addDebug('✅ Pointer toggle ready');
     
     return () => {
       document.removeEventListener('touchstart', handleTouchStart, { capture: true });
-      document.removeEventListener('touchmove', handleTouchMove, { capture: true });
       document.removeEventListener('touchend', handleTouchEnd, { capture: true });
+      document.removeEventListener('touchcancel', handleTouchEnd, { capture: true });
     };
   }, [isFullscreen, currentPage, addDebug]);
   
-  // Re-apply CSS after delay for late-rendered elements
+  // Re-apply CSS after delay
   useEffect(() => {
     const timer = setTimeout(() => {
       document.querySelectorAll('[data-scrollable="true"], .text-scroll-container, .overflow-y-auto').forEach(el => {
