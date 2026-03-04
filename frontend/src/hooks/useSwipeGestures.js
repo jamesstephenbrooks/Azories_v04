@@ -14,12 +14,19 @@ export function useSwipeGestures({
   onSwipeUp,
   onSwipeDown,
   threshold = 50,
-  enabled = true
+  enabled = true,
+  onDebug = null // Visual debug callback for iPad testing
 }) {
   const touchStartRef = useRef({ x: 0, y: 0, target: null });
   const touchEndRef = useRef({ x: 0, y: 0 });
   const touchMovedRef = useRef(false);
   const isScrollableAreaRef = useRef(false);
+  
+  // Helper to log both to console and visual debug
+  const debug = useCallback((msg) => {
+    console.log(msg);
+    onDebug?.(msg);
+  }, [onDebug]);
 
   const handleTouchStart = useCallback((e) => {
     // Check if touch started in a scrollable element
@@ -32,14 +39,13 @@ export function useSwipeGestures({
     
     isScrollableAreaRef.current = isInScrollableArea;
     
-    console.log('[SwipeGestures] touchstart - scrollable:', isInScrollableArea, 
-                'dataAttr:', !!hasDataScrollable, 'class:', !!hasTextScrollClass,
-                'target:', target.tagName, target.className?.slice(0,40));
+    // Visual debug for iPad
+    debug(`👆 Touch: ${isInScrollableArea ? 'TEXT (blocked)' : 'IMAGE (allowed)'}`);
     
     // If touch started in scrollable area, DON'T even record touch start
     // This prevents any chance of triggering a swipe
     if (isInScrollableArea) {
-      console.log('[SwipeGestures] BLOCKING - touch started in scrollable area');
+      debug('🚫 BLOCKED - in text area');
       touchStartRef.current = { x: 0, y: 0, target: null };
       touchEndRef.current = { x: 0, y: 0 };
       touchMovedRef.current = false;
@@ -53,7 +59,7 @@ export function useSwipeGestures({
     };
     touchEndRef.current = { x: 0, y: 0 };
     touchMovedRef.current = false;
-  }, []);
+  }, [debug]);
 
   const handleTouchMove = useCallback((e) => {
     // If we determined touch started in scrollable area, don't track movement

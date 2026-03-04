@@ -45,6 +45,12 @@ export default function BookReader() {
   const textScrollRef = useRef(null);
   const textScrollRefLandscape = useRef(null); // Separate ref for landscape text container
   
+  // DEBUG: Visual on-screen debug for iPad testing (no console needed)
+  const [debugMessages, setDebugMessages] = useState([]);
+  const addDebug = useCallback((msg) => {
+    setDebugMessages(prev => [...prev.slice(-4), `${new Date().toLocaleTimeString().slice(-8)}: ${msg}`]);
+  }, []);
+  
   // Continue Reading state
   const [showContinuePrompt, setShowContinuePrompt] = useState(false);
   const [savedPageNumber, setSavedPageNumber] = useState(0);
@@ -482,6 +488,7 @@ export default function BookReader() {
   // CSS touch-action handles scroll vs swipe differentiation on iPad
   const swipeHandlers = useSwipeGestures({
     onSwipeLeft: () => {
+      addDebug('⚡ SWIPE LEFT - Page turn!');
       console.log('[SwipeHandler] onSwipeLeft triggered');
       if (currentPage < totalPages - 1 && !isFlipping) {
         setSwipeHint('next');
@@ -490,6 +497,7 @@ export default function BookReader() {
       }
     },
     onSwipeRight: () => {
+      addDebug('⚡ SWIPE RIGHT - Page turn!');
       console.log('[SwipeHandler] onSwipeRight triggered');
       if (currentPage > -1 && !isFlipping) {
         setSwipeHint('prev');
@@ -499,7 +507,8 @@ export default function BookReader() {
     },
     threshold: 50,
     enabled: !isFlipping,
-    ignoreScrollableElements: false // CSS touch-action handles scroll vs swipe now
+    ignoreScrollableElements: false, // CSS touch-action handles scroll vs swipe now
+    onDebug: addDebug // Pass debug function to hook
   });
 
   useEffect(() => {
@@ -1764,6 +1773,19 @@ export default function BookReader() {
         }`}
         data-testid="book-container"
       >
+        {/* DEBUG OVERLAY - Shows touch events on iPad without console */}
+        {debugMessages.length > 0 && (
+          <div 
+            className="fixed top-20 left-2 right-2 z-[9999] bg-black/80 text-green-400 text-xs font-mono p-2 rounded-lg max-h-32 overflow-hidden"
+            style={{ pointerEvents: 'none' }}
+          >
+            <div className="text-yellow-400 mb-1">🔍 Touch Debug (iPad):</div>
+            {debugMessages.map((msg, i) => (
+              <div key={i} className="truncate">{msg}</div>
+            ))}
+          </div>
+        )}
+        
         {/* Swipe hint indicators */}
         <AnimatePresence>
           {swipeHint && (
