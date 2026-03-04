@@ -45,52 +45,6 @@ export default function BookReader() {
   const textScrollRef = useRef(null);
   const textScrollRefLandscape = useRef(null); // Separate ref for landscape text container
   
-  // FRESH APPROACH: Completely block ALL touch events from text area
-  // This prevents ANY touch interaction in the text area from reaching the page turner
-  useEffect(() => {
-    const setupTouchBlock = (textEl, name) => {
-      if (!textEl) {
-        console.log(`[TouchBlock] ${name}: Element not found`);
-        return null;
-      }
-      
-      console.log(`[TouchBlock] ${name}: Setting up touch blocking`);
-      
-      // Tell browser this element only scrolls vertically
-      textEl.style.touchAction = 'pan-y';
-      textEl.style.webkitOverflowScrolling = 'touch';
-      textEl.style.overflowY = 'auto';
-      
-      // Stop ALL touch events from reaching the page turner
-      const stopPropagation = (e) => {
-        console.log(`[TouchBlock] ${name}: Blocking ${e.type} event`);
-        e.stopPropagation();
-      };
-      
-      textEl.addEventListener('touchstart', stopPropagation, { passive: true });
-      textEl.addEventListener('touchmove', stopPropagation, { passive: true });
-      textEl.addEventListener('touchend', stopPropagation, { passive: true });
-      
-      console.log(`[TouchBlock] ${name}: Event listeners attached`);
-      
-      return () => {
-        console.log(`[TouchBlock] ${name}: Cleaning up`);
-        textEl.removeEventListener('touchstart', stopPropagation);
-        textEl.removeEventListener('touchmove', stopPropagation);
-        textEl.removeEventListener('touchend', stopPropagation);
-      };
-    };
-    
-    // Set up touch blocking for both portrait and landscape text refs
-    const cleanupPortrait = setupTouchBlock(textScrollRef.current, 'Portrait');
-    const cleanupLandscape = setupTouchBlock(textScrollRefLandscape.current, 'Landscape');
-    
-    return () => {
-      cleanupPortrait?.();
-      cleanupLandscape?.();
-    };
-  }, [currentPage, isMobilePortrait, isMobileLandscape]); // Re-run when page or mode changes
-  
   // Continue Reading state
   const [showContinuePrompt, setShowContinuePrompt] = useState(false);
   const [savedPageNumber, setSavedPageNumber] = useState(0);
@@ -438,6 +392,52 @@ export default function BookReader() {
   const isMobile = windowSize.width < 768 || windowSize.height < 500;
   const isMobileLandscape = forceLandscapeTest || (isMobile && isLandscapeOrientation);
   const isMobilePortrait = !forceLandscapeTest && isMobile && !isLandscapeOrientation;
+  
+  // FRESH APPROACH: Completely block ALL touch events from text area
+  // This prevents ANY touch interaction in the text area from reaching the page turner
+  useEffect(() => {
+    const setupTouchBlock = (textEl, name) => {
+      if (!textEl) {
+        console.log(`[TouchBlock] ${name}: Element not found`);
+        return null;
+      }
+      
+      console.log(`[TouchBlock] ${name}: Setting up touch blocking`);
+      
+      // Tell browser this element only scrolls vertically
+      textEl.style.touchAction = 'pan-y';
+      textEl.style.webkitOverflowScrolling = 'touch';
+      textEl.style.overflowY = 'auto';
+      
+      // Stop ALL touch events from reaching the page turner
+      const stopPropagation = (e) => {
+        console.log(`[TouchBlock] ${name}: Blocking ${e.type} event`);
+        e.stopPropagation();
+      };
+      
+      textEl.addEventListener('touchstart', stopPropagation, { passive: true });
+      textEl.addEventListener('touchmove', stopPropagation, { passive: true });
+      textEl.addEventListener('touchend', stopPropagation, { passive: true });
+      
+      console.log(`[TouchBlock] ${name}: Event listeners attached`);
+      
+      return () => {
+        console.log(`[TouchBlock] ${name}: Cleaning up`);
+        textEl.removeEventListener('touchstart', stopPropagation);
+        textEl.removeEventListener('touchmove', stopPropagation);
+        textEl.removeEventListener('touchend', stopPropagation);
+      };
+    };
+    
+    // Set up touch blocking for both portrait and landscape text refs
+    const cleanupPortrait = setupTouchBlock(textScrollRef.current, 'Portrait');
+    const cleanupLandscape = setupTouchBlock(textScrollRefLandscape.current, 'Landscape');
+    
+    return () => {
+      cleanupPortrait?.();
+      cleanupLandscape?.();
+    };
+  }, [currentPage, isMobilePortrait, isMobileLandscape]); // Re-run when page or mode changes
   
   const isCover = currentPage === -1;
   const isBackCover = currentPage === -2;
