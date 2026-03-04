@@ -411,8 +411,7 @@ export default function BookReader() {
   const isMobilePortrait = !forceLandscapeTest && isMobile && !isLandscapeOrientation;
   
   // UNIVERSAL FIX: Apply CSS touch-action to text containers
-  // DO NOT use stopPropagation - that blocks scrolling!
-  // Instead, rely on CSS touch-action + swipe gesture hook detection
+  // AND add document-level touch interception for Safari
   useEffect(() => {
     addDebug(`🔄 Setup: FS=${isFullscreen}, pg=${currentPage}`);
     
@@ -445,7 +444,7 @@ export default function BookReader() {
     const containers = findTextContainers();
     addDebug(`📍 Found ${containers.length} text containers`);
     
-    // Apply CSS to ALL found containers - NO stopPropagation (that blocks scrolling!)
+    // Apply CSS to ALL found containers
     containers.forEach((el) => {
       el.style.touchAction = 'pan-y';
       el.style.overflowY = 'auto';
@@ -456,9 +455,57 @@ export default function BookReader() {
     
     if (containers.length > 0) {
       addDebug(`✅ CSS applied to ${containers.length}`);
-    } else {
-      addDebug(`⚠️ No containers!`);
     }
+    
+    // SAFARI FIX: Document-level touch interceptor
+    // This catches touches BEFORE the page flip library sees them (capture phase)
+    let touchStartY = 0;
+    let touchStartX = 0;
+    let isInScrollArea = false;
+    
+    const handleDocTouchStart = (e) => {
+      const target = e.target;
+      isInScrollArea = !!(
+        target.closest('[data-scrollable="true"]') || 
+        target.closest('.text-scroll-container')
+      );
+      
+      if (isInScrollArea) {
+        touchStartY = e.touches[0].clientY;
+        touchStartX = e.touches[0].clientX;
+        addDebug(`📱 Touch in scroll area`);
+      }
+    };
+    
+    const handleDocTouchMove = (e) => {
+      if (!isInScrollArea) return;
+      
+      const deltaY = Math.abs(e.touches[0].clientY - touchStartY);
+      const deltaX = Math.abs(e.touches[0].clientX - touchStartX);
+      
+      // If vertical movement is greater, it's a scroll - stop propagation
+      if (deltaY > deltaX && deltaY > 5) {
+        e.stopPropagation();
+        addDebug(`🛑 Scroll blocked prop`);
+      }
+    };
+    
+    const handleDocTouchEnd = () => {
+      isInScrollArea = false;
+    };
+    
+    // Add listeners with CAPTURE phase to intercept before page flip library
+    document.addEventListener('touchstart', handleDocTouchStart, { capture: true, passive: true });
+    document.addEventListener('touchmove', handleDocTouchMove, { capture: true, passive: false });
+    document.addEventListener('touchend', handleDocTouchEnd, { capture: true, passive: true });
+    
+    addDebug('📡 Doc listeners added');
+    
+    return () => {
+      document.removeEventListener('touchstart', handleDocTouchStart, { capture: true });
+      document.removeEventListener('touchmove', handleDocTouchMove, { capture: true });
+      document.removeEventListener('touchend', handleDocTouchEnd, { capture: true });
+    };
   }, [isFullscreen, currentPage, addDebug]);
   
   // Additional safety: Re-run after delay to catch late-rendered elements
