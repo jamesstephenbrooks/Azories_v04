@@ -20,6 +20,7 @@ import {
 } from 'react-icons/fi';
 import CollaborativeWriting from '@/components/CollaborativeWriting';
 import { MediaGalleryPicker } from '@/components/MediaGallery';
+import { AZORIES_PLACEHOLDER, AZORIES_VIDEO_PLACEHOLDER, handleImageError } from '@/utils/imageOptimizer';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -2139,10 +2140,11 @@ export default function BookEditor() {
                           }}
                         >
                           <img 
-                            src={getOptimizedThumbnail(img.url, 150)} 
+                            src={getOptimizedThumbnail(img.url, 150) || AZORIES_PLACEHOLDER} 
                             alt={img.name} 
-                            className="w-full aspect-square object-cover"
+                            className="w-full aspect-square object-cover bg-purple-900/30"
                             loading="lazy"
+                            onError={(e) => handleImageError(e, false)}
                           />
                           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1">
                             <FiPlus className="w-5 h-5 text-white" />
@@ -2619,13 +2621,14 @@ export default function BookEditor() {
                           addCoverFromGallery(img.url || img.image_url);
                           setShowCoverGalleryPicker(false);
                         }}
-                        className="group relative aspect-[3/4] rounded-lg overflow-hidden border-2 border-transparent hover:border-amber-500 transition-all cursor-pointer bg-muted/30"
+                        className="group relative aspect-[3/4] rounded-lg overflow-hidden border-2 border-transparent hover:border-amber-500 transition-all cursor-pointer bg-purple-900/30"
                       >
                         <img 
-                          src={getOptimizedThumbnail(img.url || img.image_url, 150)} 
+                          src={getOptimizedThumbnail(img.url || img.image_url, 150) || AZORIES_PLACEHOLDER} 
                           alt={img.name || 'Starter image'}
                           className="w-full h-full object-cover"
                           loading="lazy"
+                          onError={(e) => handleImageError(e, false)}
                         />
                         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1">
                           <FiPlus className="w-5 h-5 text-white" />

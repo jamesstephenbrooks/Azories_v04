@@ -30,6 +30,12 @@ import {
   buildCinemaPrompt,
   buildCharacterPrompt
 } from '../config/ProStudioConfig';
+import { 
+  AZORIES_PLACEHOLDER, 
+  AZORIES_VIDEO_PLACEHOLDER, 
+  handleImageError,
+  getVideoThumbnailUrl 
+} from '../utils/imageOptimizer';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -2839,15 +2845,8 @@ export default function ProStudio() {
                         const isVideo = img.type === 'video' || img.type === 'animation' || 
                           img.image_url?.includes('.mp4') || img.image_url?.includes('.webm');
                         
-                        // Generate thumbnail URL for videos
-                        let thumbnailUrl = img.thumbnail_url;
-                        if (isVideo && !thumbnailUrl && img.image_url?.includes('cloudinary.com')) {
-                          // Try Cloudinary video thumbnail transformation
-                          thumbnailUrl = img.image_url
-                            .replace('/upload/', '/upload/so_0,w_300,h_300,c_fill/')
-                            .replace('.mp4', '.jpg')
-                            .replace('.webm', '.jpg');
-                        }
+                        // Generate thumbnail URL for videos using centralized utility
+                        let thumbnailUrl = img.thumbnail_url || (isVideo ? getVideoThumbnailUrl(img.image_url) : null);
                         // Fallback to character's first reference image if no thumbnail
                         const fallbackThumbnail = viewingCharacter?.reference_images?.[0] || viewingCharacter?.thumbnail;
                         
@@ -2862,41 +2861,14 @@ export default function ProStudio() {
                           >
                             {isVideo ? (
                               // Video thumbnail
-                              <div className="w-full aspect-square bg-gray-800 rounded-lg relative overflow-hidden hover:ring-2 hover:ring-purple-500 transition-all">
+                              <div className="w-full aspect-square bg-purple-900/30 rounded-lg relative overflow-hidden hover:ring-2 hover:ring-purple-500 transition-all">
                                 {/* Try multiple fallback sources */}
-                                {(thumbnailUrl || fallbackThumbnail) ? (
-                                  <img 
-                                    src={thumbnailUrl || fallbackThumbnail}
-                                    alt={img.prompt || 'Video'}
-                                    className="w-full h-full object-cover"
-                                    onError={(e) => { 
-                                      // If thumbnail fails, try using the video element instead
-                                      e.target.style.display = 'none';
-                                      const fallbackDiv = e.target.nextElementSibling;
-                                      if (fallbackDiv) fallbackDiv.style.display = 'flex';
-                                    }}
-                                  />
-                                ) : null}
-                                {/* Fallback: video element or gradient placeholder */}
-                                <div 
-                                  className={`w-full h-full ${thumbnailUrl || fallbackThumbnail ? 'hidden' : 'flex'} items-center justify-center bg-gradient-to-br from-purple-900/60 to-pink-900/60`}
-                                  style={{ display: (thumbnailUrl || fallbackThumbnail) ? 'none' : 'flex' }}
-                                >
-                                  <video 
-                                    src={img.image_url}
-                                    className="w-full h-full object-cover"
-                                    muted
-                                    preload="metadata"
-                                    onLoadedMetadata={(e) => { 
-                                      e.target.currentTime = 0.1;
-                                    }}
-                                    onError={(e) => {
-                                      // If video fails too, show film icon
-                                      e.target.style.display = 'none';
-                                    }}
-                                  />
-                                  <FiFilm className="absolute w-8 h-8 text-purple-300/50" />
-                                </div>
+                                <img 
+                                  src={thumbnailUrl || fallbackThumbnail || AZORIES_VIDEO_PLACEHOLDER}
+                                  alt={img.prompt || 'Video'}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => handleImageError(e, true)}
+                                />
                                 {/* Video play icon overlay */}
                                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                                   <div className="w-10 h-10 rounded-full bg-purple-500/80 flex items-center justify-center shadow-lg">
@@ -2907,10 +2879,10 @@ export default function ProStudio() {
                             ) : (
                               // Regular image
                               <img 
-                                src={img.image_url} 
+                                src={img.image_url || AZORIES_PLACEHOLDER} 
                                 alt={img.prompt || 'Generated'}
-                                className="w-full aspect-square object-cover rounded-lg hover:ring-2 hover:ring-purple-500 transition-all bg-gray-800"
-                                onError={(e) => { e.target.style.display = 'none'; }}
+                                className="w-full aspect-square object-cover rounded-lg hover:ring-2 hover:ring-purple-500 transition-all bg-purple-900/30"
+                                onError={(e) => handleImageError(e, false)}
                               />
                             )}
                             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
@@ -5306,18 +5278,12 @@ export default function ProStudio() {
                       {isVideo ? (
                         <div className="relative w-full aspect-square bg-gray-900">
                           {/* Video thumbnail - use saved thumbnail or show placeholder */}
-                          {item.thumbnail_url ? (
-                            <img 
-                              src={item.thumbnail_url}
-                              alt="Video thumbnail"
-                              className="video-thumbnail absolute inset-0 w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="video-thumbnail absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 flex flex-col items-center justify-center">
-                              <FiFilm className="w-10 h-10 text-purple-400 mb-2" />
-                              <span className="text-xs text-gray-400">Tap to play</span>
-                            </div>
-                          )}
+                          <img 
+                            src={item.thumbnail_url || getVideoThumbnailUrl(item.image_url || item.url) || AZORIES_VIDEO_PLACEHOLDER}
+                            alt="Video thumbnail"
+                            className="video-thumbnail absolute inset-0 w-full h-full object-cover"
+                            onError={(e) => handleImageError(e, true)}
+                          />
                           <video 
                             src={item.image_url || item.url} 
                             className="w-full h-full object-cover absolute inset-0 opacity-0 hover:opacity-100 transition-opacity" 
@@ -5360,9 +5326,9 @@ export default function ProStudio() {
                       ) : (
                         <>
                           {/* Placeholder skeleton */}
-                          <div className="img-placeholder absolute inset-0 bg-gradient-to-br from-gray-700 to-gray-800 animate-pulse" />
+                          <div className="img-placeholder absolute inset-0 bg-gradient-to-br from-purple-700/30 to-purple-800/30 animate-pulse" />
                           <img 
-                            src={item.thumbnail_url || item.image_url || item.url} 
+                            src={item.thumbnail_url || item.image_url || item.url || AZORIES_PLACEHOLDER} 
                             alt={item.prompt || 'Gallery item'} 
                             className="w-full aspect-square object-cover relative z-10"
                             loading="lazy"
@@ -5373,41 +5339,9 @@ export default function ProStudio() {
                               const placeholder = e.target.parentElement.querySelector('.img-placeholder');
                               if (placeholder) placeholder.style.display = 'none';
                             }}
-                            onError={(e) => {
-                              // Failed to load thumbnail - try full image as fallback
-                              if (item.thumbnail_url && e.target.src === item.thumbnail_url) {
-                                e.target.src = item.image_url || item.url;
-                                return;
-                              }
-                              // Failed to load - show fallback
-                              e.target.style.display = 'none';
-                              const placeholder = e.target.parentElement.querySelector('.img-placeholder');
-                              if (placeholder) placeholder.style.display = 'none';
-                              const fallback = e.target.parentElement.querySelector('.image-fallback');
-                              if (fallback) fallback.classList.remove('hidden');
-                            }}
+                            onError={(e) => handleImageError(e, false)}
                             style={{ opacity: 0, transition: 'opacity 0.2s ease-out' }}
                           />
-                          <div className="image-fallback hidden w-full aspect-square bg-gray-700 flex flex-col items-center justify-center absolute inset-0 z-20">
-                            <div className="text-center text-gray-500">
-                              <FiImage className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                              <span className="text-xs block">Unavailable</span>
-                              <span className="text-[10px] opacity-50 block mt-1">{item.name || item.character_name || 'Unknown'}</span>
-                            </div>
-                            {/* Always visible delete button for broken images */}
-                            <Button 
-                              size="sm" 
-                              variant="ghost" 
-                              className="mt-2 bg-red-500/30 hover:bg-red-500/50"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                deleteFromGallery(item.id, item.source);
-                              }}
-                            >
-                              <FiTrash2 className="text-red-400 w-4 h-4 mr-1" />
-                              <span className="text-red-400 text-xs">Delete</span>
-                            </Button>
-                          </div>
                         </>
                       )}
                       

@@ -8,16 +8,19 @@ import {
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { ScrollArea } from './ui/scroll-area';
+import { 
+  getThumbnailUrl, 
+  getVideoThumbnailUrl, 
+  AZORIES_PLACEHOLDER, 
+  AZORIES_VIDEO_PLACEHOLDER,
+  handleImageError 
+} from '../utils/imageOptimizer';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-// Optimize Cloudinary URLs for thumbnails
+// Optimize Cloudinary URLs for thumbnails - use centralized utility
 const getOptimizedThumbnail = (url, width = 200) => {
-  if (!url) return url;
-  if (url.includes('res.cloudinary.com')) {
-    return url.replace('/upload/', `/upload/f_auto,q_auto,w_${width},c_limit/`);
-  }
-  return url;
+  return getThumbnailUrl(url, width) || url;
 };
 
 /**
@@ -224,6 +227,11 @@ export default function MediaGallery({
     const isVideo = item.type === 'animation' || item.type === 'video';
     const isSelected = selectedItem?._id === item._id || selectedItem?.id === item.id;
     
+    // Get video thumbnail if available, or generate from Cloudinary
+    const videoThumbnail = isVideo 
+      ? (item.thumbnail_url || getVideoThumbnailUrl(imageUrl)) 
+      : null;
+    
     return (
       <div
         key={item._id || item.id}
@@ -235,20 +243,41 @@ export default function MediaGallery({
         onClick={() => handleItemClick(item, imageUrl)}
       >
         {isVideo ? (
-          <video
-            src={imageUrl}
-            className={`w-full ${compact ? 'aspect-square' : 'aspect-[4/3]'} object-cover`}
-            muted
-            loop
-            onMouseEnter={(e) => e.target.play()}
-            onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
-          />
+          <div className={`relative w-full ${compact ? 'aspect-square' : 'aspect-[4/3]'}`}>
+            {/* Video thumbnail for faster loading */}
+            {videoThumbnail && (
+              <img
+                src={videoThumbnail}
+                alt={item.name || 'Video thumbnail'}
+                className="absolute inset-0 w-full h-full object-cover group-hover:opacity-0 transition-opacity"
+                onError={(e) => handleImageError(e, true)}
+              />
+            )}
+            {/* Fallback placeholder if no thumbnail */}
+            {!videoThumbnail && (
+              <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-600 to-pink-600">
+                <FiPlay className="w-8 h-8 text-white/60" />
+              </div>
+            )}
+            {/* Video element - shows on hover */}
+            <video
+              src={imageUrl}
+              className={`w-full h-full object-cover ${videoThumbnail ? 'opacity-0 group-hover:opacity-100' : ''} transition-opacity`}
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              onMouseEnter={(e) => e.target.play().catch(() => {})}
+              onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
+            />
+          </div>
         ) : (
           <img
             src={getOptimizedThumbnail(imageUrl, compact ? 100 : 200)}
             alt={item.name || 'Gallery item'}
-            className={`w-full ${compact ? 'aspect-square' : 'aspect-[4/3]'} object-cover`}
+            className={`w-full ${compact ? 'aspect-square' : 'aspect-[4/3]'} object-cover bg-purple-900/30`}
             loading="lazy"
+            onError={(e) => handleImageError(e, false)}
           />
         )}
         
@@ -533,8 +562,9 @@ export default function MediaGallery({
                         <img
                           src={getOptimizedThumbnail(item.image_url, compact ? 150 : 200)}
                           alt={item.name || 'Library image'}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover bg-purple-900/30"
                           loading="lazy"
+                          onError={(e) => handleImageError(e, false)}
                         />
                         
                         {/* Book title badge */}

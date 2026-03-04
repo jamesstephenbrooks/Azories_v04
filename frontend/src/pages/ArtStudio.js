@@ -14,6 +14,12 @@ import {
   FiEye, FiMaximize2, FiSettings, FiX, FiChevronDown, FiChevronUp, FiSearch,
   FiPlay, FiVideo, FiLoader
 } from 'react-icons/fi';
+import { 
+  AZORIES_PLACEHOLDER, 
+  AZORIES_VIDEO_PLACEHOLDER, 
+  handleImageError,
+  getVideoThumbnailUrl 
+} from '../utils/imageOptimizer';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -2224,11 +2230,11 @@ export default function ArtStudio() {
                                     }`}
                                   >
                                     <img 
-                                      src={thumbUrl} 
+                                      src={thumbUrl || AZORIES_PLACEHOLDER} 
                                       alt={item.name} 
-                                      className="w-full aspect-square object-cover bg-gray-800" 
+                                      className="w-full aspect-square object-cover bg-purple-900/30" 
                                       loading="lazy"
-                                      onError={(e) => { if (e.target.src !== item.url) e.target.src = item.url; }}
+                                      onError={(e) => handleImageError(e, false)}
                                     />
                                   </button>
                                   );
@@ -2922,16 +2928,11 @@ export default function ArtStudio() {
                                     onClick={() => setExpandedStarterImage(img)}
                                   >
                                     <img
-                                      src={thumbnailUrl}
+                                      src={thumbnailUrl || AZORIES_PLACEHOLDER}
                                       alt={img.name}
-                                      className="w-full aspect-square object-cover bg-gray-800"
+                                      className="w-full aspect-square object-cover bg-purple-900/30"
                                       loading="lazy"
-                                      onError={(e) => {
-                                        // Fallback to original URL if optimized fails
-                                        if (e.target.src !== img.url) {
-                                          e.target.src = img.url || img.thumbnail_url;
-                                        }
-                                      }}
+                                      onError={(e) => handleImageError(e, false)}
                                     />
                                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1">
                                       <FiMaximize2 className="w-4 h-4 text-white" />
@@ -3614,11 +3615,11 @@ export default function ArtStudio() {
                               className="relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-amber-500 transition-colors group"
                             >
                               <img
-                                src={thumbUrl}
+                                src={thumbUrl || AZORIES_PLACEHOLDER}
                                 alt={item.name}
-                                className="w-full h-full object-cover bg-gray-800"
+                                className="w-full h-full object-cover bg-purple-900/30"
                                 loading="lazy"
-                                onError={(e) => { if (e.target.src !== item.url) e.target.src = item.url; }}
+                                onError={(e) => handleImageError(e, false)}
                               />
                               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                 <span className="text-white text-xs font-medium">Select</span>

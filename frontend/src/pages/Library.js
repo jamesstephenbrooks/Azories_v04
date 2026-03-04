@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { toast } from 'sonner';
 import Navbar from '@/components/Navbar';
 import BookRecommendations from '@/components/BookRecommendations';
-import { getThumbnailUrl, preloadImages } from '@/utils/imageOptimizer';
+import { getThumbnailUrl, preloadImages, AZORIES_PLACEHOLDER, handleImageError } from '@/utils/imageOptimizer';
 import { AZORA_ASSETS } from '@/components/AzoraMascot';
 import { useAuth } from '@/context/AuthContext';
 
@@ -149,11 +149,13 @@ const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 300
         />
       )}
       
-      {/* Error fallback */}
+      {/* Error fallback - Azories branded placeholder */}
       {hasError && (
-        <div className={`absolute inset-0 bg-gradient-to-br ${getPlaceholderGradient()} flex items-center justify-center`}>
-          <FiBook className="w-10 h-10 text-white/40" />
-        </div>
+        <img 
+          src={AZORIES_PLACEHOLDER} 
+          alt={alt} 
+          className="absolute inset-0 w-full h-full object-cover"
+        />
       )}
     </div>
   );

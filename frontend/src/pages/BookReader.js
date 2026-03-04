@@ -1533,7 +1533,36 @@ export default function BookReader() {
   return (
     <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#1a1a2e]' : 'bg-[#f8f5f0]'} ${currentPageData?.isBackCover ? '!bg-[#1a0a2e]' : ''}`}>
       {/* Header - Hidden in landscape mode for maximum book space */}
-      {!isMobileLandscape && (
+      {/* MOBILE: Minimal floating UI - back button and page counter */}
+      {(isMobilePortrait || isMobileLandscape) && (
+        <>
+          {/* Floating back button - top left */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleBackToLibrary}
+            className="fixed top-3 left-3 z-50 w-9 h-9 rounded-full bg-black/20 backdrop-blur-md text-white/90 hover:bg-black/40 hover:text-white shadow-lg"
+            data-testid="mobile-back-btn"
+          >
+            <FiArrowLeft className="w-4 h-4" />
+          </Button>
+          
+          {/* Floating page counter - bottom right */}
+          {totalPages > 0 && (
+            <div 
+              className="fixed bottom-20 right-3 z-50 px-3 py-1.5 rounded-full bg-black/30 backdrop-blur-md shadow-lg"
+              data-testid="mobile-page-counter"
+            >
+              <span className="text-white/90 text-xs font-medium">
+                {currentPage < 0 ? (currentPage === -2 ? 'Back' : 'Cover') : `${currentPage + 1} / ${totalPages}`}
+              </span>
+            </div>
+          )}
+        </>
+      )}
+      
+      {/* DESKTOP: Full header bar with all controls */}
+      {!isMobilePortrait && !isMobileLandscape && (
         <div className={`fixed top-0 left-0 right-0 z-40 ${currentPageData?.isBackCover ? 'bg-[#1a0a2e]/80' : 'bg-background/80'} backdrop-blur-xl border-b ${currentPageData?.isBackCover ? 'border-white/10' : 'border-border'}`}>
           <div className={`max-w-7xl mx-auto px-2 sm:px-4 py-1.5 sm:py-3 flex items-center justify-between`}>
             <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
@@ -1554,7 +1583,7 @@ export default function BookReader() {
             </div>
             
             <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-              {/* Reading Progress - hidden on small screens */}
+              {/* Reading Progress */}
               {user && readingProgress > 0 && (
                 <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full">
                   <FiTrendingUp className="w-4 h-4 text-primary" />
@@ -1562,7 +1591,7 @@ export default function BookReader() {
                 </div>
               )}
               
-              {/* Reading Streak Badge - hidden on small screens */}
+              {/* Reading Streak Badge */}
               {readingStats?.current_streak > 0 && (
                 <div className="hidden lg:flex items-center gap-1 px-2 py-1 bg-orange-500/10 rounded-full">
                   <FiAward className="w-4 h-4 text-orange-500" />
@@ -1570,12 +1599,12 @@ export default function BookReader() {
                 </div>
               )}
               
-              {/* Ambient Sound Control - hidden on mobile portrait */}
+              {/* Ambient Sound Control */}
               <div className="hidden sm:block">
                 <AmbientSound genre={book?.genre} isReading={currentPage >= 0} />
               </div>
               
-              {/* Print Book Button - visible for logged in users */}
+              {/* Print Book Button */}
               {user && (
                 <Button 
                   variant="ghost" 
@@ -1622,24 +1651,6 @@ export default function BookReader() {
         </div>
       )}
       
-      {/* Minimal Landscape Header - Just back button and tiny progress */}
-      {isMobileLandscape && (
-        <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-2 py-1 bg-black/30 backdrop-blur-sm">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate('/library')}
-            className="w-8 h-8 rounded-full text-white/80 hover:text-white hover:bg-white/20"
-          >
-            <FiArrowLeft className="w-4 h-4" />
-          </Button>
-          <span className="text-white/60 text-xs font-medium">
-            {currentPage + 1} / {totalPages}
-          </span>
-          <div className="w-8" /> {/* Spacer for balance */}
-        </div>
-      )}
-      
       {/* Rotate phone prompt - only on mobile portrait */}
       {showRotatePrompt && (
         <motion.div
@@ -1672,7 +1683,11 @@ export default function BookReader() {
       {/* Book Display - with swipe support */}
       <div 
         id="book-container"
-        className={`${isMobileLandscape ? 'pt-4 pb-0' : 'pt-4 sm:pt-6 pb-16 sm:pb-20'} px-1 sm:px-2 flex items-center justify-center min-h-[calc(100vh-60px)] transition-all duration-300 ${
+        className={`${
+          isMobilePortrait ? 'pt-0 pb-16' : 
+          isMobileLandscape ? 'pt-0 pb-0' : 
+          'pt-16 sm:pt-20 pb-16 sm:pb-20'
+        } px-1 sm:px-2 flex items-center justify-center min-h-screen transition-all duration-300 ${
           isFullscreen ? 'bg-black/95 fixed inset-0 z-50 pt-4 sm:pt-6 pb-4 sm:pb-6' : ''
         }`}
         {...swipeHandlers}
