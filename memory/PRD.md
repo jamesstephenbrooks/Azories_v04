@@ -40,6 +40,26 @@ User wants to enhance their "Azories" digital book application with:
 
 ## Latest Session Updates (March 3, 2026)
 
+### Session 3 - iPad Bug Fixes
+
+### Bug Fix 1: iPad Narration Continuation ✅
+- **Issue**: On iPad landscape, narration stopped after first page instead of continuing
+- **Root Cause**: `audio.onended` handler only called `goToPage()` but didn't explicitly restart audio
+- **Fix**: Added explicit `playAudio()` call with 400ms delay after page transition in `audio.onended`
+- **File**: `frontend/src/pages/BookReader.js` (lines 1055-1088)
+
+### Bug Fix 2: iPad Scroll Triggers Page Turn ✅
+- **Issue**: Scrolling text was incorrectly detected as horizontal swipe, triggering page turns
+- **Root Cause**: Swipe detection ratio was too lenient (1.5x) and didn't aggressively block scrolling
+- **Fix**: 
+  - Added `data-scrollable="true"` and `onTouchStart stopPropagation` to text containers
+  - Changed swipe ratio from 1.5x to 2x (horizontal must be 2x vertical)
+  - Added 3x ratio requirement for touches starting in vertical scrollable areas
+  - Immediately mark as scrolling if ANY vertical movement (>5px) in scrollable areas
+- **Files**: 
+  - `frontend/src/pages/BookReader.js` (lines 1744-1750, 1874-1879)
+  - `frontend/src/hooks/useSwipeGestures.js` (complete rewrite of touch handling)
+
 ### Session 2 - Veo 3 Integration & Pro Studio Fixes
 
 ### Feature 1: Veo 3.1 Video Generation Integration ✅ NEW
