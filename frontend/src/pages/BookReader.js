@@ -441,58 +441,76 @@ export default function BookReader() {
   });
   
   // Text container touch handlers with direction locking
-  // Key insight: First 10px of movement determines if it's scroll or swipe
+  // UPDATED: Better iPad support with higher threshold and pointer event handling
+  // iPad uses different touch behavior than iPhone - needs explicit handling
   const textContainerTouchHandlers = {
     onTouchStart: (e) => {
-      // Record starting position
+      const touch = e.touches[0];
+      // Record starting position with iPad-friendly threshold
       touchDirectionRef.current = {
-        startX: e.touches[0].clientX,
-        startY: e.touches[0].clientY,
+        startX: touch.clientX,
+        startY: touch.clientY,
         locked: null,
-        threshold: 10
+        threshold: 15, // Higher threshold for iPad's sensitivity
+        initialTime: Date.now()
       };
       // Don't stop propagation yet - let direction be determined first
     },
     onTouchMove: (e) => {
+      if (!touchDirectionRef.current.startX) return;
+      
       const touch = e.touches[0];
       const deltaX = Math.abs(touch.clientX - touchDirectionRef.current.startX);
       const deltaY = Math.abs(touch.clientY - touchDirectionRef.current.startY);
       
+      // Too early to decide direction - wait for more movement
+      if (deltaX < 15 && deltaY < 15) {
+        return;
+      }
+      
       // Lock direction once we've moved past threshold
       if (touchDirectionRef.current.locked === null) {
-        const totalDelta = Math.max(deltaX, deltaY);
-        if (totalDelta > touchDirectionRef.current.threshold) {
-          if (deltaY > deltaX) {
-            // More vertical movement = SCROLL
-            touchDirectionRef.current.locked = 'scroll';
-            console.log('[Touch] Direction locked: SCROLL (vertical)');
-          } else {
-            // More horizontal movement = SWIPE (page turn)
-            touchDirectionRef.current.locked = 'swipe';
-            console.log('[Touch] Direction locked: SWIPE (horizontal)');
-          }
+        if (deltaY > deltaX) {
+          // More vertical movement = SCROLL
+          touchDirectionRef.current.locked = 'scroll';
+          // CRITICAL: Prevent page turn completely when scrolling
+          e.stopPropagation();
+          e.preventDefault();
+          console.log('[Touch iPad] Direction locked: SCROLL');
+        } else {
+          // More horizontal movement = SWIPE (page turn)
+          touchDirectionRef.current.locked = 'swipe';
+          console.log('[Touch iPad] Direction locked: SWIPE');
         }
       }
       
-      // If locked to swipe, prevent text scrolling
-      if (touchDirectionRef.current.locked === 'swipe') {
-        e.preventDefault();
-        // Don't stop propagation - let swipe handler see it
-      }
-      // If locked to scroll, allow text scrolling, block swipe handler
-      else if (touchDirectionRef.current.locked === 'scroll') {
+      // Apply locked behavior
+      if (touchDirectionRef.current.locked === 'scroll') {
+        // Block swipe handler, allow text scrolling
         e.stopPropagation();
-        // Don't prevent default - allow natural scrolling
+        // Re-enable default scrolling behavior
+        // The text container should handle its own scroll
+      } else if (touchDirectionRef.current.locked === 'swipe') {
+        // Block scrolling, allow swipe to propagate
+        e.preventDefault();
       }
     },
     onTouchEnd: () => {
       // Reset after a small delay to prevent race conditions
       setTimeout(() => {
-        touchDirectionRef.current.locked = null;
-      }, 50);
+        if (touchDirectionRef.current) {
+          touchDirectionRef.current.locked = null;
+          touchDirectionRef.current.startX = null;
+          touchDirectionRef.current.startY = null;
+        }
+      }, 100);
     },
     onTouchCancel: () => {
-      touchDirectionRef.current.locked = null;
+      if (touchDirectionRef.current) {
+        touchDirectionRef.current.locked = null;
+        touchDirectionRef.current.startX = null;
+        touchDirectionRef.current.startY = null;
+      }
     }
   };
 
@@ -1890,6 +1908,7 @@ export default function BookReader() {
                     ref={textScrollRef}
                     className="h-full overflow-y-auto px-5 py-4 pb-8 text-scroll-container"
                     data-scrollable="true"
+                    style={{ touchAction: 'pan-y' }}
                     {...textContainerTouchHandlers}
                   >
                     {(currentPageData?.text_content || currentPageData?.text || currentPageData?.content) ? (
@@ -2028,6 +2047,7 @@ export default function BookReader() {
                         ref={textScrollRef}
                         className="flex-1 overflow-y-auto px-5 py-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent text-scroll-container"
                         data-scrollable="true"
+                        style={{ touchAction: 'pan-y' }}
                         {...textContainerTouchHandlers}
                       >
                         {(currentPageData?.text_content || currentPageData?.text || currentPageData?.content) ? (
