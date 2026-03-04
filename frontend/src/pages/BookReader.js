@@ -48,14 +48,6 @@ export default function BookReader() {
   const [showContinuePrompt, setShowContinuePrompt] = useState(false);
   const [savedPageNumber, setSavedPageNumber] = useState(0);
   
-  // iPad touch direction detection - determines if gesture is scroll or page turn
-  const touchDirectionRef = useRef({
-    startX: 0,
-    startY: 0,
-    locked: null, // null = not determined, 'scroll' = vertical, 'swipe' = horizontal
-    threshold: 10 // pixels of movement before locking direction
-  });
-  
   // Audio state
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioLoading, setAudioLoading] = useState(false);
@@ -409,14 +401,9 @@ export default function BookReader() {
     : (currentPage === -2 && allPages.length > 0 ? allPages[allPages.length - 1] : null);
   
   // Swipe gestures for page navigation
-  // CRITICAL: Check if direction is locked to scroll to prevent page turns
+  // CSS touch-action handles scroll vs swipe differentiation on iPad
   const swipeHandlers = useSwipeGestures({
     onSwipeLeft: () => {
-      // Block page turn if direction was locked to scroll
-      if (touchDirectionRef.current.locked === 'scroll') {
-        console.log('[Swipe] Blocked - direction locked to scroll');
-        return;
-      }
       if (currentPage < totalPages - 1 && !isFlipping) {
         setSwipeHint('next');
         setTimeout(() => setSwipeHint(null), 300);
@@ -424,11 +411,6 @@ export default function BookReader() {
       }
     },
     onSwipeRight: () => {
-      // Block page turn if direction was locked to scroll
-      if (touchDirectionRef.current.locked === 'scroll') {
-        console.log('[Swipe] Blocked - direction locked to scroll');
-        return;
-      }
       if (currentPage > -1 && !isFlipping) {
         setSwipeHint('prev');
         setTimeout(() => setSwipeHint(null), 300);
@@ -437,82 +419,8 @@ export default function BookReader() {
     },
     threshold: 50,
     enabled: !isFlipping,
-    ignoreScrollableElements: false // We handle this ourselves now
+    ignoreScrollableElements: false // CSS touch-action handles scroll vs swipe now
   });
-  
-  // Text container touch handlers with direction locking
-  // UPDATED: Better iPad support with higher threshold and pointer event handling
-  // iPad uses different touch behavior than iPhone - needs explicit handling
-  const textContainerTouchHandlers = {
-    onTouchStart: (e) => {
-      const touch = e.touches[0];
-      // Record starting position with iPad-friendly threshold
-      touchDirectionRef.current = {
-        startX: touch.clientX,
-        startY: touch.clientY,
-        locked: null,
-        threshold: 15, // Higher threshold for iPad's sensitivity
-        initialTime: Date.now()
-      };
-      // Don't stop propagation yet - let direction be determined first
-    },
-    onTouchMove: (e) => {
-      if (!touchDirectionRef.current.startX) return;
-      
-      const touch = e.touches[0];
-      const deltaX = Math.abs(touch.clientX - touchDirectionRef.current.startX);
-      const deltaY = Math.abs(touch.clientY - touchDirectionRef.current.startY);
-      
-      // Too early to decide direction - wait for more movement
-      if (deltaX < 15 && deltaY < 15) {
-        return;
-      }
-      
-      // Lock direction once we've moved past threshold
-      if (touchDirectionRef.current.locked === null) {
-        if (deltaY > deltaX) {
-          // More vertical movement = SCROLL
-          touchDirectionRef.current.locked = 'scroll';
-          // CRITICAL: Prevent page turn completely when scrolling
-          e.stopPropagation();
-          e.preventDefault();
-          console.log('[Touch iPad] Direction locked: SCROLL');
-        } else {
-          // More horizontal movement = SWIPE (page turn)
-          touchDirectionRef.current.locked = 'swipe';
-          console.log('[Touch iPad] Direction locked: SWIPE');
-        }
-      }
-      
-      // Apply locked behavior
-      if (touchDirectionRef.current.locked === 'scroll') {
-        // Block swipe handler, allow text scrolling
-        e.stopPropagation();
-        // Re-enable default scrolling behavior
-        // The text container should handle its own scroll
-      } else if (touchDirectionRef.current.locked === 'swipe') {
-        // Block scrolling, allow swipe to propagate
-        e.preventDefault();
-      }
-    },
-    onTouchEnd: () => {
-      // Reset after a small delay to prevent race conditions
-      setTimeout(() => {
-        if (touchDirectionRef.current) {
-          touchDirectionRef.current.locked = null;
-          touchDirectionRef.current.startX = null;
-          touchDirectionRef.current.startY = null;
-        }
-      }, 100);
-    },
-    onTouchCancel: () => {
-      if (touchDirectionRef.current) {
-        touchDirectionRef.current.locked = null;
-        touchDirectionRef.current.startX = null;
-        touchDirectionRef.current.startY = null;
-      }
-    }
-  };
 
   useEffect(() => {
     // Mark component as mounted
@@ -1720,7 +1628,7 @@ export default function BookReader() {
           isFullscreen ? 'bg-black/95 fixed inset-0 z-50 pt-4 sm:pt-6 pb-4 sm:pb-6' : ''
         }`}
         {...swipeHandlers}
-        style={{ touchAction: 'pan-y pinch-zoom' }}
+        style={{ touchAction: 'pan-x' }}
         data-testid="book-container"
       >
         {/* Swipe hint indicators */}
@@ -1908,8 +1816,7 @@ export default function BookReader() {
                     ref={textScrollRef}
                     className="h-full overflow-y-auto px-5 py-4 pb-8 text-scroll-container"
                     data-scrollable="true"
-                    style={{ touchAction: 'pan-y' }}
-                    {...textContainerTouchHandlers}
+                    style={{ touchAction: 'pan-y', WebkitOverflowScrolling: 'touch' }}
                   >
                     {(currentPageData?.text_content || currentPageData?.text || currentPageData?.content) ? (
                       <p className="font-reader text-base leading-relaxed text-foreground/90 whitespace-pre-wrap">
@@ -2047,8 +1954,7 @@ export default function BookReader() {
                         ref={textScrollRef}
                         className="flex-1 overflow-y-auto px-5 py-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent text-scroll-container"
                         data-scrollable="true"
-                        style={{ touchAction: 'pan-y' }}
-                        {...textContainerTouchHandlers}
+                        style={{ touchAction: 'pan-y', WebkitOverflowScrolling: 'touch' }}
                       >
                         {(currentPageData?.text_content || currentPageData?.text || currentPageData?.content) ? (
                           <p className="font-reader text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap text-center">
