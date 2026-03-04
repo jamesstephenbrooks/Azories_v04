@@ -43,13 +43,7 @@ export default function BookReader() {
   const [forceLandscapeTest, setForceLandscapeTest] = useState(false); // TEMP: For testing landscape mode
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
   const textScrollRef = useRef(null);
-  const textScrollRefLandscape = useRef(null); // Separate ref for landscape text container
-  
-  // DEBUG: Visual on-screen debug for iPad testing (no console needed)
-  const [debugMessages, setDebugMessages] = useState([]);
-  const addDebug = useCallback((msg) => {
-    setDebugMessages(prev => [...prev.slice(-4), `${new Date().toLocaleTimeString().slice(-8)}: ${msg}`]);
-  }, []);
+  const textScrollRefLandscape = useRef(null);
   
   // Continue Reading state
   const [showContinuePrompt, setShowContinuePrompt] = useState(false);
@@ -410,99 +404,18 @@ export default function BookReader() {
   const isMobileLandscape = forceLandscapeTest || (isMobile && isLandscapeOrientation);
   const isMobilePortrait = !forceLandscapeTest && isMobile && !isLandscapeOrientation;
   
-  // FINAL ATTEMPT: Block touchmove when vertical scrolling in text area
-  // Let touchstart through so native scroll can initialize
-  // Only block touchmove to prevent flip book from seeing horizontal component
+  // Apply CSS to text containers for scroll support
   useEffect(() => {
-    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    addDebug(`🔄 Touch:${isTouchDevice ? 'Y' : 'N'} FS:${isFullscreen ? 'Y' : 'N'}`);
-    
-    // Apply CSS to text containers
     const selectors = '[data-scrollable="true"], .text-scroll-container, .overflow-y-auto';
-    const containers = document.querySelectorAll(selectors);
-    addDebug(`📍 ${containers.length} text areas`);
-    
-    containers.forEach((el) => {
+    document.querySelectorAll(selectors).forEach((el) => {
       el.style.touchAction = 'pan-y';
       el.style.overflowY = 'auto';
       el.style.webkitOverflowScrolling = 'touch';
       el.style.pointerEvents = 'auto';
     });
-    
-    // Track touch state
-    let startX = 0;
-    let startY = 0;
-    let isInTextArea = false;
-    let directionLocked = false;
-    let isVertical = false;
-    
-    const isTextElement = (el) => {
-      if (!el) return false;
-      return !!(
-        el.closest('[data-scrollable="true"]') ||
-        el.closest('.text-scroll-container') ||
-        el.closest('.overflow-y-auto')
-      );
-    };
-    
-    // Let touchstart through - don't block it
-    const handleTouchStart = (e) => {
-      isInTextArea = isTextElement(e.target);
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-      directionLocked = false;
-      isVertical = false;
-      if (isInTextArea) addDebug('📱 Start');
-    };
-    
-    // Block touchmove ONLY if vertical scroll detected
-    const handleTouchMove = (e) => {
-      if (!isInTextArea) return;
-      
-      const deltaX = Math.abs(e.touches[0].clientX - startX);
-      const deltaY = Math.abs(e.touches[0].clientY - startY);
-      
-      // Lock direction after 8px of movement
-      if (!directionLocked && (deltaX > 8 || deltaY > 8)) {
-        directionLocked = true;
-        isVertical = deltaY >= deltaX;
-        addDebug(isVertical ? '↕️ Vert' : '↔️ Horiz');
-      }
-      
-      // If vertical scroll, block the event from reaching flip book
-      if (directionLocked && isVertical) {
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-      }
-    };
-    
-    // Block touchend too if we were vertical scrolling
-    const handleTouchEnd = (e) => {
-      if (isInTextArea && directionLocked && isVertical) {
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        addDebug('✅ Blocked');
-      }
-      isInTextArea = false;
-      directionLocked = false;
-      isVertical = false;
-    };
-    
-    // IMPORTANT: Use capture phase but passive:false for touchmove to allow stopPropagation
-    document.addEventListener('touchstart', handleTouchStart, { capture: true, passive: true });
-    document.addEventListener('touchmove', handleTouchMove, { capture: true, passive: false });
-    document.addEventListener('touchend', handleTouchEnd, { capture: true, passive: false });
-    
-    addDebug('✅ Final attempt');
-    
-    return () => {
-      document.removeEventListener('touchstart', handleTouchStart, { capture: true });
-      document.removeEventListener('touchmove', handleTouchMove, { capture: true });
-      document.removeEventListener('touchend', handleTouchEnd, { capture: true });
-    };
-  }, [isFullscreen, currentPage, addDebug]);
+  }, [isFullscreen, currentPage]);
   
-  // Re-apply CSS after delay
+  // Re-apply CSS after delay for late-rendered elements
   useEffect(() => {
     const timer = setTimeout(() => {
       document.querySelectorAll('[data-scrollable="true"], .text-scroll-container, .overflow-y-auto').forEach(el => {
@@ -1810,23 +1723,6 @@ export default function BookReader() {
         }`}
         data-testid="book-container"
       >
-        {/* DEBUG OVERLAY - Shows touch events on iPad without console */}
-        <div 
-          className="fixed top-20 left-2 right-2 z-[9999] bg-black/80 text-green-400 text-xs font-mono p-2 rounded-lg max-h-36 overflow-hidden"
-          style={{ pointerEvents: 'none' }}
-        >
-          <div className="text-yellow-400 mb-1">
-            🔍 Debug v3 | FS: {isFullscreen ? '✅ON' : '❌OFF'} | Page: {currentPage}
-          </div>
-          {debugMessages.length === 0 ? (
-            <div className="text-gray-400">Waiting for touch events...</div>
-          ) : (
-            debugMessages.map((msg, i) => (
-              <div key={i} className="truncate">{msg}</div>
-            ))
-          )}
-        </div>
-        
         {/* Swipe hint indicators */}
         <AnimatePresence>
           {swipeHint && (
