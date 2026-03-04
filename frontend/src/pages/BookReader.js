@@ -421,17 +421,12 @@ export default function BookReader() {
     const findTextContainers = () => {
       const containers = [];
       
-      // By data attribute
       document.querySelectorAll('[data-scrollable="true"]').forEach(el => {
         if (!containers.includes(el)) containers.push(el);
       });
-      
-      // By class name
       document.querySelectorAll('.text-scroll-container').forEach(el => {
         if (!containers.includes(el)) containers.push(el);
       });
-      
-      // By overflow-y-auto inside book container
       document.querySelectorAll('#book-container .overflow-y-auto').forEach(el => {
         if (!containers.includes(el)) containers.push(el);
       });
@@ -450,11 +445,11 @@ export default function BookReader() {
       el.setAttribute('data-scrollable', 'true');
     });
     
-    // AGGRESSIVE DOCUMENT-LEVEL INTERCEPTOR
-    // Block BOTH touch AND pointer events when in text area
-    let touchStartY = 0;
-    let touchStartX = 0;
+    // Track touch state
+    let startX = 0;
+    let startY = 0;
     let isInTextArea = false;
+    let isScrollingVertically = false;
     
     const isTextElement = (el) => {
       if (!el) return false;
@@ -465,69 +460,51 @@ export default function BookReader() {
       );
     };
     
-    // TOUCH EVENTS
     const handleTouchStart = (e) => {
       isInTextArea = isTextElement(e.target);
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-      if (isInTextArea) addDebug('📱 T-start');
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      isScrollingVertically = false;
+      if (isInTextArea) addDebug('📱 Touch');
     };
     
     const handleTouchMove = (e) => {
       if (!isInTextArea) return;
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-    };
-    
-    const handleTouchEnd = (e) => {
-      if (isInTextArea) {
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        addDebug('📱 T-end');
+      
+      const deltaX = Math.abs(e.touches[0].clientX - startX);
+      const deltaY = Math.abs(e.touches[0].clientY - startY);
+      
+      // Determine scroll direction on first significant move
+      if (!isScrollingVertically && (deltaX > 10 || deltaY > 10)) {
+        isScrollingVertically = deltaY > deltaX;
+        addDebug(isScrollingVertically ? '↕️ Scroll' : '↔️ Swipe');
       }
-      isInTextArea = false;
-    };
-    
-    // POINTER EVENTS (used by many libraries instead of touch)
-    const handlePointerDown = (e) => {
-      isInTextArea = isTextElement(e.target);
-      touchStartX = e.clientX;
-      touchStartY = e.clientY;
-      if (isInTextArea) addDebug('👆 P-down');
-    };
-    
-    const handlePointerMove = (e) => {
-      if (!isInTextArea) return;
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-    };
-    
-    const handlePointerUp = (e) => {
-      if (isInTextArea) {
+      
+      // If scrolling vertically in text area, block horizontal page flip
+      // But DON'T stop the event entirely - let vertical scroll happen
+      if (isScrollingVertically) {
+        // Only stop propagation, not immediate propagation
+        // This allows the scroll to work but blocks the flip book
         e.stopPropagation();
-        e.stopImmediatePropagation();
-        addDebug('👆 P-up');
       }
-      isInTextArea = false;
     };
     
-    // Add ALL event listeners with CAPTURE phase
+    const handleTouchEnd = () => {
+      isInTextArea = false;
+      isScrollingVertically = false;
+    };
+    
+    // Add touch listeners - NOT pointer events (those block scroll)
     document.addEventListener('touchstart', handleTouchStart, { capture: true, passive: true });
     document.addEventListener('touchmove', handleTouchMove, { capture: true, passive: false });
-    document.addEventListener('touchend', handleTouchEnd, { capture: true, passive: false });
-    document.addEventListener('pointerdown', handlePointerDown, { capture: true });
-    document.addEventListener('pointermove', handlePointerMove, { capture: true });
-    document.addEventListener('pointerup', handlePointerUp, { capture: true });
+    document.addEventListener('touchend', handleTouchEnd, { capture: true, passive: true });
     
-    addDebug('✅ Touch+Pointer blocked');
+    addDebug('✅ Vertical scroll OK');
     
     return () => {
       document.removeEventListener('touchstart', handleTouchStart, { capture: true });
       document.removeEventListener('touchmove', handleTouchMove, { capture: true });
       document.removeEventListener('touchend', handleTouchEnd, { capture: true });
-      document.removeEventListener('pointerdown', handlePointerDown, { capture: true });
-      document.removeEventListener('pointermove', handlePointerMove, { capture: true });
-      document.removeEventListener('pointerup', handlePointerUp, { capture: true });
     };
   }, [isFullscreen, currentPage, addDebug]);
   
