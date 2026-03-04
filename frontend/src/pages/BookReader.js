@@ -410,13 +410,13 @@ export default function BookReader() {
   const isMobileLandscape = forceLandscapeTest || (isMobile && isLandscapeOrientation);
   const isMobilePortrait = !forceLandscapeTest && isMobile && !isLandscapeOrientation;
   
-  // UNIVERSAL FIX: Use querySelector to find text containers regardless of render mode
-  // iPad Safari browser uses desktop RealisticPageFlip, not mobile views with refs
-  // This approach finds ALL scrollable text areas and blocks touch events on them
+  // UNIVERSAL FIX: Apply CSS touch-action to text containers
+  // DO NOT use stopPropagation - that blocks scrolling!
+  // Instead, rely on CSS touch-action + swipe gesture hook detection
   useEffect(() => {
     addDebug(`🔄 Setup: FS=${isFullscreen}, pg=${currentPage}`);
     
-    // Use multiple methods to find text containers - works for both mobile and desktop views
+    // Use multiple methods to find text containers
     const findTextContainers = () => {
       const containers = [];
       
@@ -445,36 +445,20 @@ export default function BookReader() {
     const containers = findTextContainers();
     addDebug(`📍 Found ${containers.length} text containers`);
     
-    // Block touch function
-    const blockTouch = (e) => {
-      e.stopPropagation();
-      addDebug(`🛑 BLOCKED ${e.type}`);
-    };
-    
-    // Attach listeners to ALL found containers
+    // Apply CSS to ALL found containers - NO stopPropagation (that blocks scrolling!)
     containers.forEach((el) => {
       el.style.touchAction = 'pan-y';
       el.style.overflowY = 'auto';
       el.style.webkitOverflowScrolling = 'touch';
-      
-      el.addEventListener('touchstart', blockTouch, { capture: true, passive: true });
-      el.addEventListener('touchmove', blockTouch, { capture: true, passive: true });
-      el.addEventListener('touchend', blockTouch, { capture: true, passive: true });
+      el.setAttribute('data-scrollable', 'true');
+      el.classList.add('text-scroll-container');
     });
     
     if (containers.length > 0) {
-      addDebug(`✅ ${containers.length} listeners OK`);
+      addDebug(`✅ CSS applied to ${containers.length}`);
     } else {
       addDebug(`⚠️ No containers!`);
     }
-    
-    return () => {
-      containers.forEach(el => {
-        el.removeEventListener('touchstart', blockTouch, { capture: true });
-        el.removeEventListener('touchmove', blockTouch, { capture: true });
-        el.removeEventListener('touchend', blockTouch, { capture: true });
-      });
-    };
   }, [isFullscreen, currentPage, addDebug]);
   
   // Additional safety: Re-run after delay to catch late-rendered elements
@@ -482,6 +466,7 @@ export default function BookReader() {
     const timer = setTimeout(() => {
       document.querySelectorAll('[data-scrollable="true"], .text-scroll-container, #book-container .overflow-y-auto').forEach(el => {
         el.style.touchAction = 'pan-y';
+        el.setAttribute('data-scrollable', 'true');
       });
       addDebug('🔁 Delayed CSS applied');
     }, 500);

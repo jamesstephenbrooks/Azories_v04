@@ -133,13 +133,44 @@ const ScrollableTextArea = ({ children, className = "" }) => {
     }
   }, [children]);
   
+  // IPAD FIX: Stop touchmove from reaching the page flip library
+  // We allow touchstart (so the element knows about the touch) but block touchmove propagation
+  // This allows native scrolling while preventing the page flip library from intercepting
+  const isScrollingRef = useRef(false);
+  const touchStartYRef = useRef(0);
+  
+  const handleTouchStart = useCallback((e) => {
+    touchStartYRef.current = e.touches[0].clientY;
+    isScrollingRef.current = false;
+  }, []);
+  
+  const handleTouchMove = useCallback((e) => {
+    const deltaY = Math.abs(e.touches[0].clientY - touchStartYRef.current);
+    
+    // If moving vertically more than 10px, we're scrolling - stop propagation
+    if (deltaY > 10) {
+      isScrollingRef.current = true;
+      e.stopPropagation();
+    }
+  }, []);
+  
+  const handleTouchEnd = useCallback(() => {
+    isScrollingRef.current = false;
+    touchStartYRef.current = 0;
+  }, []);
+  
   return (
-    <div className="relative flex-1 overflow-hidden">
+    <div 
+      className="relative flex-1 overflow-hidden"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       <div 
         ref={scrollRef}
         className={`h-full overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-muted-foreground/30 scrollbar-track-transparent text-scroll-container ${className}`}
         data-scrollable="true"
-        style={{ touchAction: 'pan-y', WebkitOverflowScrolling: 'touch' }}
+        style={{ touchAction: 'pan-y', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain' }}
       >
         {children}
       </div>
