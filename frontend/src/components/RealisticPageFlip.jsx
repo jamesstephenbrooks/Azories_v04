@@ -626,6 +626,12 @@ const RealisticPageFlip = forwardRef(({
   const [isFlipping, setIsFlipping] = useState(false);
   const [isFading, setIsFading] = useState(false); // Simple fade animation state
   
+  // IPAD FIX: Detect touch device to disable swipe and use buttons only
+  const isTouchDevice = useMemo(() => {
+    if (typeof window === 'undefined') return false;
+    return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  }, []);
+  
   // Build the page mapping once so we can track which flipbook page = which content page
   // This map tracks: flipbookPageIndex -> contentPageIndex (from pages array)
   const pageMapping = useRef([]);
@@ -875,11 +881,11 @@ const RealisticPageFlip = forwardRef(({
           drawShadow={true}
           flippingTime={isMobilePortrait ? 400 : 650}
           usePortrait={isMobilePortrait}
-          disableFlipByClick={false}
-          useMouseEvents={true}
-          swipeDistance={200}
-          showPageCorners={!isMobilePortrait}
-          clickEventForward={true}
+          disableFlipByClick={isTouchDevice}
+          useMouseEvents={!isTouchDevice}
+          swipeDistance={isTouchDevice ? 9999 : 30}
+          showPageCorners={!isMobilePortrait && !isTouchDevice}
+          clickEventForward={!isTouchDevice}
         >
           {allBookPages}
         </HTMLFlipBook>

@@ -413,7 +413,9 @@ export default function BookReader() {
   // UNIVERSAL FIX: Apply CSS touch-action to text containers
   // AND add document-level touch interception for Safari
   useEffect(() => {
-    addDebug(`🔄 Setup: FS=${isFullscreen}, pg=${currentPage}`);
+    // Detect touch device
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    addDebug(`🔄 Touch:${isTouchDevice ? 'YES' : 'NO'} FS:${isFullscreen ? 'Y' : 'N'}`);
     
     // Use multiple methods to find text containers
     const findTextContainers = () => {
@@ -442,7 +444,7 @@ export default function BookReader() {
     };
     
     const containers = findTextContainers();
-    addDebug(`📍 Found ${containers.length} text containers`);
+    addDebug(`📍 Found ${containers.length} containers`);
     
     // Apply CSS to ALL found containers
     containers.forEach((el) => {
@@ -454,13 +456,14 @@ export default function BookReader() {
     });
     
     if (containers.length > 0) {
-      addDebug(`✅ CSS to ${containers.length}`);
+      addDebug(`✅ CSS applied`);
     }
     
-    // No more document-level listeners - rely on:
-    // 1. CSS touch-action: pan-y on text containers
-    // 2. High swipeDistance (200px) on page flip library
-    addDebug('🎯 CSS-only mode');
+    // Touch devices: swipe is DISABLED in RealisticPageFlip
+    // Only button navigation works
+    if (isTouchDevice) {
+      addDebug('📱 Swipe DISABLED - use buttons');
+    }
     
   }, [isFullscreen, currentPage, addDebug]);
   
