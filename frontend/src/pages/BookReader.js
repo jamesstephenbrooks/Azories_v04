@@ -428,19 +428,20 @@ export default function BookReader() {
     const containers = findTextContainers();
     addDebug(`📍 ${containers.length} text areas`);
     
-    // Apply CSS
+    // Apply CSS - IMPORTANT: set pointer-events: auto on text containers
     containers.forEach((el) => {
       el.style.touchAction = 'pan-y';
       el.style.overflowY = 'auto';
       el.style.webkitOverflowScrolling = 'touch';
+      el.style.pointerEvents = 'auto'; // Ensure text always receives events
       el.setAttribute('data-scrollable', 'true');
     });
     
-    // Find the flip book canvas/container
+    // Find the flip book canvas/container (the part that handles swipe)
     const getFlipBookEl = () => {
-      return document.querySelector('.stf__wrapper') || 
-             document.querySelector('[class*="flipbook"]') ||
-             document.querySelector('.book-flipbook');
+      // Target the canvas element that handles flip, not the content wrapper
+      return document.querySelector('.stf__wrapper canvas') || 
+             document.querySelector('.stf__wrapper');
     };
     
     let startY = 0;
@@ -461,21 +462,27 @@ export default function BookReader() {
       startY = e.touches[0].clientY;
       
       if (isInTextArea) {
-        addDebug('📱 Touch text');
-        // DISABLE flip book pointer events immediately
+        addDebug('📱 Text touch');
+        // Find and disable the flip canvas, but keep text container active
         flipBookEl = getFlipBookEl();
         if (flipBookEl) {
           flipBookEl.style.pointerEvents = 'none';
-          addDebug('🚫 Flip disabled');
+          addDebug('🚫 Canvas off');
+        }
+        // Ensure the touched text container stays active
+        const textContainer = e.target.closest('[data-scrollable="true"]') || 
+                              e.target.closest('.text-scroll-container') ||
+                              e.target.closest('.overflow-y-auto');
+        if (textContainer) {
+          textContainer.style.pointerEvents = 'auto';
         }
       }
     };
     
     const handleTouchEnd = () => {
-      if (isInTextArea && flipBookEl) {
-        // RE-ENABLE flip book pointer events
+      if (flipBookEl) {
         flipBookEl.style.pointerEvents = 'auto';
-        addDebug('✅ Flip enabled');
+        addDebug('✅ Canvas on');
       }
       isInTextArea = false;
       flipBookEl = null;
@@ -485,7 +492,7 @@ export default function BookReader() {
     document.addEventListener('touchend', handleTouchEnd, { capture: true, passive: true });
     document.addEventListener('touchcancel', handleTouchEnd, { capture: true, passive: true });
     
-    addDebug('✅ Pointer toggle ready');
+    addDebug('✅ Ready');
     
     return () => {
       document.removeEventListener('touchstart', handleTouchStart, { capture: true });
@@ -499,6 +506,7 @@ export default function BookReader() {
     const timer = setTimeout(() => {
       document.querySelectorAll('[data-scrollable="true"], .text-scroll-container, .overflow-y-auto').forEach(el => {
         el.style.touchAction = 'pan-y';
+        el.style.pointerEvents = 'auto';
       });
     }, 500);
     return () => clearTimeout(timer);
