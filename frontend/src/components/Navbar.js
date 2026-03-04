@@ -64,8 +64,30 @@ export const Navbar = () => {
               className="font-ui text-foreground/80 hover:text-foreground transition-colors flex items-center gap-1.5"
               data-testid="nav-creators"
             >
-              <FiDroplet className="w-4 h-4 text-purple-500" />
-              Creators
+              <span className="text-base">✍️</span>
+              Image Creator
+            </Link>
+          )}
+          
+          {user && (
+            <Link 
+              to="/ai-stories" 
+              className="font-ui text-foreground/80 hover:text-foreground transition-colors flex items-center gap-1.5"
+              data-testid="nav-ai-stories"
+            >
+              <span className="text-base">🐉</span>
+              AI Stories
+            </Link>
+          )}
+          
+          {user && (
+            <Link 
+              to="/pro-studio" 
+              className="font-ui text-foreground/80 hover:text-foreground transition-colors flex items-center gap-1.5"
+              data-testid="nav-pro-studio"
+            >
+              <span className="text-base">⚡</span>
+              Pro Studio
             </Link>
           )}
         </div>
@@ -131,8 +153,22 @@ export const Navbar = () => {
                   onClick={() => navigate('/creators')}
                   data-testid="menu-creators"
                 >
-                  <FiDroplet className="mr-2 text-purple-500" />
-                  Creators
+                  <span className="mr-2">✍️</span>
+                  Image Creator
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => navigate('/ai-stories')}
+                  data-testid="menu-ai-stories"
+                >
+                  <span className="mr-2">🐉</span>
+                  AI Stories
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => navigate('/pro-studio')}
+                  data-testid="menu-pro-studio"
+                >
+                  <span className="mr-2">⚡</span>
+                  Pro Studio
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={() => navigate('/credits')}
@@ -202,8 +238,19 @@ export const Navbar = () => {
               onClick={() => setMobileOpen(false)}
               data-testid="mobile-nav-creators"
             >
-              <FiDroplet className="w-4 h-4 text-purple-500" />
-              Creators
+              <span className="text-base">✍️</span>
+              Image Creator
+            </Link>
+          )}
+          {user && (
+            <Link 
+              to="/ai-stories" 
+              className="block px-4 py-3 font-ui rounded-xl hover:bg-muted min-h-[44px] flex items-center gap-2"
+              onClick={() => setMobileOpen(false)}
+              data-testid="mobile-nav-ai-stories"
+            >
+              <span className="text-base">🐉</span>
+              AI Stories
             </Link>
           )}
           {user && (
@@ -213,7 +260,7 @@ export const Navbar = () => {
               onClick={() => setMobileOpen(false)}
               data-testid="mobile-nav-pro-studio"
             >
-              <FiZap className="w-4 h-4 text-amber-500" />
+              <span className="text-base">⚡</span>
               Pro Studio
             </Link>
           )}

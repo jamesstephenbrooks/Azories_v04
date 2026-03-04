@@ -86,7 +86,7 @@ export default function StoryCreator() {
   // Auth check
   useEffect(() => {
     if (!authLoading && !user && !localStorage.getItem('azories-token')) {
-      navigate('/auth', { state: { from: '/creators' } });
+      navigate('/auth', { state: { from: '/ai-stories' } });
     }
   }, [user, authLoading, navigate]);
   
@@ -277,7 +277,7 @@ export default function StoryCreator() {
       setCurrentJobId(jobId);
       
       // Update URL to include job ID (so user can return)
-      window.history.replaceState({}, '', `/creators?job=${jobId}`);
+      window.history.replaceState({}, '', `/ai-stories?job=${jobId}`);
       
       // Start polling
       startPolling(jobId);
@@ -303,7 +303,7 @@ export default function StoryCreator() {
     setIsGenerating(false);
     setCurrentJobId(null);
     setJobStatus(null);
-    window.history.replaceState({}, '', '/creators');
+    window.history.replaceState({}, '', '/ai-stories');
   };
   
   // Get current options based on mode

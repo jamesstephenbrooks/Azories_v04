@@ -123,10 +123,11 @@ function AppContent() {
           <Route path="/series" element={<ProtectedRoute><MySeries /></ProtectedRoute>} />
           <Route path="/editor/:bookId" element={<ProtectedRoute><BookEditor /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
-          <Route path="/creators" element={<ProtectedRoute><StoryCreator /></ProtectedRoute>} />
-          <Route path="/art-studio" element={<ProtectedRoute><Creators /></ProtectedRoute>} />
+          <Route path="/creators" element={<ProtectedRoute><Creators /></ProtectedRoute>} />
           <Route path="/creators/expert" element={<ProtectedRoute><CreatorsExpert /></ProtectedRoute>} />
+          <Route path="/ai-stories" element={<ProtectedRoute><StoryCreator /></ProtectedRoute>} />
           {/* Legacy routes - redirect to new paths */}
+          <Route path="/art-studio" element={<Navigate to="/creators" replace />} />
           <Route path="/art-studio/expert" element={<Navigate to="/creators/expert" replace />} />
           <Route path="/pro-studio" element={<ProtectedRoute><ProStudio /></ProtectedRoute>} />
           <Route path="/credits" element={<ProtectedRoute><Credits /></ProtectedRoute>} />

@@ -620,13 +620,26 @@ export default function Dashboard() {
               )}
               
               {isPro && (
+                <Button 
+                  variant="outline"
+                  className="rounded-full px-6 py-6 font-ui border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+                  onClick={() => navigate('/ai-stories')}
+                  data-testid="ai-story-btn"
+                >
+                  <FiZap className="mr-2" />
+                  🐉 AI Stories
+                </Button>
+              )}
+              
+              {/* Legacy AI Story Dialog - now redirects to /ai-stories page */}
+              {false && isPro && (
                 <>
                   <Dialog open={isAIStoryOpen} onOpenChange={setIsAIStoryOpen}>
                     <DialogTrigger asChild>
                       <Button 
                         variant="outline"
                         className="rounded-full px-6 py-6 font-ui border-accent text-accent hover:bg-accent hover:text-accent-foreground"
-                        data-testid="ai-story-btn"
+                        data-testid="ai-story-btn-legacy"
                       >
                         <FiZap className="mr-2" />
                         AI Story Creator
@@ -1437,7 +1450,7 @@ export default function Dashboard() {
                     <p className="text-muted-foreground text-sm mb-4">
                       Create AI stories or add images to your books to build your library
                     </p>
-                    <Button onClick={() => setIsAIStoryOpen(true)} className="rounded-full">
+                    <Button onClick={() => navigate('/ai-stories')} className="rounded-full">
                       <FiZap className="mr-2" /> Create AI Story
                     </Button>
                   </Card>
