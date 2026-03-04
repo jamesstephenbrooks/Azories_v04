@@ -415,28 +415,24 @@ export default function BookReader() {
   useEffect(() => {
     // Detect touch device
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    addDebug(`🔄 Touch:${isTouchDevice ? 'YES' : 'NO'} FS:${isFullscreen ? 'Y' : 'N'}`);
+    addDebug(`🔄 Touch:${isTouchDevice ? 'Y' : 'N'} FS:${isFullscreen ? 'Y' : 'N'}`);
     
     // Use multiple methods to find text containers
     const findTextContainers = () => {
       const containers = [];
       
-      // Method 1: By ref (mobile views)
-      if (textScrollRef.current) containers.push(textScrollRef.current);
-      if (textScrollRefLandscape.current) containers.push(textScrollRefLandscape.current);
-      
-      // Method 2: By data attribute (all views)
+      // By data attribute
       document.querySelectorAll('[data-scrollable="true"]').forEach(el => {
         if (!containers.includes(el)) containers.push(el);
       });
       
-      // Method 3: By class name (fallback)
+      // By class name
       document.querySelectorAll('.text-scroll-container').forEach(el => {
         if (!containers.includes(el)) containers.push(el);
       });
       
-      // Method 4: Find any overflow-y-auto inside book container (catches desktop view)
-      document.querySelectorAll('#book-container .overflow-y-auto, #book-container [class*="overflow-y"]').forEach(el => {
+      // By overflow-y-auto inside book container
+      document.querySelectorAll('#book-container .overflow-y-auto').forEach(el => {
         if (!containers.includes(el)) containers.push(el);
       });
       
@@ -444,7 +440,7 @@ export default function BookReader() {
     };
     
     const containers = findTextContainers();
-    addDebug(`📍 Found ${containers.length} containers`);
+    addDebug(`📍 ${containers.length} text areas`);
     
     // Apply CSS to ALL found containers
     containers.forEach((el) => {
@@ -452,33 +448,77 @@ export default function BookReader() {
       el.style.overflowY = 'auto';
       el.style.webkitOverflowScrolling = 'touch';
       el.setAttribute('data-scrollable', 'true');
-      el.classList.add('text-scroll-container');
     });
     
-    if (containers.length > 0) {
-      addDebug(`✅ CSS applied`);
-    }
+    // AGGRESSIVE DOCUMENT-LEVEL INTERCEPTOR
+    // Catches ALL touch events and blocks page flip when in text area
+    let touchStartY = 0;
+    let touchStartX = 0;
+    let touchStartTarget = null;
+    let isInTextArea = false;
     
-    // Touch devices: swipe is DISABLED in RealisticPageFlip
-    // Only button navigation works
-    if (isTouchDevice) {
-      addDebug('📱 Swipe DISABLED - use buttons');
-    }
+    const isTextElement = (el) => {
+      if (!el) return false;
+      return !!(
+        el.closest('[data-scrollable="true"]') ||
+        el.closest('.text-scroll-container') ||
+        el.closest('.overflow-y-auto')
+      );
+    };
     
+    const handleTouchStart = (e) => {
+      touchStartTarget = e.target;
+      isInTextArea = isTextElement(e.target);
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      
+      if (isInTextArea) {
+        addDebug('📱 Touch TEXT');
+      }
+    };
+    
+    const handleTouchMove = (e) => {
+      if (!isInTextArea) return;
+      
+      const deltaX = Math.abs(e.touches[0].clientX - touchStartX);
+      const deltaY = Math.abs(e.touches[0].clientY - touchStartY);
+      
+      // If in text area, ALWAYS block horizontal movement from reaching page flip
+      // This is aggressive but necessary for iPad Safari
+      if (deltaX > 5 || deltaY > 5) {
+        e.stopImmediatePropagation();
+        addDebug('🛑 Blocked');
+      }
+    };
+    
+    const handleTouchEnd = () => {
+      isInTextArea = false;
+      touchStartTarget = null;
+    };
+    
+    // Use CAPTURE phase with highest priority
+    document.addEventListener('touchstart', handleTouchStart, { capture: true, passive: true });
+    document.addEventListener('touchmove', handleTouchMove, { capture: true, passive: false });
+    document.addEventListener('touchend', handleTouchEnd, { capture: true, passive: true });
+    
+    addDebug('✅ Swipe ON, text blocked');
+    
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart, { capture: true });
+      document.removeEventListener('touchmove', handleTouchMove, { capture: true });
+      document.removeEventListener('touchend', handleTouchEnd, { capture: true });
+    };
   }, [isFullscreen, currentPage, addDebug]);
   
-  // Additional safety: Re-run after delay to catch late-rendered elements
+  // Re-apply CSS after delay for late-rendered elements
   useEffect(() => {
     const timer = setTimeout(() => {
-      document.querySelectorAll('[data-scrollable="true"], .text-scroll-container, #book-container .overflow-y-auto').forEach(el => {
+      document.querySelectorAll('[data-scrollable="true"], .text-scroll-container, .overflow-y-auto').forEach(el => {
         el.style.touchAction = 'pan-y';
-        el.setAttribute('data-scrollable', 'true');
       });
-      addDebug('🔁 Delayed CSS applied');
     }, 500);
-    
     return () => clearTimeout(timer);
-  }, [isFullscreen, currentPage, addDebug]);
+  }, [currentPage]);
   
   const isCover = currentPage === -1;
   const isBackCover = currentPage === -2;

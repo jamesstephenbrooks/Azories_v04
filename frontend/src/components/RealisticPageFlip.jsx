@@ -632,6 +632,9 @@ const RealisticPageFlip = forwardRef(({
     return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
   }, []);
   
+  // RESTORE SWIPE: But block it when touching text areas
+  // We'll handle this at the document level in BookReader.js
+  
   // Build the page mapping once so we can track which flipbook page = which content page
   // This map tracks: flipbookPageIndex -> contentPageIndex (from pages array)
   const pageMapping = useRef([]);
@@ -881,11 +884,11 @@ const RealisticPageFlip = forwardRef(({
           drawShadow={true}
           flippingTime={isMobilePortrait ? 400 : 650}
           usePortrait={isMobilePortrait}
-          disableFlipByClick={isTouchDevice}
-          useMouseEvents={!isTouchDevice}
-          swipeDistance={isTouchDevice ? 9999 : 30}
-          showPageCorners={!isMobilePortrait && !isTouchDevice}
-          clickEventForward={!isTouchDevice}
+          disableFlipByClick={false}
+          useMouseEvents={true}
+          swipeDistance={30}
+          showPageCorners={!isMobilePortrait}
+          clickEventForward={true}
         >
           {allBookPages}
         </HTMLFlipBook>
