@@ -38,24 +38,24 @@ CREAM = HexColor('#FDF8F3')
 WHITE = HexColor('#FFFFFF')
 
 # Official mascot images from Cloudinary
-# AZORA = The girl character
-# BLAZE = The dragon companion
+# AZORA = The girl character with her dragon Blaze
 MASCOT_IMAGES = {
-    # Azora the girl - main image
+    # NEW Azora mascot images (768x1024 PNG)
+    "azora_mascot_1": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772656467/azories/mascot/azora_mascot_1.png",
+    "azora_mascot_2": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772656468/azories/mascot/azora_mascot_2.png",
+    "azora_mascot_main": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772656469/azories/mascot/azora_mascot_main.png",
+    "azora_mascot": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772656469/azories/mascot/azora_mascot.png",
+    # Original Azora girl image
     "azora_girl": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772654323/azories/mascot/azora_girl_main.png",
-    # Blaze the dragon - main image
+    # Blaze the dragon
     "blaze_dragon": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772654324/azories/mascot/blaze_dragon_main.jpg",
-    # Combined pose - girl with dragon (pointing)
+    # Combined poses (older)
+    "azora_running": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279585/azories/mascot/azora_pose2_running.jpg",
     "azora_pointing": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772280556/azories/mascot/azora_pointing_v2.jpg",
-    # Combined pose - confident
     "azora_confident": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279581/azories/mascot/azora_pose1_confident.jpg",
-    # Combined pose - reading
     "azora_reading": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279589/azories/mascot/azora_pose3_reading.jpg",
-    # Combined pose - waving
     "azora_waving": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279875/azories/mascot/azora_waving_hello.jpg",
-    # Cozy reading
     "azora_cozy": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279866/azories/mascot/azora_reading_cozy.jpg",
-    # Dragon icon solo
     "blaze_icon": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772279877/azories/mascot/dragon_icon_solo.jpg"
 }
 
@@ -290,6 +290,73 @@ def draw_image_full_page_faded(c, pil_img, opacity=0.15):
     c.drawImage(ImageReader(img_buffer), 0, 0, width=PAGE_WIDTH, height=PAGE_HEIGHT, mask='auto')
 
 
+def draw_image_full_page_cropped(c, pil_img, opacity=0.15, crop_sides=0.15):
+    """Draw image full page with sides cropped and opacity."""
+    if pil_img is None:
+        return
+    
+    if pil_img.mode != 'RGBA':
+        pil_img = pil_img.convert('RGBA')
+    
+    # Crop sides to fix aspect ratio
+    img_width, img_height = pil_img.size
+    crop_amount = int(img_width * crop_sides)
+    pil_img = pil_img.crop((crop_amount, 0, img_width - crop_amount, img_height))
+    
+    # Apply opacity
+    r, g, b, a = pil_img.split()
+    a = a.point(lambda x: int(x * opacity))
+    pil_img = PILImage.merge('RGBA', (r, g, b, a))
+    
+    img_buffer = io.BytesIO()
+    pil_img.save(img_buffer, format='PNG', dpi=(300, 300))
+    img_buffer.seek(0)
+    
+    c.drawImage(ImageReader(img_buffer), 0, 0, width=PAGE_WIDTH, height=PAGE_HEIGHT, mask='auto')
+
+
+def draw_image_with_frame(c, pil_img, x, y, width, height, frame_color=GOLD, frame_width=3*mm):
+    """Draw image with a decorative picture frame around it."""
+    if pil_img is None:
+        return
+    
+    # Draw outer frame
+    c.setStrokeColor(frame_color)
+    c.setLineWidth(frame_width)
+    c.roundRect(x - frame_width/2, y - frame_width/2, 
+                width + frame_width, height + frame_width, 
+                2*mm, stroke=1, fill=0)
+    
+    # Draw inner decorative line
+    c.setStrokeColor(PURPLE_LIGHT)
+    c.setLineWidth(1)
+    c.roundRect(x + 2*mm, y + 2*mm, 
+                width - 4*mm, height - 4*mm, 
+                1*mm, stroke=1, fill=0)
+    
+    # Draw corner decorations
+    c.setFillColor(frame_color)
+    corners = [
+        (x, y),
+        (x + width, y),
+        (x, y + height),
+        (x + width, y + height)
+    ]
+    for cx, cy in corners:
+        c.circle(cx, cy, 2*mm, fill=1, stroke=0)
+    
+    # Draw the image inside the frame
+    if pil_img.mode != 'RGBA':
+        pil_img = pil_img.convert('RGBA')
+    
+    img_buffer = io.BytesIO()
+    pil_img.save(img_buffer, format='PNG', dpi=(300, 300))
+    img_buffer.seek(0)
+    
+    c.drawImage(ImageReader(img_buffer), x + 3*mm, y + 3*mm, 
+                width=width - 6*mm, height=height - 6*mm, mask='auto')
+
+
 def draw_wrapped_text(c, text, x, y, max_width, font_name="Helvetica", font_size=12, line_height=None, align="left"):
     """Draw text with word wrapping."""
     if not text:
@@ -370,7 +437,7 @@ def draw_stars(c, count=15):
 # ============== BONUS PAGES ==============
 
 async def draw_bonus_page_the_end(c, book_title=""):
-    """Page B1 - 'The End' - Azora waving goodbye, no white background."""
+    """Page B1 - 'The End' - Running Azora image."""
     # Purple background
     c.setFillColor(PURPLE_DARK)
     c.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, fill=1, stroke=0)
@@ -392,8 +459,8 @@ async def draw_bonus_page_the_end(c, book_title=""):
     c.setLineWidth(2)
     c.line(50*mm, PAGE_HEIGHT - 45*mm, PAGE_WIDTH - 50*mm, PAGE_HEIGHT - 45*mm)
     
-    # Azora waving image - remove white background
-    azora_img = await get_azora_image("azora_waving")
+    # Running Azora image - no background removal needed for this one
+    azora_img = await get_azora_image("azora_running")
     if azora_img:
         azora_img = remove_white_background(azora_img, threshold=245)
         draw_image_contain_transparent(c, azora_img, PAGE_WIDTH/2 - 40*mm, PAGE_HEIGHT/2 - 55*mm, 80*mm, 95*mm)
@@ -410,7 +477,7 @@ async def draw_bonus_page_the_end(c, book_title=""):
 
 
 async def draw_bonus_page_about_azories(c):
-    """Page B2 - About Azories with Azora (the girl) - no background."""
+    """Page B2 - About Azories with Azora Mascot image."""
     c.setFillColor(CREAM)
     c.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, fill=1, stroke=0)
     
@@ -421,13 +488,12 @@ async def draw_bonus_page_about_azories(c):
     c.setFont("Helvetica-Bold", 24)
     c.drawCentredString(PAGE_WIDTH/2, PAGE_HEIGHT - 25*mm, "About Azories")
     
-    # Azora (the girl) confident pose on left - remove background
-    azora_img = await get_azora_image("azora_confident")
+    # Azora Mascot on left - new image
+    azora_img = await get_azora_image("azora_mascot")
     if azora_img:
-        azora_img = remove_white_background(azora_img, threshold=245)
-        draw_image_contain_transparent(c, azora_img, 5*mm, PAGE_HEIGHT/2 - 50*mm, 70*mm, 95*mm)
+        draw_image_contain_transparent(c, azora_img, 5*mm, PAGE_HEIGHT/2 - 55*mm, 70*mm, 100*mm)
     
-    # Text on right - Updated to mention Azora (girl) and Blaze (dragon)
+    # Text on right - Updated for Azora and Blaze
     text_x = 78*mm
     text_width = 105*mm
     about_text = """Azories is a magical world of stories where every child is the hero of their own adventure.
@@ -455,7 +521,7 @@ Visit us at azories.com"""
 
 
 async def draw_bonus_page_azora_story(c):
-    """Page B3 - The Story of Azora (the girl) with her dragon Blaze."""
+    """Page B3 - The Story of Azora - remove background from image."""
     c.setFillColor(PURPLE_DARK)
     c.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, fill=1, stroke=0)
     
@@ -467,12 +533,13 @@ async def draw_bonus_page_azora_story(c):
     c.setLineWidth(1)
     c.line(50*mm, PAGE_HEIGHT - 34*mm, PAGE_WIDTH - 50*mm, PAGE_HEIGHT - 34*mm)
     
-    # Azora the girl illustration - use the new uploaded image
+    # Azora girl illustration - remove white background
     azora_img = await get_azora_image("azora_girl")
     if azora_img:
+        azora_img = remove_white_background(azora_img, threshold=240)
         draw_image_contain_transparent(c, azora_img, PAGE_WIDTH/2 - 30*mm, PAGE_HEIGHT - 105*mm, 60*mm, 65*mm)
     
-    # Story text - Updated for Azora (girl) and Blaze (dragon)
+    # Story text
     story_text = """Azora is a young adventurer with a heart full of wonder and a best friend like no other — a small but mighty dragon named Blaze.
 
 Together they live in the Grand Library, a magical place where every book ever written floats on golden shelves that stretch up to the clouds.
@@ -536,14 +603,14 @@ async def draw_bonus_page_draw_scene(c):
 
 
 async def draw_bonus_page_what_happens_next(c):
-    """Page B5 - What Happens Next? Full page faded image with writing lines."""
+    """Page B5 - What Happens Next? Full page faded image with correct aspect ratio."""
     c.setFillColor(CREAM)
     c.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, fill=1, stroke=0)
     
-    # Full page faded Azora image as background
+    # Full page faded Azora image as background - crop sides for better aspect ratio
     azora_img = await get_azora_image("azora_pointing")
     if azora_img:
-        draw_image_full_page_faded(c, azora_img, opacity=0.12)
+        draw_image_full_page_cropped(c, azora_img, opacity=0.12, crop_sides=0.15)
     
     # Border on top
     draw_decorative_border(c, 12*mm, TEAL)
@@ -620,7 +687,7 @@ async def draw_bonus_page_reading_journal(c):
 
 
 async def draw_bonus_page_create_story(c):
-    """Page B7 - Your Turn! Create your own story - no background on image, no overlap."""
+    """Page B7 - Your Turn! Create your own story - with picture frame around image."""
     c.setFillColor(CREAM)
     c.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, fill=1, stroke=0)
     
@@ -636,11 +703,11 @@ async def draw_bonus_page_create_story(c):
     c.setFont("Helvetica-Oblique", 11)
     c.drawCentredString(PAGE_WIDTH/2, PAGE_HEIGHT - 38*mm, "Every great author started with one idea. What's yours?")
     
-    # Prompts with boxes - adjusted to leave room for image
+    # Prompts with boxes - adjusted to leave room for framed image
     prompts = ["My story is called:", "My main character is:", "The adventure begins when:"]
     y = PAGE_HEIGHT - 60*mm
     margin = 22*mm
-    box_width = PAGE_WIDTH - 2*margin - 55*mm  # Leave space for image on right
+    box_width = PAGE_WIDTH - 2*margin - 60*mm  # Leave space for framed image
     
     c.setFillColor(PURPLE_DARK)
     for prompt in prompts:
@@ -657,17 +724,17 @@ async def draw_bonus_page_create_story(c):
     c.drawString(margin, 15*mm, "Visit azories.com to turn your idea")
     c.drawString(margin, 8*mm, "into a real illustrated book!")
     
-    # Blaze dragon on the right side - remove background, positioned to not overlap
+    # Blaze dragon with nice picture frame on the right
     blaze_img = await get_azora_image("blaze_dragon")
     if blaze_img:
         blaze_img = remove_white_background(blaze_img, threshold=235)
-        draw_image_contain_transparent(c, blaze_img, PAGE_WIDTH - 60*mm, 25*mm, 50*mm, 115*mm)
+        draw_image_with_frame(c, blaze_img, PAGE_WIDTH - 58*mm, 22*mm, 48*mm, 115*mm)
     
     c.showPage()
 
 
 async def draw_bonus_page_back_cover(c, book_title="", book_summary="", author_name=""):
-    """Page B8 - Back cover with Blaze dragon (no background) and full branding."""
+    """Page B8 - Back cover with Azora Mascot 2 and full branding."""
     # Purple background
     c.setFillColor(PURPLE_DARK)
     c.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, fill=1, stroke=0)
@@ -691,11 +758,10 @@ async def draw_bonus_page_back_cover(c, book_title="", book_summary="", author_n
     c.setLineWidth(1)
     c.line(45*mm, PAGE_HEIGHT - 50*mm, PAGE_WIDTH - 45*mm, PAGE_HEIGHT - 50*mm)
     
-    # Blaze dragon in center - remove background
-    blaze_img = await get_azora_image("blaze_dragon")
-    if blaze_img:
-        blaze_img = remove_white_background(blaze_img, threshold=235)
-        draw_image_contain_transparent(c, blaze_img, PAGE_WIDTH/2 - 35*mm, PAGE_HEIGHT/2 - 35*mm, 70*mm, 85*mm)
+    # Azora Mascot 2 in center
+    azora_img = await get_azora_image("azora_mascot_2")
+    if azora_img:
+        draw_image_contain_transparent(c, azora_img, PAGE_WIDTH/2 - 35*mm, PAGE_HEIGHT/2 - 35*mm, 70*mm, 85*mm)
     
     # Book info at bottom
     c.setFillColor(Color(0.15, 0.08, 0.25, alpha=0.9))
