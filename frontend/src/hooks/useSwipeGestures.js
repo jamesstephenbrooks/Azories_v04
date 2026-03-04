@@ -14,6 +14,7 @@ export function useSwipeGestures({
   const touchEndRef = useRef({ x: 0, y: 0 });
   const isScrollingRef = useRef(false);
   const startedInScrollableRef = useRef(false);
+  const touchMovedRef = useRef(false); // Track if any movement occurred
 
   // Check if an element or its parents are scrollable
   const isInScrollableElement = useCallback((element) => {
@@ -25,11 +26,20 @@ export function useSwipeGestures({
       
       // Check if element has scrollable content
       if ((overflowY === 'auto' || overflowY === 'scroll') && current.scrollHeight > current.clientHeight) {
-        return { element: current, direction: 'vertical' };
+        return { element: current, direction: 'vertical', canScroll: true };
       }
       if ((overflowX === 'auto' || overflowX === 'scroll') && current.scrollWidth > current.clientWidth) {
-        return { element: current, direction: 'horizontal' };
+        return { element: current, direction: 'horizontal', canScroll: true };
       }
+      
+      // Also check for explicit scroll classes or data attributes (for text containers)
+      if (current.dataset?.scrollable === 'true' || 
+          current.classList?.contains('overflow-y-auto') ||
+          current.classList?.contains('overflow-y-scroll') ||
+          current.classList?.contains('text-scroll-container')) {
+        return { element: current, direction: 'vertical', canScroll: current.scrollHeight > current.clientHeight };
+      }
+      
       current = current.parentElement;
     }
     return null;
@@ -40,37 +50,65 @@ export function useSwipeGestures({
       x: e.touches[0].clientX,
       y: e.touches[0].clientY
     };
+    touchEndRef.current = { x: 0, y: 0 };
     isScrollingRef.current = false;
+    touchMovedRef.current = false;
     
     // Check if touch started in a scrollable element
     if (ignoreScrollableElements) {
       const scrollable = isInScrollableElement(e.target);
       startedInScrollableRef.current = scrollable;
+      
+      // If started in a scrollable vertical container, immediately mark as potential scroll
+      // This is crucial for iPad where scroll detection needs to be more aggressive
+      if (scrollable && scrollable.direction === 'vertical' && scrollable.canScroll) {
+        isScrollingRef.current = true; // Assume scrolling until proven otherwise
+      }
     } else {
       startedInScrollableRef.current = null;
     }
   }, [ignoreScrollableElements, isInScrollableElement]);
 
   const handleTouchMove = useCallback((e) => {
+    touchMovedRef.current = true;
     touchEndRef.current = {
       x: e.touches[0].clientX,
       y: e.touches[0].clientY
     };
     
-    // If we started in a scrollable element and are moving vertically, mark as scrolling
+    // If we started in a scrollable element, check movement direction
     if (startedInScrollableRef.current) {
       const deltaY = Math.abs(touchEndRef.current.y - touchStartRef.current.y);
       const deltaX = Math.abs(touchEndRef.current.x - touchStartRef.current.x);
       
-      // If vertical movement is greater than horizontal, user is likely scrolling
-      if (deltaY > deltaX && deltaY > 10) {
-        isScrollingRef.current = true;
+      // CRITICAL FIX FOR IPAD: If ANY vertical movement is detected in a vertical 
+      // scrollable area, block horizontal swipe gestures completely
+      // This prevents page turns when trying to scroll text
+      if (startedInScrollableRef.current.direction === 'vertical') {
+        // If vertical movement is non-trivial, mark as scrolling
+        if (deltaY > 5) {
+          isScrollingRef.current = true;
+        }
+        // Only allow horizontal swipe if it's VERY dominant (3x more than vertical)
+        // and started with clear horizontal intent
+        if (deltaY > 0 && deltaX < deltaY * 3) {
+          isScrollingRef.current = true;
+        }
       }
     }
   }, []);
 
   const handleTouchEnd = useCallback(() => {
     if (!enabled) return;
+
+    // If no movement occurred, reset and exit
+    if (!touchMovedRef.current) {
+      touchStartRef.current = { x: 0, y: 0 };
+      touchEndRef.current = { x: 0, y: 0 };
+      isScrollingRef.current = false;
+      startedInScrollableRef.current = null;
+      return;
+    }
 
     const deltaX = touchEndRef.current.x - touchStartRef.current.x;
     const deltaY = touchEndRef.current.y - touchStartRef.current.y;
@@ -82,43 +120,49 @@ export function useSwipeGestures({
       // Reset
       touchStartRef.current = { x: 0, y: 0 };
       touchEndRef.current = { x: 0, y: 0 };
+      isScrollingRef.current = false;
+      startedInScrollableRef.current = null;
+      touchMovedRef.current = false;
       return;
     }
 
-    // If user was scrolling in a scrollable element, don't trigger page swipes
+    // CRITICAL: If user was scrolling in a scrollable element, NEVER trigger page swipes
     if (isScrollingRef.current && startedInScrollableRef.current) {
       // Reset
       touchStartRef.current = { x: 0, y: 0 };
       touchEndRef.current = { x: 0, y: 0 };
       isScrollingRef.current = false;
       startedInScrollableRef.current = null;
+      touchMovedRef.current = false;
       return;
     }
 
     // For horizontal swipes (page turns), require horizontal movement to be 
-    // significantly greater than vertical to avoid conflicts with scrolling
-    const isHorizontalSwipe = absDeltaX > absDeltaY * 1.5; // Horizontal must be 1.5x vertical
-    const isVerticalSwipe = absDeltaY > absDeltaX * 1.5;   // Vertical must be 1.5x horizontal
+    // SIGNIFICANTLY greater than vertical to avoid conflicts with scrolling
+    // iPad requires stricter ratio (2x instead of 1.5x)
+    const isHorizontalSwipe = absDeltaX > absDeltaY * 2; // Horizontal must be 2x vertical
+    const isVerticalSwipe = absDeltaY > absDeltaX * 2;   // Vertical must be 2x horizontal
+
+    // Additional check: if started in vertical scrollable, require even stronger horizontal intent
+    const inVerticalScrollable = startedInScrollableRef.current?.direction === 'vertical';
+    const canTriggerHorizontalSwipe = !inVerticalScrollable || (absDeltaX > absDeltaY * 3 && absDeltaX > threshold * 1.5);
 
     // Determine swipe direction
-    if (isHorizontalSwipe && absDeltaX > threshold) {
-      // Horizontal swipe - only if started outside scrollable or scrollable is horizontal
-      const canSwipeHorizontal = !startedInScrollableRef.current || 
-                                  startedInScrollableRef.current.direction === 'horizontal';
-      
-      if (canSwipeHorizontal || absDeltaX > threshold * 2) { // Allow strong horizontal swipes anywhere
-        if (deltaX > 0) {
-          onSwipeRight?.();
-        } else {
-          onSwipeLeft?.();
-        }
+    if (isHorizontalSwipe && absDeltaX > threshold && canTriggerHorizontalSwipe) {
+      // Horizontal swipe - only if started outside scrollable or meets strict criteria
+      if (deltaX > 0) {
+        onSwipeRight?.();
+      } else {
+        onSwipeLeft?.();
       }
     } else if (isVerticalSwipe && absDeltaY > threshold) {
-      // Vertical swipe
-      if (deltaY > 0) {
-        onSwipeDown?.();
-      } else {
-        onSwipeUp?.();
+      // Vertical swipe - only outside scrollable vertical areas
+      if (!inVerticalScrollable) {
+        if (deltaY > 0) {
+          onSwipeDown?.();
+        } else {
+          onSwipeUp?.();
+        }
       }
     }
 
@@ -127,6 +171,7 @@ export function useSwipeGestures({
     touchEndRef.current = { x: 0, y: 0 };
     isScrollingRef.current = false;
     startedInScrollableRef.current = null;
+    touchMovedRef.current = false;
   }, [enabled, threshold, onSwipeLeft, onSwipeRight, onSwipeUp, onSwipeDown]);
 
   return {

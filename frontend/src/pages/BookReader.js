@@ -1056,13 +1056,32 @@ export default function BookReader() {
         // Check mounted before updating state
         if (!mountedRef.current) return;
         setIsPlaying(false);
+        setAudioElement(null); // Clear the audio element
+        
         // Continue to next page when audio finishes in auto-read mode
         if (autoReadRef.current && currentPageRef.current < allPages.length - 1) {
           // Reset lastPlayedPage to allow next page to play
           lastPlayedPageRef.current = -999;
+          
+          // For iPad landscape, we need to ensure audio plays after page transition
+          // Use a longer delay to ensure page state is fully updated
+          const nextPageIndex = currentPageRef.current + 1;
+          
           setTimeout(() => {
             if (autoReadRef.current && mountedRef.current) {
-              goToPage(currentPageRef.current + 1, 'next');
+              // Go to next page
+              goToPage(nextPageIndex, 'next');
+              
+              // CRITICAL FIX FOR IPAD: Explicitly trigger playAudio after page change
+              // The useEffect may not catch it reliably on iPad Safari
+              setTimeout(() => {
+                if (autoReadRef.current && mountedRef.current && currentPageRef.current === nextPageIndex) {
+                  // Double-check we haven't already started playing
+                  if (lastPlayedPageRef.current !== nextPageIndex) {
+                    playAudio();
+                  }
+                }
+              }, 400); // Allow time for page state to update
             }
           }, 200);
         }
@@ -1723,7 +1742,9 @@ export default function BookReader() {
                 >
                   <div 
                     ref={textScrollRef}
-                    className="h-full overflow-y-auto px-5 py-4 pb-8"
+                    className="h-full overflow-y-auto px-5 py-4 pb-8 text-scroll-container"
+                    data-scrollable="true"
+                    onTouchStart={(e) => e.stopPropagation()}
                   >
                     {(currentPageData?.text_content || currentPageData?.text || currentPageData?.content) ? (
                       <p className="font-reader text-base leading-relaxed text-foreground/90 whitespace-pre-wrap">
@@ -1850,7 +1871,9 @@ export default function BookReader() {
                       {/* Text content - scrollable with indicator */}
                       <div 
                         ref={textScrollRef}
-                        className="flex-1 overflow-y-auto px-5 py-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+                        className="flex-1 overflow-y-auto px-5 py-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent text-scroll-container"
+                        data-scrollable="true"
+                        onTouchStart={(e) => e.stopPropagation()}
                       >
                         {(currentPageData?.text_content || currentPageData?.text || currentPageData?.content) ? (
                           <p className="font-reader text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap text-center">
