@@ -1774,17 +1774,19 @@ export default function BookReader() {
         data-testid="book-container"
       >
         {/* DEBUG OVERLAY - Shows touch events on iPad without console */}
-        {debugMessages.length > 0 && (
-          <div 
-            className="fixed top-20 left-2 right-2 z-[9999] bg-black/80 text-green-400 text-xs font-mono p-2 rounded-lg max-h-32 overflow-hidden"
-            style={{ pointerEvents: 'none' }}
-          >
-            <div className="text-yellow-400 mb-1">🔍 Touch Debug (iPad):</div>
-            {debugMessages.map((msg, i) => (
+        <div 
+          className="fixed top-20 left-2 right-2 z-[9999] bg-black/80 text-green-400 text-xs font-mono p-2 rounded-lg max-h-32 overflow-hidden"
+          style={{ pointerEvents: 'none' }}
+        >
+          <div className="text-yellow-400 mb-1">🔍 iPad Debug v2 - Touch the screen</div>
+          {debugMessages.length === 0 ? (
+            <div className="text-gray-400">Waiting for touch events...</div>
+          ) : (
+            debugMessages.map((msg, i) => (
               <div key={i} className="truncate">{msg}</div>
-            ))}
-          </div>
-        )}
+            ))
+          )}
+        </div>
         
         {/* Swipe hint indicators */}
         <AnimatePresence>
