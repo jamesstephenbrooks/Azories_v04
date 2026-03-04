@@ -263,7 +263,6 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 logger = logging.getLogger(__name__)
 
 # In-memory task stores
-import asyncio
 TASK_STORE: Dict[str, dict] = {}
 
 
@@ -2921,11 +2920,8 @@ async def download_printable_pdf(book_id: str, current_user: dict = Depends(get_
     
     Cost: 5 credits per download.
     """
-    from reportlab.lib.pagesizes import A4, landscape
+    from reportlab.lib.pagesizes import landscape
     from reportlab.lib.units import mm
-    from reportlab.pdfgen import canvas
-    from reportlab.lib.utils import ImageReader
-    from PIL import Image as PILImage
     import aiohttp
     import io
     import base64
@@ -4533,7 +4529,7 @@ async def create_character(request: CharacterCreate, current_user: dict = Depend
                     )
                     if result.get("images"):
                         thumbnail = result["images"][0].get("url")
-                        logger.info(f"Generated thumbnail via fal.ai for character")
+                        logger.info("Generated thumbnail via fal.ai for character")
                 except Exception as e:
                     logger.warning(f"fal.ai thumbnail generation failed: {e}")
             
@@ -4550,7 +4546,7 @@ async def create_character(request: CharacterCreate, current_user: dict = Depend
                     if images and len(images) > 0:
                         image_base64 = base64.b64encode(images[0]).decode('utf-8')
                         thumbnail = f"data:image/png;base64,{image_base64}"
-                        logger.info(f"Generated thumbnail via OpenAI fallback for character")
+                        logger.info("Generated thumbnail via OpenAI fallback for character")
                 except Exception as e:
                     logger.warning(f"OpenAI thumbnail generation also failed: {e}")
         
@@ -7714,7 +7710,7 @@ async def generate_tts(request: TTSRequest):
             upload_result = cloudinary.uploader.upload(
                 audio_bytes,
                 resource_type="video",  # Cloudinary uses "video" for audio files
-                folder=f"azories/audio/narration",
+                folder="azories/audio/narration",
                 public_id=f"tts_{cache_key[:16]}",
                 format="mp3"
             )
@@ -7830,7 +7826,7 @@ async def batch_prepare_tts(request: BatchTTSRequest, background_tasks: Backgrou
                     upload_result = cloudinary.uploader.upload(
                         audio_bytes,
                         resource_type="video",
-                        folder=f"azories/audio/narration",
+                        folder="azories/audio/narration",
                         public_id=f"tts_{cache_key[:16]}",
                         format="mp3"
                     )
@@ -8802,6 +8798,7 @@ BADGE_REQUIREMENTS = {
     'bookworm': {'type': 'books_completed', 'count': 5},
     'streak_3': {'type': 'streak', 'count': 3},
     'streak_7': {'type': 'streak', 'count': 7},
+    'streak_14': {'type': 'streak', 'count': 14},
     'streak_30': {'type': 'streak', 'count': 30},
     'night_owl': {'type': 'reading_time', 'hour_start': 0, 'hour_end': 4},
     'early_bird': {'type': 'reading_time', 'hour_start': 5, 'hour_end': 7},
@@ -8821,6 +8818,7 @@ async def get_reading_stats(current_user: dict = Depends(get_current_user)):
         stats = {
             "user_id": user_id,
             "streak": 0,
+            "best_streak": 0,
             "last_read_date": None,
             "total_books_read": 0,
             "total_time_read": 0,
@@ -8832,6 +8830,7 @@ async def get_reading_stats(current_user: dict = Depends(get_current_user)):
     
     return {
         "streak": stats.get("streak", 0),
+        "best_streak": stats.get("best_streak", 0),
         "badges": stats.get("badges", []),
         "total_books_read": stats.get("total_books_read", 0),
         "total_time_read": stats.get("total_time_read", 0),
@@ -8861,6 +8860,7 @@ async def record_reading(request: RecordReadingRequest, current_user: dict = Dep
         stats = {
             "user_id": user_id,
             "streak": 0,
+            "best_streak": 0,
             "last_read_date": None,
             "total_books_read": 0,
             "total_time_read": 0,
@@ -8891,6 +8891,10 @@ async def record_reading(request: RecordReadingRequest, current_user: dict = Dep
         # First time reading
         stats["streak"] = 1
     
+    # Update best streak if current streak is higher
+    if stats["streak"] > stats.get("best_streak", 0):
+        stats["best_streak"] = stats["streak"]
+    
     stats["last_read_date"] = today
     stats["total_time_read"] = stats.get("total_time_read", 0) + request.time_spent
     
@@ -8911,6 +8915,8 @@ async def record_reading(request: RecordReadingRequest, current_user: dict = Dep
         new_badges.append('streak_3')
     if streak >= 7 and 'streak_7' not in current_badges:
         new_badges.append('streak_7')
+    if streak >= 14 and 'streak_14' not in current_badges:
+        new_badges.append('streak_14')
     if streak >= 30 and 'streak_30' not in current_badges:
         new_badges.append('streak_30')
     
@@ -8954,6 +8960,7 @@ async def record_reading(request: RecordReadingRequest, current_user: dict = Dep
     
     return {
         "streak": stats["streak"],
+        "best_streak": stats.get("best_streak", stats["streak"]),
         "new_badge": new_badges[0] if new_badges else None,
         "all_badges": stats["badges"]
     }
@@ -10572,7 +10579,7 @@ async def import_starter_library(request: StarterLibraryImportRequest, current_u
             errors.append(f"{item.id}: {str(e)[:50]}")
     
     return {
-        "message": f"Import complete",
+        "message": "Import complete",
         "imported": imported,
         "skipped": skipped,
         "total_in_db": await db.starter_library.count_documents({}),
@@ -12192,7 +12199,7 @@ async def admin_bulk_update_page_images(book_id: str, updates: List[UpdatePageIm
                     if update.page_index < len(ch_pages):
                         chapters[update.chapter_index]["pages"][update.page_index]["image_url"] = update.image_url
                         updated_count += 1
-                        logger.info(f"    Updated!")
+                        logger.info("    Updated!")
             elif update.source == "pages" and pages:
                 if update.page_index < len(pages):
                     pages[update.page_index]["image_url"] = update.image_url
@@ -12411,7 +12418,7 @@ async def admin_update_fal_key(request: UpdateFalKeyRequest, admin: dict = Depen
         if validate_fal_key_on_startup:
             await validate_fal_key_on_startup()
         
-        logger.info(f"FAL_KEY updated successfully by admin and persisted to database")
+        logger.info("FAL_KEY updated successfully by admin and persisted to database")
         
         return {
             "success": True,

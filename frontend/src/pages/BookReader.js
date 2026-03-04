@@ -1299,7 +1299,7 @@ export default function BookReader() {
     // Fallback to clipboard
     try {
       await navigator.clipboard.writeText(shareUrl);
-      toast.success('Link copied! Share this story with friends 📚', {
+      toast.success('Link copied! Share it with anyone 🐉', {
         duration: 3000,
         icon: '🔗'
       });
@@ -1533,7 +1533,7 @@ export default function BookReader() {
   return (
     <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#1a1a2e]' : 'bg-[#f8f5f0]'} ${currentPageData?.isBackCover ? '!bg-[#1a0a2e]' : ''}`}>
       {/* Header - Hidden in landscape mode for maximum book space */}
-      {/* MOBILE: Minimal floating UI - back button and page counter */}
+      {/* MOBILE: Minimal floating UI - back button, share button, and page counter */}
       {(isMobilePortrait || isMobileLandscape) && (
         <>
           {/* Floating back button - top left */}
@@ -1545,6 +1545,17 @@ export default function BookReader() {
             data-testid="mobile-back-btn"
           >
             <FiArrowLeft className="w-4 h-4" />
+          </Button>
+          
+          {/* Floating share button - top right */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={shareBook}
+            className="fixed top-3 right-3 z-50 w-9 h-9 rounded-full bg-black/20 backdrop-blur-md text-white/90 hover:bg-black/40 hover:text-white shadow-lg"
+            data-testid="mobile-share-btn"
+          >
+            <FiShare2 className="w-4 h-4" />
           </Button>
           
           {/* Floating page counter - bottom right */}

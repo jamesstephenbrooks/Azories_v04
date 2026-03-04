@@ -20,7 +20,7 @@ import {
 import Navbar from '@/components/Navbar';
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
 import TrialBanner from '@/components/TrialBanner';
-import { StreakDisplay, BadgeCollection, useStreaksAndBadges } from '@/components/ReadingStreaks';
+import { StreakDisplay, BadgeCollection, useStreaksAndBadges, NewBadgePopup } from '@/components/ReadingStreaks';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -94,6 +94,9 @@ export default function Dashboard() {
   const [libraryLoading, setLibraryLoading] = useState(false);
   const [libraryFilter, setLibraryFilter] = useState('all'); // 'all', 'character', 'scene', 'cover'
   const [selectedLibraryImage, setSelectedLibraryImage] = useState(null);
+  
+  // Reading streaks and badges
+  const { streak, bestStreak, badges, newBadge, setNewBadge, loading: streakLoading } = useStreaksAndBadges();
 
   useEffect(() => {
     if (!authLoading && !user && !localStorage.getItem('azories-token')) {
@@ -579,6 +582,11 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
+      
+      {/* New Badge Celebration Popup */}
+      {newBadge && (
+        <NewBadgePopup badge={newBadge} onClose={() => setNewBadge(null)} />
+      )}
       
       <div className="pt-28 pb-12 px-6 md:px-12">
         <div className="max-w-7xl mx-auto">
@@ -1131,14 +1139,14 @@ export default function Dashboard() {
                   <FiZap className="text-secondary" />
                   Reading Streak
                 </h3>
-                <StreakDisplay compact={false} />
+                <StreakDisplay streak={streak} bestStreak={bestStreak} compact={false} />
               </div>
               <div className="p-6 rounded-2xl bg-card border border-border">
                 <h3 className="font-heading text-lg font-semibold mb-4 flex items-center gap-2">
                   <FiAward className="text-primary" />
                   Your Badges
                 </h3>
-                <BadgeCollection showAll={false} />
+                <BadgeCollection earnedBadges={badges} showAll={true} />
               </div>
             </div>
           </motion.div>

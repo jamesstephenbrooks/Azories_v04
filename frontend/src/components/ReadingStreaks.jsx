@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FiAward, FiZap, FiBook, FiStar, FiHeart, FiTrendingUp, FiClock, FiTarget } from 'react-icons/fi';
 import { Button } from '@/components/ui/button';
 import { userAPI, getErrorMessage } from '../services/api';
+import confetti from 'canvas-confetti';
 
-// Badge definitions
+// Badge definitions with user-requested milestone names
 export const BADGES = {
   first_book: {
     id: 'first_book',
@@ -12,7 +13,8 @@ export const BADGES = {
     description: 'Completed your first book',
     icon: FiBook,
     color: 'from-blue-500 to-cyan-500',
-    requirement: 'Complete 1 book'
+    requirement: 'Complete 1 book',
+    emoji: '📖'
   },
   bookworm: {
     id: 'bookworm',
@@ -20,31 +22,44 @@ export const BADGES = {
     description: 'Read 5 books',
     icon: FiStar,
     color: 'from-yellow-500 to-orange-500',
-    requirement: 'Complete 5 books'
+    requirement: 'Complete 5 books',
+    emoji: '📚'
   },
   streak_3: {
     id: 'streak_3',
-    name: '3-Day Streak',
-    description: 'Read for 3 days in a row',
+    name: 'On Fire!',
+    description: '3 day reading streak',
     icon: FiZap,
-    color: 'from-green-500 to-emerald-500',
-    requirement: '3 day reading streak'
+    color: 'from-orange-500 to-red-500',
+    requirement: '3 day reading streak',
+    emoji: '🔥'
   },
   streak_7: {
     id: 'streak_7',
-    name: 'Week Warrior',
-    description: 'Read for 7 days in a row',
-    icon: FiTrendingUp,
+    name: 'Star Reader!',
+    description: '7 day reading streak',
+    icon: FiStar,
     color: 'from-purple-500 to-pink-500',
-    requirement: '7 day reading streak'
+    requirement: '7 day reading streak',
+    emoji: '⭐'
+  },
+  streak_14: {
+    id: 'streak_14',
+    name: 'Champion Reader!',
+    description: '14 day reading streak',
+    icon: FiAward,
+    color: 'from-amber-500 to-yellow-500',
+    requirement: '14 day reading streak',
+    emoji: '🏆'
   },
   streak_30: {
     id: 'streak_30',
-    name: 'Dedicated Reader',
-    description: 'Read for 30 days in a row',
+    name: 'Dragon Reader!',
+    description: '30 day reading streak',
     icon: FiAward,
-    color: 'from-amber-500 to-red-500',
-    requirement: '30 day reading streak'
+    color: 'from-emerald-500 to-teal-500',
+    requirement: '30 day reading streak',
+    emoji: '🐉'
   },
   night_owl: {
     id: 'night_owl',
@@ -52,7 +67,8 @@ export const BADGES = {
     description: 'Read late at night',
     icon: FiClock,
     color: 'from-indigo-500 to-purple-500',
-    requirement: 'Read after midnight'
+    requirement: 'Read after midnight',
+    emoji: '🦉'
   },
   early_bird: {
     id: 'early_bird',
@@ -60,7 +76,8 @@ export const BADGES = {
     description: 'Read early in the morning',
     icon: FiStar,
     color: 'from-orange-400 to-yellow-400',
-    requirement: 'Read before 7 AM'
+    requirement: 'Read before 7 AM',
+    emoji: '🌅'
   },
   genre_explorer: {
     id: 'genre_explorer',
@@ -68,7 +85,8 @@ export const BADGES = {
     description: 'Read books from 5 different genres',
     icon: FiTarget,
     color: 'from-teal-500 to-blue-500',
-    requirement: 'Read 5 different genres'
+    requirement: 'Read 5 different genres',
+    emoji: '🗺️'
   },
   supporter: {
     id: 'supporter',
@@ -76,7 +94,8 @@ export const BADGES = {
     description: 'Follow 5 authors',
     icon: FiHeart,
     color: 'from-pink-500 to-rose-500',
-    requirement: 'Follow 5 authors'
+    requirement: 'Follow 5 authors',
+    emoji: '💝'
   },
   creator: {
     id: 'creator',
@@ -84,20 +103,36 @@ export const BADGES = {
     description: 'Publish your first book',
     icon: FiBook,
     color: 'from-violet-500 to-purple-500',
-    requirement: 'Publish 1 book'
+    requirement: 'Publish 1 book',
+    emoji: '✍️'
   }
 };
 
 // Streak display component
-export function StreakDisplay({ streak = 0, compact = false }) {
+export function StreakDisplay({ streak = 0, bestStreak = 0, compact = false }) {
   const isActive = streak > 0;
+  
+  // Get milestone badge info based on current streak
+  const getMilestoneInfo = (currentStreak) => {
+    if (currentStreak >= 30) return { emoji: '🐉', text: 'Dragon Reader!' };
+    if (currentStreak >= 14) return { emoji: '🏆', text: 'Champion Reader!' };
+    if (currentStreak >= 7) return { emoji: '⭐', text: 'Star Reader!' };
+    if (currentStreak >= 3) return { emoji: '🔥', text: 'On Fire!' };
+    return null;
+  };
+  
+  const milestone = getMilestoneInfo(streak);
   
   if (compact) {
     return (
       <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
         isActive ? 'bg-orange-500/10 text-orange-500' : 'bg-muted text-muted-foreground'
       }`}>
-        <FiZap className={`w-3 h-3 ${isActive ? 'text-orange-500' : ''}`} />
+        {milestone ? (
+          <span>{milestone.emoji}</span>
+        ) : (
+          <FiZap className={`w-3 h-3 ${isActive ? 'text-orange-500' : ''}`} />
+        )}
         <span>{streak}</span>
       </div>
     );
@@ -117,23 +152,37 @@ export function StreakDisplay({ streak = 0, compact = false }) {
         <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${
           isActive ? 'bg-gradient-to-r from-orange-500 to-red-500' : 'bg-muted'
         }`}>
-          <FiZap className={`w-7 h-7 ${isActive ? 'text-white' : 'text-muted-foreground'}`} />
+          {milestone ? (
+            <span className="text-2xl">{milestone.emoji}</span>
+          ) : (
+            <FiZap className={`w-7 h-7 ${isActive ? 'text-white' : 'text-muted-foreground'}`} />
+          )}
         </div>
-        <div>
+        <div className="flex-1">
           <div className="flex items-baseline gap-2">
             <span className={`text-3xl font-bold ${isActive ? 'text-orange-500' : 'text-muted-foreground'}`}>
               {streak}
             </span>
             <span className="text-sm text-muted-foreground">day streak</span>
+            {milestone && (
+              <span className="text-sm font-medium text-orange-500">{milestone.text}</span>
+            )}
           </div>
-          <p className="text-sm text-muted-foreground">
-            {isActive 
-              ? streak >= 7 
-                ? "You're on fire! Keep it up!" 
-                : "Great progress! Keep reading!"
-              : "Start reading to build your streak!"
-            }
-          </p>
+          <div className="flex items-center gap-4 mt-1">
+            <p className="text-sm text-muted-foreground">
+              {isActive 
+                ? streak >= 7 
+                  ? "You're on fire! Keep it up!" 
+                  : "Great progress! Keep reading!"
+                : "Start reading to build your streak!"
+              }
+            </p>
+            {bestStreak > 0 && (
+              <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                Best: {bestStreak} days
+              </span>
+            )}
+          </div>
         </div>
       </div>
       
@@ -223,12 +272,46 @@ export function BadgeCollection({ earnedBadges = [], showAll = true }) {
   );
 }
 
-// New badge earned popup
+// New badge earned popup with celebration animation
 export function NewBadgePopup({ badge, onClose }) {
   const badgeInfo = BADGES[badge];
+  const Icon = badgeInfo?.icon;
+  
+  // Fire confetti when popup appears
+  useEffect(() => {
+    if (!badgeInfo) return;
+    
+    // Fire confetti from both sides
+    const duration = 2000;
+    const end = Date.now() + duration;
+    
+    const colors = ['#f59e0b', '#10b981', '#8b5cf6', '#ec4899', '#3b82f6'];
+    
+    const frame = () => {
+      confetti({
+        particleCount: 3,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.7 },
+        colors: colors
+      });
+      confetti({
+        particleCount: 3,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.7 },
+        colors: colors
+      });
+      
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    };
+    
+    frame();
+  }, [badgeInfo]);
+  
   if (!badgeInfo) return null;
-
-  const Icon = badgeInfo.icon;
 
   return (
     <AnimatePresence>
@@ -247,7 +330,7 @@ export function NewBadgePopup({ badge, onClose }) {
           className="bg-background rounded-3xl p-8 text-center max-w-sm mx-4"
           onClick={e => e.stopPropagation()}
         >
-          {/* Confetti effect */}
+          {/* Sparkle effect around badge */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-3xl">
             {[...Array(20)].map((_, i) => (
               <motion.div
@@ -263,14 +346,18 @@ export function NewBadgePopup({ badge, onClose }) {
 
           <div className="relative">
             <motion.div
-              animate={{ rotate: [0, 10, -10, 0] }}
+              animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
               transition={{ duration: 0.5, repeat: 3 }}
               className={`w-24 h-24 mx-auto rounded-2xl bg-gradient-to-r ${badgeInfo.color} flex items-center justify-center shadow-2xl mb-4`}
             >
-              <Icon className="w-12 h-12 text-white" />
+              {badgeInfo.emoji ? (
+                <span className="text-4xl">{badgeInfo.emoji}</span>
+              ) : (
+                <Icon className="w-12 h-12 text-white" />
+              )}
             </motion.div>
             
-            <h2 className="text-2xl font-bold mb-2">New Badge!</h2>
+            <h2 className="text-2xl font-bold mb-2">🎉 New Badge!</h2>
             <h3 className={`text-xl font-bold bg-gradient-to-r ${badgeInfo.color} bg-clip-text text-transparent mb-2`}>
               {badgeInfo.name}
             </h3>
@@ -289,6 +376,7 @@ export function NewBadgePopup({ badge, onClose }) {
 // Hook to manage streaks and badges
 export function useStreaksAndBadges() {
   const [streak, setStreak] = useState(0);
+  const [bestStreak, setBestStreak] = useState(0);
   const [badges, setBadges] = useState([]);
   const [newBadge, setNewBadge] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -297,6 +385,7 @@ export function useStreaksAndBadges() {
     try {
       const res = await userAPI.getReadingStats();
       setStreak(res.data.streak || 0);
+      setBestStreak(res.data.best_streak || 0);
       setBadges(res.data.badges || []);
     } catch (error) {
       console.error('Failed to fetch reading stats:', error);
@@ -321,6 +410,10 @@ export function useStreaksAndBadges() {
         setStreak(res.data.streak);
       }
       
+      if (res.data.best_streak !== undefined) {
+        setBestStreak(res.data.best_streak);
+      }
+      
       return res.data;
     } catch (error) {
       console.error('Failed to record reading:', error);
@@ -333,6 +426,7 @@ export function useStreaksAndBadges() {
 
   return {
     streak,
+    bestStreak,
     badges,
     newBadge,
     setNewBadge,
