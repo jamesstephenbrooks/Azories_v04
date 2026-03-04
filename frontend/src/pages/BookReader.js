@@ -410,40 +410,104 @@ export default function BookReader() {
   const isMobileLandscape = forceLandscapeTest || (isMobile && isLandscapeOrientation);
   const isMobilePortrait = !forceLandscapeTest && isMobile && !isLandscapeOrientation;
   
-  // PURE CSS APPROACH - No JavaScript event handling
-  // Just set CSS properties and let the browser handle scroll natively
+  // FINAL ATTEMPT: Block touchmove when vertical scrolling in text area
+  // Let touchstart through so native scroll can initialize
+  // Only block touchmove to prevent flip book from seeing horizontal component
   useEffect(() => {
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     addDebug(`🔄 Touch:${isTouchDevice ? 'Y' : 'N'} FS:${isFullscreen ? 'Y' : 'N'}`);
     
-    // Find ALL scrollable text containers
-    const selectors = '[data-scrollable="true"], .text-scroll-container, .overflow-y-auto, [class*="overflow-y"]';
+    // Apply CSS to text containers
+    const selectors = '[data-scrollable="true"], .text-scroll-container, .overflow-y-auto';
     const containers = document.querySelectorAll(selectors);
     addDebug(`📍 ${containers.length} text areas`);
     
-    // Apply ONLY CSS - no event blocking
     containers.forEach((el) => {
-      el.style.cssText += `
-        touch-action: pan-y !important;
-        overflow-y: auto !important;
-        -webkit-overflow-scrolling: touch !important;
-        pointer-events: auto !important;
-        overscroll-behavior: contain !important;
-      `;
+      el.style.touchAction = 'pan-y';
+      el.style.overflowY = 'auto';
+      el.style.webkitOverflowScrolling = 'touch';
+      el.style.pointerEvents = 'auto';
     });
     
-    addDebug('✅ CSS only - no JS');
+    // Track touch state
+    let startX = 0;
+    let startY = 0;
+    let isInTextArea = false;
+    let directionLocked = false;
+    let isVertical = false;
     
+    const isTextElement = (el) => {
+      if (!el) return false;
+      return !!(
+        el.closest('[data-scrollable="true"]') ||
+        el.closest('.text-scroll-container') ||
+        el.closest('.overflow-y-auto')
+      );
+    };
+    
+    // Let touchstart through - don't block it
+    const handleTouchStart = (e) => {
+      isInTextArea = isTextElement(e.target);
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      directionLocked = false;
+      isVertical = false;
+      if (isInTextArea) addDebug('📱 Start');
+    };
+    
+    // Block touchmove ONLY if vertical scroll detected
+    const handleTouchMove = (e) => {
+      if (!isInTextArea) return;
+      
+      const deltaX = Math.abs(e.touches[0].clientX - startX);
+      const deltaY = Math.abs(e.touches[0].clientY - startY);
+      
+      // Lock direction after 8px of movement
+      if (!directionLocked && (deltaX > 8 || deltaY > 8)) {
+        directionLocked = true;
+        isVertical = deltaY >= deltaX;
+        addDebug(isVertical ? '↕️ Vert' : '↔️ Horiz');
+      }
+      
+      // If vertical scroll, block the event from reaching flip book
+      if (directionLocked && isVertical) {
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+      }
+    };
+    
+    // Block touchend too if we were vertical scrolling
+    const handleTouchEnd = (e) => {
+      if (isInTextArea && directionLocked && isVertical) {
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        addDebug('✅ Blocked');
+      }
+      isInTextArea = false;
+      directionLocked = false;
+      isVertical = false;
+    };
+    
+    // IMPORTANT: Use capture phase but passive:false for touchmove to allow stopPropagation
+    document.addEventListener('touchstart', handleTouchStart, { capture: true, passive: true });
+    document.addEventListener('touchmove', handleTouchMove, { capture: true, passive: false });
+    document.addEventListener('touchend', handleTouchEnd, { capture: true, passive: false });
+    
+    addDebug('✅ Final attempt');
+    
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart, { capture: true });
+      document.removeEventListener('touchmove', handleTouchMove, { capture: true });
+      document.removeEventListener('touchend', handleTouchEnd, { capture: true });
+    };
   }, [isFullscreen, currentPage, addDebug]);
   
-  // Re-apply CSS after delay for late elements
+  // Re-apply CSS after delay
   useEffect(() => {
     const timer = setTimeout(() => {
-      const selectors = '[data-scrollable="true"], .text-scroll-container, .overflow-y-auto';
-      document.querySelectorAll(selectors).forEach(el => {
+      document.querySelectorAll('[data-scrollable="true"], .text-scroll-container, .overflow-y-auto').forEach(el => {
         el.style.touchAction = 'pan-y';
         el.style.pointerEvents = 'auto';
-        el.style.overflowY = 'auto';
       });
     }, 500);
     return () => clearTimeout(timer);
