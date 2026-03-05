@@ -89,6 +89,78 @@ async def get_product_info():
     }
 
 
+@router.get("/generate-test-pdf/{book_id}")
+async def generate_test_pdf_endpoint(book_id: str):
+    """
+    Generate a test PDF for a specific book.
+    Returns the PDF file for download and review.
+    """
+    from fastapi.responses import FileResponse
+    import os
+    
+    db = get_db()
+    
+    try:
+        result = await generate_test_pdf(book_id, db)
+        
+        if not os.path.exists(result["path"]):
+            raise HTTPException(status_code=500, detail="PDF generation failed - file not created")
+        
+        return FileResponse(
+            path=result["path"],
+            filename=f"azories_print_test_{book_id[:8]}.pdf",
+            media_type="application/pdf",
+            headers={
+                "X-PDF-Pages": str(result["total_pdf_pages"]),
+                "X-PDF-Size-MB": str(result["size_mb"]),
+                "X-Book-Title": result["book_title"] or "Unknown"
+            }
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        logger.error(f"PDF generation error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate PDF: {str(e)}")
+
+
+@router.get("/test-pdf-info/{book_id}")
+async def get_test_pdf_info(book_id: str):
+    """
+    Get info about what the test PDF will contain without generating it.
+    """
+    db = get_db()
+    
+    # Fetch book
+    book = await db.books.find_one({"id": book_id}, {"_id": 0})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    # Get pages count - first check book document, then separate collection
+    pages = book.get('pages', [])
+    if not pages:
+        pages_count = await db.pages.count_documents({"book_id": book_id})
+    else:
+        pages_count = len(pages)
+    
+    # Calculate total pages in PDF
+    bonus_pages = 7  # Welcome, Dedication, The End, Thank You, Certificate, About, Meet Azora
+    cover_pages = 2  # Front + Back
+    total_pages = pages_count + bonus_pages + cover_pages
+    
+    return {
+        "book_id": book_id,
+        "book_title": book.get("title"),
+        "story_pages": pages_count,
+        "bonus_pages": bonus_pages,
+        "cover_pages": cover_pages,
+        "total_pdf_pages": total_pages,
+        "page_size": "8 x 8 inches (2400 x 2400 pixels at 300 DPI)",
+        "format": "PDF",
+        "estimated_file_size_mb": round(total_pages * 0.8, 1),  # Rough estimate
+        "download_url": f"/api/print/generate-test-pdf/{book_id}"
+    }
+
+
 @router.post("/shipping-quote")
 async def get_shipping_quote(request: ShippingQuoteRequest):
     """Get shipping quote for a specific country"""

@@ -965,9 +965,13 @@ async def generate_test_pdf(book_id: str, db) -> dict:
     if not book:
         raise ValueError(f"Book not found: {book_id}")
     
-    # Fetch book pages
-    pages_cursor = db.pages.find({"book_id": book_id}, {"_id": 0}).sort("sequence", 1)
-    pages = await pages_cursor.to_list(length=100)
+    # Get pages - first try from book document, then from separate collection
+    pages = book.get('pages', [])
+    
+    if not pages:
+        # Try fetching from separate pages collection
+        pages_cursor = db.pages.find({"book_id": book_id}, {"_id": 0}).sort("sequence", 1)
+        pages = await pages_cursor.to_list(length=100)
     
     # Generate PDF
     output_path = f"/tmp/print_test_{book_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
