@@ -196,8 +196,12 @@ class PrintPDFGenerator:
     # ============================================
     
     async def create_story_image_page(self, page_data: dict) -> Image.Image:
-        """Create LEFT page of spread - Full illustration"""
-        # Cream/warm paper background
+        """Create LEFT page of spread - Full illustration
+        
+        For portrait images: Fill the entire page (full bleed)
+        For landscape images: Center with elegant margins
+        """
+        # Start with cream paper background
         img = Image.new('RGB', (PAGE_WIDTH_PX, PAGE_HEIGHT_PX), (253, 251, 247))
         draw = ImageDraw.Draw(img)
         
@@ -206,35 +210,60 @@ class PrintPDFGenerator:
         if image_url:
             story_img = await self.download_image(image_url)
             if story_img:
-                # Calculate size to fill page with margins
-                margin = 80
-                available_width = PAGE_WIDTH_PX - (margin * 2)
-                available_height = PAGE_HEIGHT_PX - (margin * 2)
-                
-                # Maintain aspect ratio and fit within available space
                 img_aspect = story_img.width / story_img.height
-                page_aspect = available_width / available_height
+                page_aspect = PAGE_WIDTH_PX / PAGE_HEIGHT_PX  # 0.8 for 8x10
                 
-                if img_aspect > page_aspect:
-                    # Image is wider - fit to width
-                    new_width = available_width
-                    new_height = int(available_width / img_aspect)
+                # Check if image is portrait (aspect ratio < 1)
+                is_portrait = img_aspect < 1
+                
+                if is_portrait:
+                    # Portrait image: Fill the entire page (cover style)
+                    # Scale to cover the page completely
+                    if img_aspect < page_aspect:
+                        # Image is narrower - fit to width, crop height
+                        new_width = PAGE_WIDTH_PX
+                        new_height = int(PAGE_WIDTH_PX / img_aspect)
+                    else:
+                        # Image is wider - fit to height, crop width
+                        new_height = PAGE_HEIGHT_PX
+                        new_width = int(PAGE_HEIGHT_PX * img_aspect)
+                    
+                    story_img = story_img.resize((new_width, new_height), Image.Resampling.LANCZOS)
+                    
+                    # Center and crop to page size
+                    x = (PAGE_WIDTH_PX - new_width) // 2
+                    y = (PAGE_HEIGHT_PX - new_height) // 2
+                    
+                    # Create final image by pasting and cropping
+                    img.paste(story_img, (x, y))
+                    
                 else:
-                    # Image is taller - fit to height
-                    new_height = available_height
-                    new_width = int(available_height * img_aspect)
-                
-                story_img = story_img.resize((new_width, new_height), Image.Resampling.LANCZOS)
-                
-                # Center the image on the page
-                x = (PAGE_WIDTH_PX - new_width) // 2
-                y = (PAGE_HEIGHT_PX - new_height) // 2
-                
-                # Add subtle shadow effect
-                shadow = Image.new('RGB', (new_width + 20, new_height + 20), (230, 228, 224))
-                img.paste(shadow, (x + 10, y + 10))
-                
-                img.paste(story_img, (x, y))
+                    # Landscape image: Center with margins
+                    margin = 60
+                    available_width = PAGE_WIDTH_PX - (margin * 2)
+                    available_height = PAGE_HEIGHT_PX - (margin * 2)
+                    
+                    # Fit within available space maintaining aspect ratio
+                    if img_aspect > (available_width / available_height):
+                        # Image is wider - fit to width
+                        new_width = available_width
+                        new_height = int(available_width / img_aspect)
+                    else:
+                        # Image is taller - fit to height
+                        new_height = available_height
+                        new_width = int(available_height * img_aspect)
+                    
+                    story_img = story_img.resize((new_width, new_height), Image.Resampling.LANCZOS)
+                    
+                    # Center the image on the page
+                    x = (PAGE_WIDTH_PX - new_width) // 2
+                    y = (PAGE_HEIGHT_PX - new_height) // 2
+                    
+                    # Add subtle shadow effect for landscape images
+                    shadow = Image.new('RGB', (new_width + 20, new_height + 20), (230, 228, 224))
+                    img.paste(shadow, (x + 10, y + 10))
+                    
+                    img.paste(story_img, (x, y))
         else:
             # No image - show decorative placeholder
             self.draw_text_centered(draw, "✦", PAGE_HEIGHT_PX // 2, self.get_font(120), '#d1d5db', PAGE_WIDTH_PX)
@@ -242,55 +271,86 @@ class PrintPDFGenerator:
         return img
     
     async def create_story_text_page(self, page_data: dict, page_number: int) -> Image.Image:
-        """Create RIGHT page of spread - Story text"""
+        """Create RIGHT page of spread - Story text with auto-sizing to fit"""
         # Cream/warm paper background
         img = Image.new('RGB', (PAGE_WIDTH_PX, PAGE_HEIGHT_PX), (253, 251, 247))
         draw = ImageDraw.Draw(img)
         
         text_content = page_data.get('text_content') or page_data.get('text') or page_data.get('content', '')
         
-        margin = 150
+        margin = 180
         content_width = PAGE_WIDTH_PX - (margin * 2)
         
         # Decorative header ornament
-        ornament_y = 200
-        draw.line([(margin, ornament_y), (margin + 150, ornament_y)], fill='#d1d5db', width=2)
-        font_ornament = self.get_font(36)
-        draw.text((PAGE_WIDTH_PX // 2 - 15, ornament_y - 18), "✦", fill='#c4b5fd', font=font_ornament)
-        draw.line([(PAGE_WIDTH_PX - margin - 150, ornament_y), (PAGE_WIDTH_PX - margin, ornament_y)], fill='#d1d5db', width=2)
+        ornament_y = 250
+        draw.line([(margin, ornament_y), (margin + 200, ornament_y)], fill='#d1d5db', width=3)
+        font_ornament = self.get_font(42)
+        draw.text((PAGE_WIDTH_PX // 2 - 18, ornament_y - 22), "✦", fill='#c4b5fd', font=font_ornament)
+        draw.line([(PAGE_WIDTH_PX - margin - 200, ornament_y), (PAGE_WIDTH_PX - margin, ornament_y)], fill='#d1d5db', width=3)
         
-        # Story text
+        # Available space for text (between header ornament and footer)
+        text_start_y = 350
+        text_end_y = PAGE_HEIGHT_PX - 280
+        available_height = text_end_y - text_start_y
+        
+        # Story text with auto-sizing
         if text_content:
-            font_text = self.get_font(52)
-            lines = self.word_wrap_text(draw, text_content, font_text, content_width)
+            # Try different font sizes from large to small until text fits
+            font_sizes = [72, 66, 60, 56, 52, 48, 44, 40, 36]
+            line_height_ratios = [1.45, 1.42, 1.40, 1.38, 1.36, 1.34, 1.32, 1.30, 1.28]
             
-            # Calculate vertical centering
-            line_height = 72
-            total_text_height = len(lines) * line_height
-            start_y = max(300, (PAGE_HEIGHT_PX - total_text_height) // 2)
+            best_font_size = font_sizes[-1]  # Default to smallest
+            best_lines = []
+            best_line_height = 50
+            
+            for font_size, lh_ratio in zip(font_sizes, line_height_ratios):
+                font_text = self.get_font(font_size)
+                lines = self.word_wrap_text(draw, text_content, font_text, content_width)
+                line_height = int(font_size * lh_ratio)
+                total_text_height = len(lines) * line_height
+                
+                # Check if text fits within available space
+                if total_text_height <= available_height:
+                    best_font_size = font_size
+                    best_lines = lines
+                    best_line_height = line_height
+                    break
+                else:
+                    # Save this as fallback (will be truncated)
+                    best_font_size = font_size
+                    best_lines = lines
+                    best_line_height = line_height
+            
+            # Draw the text
+            font_text = self.get_font(best_font_size)
+            total_text_height = len(best_lines) * best_line_height
+            
+            # Center vertically in available space
+            start_y = text_start_y + (available_height - total_text_height) // 2
+            start_y = max(text_start_y, start_y)
             
             y_offset = start_y
-            for line in lines:
-                if y_offset + line_height > PAGE_HEIGHT_PX - 200:
+            for line in best_lines:
+                if y_offset + best_line_height > text_end_y:
                     break
-                # Center each line
+                # Center each line horizontally
                 bbox = draw.textbbox((0, 0), line, font=font_text)
                 line_width = bbox[2] - bbox[0]
                 x = (PAGE_WIDTH_PX - line_width) // 2
                 draw.text((x, y_offset), line, fill='#1f2937', font=font_text)
-                y_offset += line_height
+                y_offset += best_line_height
         
         # Decorative footer ornament
-        footer_y = PAGE_HEIGHT_PX - 200
-        draw.line([(margin, footer_y), (margin + 150, footer_y)], fill='#d1d5db', width=2)
-        draw.text((PAGE_WIDTH_PX // 2 - 15, footer_y - 18), "✦", fill='#c4b5fd', font=font_ornament)
-        draw.line([(PAGE_WIDTH_PX - margin - 150, footer_y), (PAGE_WIDTH_PX - margin, footer_y)], fill='#d1d5db', width=2)
+        footer_y = PAGE_HEIGHT_PX - 220
+        draw.line([(margin, footer_y), (margin + 200, footer_y)], fill='#d1d5db', width=3)
+        draw.text((PAGE_WIDTH_PX // 2 - 18, footer_y - 22), "✦", fill='#c4b5fd', font=font_ornament)
+        draw.line([(PAGE_WIDTH_PX - margin - 200, footer_y), (PAGE_WIDTH_PX - margin, footer_y)], fill='#d1d5db', width=3)
         
         # Page number
-        font_page_num = self.get_font(32)
+        font_page_num = self.get_font(36)
         page_str = str(page_number)
         bbox = draw.textbbox((0, 0), page_str, font=font_page_num)
-        draw.text((PAGE_WIDTH_PX - margin - (bbox[2] - bbox[0]), PAGE_HEIGHT_PX - 120), 
+        draw.text((PAGE_WIDTH_PX - margin - (bbox[2] - bbox[0]), PAGE_HEIGHT_PX - 130), 
                   page_str, fill='#9ca3af', font=font_page_num)
         
         return img
