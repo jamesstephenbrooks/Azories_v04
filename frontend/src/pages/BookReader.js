@@ -1608,7 +1608,7 @@ export default function BookReader() {
   return (
     <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#1a1a2e]' : 'bg-[#f8f5f0]'} ${currentPageData?.isBackCover ? '!bg-[#1a0a2e]' : ''}`}>
       {/* Header - Hidden in landscape mode for maximum book space */}
-      {/* MOBILE: Minimal floating UI - back button, share button, and page counter */}
+      {/* MOBILE: Minimal floating UI - back button, share button */}
       {(isMobilePortrait || isMobileLandscape) && (
         <>
           {/* Floating back button - top left */}
@@ -1616,7 +1616,7 @@ export default function BookReader() {
             variant="ghost"
             size="icon"
             onClick={handleBackToLibrary}
-            className="fixed top-3 left-3 z-50 w-9 h-9 rounded-full bg-black/20 backdrop-blur-md text-white/90 hover:bg-black/40 hover:text-white shadow-lg"
+            className="fixed top-3 left-3 z-50 w-7 h-7 rounded-full bg-black/20 backdrop-blur-md text-white/90 hover:bg-black/40 hover:text-white shadow-lg"
             data-testid="mobile-back-btn"
           >
             <FiArrowLeft className="w-4 h-4" />
@@ -1627,23 +1627,11 @@ export default function BookReader() {
             variant="ghost"
             size="icon"
             onClick={shareBook}
-            className="fixed top-3 right-3 z-50 w-9 h-9 rounded-full bg-black/20 backdrop-blur-md text-white/90 hover:bg-black/40 hover:text-white shadow-lg"
+            className="fixed top-3 right-3 z-50 w-7 h-7 rounded-full bg-black/20 backdrop-blur-md text-white/90 hover:bg-black/40 hover:text-white shadow-lg"
             data-testid="mobile-share-btn"
           >
             <FiShare2 className="w-4 h-4" />
           </Button>
-          
-          {/* Floating page counter - bottom right */}
-          {totalPages > 0 && (
-            <div 
-              className="fixed bottom-6 right-3 z-50 px-2.5 py-1 rounded-full bg-black/40 backdrop-blur-md shadow-lg"
-              data-testid="mobile-page-counter"
-            >
-              <span className="text-white/80 text-[10px] font-medium">
-                {currentPage < 0 ? (currentPage === -2 ? 'Back' : 'Cover') : `${currentPage + 1} / ${totalPages}`}
-              </span>
-            </div>
-          )}
         </>
       )}
       
