@@ -2168,10 +2168,10 @@ export default function BookReader() {
                     {currentPage > 0 && (
                       <button
                         onClick={() => goToPage(currentPage - 1, 'prev')}
-                        className="absolute left-2 top-1/2 -translate-y-1/2 z-50 w-10 h-10 rounded-full bg-purple-600/80 hover:bg-purple-600 active:bg-purple-700 flex items-center justify-center text-white shadow-lg"
+                        className="absolute left-2 top-1/2 -translate-y-1/2 z-50 w-6 h-6 rounded-full bg-purple-600/80 hover:bg-purple-600 active:bg-purple-700 flex items-center justify-center text-white shadow-lg"
                         data-testid="landscape-prev-btn"
                       >
-                        <FiChevronLeft className="w-5 h-5" />
+                        <FiChevronLeft className="w-3 h-3" />
                       </button>
                     )}
                     
@@ -2179,10 +2179,10 @@ export default function BookReader() {
                     {currentPage < allPages.length - 1 && (
                       <button
                         onClick={() => goToPage(currentPage + 1, 'next')}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 z-50 w-10 h-10 rounded-full bg-purple-600/80 hover:bg-purple-600 active:bg-purple-700 flex items-center justify-center text-white shadow-lg"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 z-50 w-6 h-6 rounded-full bg-purple-600/80 hover:bg-purple-600 active:bg-purple-700 flex items-center justify-center text-white shadow-lg"
                         data-testid="landscape-next-btn"
                       >
-                        <FiChevronRight className="w-5 h-5" />
+                        <FiChevronRight className="w-3 h-3" />
                       </button>
                     )}
                   </>
