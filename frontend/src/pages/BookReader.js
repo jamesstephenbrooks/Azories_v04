@@ -30,7 +30,7 @@ export default function BookReader() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
-  const { user, token, loading: authLoading } = useAuth();
+  const { user, token, loading: authLoading, logout, refreshUser } = useAuth();
   const audioRef = useRef(null);
   
   const [book, setBook] = useState(null);
@@ -617,12 +617,17 @@ export default function BookReader() {
     }
   };
 
-  const fetchBook = async () => {
+  const fetchBook = async (isRetry = false) => {
     try {
       // Check if component is still mounted
       if (!mountedRef.current) return;
       
+      // Ensure we have the latest token
+      const currentToken = localStorage.getItem('azories-token');
+      const headers = currentToken ? { Authorization: `Bearer ${currentToken}` } : {};
+      
       const res = await axios.get(`${API}/books/${bookId}/full`, {
+        headers,
         signal: abortControllerRef.current?.signal
       });
       
@@ -739,6 +744,33 @@ export default function BookReader() {
         console.log('[BookReader] Fetch aborted (component unmounted)');
         return;
       }
+      
+      // Handle 401 - authentication required
+      if (error.response?.status === 401) {
+        console.log('[BookReader] 401 received, attempting to refresh session...');
+        
+        if (!isRetry && token) {
+          // Try to refresh user session
+          try {
+            await refreshUser();
+            console.log('[BookReader] Session refreshed, retrying fetch...');
+            return fetchBook(true);
+          } catch (refreshError) {
+            console.log('[BookReader] Session refresh failed');
+          }
+        }
+        
+        // Session invalid, redirect to login
+        toast.error('Please log in to read your books');
+        navigate('/login', { 
+          state: { 
+            from: `/book/${bookId}`, 
+            message: 'Your session has expired. Please log in to continue reading.' 
+          } 
+        });
+        return;
+      }
+      
       if (mountedRef.current) {
         toast.error('Failed to load book');
         navigate('/library');

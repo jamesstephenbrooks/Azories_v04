@@ -8092,14 +8092,15 @@ async def get_full_book(book_id: str, response: Response, current_user: dict = D
     
     book = set_book_defaults(book)
     
-    # If not logged in, only return book info (not pages content)
-    if not current_user:
-        return {
-            **book,
-            "chapters": [],
-            "requires_auth": True,
-            "message": "Sign in to read this book"
-        }
+    # Check if this is a published/public book that can be viewed without auth
+    is_published = book.get("is_published", False)
+    
+    # If not logged in and book is not published, return 401 for proper auth handling
+    if not current_user and not is_published:
+        raise HTTPException(
+            status_code=401, 
+            detail="Authentication required to read this book"
+        )
     
     full_chapters = []
     
