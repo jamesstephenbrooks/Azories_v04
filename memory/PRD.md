@@ -41,7 +41,59 @@ User wants to enhance their "Azories" digital book application with:
 
 ## Latest Session Updates (March 5, 2026)
 
-### Session 8 - Gelato Print on Demand "Coming Soon" UI ✅ NEW
+### Session 9 - iPad Scroll/Swipe Bug FIX ✅ CRITICAL
+
+### Fix: Complete iPad Touch Conflict Resolution
+- **Problem**: react-pageflip library intercepted all touch events on iPad, making text scrolling impossible and causing unwanted page turns while trying to scroll
+- **Previous Failed Attempts**: Event interception (stopPropagation), CSS pointer-events, touch-action manipulation - all failed because react-pageflip's internal handling couldn't be bypassed
+- **Final Solution**: COMPLETELY BYPASS react-pageflip on iPad
+
+### Implementation:
+1. **New Component**: `IPadPageViewer.jsx` - Simple, conflict-free page viewer for iPad
+   - NO swipe gesture detection at all
+   - 60px tap zones on left/right edges for page navigation  
+   - Completely free vertical scrolling in text areas (touchAction: 'pan-y')
+   - Always-visible arrow buttons for navigation
+   - Simple fade transition between pages (no flip animation)
+
+2. **iPad Detection**: 
+   ```javascript
+   const isIPad = /iPad/i.test(navigator.userAgent) || 
+     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+   ```
+
+3. **Conditional Rendering**: 
+   - iPad → Uses `IPadPageViewer` (tap zones + buttons only)
+   - Desktop → Uses existing `RealisticPageFlip` (react-pageflip with animations)
+
+### Files Created:
+- `frontend/src/components/IPadPageViewer.jsx` - New simplified page viewer for iPad
+
+### Files Modified:
+- `BookReader.js`:
+  - Added `useMemo` import
+  - Added `IPadPageViewer` import
+  - Added `isIPad` detection using proper detection methods
+  - Added `ipadPageViewerRef` ref
+  - Disabled swipe handlers on iPad (`enabled: !isFlipping && !isIPad`)
+  - Updated `goToPage`, `startReading`, `startListening` to handle iPad viewer
+  - Added conditional rendering: iPad uses `IPadPageViewer`, desktop uses `RealisticPageFlip`
+
+### Why This Solution Works:
+- Zero touch event conflicts - no swipe detection means no interference with native scroll
+- Tap zones are simple click handlers, not touch gesture listeners
+- Text areas have `touchAction: 'pan-y'` allowing native browser scroll
+- Desktop experience is unchanged - still gets the beautiful page flip animation
+
+### Testing Required:
+- iPad Safari: Verify text scrolling works without page turn
+- iPad PWA: Verify same behavior in standalone mode  
+- iPad Fullscreen: Verify same behavior in fullscreen
+- Desktop browsers: Verify react-pageflip still works normally
+
+---
+
+### Session 8 - Gelato Print on Demand "Coming Soon" UI ✅
 
 ### Feature: Print-on-Demand Coming Soon Modal
 - **Purpose**: Implement placeholder UI for upcoming Gelato Print-on-Demand feature
