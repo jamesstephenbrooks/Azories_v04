@@ -872,10 +872,8 @@ export default function BookReader() {
       setIsPlaying(false);
     }
     
-    // Auto-hide toolbar when starting to read (on touch devices)
-    if (isIPad || isMobilePortrait || isMobileLandscape) {
-      setTimeout(() => setHideControls(true), 1500);
-    }
+    // Auto-hide toolbar after starting to read (all devices)
+    setTimeout(() => setHideControls(true), 1500);
     
     if (currentPage === -1) {
       // Transition from cover to first page
@@ -890,7 +888,7 @@ export default function BookReader() {
         setCurrentPage(0);
       }
     }
-  }, [currentPage, audioElement, isMobilePortrait, isMobileLandscape, isIPad]);
+  }, [currentPage, audioElement, isMobilePortrait, isMobileLandscape]);
 
   // Download printable PDF (5 credits)
   const handlePrintBook = useCallback(async () => {
@@ -1351,11 +1349,9 @@ export default function BookReader() {
       playAudio();
     }
     
-    // Auto-hide toolbar when starting to listen (on touch devices)
-    if (isIPad || isMobilePortrait || isMobileLandscape) {
-      setTimeout(() => setHideControls(true), 1500);
-    }
-  }, [currentPage, playAudio, isMobilePortrait, isMobileLandscape, isIPad]);
+    // Auto-hide toolbar after starting to listen (all devices)
+    setTimeout(() => setHideControls(true), 1500);
+  }, [currentPage, playAudio, isMobilePortrait, isMobileLandscape]);
 
   // Share book function - copy direct link to clipboard
   const shareBook = useCallback(async () => {
