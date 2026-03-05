@@ -2168,10 +2168,10 @@ export default function BookReader() {
                     {currentPage > 0 && (
                       <button
                         onClick={() => goToPage(currentPage - 1, 'prev')}
-                        className="absolute left-2 top-1/2 -translate-y-1/2 z-50 w-6 h-6 rounded-full bg-purple-600/80 hover:bg-purple-600 active:bg-purple-700 flex items-center justify-center text-white shadow-lg"
+                        className="absolute left-2 top-1/2 -translate-y-1/2 z-50 w-7 h-7 rounded-full bg-purple-600/80 hover:bg-purple-600 active:bg-purple-700 flex items-center justify-center text-white shadow-lg"
                         data-testid="landscape-prev-btn"
                       >
-                        <FiChevronLeft className="w-3 h-3" />
+                        <FiChevronLeft className="w-4 h-4" />
                       </button>
                     )}
                     
@@ -2179,10 +2179,10 @@ export default function BookReader() {
                     {currentPage < allPages.length - 1 && (
                       <button
                         onClick={() => goToPage(currentPage + 1, 'next')}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 z-50 w-6 h-6 rounded-full bg-purple-600/80 hover:bg-purple-600 active:bg-purple-700 flex items-center justify-center text-white shadow-lg"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 z-50 w-7 h-7 rounded-full bg-purple-600/80 hover:bg-purple-600 active:bg-purple-700 flex items-center justify-center text-white shadow-lg"
                         data-testid="landscape-next-btn"
                       >
-                        <FiChevronRight className="w-3 h-3" />
+                        <FiChevronRight className="w-4 h-4" />
                       </button>
                     )}
                   </>
@@ -2279,7 +2279,7 @@ export default function BookReader() {
       {/* Hide/Show Controls Toggle + Floating Listen button - visible when controls are hidden */}
       {hideControls && (
         <>
-          {/* Floating Listen/Pause button - 25% up the page, directly above show menu button */}
+          {/* Floating Listen/Pause button - 25% up the page */}
           <button
             onClick={() => {
               if (isPlaying) {
@@ -2295,7 +2295,7 @@ export default function BookReader() {
                 startListening();
               }
             }}
-            className="fixed right-4 z-50 w-8 h-8 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white shadow-lg flex items-center justify-center transition-colors"
+            className="fixed right-4 z-50 w-7 h-7 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white shadow-lg flex items-center justify-center transition-colors"
             style={{ bottom: '25%' }}
             data-testid="floating-listen-btn"
           >
@@ -2306,13 +2306,13 @@ export default function BookReader() {
             )}
           </button>
           
-          {/* Show controls button - original position */}
+          {/* Show controls button */}
           <button
             onClick={() => setHideControls(false)}
             className="fixed bottom-5 right-4 z-50 w-7 h-7 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-purple-400 text-purple-600 dark:text-purple-300 shadow-lg flex items-center justify-center hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors"
             data-testid="show-controls-btn"
           >
-            <FiChevronUp className="w-3 h-3" />
+            <FiChevronUp className="w-4 h-4" />
           </button>
         </>
       )}
@@ -2493,7 +2493,7 @@ export default function BookReader() {
               title="Hide controls"
               data-testid="hide-controls-btn"
             >
-              <FiChevronDown className="w-3 h-3" />
+              <FiChevronDown className="w-4 h-4" />
             </button>
           </div>
         </div>
