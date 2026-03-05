@@ -11,7 +11,7 @@ import uuid
 import logging
 
 from services.gelato_service import gelato_service
-from services.print_pdf_generator import generate_print_ready_pdf
+from services.print_pdf_generator import pdf_generator, generate_test_pdf
 
 logger = logging.getLogger(__name__)
 
@@ -149,9 +149,15 @@ async def prepare_print_order(
     
     # Generate print-ready PDF
     try:
-        result = await generate_print_ready_pdf(book)
+        # Get book pages
+        pages = await db.pages.find({"book_id": book_id}, {"_id": 0}).sort("sequence", 1).to_list(100)
         
-        if not result.get("success"):
+        result = await pdf_generator.generate_print_pdf(
+            book=book,
+            pages=pages
+        )
+        
+        if not result:
             raise HTTPException(status_code=500, detail="Failed to generate print PDF")
         
         # Store the prepared print info

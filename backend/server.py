@@ -13535,22 +13535,28 @@ async def seed_from_preview(
 
 # Include the router
 # Import print PDF generator
-from services.print_pdf_generator import generate_print_preview_pdf
+from services.print_pdf_generator import pdf_generator, generate_test_pdf
 
-@api_router.get("/print/preview-bonus-pages")
-async def download_bonus_pages_preview():
-    """Download a preview PDF of all bonus pages."""
-    preview_path = await generate_print_preview_pdf("/tmp/bonus_pages_preview.pdf")
-    
-    def iter_file():
-        with open(preview_path, 'rb') as f:
-            yield from f
-    
-    return StreamingResponse(
-        iter_file(),
-        media_type="application/pdf",
-        headers={"Content-Disposition": "attachment; filename=azories_bonus_pages_preview.pdf"}
-    )
+@api_router.get("/print/preview-bonus-pages/{book_id}")
+async def download_bonus_pages_preview(book_id: str):
+    """Download a preview PDF of all bonus pages for a specific book."""
+    try:
+        result = await generate_test_pdf(book_id, db)
+        preview_path = result["path"]
+        
+        def iter_file():
+            with open(preview_path, 'rb') as f:
+                yield from f
+        
+        return StreamingResponse(
+            iter_file(),
+            media_type="application/pdf",
+            headers={"Content-Disposition": f"attachment; filename=azories_print_preview_{book_id}.pdf"}
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to generate PDF: {str(e)}")
 
 app.include_router(api_router)
 
