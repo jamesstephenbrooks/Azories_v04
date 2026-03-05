@@ -4,8 +4,9 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { FiPrinter, FiTruck, FiCreditCard, FiCheck, FiPackage, FiAlertCircle } from 'react-icons/fi';
+import { FiPrinter, FiTruck, FiCreditCard, FiCheck, FiPackage, FiAlertCircle, FiEye } from 'react-icons/fi';
 import { toast } from 'sonner';
+import BonusPagesPreview from './print/BonusPagesPreview';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -186,38 +187,71 @@ export default function PrintOrderModal({
   };
 
   // Coming Soon State
+  const [showBonusPreview, setShowBonusPreview] = useState(false);
+  
   if (comingSoon) {
     return (
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <FiPrinter className="text-purple-500" />
-              Print Your Book
-            </DialogTitle>
-          </DialogHeader>
-          
-          <div className="text-center py-8">
-            <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <FiPackage className="w-10 h-10 text-purple-500" />
+      <>
+        <Dialog open={isOpen} onOpenChange={onClose}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <FiPrinter className="text-purple-500" />
+                Print Your Book
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="text-center py-6">
+              <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FiPackage className="w-10 h-10 text-purple-500" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Coming Soon!</h3>
+              <p className="text-gray-600 mb-4">
+                We're putting the finishing touches on our print-on-demand service. 
+                Soon you'll be able to order beautiful printed copies of your stories!
+              </p>
+              
+              {/* Product info */}
+              <div className="bg-purple-50 rounded-lg p-4 text-sm text-purple-700 mb-4">
+                <p className="font-medium mb-1">Premium 8x8" Photobook</p>
+                <p>Softcover with matt lamination • High-quality printing</p>
+                <p className="mt-2 font-semibold">Starting from £14.99 / $19.99</p>
+              </div>
+              
+              {/* Bonus pages preview button */}
+              <div className="bg-gradient-to-r from-amber-50 to-purple-50 rounded-lg p-4 mb-4">
+                <p className="text-sm text-gray-600 mb-2">
+                  Each printed book includes <span className="font-semibold text-purple-600">7 bonus pages</span>:
+                </p>
+                <p className="text-xs text-gray-500 mb-3">
+                  Welcome • Dedication • The End • Thank You • Certificate • About Azories • Meet Azora
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowBonusPreview(true)}
+                  className="gap-2"
+                >
+                  <FiEye className="w-4 h-4" />
+                  Preview Bonus Pages
+                </Button>
+              </div>
             </div>
-            <h3 className="text-xl font-semibold mb-2">Coming Soon!</h3>
-            <p className="text-gray-600 mb-4">
-              We're putting the finishing touches on our print-on-demand service. 
-              Soon you'll be able to order beautiful printed copies of your stories!
-            </p>
-            <div className="bg-purple-50 rounded-lg p-4 text-sm text-purple-700">
-              <p className="font-medium mb-1">Premium 8x8" Photobook</p>
-              <p>Softcover with matt lamination • High-quality printing</p>
-              <p className="mt-2 font-semibold">Starting from £14.99 / $19.99</p>
-            </div>
-          </div>
-          
-          <Button onClick={onClose} className="w-full">
-            Got it!
-          </Button>
-        </DialogContent>
-      </Dialog>
+            
+            <Button onClick={onClose} className="w-full">
+              Got it!
+            </Button>
+          </DialogContent>
+        </Dialog>
+        
+        {/* Bonus pages preview modal */}
+        <BonusPagesPreview
+          isOpen={showBonusPreview}
+          onClose={() => setShowBonusPreview(false)}
+          bookTitle={book?.title}
+          childName={book?.main_character_name || book?.child_name}
+        />
+      </>
     );
   }
 
