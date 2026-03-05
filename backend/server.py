@@ -13558,6 +13558,78 @@ async def download_bonus_pages_preview(book_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to generate PDF: {str(e)}")
 
+
+# ==================== STRIPE WEBHOOK ====================
+@api_router.post("/webhook/stripe")
+async def stripe_webhook(request: Request):
+    """Handle Stripe webhook events for payment confirmations"""
+    from emergentintegrations.payments.stripe.checkout import StripeCheckout
+    
+    STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY")
+    
+    try:
+        # Get raw body
+        body = await request.body()
+        signature = request.headers.get("Stripe-Signature")
+        
+        # Initialize Stripe checkout (webhook URL not needed for handling)
+        stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url="")
+        
+        # Handle the webhook
+        webhook_response = await stripe_checkout.handle_webhook(body, signature)
+        
+        logger.info(f"Stripe webhook received: {webhook_response.event_type}")
+        
+        # Process payment confirmation
+        if webhook_response.event_type == "checkout.session.completed":
+            session_id = webhook_response.session_id
+            
+            # Update transaction status
+            await db.payment_transactions.update_one(
+                {"session_id": session_id},
+                {"$set": {
+                    "payment_status": webhook_response.payment_status,
+                    "event_id": webhook_response.event_id,
+                    "updated_at": datetime.utcnow()
+                }}
+            )
+            
+            # If paid, check if print order needs to be created
+            if webhook_response.payment_status == "paid":
+                transaction = await db.payment_transactions.find_one({"session_id": session_id})
+                if transaction:
+                    # Check if print order already exists
+                    existing_order = await db.print_orders.find_one({
+                        "payment_session_id": session_id
+                    })
+                    
+                    if not existing_order:
+                        order_id = str(uuid.uuid4())
+                        await db.print_orders.insert_one({
+                            "id": order_id,
+                            "order_reference": transaction.get("order_reference"),
+                            "book_id": transaction.get("book_id"),
+                            "book_title": transaction.get("book_title"),
+                            "user_id": transaction.get("user_id"),
+                            "product_type": transaction.get("product_type"),
+                            "status": "paid",
+                            "payment_session_id": session_id,
+                            "amount_paid": transaction.get("amount"),
+                            "currency": transaction.get("currency"),
+                            "shipping_country": transaction.get("shipping_country"),
+                            "created_at": datetime.utcnow(),
+                            "updated_at": datetime.utcnow()
+                        })
+                        logger.info(f"Print order created via webhook: {order_id}")
+        
+        return {"received": True}
+        
+    except Exception as e:
+        logger.error(f"Stripe webhook error: {e}")
+        # Return 200 to acknowledge receipt (Stripe will retry on non-200)
+        return {"received": True, "error": str(e)}
+
+
 app.include_router(api_router)
 
 app.add_middleware(

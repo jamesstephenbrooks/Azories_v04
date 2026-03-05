@@ -277,16 +277,36 @@ async def generate_image_flux(
     num_images: int = 1,
     seed: Optional[int] = None,
     guidance_scale: float = 3.5,
-    num_inference_steps: int = 28
+    num_inference_steps: int = 28,
+    print_quality: bool = False
 ) -> Dict[str, Any]:
-    """Generate images using FLUX models"""
+    """Generate images using FLUX models
+    
+    Args:
+        prompt: Text description of the image
+        model: FLUX model variant (flux-dev, flux-pro, etc.)
+        image_size: Preset size string OR custom dict {"width": X, "height": Y}
+        num_images: Number of images to generate
+        seed: Optional seed for reproducibility
+        guidance_scale: How closely to follow the prompt
+        num_inference_steps: Number of denoising steps
+        print_quality: If True, generates at 2400x3000 (300 DPI for 8x10 print)
+    """
     _get_fal_key()  # Validate key exists
     
     model_id = FAL_MODELS.get(model, {}).get("id", "fal-ai/flux/dev")
 
+    # For print quality, use high resolution suitable for 8x10 inch at 300 DPI
+    if print_quality:
+        actual_image_size = {"width": 2400, "height": 3000}
+    elif isinstance(image_size, dict):
+        actual_image_size = image_size
+    else:
+        actual_image_size = image_size
+
     arguments = {
         "prompt": prompt,
-        "image_size": image_size,
+        "image_size": actual_image_size,
         "num_images": num_images,
         "guidance_scale": guidance_scale,
         "num_inference_steps": num_inference_steps,

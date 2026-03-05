@@ -1,21 +1,44 @@
 """
 Print Orders API Routes
-Handles print-on-demand orders via Gelato
+Handles print-on-demand orders via Gelato with Stripe payments
 """
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 import uuid
 import logging
+import os
+from dotenv import load_dotenv
 
 from services.gelato_service import gelato_service
 from services.print_pdf_generator import pdf_generator, generate_test_pdf
 
+load_dotenv()
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/print", tags=["Print Orders"])
+
+# Stripe integration
+STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY")
+
+# Fixed product pricing (server-side only - never trust frontend prices)
+PRINT_PRODUCTS = {
+    "softcover_8x10": {
+        "name": "Softcover Book",
+        "price_gbp": 14.99,
+        "price_usd": 19.99,
+        "description": "Premium softcover photobook"
+    },
+    "hardcover_8x10": {
+        "name": "Hardcover Book", 
+        "price_gbp": 19.99,
+        "price_usd": 24.99,
+        "description": "Premium hardcover photobook"
+    }
+}
 
 
 # Request/Response Models
@@ -65,27 +88,39 @@ def get_db():
 
 @router.get("/product-info")
 async def get_product_info():
-    """Get information about the print product"""
+    """Get information about print products"""
     return {
-        "name": "8x8\" Softcover Photobook",
-        "description": "Premium softcover photobook with matt lamination, perfect bound",
-        "dimensions": "8 x 8 inches (200 x 200 mm)",
-        "paper": "170gsm coated silk interior, 250gsm cover",
-        "binding": "Perfect bound (glued)",
-        "finish": "Matt lamination cover",
+        "products": [
+            {
+                "id": "softcover_8x10",
+                "name": "Softcover Book (8x10\")",
+                "description": "Premium softcover photobook with matt lamination, perfect bound",
+                "dimensions": "8 x 10 inches (203 x 254 mm)",
+                "paper": "170gsm coated silk interior, 250gsm cover",
+                "binding": "Perfect bound (glued)",
+                "finish": "Matt lamination cover",
+                "price": {"GBP": 14.99, "USD": 19.99}
+            },
+            {
+                "id": "hardcover_8x10",
+                "name": "Hardcover Book (8x10\")",
+                "description": "Premium hardcover photobook with matt lamination",
+                "dimensions": "8 x 10 inches (203 x 254 mm)",
+                "paper": "170gsm coated silk interior, 350gsm cover",
+                "binding": "Case bound",
+                "finish": "Matt lamination cover",
+                "price": {"GBP": 19.99, "USD": 24.99}
+            }
+        ],
         "min_pages": 24,
         "max_pages": 200,
-        "base_price": {
-            "GBP": 14.99,
-            "USD": 19.99
-        },
         "production_time": "3-5 business days",
         "shipping_options": [
             {"method": "normal", "name": "Standard", "days": "5-10 business days"},
-            {"method": "express", "name": "Express", "days": "2-4 business days"},
-            {"method": "overnight", "name": "Next Day", "days": "1-2 business days"}
+            {"method": "express", "name": "Express", "days": "2-4 business days"}
         ],
-        "coming_soon": True  # Flag to show "Coming Soon" in UI
+        "gelato_configured": gelato_service.is_configured(),
+        "coming_soon": not gelato_service.is_configured()  # Show coming soon if not configured
     }
 
 
@@ -440,9 +475,252 @@ async def get_price_estimate(
             shipping_cost = quote_result["quotes"][0].get("price", 0)
     
     currency = "GBP" if country_code == "GB" else "USD"
-    price = gelato_service.calculate_price(page_count, shipping_cost, currency)
+    price = gelato_service.calculate_price(
+        product_type="softcover_8x10",
+        shipping_cost=shipping_cost,
+        currency=currency
+    )
     
     return {
         "estimate": price,
         "shipping_options": quote_result.get("quotes", [])
+    }
+
+
+# ==================== STRIPE PAYMENT ENDPOINTS ====================
+
+class CheckoutRequest(BaseModel):
+    book_id: str
+    product_type: str = "softcover_8x10"  # softcover_8x10 or hardcover_8x10
+    shipping_country: str = "GB"
+    shipping_postal_code: str = ""
+    origin_url: str  # Frontend origin for success/cancel URLs
+
+
+class CheckoutResponse(BaseModel):
+    checkout_url: str
+    session_id: str
+    order_reference: str
+
+
+@router.post("/checkout/create-session")
+async def create_checkout_session(request: CheckoutRequest, http_request: Request):
+    """
+    Create a Stripe checkout session for a print order.
+    Price is determined server-side based on product_type - never from frontend.
+    """
+    from emergentintegrations.payments.stripe.checkout import (
+        StripeCheckout, 
+        CheckoutSessionRequest, 
+        CheckoutSessionResponse
+    )
+    
+    db = get_db()
+    
+    # Validate product type
+    if request.product_type not in PRINT_PRODUCTS:
+        raise HTTPException(status_code=400, detail="Invalid product type")
+    
+    # Get book info
+    book = await db.books.find_one({"id": request.book_id}, {"_id": 0})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    # Get price from server-side config (NEVER from frontend)
+    product = PRINT_PRODUCTS[request.product_type]
+    currency = "gbp" if request.shipping_country == "GB" else "usd"
+    base_price = product["price_gbp"] if currency == "gbp" else product["price_usd"]
+    
+    # TODO: Add shipping cost from Gelato quote once fully integrated
+    # For now, estimate shipping
+    estimated_shipping = 5.99 if currency == "gbp" else 7.99
+    total_amount = float(base_price) + float(estimated_shipping)
+    
+    # Generate order reference
+    order_reference = f"AZ-{datetime.utcnow().strftime('%Y%m%d')}-{uuid.uuid4().hex[:8].upper()}"
+    
+    # Build success/cancel URLs from frontend origin
+    success_url = f"{request.origin_url}/print-success?session_id={{CHECKOUT_SESSION_ID}}"
+    cancel_url = f"{request.origin_url}/book/{request.book_id}"
+    
+    # Setup Stripe checkout
+    webhook_url = f"{str(http_request.base_url)}api/webhook/stripe"
+    stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url=webhook_url)
+    
+    # Create checkout session
+    checkout_request = CheckoutSessionRequest(
+        amount=total_amount,
+        currency=currency,
+        success_url=success_url,
+        cancel_url=cancel_url,
+        metadata={
+            "order_reference": order_reference,
+            "book_id": request.book_id,
+            "book_title": book.get("title", "Untitled"),
+            "product_type": request.product_type,
+            "shipping_country": request.shipping_country,
+            "type": "print_order"
+        }
+    )
+    
+    try:
+        session: CheckoutSessionResponse = await stripe_checkout.create_checkout_session(checkout_request)
+        
+        # Create payment transaction record (MANDATORY before redirect)
+        transaction_id = str(uuid.uuid4())
+        await db.payment_transactions.insert_one({
+            "id": transaction_id,
+            "session_id": session.session_id,
+            "order_reference": order_reference,
+            "book_id": request.book_id,
+            "book_title": book.get("title"),
+            "user_id": book.get("user_id"),
+            "product_type": request.product_type,
+            "amount": total_amount,
+            "currency": currency.upper(),
+            "payment_status": "initiated",
+            "shipping_country": request.shipping_country,
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow()
+        })
+        
+        logger.info(f"Created checkout session {session.session_id} for order {order_reference}")
+        
+        return {
+            "checkout_url": session.url,
+            "session_id": session.session_id,
+            "order_reference": order_reference
+        }
+        
+    except Exception as e:
+        logger.error(f"Stripe checkout error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to create checkout session: {str(e)}")
+
+
+@router.get("/checkout/status/{session_id}")
+async def get_checkout_status(session_id: str):
+    """
+    Get the status of a checkout session.
+    Called by frontend after returning from Stripe.
+    """
+    from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutStatusResponse
+    
+    db = get_db()
+    
+    # Get transaction record
+    transaction = await db.payment_transactions.find_one(
+        {"session_id": session_id},
+        {"_id": 0}
+    )
+    
+    if not transaction:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+    
+    # Check if already processed to avoid double processing
+    if transaction.get("payment_status") == "paid":
+        return {
+            "status": "complete",
+            "payment_status": "paid",
+            "order_reference": transaction.get("order_reference"),
+            "already_processed": True
+        }
+    
+    # Get status from Stripe
+    stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url="")
+    
+    try:
+        status: CheckoutStatusResponse = await stripe_checkout.get_checkout_status(session_id)
+        
+        # Update transaction record
+        new_status = "paid" if status.payment_status == "paid" else status.status
+        
+        await db.payment_transactions.update_one(
+            {"session_id": session_id},
+            {"$set": {
+                "payment_status": new_status,
+                "stripe_status": status.status,
+                "updated_at": datetime.utcnow()
+            }}
+        )
+        
+        # If payment successful, create the print order record
+        if status.payment_status == "paid" and transaction.get("payment_status") != "paid":
+            order_id = str(uuid.uuid4())
+            await db.print_orders.insert_one({
+                "id": order_id,
+                "order_reference": transaction.get("order_reference"),
+                "book_id": transaction.get("book_id"),
+                "book_title": transaction.get("book_title"),
+                "user_id": transaction.get("user_id"),
+                "product_type": transaction.get("product_type"),
+                "status": "paid",  # Paid, awaiting shipping details
+                "payment_session_id": session_id,
+                "amount_paid": status.amount_total / 100,  # Convert from cents
+                "currency": status.currency.upper(),
+                "shipping_country": transaction.get("shipping_country"),
+                "created_at": datetime.utcnow(),
+                "updated_at": datetime.utcnow()
+            })
+            
+            logger.info(f"Print order created: {order_id} for {transaction.get('order_reference')}")
+        
+        return {
+            "status": status.status,
+            "payment_status": status.payment_status,
+            "amount_total": status.amount_total / 100,
+            "currency": status.currency,
+            "order_reference": transaction.get("order_reference"),
+            "metadata": status.metadata
+        }
+        
+    except Exception as e:
+        logger.error(f"Error checking checkout status: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to check status: {str(e)}")
+
+
+@router.post("/orders/{order_id}/add-shipping")
+async def add_shipping_to_order(order_id: str, shipping_address: ShippingAddress):
+    """
+    Add shipping details to a paid order and submit to Gelato.
+    """
+    db = get_db()
+    
+    # Get the order
+    order = await db.print_orders.find_one({"id": order_id}, {"_id": 0})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    if order.get("status") != "paid":
+        raise HTTPException(status_code=400, detail="Order is not in paid status")
+    
+    if order.get("gelato_order_id"):
+        raise HTTPException(status_code=400, detail="Order already submitted to Gelato")
+    
+    # Generate PDF for printing
+    book = await db.books.find_one({"id": order["book_id"]})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    # Get or generate the print PDF URL
+    # For now, we'll use a placeholder - in production this would be a Cloudinary/S3 URL
+    pdf_result = await generate_test_pdf(order["book_id"], db)
+    
+    # TODO: Upload PDF to cloud storage and get public URL
+    # For now, return success without Gelato submission
+    
+    # Update order with shipping address
+    await db.print_orders.update_one(
+        {"id": order_id},
+        {"$set": {
+            "shipping_address": shipping_address.dict(),
+            "status": "processing",
+            "updated_at": datetime.utcnow()
+        }}
+    )
+    
+    return {
+        "success": True,
+        "order_id": order_id,
+        "status": "processing",
+        "message": "Shipping details added. Order is being prepared for production."
     }
