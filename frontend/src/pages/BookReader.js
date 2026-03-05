@@ -2256,7 +2256,7 @@ export default function BookReader() {
       {/* Hide/Show Controls Toggle + Floating Listen button - visible when controls are hidden */}
       {hideControls && (
         <>
-          {/* Floating Listen/Pause button - left side */}
+          {/* Floating Listen/Pause button - above Azora button, left side */}
           <button
             onClick={() => {
               if (isPlaying) {
@@ -2272,7 +2272,7 @@ export default function BookReader() {
                 startListening();
               }
             }}
-            className="fixed bottom-5 right-20 z-50 w-14 h-14 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white shadow-lg flex items-center justify-center transition-colors"
+            className="fixed bottom-28 right-20 z-50 w-14 h-14 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white shadow-lg flex items-center justify-center transition-colors"
             data-testid="floating-listen-btn"
           >
             {isPlaying ? (
@@ -2282,10 +2282,10 @@ export default function BookReader() {
             )}
           </button>
           
-          {/* Show controls button - right side */}
+          {/* Show controls button - above Azora button, right side */}
           <button
             onClick={() => setHideControls(false)}
-            className="fixed bottom-5 right-4 z-50 w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-purple-400 text-purple-600 dark:text-purple-300 shadow-lg flex items-center justify-center hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors"
+            className="fixed bottom-28 right-4 z-50 w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-purple-400 text-purple-600 dark:text-purple-300 shadow-lg flex items-center justify-center hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors"
             data-testid="show-controls-btn"
           >
             <FiChevronUp className="w-5 h-5" />
