@@ -198,12 +198,12 @@ class PrintPDFGenerator:
     async def create_story_image_page(self, page_data: dict) -> Image.Image:
         """Create LEFT page of spread - Full illustration
         
-        For portrait images: Fill the entire page (full bleed)
-        For landscape images: Center with elegant margins
+        ALL images fill the entire page (full bleed/cover style)
+        - Portrait images: scale to fit width, crop top/bottom if needed
+        - Landscape images: scale to fit height, crop left/right if needed
         """
-        # Start with cream paper background
-        img = Image.new('RGB', (PAGE_WIDTH_PX, PAGE_HEIGHT_PX), (253, 251, 247))
-        draw = ImageDraw.Draw(img)
+        # Start with white background (will be covered by image)
+        img = Image.new('RGB', (PAGE_WIDTH_PX, PAGE_HEIGHT_PX), (255, 255, 255))
         
         image_url = page_data.get('image_url')
         
@@ -213,59 +213,30 @@ class PrintPDFGenerator:
                 img_aspect = story_img.width / story_img.height
                 page_aspect = PAGE_WIDTH_PX / PAGE_HEIGHT_PX  # 0.8 for 8x10
                 
-                # Check if image is portrait (aspect ratio < 1)
-                is_portrait = img_aspect < 1
-                
-                if is_portrait:
-                    # Portrait image: Fill the entire page (cover style)
-                    # Scale to cover the page completely
-                    if img_aspect < page_aspect:
-                        # Image is narrower - fit to width, crop height
-                        new_width = PAGE_WIDTH_PX
-                        new_height = int(PAGE_WIDTH_PX / img_aspect)
-                    else:
-                        # Image is wider - fit to height, crop width
-                        new_height = PAGE_HEIGHT_PX
-                        new_width = int(PAGE_HEIGHT_PX * img_aspect)
-                    
-                    story_img = story_img.resize((new_width, new_height), Image.Resampling.LANCZOS)
-                    
-                    # Center and crop to page size
-                    x = (PAGE_WIDTH_PX - new_width) // 2
-                    y = (PAGE_HEIGHT_PX - new_height) // 2
-                    
-                    # Create final image by pasting and cropping
-                    img.paste(story_img, (x, y))
-                    
+                # Scale image to COVER the entire page (no white space)
+                if img_aspect < page_aspect:
+                    # Image is narrower than page - fit to width, will be taller
+                    new_width = PAGE_WIDTH_PX
+                    new_height = int(PAGE_WIDTH_PX / img_aspect)
                 else:
-                    # Landscape image: Center with margins
-                    margin = 60
-                    available_width = PAGE_WIDTH_PX - (margin * 2)
-                    available_height = PAGE_HEIGHT_PX - (margin * 2)
-                    
-                    # Fit within available space maintaining aspect ratio
-                    if img_aspect > (available_width / available_height):
-                        # Image is wider - fit to width
-                        new_width = available_width
-                        new_height = int(available_width / img_aspect)
-                    else:
-                        # Image is taller - fit to height
-                        new_height = available_height
-                        new_width = int(available_height * img_aspect)
-                    
-                    story_img = story_img.resize((new_width, new_height), Image.Resampling.LANCZOS)
-                    
-                    # Center the image on the page
-                    x = (PAGE_WIDTH_PX - new_width) // 2
-                    y = (PAGE_HEIGHT_PX - new_height) // 2
-                    
-                    # Add subtle shadow effect for landscape images
-                    shadow = Image.new('RGB', (new_width + 20, new_height + 20), (230, 228, 224))
-                    img.paste(shadow, (x + 10, y + 10))
-                    
-                    img.paste(story_img, (x, y))
+                    # Image is wider than page - fit to height, will be wider
+                    new_height = PAGE_HEIGHT_PX
+                    new_width = int(PAGE_HEIGHT_PX * img_aspect)
+                
+                # Resize image
+                story_img = story_img.resize((new_width, new_height), Image.Resampling.LANCZOS)
+                
+                # Center and crop to page size
+                x = (PAGE_WIDTH_PX - new_width) // 2
+                y = (PAGE_HEIGHT_PX - new_height) // 2
+                
+                # Paste image (parts outside page bounds are automatically cropped)
+                img.paste(story_img, (x, y))
         else:
-            # No image - show decorative placeholder
+            # No image - show decorative placeholder on cream background
+            draw = ImageDraw.Draw(img)
+            img = Image.new('RGB', (PAGE_WIDTH_PX, PAGE_HEIGHT_PX), (253, 251, 247))
+            draw = ImageDraw.Draw(img)
             self.draw_text_centered(draw, "✦", PAGE_HEIGHT_PX // 2, self.get_font(120), '#d1d5db', PAGE_WIDTH_PX)
         
         return img
