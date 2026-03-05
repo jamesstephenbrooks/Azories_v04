@@ -1,24 +1,25 @@
 """
 Print PDF Generator - Creates print-ready PDFs for Gelato Print on Demand
 
-PDF Specifications:
-- Page size: 8x8 inches (204.12mm x 204.12mm)
+PDF Specifications (8x10 Portrait Format):
+- Page size: 8x10 inches (203.2mm x 254mm)
 - Resolution: 300 DPI
-- Pixel dimensions: 2400 x 2400 pixels per page
-- Bleed: 3mm on all sides (optional)
-- Format: PDF/X-1a compatible
+- Pixel dimensions: 2400 x 3000 pixels per page
+- Format: PDF for Gelato photobook
+
+Layout: Spread format like the Azories app
+- Left page: Full illustration
+- Right page: Story text
 
 Page Order:
-1. Front Cover (from book)
-2. Welcome Page (bonus)
-3. Dedication Page (bonus)
-4. Story Content Pages (from book)
-5. The End Page (bonus)
-6. Thank You Page (bonus)
-7. Certificate Page (bonus)
-8. About Azories Page (bonus)
-9. Meet Azora Page (bonus)
-10. Back Cover (from book, if exists)
+1. Front Cover
+2. Inside front (blank or dedication)
+3. Welcome Page
+4. Dedication Page  
+5-24. Story Spreads (image left, text right)
+25-31. Bonus pages (The End, Thank You, Certificate, About, Meet Azora)
+32+. Filler pages with mascot images
+Last. Back Cover
 """
 
 import os
@@ -30,22 +31,21 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 from reportlab.lib.pagesizes import inch
 from reportlab.lib.utils import ImageReader
 from reportlab.pdfgen import canvas
-from reportlab.lib.colors import HexColor, Color
 import tempfile
 import logging
 
 logger = logging.getLogger(__name__)
 
-# Page dimensions for 8x8 inch at 300 DPI
+# Page dimensions for 8x10 inch PORTRAIT at 300 DPI
 PAGE_WIDTH_INCHES = 8
-PAGE_HEIGHT_INCHES = 8
+PAGE_HEIGHT_INCHES = 10
 DPI = 300
-PAGE_WIDTH_PX = int(PAGE_WIDTH_INCHES * DPI)  # 2400 pixels
-PAGE_HEIGHT_PX = int(PAGE_HEIGHT_INCHES * DPI)  # 2400 pixels
+PAGE_WIDTH_PX = int(PAGE_WIDTH_INCHES * DPI)   # 2400 pixels
+PAGE_HEIGHT_PX = int(PAGE_HEIGHT_INCHES * DPI)  # 3000 pixels
 
 # ReportLab uses points (72 points = 1 inch)
-PAGE_WIDTH_PT = PAGE_WIDTH_INCHES * inch  # 576 points
-PAGE_HEIGHT_PT = PAGE_HEIGHT_INCHES * inch  # 576 points
+PAGE_WIDTH_PT = PAGE_WIDTH_INCHES * inch   # 576 points
+PAGE_HEIGHT_PT = PAGE_HEIGHT_INCHES * inch  # 720 points
 
 # Bonus page mascot images
 BONUS_IMAGES = {
@@ -56,24 +56,24 @@ BONUS_IMAGES = {
     'about': 'https://customer-assets.emergentagent.com/job_5f7e2b9e-d2a4-4bf3-b6c6-aac66cbef904/artifacts/dlulgnzy_Azora_Mascot.jpg',
     'certificate': 'https://customer-assets.emergentagent.com/job_5f7e2b9e-d2a4-4bf3-b6c6-aac66cbef904/artifacts/e45x5iez_azora%20library.png',
     'meet_azora': 'https://customer-assets.emergentagent.com/job_5f7e2b9e-d2a4-4bf3-b6c6-aac66cbef904/artifacts/o1xvfgto_azora%20librbary%201.png',
+    # Filler page images - best mascot images
+    'filler_1': 'https://customer-assets.emergentagent.com/job_5f7e2b9e-d2a4-4bf3-b6c6-aac66cbef904/artifacts/60k2xrwp_Azora%20Mascot%20Main.jpg',
+    'filler_2': 'https://customer-assets.emergentagent.com/job_5f7e2b9e-d2a4-4bf3-b6c6-aac66cbef904/artifacts/e45x5iez_azora%20library.png',
+    'filler_3': 'https://customer-assets.emergentagent.com/job_5f7e2b9e-d2a4-4bf3-b6c6-aac66cbef904/artifacts/o1xvfgto_azora%20librbary%201.png',
 }
-
-# Colors
-PURPLE_PRIMARY = '#7c3aed'
-PURPLE_LIGHT = '#a78bfa'
-PINK_LIGHT = '#f9a8d4'
-AMBER_PRIMARY = '#d97706'
-AMBER_LIGHT = '#fde68a'
 
 
 class PrintPDFGenerator:
-    """Generates print-ready PDFs for photobooks"""
+    """Generates print-ready PDFs for photobooks in portrait 8x10 format"""
     
     def __init__(self):
         self.image_cache = {}
         
     async def download_image(self, url: str) -> Image.Image:
         """Download and cache an image from URL"""
+        if not url:
+            return None
+            
         if url in self.image_cache:
             return self.image_cache[url].copy()
             
@@ -133,30 +133,21 @@ class PrintPDFGenerator:
         draw.text((x, y), text, fill=color, font=font)
     
     def draw_circular_image(self, base: Image.Image, img: Image.Image,
-                            center_x: int, center_y: int, radius: int,
-                            border_color: tuple = None, border_width: int = 0):
+                            center_x: int, center_y: int, radius: int):
         """Draw an image in a circular frame"""
         # Resize image to fit circle
-        img = img.resize((radius * 2, radius * 2), Image.Resampling.LANCZOS)
+        size = radius * 2
+        img = img.resize((size, size), Image.Resampling.LANCZOS)
         
         # Create circular mask
-        mask = Image.new('L', (radius * 2, radius * 2), 0)
+        mask = Image.new('L', (size, size), 0)
         mask_draw = ImageDraw.Draw(mask)
-        mask_draw.ellipse((0, 0, radius * 2 - 1, radius * 2 - 1), fill=255)
+        mask_draw.ellipse((0, 0, size - 1, size - 1), fill=255)
         
         # Apply mask to image
-        circular_img = Image.new('RGBA', (radius * 2, radius * 2), (255, 255, 255, 0))
+        circular_img = Image.new('RGBA', (size, size), (255, 255, 255, 0))
         circular_img.paste(img, (0, 0))
         circular_img.putalpha(mask)
-        
-        # Draw border if specified
-        if border_color and border_width > 0:
-            draw = ImageDraw.Draw(base)
-            draw.ellipse(
-                (center_x - radius - border_width, center_y - radius - border_width,
-                 center_x + radius + border_width, center_y + radius + border_width),
-                fill=border_color
-            )
         
         # Paste the circular image
         paste_x = center_x - radius
@@ -178,78 +169,185 @@ class PrintPDFGenerator:
                 except:
                     pass
         
-        # Fallback to default
         return ImageFont.load_default()
     
+    def word_wrap_text(self, draw: ImageDraw.Draw, text: str, font, max_width: int) -> list:
+        """Wrap text to fit within max_width"""
+        words = text.split()
+        lines = []
+        current_line = []
+        
+        for word in words:
+            test_line = ' '.join(current_line + [word])
+            bbox = draw.textbbox((0, 0), test_line, font=font)
+            if bbox[2] - bbox[0] <= max_width:
+                current_line.append(word)
+            else:
+                if current_line:
+                    lines.append(' '.join(current_line))
+                current_line = [word]
+        if current_line:
+            lines.append(' '.join(current_line))
+        
+        return lines
+
+    # ============================================
+    # STORY SPREAD PAGES (Image Left, Text Right)
+    # ============================================
+    
+    async def create_story_image_page(self, page_data: dict) -> Image.Image:
+        """Create LEFT page of spread - Full illustration"""
+        # Cream/warm paper background
+        img = Image.new('RGB', (PAGE_WIDTH_PX, PAGE_HEIGHT_PX), (253, 251, 247))
+        draw = ImageDraw.Draw(img)
+        
+        image_url = page_data.get('image_url')
+        
+        if image_url:
+            story_img = await self.download_image(image_url)
+            if story_img:
+                # Calculate size to fill page with margins
+                margin = 80
+                available_width = PAGE_WIDTH_PX - (margin * 2)
+                available_height = PAGE_HEIGHT_PX - (margin * 2)
+                
+                # Maintain aspect ratio and fit within available space
+                img_aspect = story_img.width / story_img.height
+                page_aspect = available_width / available_height
+                
+                if img_aspect > page_aspect:
+                    # Image is wider - fit to width
+                    new_width = available_width
+                    new_height = int(available_width / img_aspect)
+                else:
+                    # Image is taller - fit to height
+                    new_height = available_height
+                    new_width = int(available_height * img_aspect)
+                
+                story_img = story_img.resize((new_width, new_height), Image.Resampling.LANCZOS)
+                
+                # Center the image on the page
+                x = (PAGE_WIDTH_PX - new_width) // 2
+                y = (PAGE_HEIGHT_PX - new_height) // 2
+                
+                # Add subtle shadow effect
+                shadow = Image.new('RGB', (new_width + 20, new_height + 20), (230, 228, 224))
+                img.paste(shadow, (x + 10, y + 10))
+                
+                img.paste(story_img, (x, y))
+        else:
+            # No image - show decorative placeholder
+            self.draw_text_centered(draw, "✦", PAGE_HEIGHT_PX // 2, self.get_font(120), '#d1d5db', PAGE_WIDTH_PX)
+        
+        return img
+    
+    async def create_story_text_page(self, page_data: dict, page_number: int) -> Image.Image:
+        """Create RIGHT page of spread - Story text"""
+        # Cream/warm paper background
+        img = Image.new('RGB', (PAGE_WIDTH_PX, PAGE_HEIGHT_PX), (253, 251, 247))
+        draw = ImageDraw.Draw(img)
+        
+        text_content = page_data.get('text_content') or page_data.get('text') or page_data.get('content', '')
+        
+        margin = 150
+        content_width = PAGE_WIDTH_PX - (margin * 2)
+        
+        # Decorative header ornament
+        ornament_y = 200
+        draw.line([(margin, ornament_y), (margin + 150, ornament_y)], fill='#d1d5db', width=2)
+        font_ornament = self.get_font(36)
+        draw.text((PAGE_WIDTH_PX // 2 - 15, ornament_y - 18), "✦", fill='#c4b5fd', font=font_ornament)
+        draw.line([(PAGE_WIDTH_PX - margin - 150, ornament_y), (PAGE_WIDTH_PX - margin, ornament_y)], fill='#d1d5db', width=2)
+        
+        # Story text
+        if text_content:
+            font_text = self.get_font(52)
+            lines = self.word_wrap_text(draw, text_content, font_text, content_width)
+            
+            # Calculate vertical centering
+            line_height = 72
+            total_text_height = len(lines) * line_height
+            start_y = max(300, (PAGE_HEIGHT_PX - total_text_height) // 2)
+            
+            y_offset = start_y
+            for line in lines:
+                if y_offset + line_height > PAGE_HEIGHT_PX - 200:
+                    break
+                # Center each line
+                bbox = draw.textbbox((0, 0), line, font=font_text)
+                line_width = bbox[2] - bbox[0]
+                x = (PAGE_WIDTH_PX - line_width) // 2
+                draw.text((x, y_offset), line, fill='#1f2937', font=font_text)
+                y_offset += line_height
+        
+        # Decorative footer ornament
+        footer_y = PAGE_HEIGHT_PX - 200
+        draw.line([(margin, footer_y), (margin + 150, footer_y)], fill='#d1d5db', width=2)
+        draw.text((PAGE_WIDTH_PX // 2 - 15, footer_y - 18), "✦", fill='#c4b5fd', font=font_ornament)
+        draw.line([(PAGE_WIDTH_PX - margin - 150, footer_y), (PAGE_WIDTH_PX - margin, footer_y)], fill='#d1d5db', width=2)
+        
+        # Page number
+        font_page_num = self.get_font(32)
+        page_str = str(page_number)
+        bbox = draw.textbbox((0, 0), page_str, font=font_page_num)
+        draw.text((PAGE_WIDTH_PX - margin - (bbox[2] - bbox[0]), PAGE_HEIGHT_PX - 120), 
+                  page_str, fill='#9ca3af', font=font_page_num)
+        
+        return img
+
+    # ============================================
+    # BONUS PAGES
+    # ============================================
+    
     async def create_welcome_page(self, book_title: str, child_name: str) -> Image.Image:
-        """Create the Welcome bonus page"""
-        # Create gradient background
+        """Create Welcome page"""
         img = self.create_gradient_background(
             PAGE_WIDTH_PX, PAGE_HEIGHT_PX,
-            (250, 245, 255),  # Light purple
-            (255, 250, 253)   # Light pink
+            (250, 245, 255), (255, 250, 253)
         )
         draw = ImageDraw.Draw(img)
         
-        # Decorative corner flourishes
-        corner_color = (196, 181, 253)  # Purple-300
+        # Decorative corners
+        corner_color = (196, 181, 253)
         line_width = 12
         corner_size = 200
         
-        # Top-left
-        draw.line([(60, 60), (60, 60 + corner_size)], fill=corner_color, width=line_width)
-        draw.line([(60, 60), (60 + corner_size, 60)], fill=corner_color, width=line_width)
-        # Top-right
-        draw.line([(PAGE_WIDTH_PX - 60, 60), (PAGE_WIDTH_PX - 60 - corner_size, 60)], fill=corner_color, width=line_width)
-        draw.line([(PAGE_WIDTH_PX - 60, 60), (PAGE_WIDTH_PX - 60, 60 + corner_size)], fill=corner_color, width=line_width)
-        # Bottom-left
-        draw.line([(60, PAGE_HEIGHT_PX - 60), (60, PAGE_HEIGHT_PX - 60 - corner_size)], fill=corner_color, width=line_width)
-        draw.line([(60, PAGE_HEIGHT_PX - 60), (60 + corner_size, PAGE_HEIGHT_PX - 60)], fill=corner_color, width=line_width)
-        # Bottom-right
-        draw.line([(PAGE_WIDTH_PX - 60, PAGE_HEIGHT_PX - 60), (PAGE_WIDTH_PX - 60 - corner_size, PAGE_HEIGHT_PX - 60)], fill=corner_color, width=line_width)
-        draw.line([(PAGE_WIDTH_PX - 60, PAGE_HEIGHT_PX - 60), (PAGE_WIDTH_PX - 60, PAGE_HEIGHT_PX - 60 - corner_size)], fill=corner_color, width=line_width)
+        # Draw corners
+        for pos in [(60, 60, 1, 1), (PAGE_WIDTH_PX-60, 60, -1, 1), 
+                    (60, PAGE_HEIGHT_PX-60, 1, -1), (PAGE_WIDTH_PX-60, PAGE_HEIGHT_PX-60, -1, -1)]:
+            x, y, dx, dy = pos
+            draw.line([(x, y), (x, y + corner_size * dy)], fill=corner_color, width=line_width)
+            draw.line([(x, y), (x + corner_size * dx, y)], fill=corner_color, width=line_width)
         
-        # Header text
+        # Text
         font_small = self.get_font(48)
         font_title = self.get_font(96, bold=True)
         font_medium = self.get_font(56)
-        font_name = self.get_font(72, bold=True)
+        font_name = self.get_font(80, bold=True)
         
-        self.draw_text_centered(draw, "A MAGICAL STORY", 200, font_small, '#7c3aed', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, "A MAGICAL STORY", 300, font_small, '#7c3aed', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, book_title or "Your Story", 400, font_title, '#1f2937', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, "Created especially for", 580, font_medium, '#a855f7', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, child_name or "You", 680, font_name, '#7c3aed', PAGE_WIDTH_PX)
         
-        # Book title
-        self.draw_text_centered(draw, book_title or "Your Story", 280, font_title, '#1f2937', PAGE_WIDTH_PX)
-        
-        # Created for text
-        self.draw_text_centered(draw, "Created especially for", 420, font_medium, '#a855f7', PAGE_WIDTH_PX)
-        self.draw_text_centered(draw, child_name or "You", 500, font_name, '#7c3aed', PAGE_WIDTH_PX)
-        
-        # Download and draw mascot image in circular frame
+        # Mascot image
         mascot_img = await self.download_image(BONUS_IMAGES['welcome'])
         if mascot_img:
             center_x = PAGE_WIDTH_PX // 2
-            center_y = 1050
-            radius = 320
+            center_y = 1400
+            radius = 380
             
-            # Draw border circle
-            draw.ellipse(
-                (center_x - radius - 20, center_y - radius - 20,
-                 center_x + radius + 20, center_y + radius + 20),
-                fill=(196, 181, 253)
-            )
-            draw.ellipse(
-                (center_x - radius - 10, center_y - radius - 10,
-                 center_x + radius + 10, center_y + radius + 10),
-                fill=(244, 194, 194)
-            )
-            
+            draw.ellipse((center_x - radius - 20, center_y - radius - 20,
+                         center_x + radius + 20, center_y + radius + 20), fill=(196, 181, 253))
+            draw.ellipse((center_x - radius - 10, center_y - radius - 10,
+                         center_x + radius + 10, center_y + radius + 10), fill=(244, 194, 194))
             self.draw_circular_image(img, mascot_img, center_x, center_y, radius)
         
-        # Sparkle decorations
+        # Sparkles
         sparkle_font = self.get_font(64)
-        draw.text((PAGE_WIDTH_PX - 300, 150), "✦", fill='#fbbf24', font=sparkle_font)
-        draw.text((200, 250), "✦", fill='#a855f7', font=sparkle_font)
-        draw.text((PAGE_WIDTH_PX - 350, 1500), "✨", fill='#fbbf24', font=sparkle_font)
+        draw.text((PAGE_WIDTH_PX - 300, 200), "✦", fill='#fbbf24', font=sparkle_font)
+        draw.text((200, 350), "✦", fill='#a855f7', font=sparkle_font)
+        draw.text((PAGE_WIDTH_PX - 350, 1900), "✨", fill='#fbbf24', font=sparkle_font)
         
         # Footer
         font_footer = self.get_font(36)
@@ -258,322 +356,244 @@ class PrintPDFGenerator:
         return img
     
     async def create_dedication_page(self, child_name: str, dedication_message: str = None) -> Image.Image:
-        """Create the Dedication bonus page"""
-        # Cream/amber gradient background
+        """Create Dedication page"""
         img = self.create_gradient_background(
             PAGE_WIDTH_PX, PAGE_HEIGHT_PX,
-            (254, 252, 232),  # Amber-50
-            (255, 255, 255)
+            (254, 252, 232), (255, 255, 255)
         )
         draw = ImageDraw.Draw(img)
         
-        # Decorative border
-        border_color = (253, 230, 138)  # Amber-200
-        draw.rectangle([(80, 80), (PAGE_WIDTH_PX - 80, PAGE_HEIGHT_PX - 80)], outline=border_color, width=8)
+        # Border
+        draw.rectangle([(80, 80), (PAGE_WIDTH_PX - 80, PAGE_HEIGHT_PX - 80)], outline=(253, 230, 138), width=8)
         draw.rectangle([(120, 120), (PAGE_WIDTH_PX - 120, PAGE_HEIGHT_PX - 120)], outline=(254, 243, 199), width=4)
         
-        # Header ornament
-        ornament_color = '#d97706'
+        # Ornament
         font_ornament = self.get_font(72)
-        self.draw_text_centered(draw, "❦", 200, font_ornament, ornament_color, PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, "❦", 250, font_ornament, '#d97706', PAGE_WIDTH_PX)
         
-        # Title text
+        # Text
         font_subtitle = self.get_font(56)
         font_name = self.get_font(96, bold=True)
         
-        self.draw_text_centered(draw, "This book belongs to", 320, font_subtitle, '#4b5563', PAGE_WIDTH_PX)
-        self.draw_text_centered(draw, child_name or "________________", 440, font_name, '#b45309', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, "This book belongs to", 400, font_subtitle, '#4b5563', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, child_name or "________________", 520, font_name, '#b45309', PAGE_WIDTH_PX)
         
-        # Download and draw mascot image in rounded frame
+        # Mascot
         mascot_img = await self.download_image(BONUS_IMAGES['dedication'])
         if mascot_img:
-            # Draw white frame background
-            frame_x = (PAGE_WIDTH_PX - 500) // 2
-            frame_y = 600
-            frame_size = 500
+            frame_size = 550
+            frame_x = (PAGE_WIDTH_PX - frame_size) // 2
+            frame_y = 750
             
             draw.rounded_rectangle(
                 [(frame_x - 15, frame_y - 15), (frame_x + frame_size + 15, frame_y + frame_size + 15)],
                 radius=30, fill=(255, 255, 255)
             )
-            
-            # Resize and paste image
             mascot_img = mascot_img.resize((frame_size, frame_size), Image.Resampling.LANCZOS)
             img.paste(mascot_img, (frame_x, frame_y))
         
-        # Dedication message
+        # Message
         font_quote = self.get_font(44)
         message = dedication_message or '"May every page bring you joy, and every story spark your imagination."'
-        # Word wrap for long messages
-        max_width = PAGE_WIDTH_PX - 400
-        words = message.split()
-        lines = []
-        current_line = []
-        for word in words:
-            test_line = ' '.join(current_line + [word])
-            bbox = draw.textbbox((0, 0), test_line, font=font_quote)
-            if bbox[2] - bbox[0] <= max_width:
-                current_line.append(word)
-            else:
-                lines.append(' '.join(current_line))
-                current_line = [word]
-        if current_line:
-            lines.append(' '.join(current_line))
+        lines = self.word_wrap_text(draw, message, font_quote, PAGE_WIDTH_PX - 400)
         
-        y_offset = 1200
+        y_offset = 1450
         for line in lines:
             self.draw_text_centered(draw, line, y_offset, font_quote, '#4b5563', PAGE_WIDTH_PX)
             y_offset += 60
         
-        # Footer ornament
         self.draw_text_centered(draw, "✦", PAGE_HEIGHT_PX - 200, font_ornament, '#fbbf24', PAGE_WIDTH_PX)
         
         return img
     
     async def create_the_end_page(self, book_title: str) -> Image.Image:
-        """Create The End bonus page"""
-        # Sky to purple gradient
+        """Create The End page"""
         img = self.create_gradient_background(
             PAGE_WIDTH_PX, PAGE_HEIGHT_PX,
-            (240, 249, 255),  # Sky-50
-            (250, 245, 255)   # Purple-50
+            (240, 249, 255), (250, 245, 255)
         )
         draw = ImageDraw.Draw(img)
         
-        # Main heading
-        font_title = self.get_font(144, bold=True)
-        self.draw_text_centered(draw, "The End", 300, font_title, '#7c3aed', PAGE_WIDTH_PX)
+        font_title = self.get_font(160, bold=True)
+        self.draw_text_centered(draw, "The End", 350, font_title, '#7c3aed', PAGE_WIDTH_PX)
         
-        # Decorative stars
         font_stars = self.get_font(48)
-        self.draw_text_centered(draw, "✦    ✦    ✦", 480, font_stars, '#a855f7', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, "✦    ✦    ✦", 550, font_stars, '#a855f7', PAGE_WIDTH_PX)
         
-        # Download and draw mascot image
         mascot_img = await self.download_image(BONUS_IMAGES['the_end'])
         if mascot_img:
-            frame_x = (PAGE_WIDTH_PX - 600) // 2
-            frame_y = 600
-            frame_size = 600
+            frame_size = 700
+            frame_x = (PAGE_WIDTH_PX - frame_size) // 2
+            frame_y = 700
             
-            # White border
             draw.rounded_rectangle(
                 [(frame_x - 20, frame_y - 20), (frame_x + frame_size + 20, frame_y + frame_size + 20)],
                 radius=40, fill=(255, 255, 255)
             )
-            
             mascot_img = mascot_img.resize((frame_size, frame_size), Image.Resampling.LANCZOS)
             img.paste(mascot_img, (frame_x, frame_y))
             
-            # Trail sparkles
-            draw.text((frame_x - 80, frame_y + 300), "✨", fill='#fbbf24', font=font_stars)
-            draw.text((frame_x - 120, frame_y + 200), "✦", fill='#a855f7', font=self.get_font(32))
+            draw.text((frame_x - 80, frame_y + 350), "✨", fill='#fbbf24', font=font_stars)
         
-        # Closing message
         font_message = self.get_font(52)
-        self.draw_text_centered(draw, "But remember, every ending is just", 1350, font_message, '#4b5563', PAGE_WIDTH_PX)
-        self.draw_text_centered(draw, "the beginning of a new adventure!", 1420, font_message, '#4b5563', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, "But remember, every ending is just", 1550, font_message, '#4b5563', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, "the beginning of a new adventure!", 1630, font_message, '#4b5563', PAGE_WIDTH_PX)
         
-        # Book title
         font_small = self.get_font(36)
         self.draw_text_centered(draw, book_title or "", PAGE_HEIGHT_PX - 150, font_small, '#a855f7', PAGE_WIDTH_PX)
         
         return img
     
     async def create_thank_you_page(self, child_name: str) -> Image.Image:
-        """Create Thank You bonus page"""
-        # Pink gradient
+        """Create Thank You page"""
         img = self.create_gradient_background(
             PAGE_WIDTH_PX, PAGE_HEIGHT_PX,
-            (253, 242, 248),  # Pink-50
-            (250, 245, 255)   # Purple-50
+            (253, 242, 248), (250, 245, 255)
         )
         draw = ImageDraw.Draw(img)
         
-        # Heart decorations
         font_heart = self.get_font(64)
-        draw.text((200, 150), "♥", fill='#f9a8d4', font=font_heart)
-        draw.text((PAGE_WIDTH_PX - 280, 250), "♥", fill='#c4b5fd', font=font_heart)
-        draw.text((300, PAGE_HEIGHT_PX - 300), "♥", fill='#fecdd3', font=font_heart)
+        draw.text((200, 200), "♥", fill='#f9a8d4', font=font_heart)
+        draw.text((PAGE_WIDTH_PX - 280, 350), "♥", fill='#c4b5fd', font=font_heart)
+        draw.text((300, PAGE_HEIGHT_PX - 400), "♥", fill='#fecdd3', font=font_heart)
         
-        # Title
         font_title = self.get_font(96, bold=True)
         font_subtitle = self.get_font(64)
         
-        self.draw_text_centered(draw, "Thank You", 250, font_title, '#7c3aed', PAGE_WIDTH_PX)
-        self.draw_text_centered(draw, "for reading!", 370, font_subtitle, '#ec4899', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, "Thank You", 300, font_title, '#7c3aed', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, "for reading!", 420, font_subtitle, '#ec4899', PAGE_WIDTH_PX)
         
-        # Waving Azora in circular frame
         mascot_img = await self.download_image(BONUS_IMAGES['thank_you'])
         if mascot_img:
             center_x = PAGE_WIDTH_PX // 2
-            center_y = 850
-            radius = 300
+            center_y = 1050
+            radius = 350
             
-            # Gradient border
-            draw.ellipse(
-                (center_x - radius - 15, center_y - radius - 15,
-                 center_x + radius + 15, center_y + radius + 15),
-                fill=(244, 194, 194)
-            )
-            draw.ellipse(
-                (center_x - radius - 8, center_y - radius - 8,
-                 center_x + radius + 8, center_y + radius + 8),
-                fill=(196, 181, 253)
-            )
-            
+            draw.ellipse((center_x - radius - 15, center_y - radius - 15,
+                         center_x + radius + 15, center_y + radius + 15), fill=(244, 194, 194))
+            draw.ellipse((center_x - radius - 8, center_y - radius - 8,
+                         center_x + radius + 8, center_y + radius + 8), fill=(196, 181, 253))
             self.draw_circular_image(img, mascot_img, center_x, center_y, radius)
             
-            # Wave emoji
             wave_font = self.get_font(72)
             draw.text((center_x + radius - 50, center_y - radius + 50), "👋", font=wave_font)
         
-        # Message
         font_message = self.get_font(52)
         name_text = f"{child_name}, you're" if child_name else "You're"
-        self.draw_text_centered(draw, name_text, 1300, font_message, '#4b5563', PAGE_WIDTH_PX)
-        self.draw_text_centered(draw, "an amazing reader!", 1370, font_message, '#4b5563', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, name_text, 1550, font_message, '#4b5563', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, "an amazing reader!", 1630, font_message, '#4b5563', PAGE_WIDTH_PX)
         
         font_cta = self.get_font(48)
-        self.draw_text_centered(draw, "Come back soon for more adventures!", 1480, font_cta, '#a855f7', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, "Come back soon for more adventures!", 1750, font_cta, '#a855f7', PAGE_WIDTH_PX)
         
-        # Footer
         font_footer = self.get_font(36)
         self.draw_text_centered(draw, "Made with ♥ on Azories.com", PAGE_HEIGHT_PX - 150, font_footer, '#9ca3af', PAGE_WIDTH_PX)
         
         return img
     
     async def create_certificate_page(self, child_name: str, book_title: str) -> Image.Image:
-        """Create Certificate of Achievement page"""
-        # Amber/gold background
+        """Create Certificate page"""
         img = self.create_gradient_background(
             PAGE_WIDTH_PX, PAGE_HEIGHT_PX,
-            (254, 252, 232),  # Amber-50
-            (254, 249, 195)   # Yellow-100
+            (254, 252, 232), (254, 249, 195)
         )
         draw = ImageDraw.Draw(img)
         
-        # Ornate triple border
-        amber_dark = (217, 119, 6)
-        amber_mid = (251, 191, 36)
-        amber_light = (253, 230, 138)
-        
-        draw.rectangle([(60, 60), (PAGE_WIDTH_PX - 60, PAGE_HEIGHT_PX - 60)], outline=amber_dark, width=12)
-        draw.rectangle([(90, 90), (PAGE_WIDTH_PX - 90, PAGE_HEIGHT_PX - 90)], outline=amber_mid, width=6)
-        draw.rectangle([(115, 115), (PAGE_WIDTH_PX - 115, PAGE_HEIGHT_PX - 115)], outline=amber_light, width=3)
+        # Ornate borders
+        draw.rectangle([(60, 60), (PAGE_WIDTH_PX - 60, PAGE_HEIGHT_PX - 60)], outline=(217, 119, 6), width=12)
+        draw.rectangle([(90, 90), (PAGE_WIDTH_PX - 90, PAGE_HEIGHT_PX - 90)], outline=(251, 191, 36), width=6)
+        draw.rectangle([(115, 115), (PAGE_WIDTH_PX - 115, PAGE_HEIGHT_PX - 115)], outline=(253, 230, 138), width=3)
         
         # Corner ornaments
         font_ornament = self.get_font(72)
-        ornament = "❧"
-        draw.text((130, 130), ornament, fill='#d97706', font=font_ornament)
-        draw.text((PAGE_WIDTH_PX - 200, 130), ornament, fill='#d97706', font=font_ornament)
-        draw.text((130, PAGE_HEIGHT_PX - 200), ornament, fill='#d97706', font=font_ornament)
-        draw.text((PAGE_WIDTH_PX - 200, PAGE_HEIGHT_PX - 200), ornament, fill='#d97706', font=font_ornament)
+        draw.text((130, 130), "❧", fill='#d97706', font=font_ornament)
+        draw.text((PAGE_WIDTH_PX - 200, 130), "❧", fill='#d97706', font=font_ornament)
+        draw.text((130, PAGE_HEIGHT_PX - 200), "❧", fill='#d97706', font=font_ornament)
+        draw.text((PAGE_WIDTH_PX - 200, PAGE_HEIGHT_PX - 200), "❧", fill='#d97706', font=font_ornament)
         
-        # Certificate text
         font_small = self.get_font(36)
         font_title = self.get_font(96, bold=True)
         font_medium = self.get_font(48)
         font_name = self.get_font(80, bold=True)
         font_book = self.get_font(56)
         
-        self.draw_text_centered(draw, "CERTIFICATE OF", 220, font_small, '#92400e', PAGE_WIDTH_PX)
-        self.draw_text_centered(draw, "Achievement", 300, font_title, '#92400e', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, "CERTIFICATE OF", 280, font_small, '#92400e', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, "Achievement", 380, font_title, '#92400e', PAGE_WIDTH_PX)
         
-        self.draw_text_centered(draw, "This certifies that", 450, font_medium, '#4b5563', PAGE_WIDTH_PX)
-        self.draw_text_centered(draw, child_name or "________________", 540, font_name, '#b45309', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, "This certifies that", 560, font_medium, '#4b5563', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, child_name or "________________", 660, font_name, '#b45309', PAGE_WIDTH_PX)
         
-        # Underline for name
         name_width = len(child_name or "________________") * 40
         line_x = (PAGE_WIDTH_PX - name_width) // 2
-        draw.line([(line_x, 640), (line_x + name_width, 640)], fill='#d97706', width=4)
+        draw.line([(line_x, 760), (line_x + name_width, 760)], fill='#d97706', width=4)
         
-        self.draw_text_centered(draw, "has successfully completed reading", 700, font_medium, '#4b5563', PAGE_WIDTH_PX)
-        self.draw_text_centered(draw, f'"{book_title or "This Wonderful Story"}"', 780, font_book, '#7c3aed', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, "has successfully completed reading", 840, font_medium, '#4b5563', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, f'"{book_title or "This Wonderful Story"}"', 940, font_book, '#7c3aed', PAGE_WIDTH_PX)
         
-        # Small mascot image
         mascot_img = await self.download_image(BONUS_IMAGES['certificate'])
         if mascot_img:
             center_x = PAGE_WIDTH_PX // 2
-            center_y = 1020
-            radius = 150
+            center_y = 1250
+            radius = 180
             
-            # Border
-            draw.ellipse(
-                (center_x - radius - 10, center_y - radius - 10,
-                 center_x + radius + 10, center_y + radius + 10),
-                fill=(251, 191, 36)
-            )
-            
+            draw.ellipse((center_x - radius - 10, center_y - radius - 10,
+                         center_x + radius + 10, center_y + radius + 10), fill=(251, 191, 36))
             self.draw_circular_image(img, mascot_img, center_x, center_y, radius)
         
-        # Date
         date_str = datetime.now().strftime("%B %d, %Y")
-        self.draw_text_centered(draw, date_str, 1280, font_small, '#6b7280', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, date_str, 1550, font_small, '#6b7280', PAGE_WIDTH_PX)
         
-        # Star rating
-        stars = "★  ★  ★  ★  ★"
         font_stars = self.get_font(64)
-        self.draw_text_centered(draw, stars, 1380, font_stars, '#fbbf24', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, "★  ★  ★  ★  ★", 1680, font_stars, '#fbbf24', PAGE_WIDTH_PX)
         
         return img
     
     async def create_about_azories_page(self) -> Image.Image:
         """Create About Azories page"""
-        # Purple gradient
         img = self.create_gradient_background(
             PAGE_WIDTH_PX, PAGE_HEIGHT_PX,
-            (109, 40, 217),   # Purple-600
-            (79, 70, 229)     # Indigo-600
+            (109, 40, 217), (79, 70, 229)
         )
         draw = ImageDraw.Draw(img)
         
-        # Background pattern (subtle stars)
         font_star = self.get_font(120)
-        draw.text((150, 150), "✦", fill='#ffffff20', font=font_star)
-        draw.text((PAGE_WIDTH_PX - 350, 300), "✦", fill='#ffffff15', font=self.get_font(80))
-        draw.text((200, PAGE_HEIGHT_PX - 500), "✦", fill='#ffffff20', font=self.get_font(100))
-        draw.text((PAGE_WIDTH_PX - 400, PAGE_HEIGHT_PX - 600), "✦", fill='#ffffff15', font=self.get_font(60))
+        draw.text((150, 200), "✦", fill='#ffffff20', font=font_star)
+        draw.text((PAGE_WIDTH_PX - 350, 400), "✦", fill='#ffffff15', font=self.get_font(80))
+        draw.text((200, PAGE_HEIGHT_PX - 600), "✦", fill='#ffffff20', font=self.get_font(100))
         
-        # Title
         font_small = self.get_font(72, bold=True)
         font_title = self.get_font(120, bold=True)
         
-        self.draw_text_centered(draw, "About", 200, font_small, '#ffffff', PAGE_WIDTH_PX)
-        self.draw_text_centered(draw, "Azories", 300, font_title, '#ffffff', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, "About", 300, font_small, '#ffffff', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, "Azories", 420, font_title, '#ffffff', PAGE_WIDTH_PX)
         
-        # Mascot image
         mascot_img = await self.download_image(BONUS_IMAGES['about'])
         if mascot_img:
-            frame_x = (PAGE_WIDTH_PX - 480) // 2
-            frame_y = 500
-            frame_size = 480
+            frame_size = 550
+            frame_x = (PAGE_WIDTH_PX - frame_size) // 2
+            frame_y = 650
             
-            # White/semi-transparent border
             draw.rounded_rectangle(
                 [(frame_x - 15, frame_y - 15), (frame_x + frame_size + 15, frame_y + frame_size + 15)],
                 radius=30, fill=(255, 255, 255, 50)
             )
-            
             mascot_img = mascot_img.resize((frame_size, frame_size), Image.Resampling.LANCZOS)
             img.paste(mascot_img, (frame_x, frame_y))
         
-        # Description
         font_desc = self.get_font(44)
         desc_lines = [
             "Azories creates personalized AI-powered",
             "stories that bring imagination to life.",
             "Every story is unique, just like you!"
         ]
-        y_offset = 1100
+        y_offset = 1350
         for line in desc_lines:
             self.draw_text_centered(draw, line, y_offset, font_desc, '#e9d5ff', PAGE_WIDTH_PX)
-            y_offset += 60
+            y_offset += 65
         
-        # Features
         font_features = self.get_font(36)
-        self.draw_text_centered(draw, "✦ AI-Powered    ✦ Personalized    ✦ Magical", 1350, font_features, '#c4b5fd', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, "✦ AI-Powered    ✦ Personalized    ✦ Magical", 1600, font_features, '#c4b5fd', PAGE_WIDTH_PX)
         
-        # Website
         font_url = self.get_font(40)
         self.draw_text_centered(draw, "www.azories.com", PAGE_HEIGHT_PX - 150, font_url, '#a5b4fc', PAGE_WIDTH_PX)
         
@@ -581,43 +601,37 @@ class PrintPDFGenerator:
     
     async def create_meet_azora_page(self) -> Image.Image:
         """Create Meet Azora page"""
-        # Rose/purple gradient
         img = self.create_gradient_background(
             PAGE_WIDTH_PX, PAGE_HEIGHT_PX,
-            (255, 241, 242),  # Rose-50
-            (250, 245, 255)   # Purple-50
+            (255, 241, 242), (250, 245, 255)
         )
         draw = ImageDraw.Draw(img)
         
-        # Top ornament
         font_ornament = self.get_font(48)
-        ornament_y = 120
+        ornament_y = 150
         draw.line([(PAGE_WIDTH_PX // 2 - 300, ornament_y), (PAGE_WIDTH_PX // 2 - 80, ornament_y)], fill='#fda4af', width=3)
         self.draw_text_centered(draw, "✦", ornament_y - 20, font_ornament, '#fb7185', PAGE_WIDTH_PX)
         draw.line([(PAGE_WIDTH_PX // 2 + 80, ornament_y), (PAGE_WIDTH_PX // 2 + 300, ornament_y)], fill='#fda4af', width=3)
         
-        # Title
         font_meet = self.get_font(72, bold=True)
         font_name = self.get_font(120, bold=True)
         
-        self.draw_text_centered(draw, "Meet", 220, font_meet, '#7c3aed', PAGE_WIDTH_PX)
-        self.draw_text_centered(draw, "Azora", 340, font_name, '#db2777', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, "Meet", 280, font_meet, '#7c3aed', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, "Azora", 410, font_name, '#db2777', PAGE_WIDTH_PX)
         
-        # Mascot image in fancy frame
         mascot_img = await self.download_image(BONUS_IMAGES['meet_azora'])
         if mascot_img:
-            frame_x = (PAGE_WIDTH_PX - 550) // 2
-            frame_y = 500
-            frame_size = 550
+            frame_size = 650
+            frame_x = (PAGE_WIDTH_PX - frame_size) // 2
+            frame_y = 600
             
-            # Gradient border effect
             draw.rounded_rectangle(
                 [(frame_x - 15, frame_y - 15), (frame_x + frame_size + 15, frame_y + frame_size + 15)],
-                radius=30, fill=(253, 164, 175)  # Rose-300
+                radius=30, fill=(253, 164, 175)
             )
             draw.rounded_rectangle(
                 [(frame_x - 8, frame_y - 8), (frame_x + frame_size + 8, frame_y + frame_size + 8)],
-                radius=25, fill=(196, 181, 253)  # Purple-300
+                radius=25, fill=(196, 181, 253)
             )
             draw.rounded_rectangle(
                 [(frame_x, frame_y), (frame_x + frame_size, frame_y + frame_size)],
@@ -627,138 +641,68 @@ class PrintPDFGenerator:
             mascot_img = mascot_img.resize((frame_size - 20, frame_size - 20), Image.Resampling.LANCZOS)
             img.paste(mascot_img, (frame_x + 10, frame_y + 10))
             
-            # Sparkle accents
             draw.text((frame_x - 50, frame_y - 40), "✨", fill='#fbbf24', font=self.get_font(56))
-            draw.text((frame_x + frame_size - 20, frame_y + frame_size - 50), "✦", fill='#a855f7', font=self.get_font(48))
         
-        # Description
         font_desc = self.get_font(46)
         desc_lines = [
             "Hi! I'm Azora, your magical story guide.",
             "I love helping kids discover amazing adventures",
             "through the power of imagination and reading!"
         ]
-        y_offset = 1150
+        y_offset = 1400
         for line in desc_lines:
             self.draw_text_centered(draw, line, y_offset, font_desc, '#4b5563', PAGE_WIDTH_PX)
-            y_offset += 60
+            y_offset += 65
         
-        # CTA
         font_cta = self.get_font(40)
-        self.draw_text_centered(draw, "Ready for your next adventure?", 1400, font_cta, '#a855f7', PAGE_WIDTH_PX)
+        self.draw_text_centered(draw, "Ready for your next adventure?", 1650, font_cta, '#a855f7', PAGE_WIDTH_PX)
         
-        # Footer ornament
         draw.line([(PAGE_WIDTH_PX // 2 - 300, PAGE_HEIGHT_PX - 150), (PAGE_WIDTH_PX // 2 - 80, PAGE_HEIGHT_PX - 150)], fill='#c4b5fd', width=3)
         self.draw_text_centered(draw, "♥", PAGE_HEIGHT_PX - 170, font_ornament, '#a855f7', PAGE_WIDTH_PX)
         draw.line([(PAGE_WIDTH_PX // 2 + 80, PAGE_HEIGHT_PX - 150), (PAGE_WIDTH_PX // 2 + 300, PAGE_HEIGHT_PX - 150)], fill='#c4b5fd', width=3)
         
         return img
     
-    async def create_story_page(self, page_data: dict, page_number: int) -> Image.Image:
-        """Create a story content page with image and text"""
-        # Cream paper background
-        img = Image.new('RGB', (PAGE_WIDTH_PX, PAGE_HEIGHT_PX), (253, 251, 247))
+    async def create_filler_page(self, image_key: str) -> Image.Image:
+        """Create a filler page with mascot image"""
+        img = self.create_gradient_background(
+            PAGE_WIDTH_PX, PAGE_HEIGHT_PX,
+            (250, 245, 255), (255, 250, 253)
+        )
         draw = ImageDraw.Draw(img)
         
-        image_url = page_data.get('image_url')
-        text_content = page_data.get('text_content', '')
-        chapter_title = page_data.get('chapterTitle')
-        is_first_of_chapter = page_data.get('isFirstOfChapter', False)
-        
-        # Calculate layout
-        margin = 100
-        content_width = PAGE_WIDTH_PX - (margin * 2)
-        
-        y_offset = margin
-        
-        # Chapter header if applicable
-        if chapter_title and is_first_of_chapter:
-            font_chapter_label = self.get_font(32)
-            font_chapter_title = self.get_font(56, bold=True)
+        mascot_img = await self.download_image(BONUS_IMAGES.get(image_key, BONUS_IMAGES['filler_1']))
+        if mascot_img:
+            # Large centered image
+            margin = 150
+            available_width = PAGE_WIDTH_PX - (margin * 2)
+            available_height = PAGE_HEIGHT_PX - (margin * 2)
             
-            chapter_num = page_data.get('chapterNumber', '')
-            if chapter_num:
-                self.draw_text_centered(draw, f"Chapter {chapter_num}", y_offset, font_chapter_label, '#9ca3af', PAGE_WIDTH_PX)
-                y_offset += 50
+            img_aspect = mascot_img.width / mascot_img.height
+            page_aspect = available_width / available_height
             
-            self.draw_text_centered(draw, chapter_title, y_offset, font_chapter_title, '#1f2937', PAGE_WIDTH_PX)
-            y_offset += 100
+            if img_aspect > page_aspect:
+                new_width = available_width
+                new_height = int(available_width / img_aspect)
+            else:
+                new_height = available_height
+                new_width = int(available_height * img_aspect)
             
-            # Decorative line
-            line_width = 200
-            draw.line(
-                [(PAGE_WIDTH_PX // 2 - line_width // 2, y_offset),
-                 (PAGE_WIDTH_PX // 2 + line_width // 2, y_offset)],
-                fill='#d1d5db', width=3
+            mascot_img = mascot_img.resize((new_width, new_height), Image.Resampling.LANCZOS)
+            
+            x = (PAGE_WIDTH_PX - new_width) // 2
+            y = (PAGE_HEIGHT_PX - new_height) // 2
+            
+            # Subtle frame
+            draw.rounded_rectangle(
+                [(x - 15, y - 15), (x + new_width + 15, y + new_height + 15)],
+                radius=20, fill=(255, 255, 255)
             )
-            y_offset += 50
+            img.paste(mascot_img, (x, y))
         
-        # Image section
-        if image_url:
-            story_img = await self.download_image(image_url)
-            if story_img:
-                # Image takes up ~55% of page height
-                img_height = int((PAGE_HEIGHT_PX - margin * 2) * 0.55)
-                img_width = content_width
-                
-                # Maintain aspect ratio
-                aspect = story_img.width / story_img.height
-                if aspect > (img_width / img_height):
-                    new_width = img_width
-                    new_height = int(img_width / aspect)
-                else:
-                    new_height = img_height
-                    new_width = int(img_height * aspect)
-                
-                story_img = story_img.resize((new_width, new_height), Image.Resampling.LANCZOS)
-                
-                # Center image
-                img_x = (PAGE_WIDTH_PX - new_width) // 2
-                img.paste(story_img, (img_x, y_offset))
-                
-                y_offset += new_height + 40
-        
-        # Text section
-        if text_content:
-            font_text = self.get_font(42)
-            
-            # Word wrap text
-            max_text_width = content_width - 40
-            words = text_content.split()
-            lines = []
-            current_line = []
-            
-            for word in words:
-                test_line = ' '.join(current_line + [word])
-                bbox = draw.textbbox((0, 0), test_line, font=font_text)
-                if bbox[2] - bbox[0] <= max_text_width:
-                    current_line.append(word)
-                else:
-                    if current_line:
-                        lines.append(' '.join(current_line))
-                    current_line = [word]
-            if current_line:
-                lines.append(' '.join(current_line))
-            
-            # Draw text lines
-            text_x = margin + 20
-            line_height = 58
-            
-            for line in lines:
-                if y_offset + line_height > PAGE_HEIGHT_PX - margin - 50:
-                    break  # Don't overflow page
-                draw.text((text_x, y_offset), line, fill='#1f2937', font=font_text)
-                y_offset += line_height
-        
-        # Page number
-        font_page_num = self.get_font(32)
-        page_num_text = str(page_number)
-        bbox = draw.textbbox((0, 0), page_num_text, font=font_page_num)
-        page_num_width = bbox[2] - bbox[0]
-        draw.text(
-            (PAGE_WIDTH_PX - margin - page_num_width, PAGE_HEIGHT_PX - margin),
-            page_num_text, fill='#9ca3af', font=font_page_num
-        )
+        # Small branding
+        font_footer = self.get_font(32)
+        self.draw_text_centered(draw, "Azories.com", PAGE_HEIGHT_PX - 100, font_footer, '#c4b5fd', PAGE_WIDTH_PX)
         
         return img
     
@@ -768,7 +712,6 @@ class PrintPDFGenerator:
         draw = ImageDraw.Draw(img)
         
         if is_back:
-            # Back cover
             cover_url = book.get('back_cover_image')
             gradient_start = book.get('cover_gradient_start', '#667eea')
             gradient_end = book.get('cover_gradient_end', '#764ba2')
@@ -779,43 +722,24 @@ class PrintPDFGenerator:
                     cover_img = cover_img.resize((PAGE_WIDTH_PX, PAGE_HEIGHT_PX), Image.Resampling.LANCZOS)
                     img.paste(cover_img, (0, 0))
             else:
-                # Gradient background
                 start_rgb = self.hex_to_rgb(gradient_start)
                 end_rgb = self.hex_to_rgb(gradient_end)
                 img = self.create_gradient_background(PAGE_WIDTH_PX, PAGE_HEIGHT_PX, end_rgb, start_rgb)
                 draw = ImageDraw.Draw(img)
                 
-                # Back cover text
                 font_desc = self.get_font(44)
                 description = book.get('back_cover_text') or book.get('description', 'Thank you for reading!')
-                
-                # Word wrap
-                max_width = PAGE_WIDTH_PX - 400
-                words = description.split()
-                lines = []
-                current_line = []
-                for word in words:
-                    test_line = ' '.join(current_line + [word])
-                    bbox = draw.textbbox((0, 0), test_line, font=font_desc)
-                    if bbox[2] - bbox[0] <= max_width:
-                        current_line.append(word)
-                    else:
-                        lines.append(' '.join(current_line))
-                        current_line = [word]
-                if current_line:
-                    lines.append(' '.join(current_line))
+                lines = self.word_wrap_text(draw, description, font_desc, PAGE_WIDTH_PX - 400)
                 
                 y_offset = PAGE_HEIGHT_PX // 2 - (len(lines) * 60) // 2
                 for line in lines:
                     self.draw_text_centered(draw, line, y_offset, font_desc, '#ffffff', PAGE_WIDTH_PX)
                     y_offset += 60
                 
-                # Age rating
                 if book.get('age_rating'):
                     font_small = self.get_font(36)
                     self.draw_text_centered(draw, book['age_rating'], PAGE_HEIGHT_PX - 200, font_small, '#ffffffcc', PAGE_WIDTH_PX)
         else:
-            # Front cover
             cover_url = book.get('cover_image')
             
             if cover_url:
@@ -824,7 +748,6 @@ class PrintPDFGenerator:
                     cover_img = cover_img.resize((PAGE_WIDTH_PX, PAGE_HEIGHT_PX), Image.Resampling.LANCZOS)
                     img.paste(cover_img, (0, 0))
             else:
-                # Gradient with title
                 gradient_start = book.get('cover_gradient_start', '#667eea')
                 gradient_end = book.get('cover_gradient_end', '#764ba2')
                 start_rgb = self.hex_to_rgb(gradient_start)
@@ -839,28 +762,15 @@ class PrintPDFGenerator:
                 self.draw_text_centered(draw, book.get('author_name', ''), PAGE_HEIGHT_PX // 2 + 50, font_author, '#ffffffcc', PAGE_WIDTH_PX)
         
         return img
-    
+
     async def generate_print_pdf(self, book: dict, pages: list, 
                                   child_name: str = None, 
                                   dedication_message: str = None,
                                   output_path: str = None) -> str:
-        """
-        Generate a complete print-ready PDF
-        
-        Args:
-            book: Book data including title, cover, etc.
-            pages: List of story pages
-            child_name: Name for personalization
-            dedication_message: Custom dedication
-            output_path: Where to save the PDF
-            
-        Returns:
-            Path to the generated PDF
-        """
+        """Generate complete print-ready PDF with spread layout"""
         if not output_path:
             output_path = tempfile.mktemp(suffix='.pdf')
         
-        # Create PDF canvas
         c = canvas.Canvas(output_path, pagesize=(PAGE_WIDTH_PT, PAGE_HEIGHT_PT))
         
         book_title = book.get('title', 'My Story')
@@ -868,7 +778,7 @@ class PrintPDFGenerator:
         
         all_images = []
         
-        logger.info("Generating print PDF...")
+        logger.info("Generating print PDF (8x10 portrait with spreads)...")
         
         # 1. Front Cover
         logger.info("Creating front cover...")
@@ -885,12 +795,18 @@ class PrintPDFGenerator:
         dedication_img = await self.create_dedication_page(child_name, dedication_message)
         all_images.append(('Dedication', dedication_img))
         
-        # 4. Story Content Pages
+        # 4. Story Spreads (Left = Image, Right = Text)
         story_pages = [p for p in pages if not p.get('isBackCover')]
         for i, page in enumerate(story_pages):
-            logger.info(f"Creating story page {i + 1}/{len(story_pages)}...")
-            story_img = await self.create_story_page(page, i + 1)
-            all_images.append((f'Page {i + 1}', story_img))
+            logger.info(f"Creating story spread {i + 1}/{len(story_pages)}...")
+            
+            # Left page - Image
+            img_page = await self.create_story_image_page(page)
+            all_images.append((f'Story {i+1} Image', img_page))
+            
+            # Right page - Text
+            text_page = await self.create_story_text_page(page, i + 1)
+            all_images.append((f'Story {i+1} Text', text_page))
         
         # 5. The End Page
         logger.info("Creating 'The End' page...")
@@ -917,19 +833,35 @@ class PrintPDFGenerator:
         meet_img = await self.create_meet_azora_page()
         all_images.append(('Meet Azora', meet_img))
         
-        # 10. Back Cover
+        # 10. Calculate filler pages needed for even count
+        # Current count + back cover
+        current_count = len(all_images) + 1  # +1 for back cover
+        
+        # Need even page count, minimum 24 for perfect binding
+        target_pages = max(24, current_count)
+        if target_pages % 2 != 0:
+            target_pages += 1
+        
+        filler_needed = target_pages - current_count
+        logger.info(f"Adding {filler_needed} filler pages...")
+        
+        filler_images = ['filler_1', 'filler_2', 'filler_3']
+        for i in range(filler_needed):
+            filler_key = filler_images[i % len(filler_images)]
+            filler_img = await self.create_filler_page(filler_key)
+            all_images.append((f'Filler {i+1}', filler_img))
+        
+        # 11. Back Cover (last page)
         logger.info("Creating back cover...")
         back_cover_img = await self.create_cover_page(book, is_back=True)
         all_images.append(('Back Cover', back_cover_img))
         
         # Add all images to PDF
         for name, img in all_images:
-            # Convert PIL image to bytes
             img_buffer = io.BytesIO()
             img.save(img_buffer, format='JPEG', quality=95, dpi=(DPI, DPI))
             img_buffer.seek(0)
             
-            # Add to PDF
             c.drawImage(
                 ImageReader(img_buffer),
                 0, 0,
@@ -938,7 +870,6 @@ class PrintPDFGenerator:
             )
             c.showPage()
         
-        # Save PDF
         c.save()
         
         logger.info(f"PDF generated successfully: {output_path}")
@@ -952,28 +883,16 @@ pdf_generator = PrintPDFGenerator()
 
 
 async def generate_test_pdf(book_id: str, db) -> dict:
-    """
-    Generate a test PDF for a specific book
-    
-    Returns dict with:
-    - path: Path to generated PDF
-    - pages: Number of pages
-    - size_bytes: File size
-    """
-    # Fetch book data
+    """Generate a test PDF for a specific book"""
     book = await db.books.find_one({"id": book_id}, {"_id": 0})
     if not book:
         raise ValueError(f"Book not found: {book_id}")
     
-    # Get pages - first try from book document, then from separate collection
     pages = book.get('pages', [])
-    
     if not pages:
-        # Try fetching from separate pages collection
         pages_cursor = db.pages.find({"book_id": book_id}, {"_id": 0}).sort("sequence", 1)
         pages = await pages_cursor.to_list(length=100)
     
-    # Generate PDF
     output_path = f"/tmp/print_test_{book_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
     
     await pdf_generator.generate_print_pdf(
@@ -982,8 +901,14 @@ async def generate_test_pdf(book_id: str, db) -> dict:
         output_path=output_path
     )
     
-    # Get file info
     file_size = os.path.getsize(output_path)
+    story_pages = len([p for p in pages if not p.get('isBackCover')])
+    
+    # Calculate total: cover + welcome + dedication + (story_pages * 2 for spreads) + 5 bonus + fillers + back cover
+    base_pages = 1 + 1 + 1 + (story_pages * 2) + 5 + 1  # 29 for 10 stories
+    total_pages = max(24, base_pages)
+    if total_pages % 2 != 0:
+        total_pages += 1
     
     return {
         "path": output_path,
@@ -991,6 +916,8 @@ async def generate_test_pdf(book_id: str, db) -> dict:
         "size_bytes": file_size,
         "size_mb": round(file_size / (1024 * 1024), 2),
         "book_title": book.get('title'),
-        "total_story_pages": len(pages),
-        "total_pdf_pages": len(pages) + 10  # +10 for bonus pages and covers
+        "total_story_pages": story_pages,
+        "total_pdf_pages": total_pages,
+        "format": "8x10 Portrait",
+        "layout": "Spread (Image left, Text right)"
     }
