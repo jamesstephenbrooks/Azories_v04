@@ -626,9 +626,22 @@ export default function BookReader() {
       const currentToken = localStorage.getItem('azories-token');
       const headers = currentToken ? { Authorization: `Bearer ${currentToken}` } : {};
       
+      console.log('[BookReader] Fetching book:', bookId);
+      console.log('[BookReader] Auth token present:', !!currentToken);
+      
       const res = await axios.get(`${API}/books/${bookId}/full`, {
         headers,
         signal: abortControllerRef.current?.signal
+      });
+      
+      // DEBUG: Log raw API response
+      console.log('[BookReader] RAW API Response:', {
+        title: res.data.title,
+        requires_auth: res.data.requires_auth,
+        chapters_count: res.data.chapters?.length || 0,
+        pages_in_chapter_1: res.data.chapters?.[0]?.pages?.length || 0,
+        direct_pages_count: res.data.pages?.length || 0,
+        first_page_image: res.data.chapters?.[0]?.pages?.[0]?.image_url?.substring(0, 50) || 'NO IMAGE'
       });
       
       // Check again after async operation
@@ -697,6 +710,18 @@ export default function BookReader() {
             chapterNumber: 1
           }));
           console.log('[BookReader] Loaded', pages.length, 'pages from pages (no text)');
+        } else {
+          console.log('[BookReader] NO PAGES FOUND! directPages:', directPages.length, 'chapters:', chapters.length);
+          console.log('[BookReader] chaptersHasContent:', chaptersHasContent, 'pagesHasContent:', pagesHasContent);
+        }
+        
+        console.log('[BookReader] Final pages count:', pages.length);
+        if (pages.length > 0) {
+          console.log('[BookReader] First page:', { 
+            hasImage: !!pages[0].image_url, 
+            hasText: !!pages[0].text_content,
+            imageUrl: pages[0].image_url?.substring(0, 50)
+          });
         }
         
         // Append back cover as final page if available

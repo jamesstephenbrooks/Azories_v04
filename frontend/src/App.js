@@ -93,7 +93,7 @@ function AppContent() {
   const { shouldShow, completeOnboarding } = useOnboarding();
   const location = useLocation();
   const isAdminPage = location.pathname.startsWith("/admin");
-  const isBookReaderPage = location.pathname.startsWith("/read/");
+  const isBookReaderPage = location.pathname.startsWith("/read/") || location.pathname.startsWith("/book/");
   
   // Track page views automatically
   usePageTracking();
@@ -111,6 +111,7 @@ function AppContent() {
           <Route path="/coming-soon" element={<ComingSoon />} />
           <Route path="/library" element={<Library />} />
           <Route path="/read/:bookId" element={<BookReader />} />
+          <Route path="/book/:bookId" element={<BookReader />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/terms" element={<TermsOfService />} />
