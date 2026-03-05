@@ -619,7 +619,8 @@ const RealisticPageFlip = forwardRef(({
   showControls = true,
   className = '',
   isFullscreen = false,
-  isMobilePortrait = false
+  isMobilePortrait = false,
+  disableSwipe = false // iPad: disable swipe, use tap zones instead
 }, ref) => {
   const flipBookRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(initialPage);
@@ -859,7 +860,7 @@ const RealisticPageFlip = forwardRef(({
           />
         
         <HTMLFlipBook
-          key={`flipbook-${pages.length}-${width}-${height}-${isMobilePortrait ? 'portrait' : 'landscape'}`}
+          key={`flipbook-${pages.length}-${width}-${height}-${isMobilePortrait ? 'portrait' : 'landscape'}-${disableSwipe}`}
           ref={flipBookRef}
           width={width}
           height={height}
@@ -869,10 +870,10 @@ const RealisticPageFlip = forwardRef(({
           minHeight={height * 0.8}
           maxHeight={height * 1.2}
           showCover={true}
-          mobileScrollSupport={true}
+          mobileScrollSupport={!disableSwipe} // Disable mobile scroll handling on iPad
           onFlip={handleFlip}
           onChangeState={handleFlipStart}
-          className={`book-flipbook ${currentPage === 0 ? 'cover-view' : ''} ${isMobilePortrait ? 'mobile-portrait' : ''}`}
+          className={`book-flipbook ${currentPage === 0 ? 'cover-view' : ''} ${isMobilePortrait ? 'mobile-portrait' : ''} ${disableSwipe ? 'swipe-disabled' : ''}`}
           style={{ 
             width: isMobilePortrait ? `${width}px` : `${width * 2}px`,
             height: `${height}px`,
@@ -884,11 +885,11 @@ const RealisticPageFlip = forwardRef(({
           drawShadow={true}
           flippingTime={isMobilePortrait ? 400 : 650}
           usePortrait={isMobilePortrait}
-          disableFlipByClick={false}
-          useMouseEvents={true}
-          swipeDistance={30}
-          showPageCorners={!isMobilePortrait}
-          clickEventForward={true}
+          disableFlipByClick={disableSwipe} // Disable click-to-flip on iPad (use tap zones)
+          useMouseEvents={!disableSwipe} // Disable mouse/touch events on iPad
+          swipeDistance={disableSwipe ? 99999 : 30} // Effectively disable swipe on iPad
+          showPageCorners={!isMobilePortrait && !disableSwipe}
+          clickEventForward={!disableSwipe}
         >
           {allBookPages}
         </HTMLFlipBook>

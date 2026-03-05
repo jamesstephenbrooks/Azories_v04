@@ -19,7 +19,6 @@ import AmbientSound from '@/components/AmbientSound';
 import AIReadingBuddy from '@/components/AIReadingBuddy';
 import { useSwipeGestures } from '@/hooks/useSwipeGestures';
 import RealisticPageFlip from '@/components/RealisticPageFlip';
-import IPadPageViewer from '@/components/IPadPageViewer';
 import PWAPrompt from '@/components/PWAPrompt';
 import { AZORA_ASSETS } from '@/components/AzoraMascot';
 import PrintOrderModal from '@/components/PrintOrderModal';
@@ -231,13 +230,10 @@ export default function BookReader() {
     
     const result = isIPadUA || isIPadDesktopMode;
     if (result) {
-      console.log('[BookReader] iPad detected - using tap zones instead of react-pageflip');
+      console.log('[BookReader] iPad detected - using tap zones instead of swipe');
     }
     return result;
   }, []);
-  
-  // Ref for iPad page viewer
-  const ipadPageViewerRef = useRef(null);
   
   // Listen to window resize for responsive book sizing
   useEffect(() => {
@@ -775,19 +771,7 @@ export default function BookReader() {
     // Reset the last played page so new page can play fresh
     lastPlayedPageRef.current = -999;
     
-    // For iPad, use the simple iPad viewer
-    if (isIPad && ipadPageViewerRef.current) {
-      if (jumpDirect) {
-        ipadPageViewerRef.current.goToPage(newPage);
-      } else if (direction === 'next') {
-        ipadPageViewerRef.current.nextPage();
-      } else {
-        ipadPageViewerRef.current.prevPage();
-      }
-      return;
-    }
-    
-    // For mobile portrait/landscape (non-iPad), directly set the page (no pageflip library)
+    // For mobile portrait/landscape, directly set the page (no pageflip library)
     if (isMobilePortrait || isMobileLandscape) {
       setCurrentPage(newPage);
       saveReadingProgress();
@@ -809,7 +793,7 @@ export default function BookReader() {
       setCurrentPage(newPage);
       saveReadingProgress();
     }
-  }, [allPages.length, isFlipping, audioElement, isMobilePortrait, isMobileLandscape, isIPad, saveReadingProgress]);
+  }, [allPages.length, isFlipping, audioElement, isMobilePortrait, isMobileLandscape, saveReadingProgress]);
 
   const nextPage = useCallback(() => goToPage(currentPage + 1, 'next'), [currentPage, goToPage]);
   const prevPage = useCallback(() => goToPage(currentPage - 1, 'prev'), [currentPage, goToPage]);
@@ -863,10 +847,7 @@ export default function BookReader() {
     
     if (currentPage === -1) {
       // Transition from cover to first page
-      if (isIPad && ipadPageViewerRef.current) {
-        // iPad uses simple viewer - directly navigate
-        ipadPageViewerRef.current.goToPage(0);
-      } else if (isMobilePortrait || isMobileLandscape) {
+      if (isMobilePortrait || isMobileLandscape) {
         // In mobile mode (split view or landscape), directly set the page
         setCurrentPage(0);
       } else if (realisticFlipRef.current) {
@@ -877,7 +858,7 @@ export default function BookReader() {
         setCurrentPage(0);
       }
     }
-  }, [currentPage, audioElement, isMobilePortrait, isMobileLandscape, isIPad]);
+  }, [currentPage, audioElement, isMobilePortrait, isMobileLandscape]);
 
   // Download printable PDF (5 credits)
   const handlePrintBook = useCallback(async () => {
@@ -1308,17 +1289,7 @@ export default function BookReader() {
     
     if (currentPage === -1) {
       // On cover - go to first page
-      // For iPad, use the simple viewer
-      if (isIPad && ipadPageViewerRef.current) {
-        ipadPageViewerRef.current.goToPage(0);
-        // Trigger audio after page change
-        setTimeout(() => {
-          if (autoReadRef.current && mountedRef.current) {
-            lastPlayedPageRef.current = -999;
-            playAudio();
-          }
-        }, 300);
-      } else if (isMobilePortrait || isMobileLandscape) {
+      if (isMobilePortrait || isMobileLandscape) {
         // For mobile portrait/landscape, we use direct state update (no pageflip library)
         setCurrentPage(0);
         // CRITICAL: Directly trigger audio playback after a short delay for mobile
@@ -1347,7 +1318,7 @@ export default function BookReader() {
       lastPlayedPageRef.current = -999; // Reset to allow playback
       playAudio();
     }
-  }, [currentPage, playAudio, isMobilePortrait, isMobileLandscape, isIPad]);
+  }, [currentPage, playAudio, isMobilePortrait, isMobileLandscape]);
 
   // Share book function - copy direct link to clipboard
   const shareBook = useCallback(async () => {
@@ -2158,60 +2129,82 @@ export default function BookReader() {
                 )}
               </div>
             ) : (
-              /* Book view - iPad uses simple tap zones, desktop uses react-pageflip */
+              /* Book view - Use RealisticPageFlip for all devices, add tap zones on iPad */
               <div 
-                className={`flex justify-center items-center ${isFullscreen ? 'h-full w-full' : ''}`}
+                className={`relative flex justify-center items-center ${isFullscreen ? 'h-full w-full' : ''}`}
                 style={{ 
                   minHeight: isFullscreen ? '100%' : `${bookDimensions.height + 50}px`,
                   width: '100%'
                 }}
               >
-                {/* iPad-specific viewer - NO react-pageflip, just tap zones and buttons */}
-                {isIPad ? (
-                  <IPadPageViewer
-                    key={`ipad-viewer-${orientationKey}`}
-                    ref={ipadPageViewerRef}
-                    book={book}
-                    pages={allPages}
-                    onPageChange={(newPage) => {
-                      setCurrentPage(newPage);
-                      if (newPage >= 0) {
-                        saveReadingProgress();
-                      }
-                    }}
-                    onStartReading={startReading}
-                    onStartListening={startListening}
-                    initialPage={currentPage}
-                    isLandscape={isLandscapeOrientation}
-                    isFullscreen={isFullscreen}
-                    className="w-full h-full"
-                  />
-                ) : (
-                  /* Desktop/other devices - use react-pageflip */
-                  <RealisticPageFlip
-                    key={`pageflip-${orientationKey}-${isMobileLandscape ? 'landscape' : 'portrait'}`}
-                    ref={realisticFlipRef}
-                    book={book}
-                    pages={allPages}
-                    onPageChange={(flipPage, contentPageIndex) => {
-                      // contentPageIndex is the actual index in allPages array
-                      // -1 = front cover, -2 = back cover, 0+ = content page
-                      setCurrentPage(contentPageIndex);
-                      if (contentPageIndex >= 0) {
-                        saveReadingProgress();
-                      }
-                    }}
-                    onFlipStart={() => setIsFlipping(true)}
-                    onFlipEnd={() => setIsFlipping(false)}
-                    onStartReading={startReading}
-                    onStartListening={startListening}
-                    initialPage={currentPage >= 0 ? currentPage + 1 : 0}
-                    width={bookDimensions.width}
-                    height={bookDimensions.height}
-                    showControls={false}
-                    isFullscreen={isFullscreen}
-                    isMobilePortrait={isMobilePortrait}
-                  />
+                {/* RealisticPageFlip - same for all devices */}
+                <RealisticPageFlip
+                  key={`pageflip-${orientationKey}-${isMobileLandscape ? 'landscape' : 'portrait'}`}
+                  ref={realisticFlipRef}
+                  book={book}
+                  pages={allPages}
+                  onPageChange={(flipPage, contentPageIndex) => {
+                    // contentPageIndex is the actual index in allPages array
+                    // -1 = front cover, -2 = back cover, 0+ = content page
+                    setCurrentPage(contentPageIndex);
+                    if (contentPageIndex >= 0) {
+                      saveReadingProgress();
+                    }
+                  }}
+                  onFlipStart={() => setIsFlipping(true)}
+                  onFlipEnd={() => setIsFlipping(false)}
+                  onStartReading={startReading}
+                  onStartListening={startListening}
+                  initialPage={currentPage >= 0 ? currentPage + 1 : 0}
+                  width={bookDimensions.width}
+                  height={bookDimensions.height}
+                  showControls={false}
+                  isFullscreen={isFullscreen}
+                  isMobilePortrait={isMobilePortrait}
+                  disableSwipe={isIPad} // Disable swipe on iPad
+                />
+                
+                {/* iPad-only: Tap zones for page navigation (60px wide edges) */}
+                {isIPad && currentPage >= 0 && (
+                  <>
+                    {/* Left tap zone - previous page */}
+                    {currentPage > -1 && (
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (!isFlipping && realisticFlipRef.current) {
+                            realisticFlipRef.current.prevPage();
+                          }
+                        }}
+                        className="absolute left-0 top-0 bottom-0 z-[200] cursor-pointer"
+                        style={{ width: '60px' }}
+                        data-testid="ipad-tap-zone-left"
+                      >
+                        <div className="absolute inset-0 bg-black/0 active:bg-black/10 transition-colors flex items-center justify-start pl-2">
+                          <FiChevronLeft className="w-8 h-8 text-white/30" />
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Right tap zone - next page */}
+                    {currentPage < allPages.length - 1 && (
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (!isFlipping && realisticFlipRef.current) {
+                            realisticFlipRef.current.nextPage();
+                          }
+                        }}
+                        className="absolute right-0 top-0 bottom-0 z-[200] cursor-pointer"
+                        style={{ width: '60px' }}
+                        data-testid="ipad-tap-zone-right"
+                      >
+                        <div className="absolute inset-0 bg-black/0 active:bg-black/10 transition-colors flex items-center justify-end pr-2">
+                          <FiChevronRight className="w-8 h-8 text-white/30" />
+                        </div>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             )}
