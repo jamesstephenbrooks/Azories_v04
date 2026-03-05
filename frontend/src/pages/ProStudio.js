@@ -1095,6 +1095,51 @@ export default function ProStudio() {
     }
   };
 
+  // Delete reference image from character
+  const deleteReferenceImage = async (characterId, imageUrl) => {
+    if (!confirm('Delete this reference image?')) return;
+    
+    try {
+      const token = localStorage.getItem('azories-token');
+      const response = await fetch(`${API_URL}/api/pro-studio/characters/${characterId}/remove-reference`, {
+        method: 'POST',
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ image_url: imageUrl })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        toast.success('Reference image removed');
+        
+        // Update the local character state
+        setCharacters(prev => prev.map(c => 
+          c.id === characterId 
+            ? { ...c, reference_images: data.reference_images }
+            : c
+        ));
+        
+        // Update viewing character if it's the same one
+        if (viewingCharacter?.id === characterId) {
+          setViewingCharacter(prev => ({ ...prev, reference_images: data.reference_images }));
+        }
+        
+        // Update selected character if it's the same one
+        if (selectedCharacter?.id === characterId) {
+          setSelectedCharacter(prev => ({ ...prev, reference_images: data.reference_images }));
+        }
+      } else {
+        const error = await response.json();
+        toast.error(error.detail || 'Failed to remove reference image');
+      }
+    } catch (error) {
+      toast.error('Error removing reference image');
+      console.error(error);
+    }
+  };
+
   // Edit character details
   const [editingCharacter, setEditingCharacter] = useState(null);
   const [editForm, setEditForm] = useState({});
@@ -2837,13 +2882,32 @@ export default function ProStudio() {
                   <h3 className="text-white font-medium mb-3">Reference Images ({viewingCharacter.reference_images.length})</h3>
                   <div className="grid grid-cols-4 md:grid-cols-6 gap-3">
                     {viewingCharacter.reference_images.map((img, idx) => (
-                      <img 
+                      <div 
                         key={idx}
-                        src={img} 
-                        alt={`Reference ${idx + 1}`}
-                        className="w-full aspect-square object-cover rounded-lg cursor-pointer hover:ring-2 hover:ring-purple-500 transition-all"
-                        onClick={() => setPreviewImage({ url: img, prompt: `${viewingCharacter.name} reference ${idx + 1}` })}
-                      />
+                        className="relative group"
+                      >
+                        <img 
+                          src={img} 
+                          alt={`Reference ${idx + 1}`}
+                          className="w-full aspect-square object-cover rounded-lg cursor-pointer hover:ring-2 hover:ring-purple-500 transition-all"
+                          onClick={() => setPreviewImage({ url: img, prompt: `${viewingCharacter.name} reference ${idx + 1}` })}
+                        />
+                        {/* Delete button overlay */}
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                          <Button 
+                            size="sm" 
+                            variant="ghost"
+                            onClick={(e) => { 
+                              e.stopPropagation(); 
+                              deleteReferenceImage(viewingCharacter.id, img);
+                            }}
+                            title="Remove Reference Image"
+                            className="bg-red-600/80 hover:bg-red-600 active:bg-red-700 active:scale-95"
+                          >
+                            <FiTrash2 className="text-white" size={14} />
+                          </Button>
+                        </div>
+                      </div>
                     ))}
                   </div>
                 </div>

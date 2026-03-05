@@ -2255,7 +2255,7 @@ export default function BookReader() {
       
       {/* Hide/Show Controls Toggle + Floating Listen button - visible when controls are hidden */}
       {hideControls && (
-        <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3 items-center">
+        <div className="fixed bottom-24 right-4 z-50 flex flex-col gap-3 items-center">
           {/* Floating Listen/Pause button when toolbar is hidden */}
           <button
             onClick={() => {
@@ -2462,16 +2462,15 @@ export default function BookReader() {
               Auto: {autoRead ? 'ON' : 'OFF'}
             </Button>
             
-            {/* Hide Controls Button - useful for iPad */}
-            <Button
-              variant="ghost"
-              size="sm"
+            {/* Hide Controls Button - styled with purple circle */}
+            <button
               onClick={() => setHideControls(true)}
-              className="rounded-full text-xs"
+              className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-purple-400 text-purple-600 dark:text-purple-300 flex items-center justify-center hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors"
               title="Hide controls"
+              data-testid="hide-controls-btn"
             >
-              <FiChevronDown className="w-4 h-4" />
-            </Button>
+              <FiChevronDown className="w-5 h-5" />
+            </button>
           </div>
         </div>
       </div>

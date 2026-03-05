@@ -4841,6 +4841,43 @@ async def add_reference_image(character_id: str, request: dict, current_user: di
         "message": f"Reference image added. {len(ref_images)}/3 images for LoRA training." if len(ref_images) < 3 else "You can now train a LoRA model for this character!"
     }
 
+@api_router.post("/pro-studio/characters/{character_id}/remove-reference")
+async def remove_reference_image(character_id: str, request: dict, current_user: dict = Depends(get_current_user)):
+    """Remove an image from a character's reference images
+    
+    This allows users to remove unwanted reference images from their collection.
+    """
+    character = await db.pro_studio_characters.find_one({
+        "id": character_id,
+        "user_id": current_user["id"]
+    })
+    if not character:
+        raise HTTPException(status_code=404, detail="Character not found")
+    
+    image_url = request.get("image_url")
+    if not image_url:
+        raise HTTPException(status_code=400, detail="image_url is required")
+    
+    # Remove from reference images
+    ref_images = character.get("reference_images", [])
+    if image_url in ref_images:
+        ref_images.remove(image_url)
+        
+        await db.pro_studio_characters.update_one(
+            {"id": character_id},
+            {"$set": {
+                "reference_images": ref_images,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+    
+    return {
+        "success": True,
+        "reference_images": ref_images,
+        "reference_images_count": len(ref_images),
+        "can_train_lora": len(ref_images) >= 3
+    }
+
 @api_router.post("/pro-studio/characters/{character_id}/regenerate-thumbnail")
 async def regenerate_character_thumbnail(character_id: str, current_user: dict = Depends(get_current_user)):
     """Regenerate the thumbnail for a character using fal.ai
