@@ -567,6 +567,33 @@ export default function BookReader() {
     autoReadRef.current = autoRead;
   }, [autoRead]);
   
+  // Pause narration when user leaves the page/app (switches tabs, goes to another app)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        // Page is hidden - pause audio and auto-read
+        console.log('[Audio] Page hidden - pausing narration');
+        if (audioRef.current) {
+          try {
+            audioRef.current.pause();
+          } catch (e) {}
+        }
+        if (persistentAudioRef.current) {
+          try {
+            persistentAudioRef.current.pause();
+          } catch (e) {}
+        }
+        setIsPlaying(false);
+        // Keep autoRead state but stop current playback
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+  
   // Ref to track current page for async operations
   const currentPageRef = useRef(currentPage);
   currentPageRef.current = currentPage;
@@ -845,6 +872,11 @@ export default function BookReader() {
       setIsPlaying(false);
     }
     
+    // Auto-hide toolbar when starting to read (on touch devices)
+    if (isIPad || isMobilePortrait || isMobileLandscape) {
+      setTimeout(() => setHideControls(true), 1500);
+    }
+    
     if (currentPage === -1) {
       // Transition from cover to first page
       if (isMobilePortrait || isMobileLandscape) {
@@ -858,7 +890,7 @@ export default function BookReader() {
         setCurrentPage(0);
       }
     }
-  }, [currentPage, audioElement, isMobilePortrait, isMobileLandscape]);
+  }, [currentPage, audioElement, isMobilePortrait, isMobileLandscape, isIPad]);
 
   // Download printable PDF (5 credits)
   const handlePrintBook = useCallback(async () => {
@@ -1318,7 +1350,12 @@ export default function BookReader() {
       lastPlayedPageRef.current = -999; // Reset to allow playback
       playAudio();
     }
-  }, [currentPage, playAudio, isMobilePortrait, isMobileLandscape]);
+    
+    // Auto-hide toolbar when starting to listen (on touch devices)
+    if (isIPad || isMobilePortrait || isMobileLandscape) {
+      setTimeout(() => setHideControls(true), 1500);
+    }
+  }, [currentPage, playAudio, isMobilePortrait, isMobileLandscape, isIPad]);
 
   // Share book function - copy direct link to clipboard
   const shareBook = useCallback(async () => {
@@ -2165,9 +2202,9 @@ export default function BookReader() {
                 />
                 
                 {/* iPad-only: Tap zones for page navigation (60px wide edges) */}
-                {isIPad && currentPage >= 0 && (
+                {isIPad && (
                   <>
-                    {/* Left tap zone - previous page */}
+                    {/* Left tap zone - previous page (show on all pages except cover) */}
                     {currentPage > -1 && (
                       <div
                         onClick={(e) => {
@@ -2180,13 +2217,15 @@ export default function BookReader() {
                         style={{ width: '60px' }}
                         data-testid="ipad-tap-zone-left"
                       >
-                        <div className="absolute inset-0 bg-black/0 active:bg-black/10 transition-colors flex items-center justify-start pl-2">
-                          <FiChevronLeft className="w-8 h-8 text-white/30" />
+                        <div className="absolute inset-0 bg-black/0 active:bg-purple-500/20 transition-colors flex items-center justify-start pl-1">
+                          <div className="w-10 h-10 rounded-full bg-purple-600/80 shadow-lg flex items-center justify-center">
+                            <FiChevronLeft className="w-6 h-6 text-white" />
+                          </div>
                         </div>
                       </div>
                     )}
                     
-                    {/* Right tap zone - next page */}
+                    {/* Right tap zone - next page (show on cover AND all pages except last) */}
                     {currentPage < allPages.length - 1 && (
                       <div
                         onClick={(e) => {
@@ -2199,8 +2238,10 @@ export default function BookReader() {
                         style={{ width: '60px' }}
                         data-testid="ipad-tap-zone-right"
                       >
-                        <div className="absolute inset-0 bg-black/0 active:bg-black/10 transition-colors flex items-center justify-end pr-2">
-                          <FiChevronRight className="w-8 h-8 text-white/30" />
+                        <div className="absolute inset-0 bg-black/0 active:bg-purple-500/20 transition-colors flex items-center justify-end pr-1">
+                          <div className="w-10 h-10 rounded-full bg-purple-600/80 shadow-lg flex items-center justify-center">
+                            <FiChevronRight className="w-6 h-6 text-white" />
+                          </div>
                         </div>
                       </div>
                     )}
@@ -2212,15 +2253,44 @@ export default function BookReader() {
         </div>
       </div>
       
-      {/* Hide/Show Controls Toggle - visible on touch devices */}
+      {/* Hide/Show Controls Toggle + Floating Listen button - visible when controls are hidden */}
       {hideControls && (
-        <button
-          onClick={() => setHideControls(false)}
-          className="fixed bottom-4 right-4 z-50 p-3 rounded-full bg-primary/80 text-white shadow-lg"
-          data-testid="show-controls-btn"
-        >
-          <FiChevronUp className="w-5 h-5" />
-        </button>
+        <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3 items-center">
+          {/* Floating Listen/Pause button when toolbar is hidden */}
+          <button
+            onClick={() => {
+              if (isPlaying) {
+                // Stop narration
+                if (audioElement) {
+                  audioElement.pause();
+                }
+                setIsPlaying(false);
+                setAutoRead(false);
+                autoReadRef.current = false;
+              } else {
+                // Start narration
+                startListening();
+              }
+            }}
+            className="w-14 h-14 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white shadow-lg flex items-center justify-center transition-colors"
+            data-testid="floating-listen-btn"
+          >
+            {isPlaying ? (
+              <FiPause className="w-6 h-6" />
+            ) : (
+              <FiPlay className="w-6 h-6 ml-1" />
+            )}
+          </button>
+          
+          {/* Show controls button with purple circle */}
+          <button
+            onClick={() => setHideControls(false)}
+            className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-purple-400 text-purple-600 dark:text-purple-300 shadow-lg flex items-center justify-center hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors"
+            data-testid="show-controls-btn"
+          >
+            <FiChevronUp className="w-5 h-5" />
+          </button>
+        </div>
       )}
       
       {/* Bottom Controls - Hidden in landscape (edge arrows are used instead) */}
