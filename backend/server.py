@@ -7108,9 +7108,11 @@ Return ONLY the JSON array, no other text."""
             "cover_title": story_data["title"],
             "cover_subtitle": "",
             "back_cover_text": story_data["back_cover_text"],
+            "user_id": current_user["id"],  # Owner ID for access control
             "author_id": current_user["id"],
             "author_name": current_user["name"],
             "is_published": False,
+            "requires_auth": False,  # Always allow owner to read their books
             "is_featured": False,
             "is_best_of_week": False,
             "layout_mode": "standard",
@@ -8102,7 +8104,7 @@ async def upload_video(file: UploadFile = File(...), current_user: dict = Depend
 
 @api_router.get("/books/{book_id}/full")
 async def get_full_book(book_id: str, response: Response, current_user: dict = Depends(get_optional_user)):
-    """Get complete book - requires auth for full content"""
+    """Get complete book - always returns pages to the book owner"""
     # Prevent caching so text updates appear immediately
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     response.headers["Pragma"] = "no-cache"
@@ -8114,11 +8116,23 @@ async def get_full_book(book_id: str, response: Response, current_user: dict = D
     
     book = set_book_defaults(book)
     
-    # Check if this is a published/public book that can be viewed without auth
+    # ALWAYS return full book content if:
+    # 1. User is logged in AND is the book owner
+    # 2. Book is published/public
+    # 3. Book doesn't require auth
     is_published = book.get("is_published", False)
+    is_owner = current_user and (
+        book.get("user_id") == current_user.get("id") or 
+        book.get("owner_id") == current_user.get("id") or
+        book.get("author_id") == current_user.get("id")
+    )
+    requires_auth = book.get("requires_auth", False)
     
-    # If not logged in and book is not published, return 401 for proper auth handling
-    if not current_user and not is_published:
+    # Allow access if: owner, published, or doesn't require auth
+    allow_full_access = is_owner or is_published or not requires_auth
+    
+    # If not allowed and not logged in, return 401
+    if not allow_full_access and not current_user:
         raise HTTPException(
             status_code=401, 
             detail="Authentication required to read this book"
