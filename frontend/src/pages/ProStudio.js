@@ -2892,21 +2892,17 @@ export default function ProStudio() {
                           className="w-full aspect-square object-cover rounded-lg cursor-pointer hover:ring-2 hover:ring-purple-500 transition-all"
                           onClick={() => setPreviewImage({ url: img, prompt: `${viewingCharacter.name} reference ${idx + 1}` })}
                         />
-                        {/* Delete button overlay */}
-                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-                          <Button 
-                            size="sm" 
-                            variant="ghost"
-                            onClick={(e) => { 
-                              e.stopPropagation(); 
-                              deleteReferenceImage(viewingCharacter.id, img);
-                            }}
-                            title="Remove Reference Image"
-                            className="bg-red-600/80 hover:bg-red-600 active:bg-red-700 active:scale-95"
-                          >
-                            <FiTrash2 className="text-white" size={14} />
-                          </Button>
-                        </div>
+                        {/* Delete button - always visible in corner for touch devices */}
+                        <button
+                          onClick={(e) => { 
+                            e.stopPropagation(); 
+                            deleteReferenceImage(viewingCharacter.id, img);
+                          }}
+                          title="Remove Reference Image"
+                          className="absolute top-1 right-1 w-7 h-7 rounded-full bg-red-600/90 hover:bg-red-600 active:bg-red-700 flex items-center justify-center shadow-lg"
+                        >
+                          <FiTrash2 className="text-white" size={12} />
+                        </button>
                       </div>
                     ))}
                   </div>
