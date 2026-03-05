@@ -819,6 +819,28 @@ async def verify_admin_token(admin: dict = Depends(get_admin_user)):
         "role": "admin"
     }
 
+
+@api_router.post("/admin/fix-books-auth")
+async def fix_books_auth(admin: dict = Depends(get_admin_user)):
+    """
+    EMERGENCY FIX: Set requires_auth=false on all books so they can be viewed.
+    This fixes the issue where AI-created books show 'No illustration' and '1/0' pages.
+    """
+    try:
+        result = await db.books.update_many(
+            {},
+            {"$set": {"requires_auth": False, "is_published": True}}
+        )
+        
+        return {
+            "success": True,
+            "message": f"Fixed {result.modified_count} books",
+            "matched_count": result.matched_count,
+            "modified_count": result.modified_count
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fix books: {str(e)}")
+
 # Age ratings
 AGE_RATINGS = ["All Ages", "5+", "8+", "12+", "16+"]
 
