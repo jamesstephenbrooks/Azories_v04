@@ -2295,24 +2295,24 @@ export default function BookReader() {
                 startListening();
               }
             }}
-            className="fixed right-4 z-50 w-14 h-14 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white shadow-lg flex items-center justify-center transition-colors"
+            className="fixed right-4 z-50 w-8 h-8 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white shadow-lg flex items-center justify-center transition-colors"
             style={{ bottom: '25%' }}
             data-testid="floating-listen-btn"
           >
             {isPlaying ? (
-              <FiPause className="w-6 h-6" />
+              <FiPause className="w-4 h-4" />
             ) : (
-              <FiPlay className="w-6 h-6 ml-1" />
+              <FiPlay className="w-4 h-4 ml-0.5" />
             )}
           </button>
           
           {/* Show controls button - original position */}
           <button
             onClick={() => setHideControls(false)}
-            className="fixed bottom-5 right-4 z-50 w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-purple-400 text-purple-600 dark:text-purple-300 shadow-lg flex items-center justify-center hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors"
+            className="fixed bottom-5 right-4 z-50 w-7 h-7 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-purple-400 text-purple-600 dark:text-purple-300 shadow-lg flex items-center justify-center hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors"
             data-testid="show-controls-btn"
           >
-            <FiChevronUp className="w-5 h-5" />
+            <FiChevronUp className="w-3 h-3" />
           </button>
         </>
       )}
@@ -2489,11 +2489,11 @@ export default function BookReader() {
             {/* Hide Controls Button - same position as show button */}
             <button
               onClick={() => setHideControls(true)}
-              className="fixed bottom-5 right-4 z-[150] w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-purple-400 text-purple-600 dark:text-purple-300 flex items-center justify-center hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors shadow-lg"
+              className="fixed bottom-5 right-4 z-[150] w-7 h-7 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-purple-400 text-purple-600 dark:text-purple-300 flex items-center justify-center hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors shadow-lg"
               title="Hide controls"
               data-testid="hide-controls-btn"
             >
-              <FiChevronDown className="w-5 h-5" />
+              <FiChevronDown className="w-3 h-3" />
             </button>
           </div>
         </div>
