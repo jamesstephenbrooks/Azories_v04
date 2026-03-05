@@ -2256,7 +2256,7 @@ export default function BookReader() {
       {/* Hide/Show Controls Toggle + Floating Listen button - visible when controls are hidden */}
       {hideControls && (
         <>
-          {/* Floating Listen/Pause button - 30% up the page, directly above show menu button */}
+          {/* Floating Listen/Pause button - 25% up the page, directly above show menu button */}
           <button
             onClick={() => {
               if (isPlaying) {
@@ -2273,7 +2273,7 @@ export default function BookReader() {
               }
             }}
             className="fixed right-4 z-50 w-14 h-14 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white shadow-lg flex items-center justify-center transition-colors"
-            style={{ bottom: '30%' }}
+            style={{ bottom: '25%' }}
             data-testid="floating-listen-btn"
           >
             {isPlaying ? (
@@ -2463,10 +2463,10 @@ export default function BookReader() {
               Auto: {autoRead ? 'ON' : 'OFF'}
             </Button>
             
-            {/* Hide Controls Button - styled with purple circle */}
+            {/* Hide Controls Button - same position as show button */}
             <button
               onClick={() => setHideControls(true)}
-              className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-purple-400 text-purple-600 dark:text-purple-300 flex items-center justify-center hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors"
+              className="fixed bottom-5 right-4 z-[150] w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-purple-400 text-purple-600 dark:text-purple-300 flex items-center justify-center hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors shadow-lg"
               title="Hide controls"
               data-testid="hide-controls-btn"
             >
