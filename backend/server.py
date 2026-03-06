@@ -2173,6 +2173,27 @@ def set_book_defaults(book: dict) -> dict:
     book.setdefault("series_order", None)
     book.setdefault("view_count", 0)
     book.setdefault("read_count", 0)
+    
+    # Ensure author_name exists (AI-generated books may only have user_id)
+    if not book.get("author_name"):
+        book["author_name"] = ""
+    
+    # Ensure author_id exists
+    if not book.get("author_id") and book.get("user_id"):
+        book["author_id"] = book["user_id"]
+    
+    # Convert datetime objects to ISO strings for Pydantic
+    if isinstance(book.get("created_at"), datetime):
+        book["created_at"] = book["created_at"].isoformat()
+    if isinstance(book.get("updated_at"), datetime):
+        book["updated_at"] = book["updated_at"].isoformat()
+    
+    # Ensure created_at and updated_at exist
+    if not book.get("created_at"):
+        book["created_at"] = datetime.now(timezone.utc).isoformat()
+    if not book.get("updated_at"):
+        book["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
     return book
 
 async def get_book_with_counts(book: dict) -> dict:
