@@ -2879,6 +2879,7 @@ export default function BookReader() {
         isOpen={showPrintOrderModal}
         onClose={() => setShowPrintOrderModal(false)}
         book={book}
+        pages={allPages}
       />
       
       {/* AI Reading Buddy */}

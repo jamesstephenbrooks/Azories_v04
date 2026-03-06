@@ -59,6 +59,7 @@ export default function PrintOrderModal({
   isOpen, 
   onClose, 
   book,
+  pages: passedPages = [], // Normalized pages array from BookReader (optional)
   comingSoon = false // Print on Demand is now active!
 }) {
   const [step, setStep] = useState(1); // 1: Info, 2: Address, 3: Shipping, 4: Payment, 5: Confirmation
@@ -66,6 +67,29 @@ export default function PrintOrderModal({
   const [productInfo, setProductInfo] = useState(null);
   const [preparing, setPreparing] = useState(false);
   const [prepData, setPrepData] = useState(null);
+  
+  // Normalize pages - use passed pages from BookReader, or extract from book object
+  const normalizedPages = React.useMemo(() => {
+    // If pages were passed from BookReader, use them
+    if (passedPages && passedPages.length > 0) {
+      console.log('[PrintOrderModal] Using passed pages:', passedPages.length);
+      return passedPages.filter(p => !p.isBackCover && !p.isTitlePage);
+    }
+    
+    // Otherwise, try to extract from book object
+    if (book?.chapters?.[0]?.pages) {
+      console.log('[PrintOrderModal] Extracting pages from book.chapters');
+      return book.chapters[0].pages;
+    }
+    
+    if (book?.pages) {
+      console.log('[PrintOrderModal] Using book.pages');
+      return book.pages;
+    }
+    
+    console.log('[PrintOrderModal] No pages found');
+    return [];
+  }, [passedPages, book]);
   
   // Address form
   const [address, setAddress] = useState({
@@ -327,7 +351,7 @@ export default function PrintOrderModal({
             {/* Page Thumbnails - clean illustration strip */}
             <div className="bg-gray-50 dark:bg-slate-800 rounded-xl p-3">
               <BookPageStrip
-                pages={book?.chapters?.[0]?.pages || []}
+                pages={normalizedPages}
                 coverImage={book?.cover_image || book?.cover_image_url}
               />
             </div>

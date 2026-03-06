@@ -9,6 +9,14 @@ export default function BookPageStrip({
 }) {
   const scrollRef = useRef(null);
   
+  // Debug log
+  console.log('[BookPageStrip] Received pages:', pages.length);
+  if (pages.length > 0) {
+    console.log('[BookPageStrip] First page fields:', Object.keys(pages[0]));
+    console.log('[BookPageStrip] First page image_url:', pages[0]?.image_url?.substring(0, 60));
+    console.log('[BookPageStrip] First page text_content:', pages[0]?.text_content?.substring(0, 60));
+  }
+  
   // Build page spreads - cover first, then each page with image + text
   const spreads = [];
   
@@ -21,12 +29,19 @@ export default function BookPageStrip({
     });
   }
   
+  // Filter out back cover and any non-content pages
+  const contentPages = pages.filter(page => !page.isBackCover && !page.isTitlePage);
+  
   // Add each page as a spread (image on left, text preview on right)
-  pages.forEach((page, index) => {
+  contentPages.forEach((page, index) => {
+    // Handle different field names that might exist
+    const imageUrl = page.image_url || page.imageUrl || page.image || page.illustration_url;
+    const textContent = page.text_content || page.text || page.content || page.story_text || page.page_text;
+    
     spreads.push({
       type: 'page',
-      image: page.image_url || page.imageUrl || page.image,
-      text: page.text || page.content || page.story_text || '',
+      image: imageUrl,
+      text: textContent,
       label: `Page ${index + 1}`
     });
   });
@@ -109,7 +124,7 @@ export default function BookPageStrip({
                     {/* Right side - text preview */}
                     <div className="w-1/2 h-full p-1.5 bg-white overflow-hidden">
                       <p className="text-[6px] leading-tight text-gray-600 line-clamp-6 text-left">
-                        {spread.text || 'Story text will appear here in the printed book...'}
+                        {spread.text || 'Story text appears here...'}
                       </p>
                     </div>
                   </div>
