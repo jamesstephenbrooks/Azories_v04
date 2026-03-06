@@ -56,7 +56,9 @@ BONUS_IMAGES = {
     'about': 'https://customer-assets.emergentagent.com/job_5f7e2b9e-d2a4-4bf3-b6c6-aac66cbef904/artifacts/dlulgnzy_Azora_Mascot.jpg',
     'certificate': 'https://customer-assets.emergentagent.com/job_5f7e2b9e-d2a4-4bf3-b6c6-aac66cbef904/artifacts/e45x5iez_azora%20library.png',
     'meet_azora': 'https://customer-assets.emergentagent.com/job_5f7e2b9e-d2a4-4bf3-b6c6-aac66cbef904/artifacts/o1xvfgto_azora%20librbary%201.png',
-    # Azora pointing with transparent background - for back cover
+    # Azora with dragon and magic book - for back cover
+    'back_cover': 'https://customer-assets.emergentagent.com/job_d074d9b2-20b0-488a-8289-b8b7671631f8/artifacts/802tmoct_azora_pose4_pointing.jpg',
+    # Azora pointing with transparent background
     'pointing': 'https://res.cloudinary.com/dlbmjqmoy/image/upload/e_background_removal/v1772279592/azories/mascot/azora_pose4_pointing.png',
     # Filler page images - best mascot images
     'filler_1': 'https://customer-assets.emergentagent.com/job_5f7e2b9e-d2a4-4bf3-b6c6-aac66cbef904/artifacts/60k2xrwp_Azora%20Mascot%20Main.jpg',
@@ -864,101 +866,40 @@ class PrintPDFGenerator:
                     cover_img = cover_img.resize((PAGE_WIDTH_PX, PAGE_HEIGHT_PX), Image.Resampling.LANCZOS)
                     img.paste(cover_img, (0, 0))
             else:
-                # Create beautiful Azora branded back cover
-                # Deep purple gradient background
-                start_rgb = (26, 10, 46)  # Dark purple #1a0a2e
-                end_rgb = (75, 25, 100)   # Lighter purple
-                img = self.create_gradient_background(PAGE_WIDTH_PX, PAGE_HEIGHT_PX, start_rgb, end_rgb)
-                draw = ImageDraw.Draw(img)
-                
-                # Add Azora pointing mascot with "bursting through page" effect
-                mascot_url = BONUS_IMAGES.get('pointing')
-                if mascot_url:
+                # Simple back cover - just the Azora image filling the page
+                # Use the beautiful Azora with dragon and magic book image
+                back_cover_url = BONUS_IMAGES.get('back_cover')
+                if back_cover_url:
                     try:
-                        mascot_img = await self.download_image(mascot_url)
-                        if mascot_img:
-                            # Position mascot in center, nice size
-                            mascot_size = 1200
-                            # Maintain aspect ratio
-                            aspect = mascot_img.width / mascot_img.height
-                            if aspect > 1:
-                                new_width = mascot_size
-                                new_height = int(mascot_size / aspect)
+                        back_img = await self.download_image(back_cover_url)
+                        if back_img:
+                            # Resize to fill the page while maintaining aspect ratio
+                            # Center crop to fill 8x10 page
+                            img_aspect = back_img.width / back_img.height
+                            page_aspect = PAGE_WIDTH_PX / PAGE_HEIGHT_PX
+                            
+                            if img_aspect > page_aspect:
+                                # Image is wider - fit height, crop width
+                                new_height = PAGE_HEIGHT_PX
+                                new_width = int(new_height * img_aspect)
+                                back_img = back_img.resize((new_width, new_height), Image.Resampling.LANCZOS)
+                                # Center crop
+                                left = (new_width - PAGE_WIDTH_PX) // 2
+                                back_img = back_img.crop((left, 0, left + PAGE_WIDTH_PX, PAGE_HEIGHT_PX))
                             else:
-                                new_height = mascot_size
-                                new_width = int(mascot_size * aspect)
+                                # Image is taller - fit width, crop height
+                                new_width = PAGE_WIDTH_PX
+                                new_height = int(new_width / img_aspect)
+                                back_img = back_img.resize((new_width, new_height), Image.Resampling.LANCZOS)
+                                # Center crop
+                                top = (new_height - PAGE_HEIGHT_PX) // 2
+                                back_img = back_img.crop((0, top, PAGE_WIDTH_PX, top + PAGE_HEIGHT_PX))
                             
-                            mascot_img = mascot_img.resize((new_width, new_height), Image.Resampling.LANCZOS)
-                            mascot_x = (PAGE_WIDTH_PX - new_width) // 2
-                            mascot_y = 250
-                            
-                            # Create "burst through page" effect - irregular torn paper shape
-                            import random
-                            random.seed(42)  # Consistent randomness
-                            
-                            # Draw a jagged white "torn paper" burst behind Azora
-                            burst_center_x = mascot_x + new_width // 2
-                            burst_center_y = mascot_y + new_height // 2
-                            
-                            # Create burst polygon points
-                            burst_points = []
-                            num_points = 24
-                            for i in range(num_points):
-                                angle = (i / num_points) * 2 * 3.14159
-                                # Alternate between inner and outer radius for jagged effect
-                                if i % 2 == 0:
-                                    radius = new_width // 2 + random.randint(80, 150)
-                                else:
-                                    radius = new_width // 2 + random.randint(20, 60)
-                                x = burst_center_x + int(radius * 1.1 * (1 if abs(angle - 3.14159) > 1.5 else 0.9) * (angle / 3.14159 if angle < 3.14159 else (2 - angle / 3.14159)) * 0.3 + radius * 0.7) * int(__import__('math').cos(angle))
-                                y = burst_center_y + int(radius * (1 if abs(angle - 1.57) > 1 else 0.85)) * int(__import__('math').sin(angle))
-                                # Simplified: just use basic burst
-                                x = burst_center_x + int(radius * __import__('math').cos(angle))
-                                y = burst_center_y + int(radius * __import__('math').sin(angle))
-                                burst_points.append((x, y))
-                            
-                            # Draw the burst (white with slight transparency for paper look)
-                            draw.polygon(burst_points, fill=(255, 255, 255, 240))
-                            
-                            # Add a subtle shadow/torn edge effect
-                            shadow_points = [(x + 8, y + 8) for x, y in burst_points]
-                            # Draw shadow first (behind)
-                            img_with_shadow = img.copy()
-                            shadow_draw = ImageDraw.Draw(img_with_shadow)
-                            shadow_draw.polygon(shadow_points, fill=(0, 0, 0, 60))
-                            shadow_draw.polygon(burst_points, fill=(255, 255, 255))
-                            img = img_with_shadow
-                            draw = ImageDraw.Draw(img)
-                            
-                            # Use transparency if available (PNG with alpha)
-                            if mascot_img.mode == 'RGBA':
-                                img.paste(mascot_img, (mascot_x, mascot_y), mascot_img)
-                            else:
-                                img.paste(mascot_img, (mascot_x, mascot_y))
+                            img = back_img.convert('RGB')
                     except Exception as e:
-                        logger.warning(f"Could not load mascot for back cover: {e}")
-                
-                # Add "Azora" branding text - MUCH BIGGER
-                font_brand = self.get_font(180, bold=True)
-                self.draw_text_centered(draw, "Azora", PAGE_HEIGHT_PX - 550, font_brand, '#ffffff', PAGE_WIDTH_PX)
-                
-                # Add tagline - BIGGER
-                font_tagline = self.get_font(72)
-                self.draw_text_centered(draw, "Where Stories Come Alive", PAGE_HEIGHT_PX - 350, font_tagline, '#ffffffdd', PAGE_WIDTH_PX)
-                
-                # Add website - BIGGER
-                font_url = self.get_font(56)
-                self.draw_text_centered(draw, "azories.com", PAGE_HEIGHT_PX - 200, font_url, '#a855f7', PAGE_WIDTH_PX)
-                
-                # Add back cover text if provided - at top
-                description = book.get('back_cover_text') or book.get('description')
-                if description:
-                    font_desc = self.get_font(42)
-                    lines = self.word_wrap_text(draw, description, font_desc, PAGE_WIDTH_PX - 300)
-                    y_offset = 100
-                    for line in lines[:3]:  # Limit to 3 lines at top
-                        self.draw_text_centered(draw, line, y_offset, font_desc, '#ffffffcc', PAGE_WIDTH_PX)
-                        y_offset += 60
+                        logger.warning(f"Could not load back cover image: {e}")
+                        # Fallback to white page
+                        img = Image.new('RGB', (PAGE_WIDTH_PX, PAGE_HEIGHT_PX), (255, 255, 255))
         else:
             cover_url = book.get('cover_image')
             
