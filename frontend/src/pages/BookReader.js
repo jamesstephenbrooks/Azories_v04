@@ -1961,7 +1961,34 @@ export default function BookReader() {
                 </div>
               </div>
             ) : isMobilePortrait && !isCover && currentPage >= 0 ? (
-              <div className="flex flex-col w-full max-w-md mx-auto" style={{ height: `calc(100vh - 140px)` }}>
+              <div className="flex flex-col w-full max-w-md mx-auto relative" style={{ height: `calc(100vh - 140px)` }}>
+                {/* Navigation buttons for mobile portrait - always visible */}
+                {!currentPageData?.isBackCover && (
+                  <>
+                    {/* Previous page button */}
+                    {currentPage > 0 && (
+                      <button
+                        onClick={() => goToPage(currentPage - 1, 'prev')}
+                        className="absolute left-1 top-1/2 -translate-y-1/2 z-50 w-8 h-8 rounded-full bg-purple-600/90 active:bg-purple-700 active:scale-95 flex items-center justify-center text-white shadow-lg"
+                        data-testid="portrait-prev-btn"
+                      >
+                        <FiChevronLeft className="w-5 h-5" />
+                      </button>
+                    )}
+                    
+                    {/* Next page button */}
+                    {currentPage < allPages.length - 1 && (
+                      <button
+                        onClick={() => goToPage(currentPage + 1, 'next')}
+                        className="absolute right-1 top-1/2 -translate-y-1/2 z-50 w-8 h-8 rounded-full bg-purple-600/90 active:bg-purple-700 active:scale-95 flex items-center justify-center text-white shadow-lg"
+                        data-testid="portrait-next-btn"
+                      >
+                        <FiChevronRight className="w-5 h-5" />
+                      </button>
+                    )}
+                  </>
+                )}
+                
                 {/* Back Cover - Full page with dark background extending to edges */}
                 {currentPageData?.isBackCover ? (
                   <div 
@@ -2379,19 +2406,19 @@ export default function BookReader() {
       {/* Bottom Controls - Hidden in landscape (edge arrows are used instead) */}
       {!isMobileLandscape && (
         <div className={`fixed bottom-0 left-0 right-0 ${currentPageData?.isBackCover ? 'bg-[#1a0a2e]/90' : 'bg-background/90'} backdrop-blur-xl border-t ${currentPageData?.isBackCover ? 'border-white/10' : 'border-border'} z-[100] transition-transform duration-300 ${hideControls && !currentPageData?.isBackCover ? 'translate-y-full' : ''}`}>
-          <div className={`max-w-4xl mx-auto px-2 sm:px-4 py-3 sm:py-4`}>
-            {/* Navigation - LARGE touch targets for mobile, instant response */}
-            <div className={`flex items-center justify-center gap-4 sm:gap-4 mb-2 sm:mb-4`}>
+          <div className={`max-w-4xl mx-auto px-2 sm:px-4 py-2 sm:py-4`}>
+            {/* Navigation - Smaller on mobile for more screen space */}
+            <div className={`flex items-center justify-center gap-3 sm:gap-4 mb-1 sm:mb-4`}>
               {/* Back Cover: Show Read Again + Library + Back button */}
               {currentPageData?.isBackCover ? (
                 <>
                   <button
                     onClick={() => navigate('/library')}
-                    className="min-w-[56px] min-h-[56px] px-4 sm:px-5 rounded-full border-2 border-purple-400 bg-purple-600/20 hover:bg-purple-600/40 active:bg-purple-600/60 text-purple-300 flex items-center justify-center gap-2 touch-manipulation"
+                    className="min-w-[44px] min-h-[44px] sm:min-w-[56px] sm:min-h-[56px] px-3 sm:px-5 rounded-full border-2 border-purple-400 bg-purple-600/20 hover:bg-purple-600/40 active:bg-purple-600/60 text-purple-300 flex items-center justify-center gap-2 touch-manipulation"
                     style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                     data-testid="back-to-library-btn"
                   >
-                    <FiHome className="w-5 h-5" />
+                    <FiHome className="w-4 h-4 sm:w-5 sm:h-5" />
                     <span className="hidden sm:inline">Library</span>
                   </button>
                   <button
@@ -2406,11 +2433,11 @@ export default function BookReader() {
                         setCurrentPage(-1);
                       }
                     }}
-                    className="min-h-[56px] px-6 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 active:scale-95 active:bg-purple-700 text-white font-medium flex items-center justify-center gap-2 touch-manipulation"
+                    className="min-h-[44px] sm:min-h-[56px] px-4 sm:px-6 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 active:scale-95 active:bg-purple-700 text-white text-sm sm:text-base font-medium flex items-center justify-center gap-2 touch-manipulation"
                     style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                     data-testid="read-again-btn"
                   >
-                    Read Again <FiPlay className="w-5 h-5" />
+                    Read Again <FiPlay className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                   <button
                     onClick={() => {
@@ -2428,11 +2455,11 @@ export default function BookReader() {
                         realisticFlipRef.current.prevPage();
                       }
                     }}
-                    className="min-w-[56px] min-h-[56px] px-5 rounded-full border-2 border-border bg-background hover:bg-muted active:bg-muted/80 flex items-center justify-center touch-manipulation"
+                    className="min-w-[44px] min-h-[44px] sm:min-w-[56px] sm:min-h-[56px] px-4 sm:px-5 rounded-full border-2 border-border bg-background hover:bg-muted active:bg-muted/80 flex items-center justify-center touch-manipulation"
                     style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                     data-testid="back-from-backcover-btn"
                   >
-                    <FiChevronLeft className="w-6 h-6" />
+                    <FiChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
                   </button>
                 </>
               ) : (
@@ -2440,11 +2467,11 @@ export default function BookReader() {
               <button
                 onClick={prevPage}
                 disabled={currentPage <= -1}
-                className="min-w-[56px] min-h-[56px] px-5 rounded-full border-2 border-border bg-background hover:bg-muted active:bg-muted/80 flex items-center justify-center touch-manipulation"
+                className="min-w-[44px] min-h-[44px] sm:min-w-[56px] sm:min-h-[56px] px-4 sm:px-5 rounded-full border-2 border-border bg-background hover:bg-muted active:bg-muted/80 flex items-center justify-center touch-manipulation"
                 style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                 data-testid="portrait-prev-btn"
               >
-                <FiChevronLeft className="w-6 h-6" />
+                <FiChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
               
               {/* Show Start Listening on cover, Read Aloud on other pages */}
@@ -2452,23 +2479,23 @@ export default function BookReader() {
                 <button
                   onClick={startListening}
                   disabled={narrationPreparing || audioLoading}
-                  className={`min-h-[56px] px-6 rounded-full ${(narrationPreparing || audioLoading) ? 'bg-purple-400' : 'bg-purple-600 hover:bg-purple-500 active:bg-purple-700 active:scale-95 active:bg-purple-700'} text-white font-medium flex items-center justify-center gap-2 touch-manipulation`}
+                  className={`min-h-[44px] sm:min-h-[56px] px-4 sm:px-6 rounded-full ${(narrationPreparing || audioLoading) ? 'bg-purple-400' : 'bg-purple-600 hover:bg-purple-500 active:bg-purple-700 active:scale-95 active:bg-purple-700'} text-white text-sm sm:text-base font-medium flex items-center justify-center gap-2 touch-manipulation`}
                   style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                   data-testid="cover-start-listening-btn"
                 >
                   {narrationPreparing ? (
-                    <><div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> Preparing...</>
+                    <><div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> Preparing...</>
                   ) : audioLoading ? (
-                    <><div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> Loading...</>
+                    <><div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> Loading...</>
                   ) : (
-                    <><FiPlay className="w-5 h-5" /> Listen</>
+                    <><FiPlay className="w-4 h-4 sm:w-5 sm:h-5" /> Listen</>
                   )}
                 </button>
               ) : (
                 <button
                   onClick={isPlaying || autoRead ? handleAutoReadToggle : toggleAudio}
                   disabled={audioLoading || narrationPreparing}
-                  className={`min-h-[56px] px-6 rounded-full border-2 ${(isPlaying || autoRead) ? 'bg-primary text-primary-foreground border-primary' : 'border-border bg-background'} font-medium flex items-center justify-center gap-2 touch-manipulation`}
+                  className={`min-h-[44px] sm:min-h-[56px] px-4 sm:px-6 rounded-full border-2 ${(isPlaying || autoRead) ? 'bg-primary text-primary-foreground border-primary' : 'border-border bg-background'} text-sm sm:text-base font-medium flex items-center justify-center gap-2 touch-manipulation`}
                   style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                   data-testid="read-aloud-btn"
                 >
@@ -2477,9 +2504,9 @@ export default function BookReader() {
                   ) : audioLoading ? (
                     <><div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" /> Loading</>
                   ) : (isPlaying || autoRead) ? (
-                    <><FiPause className="w-5 h-5" /> Pause</>
+                    <><FiPause className="w-4 h-4 sm:w-5 sm:h-5" /> Pause</>
                   ) : (
-                    <><FiPlay className="w-5 h-5" /> Aloud</>
+                    <><FiPlay className="w-4 h-4 sm:w-5 sm:h-5" /> Aloud</>
                   )}
                 </button>
               )}
@@ -2487,11 +2514,11 @@ export default function BookReader() {
               <button
                 onClick={nextPage}
                 disabled={currentPage >= allPages.length - 1}
-                className="min-w-[56px] min-h-[56px] px-5 rounded-full border-2 border-border bg-background hover:bg-muted active:bg-muted/80 flex items-center justify-center touch-manipulation"
+                className="min-w-[44px] min-h-[44px] sm:min-w-[56px] sm:min-h-[56px] px-4 sm:px-5 rounded-full border-2 border-border bg-background hover:bg-muted active:bg-muted/80 flex items-center justify-center touch-manipulation"
                 style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                 data-testid="portrait-next-btn"
               >
-                <FiChevronRight className="w-6 h-6" />
+                <FiChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
                 </>
               )}
