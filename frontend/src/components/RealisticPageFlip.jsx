@@ -665,7 +665,11 @@ const RealisticPageFlip = forwardRef(({
     prevPage: () => flipBookRef.current?.pageFlip()?.flipPrev(),
     goToPage: (pageNum) => flipBookRef.current?.pageFlip()?.turnToPage(pageNum), // Use turnToPage for reliable navigation (flip() has known bugs)
     getCurrentPage: () => currentPage,
-    getTotalPages: () => pages.length + 2, // +2 for cover and back cover
+    getTotalPages: () => {
+      // Return the actual flipbook page count (allBookPages.length after it's built)
+      // This is used by BookReader to navigate to the back cover
+      return flipBookRef.current?.pageFlip()?.getPageCount() || 0;
+    },
     // Get the content page index for audio sync
     getContentPageIndex: (flipPageNum) => pageMapping.current[flipPageNum] ?? -1,
   }));
@@ -799,8 +803,10 @@ const RealisticPageFlip = forwardRef(({
   pageMapping.current = newPageMapping;
   
   // Calculate total content spreads for page indicator
-  const totalContentPages = pages.length;
+  const totalContentPages = pages.filter(p => !p.isBackCover).length; // Only count actual content pages
   const totalFlipbookPages = allBookPages.length;
+  
+  console.log('[RealisticPageFlip] allBookPages:', allBookPages.length, 'totalContentPages:', totalContentPages, 'pages prop length:', pages.length);
 
   // Check if we're on cover (first page) or back cover (last page)
   // react-pageflip uses 0-indexed pages, back cover is the last page

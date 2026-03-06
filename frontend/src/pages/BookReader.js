@@ -747,8 +747,10 @@ export default function BookReader() {
             chapterTitle: 'Back Cover',
             chapterNumber: 999
           });
+          console.log('[BookReader] Back cover added. Total pages now:', pages.length);
         }
         
+        console.log('[BookReader] Setting allPages with', pages.length, 'pages. Last page isBackCover:', pages[pages.length-1]?.isBackCover);
         setAllPages(pages);
         
         // Track read
@@ -856,7 +858,12 @@ export default function BookReader() {
     const minPage = -1;
     const maxPage = allPages.length - 1;
     
-    if (newPage < minPage || newPage > maxPage || isFlipping) return;
+    console.log('[goToPage] Called with:', { newPage, direction, jumpDirect, currentPage, maxPage });
+    
+    if (newPage < minPage || newPage > maxPage || isFlipping) {
+      console.log('[goToPage] Blocked:', { belowMin: newPage < minPage, aboveMax: newPage > maxPage, isFlipping });
+      return;
+    }
     
     // CRITICAL: Stop any playing audio IMMEDIATELY before page turn
     if (audioElement) {
@@ -869,17 +876,29 @@ export default function BookReader() {
     // Reset the last played page so new page can play fresh
     lastPlayedPageRef.current = -999;
     
+    // Check if navigating to back cover
+    const isNavigatingToBackCover = newPage >= 0 && allPages[newPage]?.isBackCover;
+    console.log('[goToPage] isNavigatingToBackCover:', isNavigatingToBackCover);
+    
     // For mobile portrait/landscape, directly set the page (no pageflip library)
     if (isMobilePortrait || isMobileLandscape) {
       setCurrentPage(newPage);
       saveReadingProgress();
     } else if (realisticFlipRef.current) {
-      // If jumpDirect is true, navigate directly to the page (for Read Again feature)
-      if (jumpDirect) {
-        // In flipbook, page 0 = cover, page 1 = first content page
-        // newPage 0 should map to flipbook page 1
-        const flipbookPage = newPage + 1;
-        realisticFlipRef.current.goToPage(flipbookPage);
+      // If jumpDirect is true OR navigating to back cover, navigate directly to the page
+      if (jumpDirect || isNavigatingToBackCover) {
+        // In flipbook, back cover is the last page
+        // For back cover specifically, navigate to the last flipbook page
+        if (isNavigatingToBackCover) {
+          const totalFlipbookPages = realisticFlipRef.current.getTotalPages?.() || (allPages.length * 2);
+          console.log('[goToPage] Navigating to back cover, flipbook page:', totalFlipbookPages - 1);
+          realisticFlipRef.current.goToPage(totalFlipbookPages - 1);
+        } else {
+          // In flipbook, page 0 = cover, page 1 = first content page
+          // newPage 0 should map to flipbook page 1
+          const flipbookPage = newPage + 1;
+          realisticFlipRef.current.goToPage(flipbookPage);
+        }
       } else if (direction === 'next') {
         realisticFlipRef.current.nextPage();
       } else {
@@ -891,7 +910,7 @@ export default function BookReader() {
       setCurrentPage(newPage);
       saveReadingProgress();
     }
-  }, [allPages.length, isFlipping, audioElement, isMobilePortrait, isMobileLandscape, saveReadingProgress]);
+  }, [allPages, isFlipping, audioElement, isMobilePortrait, isMobileLandscape, saveReadingProgress]);
 
   const nextPage = useCallback(() => goToPage(currentPage + 1, 'next'), [currentPage, goToPage]);
   const prevPage = useCallback(() => goToPage(currentPage - 1, 'prev'), [currentPage, goToPage]);
@@ -2587,6 +2606,21 @@ export default function BookReader() {
                   ) : (
                     <><FiPlay className="w-3 h-3 sm:w-5 sm:h-5" /> Aloud</>
                   )}
+                </button>
+              )}
+              
+              {/* Show "Back Cover" button on the last story page */}
+              {currentPage >= 0 && currentPage === allPages.length - 2 && allPages[allPages.length - 1]?.isBackCover && (
+                <button
+                  onClick={() => {
+                    console.log('[Back Cover Button] Clicked, navigating to back cover');
+                    setCurrentPage(allPages.length - 1);
+                  }}
+                  className="h-7 px-3 sm:min-h-[56px] sm:px-4 rounded-full bg-purple-600 text-white text-xs sm:text-sm font-medium flex items-center justify-center gap-1.5 hover:bg-purple-500 active:bg-purple-700 transition-colors"
+                  data-testid="view-backcover-btn"
+                >
+                  <FiBook className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">Back Cover</span>
                 </button>
               )}
               

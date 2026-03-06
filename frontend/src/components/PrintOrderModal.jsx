@@ -353,6 +353,7 @@ export default function PrintOrderModal({
               <BookPageStrip
                 pages={normalizedPages}
                 coverImage={book?.cover_image || book?.cover_image_url}
+                backCoverImage={book?.back_cover_image}
               />
             </div>
             

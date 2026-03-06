@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
-// Pure CSS 3D Book Mockup - 8x11 Portrait Format (like real children's books)
-// Cover image directly fills the front face for perfect alignment
+// Pure CSS 3D Book Mockup - 8x11 Portrait Format
+// Simplified perspective to avoid image distortion
 
 export default function BookPreview3D({ 
   coverImage, 
@@ -12,16 +12,15 @@ export default function BookPreview3D({
 }) {
   const [isHardcover, setIsHardcover] = useState(productType === 'hardcover');
   
-  // Book dimensions - 8x11 portrait ratio: 200 * (11/8) = 275px
-  const bookWidth = 200;
-  const bookHeight = 275;
+  // Book dimensions - 8x11 portrait ratio
+  const bookWidth = 180;
+  const bookHeight = 248; // 180 * (11/8) = 248
   
   // Calculate spine thickness based on page count
-  // 24 pages = ~17px (thin softcover), 32 pages = ~22px, 50 pages = ~35px
   const baseSpineWidth = Math.max(10, Math.min(35, pageCount * 0.7));
   const spineWidth = isHardcover ? baseSpineWidth + 8 : baseSpineWidth;
   
-  // Page edges slightly thinner than spine
+  // Page edges
   const pageEdgeWidth = Math.max(5, spineWidth * 0.4);
   
   return (
@@ -50,26 +49,81 @@ export default function BookPreview3D({
         </button>
       </div>
       
-      {/* 3D Book Container */}
+      {/* 3D Book Container - No perspective distortion */}
       <div 
         className="relative flex items-center justify-center"
         style={{ 
-          width: '320px', 
-          height: '320px',
-          perspective: '1000px',
+          width: '300px', 
+          height: '300px',
         }}
       >
-        {/* Book wrapper with 3D transform */}
-        <div
-          className="relative transition-transform duration-500"
-          style={{
-            width: `${bookWidth}px`,
-            height: `${bookHeight}px`,
-            transformStyle: 'preserve-3d',
-            transform: 'rotateY(-25deg) rotateX(5deg)',
-          }}
-        >
-          {/* Front Cover - shows actual book cover image */}
+        {/* Book assembly - using simple shadow/offset for 3D effect */}
+        <div className="relative" style={{ width: `${bookWidth}px`, height: `${bookHeight}px` }}>
+          
+          {/* Back cover shadow (creates depth) */}
+          <div
+            className="absolute"
+            style={{
+              left: `-${spineWidth + 4}px`,
+              top: '8px',
+              width: `${bookWidth}px`,
+              height: `${bookHeight}px`,
+              background: 'rgba(0,0,0,0.15)',
+              borderRadius: isHardcover ? '0' : '4px',
+              filter: 'blur(8px)',
+            }}
+          />
+          
+          {/* Spine */}
+          <div
+            className="absolute top-0 flex items-center justify-center"
+            style={{
+              left: `-${spineWidth}px`,
+              width: `${spineWidth}px`,
+              height: `${bookHeight}px`,
+              background: isHardcover 
+                ? 'linear-gradient(to right, #2d0055, #4a0080, #5a0090)'
+                : 'linear-gradient(to right, #4a0080, #6a00b0, #5a00a0)',
+              borderRadius: isHardcover ? '0' : '3px 0 0 3px',
+              boxShadow: 'inset -3px 0 6px rgba(0,0,0,0.3)',
+            }}
+          >
+            {/* Spine text */}
+            <span 
+              className="text-white text-[7px] font-medium tracking-wider whitespace-nowrap overflow-hidden opacity-80"
+              style={{
+                writingMode: 'vertical-rl',
+                textOrientation: 'mixed',
+                transform: 'rotate(180deg)',
+                maxHeight: `${bookHeight - 30}px`,
+              }}
+            >
+              {title || 'Book Title'}
+            </span>
+          </div>
+          
+          {/* Page edges (right side) - creates thickness illusion */}
+          <div
+            className="absolute top-[3px]"
+            style={{
+              right: `-${pageEdgeWidth}px`,
+              width: `${pageEdgeWidth}px`,
+              height: `${bookHeight - 6}px`,
+              background: 'linear-gradient(to right, #f5f5f5, #e8e8e8, #f0f0f0)',
+              borderRadius: '0 2px 2px 0',
+              boxShadow: '2px 2px 4px rgba(0,0,0,0.1)',
+            }}
+          >
+            {/* Page line texture */}
+            <div 
+              className="w-full h-full"
+              style={{
+                background: 'repeating-linear-gradient(to bottom, transparent, transparent 3px, rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px)',
+              }}
+            />
+          </div>
+          
+          {/* Front Cover - FLAT, no perspective distortion */}
           <div
             className="absolute inset-0 overflow-hidden"
             style={{
@@ -77,9 +131,8 @@ export default function BookPreview3D({
               height: `${bookHeight}px`,
               borderRadius: isHardcover ? '0' : '0 4px 4px 0',
               boxShadow: isHardcover 
-                ? '8px 8px 25px rgba(0,0,0,0.35), 2px 2px 8px rgba(0,0,0,0.2)'
-                : '5px 5px 20px rgba(0,0,0,0.3)',
-              transform: 'translateZ(1px)',
+                ? '4px 6px 20px rgba(0,0,0,0.3), 1px 2px 6px rgba(0,0,0,0.2)'
+                : '3px 4px 15px rgba(0,0,0,0.25)',
               background: coverImage ? 'none' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             }}
           >
@@ -98,111 +151,17 @@ export default function BookPreview3D({
               </div>
             )}
             
-            {/* Glossy overlay for hardcover */}
+            {/* Subtle edge highlight for hardcover */}
             {isHardcover && (
               <div 
                 className="absolute inset-0 pointer-events-none"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 40%, rgba(0,0,0,0.05) 100%)',
+                  boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)',
+                  background: 'linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.05) 100%)',
                 }}
               />
             )}
           </div>
-          
-          {/* Spine */}
-          <div
-            className="absolute top-0 flex items-center justify-center"
-            style={{
-              left: `-${spineWidth}px`,
-              width: `${spineWidth}px`,
-              height: `${bookHeight}px`,
-              background: isHardcover 
-                ? 'linear-gradient(to right, #2d0055, #4a0080, #3a0070)'
-                : 'linear-gradient(to right, #3a0070, #5a00a0, #4a0090)',
-              transform: 'rotateY(90deg)',
-              transformOrigin: 'right center',
-              borderRadius: isHardcover ? '0' : '2px 0 0 2px',
-              boxShadow: 'inset -2px 0 4px rgba(0,0,0,0.3)',
-            }}
-          >
-            {/* Spine text (rotated) */}
-            <span 
-              className="text-white text-[8px] font-medium tracking-wider whitespace-nowrap overflow-hidden"
-              style={{
-                writingMode: 'vertical-rl',
-                textOrientation: 'mixed',
-                transform: 'rotate(180deg)',
-                maxHeight: `${bookHeight - 20}px`,
-                textShadow: '0 1px 2px rgba(0,0,0,0.5)',
-              }}
-            >
-              {title || 'Book Title'}
-            </span>
-          </div>
-          
-          {/* Page Edges (right side) */}
-          <div
-            className="absolute"
-            style={{
-              right: `-${pageEdgeWidth}px`,
-              top: '2px',
-              width: `${pageEdgeWidth}px`,
-              height: `${bookHeight - 4}px`,
-              background: 'linear-gradient(to right, #f8f8f8, #e8e8e8, #f0f0f0)',
-              transform: 'rotateY(-90deg)',
-              transformOrigin: 'left center',
-              boxShadow: 'inset 2px 0 4px rgba(0,0,0,0.1)',
-            }}
-          >
-            {/* Page lines texture */}
-            <div 
-              className="w-full h-full"
-              style={{
-                background: 'repeating-linear-gradient(to bottom, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 3px)',
-              }}
-            />
-          </div>
-          
-          {/* Bottom edge (pages) */}
-          <div
-            className="absolute left-0"
-            style={{
-              bottom: `-${pageEdgeWidth * 0.5}px`,
-              width: `${bookWidth}px`,
-              height: `${pageEdgeWidth * 0.5}px`,
-              background: 'linear-gradient(to bottom, #f0f0f0, #e0e0e0)',
-              transform: 'rotateX(90deg)',
-              transformOrigin: 'top center',
-              boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)',
-            }}
-          />
-          
-          {/* Top edge (pages) */}
-          <div
-            className="absolute left-0"
-            style={{
-              top: `-${pageEdgeWidth * 0.5}px`,
-              width: `${bookWidth}px`,
-              height: `${pageEdgeWidth * 0.5}px`,
-              background: 'linear-gradient(to top, #f8f8f8, #f0f0f0)',
-              transform: 'rotateX(-90deg)',
-              transformOrigin: 'bottom center',
-            }}
-          />
-          
-          {/* Back cover (barely visible) */}
-          <div
-            className="absolute inset-0"
-            style={{
-              width: `${bookWidth}px`,
-              height: `${bookHeight}px`,
-              background: isHardcover 
-                ? 'linear-gradient(135deg, #2d0055 0%, #4a0080 100%)'
-                : 'linear-gradient(135deg, #3a0070 0%, #5a00a0 100%)',
-              transform: `translateZ(-${spineWidth}px)`,
-              borderRadius: isHardcover ? '0' : '4px 0 0 4px',
-            }}
-          />
         </div>
       </div>
       

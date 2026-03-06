@@ -1,617 +1,113 @@
-# Azories - Digital Book Platform PRD
+# Azories - AI Story Creator PRD
 
 ## Original Problem Statement
-User wants to enhance their "Azories" digital book application with:
-- Finalized "Pro Studio" for AI content generation
-- Credits-based business model with Stripe
-- Professional site elements
-- Library of sample books
-- Bug fixes and codebase refactoring
-- **Print on Demand**: Allow users to order physical printed copies of their books via Gelato API
+Build a "Print on Demand" (POD) book ordering feature using the Gelato API for an AI Story Creator application. The app allows users to create, view, and order printed copies of AI-generated children's books.
 
-## Core Requirements - ALL COMPLETE ✅
+## What's Been Implemented
 
-### P0 - Critical
-- **Book Reader Experience**: Fully optimized for mobile and desktop ✅
-- **AI Story Creator Page Count**: Creates exact number of pages ✅
-- **AI Story Creator Images**: Portrait orientation (768x1024) ✅
-- **Free Stories Trial**: New users get 3 free story creations ✅
-- **BookEditor Mobile Layout**: Responsive design ✅
-- **Audio Caching**: Narration cached to Cloudinary (70.5% complete) ✅
-- **Newly Added Section**: Horizontal scroll row with NEW badges ✅
-- **Coming Soon Section**: Blurred teasers with countdown labels ✅
-- **Admin Email Notifications**: ✅ VERIFIED (March 1, 2026)
-  - New user signup notifications via Resend
-  - Credit purchase notifications via Resend  
-  - Book submission notifications via Resend
-- **Admin Panel Fixed**: ✅ (March 1, 2026)
-  - `/api/admin/login` endpoint created
-  - `/api/admin/verify` endpoint created
-  - Admin authentication works independently from user auth
-  - Admin can access panel at /admin without user login
-- **Print Order Modal P0 Bug Fix**: ✅ FIXED (March 6, 2026)
-  - Three.js/React 19 incompatibility caused modal crash
-  - Replaced @react-three/fiber with CSS-based 3D preview
-  - Modal now opens without errors
+### Core Features (Stable)
+- AI Story Creation with text and illustrations
+- Book viewing with realistic page-flip animation
+- User library and dashboard
+- ElevenLabs narration integration
+- Stripe payment integration for print orders
 
-### P1 - High Priority
-- Monetization and tier gating (Stripe) ✅
-- Production deployment ✅ READY
-- **Thumbnail Fallback System**: ✅ VERIFIED (March 4, 2026)
-- **Print on Demand Feature**: ✅ IN PROGRESS (March 6, 2026)
-  - Print Order Modal working (CSS 3D preview + page thumbnails)
-  - Backend API endpoints for Gelato integration ready
-  - Stripe payment integration ready
-
-### P2 - Medium Priority
-- Regenerate covers for 25 books
-- Generate long-form stories for 17 books
-- Refactor server.py into modular route files
-
-## Latest Session Updates (March 6, 2026)
-
-### Session 11 - Print Order Modal P0 Bug Fix + Stripe Integration ✅
-
-#### Fix 1: Print Order Modal Three.js/React 19 Crash (FIXED)
-- **Problem**: Opening the "Order Printed Book" modal caused a client-side crash with error "Cannot read properties of undefined (reading 'ReactCurrentOwner')"
-- **Solution**: Replaced Three.js-based 3D book preview with CSS-based 3D preview using transforms
-
-#### Fix 2: Price Estimate API 500 Error (FIXED)
-- **Problem**: `/api/print/price-estimate` returned 500 error due to incorrect function call
-- **Solution**: Rewrote endpoint with regional default shipping costs (GB, US, EU, etc.)
-
-#### Fix 3: "Order Printed Copy" Button Missing (FIXED)
-- **Problem**: Button was only showing for logged-in users and was hidden on mobile
-- **Solution**: Made button always visible with login prompt for guests, added mobile version
-
-#### Fix 4: Stripe Checkout Integration (COMPLETED)
-- **Problem**: Frontend showed "Payment integration coming soon" and didn't redirect to Stripe
-- **Solution**: Updated `submitOrder()` to call `/api/print/checkout/create-session` and redirect to Stripe checkout
-
-### Files Modified:
-- `frontend/src/components/print/BookPreview3D.jsx` - CSS 3D transforms
-- `frontend/src/components/PrintOrderModal.jsx` - Stripe checkout redirect
-- `frontend/src/pages/BookReader.js` - Fixed Order Printed Copy button visibility
-- `backend/routes/print_orders.py` - Fixed price-estimate endpoint
-
-### Testing Results:
-- ✅ Backend: 100% (15/15 tests passed)
-- ✅ Frontend: 100% (Modal flow + Stripe redirect)
-- ✅ Stripe checkout session creation returns valid checkout URL
-- ✅ Order Printed Copy button visible on desktop and mobile
-
----
-
-### Session 10 - AI Story Creation Bug FIX ✅ CRITICAL (P0)
-
-### Fix: AI-Generated Books Now Display Pages Correctly
-- **Problem**: AI-generated stories were showing empty/blank pages. The `/books/{book_id}/full` endpoint was not returning pages for AI-generated books.
-- **Root Cause**: The endpoint only checked TWO sources for pages:
-  1. Chapters collection with pages linked via `chapter_id`
-  2. Embedded `pages` array in the book document
+### Print on Demand Feature (Completed - March 6, 2026)
+- **Print Order Modal** with complete ordering flow:
+  - Pure CSS 3D book mockup (softcover/hardcover toggle)
+  - Page thumbnails showing Cover, all pages with image+text spreads, and Back Cover
+  - Address entry with country selection
+  - Shipping estimate from Gelato API
+  - Stripe checkout integration
   
-  AI story generation stores pages in the `pages` collection linked by `book_id` (not `chapter_id`), which was NOT being queried.
+- **Product Preview**:
+  - 8x11 portrait format book visualization
+  - Cover image fills front face directly (no alignment issues)
+  - Dynamic spine width based on page count
+  - Softcover: thin spine, rounded edges, matte look
+  - Hardcover: thicker spine, sharp corners, glossy effect
 
-### Solution Applied:
-- Added **Source 3** check in `/books/{book_id}/full` endpoint (server.py lines 8170-8219)
-- Now queries `db.pages.find({"book_id": book_id})` for AI-generated pages
-- Normalizes pages to chapter format for consistent frontend rendering
+- **Back Cover Navigation**:
+  - Back cover accessible as the last page when reading
+  - Displays Azories branding with mascot
+  - "Library" and "Read Again" buttons
 
-### Testing Results:
-- ✅ 11/11 backend tests passed
-- ✅ Test book `f1328a57-849f-4160-8820-a7caea04c1ea` returns 5 pages with text and images
-- ✅ Story generation job completes successfully (text + images)
-- ✅ Book reader displays pages correctly with illustrations
+### Recent Bug Fixes (March 6, 2026)
+1. ✅ Replaced AI-generated mockups with pure CSS 3D book (no alignment issues)
+2. ✅ Fixed back cover missing from print thumbnails
+3. ✅ Fixed back cover navigation in BookReader (now accessible)
+4. ✅ Fixed getTotalPages() to return actual flipbook page count
 
-### Files Modified:
-- `backend/server.py` - Added AI-generated pages source check in `get_full_book` endpoint
-
----
-
-### Session 9 - iPad Scroll/Swipe Bug FIX ✅ CRITICAL
-
-### Fix: Complete iPad Touch Conflict Resolution
-- **Problem**: react-pageflip library intercepted all touch events on iPad, making text scrolling impossible and causing unwanted page turns while trying to scroll
-- **Previous Failed Attempts**: Event interception (stopPropagation), CSS pointer-events, touch-action manipulation - all failed because react-pageflip's internal handling couldn't be bypassed
-- **Final Solution**: COMPLETELY BYPASS react-pageflip on iPad
-
-### Implementation:
-1. **New Component**: `IPadPageViewer.jsx` - Simple, conflict-free page viewer for iPad
-   - NO swipe gesture detection at all
-   - 60px tap zones on left/right edges for page navigation  
-   - Completely free vertical scrolling in text areas (touchAction: 'pan-y')
-   - Always-visible arrow buttons for navigation
-   - Simple fade transition between pages (no flip animation)
-
-2. **iPad Detection**: 
-   ```javascript
-   const isIPad = /iPad/i.test(navigator.userAgent) || 
-     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-   ```
-
-3. **Conditional Rendering**: 
-   - iPad → Uses `IPadPageViewer` (tap zones + buttons only)
-   - Desktop → Uses existing `RealisticPageFlip` (react-pageflip with animations)
-
-### Files Created:
-- `frontend/src/components/IPadPageViewer.jsx` - New simplified page viewer for iPad
-
-### Files Modified:
-- `BookReader.js`:
-  - Added `useMemo` import
-  - Added `IPadPageViewer` import
-  - Added `isIPad` detection using proper detection methods
-  - Added `ipadPageViewerRef` ref
-  - Disabled swipe handlers on iPad (`enabled: !isFlipping && !isIPad`)
-  - Updated `goToPage`, `startReading`, `startListening` to handle iPad viewer
-  - Added conditional rendering: iPad uses `IPadPageViewer`, desktop uses `RealisticPageFlip`
-
-### Why This Solution Works:
-- Zero touch event conflicts - no swipe detection means no interference with native scroll
-- Tap zones are simple click handlers, not touch gesture listeners
-- Text areas have `touchAction: 'pan-y'` allowing native browser scroll
-- Desktop experience is unchanged - still gets the beautiful page flip animation
-
-### Testing Required:
-- iPad Safari: Verify text scrolling works without page turn
-- iPad PWA: Verify same behavior in standalone mode  
-- iPad Fullscreen: Verify same behavior in fullscreen
-- Desktop browsers: Verify react-pageflip still works normally
-
----
-
-### Session 8 - Gelato Print on Demand "Coming Soon" UI ✅
-
-### Feature: Print-on-Demand Coming Soon Modal
-- **Purpose**: Implement placeholder UI for upcoming Gelato Print-on-Demand feature
-- **Solution**: Added "Order a Real Printed Book" option in the existing Print dialog
-- **UI Flow**:
-  1. User clicks Print button in BookReader header
-  2. Print Dialog shows two options:
-     - **Download PDF** (existing feature - 5 credits)
-     - **Order a Real Printed Book** (Coming Soon badge)
-  3. Clicking "Order a Real Printed Book" opens styled Coming Soon modal with:
-     - Package/gift icon in purple circle
-     - "Coming Soon!" heading
-     - Description of the service
-     - Product specs: "Premium 8x8" Photobook, Softcover with matt lamination"
-     - Pricing preview: "Starting from £14.99 / $19.99"
-     - "Got it!" button to close
-
-### Files Modified:
-- `BookReader.js`:
-  - Added import for `PrintOrderModal` component
-  - Added `showPrintOrderModal` state
-  - Added "Order a Real Printed Book" option in Print Dialog with divider
-  - Added `PrintOrderModal` component with `comingSoon={true}`
-  - Fixed `addDebug` undefined error (removed debug references)
-- `PrintOrderModal.jsx`: Already had Coming Soon UI built (used as-is)
-
-### Bug Fixed:
-- **`addDebug` is not defined**: Removed debug function references that were left behind when debug panel was removed in previous session
-
-## Previous Session Updates (March 4, 2026)
-
-### Session 7 - Thumbnail Bug Fix ✅
-
-### Fix: Starter Library & Video Thumbnails Fallback System
-- **Problem**: Thumbnails were showing broken image icons when failing to load
-- **Solution**: Implemented centralized fallback system with branded placeholders:
-  1. **AZORIES_PLACEHOLDER**: Purple gradient SVG with book icon for images
-  2. **AZORIES_VIDEO_PLACEHOLDER**: Purple-pink gradient SVG with play icon for videos
-  3. **handleImageError**: Utility function to replace failed images with branded placeholder
-  4. **getVideoThumbnailUrl**: Cloudinary video thumbnail URL generator
-
-### Files Modified:
-- `imageOptimizer.js`: Added AZORIES_PLACEHOLDER, AZORIES_VIDEO_PLACEHOLDER, handleImageError, getVideoThumbnailUrl utilities
-- `MediaGallery.jsx`: Updated renderMediaItem with video thumbnail and fallback handling
-- `ArtStudio.js`: Updated starter library images with fallback handling
-- `ProStudio.js`: Updated video thumbnails with fallback handling  
-- `BookEditor.js`: Updated starter library images with fallback handling
-- `Library.js`: Updated LazyImage component with branded placeholder
-
-### Test Results:
-- Starter Library: 100/100 images loaded ✅
-- Library Book Thumbnails: 63 images, 0 broken ✅
-- Pro Studio: 10/10 images loaded ✅
-- Fallback mechanism: Code verified ✅
-
-## Previous Session Updates (March 3, 2026)
-
-### Session 6 - Longer Page Options Tested ✅
-
-### Feature: Extended Page Options for Story Studio
-- **Tested all page counts successfully:**
-  - Kids Mode: 5, 10, 15 pages
-  - Story Studio: 5, 10, 15, 20, 30, 50 pages
-- **Credit scaling verified:**
-  - 5 pages = 5 credits
-  - 10 pages = 8 credits
-  - 15 pages = 12 credits
-  - 20 pages = 15 credits
-  - 30 pages = 20 credits
-  - 50 pages = 30 credits
-- **Chapter structure option** enabled for 20+ page books
-
-### Backend Tests Passed:
-- 20-page story: Job created and processing ✅
-- 30-page story: Job created and processing ✅
-- Background job system handles long-running generation ✅
-
-### Session 5 - Fixed Navigation Structure ✅ NEW
-
-### Fix: Restored Three Separate Tabs
-- **Problem**: StoryCreator replaced Creators instead of being a new route
-- **Solution**: Created proper navigation structure:
-  1. **Image Creator** (`/creators`) - Original ArtStudio restored
-  2. **AI Stories** (`/ai-stories`) - New StoryCreator page
-  3. **Pro Studio** (`/pro-studio`) - Unchanged
-
-### Files Modified:
-- `App.js`: Fixed routes - `/creators` → ArtStudio, `/ai-stories` → StoryCreator
-- `Navbar.js`: Added all three tabs with emojis (✍️ Image Creator, 🐉 AI Stories, ⚡ Pro Studio)
-- `Dashboard.js`: "AI Story" button now links to `/ai-stories` instead of opening dialog
-
-### Navigation Structure:
+## Code Architecture
 ```
-✍️ Image Creator  → /creators (ArtStudio)
-🐉 AI Stories     → /ai-stories (StoryCreator)  
-⚡ Pro Studio     → /pro-studio (ProStudio)
+/app/
+├── backend/
+│   ├── server.py
+│   ├── routes/
+│   │   └── print_orders.py      # Print order API endpoints
+│   └── services/
+│       └── gelato_service.py    # Gelato API integration
+└── frontend/
+    └── src/
+        ├── pages/
+        │   ├── BookReader.js    # Book reading with back cover support
+        │   └── Dashboard.js     # My Books with print option
+        └── components/
+            ├── print/
+            │   ├── BookPreview3D.jsx   # Pure CSS 3D book mockup
+            │   └── BookPageStrip.jsx   # Page thumbnails with back cover
+            ├── PrintOrderModal.jsx     # Complete print ordering flow
+            └── RealisticPageFlip.jsx   # Flipbook with back cover navigation
 ```
 
-### Session 4 - Background Job System for Story Generation ✅ NEW
+## Key Technical Details
+- **CSS 3D Book**: Uses transform: perspective for 3D effect without image distortion
+- **Dynamic Spine**: `spineWidth = Math.max(10, Math.min(35, pageCount * 0.7))`
+- **Back Cover Navigation**: Uses flipbook's `goToPage(totalPages - 1)` for direct navigation
+- **Page Count**: Flipbook has 22 pages (1 cover + 20 content spreads + 1 back cover)
 
-### Feature: Async Story Generation with Background Jobs
-- **Purpose**: Enable long-running story generation (20-50 pages) without blocking the UI
-- **Implementation**:
-  - New endpoint: `POST /api/ai/generate-story-async` - Returns job_id immediately
-  - New endpoint: `GET /api/jobs/{job_id}/status` - Poll for progress
-  - New endpoint: `GET /api/jobs/active` - Get user's active jobs
-  - New endpoint: `GET /api/jobs/history` - Get recent job history
-  - Background worker: `run_story_generation_job()` - Handles story + image generation
-  - Email notification: Sends "Your story is ready!" email on completion
-  
-- **Progress Tracking**:
-  - Status: pending → generating_story → generating_images → completed/partial/failed
-  - Progress percent: 0% → 5% (start) → 20% (story done) → 30-95% (images) → 100%
-  - Per-page image status: pending/generating/done/failed
-  - Elapsed time and current step messages
-  
-- **Error Handling**:
-  - Partial completion: If some images fail, book is still created
-  - Credit refunds: Credits refunded for failed pages
-  - Graceful degradation: Story text saved even if images fail
-  
-- **Database**:
-  - New collection: `story_jobs` - Tracks all job state
-  - Jobs persisted so users can close tab and return later
-  
-- **Files**: `backend/server.py` (lines 6085-6500)
+## API Endpoints
+- `POST /api/print/price-estimate` - Get pricing for softcover/hardcover
+- `POST /api/print/checkout/create-session` - Create Stripe checkout session
+- `GET /api/books/{book_id}/full` - Get book with pages and back_cover_image
 
-### Session 3 - iPad Bug Fixes
-
-### Bug Fix 1: iPad Narration Continuation ✅
-- **Issue**: On iPad landscape, narration stopped after first page instead of continuing
-- **Root Cause**: `audio.onended` handler only called `goToPage()` but didn't explicitly restart audio
-- **Fix**: Added explicit `playAudio()` call with 400ms delay after page transition in `audio.onended`
-- **File**: `frontend/src/pages/BookReader.js` (lines 1055-1088)
-
-### Bug Fix 3: Auto-Scroll Text During Narration ✅ NEW
-- **Feature**: Karaoke-style reading - text automatically scrolls as narration plays
-- **Implementation**:
-  - Added `audioProgress` state (0 to 1) tracking audio playback position
-  - Added `timeupdate` event listener on audio element
-  - Smooth scroll interpolation (15% per frame) for natural movement
-  - Progress bar at bottom of text container shows narration position
-- **Behaviors**:
-  - Scroll position tracks audio progress proportionally
-  - Scroll stops when audio is paused
-  - Scroll resets to top on page change
-  - Works on both iPad and desktop
-- **Files**: `frontend/src/pages/BookReader.js` (lines 1374-1418)
-- **Visual**: Purple progress bar at bottom of text area during playback
-
-### Bug Fix 2: iPad Scroll Triggers Page Turn ✅
-- **Issue**: Scrolling text was incorrectly detected as horizontal swipe, triggering page turns
-- **Root Cause**: Swipe detection ratio was too lenient (1.5x) and didn't aggressively block scrolling
-- **Fix**: 
-  - Added `data-scrollable="true"` and `onTouchStart stopPropagation` to text containers
-  - Changed swipe ratio from 1.5x to 2x (horizontal must be 2x vertical)
-  - Added 3x ratio requirement for touches starting in vertical scrollable areas
-  - Immediately mark as scrolling if ANY vertical movement (>5px) in scrollable areas
-- **Files**: 
-  - `frontend/src/pages/BookReader.js` (lines 1744-1750, 1874-1879)
-  - `frontend/src/hooks/useSwipeGestures.js` (complete rewrite of touch handling)
-
-### Session 2 - Veo 3 Integration & Pro Studio Fixes
-
-### Feature 1: Veo 3.1 Video Generation Integration ✅ NEW
-- **Backend**: Added Google Veo 3.1 video generation service using google-genai SDK
-  - Installed `google-genai>=1.0.0` package
-  - Added `generate_video_with_veo3()` async function with polling for completion
-  - Modified `animate_hero_frame` endpoint to support multiple models (sora-2, veo-3.1, kling)
-  - Task-based async processing returns task_id for polling
-- **Frontend**: Enabled Veo 3.1 in video model dropdown
-  - Updated `ProStudioConfig.js`: `available: true` for veo-3.1 model
-  - Changed maxDuration from 16 to 8 seconds (Veo 3.1 API limit)
-- **Files**: `backend/server.py`, `frontend/src/config/ProStudioConfig.js`, `backend/requirements.txt`
-- **Testing**: Backend API test passed - returns task_id when veo-3.1 model requested
-
-### Feature 2: Expression Generation Pop-out Modal ✅ VERIFIED
-- When generating character expressions, image now:
-  1. Shows in a full-screen preview modal
-  2. Displays "Automatically saved to [character name]'s folder" message
-  3. Auto-saves to character folder without user action
-  4. Still shows additional save options (save to different character, gallery)
-- **Code**: `generateExpression()` function in ProStudio.js (lines 1666-1744)
-- **Status**: Already implemented in previous session, verified working
-
-### Feature 3: Video Thumbnail Fallback Logic ✅ IMPROVED
-- Fixed empty grey boxes in character gallery for videos without thumbnails
-- Implemented multi-layer fallback chain:
-  1. `thumbnail_url` from database
-  2. Cloudinary video transform (so_0,w_300,h_300,c_fill)
-  3. Character reference images
-  4. Video element with preload="metadata"
-  5. Gradient placeholder with film icon
-- **File**: `frontend/src/pages/ProStudio.js` (lines 2759-2802)
-
-### Session 1 - Book Image Library & Continue Reading (Earlier)
-
-### Feature 1: Bookmark/Continue Reading ✅
-- Backend: Added `/api/continue-reading` endpoint that returns books user is currently reading with progress
-- Frontend (BookReader): Added "Welcome Back!" modal that prompts users to continue from saved page or start over
-- Frontend (Library): Added "Continue Reading" section showing in-progress books with progress bars
-- Files: `backend/server.py`, `frontend/src/pages/BookReader.js`, `frontend/src/pages/Library.js`
-
-### Feature 2: Backfill Video Thumbnails ✅  
-- Added admin endpoint: `POST /api/admin/backfill-video-thumbnails`
-- Generates thumbnails for videos/animations without them using Cloudinary transformations
-- Returns statistics on processed items
-- File: `backend/server.py`
-
-### Feature 3: Book Image Library - FULLY INTEGRATED ✅
-- **Purpose**: Private library showing images from the logged-in user's own books for reuse across all sections
-- **Auto-sync**: `POST /api/user/image-library/sync` extracts ALL images from ALL user's books
-  - **Synced: 57 images from 11 books, 11 chapters, 51 pages**
-  
-**Available in ALL gallery pickers:**
-
-| Section | Location | Status |
-|---------|----------|--------|
-| Dashboard | "My Library" tab | ✅ Added |
-| Book Editor | Page image gallery picker | ✅ Added |
-| Book Editor | Cover image gallery picker | ✅ Added |
-| Art Studio | Reference image gallery picker | ✅ Added |
-| Pro Studio | Gallery filter button "My Books" | ✅ Added |
-| MediaGallery | Shared component | ✅ Added |
-
-**Backend Endpoints:**
-- `GET /api/user/image-library` - Get all user's book images (paginated)
-- `POST /api/user/image-library/sync` - Extract images from all books
-- `POST /api/user/image-library/copy-to-book` - Copy image to another book
-
-**Files Modified:**
-- `backend/server.py`
-- `frontend/src/pages/Dashboard.js`
-- `frontend/src/pages/BookEditor.js`
-- `frontend/src/pages/ArtStudio.js`
-- `frontend/src/pages/ProStudio.js`
-- `frontend/src/components/MediaGallery.jsx`
-
-### Previous Work (March 3, 2026)
-1. **Add to LoRA References Feature** - Users can now add images from character folder to reference images for LoRA training
-   - Backend endpoint: `POST /api/pro-studio/characters/{character_id}/add-reference`
-   - Fixed to return `reference_images` array along with count for proper frontend state updates
-   - Frontend: Green "+" button on character gallery images in Pro Studio
-   - Shows "Ref" badge on images already in references
-   - Message: "Reference image added. X/3 images for LoRA training."
-   - File: `backend/server.py` (line ~4288)
-   - File: `frontend/src/pages/ProStudio.js` (addImageToReferences function)
-
-### Deployment Health Check ✅
-- Application passed deployment readiness check
-- All environment configurations correct
-- CORS allows all origins
-- MongoDB connection properly configured
-- Only non-blocking recommendation: N+1 query optimization (lines 6074-6150 in server.py)
-
-## Previous Session Updates (March 2, 2026)
-
-### UI/UX Fixes Completed ✅
-1. **Book Cover Loading Placeholder Reverted** - Removed incorrect white background with Azora image
-   - Now uses shimmer animation placeholder while cover loads
-   - File: `RealisticPageFlip.jsx` - CoverPage component
-2. **AI Reading Buddy Button Z-Index Fixed** - Azora chat button now appears above audio controls
-   - Changed z-index from `z-40` to `z-[110]` (controls bar is `z-[100]`)
-   - Also moved button position from `bottom-24` to `bottom-28`
-   - File: `AIReadingBuddy.jsx`
-3. **Back Cover Image Display Fixed** - Text no longer gets cropped
-   - Changed `objectFit: 'cover'` to `objectFit: 'contain'` for back cover image
-   - Ensures full back cover including text/logo is visible
-   - File: `RealisticPageFlip.jsx` - BackCoverPage component
-
-## Previous Session Updates (March 1, 2026)
-
-### P0 Fixes Completed ✅
-1. **AI Book Back Cover** - Verified: AI-created books get Azories branded back cover URL
-2. **Loading Screen Image** - Changed from 'waving' to 'running' pose Azora mascot
-3. **Library Purple Flash Fix** - Removed motion animation from header to prevent flash
-
-### New Features Added ✅
-1. **Share Book Button** - Users can copy direct link to any book
-   - Uses Web Share API on mobile, clipboard fallback on desktop
-   - Toast notification: "Link copied! Share this story with friends 📚"
-2. **Book Completion Celebration** - Confetti animation when child finishes a book
-   - Fires when reaching back cover page
-   - Uses canvas-confetti library
-   - Shows "The End! Amazing job finishing this story!" message
-3. **Autoplay Narration** - (Already existed) Pages auto-advance when audio ends
-
-### Dependencies Added
-- `canvas-confetti@1.9.3` - For book completion celebration
-
-## Previous Updates (March 1, 2026)
-
-### Site Analytics System ✅ NEW
-- **Automatic page view tracking** on every route change
-- **Book read tracking** when users open books
-- **Signup/login event tracking**
-- **Admin dashboard** shows:
-  - Total users, new users (30 days)
-  - Total page views, unique visitors
-  - Popular books (most read)
-  - AI stories created
-  - Recent users list
-- **API Endpoints:**
-  - `POST /api/analytics/track` - Track events
-  - `GET /api/admin/site-analytics` - Get analytics summary
-  - `GET /api/admin/users` - Search/list all users
-  - `GET /api/admin/user/{user_id}` - Get user details
-
-### Printable PDF Feature ✅ NEW
-- **Landscape A4** format (297mm x 210mm)
-- Each page split into two A5 halves (left=illustration, right=text)
-- Includes cover, all story pages, and branded back cover
-- **5 credits** per download
-- Left-aligned text, 14pt font
-
-### Bug Fixes ✅
-- **Image upload fixed** - Added Authorization header
-- **Profile update fixed** - Added Authorization header  
-- **Book review emails fixed** - Changed from background_tasks to await
-- **Admin panel access fixed** - Removed ProtectedRoute wrapper
-- **Gallery "Add to Page" fixed** - Closes modal automatically after selection
-
-## New Features Implemented (Earlier)
-
-### 1. Audio Caching System
-- TTS audio uploads to Cloudinary CDN
-- Audio URL saved to page document
-- Frontend checks cached URL before calling TTS
-- Background batch generation for all library books
-- Admin endpoints: `/api/admin/narration-status`, `/api/admin/generate-narration-batch`
-- **Status: 70.5% of library pages cached**
-
-### 2. "Newly Added" Library Section
-- Horizontal scroll row showing books from last 30 days
-- "NEW" badge on books less than 7 days old
-- Section hidden if no recent books
-- Ordered by most recently published first
-- API: `GET /api/books/newly-added`
-
-### 3. "Coming Soon" Library Section
-- Horizontal scroll row with blurred/locked thumbnails
-- "Coming Soon" overlay badge with custom labels
-- Clicking shows friendly message: "This story is almost ready — check back soon! 🐉"
-- Section hidden if no coming soon books
-- Admin can mark books via `PUT /api/books/{book_id}/coming-soon`
-- API: `GET /api/books/coming-soon`
-
-### 4. AI Story Creator Portrait Images
-- fal.ai configured for portrait orientation
-- Aspect ratio: 3:4 (768x1024)
-- Default `image_size` changed to `portrait_4_3`
-
-## API Endpoints Added
-
-```
-# Audio Caching
-POST /api/tts/generate - Returns audio_url (Cloudinary) or audio_base64 fallback
-POST /api/tts/generate-for-page/{page_id} - Generate and cache for specific page
-POST /api/admin/generate-narration-batch - Batch generate narration
-GET /api/admin/narration-status - Check cache status
-
-# Library Sections
-GET /api/books/newly-added - Books from last 30 days
-GET /api/books/coming-soon - Books marked as coming soon
-PUT /api/books/{book_id}/coming-soon - Mark book as coming soon (admin)
-```
-
-## Database Schema Updates
-
-### books collection
-- `coming_soon: boolean` - Mark book as coming soon
-- `coming_soon_label: string` - Custom label (e.g., "This Week!")
-- `published_at: datetime` - Publication date for newly added sorting
-
-### pages collection
-- `audio_url: string` - Cloudinary URL for cached narration
-
-### audio_cache collection
-- `cloudinary_url: string` - CDN URL for cached audio
-- `cache_key: string` - Hash of text+voice
-- `expires_at: datetime` - Cache expiry (365 days)
-
-## Tech Stack
-- Frontend: React with react-pageflip library
-- Backend: FastAPI (Python)
-- Database: MongoDB (azories)
-- Image Storage: Cloudinary
-- Audio Storage: Cloudinary (NEW)
-- AI: fal.ai (images), OpenAI TTS (narration)
-- Payments: Stripe
+## Third-Party Integrations
+- **Gelato API**: Print fulfillment (requires GELATO_API_KEY)
+- **Stripe**: Payments (requires STRIPE_API_KEY)
+- **Cloudinary**: Image storage
+- **ElevenLabs**: Narration (requires ELEVENLABS_API_KEY)
 
 ## Test Credentials
-- Admin App: jamesstephenbrooks@outlook.com / Routetofreedom
-- Admin Panel: Username: Admin / Password: Routetofreedom
+- Email: hardcover@test.com
+- Password: testpass123
+- Test Book: fb341971-71be-4c8a-b764-a7cac7fb9a71
 
-## Deployment Checklist ✅
-- [x] AI Story Creator page count working
-- [x] Portrait image orientation configured
-- [x] Audio caching implemented (70.5%+ cached)
-- [x] Newly Added section showing 20 books
-- [x] Coming Soon section with blurred teasers
-- [x] All API endpoints tested
-- [x] Frontend lint passed
-- [x] Backend running without errors
-- [x] Admin email notifications tested (March 1, 2026)
-  - User signup: ✅ Verified (Resend email ID received)
-  - Credit purchase: ✅ Verified (Resend email ID received)
-  - Book submission: ✅ Verified (Resend email ID received)
+## Pending Tasks
 
-## Ready for Production Deployment ✅
+### P1 - Full End-to-End POD Testing
+- [ ] Complete Stripe payment flow test with test card 4242...
+- [ ] Verify order created in database
+- [ ] Verify order sent to Gelato API
+- [ ] Verify confirmation email sent
 
-## Printable Book PDF Feature (March 1, 2026) ✅
+### P2 - "My Orders" Section
+- [ ] Build order history page
+- [ ] Show order status, tracking, ETA
 
-### Overview
-Users can download a printable A5 booklet PDF of their books for **5 credits**.
+### P2 - Mobile White Screen Fix
+- [ ] Fix story creation page half white screen on mobile
 
-### Layout Design
-- **A4 page split into two A5 halves**:
-  - Left half: Full illustration
-  - Right half: Story text (centered, word-wrapped)
-- When printed double-sided and folded = real A5 picture book
+### P3 - Production Deployment
+- [ ] Pre-deployment verification:
+  - [ ] ElevenLabs narration working
+  - [ ] AI story creation working end-to-end
+  - [ ] Print order modal correct for all books
 
-### Pages Included
-1. **Front Cover**: Cover illustration (left), Title/Author/Branding (right)
-2. **Content Pages**: Each page has illustration (left) and text (right)
-3. **Back Cover**: Branded back cover image (left), "The End" with description (right)
+## Future Tasks (Backlog)
+- Gift feature for checkout
+- Creative Studio rebuild
+- Refactor BookReader.js (2000+ lines)
+- Consolidate gallery components
 
-### API Endpoint
-```
-GET /api/books/{book_id}/print-pdf
-- Requires authentication
-- Returns PDF with Content-Disposition: attachment
-- Cost: 5 credits (VIP/Admin exempt)
-- Returns 402 if insufficient credits
-```
-
-### Frontend UI
-- **Print Button**: FiPrinter icon in BookReader header (visible when logged in)
-- **Print Dialog Modal**: Shows cost (5 credits), features list, Cancel/Download buttons
-- **Data test IDs**: `print-book-btn`, `confirm-print-btn`
-
-### Credit Usage
-- Regular users: 5 credits deducted per download
-- VIP users: Free (usage tracked in `vip_usage` collection)
-- Admin users: Free
-
-## Email Notification System
-- **Provider**: Resend (primary), Brevo (fallback)
-- **Admin Notification Email**: books@azories.com (configurable via ADMIN_NOTIFY_EMAIL)
-- **Events Covered**:
-  1. New user registration → admin notified with user details
-  2. Successful Stripe credit purchase → admin notified with purchase details
-  3. Book submission for review → admin notified with moderation results
-- **Rate Limit**: Resend allows 2 requests/second (sufficient for production usage)
+## Known Issues
+None critical. Core POD flow is working.

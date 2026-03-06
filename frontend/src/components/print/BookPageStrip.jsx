@@ -2,22 +2,16 @@ import React, { useRef } from 'react';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
 // Page spread thumbnails - showing image + text side by side like the actual printed book
+// Includes Cover at start and Back Cover at end
 export default function BookPageStrip({ 
   pages = [], 
   coverImage,
+  backCoverImage,
   className = "" 
 }) {
   const scrollRef = useRef(null);
   
-  // Debug log
-  console.log('[BookPageStrip] Received pages:', pages.length);
-  if (pages.length > 0) {
-    console.log('[BookPageStrip] First page fields:', Object.keys(pages[0]));
-    console.log('[BookPageStrip] First page image_url:', pages[0]?.image_url?.substring(0, 60));
-    console.log('[BookPageStrip] First page text_content:', pages[0]?.text_content?.substring(0, 60));
-  }
-  
-  // Build page spreads - cover first, then each page with image + text
+  // Build page spreads - cover first, then each page with image + text, then back cover
   const spreads = [];
   
   // Add cover as first item
@@ -29,7 +23,7 @@ export default function BookPageStrip({
     });
   }
   
-  // Filter out back cover and any non-content pages
+  // Filter out back cover and any non-content pages from the page array
   const contentPages = pages.filter(page => !page.isBackCover && !page.isTitlePage);
   
   // Add each page as a spread (image on left, text preview on right)
@@ -45,6 +39,15 @@ export default function BookPageStrip({
       label: `Page ${index + 1}`
     });
   });
+  
+  // Add back cover as last item
+  if (backCoverImage) {
+    spreads.push({
+      type: 'backCover',
+      image: backCoverImage,
+      label: 'Back Cover'
+    });
+  }
 
   const scroll = (direction) => {
     if (scrollRef.current) {
@@ -87,13 +90,13 @@ export default function BookPageStrip({
         >
           {spreads.map((spread, index) => (
             <div key={index} className="flex-shrink-0">
-              {spread.type === 'cover' ? (
-                // Cover - single image
+              {spread.type === 'cover' || spread.type === 'backCover' ? (
+                // Cover or Back Cover - single image
                 <div className="text-center">
                   <div className="w-20 h-24 rounded shadow-md border border-gray-200 dark:border-gray-600 overflow-hidden bg-white">
                     <img
                       src={spread.image}
-                      alt="Cover"
+                      alt={spread.label}
                       className="w-full h-full object-cover"
                       loading="lazy"
                     />
