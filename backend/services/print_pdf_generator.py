@@ -866,40 +866,53 @@ class PrintPDFGenerator:
                     cover_img = cover_img.resize((PAGE_WIDTH_PX, PAGE_HEIGHT_PX), Image.Resampling.LANCZOS)
                     img.paste(cover_img, (0, 0))
             else:
-                # Simple back cover - just the Azora image filling the page
-                # Use the beautiful Azora with dragon and magic book image
-                back_cover_url = BONUS_IMAGES.get('back_cover')
-                if back_cover_url:
+                # Create beautiful Azora branded back cover
+                # Deep purple gradient background
+                start_rgb = (26, 10, 46)  # Dark purple #1a0a2e
+                end_rgb = (75, 25, 100)   # Lighter purple
+                img = self.create_gradient_background(PAGE_WIDTH_PX, PAGE_HEIGHT_PX, start_rgb, end_rgb)
+                draw = ImageDraw.Draw(img)
+                
+                # Add new Azora mascot image (girl with dragon and magic book)
+                mascot_url = BONUS_IMAGES.get('back_cover')
+                if mascot_url:
                     try:
-                        back_img = await self.download_image(back_cover_url)
-                        if back_img:
-                            # Resize to fill the page while maintaining aspect ratio
-                            # Center crop to fill 8x10 page
-                            img_aspect = back_img.width / back_img.height
-                            page_aspect = PAGE_WIDTH_PX / PAGE_HEIGHT_PX
-                            
-                            if img_aspect > page_aspect:
-                                # Image is wider - fit height, crop width
-                                new_height = PAGE_HEIGHT_PX
-                                new_width = int(new_height * img_aspect)
-                                back_img = back_img.resize((new_width, new_height), Image.Resampling.LANCZOS)
-                                # Center crop
-                                left = (new_width - PAGE_WIDTH_PX) // 2
-                                back_img = back_img.crop((left, 0, left + PAGE_WIDTH_PX, PAGE_HEIGHT_PX))
+                        mascot_img = await self.download_image(mascot_url)
+                        if mascot_img:
+                            # Position mascot in center, nice size
+                            mascot_size = 1100
+                            # Maintain aspect ratio
+                            aspect = mascot_img.width / mascot_img.height
+                            if aspect > 1:
+                                new_width = mascot_size
+                                new_height = int(mascot_size / aspect)
                             else:
-                                # Image is taller - fit width, crop height
-                                new_width = PAGE_WIDTH_PX
-                                new_height = int(new_width / img_aspect)
-                                back_img = back_img.resize((new_width, new_height), Image.Resampling.LANCZOS)
-                                # Center crop
-                                top = (new_height - PAGE_HEIGHT_PX) // 2
-                                back_img = back_img.crop((0, top, PAGE_WIDTH_PX, top + PAGE_HEIGHT_PX))
+                                new_height = mascot_size
+                                new_width = int(mascot_size * aspect)
                             
-                            img = back_img.convert('RGB')
+                            mascot_img = mascot_img.resize((new_width, new_height), Image.Resampling.LANCZOS)
+                            mascot_x = (PAGE_WIDTH_PX - new_width) // 2
+                            mascot_y = 200
+                            
+                            # Paste mascot image
+                            if mascot_img.mode == 'RGBA':
+                                img.paste(mascot_img, (mascot_x, mascot_y), mascot_img)
+                            else:
+                                img.paste(mascot_img, (mascot_x, mascot_y))
                     except Exception as e:
-                        logger.warning(f"Could not load back cover image: {e}")
-                        # Fallback to white page
-                        img = Image.new('RGB', (PAGE_WIDTH_PX, PAGE_HEIGHT_PX), (255, 255, 255))
+                        logger.warning(f"Could not load mascot for back cover: {e}")
+                
+                # Add "Azora" branding text - BIGGER
+                font_brand = self.get_font(180, bold=True)
+                self.draw_text_centered(draw, "Azora", PAGE_HEIGHT_PX - 550, font_brand, '#ffffff', PAGE_WIDTH_PX)
+                
+                # Add tagline - BIGGER
+                font_tagline = self.get_font(72)
+                self.draw_text_centered(draw, "Where Stories Come Alive", PAGE_HEIGHT_PX - 350, font_tagline, '#ffffffdd', PAGE_WIDTH_PX)
+                
+                # Add website - BIGGER
+                font_url = self.get_font(56)
+                self.draw_text_centered(draw, "azories.com", PAGE_HEIGHT_PX - 200, font_url, '#a855f7', PAGE_WIDTH_PX)
         else:
             cover_url = book.get('cover_image')
             
