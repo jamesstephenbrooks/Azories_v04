@@ -39,7 +39,33 @@ User wants to enhance their "Azories" digital book application with:
 - Generate long-form stories for 17 books
 - Refactor server.py into modular route files
 
-## Latest Session Updates (March 5, 2026)
+## Latest Session Updates (March 6, 2026)
+
+### Session 10 - AI Story Creation Bug FIX ✅ CRITICAL (P0)
+
+### Fix: AI-Generated Books Now Display Pages Correctly
+- **Problem**: AI-generated stories were showing empty/blank pages. The `/books/{book_id}/full` endpoint was not returning pages for AI-generated books.
+- **Root Cause**: The endpoint only checked TWO sources for pages:
+  1. Chapters collection with pages linked via `chapter_id`
+  2. Embedded `pages` array in the book document
+  
+  AI story generation stores pages in the `pages` collection linked by `book_id` (not `chapter_id`), which was NOT being queried.
+
+### Solution Applied:
+- Added **Source 3** check in `/books/{book_id}/full` endpoint (server.py lines 8170-8219)
+- Now queries `db.pages.find({"book_id": book_id})` for AI-generated pages
+- Normalizes pages to chapter format for consistent frontend rendering
+
+### Testing Results:
+- ✅ 11/11 backend tests passed
+- ✅ Test book `f1328a57-849f-4160-8820-a7caea04c1ea` returns 5 pages with text and images
+- ✅ Story generation job completes successfully (text + images)
+- ✅ Book reader displays pages correctly with illustrations
+
+### Files Modified:
+- `backend/server.py` - Added AI-generated pages source check in `get_full_book` endpoint
+
+---
 
 ### Session 9 - iPad Scroll/Swipe Bug FIX ✅ CRITICAL
 
