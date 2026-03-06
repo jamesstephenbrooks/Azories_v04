@@ -871,14 +871,14 @@ class PrintPDFGenerator:
                 img = self.create_gradient_background(PAGE_WIDTH_PX, PAGE_HEIGHT_PX, start_rgb, end_rgb)
                 draw = ImageDraw.Draw(img)
                 
-                # Add Azora pointing mascot image (transparent background)
+                # Add Azora pointing mascot with "bursting through page" effect
                 mascot_url = BONUS_IMAGES.get('pointing')
                 if mascot_url:
                     try:
                         mascot_img = await self.download_image(mascot_url)
                         if mascot_img:
                             # Position mascot in center, nice size
-                            mascot_size = 1000
+                            mascot_size = 1200
                             # Maintain aspect ratio
                             aspect = mascot_img.width / mascot_img.height
                             if aspect > 1:
@@ -890,7 +890,45 @@ class PrintPDFGenerator:
                             
                             mascot_img = mascot_img.resize((new_width, new_height), Image.Resampling.LANCZOS)
                             mascot_x = (PAGE_WIDTH_PX - new_width) // 2
-                            mascot_y = 350
+                            mascot_y = 250
+                            
+                            # Create "burst through page" effect - irregular torn paper shape
+                            import random
+                            random.seed(42)  # Consistent randomness
+                            
+                            # Draw a jagged white "torn paper" burst behind Azora
+                            burst_center_x = mascot_x + new_width // 2
+                            burst_center_y = mascot_y + new_height // 2
+                            
+                            # Create burst polygon points
+                            burst_points = []
+                            num_points = 24
+                            for i in range(num_points):
+                                angle = (i / num_points) * 2 * 3.14159
+                                # Alternate between inner and outer radius for jagged effect
+                                if i % 2 == 0:
+                                    radius = new_width // 2 + random.randint(80, 150)
+                                else:
+                                    radius = new_width // 2 + random.randint(20, 60)
+                                x = burst_center_x + int(radius * 1.1 * (1 if abs(angle - 3.14159) > 1.5 else 0.9) * (angle / 3.14159 if angle < 3.14159 else (2 - angle / 3.14159)) * 0.3 + radius * 0.7) * int(__import__('math').cos(angle))
+                                y = burst_center_y + int(radius * (1 if abs(angle - 1.57) > 1 else 0.85)) * int(__import__('math').sin(angle))
+                                # Simplified: just use basic burst
+                                x = burst_center_x + int(radius * __import__('math').cos(angle))
+                                y = burst_center_y + int(radius * __import__('math').sin(angle))
+                                burst_points.append((x, y))
+                            
+                            # Draw the burst (white with slight transparency for paper look)
+                            draw.polygon(burst_points, fill=(255, 255, 255, 240))
+                            
+                            # Add a subtle shadow/torn edge effect
+                            shadow_points = [(x + 8, y + 8) for x, y in burst_points]
+                            # Draw shadow first (behind)
+                            img_with_shadow = img.copy()
+                            shadow_draw = ImageDraw.Draw(img_with_shadow)
+                            shadow_draw.polygon(shadow_points, fill=(0, 0, 0, 60))
+                            shadow_draw.polygon(burst_points, fill=(255, 255, 255))
+                            img = img_with_shadow
+                            draw = ImageDraw.Draw(img)
                             
                             # Use transparency if available (PNG with alpha)
                             if mascot_img.mode == 'RGBA':
@@ -900,27 +938,27 @@ class PrintPDFGenerator:
                     except Exception as e:
                         logger.warning(f"Could not load mascot for back cover: {e}")
                 
-                # Add "Azora" branding text
-                font_brand = self.get_font(120, bold=True)
-                self.draw_text_centered(draw, "Azora", PAGE_HEIGHT_PX - 600, font_brand, '#ffffff', PAGE_WIDTH_PX)
+                # Add "Azora" branding text - MUCH BIGGER
+                font_brand = self.get_font(180, bold=True)
+                self.draw_text_centered(draw, "Azora", PAGE_HEIGHT_PX - 550, font_brand, '#ffffff', PAGE_WIDTH_PX)
                 
-                # Add tagline
-                font_tagline = self.get_font(48)
-                self.draw_text_centered(draw, "Where Stories Come Alive", PAGE_HEIGHT_PX - 450, font_tagline, '#ffffffcc', PAGE_WIDTH_PX)
+                # Add tagline - BIGGER
+                font_tagline = self.get_font(72)
+                self.draw_text_centered(draw, "Where Stories Come Alive", PAGE_HEIGHT_PX - 350, font_tagline, '#ffffffdd', PAGE_WIDTH_PX)
                 
-                # Add website
-                font_url = self.get_font(36)
-                self.draw_text_centered(draw, "azories.com", PAGE_HEIGHT_PX - 300, font_url, '#a855f7', PAGE_WIDTH_PX)
+                # Add website - BIGGER
+                font_url = self.get_font(56)
+                self.draw_text_centered(draw, "azories.com", PAGE_HEIGHT_PX - 200, font_url, '#a855f7', PAGE_WIDTH_PX)
                 
-                # Add back cover text if provided
+                # Add back cover text if provided - at top
                 description = book.get('back_cover_text') or book.get('description')
                 if description:
-                    font_desc = self.get_font(32)
-                    lines = self.word_wrap_text(draw, description, font_desc, PAGE_WIDTH_PX - 400)
-                    y_offset = 150
-                    for line in lines[:4]:  # Limit to 4 lines at top
-                        self.draw_text_centered(draw, line, y_offset, font_desc, '#ffffffaa', PAGE_WIDTH_PX)
-                        y_offset += 50
+                    font_desc = self.get_font(42)
+                    lines = self.word_wrap_text(draw, description, font_desc, PAGE_WIDTH_PX - 300)
+                    y_offset = 100
+                    for line in lines[:3]:  # Limit to 3 lines at top
+                        self.draw_text_centered(draw, line, y_offset, font_desc, '#ffffffcc', PAGE_WIDTH_PX)
+                        y_offset += 60
         else:
             cover_url = book.get('cover_image')
             
