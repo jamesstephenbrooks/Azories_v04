@@ -56,6 +56,8 @@ BONUS_IMAGES = {
     'about': 'https://customer-assets.emergentagent.com/job_5f7e2b9e-d2a4-4bf3-b6c6-aac66cbef904/artifacts/dlulgnzy_Azora_Mascot.jpg',
     'certificate': 'https://customer-assets.emergentagent.com/job_5f7e2b9e-d2a4-4bf3-b6c6-aac66cbef904/artifacts/e45x5iez_azora%20library.png',
     'meet_azora': 'https://customer-assets.emergentagent.com/job_5f7e2b9e-d2a4-4bf3-b6c6-aac66cbef904/artifacts/o1xvfgto_azora%20librbary%201.png',
+    # Azora pointing with transparent background - for back cover
+    'pointing': 'https://res.cloudinary.com/dlbmjqmoy/image/upload/e_background_removal/v1772279592/azories/mascot/azora_pose4_pointing.png',
     # Filler page images - best mascot images
     'filler_1': 'https://customer-assets.emergentagent.com/job_5f7e2b9e-d2a4-4bf3-b6c6-aac66cbef904/artifacts/60k2xrwp_Azora%20Mascot%20Main.jpg',
     'filler_2': 'https://customer-assets.emergentagent.com/job_5f7e2b9e-d2a4-4bf3-b6c6-aac66cbef904/artifacts/e45x5iez_azora%20library.png',
@@ -869,19 +871,28 @@ class PrintPDFGenerator:
                 img = self.create_gradient_background(PAGE_WIDTH_PX, PAGE_HEIGHT_PX, start_rgb, end_rgb)
                 draw = ImageDraw.Draw(img)
                 
-                # Add Azora mascot image
-                mascot_url = BONUS_IMAGES.get('welcome')
+                # Add Azora pointing mascot image (transparent background)
+                mascot_url = BONUS_IMAGES.get('pointing')
                 if mascot_url:
                     try:
                         mascot_img = await self.download_image(mascot_url)
                         if mascot_img:
-                            # Position mascot in center-top area, nice size
-                            mascot_size = 900
-                            mascot_img = mascot_img.resize((mascot_size, mascot_size), Image.Resampling.LANCZOS)
-                            mascot_x = (PAGE_WIDTH_PX - mascot_size) // 2
-                            mascot_y = 400
+                            # Position mascot in center, nice size
+                            mascot_size = 1000
+                            # Maintain aspect ratio
+                            aspect = mascot_img.width / mascot_img.height
+                            if aspect > 1:
+                                new_width = mascot_size
+                                new_height = int(mascot_size / aspect)
+                            else:
+                                new_height = mascot_size
+                                new_width = int(mascot_size * aspect)
                             
-                            # If image has transparency, use it; otherwise just paste
+                            mascot_img = mascot_img.resize((new_width, new_height), Image.Resampling.LANCZOS)
+                            mascot_x = (PAGE_WIDTH_PX - new_width) // 2
+                            mascot_y = 350
+                            
+                            # Use transparency if available (PNG with alpha)
                             if mascot_img.mode == 'RGBA':
                                 img.paste(mascot_img, (mascot_x, mascot_y), mascot_img)
                             else:
