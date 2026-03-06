@@ -866,11 +866,8 @@ class PrintPDFGenerator:
                     cover_img = cover_img.resize((PAGE_WIDTH_PX, PAGE_HEIGHT_PX), Image.Resampling.LANCZOS)
                     img.paste(cover_img, (0, 0))
             else:
-                # Create beautiful Azora branded back cover
-                # Deep purple gradient background
-                start_rgb = (26, 10, 46)  # Dark purple #1a0a2e
-                end_rgb = (75, 25, 100)   # Lighter purple
-                img = self.create_gradient_background(PAGE_WIDTH_PX, PAGE_HEIGHT_PX, start_rgb, end_rgb)
+                # Create clean white back cover
+                img = Image.new('RGB', (PAGE_WIDTH_PX, PAGE_HEIGHT_PX), (255, 255, 255))
                 draw = ImageDraw.Draw(img)
                 
                 # Add book summary/description at the TOP with LARGE text
@@ -880,17 +877,17 @@ class PrintPDFGenerator:
                     lines = self.word_wrap_text(draw, description, font_desc, PAGE_WIDTH_PX - 250)
                     y_offset = 120
                     for line in lines[:6]:  # Up to 6 lines
-                        self.draw_text_centered(draw, line, y_offset, font_desc, '#ffffff', PAGE_WIDTH_PX)
+                        self.draw_text_centered(draw, line, y_offset, font_desc, '#1a0a2e', PAGE_WIDTH_PX)  # Dark purple text
                         y_offset += 70
                 
-                # Add Azora & Blaze mascot image (transparent background)
+                # Add Azora & Blaze mascot image (transparent background) - 20% larger
                 mascot_url = BONUS_IMAGES.get('back_cover')
                 if mascot_url:
                     try:
                         mascot_img = await self.download_image(mascot_url)
                         if mascot_img:
-                            # Position mascot in center
-                            mascot_size = 1000
+                            # Position mascot in center - 20% larger (1000 -> 1200)
+                            mascot_size = 1200
                             # Maintain aspect ratio
                             aspect = mascot_img.width / mascot_img.height
                             if aspect > 1:
@@ -902,7 +899,7 @@ class PrintPDFGenerator:
                             
                             mascot_img = mascot_img.resize((new_width, new_height), Image.Resampling.LANCZOS)
                             mascot_x = (PAGE_WIDTH_PX - new_width) // 2
-                            mascot_y = 550  # Below the summary text
+                            mascot_y = 500  # Below the summary text
                             
                             # Paste with transparency
                             if mascot_img.mode == 'RGBA':
@@ -914,15 +911,15 @@ class PrintPDFGenerator:
                     except Exception as e:
                         logger.warning(f"Could not load mascot for back cover: {e}")
                 
-                # Add "Azora" branding text at bottom - LARGE
+                # Add "Azora" branding text at bottom - Dark purple on white
                 font_brand = self.get_font(160, bold=True)
-                self.draw_text_centered(draw, "Azora", PAGE_HEIGHT_PX - 500, font_brand, '#ffffff', PAGE_WIDTH_PX)
+                self.draw_text_centered(draw, "Azora", PAGE_HEIGHT_PX - 500, font_brand, '#7c3aed', PAGE_WIDTH_PX)  # Purple
                 
-                # Add tagline - LARGE
+                # Add tagline
                 font_tagline = self.get_font(64)
-                self.draw_text_centered(draw, "Where Stories Come Alive", PAGE_HEIGHT_PX - 320, font_tagline, '#ffffffdd', PAGE_WIDTH_PX)
+                self.draw_text_centered(draw, "Where Stories Come Alive", PAGE_HEIGHT_PX - 320, font_tagline, '#1a0a2e', PAGE_WIDTH_PX)
                 
-                # Add website - LARGE
+                # Add website
                 font_url = self.get_font(52)
                 self.draw_text_centered(draw, "azories.com", PAGE_HEIGHT_PX - 180, font_url, '#a855f7', PAGE_WIDTH_PX)
         else:
