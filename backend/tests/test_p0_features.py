@@ -11,7 +11,7 @@ import requests
 import os
 import json
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://kids-mode-demo.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://blank-screen-debug-3.preview.emergentagent.com')
 
 # Test credentials
 TEST_EMAIL = "jamesstephenbrooks@outlook.com"

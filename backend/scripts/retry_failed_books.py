@@ -15,7 +15,7 @@ import requests
 from pymongo import MongoClient
 
 # Configuration
-API_URL = "https://kids-mode-demo.preview.emergentagent.com"
+API_URL = "https://blank-screen-debug-3.preview.emergentagent.com"
 FAL_KEY = "ab490710-1d52-45a3-9d2e-3fc9c1a2a995:671ae92454b3d014b5ceced926943e9b"
 os.environ['FAL_KEY'] = FAL_KEY
 
