@@ -280,41 +280,41 @@ export default function PrintOrderModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <FiPrinter className="text-purple-500" />
-            Order Printed Book
-          </DialogTitle>
-          <DialogDescription>
-            Get a beautiful printed copy of "{book?.title}"
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="w-full max-w-[600px] max-h-[90vh] overflow-y-auto p-0 gap-0 flex flex-col">
+        {/* Header */}
+        <div className="sticky top-0 bg-white dark:bg-slate-900 z-10 px-6 pt-5 pb-3 border-b">
+          <DialogHeader className="pb-0">
+            <DialogTitle className="flex items-center gap-2 text-base">
+              <FiPrinter className="text-purple-500" />
+              Order Printed Book
+            </DialogTitle>
+            <DialogDescription className="text-sm">
+              Get a beautiful printed copy of "{book?.title}"
+            </DialogDescription>
+          </DialogHeader>
 
-        {/* Progress Steps */}
-        <div className="flex justify-between mb-6">
-          {[
-            { num: 1, label: 'Product' },
-            { num: 2, label: 'Address' },
-            { num: 3, label: 'Shipping' },
-            { num: 4, label: 'Review' },
-            { num: 5, label: 'Done' }
-          ].map(({ num, label }) => (
-            <div key={num} className="flex flex-col items-center">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
-                ${step >= num ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-500'}`}>
-                {step > num ? <FiCheck size={16} /> : num}
-              </div>
-              <span className="text-xs mt-1 text-gray-500">{label}</span>
-            </div>
-          ))}
+          {/* Progress Steps */}
+          <div className="flex items-center justify-center mt-3">
+            {[1, 2, 3, 4].map((num, i) => (
+              <React.Fragment key={num}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium
+                  ${step >= num ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-500'}`}>
+                  {step > num ? <FiCheck size={12} /> : num}
+                </div>
+                {i < 3 && <div className={`w-6 h-0.5 ${step > num ? 'bg-purple-500' : 'bg-gray-200'}`} />}
+              </React.Fragment>
+            ))}
+          </div>
         </div>
+
+        {/* Content - scrollable */}
+        <div className="px-6 py-4">
 
         {/* Step 1: Product Info with 3D Preview */}
         {step === 1 && (
-          <div className="space-y-6">
-            {/* PART 1: 3D Book Render */}
-            <div className="bg-gradient-to-br from-slate-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-purple-900/20 rounded-xl p-4 border border-purple-100 dark:border-purple-800">
+          <div className="space-y-4">
+            {/* PART 1: 3D Book Render - centered */}
+            <div className="bg-gradient-to-br from-slate-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-purple-900/20 rounded-xl p-4 border border-purple-100 dark:border-purple-800 flex justify-center">
               <Suspense fallback={<Book3DFallback />}>
                 <BookPreview3D
                   coverImage={book?.cover_image || book?.cover_image_url}
@@ -658,6 +658,7 @@ export default function PrintOrderModal({
             </Button>
           </div>
         )}
+        </div>{/* End of scrollable content */}
       </DialogContent>
     </Dialog>
   );
