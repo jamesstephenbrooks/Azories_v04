@@ -1962,28 +1962,30 @@ export default function BookReader() {
               </div>
             ) : isMobilePortrait && !isCover && currentPage >= 0 ? (
               <div className="flex flex-col w-full max-w-md mx-auto relative" style={{ height: `calc(100vh - 140px)` }}>
-                {/* Navigation buttons for mobile portrait - always visible */}
+                {/* Navigation buttons for mobile portrait - smaller and positioned above page count */}
                 {!currentPageData?.isBackCover && (
                   <>
-                    {/* Previous page button */}
+                    {/* Previous page button - moved up to avoid page count */}
                     {currentPage > 0 && (
                       <button
                         onClick={() => goToPage(currentPage - 1, 'prev')}
-                        className="absolute left-1 top-1/2 -translate-y-1/2 z-50 w-8 h-8 rounded-full bg-purple-600/90 active:bg-purple-700 active:scale-95 flex items-center justify-center text-white shadow-lg"
+                        className="absolute left-1 z-50 w-6 h-6 rounded-full bg-purple-600/90 active:bg-purple-700 active:scale-95 flex items-center justify-center text-white shadow-lg"
+                        style={{ top: '40%' }}
                         data-testid="portrait-prev-btn"
                       >
-                        <FiChevronLeft className="w-5 h-5" />
+                        <FiChevronLeft className="w-4 h-4" />
                       </button>
                     )}
                     
-                    {/* Next page button */}
+                    {/* Next page button - moved up to avoid page count */}
                     {currentPage < allPages.length - 1 && (
                       <button
                         onClick={() => goToPage(currentPage + 1, 'next')}
-                        className="absolute right-1 top-1/2 -translate-y-1/2 z-50 w-8 h-8 rounded-full bg-purple-600/90 active:bg-purple-700 active:scale-95 flex items-center justify-center text-white shadow-lg"
+                        className="absolute right-1 z-50 w-6 h-6 rounded-full bg-purple-600/90 active:bg-purple-700 active:scale-95 flex items-center justify-center text-white shadow-lg"
+                        style={{ top: '40%' }}
                         data-testid="portrait-next-btn"
                       >
-                        <FiChevronRight className="w-5 h-5" />
+                        <FiChevronRight className="w-4 h-4" />
                       </button>
                     )}
                   </>
@@ -2247,17 +2249,17 @@ export default function BookReader() {
                   </div>
                 )}
                 
-                {/* Navigation buttons for iPhone landscape - always visible */}
+                {/* Navigation buttons for landscape - vertically aligned on right side, 50% smaller */}
                 {!currentPageData?.isBackCover && (
-                  <>
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-2">
                     {/* Previous page button */}
                     {currentPage > 0 && (
                       <button
                         onClick={() => goToPage(currentPage - 1, 'prev')}
-                        className="absolute left-2 top-1/2 -translate-y-1/2 z-50 w-7 h-7 rounded-full bg-purple-600/80 hover:bg-purple-600 active:bg-purple-700 flex items-center justify-center text-white shadow-lg"
+                        className="w-6 h-6 rounded-full bg-purple-600/80 hover:bg-purple-600 active:bg-purple-700 flex items-center justify-center text-white shadow-lg"
                         data-testid="landscape-prev-btn"
                       >
-                        <FiChevronLeft className="w-4 h-4" />
+                        <FiChevronLeft className="w-3 h-3" />
                       </button>
                     )}
                     
@@ -2265,13 +2267,13 @@ export default function BookReader() {
                     {currentPage < allPages.length - 1 && (
                       <button
                         onClick={() => goToPage(currentPage + 1, 'next')}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 z-50 w-7 h-7 rounded-full bg-purple-600/80 hover:bg-purple-600 active:bg-purple-700 flex items-center justify-center text-white shadow-lg"
+                        className="w-6 h-6 rounded-full bg-purple-600/80 hover:bg-purple-600 active:bg-purple-700 flex items-center justify-center text-white shadow-lg"
                         data-testid="landscape-next-btn"
                       >
-                        <FiChevronRight className="w-4 h-4" />
+                        <FiChevronRight className="w-3 h-3" />
                       </button>
                     )}
-                  </>
+                  </div>
                 )}
               </div>
             ) : (
@@ -2365,7 +2367,7 @@ export default function BookReader() {
       {/* Hide/Show Controls Toggle + Floating Listen button - visible when controls are hidden */}
       {hideControls && (
         <>
-          {/* Floating Listen/Pause button - 25% up the page */}
+          {/* Floating Listen/Pause button - 25% up the page, smaller size */}
           <button
             onClick={() => {
               if (isPlaying) {
@@ -2381,26 +2383,37 @@ export default function BookReader() {
                 startListening();
               }
             }}
-            className="fixed right-4 z-50 w-7 h-7 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white shadow-lg flex items-center justify-center transition-colors"
+            className="fixed right-4 z-50 w-6 h-6 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white shadow-lg flex items-center justify-center transition-colors"
             style={{ bottom: '25%' }}
             data-testid="floating-listen-btn"
           >
             {isPlaying ? (
-              <FiPause className="w-4 h-4" />
+              <FiPause className="w-3 h-3" />
             ) : (
-              <FiPlay className="w-4 h-4 ml-0.5" />
+              <FiPlay className="w-3 h-3 ml-0.5" />
             )}
           </button>
           
-          {/* Show controls button */}
+          {/* Show controls button - smaller */}
           <button
             onClick={() => setHideControls(false)}
-            className="fixed bottom-5 right-4 z-50 w-7 h-7 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-purple-400 text-purple-600 dark:text-purple-300 shadow-lg flex items-center justify-center hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors"
+            className="fixed bottom-5 right-4 z-50 w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-purple-400 text-purple-600 dark:text-purple-300 shadow-lg flex items-center justify-center hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors"
             data-testid="show-controls-btn"
           >
-            <FiChevronUp className="w-4 h-4" />
+            <FiChevronUp className="w-3 h-3" />
           </button>
         </>
+      )}
+      
+      {/* Hide controls button - visible when controls are shown (not on back cover) */}
+      {!hideControls && !currentPageData?.isBackCover && !isMobileLandscape && (
+        <button
+          onClick={() => setHideControls(true)}
+          className="fixed bottom-20 right-4 z-[101] w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-purple-400 text-purple-600 dark:text-purple-300 shadow-lg flex items-center justify-center hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors"
+          data-testid="hide-controls-btn"
+        >
+          <FiChevronDown className="w-3 h-3" />
+        </button>
       )}
       
       {/* Bottom Controls - Hidden in landscape (edge arrows are used instead) */}
