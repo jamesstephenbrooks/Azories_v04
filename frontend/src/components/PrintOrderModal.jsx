@@ -4,10 +4,11 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { FiPrinter, FiTruck, FiCreditCard, FiCheck, FiPackage, FiAlertCircle, FiEye } from 'react-icons/fi';
+import { FiPrinter, FiTruck, FiCreditCard, FiCheck, FiPackage, FiAlertCircle, FiEye, FiBook } from 'react-icons/fi';
 import { toast } from 'sonner';
 import BonusPagesPreview from './print/BonusPagesPreview';
-import BookPreview3D from './BookPreview3D';
+import BookPreview3D from './print/BookPreview3D';
+import BookPageStrip from './print/BookPageStrip';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -290,66 +291,90 @@ export default function PrintOrderModal({
 
         {/* Step 1: Product Info with 3D Preview */}
         {step === 1 && (
-          <div className="space-y-4">
-            {/* 3D Book Preview */}
-            <div className="bg-gradient-to-br from-purple-50 via-white to-pink-50 rounded-xl p-6 border border-purple-100">
+          <div className="space-y-6">
+            {/* PART 1: 3D Book Render */}
+            <div className="bg-gradient-to-br from-slate-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-purple-900/20 rounded-xl p-4 border border-purple-100 dark:border-purple-800">
               <BookPreview3D
                 coverImage={book?.cover_image || book?.cover_image_url}
                 title={book?.title}
-                authorName={book?.author_name}
-                pageCount={prepData?.page_count || 24}
+                pageCount={prepData?.page_count || book?.chapters?.[0]?.pages?.length || 24}
               />
             </div>
             
-            {/* Product Details */}
-            <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4">
-              <h4 className="font-semibold mb-2">8x10" Premium Hardcover Photobook</h4>
-              <ul className="text-sm text-gray-600 space-y-1">
-                <li>• Premium hardcover with glossy lamination</li>
-                <li>• 170gsm coated silk pages</li>
-                <li>• Perfect bound (glued binding)</li>
-                <li>• Includes 7 bonus activity pages</li>
-                <li>• Print-ready quality images</li>
-              </ul>
-              <p className="mt-3 text-lg font-bold text-purple-600">
-                From £14.99 / $19.99
-              </p>
+            {/* PART 2: Page Strip */}
+            <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+              <BookPageStrip
+                pages={book?.chapters?.[0]?.pages || []}
+                coverImage={book?.cover_image || book?.cover_image_url}
+                title={book?.title}
+              />
             </div>
             
-            {/* Bonus Pages Preview */}
-            <div className="bg-gradient-to-r from-amber-50 to-purple-50 rounded-lg p-4">
-              <p className="text-sm text-gray-600 mb-2">
-                Each printed book includes <span className="font-semibold text-purple-600">7 bonus pages</span>:
-              </p>
-              <p className="text-xs text-gray-500 mb-3">
-                Welcome • Dedication • The End • Thank You • Certificate • About Azora • Meet Azora
-              </p>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowBonusPreview(true)}
-                className="gap-2"
+            {/* PART 3: Order Section */}
+            <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl p-5 text-white">
+              <h3 className="text-xl font-bold mb-1">{book?.title}</h3>
+              {book?.author_name && (
+                <p className="text-purple-200 text-sm mb-4">by {book?.author_name}</p>
+              )}
+              
+              {/* Pricing */}
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="bg-white/10 rounded-lg p-3 text-center">
+                  <FiBook className="w-6 h-6 mx-auto mb-1 opacity-80" />
+                  <p className="text-xs text-purple-200">Softcover</p>
+                  <p className="text-lg font-bold">£14.99</p>
+                  <p className="text-xs text-purple-200">$19.99 USD</p>
+                </div>
+                <div className="bg-white/20 rounded-lg p-3 text-center border-2 border-white/30">
+                  <FiBook className="w-6 h-6 mx-auto mb-1" />
+                  <p className="text-xs text-purple-200">Hardcover</p>
+                  <p className="text-lg font-bold">£19.99</p>
+                  <p className="text-xs text-purple-200">$24.99 USD</p>
+                  <span className="text-xs bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded-full font-medium">Popular</span>
+                </div>
+              </div>
+              
+              {/* Delivery estimate */}
+              <div className="flex items-center gap-2 text-sm text-purple-200 mb-4">
+                <FiTruck className="w-4 h-4" />
+                <span>Estimated delivery: 5-10 business days</span>
+              </div>
+              
+              {/* Order button */}
+              <Button 
+                className="w-full bg-white text-purple-600 hover:bg-purple-50 font-semibold py-6 text-lg shadow-lg hover:shadow-xl transition-all"
+                onClick={prepareBook}
+                disabled={preparing}
               >
-                <FiEye className="w-4 h-4" />
-                Preview Bonus Pages
+                {preparing ? (
+                  <span className="flex items-center gap-2">
+                    <div className="w-5 h-5 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
+                    Preparing Your Book...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <FiPackage className="w-5 h-5" />
+                    Order Now
+                  </span>
+                )}
               </Button>
             </div>
             
-            <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
-              <FiTruck className="text-blue-500 mt-1 flex-shrink-0" />
-              <div className="text-sm">
-                <p className="font-medium text-blue-700">Worldwide Shipping</p>
-                <p className="text-blue-600">Ships to over 200 countries</p>
-              </div>
+            {/* Bonus pages info */}
+            <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-4 border border-amber-200 dark:border-amber-800">
+              <p className="text-sm text-amber-800 dark:text-amber-200">
+                <span className="font-semibold">Bonus!</span> Your book includes 7 special pages: Welcome, Dedication, The End, Thank You, Certificate, About Azora & Meet Azora
+              </p>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowBonusPreview(true)}
+                className="mt-2 text-amber-700 dark:text-amber-300 hover:text-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/30"
+              >
+                <FiEye className="w-4 h-4 mr-2" />
+                Preview Bonus Pages
+              </Button>
             </div>
-
-            <Button 
-              className="w-full" 
-              onClick={prepareBook}
-              disabled={preparing}
-            >
-              {preparing ? 'Preparing Your Book...' : 'Continue to Shipping Address'}
-            </Button>
           </div>
         )}
 
