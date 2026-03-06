@@ -322,6 +322,14 @@ const BackCoverPage = forwardRef(({ book }, ref) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   
+  console.log('[BackCoverPage] Rendering:', { 
+    hasBook: !!book, 
+    hasBackCoverImage, 
+    imageUrl: book?.back_cover_image?.substring(0, 50),
+    imageLoaded,
+    imageError
+  });
+  
   return (
     <div 
       ref={ref}
