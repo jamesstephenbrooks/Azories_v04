@@ -11,7 +11,7 @@ import {
   FiArrowLeft, FiChevronLeft, FiChevronRight, FiChevronUp, FiChevronDown,
   FiMaximize2, FiMinimize2, FiPlay, FiPause, FiVolume2, FiVolumeX, 
   FiSun, FiMoon, FiLock, FiBook, FiAward, FiTrendingUp, FiMic, FiX,
-  FiPrinter, FiDownload, FiShare2, FiHome, FiBookmark
+  FiPrinter, FiDownload, FiShare2, FiHome, FiBookmark, FiPackage
 } from 'react-icons/fi';
 import confetti from 'canvas-confetti';
 import { useTheme } from '@/context/ThemeContext';
@@ -1693,16 +1693,40 @@ export default function BookReader() {
             <FiArrowLeft className="w-4 h-4" />
           </Button>
           
-          {/* Floating share button - top right */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={shareBook}
-            className="fixed top-3 right-3 z-50 w-7 h-7 rounded-full bg-black/20 backdrop-blur-md text-white/90 hover:bg-black/40 hover:text-white shadow-lg"
-            data-testid="mobile-share-btn"
-          >
-            <FiShare2 className="w-4 h-4" />
-          </Button>
+          {/* Floating buttons - top right */}
+          <div className="fixed top-3 right-3 z-50 flex items-center gap-2">
+            {/* Order Printed Copy button - mobile */}
+            <button
+              onClick={() => {
+                if (user) {
+                  setShowPrintOrderModal(true);
+                } else {
+                  toast.info('Please log in to order a printed copy', {
+                    action: {
+                      label: 'Log In',
+                      onClick: () => navigate('/login')
+                    }
+                  });
+                }
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 text-white text-xs font-medium rounded-full shadow-lg"
+              data-testid="mobile-print-btn"
+            >
+              <FiPackage className="w-3.5 h-3.5" />
+              <span>Print</span>
+            </button>
+            
+            {/* Share button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={shareBook}
+              className="w-7 h-7 rounded-full bg-black/20 backdrop-blur-md text-white/90 hover:bg-black/40 hover:text-white shadow-lg"
+              data-testid="mobile-share-btn"
+            >
+              <FiShare2 className="w-4 h-4" />
+            </Button>
+          </div>
         </>
       )}
       
@@ -1749,39 +1773,35 @@ export default function BookReader() {
                 <AmbientSound genre={book?.genre} isReading={currentPage >= 0} />
               </div>
               
-              {/* Order Printed Book Button - Magical and prominent */}
-              {user && (
-                <button 
-                  onClick={() => setShowPrintOrderModal(true)} 
-                  className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 hover:from-purple-500 hover:via-pink-400 hover:to-purple-500 text-white text-sm font-medium rounded-full shadow-lg hover:shadow-purple-500/30 transition-all duration-300 hover:scale-105 animate-shimmer bg-[length:200%_100%]"
-                  style={{
-                    animation: 'shimmer 3s ease-in-out infinite'
-                  }}
-                  title="Order a real printed book"
-                  data-testid="order-printed-book-btn"
-                >
-                  <FiBook className="w-4 h-4" />
-                  <span>Order Printed Book</span>
-                  <span className="flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-white opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-                  </span>
-                </button>
-              )}
-              
-              {/* Print icon for mobile */}
-              {user && (
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  onClick={() => setShowPrintOrderModal(true)} 
-                  className="sm:hidden rounded-full w-8 h-8"
-                  title="Order Printed Book"
-                  data-testid="print-book-btn-mobile"
-                >
-                  <FiBook className="w-4 h-4" />
-                </Button>
-              )}
+              {/* Order Printed Copy Button - Always visible */}
+              <button 
+                onClick={() => {
+                  if (user) {
+                    setShowPrintOrderModal(true);
+                  } else {
+                    toast.info('Please log in to order a printed copy', {
+                      action: {
+                        label: 'Log In',
+                        onClick: () => navigate('/login')
+                      }
+                    });
+                  }
+                }} 
+                className="flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 hover:from-purple-500 hover:via-pink-400 hover:to-purple-500 text-white text-xs sm:text-sm font-medium rounded-full shadow-lg hover:shadow-purple-500/30 transition-all duration-300 hover:scale-105 animate-shimmer bg-[length:200%_100%]"
+                style={{
+                  animation: 'shimmer 3s ease-in-out infinite'
+                }}
+                title="Order a real printed book"
+                data-testid="order-printed-book-btn"
+              >
+                <FiPackage className="w-4 h-4" />
+                <span className="hidden sm:inline">Order Printed Copy</span>
+                <span className="sm:hidden">Print</span>
+                <span className="hidden sm:flex h-2 w-2 relative">
+                  <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-white opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                </span>
+              </button>
               
               {/* Share Book Button */}
               <Button 

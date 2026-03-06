@@ -483,34 +483,76 @@ async def get_price_estimate(
     country_code: str = "GB",
     shipping_method: str = "normal"
 ):
-    """Get a price estimate for printing a book"""
-    # Get shipping quote
-    quote_result = await gelato_service.get_shipping_quote(
-        country_code=country_code,
-        page_count=page_count,
-        quantity=1
-    )
+    """Get a price estimate for printing a book (without needing a PDF)"""
     
-    shipping_cost = 0
-    if quote_result.get("success") and quote_result.get("quotes"):
-        # Find the matching shipping method
-        for q in quote_result["quotes"]:
-            if q.get("shipmentMethodUid") == shipping_method:
-                shipping_cost = q.get("price", 0)
-                break
-        if shipping_cost == 0 and quote_result["quotes"]:
-            shipping_cost = quote_result["quotes"][0].get("price", 0)
+    # Default shipping costs by region and method (approximate)
+    shipping_costs = {
+        "GB": {"normal": 4.99, "express": 8.99, "overnight": 14.99},
+        "US": {"normal": 6.99, "express": 12.99, "overnight": 24.99},
+        "CA": {"normal": 8.99, "express": 14.99, "overnight": 29.99},
+        "AU": {"normal": 12.99, "express": 19.99, "overnight": 39.99},
+        "EU": {"normal": 6.99, "express": 11.99, "overnight": 19.99},  # Default for EU countries
+    }
     
+    # EU countries list
+    eu_countries = ["DE", "FR", "ES", "IT", "NL", "BE", "AT", "IE", "SE", "NO", "DK", "CH"]
+    
+    # Determine which region pricing to use
+    if country_code in shipping_costs:
+        region = country_code
+    elif country_code in eu_countries:
+        region = "EU"
+    else:
+        region = "US"  # Default to US pricing for other countries
+    
+    # Get shipping cost
+    shipping_cost = shipping_costs[region].get(shipping_method, shipping_costs[region]["normal"])
+    
+    # Determine currency
     currency = "GBP" if country_code == "GB" else "USD"
+    
+    # Calculate price using the service
     price = gelato_service.calculate_price(
         product_type="softcover_8x10",
         shipping_cost=shipping_cost,
         currency=currency
     )
     
+    # Add extra page cost if over 24 pages
+    extra_pages = max(0, page_count - 24)
+    extra_page_cost = extra_pages * 0.10  # £0.10 / $0.10 per extra page
+    price["extra_pages"] = extra_pages
+    price["extra_page_cost"] = round(extra_page_cost, 2)
+    price["total"] = round(price["total"] + extra_page_cost, 2)
+    
+    # Build shipping options
+    shipping_options = [
+        {
+            "shipmentMethodUid": "normal",
+            "name": "Standard Shipping",
+            "price": shipping_costs[region]["normal"],
+            "minTransitDays": 5,
+            "maxTransitDays": 10
+        },
+        {
+            "shipmentMethodUid": "express",
+            "name": "Express Shipping",
+            "price": shipping_costs[region]["express"],
+            "minTransitDays": 2,
+            "maxTransitDays": 4
+        },
+        {
+            "shipmentMethodUid": "overnight",
+            "name": "Next Day Delivery",
+            "price": shipping_costs[region]["overnight"],
+            "minTransitDays": 1,
+            "maxTransitDays": 2
+        }
+    ]
+    
     return {
         "estimate": price,
-        "shipping_options": quote_result.get("quotes", [])
+        "shipping_options": shipping_options
     }
 
 
