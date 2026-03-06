@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 // Pure CSS 3D Book Mockup - 8x11 Portrait Format
 // Simplified perspective to avoid image distortion
@@ -10,7 +10,8 @@ export default function BookPreview3D({
   productType = 'softcover',
   className = "" 
 }) {
-  const [isHardcover, setIsHardcover] = useState(productType === 'hardcover');
+  // Use productType prop directly (controlled by parent)
+  const isHardcover = productType === 'hardcover';
   
   // Book dimensions - 8x11 portrait ratio
   const bookWidth = 180;
@@ -25,30 +26,6 @@ export default function BookPreview3D({
   
   return (
     <div className={`w-full flex flex-col items-center py-4 ${className}`}>
-      {/* Product type toggle */}
-      <div className="flex gap-2 mb-4">
-        <button
-          onClick={() => setIsHardcover(false)}
-          className={`px-4 py-1.5 text-xs font-medium rounded-full transition-all ${
-            !isHardcover 
-              ? 'bg-purple-600 text-white shadow-md' 
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-          }`}
-        >
-          Softcover
-        </button>
-        <button
-          onClick={() => setIsHardcover(true)}
-          className={`px-4 py-1.5 text-xs font-medium rounded-full transition-all ${
-            isHardcover 
-              ? 'bg-purple-600 text-white shadow-md' 
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-          }`}
-        >
-          Hardcover
-        </button>
-      </div>
-      
       {/* 3D Book Container - No perspective distortion */}
       <div 
         className="relative flex items-center justify-center"

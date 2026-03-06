@@ -110,6 +110,9 @@ export default function PrintOrderModal({
   const [shippingQuote, setShippingQuote] = useState(null);
   const [priceEstimate, setPriceEstimate] = useState(null);
   
+  // Product type selection (softcover or hardcover)
+  const [selectedProductType, setSelectedProductType] = useState('hardcover'); // Default to hardcover (Popular)
+  
   // Order result
   const [orderResult, setOrderResult] = useState(null);
 
@@ -184,6 +187,9 @@ export default function PrintOrderModal({
     try {
       const token = localStorage.getItem('azories-token');
       
+      // Map selection to Gelato product types
+      const productType = selectedProductType === 'hardcover' ? 'hardcover_8x10' : 'softcover_8x10';
+      
       // Call Stripe checkout session creation endpoint
       const response = await fetch(`${API_URL}/api/print/checkout/create-session`, {
         method: 'POST',
@@ -193,7 +199,7 @@ export default function PrintOrderModal({
         },
         body: JSON.stringify({
           book_id: book.id,
-          product_type: 'softcover_8x10', // TODO: Add hardcover selection
+          product_type: productType,
           shipping_country: address.countryIsoCode,
           shipping_postal_code: address.postCode,
           origin_url: window.location.origin
@@ -344,6 +350,7 @@ export default function PrintOrderModal({
                   coverImage={book?.cover_image || book?.cover_image_url}
                   title={book?.title}
                   pageCount={prepData?.page_count || book?.chapters?.[0]?.pages?.length || 24}
+                  productType={selectedProductType}
                 />
               </Suspense>
             </div>
@@ -367,22 +374,36 @@ export default function PrintOrderModal({
                 )}
               </div>
               
-              {/* Pricing options */}
+              {/* Pricing options - clickable to select */}
               <div className="p-4">
                 <div className="grid grid-cols-2 gap-3 mb-3">
                   {/* Softcover */}
-                  <div className="bg-gray-50 dark:bg-slate-700 rounded-lg p-3 text-center border border-gray-200 dark:border-gray-600">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Softcover</p>
-                    <p className="text-xl font-bold text-gray-900 dark:text-white">£14.99</p>
+                  <button
+                    onClick={() => setSelectedProductType('softcover')}
+                    className={`rounded-lg p-3 text-center border-2 transition-all ${
+                      selectedProductType === 'softcover'
+                        ? 'bg-purple-50 dark:bg-purple-900/30 border-purple-400 ring-2 ring-purple-400 ring-offset-2'
+                        : 'bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                    }`}
+                  >
+                    <p className={`text-xs mb-1 ${selectedProductType === 'softcover' ? 'text-purple-600 dark:text-purple-400' : 'text-gray-500 dark:text-gray-400'}`}>Softcover</p>
+                    <p className={`text-xl font-bold ${selectedProductType === 'softcover' ? 'text-purple-700 dark:text-purple-300' : 'text-gray-900 dark:text-white'}`}>£14.99</p>
                     <p className="text-xs text-gray-400">$19.99 USD</p>
-                  </div>
+                  </button>
                   {/* Hardcover */}
-                  <div className="bg-purple-50 dark:bg-purple-900/30 rounded-lg p-3 text-center border-2 border-purple-400">
-                    <p className="text-xs text-purple-600 dark:text-purple-400 mb-1">Hardcover</p>
-                    <p className="text-xl font-bold text-purple-700 dark:text-purple-300">£19.99</p>
-                    <p className="text-xs text-purple-500 dark:text-purple-400">$24.99 USD</p>
+                  <button
+                    onClick={() => setSelectedProductType('hardcover')}
+                    className={`rounded-lg p-3 text-center border-2 transition-all ${
+                      selectedProductType === 'hardcover'
+                        ? 'bg-purple-50 dark:bg-purple-900/30 border-purple-400 ring-2 ring-purple-400 ring-offset-2'
+                        : 'bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                    }`}
+                  >
+                    <p className={`text-xs mb-1 ${selectedProductType === 'hardcover' ? 'text-purple-600 dark:text-purple-400' : 'text-gray-500 dark:text-gray-400'}`}>Hardcover</p>
+                    <p className={`text-xl font-bold ${selectedProductType === 'hardcover' ? 'text-purple-700 dark:text-purple-300' : 'text-gray-900 dark:text-white'}`}>£19.99</p>
+                    <p className="text-xs text-gray-400">$24.99 USD</p>
                     <span className="inline-block mt-1 text-[10px] bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded-full font-medium">Popular</span>
-                  </div>
+                  </button>
                 </div>
                 
                 {/* Delivery */}
