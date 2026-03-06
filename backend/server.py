@@ -841,6 +841,49 @@ async def fix_books_auth(admin: dict = Depends(get_admin_user)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fix books: {str(e)}")
 
+
+
+@api_router.post("/admin/fix-ai-books")
+async def fix_ai_books(admin: dict = Depends(get_admin_user)):
+    """
+    Fix AI-generated books to have proper author_id and cover_image fields.
+    This ensures AI books appear in 'My Books' and have covers displayed correctly.
+    """
+    try:
+        # Find all AI-generated books (those with generation_job_id but missing author_id)
+        ai_books = await db.books.find({
+            "generation_job_id": {"$exists": True}
+        }).to_list(1000)
+        
+        fixed_count = 0
+        for book in ai_books:
+            updates = {}
+            
+            # Fix author_id if missing
+            if not book.get("author_id") and book.get("user_id"):
+                updates["author_id"] = book["user_id"]
+            
+            # Fix cover_image if missing but cover_image_url exists
+            if not book.get("cover_image") and book.get("cover_image_url"):
+                updates["cover_image"] = book["cover_image_url"]
+            
+            # Apply updates if any
+            if updates:
+                await db.books.update_one(
+                    {"id": book["id"]},
+                    {"$set": updates}
+                )
+                fixed_count += 1
+        
+        return {
+            "success": True,
+            "message": f"Fixed {fixed_count} AI-generated books",
+            "total_ai_books": len(ai_books),
+            "fixed_count": fixed_count
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fix AI books: {str(e)}")
+
 # Age ratings
 AGE_RATINGS = ["All Ages", "5+", "8+", "12+", "16+"]
 
@@ -2318,9 +2361,29 @@ async def set_book_coming_soon(
 
 @api_router.get("/books/my", response_model=List[BookResponse])
 async def get_my_books(current_user: dict = Depends(get_current_user)):
-    books = await db.books.find({"author_id": current_user["id"]}, {"_id": 0}).to_list(100)
+    # Query books by author_id OR user_id (AI-generated books use user_id)
+    books = await db.books.find({
+        "$or": [
+            {"author_id": current_user["id"]},
+            {"user_id": current_user["id"]}
+        ]
+    }, {"_id": 0}).sort("created_at", -1).to_list(100)
     result = []
     for book in books:
+        # Normalize cover_image field (AI books use cover_image_url)
+        if not book.get("cover_image") and book.get("cover_image_url"):
+            book["cover_image"] = book["cover_image_url"]
+        # Set author_id if missing (for AI books)
+        if not book.get("author_id") and book.get("user_id"):
+            book["author_id"] = book["user_id"]
+        # Set author_name if missing
+        if not book.get("author_name"):
+            book["author_name"] = current_user.get("name", "")
+        # Convert datetime to ISO string if needed
+        if isinstance(book.get("created_at"), datetime):
+            book["created_at"] = book["created_at"].isoformat()
+        if isinstance(book.get("updated_at"), datetime):
+            book["updated_at"] = book["updated_at"].isoformat()
         book = await get_book_with_counts(book)
         result.append(BookResponse(**book))
     return result
@@ -6261,10 +6324,12 @@ async def run_story_generation_job(job_id: str, request_data: dict, user_data: d
         style_prompts = get_style_prompts()
         style_desc = style_prompts.get(selected_style, style_prompts["3d-pixar"])
         
-        # Create book document
+        # Create book document with all required fields for compatibility
         book = {
             "id": book_id,
             "user_id": user_data["id"],
+            "author_id": user_data["id"],  # Also set author_id for My Books compatibility
+            "author_name": user_data.get("name", ""),
             "title": story_data.get("title", "Untitled Story"),
             "description": story_data.get("description", ""),
             "back_cover_text": story_data.get("back_cover_text", ""),
@@ -6276,7 +6341,9 @@ async def run_story_generation_job(job_id: str, request_data: dict, user_data: d
             "status": "generating",  # Mark as generating until images done
             "created_at": now,
             "updated_at": now,
-            "generation_job_id": job_id
+            "generation_job_id": job_id,
+            "cover_image": "",  # Will be populated after cover generation
+            "back_cover_image": "",
         }
         
         await db.books.insert_one({k: v for k, v in book.items() if k != "_id"})
@@ -6293,9 +6360,14 @@ async def run_story_generation_job(job_id: str, request_data: dict, user_data: d
             
             cover_url = await generate_single_image(cover_prompt, style_desc)
             
+            # Store in both fields for compatibility (cover_image for BookResponse, cover_image_url for legacy)
             await db.books.update_one(
                 {"id": book_id},
-                {"$set": {"cover_image_url": cover_url, "updated_at": datetime.now(timezone.utc)}}
+                {"$set": {
+                    "cover_image_url": cover_url,
+                    "cover_image": cover_url,
+                    "updated_at": datetime.now(timezone.utc)
+                }}
             )
             
             await update_job_status(job_id, {
