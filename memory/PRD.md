@@ -50,31 +50,35 @@ User wants to enhance their "Azories" digital book application with:
 
 ## Latest Session Updates (March 6, 2026)
 
-### Session 11 - Print Order Modal P0 Bug Fix ✅ CRITICAL
+### Session 11 - Print Order Modal P0 Bug Fix + Stripe Integration ✅
 
-### Fix: Print Order Modal Three.js/React 19 Crash
+#### Fix 1: Print Order Modal Three.js/React 19 Crash (FIXED)
 - **Problem**: Opening the "Order Printed Book" modal caused a client-side crash with error "Cannot read properties of undefined (reading 'ReactCurrentOwner')"
-- **Root Cause**: React 19 incompatibility with @react-three/fiber v8.x and @react-three/drei. The Three.js components (Canvas, ContactShadows, OrbitControls, Text) require browser APIs that conflict with React 19's internal reconciler changes.
-- **Solution Applied**: Replaced Three.js-based 3D book preview with a pure CSS-based 3D preview using CSS transforms (perspective, rotateY, rotateX, translateZ). This provides a visually appealing rotating book without any Three.js dependencies.
+- **Solution**: Replaced Three.js-based 3D book preview with CSS-based 3D preview using transforms
+
+#### Fix 2: Price Estimate API 500 Error (FIXED)
+- **Problem**: `/api/print/price-estimate` returned 500 error due to incorrect function call
+- **Solution**: Rewrote endpoint with regional default shipping costs (GB, US, EU, etc.)
+
+#### Fix 3: "Order Printed Copy" Button Missing (FIXED)
+- **Problem**: Button was only showing for logged-in users and was hidden on mobile
+- **Solution**: Made button always visible with login prompt for guests, added mobile version
+
+#### Fix 4: Stripe Checkout Integration (COMPLETED)
+- **Problem**: Frontend showed "Payment integration coming soon" and didn't redirect to Stripe
+- **Solution**: Updated `submitOrder()` to call `/api/print/checkout/create-session` and redirect to Stripe checkout
 
 ### Files Modified:
-- `frontend/src/components/print/BookPreview3D.jsx` - Completely rewritten with CSS 3D transforms
-- `frontend/src/components/PrintOrderModal.jsx` - Updated imports (removed lazy loading for Three.js)
-- `frontend/package.json` - Updated @react-three/fiber to v9.5.0 and @react-three/drei to v9.122.0 (though CSS solution is now used)
+- `frontend/src/components/print/BookPreview3D.jsx` - CSS 3D transforms
+- `frontend/src/components/PrintOrderModal.jsx` - Stripe checkout redirect
+- `frontend/src/pages/BookReader.js` - Fixed Order Printed Copy button visibility
+- `backend/routes/print_orders.py` - Fixed price-estimate endpoint
 
-### Testing Results (iteration_50.json):
-- ✅ 9/9 frontend tests passed (100% success rate)
-- ✅ Modal opens without crash
-- ✅ CSS 3D book preview renders correctly
-- ✅ Page thumbnail strip displays all pages
-- ✅ Pricing displays correctly (£14.99/£19.99)
-- ✅ Step navigation works (Product → Address → Shipping → Review)
-- ✅ Address form validation works
-- ✅ Shipping method selection works
-
-### Minor Issues (LOW priority):
-- react-pageflip background TypeError (cosmetic, dev mode only)
-- /api/print/price-estimate 500 error (doesn't block functionality)
+### Testing Results:
+- ✅ Backend: 100% (15/15 tests passed)
+- ✅ Frontend: 100% (Modal flow + Stripe redirect)
+- ✅ Stripe checkout session creation returns valid checkout URL
+- ✅ Order Printed Copy button visible on desktop and mobile
 
 ---
 

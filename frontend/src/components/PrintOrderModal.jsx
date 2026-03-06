@@ -159,7 +159,9 @@ export default function PrintOrderModal({
     setLoading(true);
     try {
       const token = localStorage.getItem('azories-token');
-      const response = await fetch(`${API_URL}/api/print/create-order`, {
+      
+      // Call Stripe checkout session creation endpoint
+      const response = await fetch(`${API_URL}/api/print/checkout/create-session`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -167,22 +169,27 @@ export default function PrintOrderModal({
         },
         body: JSON.stringify({
           book_id: book.id,
-          shipping_address: address,
-          shipping_method: shippingMethod
+          product_type: 'softcover_8x10', // TODO: Add hardcover selection
+          shipping_country: address.countryIsoCode,
+          shipping_postal_code: address.postCode,
+          origin_url: window.location.origin
         })
       });
       
       if (response.ok) {
         const data = await response.json();
-        setOrderResult(data);
-        setStep(5);
-        toast.success('Order placed successfully!');
+        // Redirect to Stripe checkout
+        toast.info('Redirecting to secure payment...', { duration: 2000 });
+        setTimeout(() => {
+          window.location.href = data.checkout_url;
+        }, 500);
       } else {
         const error = await response.json();
-        toast.error(error.detail || 'Failed to place order');
+        toast.error(error.detail || 'Failed to create checkout session');
       }
     } catch (error) {
-      toast.error('Error placing order');
+      console.error('Checkout error:', error);
+      toast.error('Error creating checkout session');
     } finally {
       setLoading(false);
     }
@@ -610,10 +617,10 @@ export default function PrintOrderModal({
               </div>
             )}
 
-            <div className="flex items-start gap-2 p-3 bg-yellow-50 rounded-lg text-sm">
-              <FiAlertCircle className="text-yellow-600 mt-0.5 flex-shrink-0" />
-              <p className="text-yellow-700">
-                Payment integration coming soon. This is a preview of the ordering process.
+            <div className="flex items-start gap-2 p-3 bg-green-50 rounded-lg text-sm">
+              <FiCheck className="text-green-600 mt-0.5 flex-shrink-0" />
+              <p className="text-green-700">
+                Secure payment powered by Stripe. You'll be redirected to complete your purchase.
               </p>
             </div>
 
@@ -627,7 +634,7 @@ export default function PrintOrderModal({
                 disabled={loading}
               >
                 <FiCreditCard className="mr-2" />
-                {loading ? 'Processing...' : 'Place Order'}
+                {loading ? 'Redirecting...' : 'Pay Now'}
               </Button>
             </div>
           </div>
