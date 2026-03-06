@@ -6556,7 +6556,44 @@ def get_style_prompts():
     }
 
 async def generate_single_image(prompt: str, style_desc: str) -> str:
-    """Generate a single image and return its URL"""
+    """Generate a single image and return its URL using fal.ai FLUX"""
+    
+    # Use fal.ai FLUX for high-quality image generation
+    if FAL_AVAILABLE:
+        try:
+            # Combine prompt with style description for better results
+            full_prompt = f"{prompt}. {style_desc}. High quality, detailed illustration."
+            
+            result = await generate_image_flux(
+                prompt=full_prompt,
+                model="flux-dev",  # Use FLUX Dev for best quality/speed balance
+                image_size={"width": 1024, "height": 1344},  # Portrait 3:4 ratio for books
+                num_images=1,
+                guidance_scale=3.5,
+                num_inference_steps=28
+            )
+            
+            if result.get("success") and result.get("images"):
+                image_data = result["images"][0]
+                image_url = image_data.get("url")
+                
+                if image_url:
+                    # Upload to Cloudinary for permanent storage
+                    if CLOUDINARY_AVAILABLE:
+                        upload_result = cloudinary.uploader.upload(
+                            image_url,
+                            folder="azories/story_pages"
+                        )
+                        return upload_result.get("secure_url")
+                    return image_url
+                    
+            raise Exception("No image URL in fal.ai response")
+            
+        except Exception as e:
+            logger.warning(f"fal.ai generation failed, falling back to OpenAI: {e}")
+            # Fall through to OpenAI fallback
+    
+    # Fallback to OpenAI if fal.ai not available or fails
     if not EMERGENT_LLM_KEY:
         raise Exception("Image generation not available")
     
@@ -6565,12 +6602,11 @@ async def generate_single_image(prompt: str, style_desc: str) -> str:
         prompt=prompt,
         model="gpt-image-1",
         number_of_images=1,
-        size="1024x1536",  # Portrait orientation, higher quality
-        quality="high"  # Request higher quality output
+        size="1024x1536",
+        quality="high"
     )
     
     if images and len(images) > 0:
-        # Upload to Cloudinary if available
         if CLOUDINARY_AVAILABLE:
             image_bytes = images[0]
             image_base64 = base64.b64encode(image_bytes).decode('utf-8')
@@ -6580,7 +6616,6 @@ async def generate_single_image(prompt: str, style_desc: str) -> str:
             )
             return upload_result.get("secure_url")
         else:
-            # Return as data URL
             image_base64 = base64.b64encode(images[0]).decode('utf-8')
             return f"data:image/png;base64,{image_base64}"
     
