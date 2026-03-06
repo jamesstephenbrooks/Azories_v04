@@ -235,6 +235,20 @@ export default function BookReader() {
     return result;
   }, []);
   
+  // iPhone detection - need navigation buttons but can keep swipe enabled
+  const isIPhone = useMemo(() => {
+    if (typeof navigator === 'undefined') return false;
+    const userAgent = navigator.userAgent || '';
+    const result = /iPhone/i.test(userAgent);
+    if (result) {
+      console.log('[BookReader] iPhone detected - adding navigation buttons');
+    }
+    return result;
+  }, []);
+  
+  // Show navigation buttons on touch devices (iPad, iPhone, and other mobile)
+  const showMobileNavButtons = isIPad || isIPhone || isMobile;
+  
   // Listen to window resize for responsive book sizing
   useEffect(() => {
     const updateOrientation = () => {
@@ -2269,8 +2283,8 @@ export default function BookReader() {
                   disableSwipe={isIPad} // Disable swipe on iPad
                 />
                 
-                {/* iPad-only: Tap zones for page navigation (60px wide edges) */}
-                {isIPad && (
+                {/* Mobile/Touch device: Tap zones for page navigation (60px wide edges) */}
+                {showMobileNavButtons && (
                   <>
                     {/* Left tap zone - previous page (show on all pages except cover) */}
                     {currentPage > -1 && (

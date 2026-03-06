@@ -6564,7 +6564,9 @@ async def generate_single_image(prompt: str, style_desc: str) -> str:
     images = await image_gen.generate_images(
         prompt=prompt,
         model="gpt-image-1",
-        number_of_images=1
+        number_of_images=1,
+        size="1024x1536",  # Portrait orientation, higher quality
+        quality="high"  # Request higher quality output
     )
     
     if images and len(images) > 0:
