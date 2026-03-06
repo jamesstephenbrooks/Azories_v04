@@ -297,7 +297,7 @@ export default function PrintOrderModal({
                 coverImage={book?.cover_image || book?.cover_image_url}
                 title={book?.title}
                 authorName={book?.author_name}
-                pageCount={preparedData?.page_count || 24}
+                pageCount={prepData?.page_count || 24}
               />
             </div>
             
