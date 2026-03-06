@@ -256,27 +256,55 @@ async def prepare_print_order(
     
     # Generate print-ready PDF
     try:
-        # Get book pages
-        pages = await db.pages.find({"book_id": book_id}, {"_id": 0}).sort("sequence", 1).to_list(100)
+        # Get book pages - check both embedded and collection
+        pages = book.get('pages', [])
+        if not pages:
+            pages = await db.pages.find({"book_id": book_id}, {"_id": 0}).sort("page_number", 1).to_list(100)
         
-        result = await pdf_generator.generate_print_pdf(
+        # Generate PDF
+        output_path = await pdf_generator.generate_print_pdf(
             book=book,
             pages=pages
         )
         
-        if not result:
+        if not output_path:
             raise HTTPException(status_code=500, detail="Failed to generate print PDF")
+        
+        # Upload PDF to Cloudinary for storage
+        try:
+            import cloudinary
+            import cloudinary.uploader
+            
+            upload_result = cloudinary.uploader.upload(
+                output_path,
+                resource_type="raw",
+                folder="azories/print_pdfs",
+                public_id=f"print_{book_id}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"
+            )
+            pdf_url = upload_result.get("secure_url")
+        except Exception as upload_error:
+            logger.warning(f"Could not upload PDF to Cloudinary: {upload_error}")
+            # Use local path as fallback
+            pdf_url = output_path
+        
+        # Count pages in the PDF
+        page_count = 24  # Default minimum
+        try:
+            from PyPDF2 import PdfReader
+            reader = PdfReader(output_path)
+            page_count = len(reader.pages)
+        except:
+            pass
         
         # Store the prepared print info
         prep_id = str(uuid.uuid4())
         await db.print_preparations.insert_one({
             "id": prep_id,
             "book_id": book_id,
-            "user_id": book.get("user_id"),
-            "page_count": result.get("page_count"),
-            "pdf_url": result.get("pdf_url"),
-            "cover_url": result.get("cover_url"),
-            "preview_url": result.get("preview_url"),
+            "user_id": book.get("user_id") or book.get("author_id"),
+            "page_count": page_count,
+            "pdf_url": pdf_url,
+            "cover_url": book.get("cover_image") or book.get("cover_image_url"),
             "created_at": datetime.utcnow(),
             "expires_at": datetime.utcnow()  # Add expiry logic
         })
@@ -284,10 +312,9 @@ async def prepare_print_order(
         return {
             "prepared": True,
             "preparation_id": prep_id,
-            "page_count": result.get("page_count"),
-            "pdf_url": result.get("pdf_url"),
-            "cover_url": result.get("cover_url"),
-            "preview_url": result.get("preview_url")
+            "page_count": page_count,
+            "pdf_url": pdf_url,
+            "cover_url": book.get("cover_image") or book.get("cover_image_url")
         }
         
     except Exception as e:

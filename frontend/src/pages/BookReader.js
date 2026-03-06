@@ -1749,17 +1749,37 @@ export default function BookReader() {
                 <AmbientSound genre={book?.genre} isReading={currentPage >= 0} />
               </div>
               
-              {/* Print Book Button */}
+              {/* Order Printed Book Button - Magical and prominent */}
+              {user && (
+                <button 
+                  onClick={() => setShowPrintOrderModal(true)} 
+                  className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 hover:from-purple-500 hover:via-pink-400 hover:to-purple-500 text-white text-sm font-medium rounded-full shadow-lg hover:shadow-purple-500/30 transition-all duration-300 hover:scale-105 animate-shimmer bg-[length:200%_100%]"
+                  style={{
+                    animation: 'shimmer 3s ease-in-out infinite'
+                  }}
+                  title="Order a real printed book"
+                  data-testid="order-printed-book-btn"
+                >
+                  <FiBook className="w-4 h-4" />
+                  <span>Order Printed Book</span>
+                  <span className="flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-white opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                  </span>
+                </button>
+              )}
+              
+              {/* Print icon for mobile */}
               {user && (
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  onClick={() => setShowPrintDialog(true)} 
-                  className="rounded-full w-8 h-8 sm:w-10 sm:h-10"
-                  title="Print My Book"
-                  data-testid="print-book-btn"
+                  onClick={() => setShowPrintOrderModal(true)} 
+                  className="sm:hidden rounded-full w-8 h-8"
+                  title="Order Printed Book"
+                  data-testid="print-book-btn-mobile"
                 >
-                  <FiPrinter className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <FiBook className="w-4 h-4" />
                 </Button>
               )}
               
