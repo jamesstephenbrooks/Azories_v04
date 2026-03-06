@@ -8140,7 +8140,7 @@ async def get_full_book(book_id: str, response: Response, current_user: dict = D
     
     full_chapters = []
     
-    # Check BOTH sources and pick the one with actual images
+    # Check ALL THREE sources and pick the one with actual images
     
     # Source 1: Chapters from separate collection (BookEditor-created books)
     chapters_from_db = await db.chapters.find({"book_id": book_id}, {"_id": 0}).sort("order", 1).to_list(100)
@@ -8167,10 +8167,58 @@ async def get_full_book(book_id: str, response: Response, current_user: dict = D
                 embedded_have_images = True
                 break
     
-    # Decision: Use embedded pages if they have images, otherwise try chapters
-    # This prioritizes the data source that actually has content
+    # Source 3: Pages collection linked by book_id (AI-generated stories)
+    ai_generated_pages = await db.pages.find({"book_id": book_id}, {"_id": 0}).sort("page_number", 1).to_list(100)
+    ai_pages_have_images = False
     
-    if embedded_have_images:
+    if ai_generated_pages and len(ai_generated_pages) > 0:
+        for page in ai_generated_pages:
+            if page.get("image_url") and len(page.get("image_url", "")) > 0:
+                ai_pages_have_images = True
+                break
+    
+    # Decision: Prioritize data sources with actual content
+    # 1. AI-generated pages (book_id linked) - these are newest format
+    # 2. Embedded pages in book document
+    # 3. Chapter-based pages
+    
+    if ai_pages_have_images or (ai_generated_pages and len(ai_generated_pages) > 0):
+        # Use AI-generated pages from pages collection (linked by book_id)
+        normalized_pages = []
+        for page in ai_generated_pages:
+            normalized_page = {
+                "id": page.get("id", f"page-{page.get('page_number', 0)}"),
+                "chapter_id": "ai-generated-chapter",
+                "order": page.get("page_number", 0),
+                "page_number": page.get("page_number", 0),
+                "text": page.get("text_content", page.get("text", "")),
+                "text_content": page.get("text_content", page.get("text", "")),
+                "image_url": page.get("image_url", ""),
+                "image_url_2": page.get("image_url_2", ""),
+                "image_url_3": page.get("image_url_3", ""),
+                "image_url_4": page.get("image_url_4", ""),
+                "video_url": page.get("video_url", ""),
+                "use_video": page.get("use_video", False),
+                "layout_type": page.get("layout_type", page.get("layout", "single")),
+                "image_position_x": page.get("image_position_x", 50),
+                "image_position_y": page.get("image_position_y", 50),
+                "image_fit": page.get("image_fit", "cover"),
+                "font_family": page.get("font_family", "default"),
+                "font_size": page.get("font_size", "medium"),
+                "text_align": page.get("text_align", "left"),
+                "image_prompt": page.get("image_prompt", ""),
+            }
+            normalized_pages.append(normalized_page)
+        
+        full_chapters.append({
+            "id": "ai-generated-chapter",
+            "book_id": book_id,
+            "title": book.get("title", "Story"),
+            "order": 0,
+            "pages": normalized_pages
+        })
+    
+    elif embedded_have_images:
         # Use embedded pages - convert to chapter format
         normalized_pages = []
         for page in embedded_pages:

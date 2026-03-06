@@ -1,0 +1,79 @@
+{
+  "summary": "AI Story Bug Fix VERIFIED - The /books/{book_id}/full endpoint now correctly retrieves AI-generated pages stored in the pages collection linked by book_id. Test book f1328a57-849f-4160-8820-a7caea04c1ea returns 5 pages with text and images in an 'ai-generated-chapter'. All 11 backend tests passed.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "/api/books/{book_id}",
+        "issue": "Returns 500 for AI-generated books due to Pydantic validation - missing cover_image, author_id, author_name fields and datetime format issues. This is a SEPARATE bug from the empty pages fix.",
+        "priority": "MEDIUM"
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_ai_story_bugfix_iter49.py",
+    "/app/test_reports/pytest/pytest_ai_story_bugfix_iter49.xml"
+  ],
+  "action_items": [
+    "OPTIONAL: Fix /api/books/{book_id} endpoint to handle AI-generated books that may have missing fields (cover_image, author_id, author_name) and datetime format issues"
+  ],
+  "critical_code_review_comments": [
+    "server.py:8170-8219 - AI-generated pages source (Source 3) correctly implemented to check pages collection with book_id",
+    "server.py:8185-8219 - Proper priority given to ai_pages_have_images, normalized page structure with all required fields",
+    "server.py:6340-6353 - AI story generation correctly stores pages with book_id in the pages collection"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_ai_story_bugfix_iter49.py"
+  ],
+  "success_rate": {
+    "backend": "100% (11/11 tests passed)",
+    "frontend": "N/A - backend only testing requested"
+  },
+  "test_credentials": {
+    "email": "jamesstephenbrooks@outlook.com",
+    "password": "Routetofreedom"
+  },
+  "seed_data_creation": "None - used existing test book f1328a57-849f-4160-8820-a7caea04c1ea",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "AI story empty pages bug is FIXED. The fix adds Source 3 check at lines 8170-8219 to query pages collection by book_id for AI-generated stories. Test book f1328a57-849f-4160-8820-a7caea04c1ea confirms 5 pages with text and images are now returned. Minor separate bug exists in single book endpoint for AI books (Pydantic validation errors).",
+  "verified_features": {
+    "ai_story_pages_fix": {
+      "status": "PASSED",
+      "test_results": {
+        "chapters_returned": 1,
+        "pages_returned": 5,
+        "pages_with_text": 5,
+        "pages_with_images": 5,
+        "chapter_id": "ai-generated-chapter"
+      },
+      "notes": "Bug fix verified - AI-generated book pages now correctly returned via book_id query in pages collection"
+    },
+    "generate_story_async_endpoint": {
+      "status": "PASSED",
+      "notes": "Endpoint exists and accepts requests (validated with empty request returning 422)"
+    },
+    "job_status_endpoint": {
+      "status": "PASSED",
+      "notes": "Endpoint exists, returns 404 for non-existent jobs"
+    },
+    "active_jobs_endpoint": {
+      "status": "PASSED",
+      "notes": "Returns 3 active jobs for test user"
+    },
+    "job_history_endpoint": {
+      "status": "PASSED", 
+      "notes": "Returns 11 historical jobs for test user"
+    }
+  },
+  "rca_of_the_issue": {
+    "root_cause": "The /books/{book_id}/full endpoint only checked two sources for pages: 1) chapters collection with chapter_id, 2) embedded pages array in book document. AI-generated stories store pages in pages collection linked by book_id (not chapter_id), which was not being queried.",
+    "fix_applied": "Added Source 3 check at lines 8170-8219 to query db.pages.find({'book_id': book_id}) for AI-generated pages",
+    "verification": "Test book f1328a57-849f-4160-8820-a7caea04c1ea now returns 5 pages with text_content and image_url in chapters[0].pages array"
+  }
+}
