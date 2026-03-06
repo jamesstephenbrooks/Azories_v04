@@ -2384,8 +2384,8 @@ export default function BookReader() {
         </div>
       </div>
       
-      {/* Hide/Show Controls Toggle + Floating Listen button - visible when controls are hidden */}
-      {hideControls && (
+      {/* Hide/Show Controls Toggle + Floating Listen button - visible when controls are hidden, hide when modal open */}
+      {hideControls && !showPrintOrderModal && (
         <div className="fixed bottom-5 right-4 z-50 flex items-center gap-2">
           {/* Floating Listen/Pause button - to the LEFT of show controls */}
           <button
@@ -2403,29 +2403,29 @@ export default function BookReader() {
                 startListening();
               }
             }}
-            className="w-6 h-6 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white shadow-lg flex items-center justify-center transition-colors"
+            className="w-6 h-6 sm:w-10 sm:h-10 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white shadow-lg flex items-center justify-center transition-colors"
             data-testid="floating-listen-btn"
           >
             {isPlaying ? (
-              <FiPause className="w-3 h-3" />
+              <FiPause className="w-3 h-3 sm:w-5 sm:h-5" />
             ) : (
-              <FiPlay className="w-3 h-3 ml-0.5" />
+              <FiPlay className="w-3 h-3 sm:w-5 sm:h-5 ml-0.5" />
             )}
           </button>
           
           {/* Show controls button - to the RIGHT of play button */}
           <button
             onClick={() => setHideControls(false)}
-            className="w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-purple-400 text-purple-600 dark:text-purple-300 shadow-lg flex items-center justify-center hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors"
+            className="w-6 h-6 sm:w-10 sm:h-10 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-purple-400 text-purple-600 dark:text-purple-300 shadow-lg flex items-center justify-center hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors"
             data-testid="show-controls-btn"
           >
-            <FiChevronUp className="w-3 h-3" />
+            <FiChevronUp className="w-3 h-3 sm:w-5 sm:h-5" />
           </button>
         </div>
       )}
       
-      {/* Hide controls button - visible when controls are shown (not on back cover) */}
-      {!hideControls && !currentPageData?.isBackCover && !isMobileLandscape && (
+      {/* Hide controls button - visible when controls are shown (not on back cover), hide when modal open */}
+      {!hideControls && !currentPageData?.isBackCover && !isMobileLandscape && !showPrintOrderModal && (
         <div className="fixed bottom-20 right-4 z-[101] flex items-center gap-2">
           {/* Play button - to the LEFT of hide button */}
           <button
@@ -2441,29 +2441,29 @@ export default function BookReader() {
                 startListening();
               }
             }}
-            className="w-6 h-6 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white shadow-lg flex items-center justify-center transition-colors"
+            className="w-6 h-6 sm:w-10 sm:h-10 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white shadow-lg flex items-center justify-center transition-colors"
             data-testid="floating-listen-btn-visible"
           >
             {isPlaying ? (
-              <FiPause className="w-3 h-3" />
+              <FiPause className="w-3 h-3 sm:w-5 sm:h-5" />
             ) : (
-              <FiPlay className="w-3 h-3 ml-0.5" />
+              <FiPlay className="w-3 h-3 sm:w-5 sm:h-5 ml-0.5" />
             )}
           </button>
           
           {/* Hide controls button */}
           <button
             onClick={() => setHideControls(true)}
-            className="w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-purple-400 text-purple-600 dark:text-purple-300 shadow-lg flex items-center justify-center hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors"
+            className="w-6 h-6 sm:w-10 sm:h-10 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-purple-400 text-purple-600 dark:text-purple-300 shadow-lg flex items-center justify-center hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors"
             data-testid="hide-controls-btn"
           >
-            <FiChevronDown className="w-3 h-3" />
+            <FiChevronDown className="w-3 h-3 sm:w-5 sm:h-5" />
           </button>
         </div>
       )}
       
-      {/* Bottom Controls - Hidden in landscape (edge arrows are used instead) */}
-      {!isMobileLandscape && (
+      {/* Bottom Controls - Hidden in landscape, and when Print Modal is open */}
+      {!isMobileLandscape && !showPrintOrderModal && (
         <div className={`fixed bottom-0 left-0 right-0 ${currentPageData?.isBackCover ? 'bg-[#1a0a2e]/90' : 'bg-background/90'} backdrop-blur-xl border-t ${currentPageData?.isBackCover ? 'border-white/10' : 'border-border'} z-[100] transition-transform duration-300 ${hideControls && !currentPageData?.isBackCover ? 'translate-y-full' : ''}`}>
           <div className={`max-w-4xl mx-auto px-2 sm:px-4 py-1.5 sm:py-4`}>
             {/* Navigation - 50% smaller on mobile */}
