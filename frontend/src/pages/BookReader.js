@@ -2249,31 +2249,31 @@ export default function BookReader() {
                   </div>
                 )}
                 
-                {/* Navigation buttons for landscape - vertically aligned on right side, 50% smaller */}
+                {/* Navigation buttons for landscape - prev on left, next on right */}
                 {!currentPageData?.isBackCover && (
-                  <div className="absolute right-2 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-2">
-                    {/* Previous page button */}
+                  <>
+                    {/* Previous page button - LEFT side */}
                     {currentPage > 0 && (
                       <button
                         onClick={() => goToPage(currentPage - 1, 'prev')}
-                        className="w-6 h-6 rounded-full bg-purple-600/80 hover:bg-purple-600 active:bg-purple-700 flex items-center justify-center text-white shadow-lg"
+                        className="absolute left-2 top-1/2 -translate-y-1/2 z-50 w-6 h-6 rounded-full bg-purple-600/80 hover:bg-purple-600 active:bg-purple-700 flex items-center justify-center text-white shadow-lg"
                         data-testid="landscape-prev-btn"
                       >
                         <FiChevronLeft className="w-3 h-3" />
                       </button>
                     )}
                     
-                    {/* Next page button */}
+                    {/* Next page button - RIGHT side */}
                     {currentPage < allPages.length - 1 && (
                       <button
                         onClick={() => goToPage(currentPage + 1, 'next')}
-                        className="w-6 h-6 rounded-full bg-purple-600/80 hover:bg-purple-600 active:bg-purple-700 flex items-center justify-center text-white shadow-lg"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 z-50 w-6 h-6 rounded-full bg-purple-600/80 hover:bg-purple-600 active:bg-purple-700 flex items-center justify-center text-white shadow-lg"
                         data-testid="landscape-next-btn"
                       >
                         <FiChevronRight className="w-3 h-3" />
                       </button>
                     )}
-                  </div>
+                  </>
                 )}
               </div>
             ) : (
@@ -2366,8 +2366,8 @@ export default function BookReader() {
       
       {/* Hide/Show Controls Toggle + Floating Listen button - visible when controls are hidden */}
       {hideControls && (
-        <>
-          {/* Floating Listen/Pause button - 25% up the page, smaller size */}
+        <div className="fixed bottom-5 right-4 z-50 flex items-center gap-2">
+          {/* Floating Listen/Pause button - to the LEFT of show controls */}
           <button
             onClick={() => {
               if (isPlaying) {
@@ -2383,8 +2383,7 @@ export default function BookReader() {
                 startListening();
               }
             }}
-            className="fixed right-4 z-50 w-6 h-6 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white shadow-lg flex items-center justify-center transition-colors"
-            style={{ bottom: '25%' }}
+            className="w-6 h-6 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white shadow-lg flex items-center justify-center transition-colors"
             data-testid="floating-listen-btn"
           >
             {isPlaying ? (
@@ -2394,26 +2393,53 @@ export default function BookReader() {
             )}
           </button>
           
-          {/* Show controls button - smaller */}
+          {/* Show controls button - to the RIGHT of play button */}
           <button
             onClick={() => setHideControls(false)}
-            className="fixed bottom-5 right-4 z-50 w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-purple-400 text-purple-600 dark:text-purple-300 shadow-lg flex items-center justify-center hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors"
+            className="w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-purple-400 text-purple-600 dark:text-purple-300 shadow-lg flex items-center justify-center hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors"
             data-testid="show-controls-btn"
           >
             <FiChevronUp className="w-3 h-3" />
           </button>
-        </>
+        </div>
       )}
       
       {/* Hide controls button - visible when controls are shown (not on back cover) */}
       {!hideControls && !currentPageData?.isBackCover && !isMobileLandscape && (
-        <button
-          onClick={() => setHideControls(true)}
-          className="fixed bottom-20 right-4 z-[101] w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-purple-400 text-purple-600 dark:text-purple-300 shadow-lg flex items-center justify-center hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors"
-          data-testid="hide-controls-btn"
-        >
-          <FiChevronDown className="w-3 h-3" />
-        </button>
+        <div className="fixed bottom-20 right-4 z-[101] flex items-center gap-2">
+          {/* Play button - to the LEFT of hide button */}
+          <button
+            onClick={() => {
+              if (isPlaying) {
+                if (audioElement) {
+                  audioElement.pause();
+                }
+                setIsPlaying(false);
+                setAutoRead(false);
+                autoReadRef.current = false;
+              } else {
+                startListening();
+              }
+            }}
+            className="w-6 h-6 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white shadow-lg flex items-center justify-center transition-colors"
+            data-testid="floating-listen-btn-visible"
+          >
+            {isPlaying ? (
+              <FiPause className="w-3 h-3" />
+            ) : (
+              <FiPlay className="w-3 h-3 ml-0.5" />
+            )}
+          </button>
+          
+          {/* Hide controls button */}
+          <button
+            onClick={() => setHideControls(true)}
+            className="w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-purple-400 text-purple-600 dark:text-purple-300 shadow-lg flex items-center justify-center hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors"
+            data-testid="hide-controls-btn"
+          >
+            <FiChevronDown className="w-3 h-3" />
+          </button>
+        </div>
       )}
       
       {/* Bottom Controls - Hidden in landscape (edge arrows are used instead) */}
