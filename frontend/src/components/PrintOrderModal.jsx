@@ -43,7 +43,7 @@ export default function PrintOrderModal({
   isOpen, 
   onClose, 
   book,
-  comingSoon = true // Set to false when ready to activate
+  comingSoon = false // Print on Demand is now active!
 }) {
   const [step, setStep] = useState(1); // 1: Info, 2: Address, 3: Shipping, 4: Payment, 5: Confirmation
   const [loading, setLoading] = useState(false);

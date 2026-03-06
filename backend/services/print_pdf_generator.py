@@ -855,8 +855,6 @@ class PrintPDFGenerator:
         
         if is_back:
             cover_url = book.get('back_cover_image')
-            gradient_start = book.get('cover_gradient_start', '#667eea')
-            gradient_end = book.get('cover_gradient_end', '#764ba2')
             
             if cover_url:
                 cover_img = await self.download_image(cover_url)
@@ -864,23 +862,54 @@ class PrintPDFGenerator:
                     cover_img = cover_img.resize((PAGE_WIDTH_PX, PAGE_HEIGHT_PX), Image.Resampling.LANCZOS)
                     img.paste(cover_img, (0, 0))
             else:
-                start_rgb = self.hex_to_rgb(gradient_start)
-                end_rgb = self.hex_to_rgb(gradient_end)
-                img = self.create_gradient_background(PAGE_WIDTH_PX, PAGE_HEIGHT_PX, end_rgb, start_rgb)
+                # Create beautiful Azora branded back cover
+                # Deep purple gradient background
+                start_rgb = (26, 10, 46)  # Dark purple #1a0a2e
+                end_rgb = (75, 25, 100)   # Lighter purple
+                img = self.create_gradient_background(PAGE_WIDTH_PX, PAGE_HEIGHT_PX, start_rgb, end_rgb)
                 draw = ImageDraw.Draw(img)
                 
-                font_desc = self.get_font(44)
-                description = book.get('back_cover_text') or book.get('description', 'Thank you for reading!')
-                lines = self.word_wrap_text(draw, description, font_desc, PAGE_WIDTH_PX - 400)
+                # Add Azora mascot image
+                mascot_url = BONUS_IMAGES.get('welcome')
+                if mascot_url:
+                    try:
+                        mascot_img = await self.download_image(mascot_url)
+                        if mascot_img:
+                            # Position mascot in center-top area, nice size
+                            mascot_size = 900
+                            mascot_img = mascot_img.resize((mascot_size, mascot_size), Image.Resampling.LANCZOS)
+                            mascot_x = (PAGE_WIDTH_PX - mascot_size) // 2
+                            mascot_y = 400
+                            
+                            # If image has transparency, use it; otherwise just paste
+                            if mascot_img.mode == 'RGBA':
+                                img.paste(mascot_img, (mascot_x, mascot_y), mascot_img)
+                            else:
+                                img.paste(mascot_img, (mascot_x, mascot_y))
+                    except Exception as e:
+                        logger.warning(f"Could not load mascot for back cover: {e}")
                 
-                y_offset = PAGE_HEIGHT_PX // 2 - (len(lines) * 60) // 2
-                for line in lines:
-                    self.draw_text_centered(draw, line, y_offset, font_desc, '#ffffff', PAGE_WIDTH_PX)
-                    y_offset += 60
+                # Add "Azora" branding text
+                font_brand = self.get_font(120, bold=True)
+                self.draw_text_centered(draw, "Azora", PAGE_HEIGHT_PX - 600, font_brand, '#ffffff', PAGE_WIDTH_PX)
                 
-                if book.get('age_rating'):
-                    font_small = self.get_font(36)
-                    self.draw_text_centered(draw, book['age_rating'], PAGE_HEIGHT_PX - 200, font_small, '#ffffffcc', PAGE_WIDTH_PX)
+                # Add tagline
+                font_tagline = self.get_font(48)
+                self.draw_text_centered(draw, "Where Stories Come Alive", PAGE_HEIGHT_PX - 450, font_tagline, '#ffffffcc', PAGE_WIDTH_PX)
+                
+                # Add website
+                font_url = self.get_font(36)
+                self.draw_text_centered(draw, "azories.com", PAGE_HEIGHT_PX - 300, font_url, '#a855f7', PAGE_WIDTH_PX)
+                
+                # Add back cover text if provided
+                description = book.get('back_cover_text') or book.get('description')
+                if description:
+                    font_desc = self.get_font(32)
+                    lines = self.word_wrap_text(draw, description, font_desc, PAGE_WIDTH_PX - 400)
+                    y_offset = 150
+                    for line in lines[:4]:  # Limit to 4 lines at top
+                        self.draw_text_centered(draw, line, y_offset, font_desc, '#ffffffaa', PAGE_WIDTH_PX)
+                        y_offset += 50
         else:
             cover_url = book.get('cover_image')
             

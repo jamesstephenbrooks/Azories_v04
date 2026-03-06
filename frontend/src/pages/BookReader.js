@@ -2832,10 +2832,10 @@ export default function BookReader() {
                   </div>
                   <div className="text-left flex-1">
                     <p className="font-semibold text-foreground">Order a Real Printed Book</p>
-                    <p className="text-xs text-muted-foreground">Premium 8x8" photobook delivered to your door</p>
+                    <p className="text-xs text-muted-foreground">Premium 8x10" photobook delivered to your door</p>
                   </div>
-                  <div className="px-2 py-1 bg-purple-100 dark:bg-purple-900/40 rounded-full">
-                    <span className="text-xs font-medium text-purple-600 dark:text-purple-400">Coming Soon</span>
+                  <div className="px-2 py-1 bg-green-100 dark:bg-green-900/40 rounded-full">
+                    <span className="text-xs font-medium text-green-600 dark:text-green-400">New!</span>
                   </div>
                 </div>
               </button>
@@ -2844,12 +2844,11 @@ export default function BookReader() {
         </div>
       )}
       
-      {/* Print Order Modal (Coming Soon) */}
+      {/* Print Order Modal */}
       <PrintOrderModal
         isOpen={showPrintOrderModal}
         onClose={() => setShowPrintOrderModal(false)}
         book={book}
-        comingSoon={true}
       />
       
       {/* AI Reading Buddy */}
