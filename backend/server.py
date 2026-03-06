@@ -1717,7 +1717,9 @@ async def get_story_pricing():
                 {"id": "3d-pixar", "name": "3D Pixar Animation", "emoji": "🎬"},
                 {"id": "watercolour", "name": "Watercolour Illustration", "emoji": "🎨"},
                 {"id": "comic-book", "name": "Comic Book", "emoji": "💥"},
-                {"id": "hand-drawn", "name": "Hand Drawn / Sketch", "emoji": "✏️"}
+                {"id": "hand-drawn", "name": "Hand Drawn / Sketch", "emoji": "✏️"},
+                {"id": "ideogram-storybook", "name": "Ideogram Storybook", "emoji": "📚", "badge": "NEW"},
+                {"id": "ideogram-character", "name": "Ideogram Character (Consistent)", "emoji": "👤", "badge": "NEW"}
             ],
             "studio": [
                 {"id": "3d-pixar", "name": "3D Pixar Animation", "emoji": "🎬"},
@@ -1729,7 +1731,10 @@ async def get_story_pricing():
                 {"id": "oil-painting", "name": "Oil Painting", "emoji": "🖌️"},
                 {"id": "vintage-storybook", "name": "Vintage Storybook", "emoji": "📜"},
                 {"id": "dark-fantasy", "name": "Dark Fantasy Art", "emoji": "🌙"},
-                {"id": "photorealistic", "name": "Photorealistic", "emoji": "📷"}
+                {"id": "photorealistic", "name": "Photorealistic", "emoji": "📷"},
+                {"id": "ideogram-realistic", "name": "Ideogram Realistic", "emoji": "📸", "badge": "NEW"},
+                {"id": "ideogram-storybook", "name": "Ideogram Storybook", "emoji": "📚", "badge": "NEW"},
+                {"id": "ideogram-character", "name": "Ideogram Character (Consistent)", "emoji": "👤", "badge": "NEW"}
             ]
         },
         "age_ranges": {
@@ -7018,6 +7023,11 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
             "vintage-storybook": "Vintage storybook illustration, aged paper texture, classic fairy tale style, ornate details",
             "dark-fantasy": "Dark fantasy art, moody atmosphere, dramatic lighting, gothic elements, epic fantasy style",
             
+            # Ideogram styles (NEW - Character consistency)
+            "ideogram-realistic": "Photorealistic style, cinematic quality, natural lighting, detailed textures, professional photography",
+            "ideogram-storybook": "Charming children's book illustration style, soft pastel colors, warm lighting, whimsical and friendly",
+            "ideogram-character": "Illustrated character style, consistent character appearance, expressive features, warm colors, storybook quality",
+            
             # Legacy fallbacks
             "illustration": "Professional children's book illustration, colorful, friendly, whimsical, hand-drawn feel",
             "comic": "Comic book panel style, bold outlines, dynamic poses, vibrant colors",
@@ -7293,15 +7303,37 @@ Return ONLY the JSON array, no other text."""
                     
                     logger.info(f"Generating image for page {idx + 1}: {full_prompt[:100]}...")
                     
-                    # Use fal.ai FLUX for image generation
-                    # print_quality=True generates at 2400x3000 (8x10 at 300 DPI)
-                    result = await generate_image_flux(
-                        prompt=full_prompt,
-                        model="flux-dev",
-                        image_size="portrait_4_3",  # Fallback if print_quality doesn't work
-                        num_images=1,
-                        print_quality=True  # Generate at correct 8x10 ratio for printing
-                    )
+                    # Check if using Ideogram style
+                    if final_style.startswith("ideogram-"):
+                        # Use Ideogram for character consistency
+                        from fal_service import generate_image_ideogram
+                        
+                        ideogram_style = "design"  # Default
+                        if final_style == "ideogram-realistic":
+                            ideogram_style = "realistic"
+                        elif final_style == "ideogram-storybook":
+                            ideogram_style = "design"
+                        elif final_style == "ideogram-character":
+                            ideogram_style = "design"  # Best for consistent characters
+                        
+                        result = await generate_image_ideogram(
+                            prompt=full_prompt,
+                            model="ideogram-v3",
+                            aspect_ratio="4:5",  # Portrait for book pages
+                            style=ideogram_style,
+                            magic_prompt=True,
+                            print_quality=True
+                        )
+                    else:
+                        # Use fal.ai FLUX for image generation
+                        # print_quality=True generates at 2400x3000 (8x10 at 300 DPI)
+                        result = await generate_image_flux(
+                            prompt=full_prompt,
+                            model="flux-dev",
+                            image_size="portrait_4_3",  # Fallback if print_quality doesn't work
+                            num_images=1,
+                            print_quality=True  # Generate at correct 8x10 ratio for printing
+                        )
                     
                     if result and result.get("images") and len(result["images"]) > 0:
                         image_url_raw = result["images"][0].get("url", "")

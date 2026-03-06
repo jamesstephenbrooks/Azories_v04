@@ -142,7 +142,7 @@ export default function AIReadingBuddy({ book, currentPage, isOpen, onToggle }) 
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={onToggle}
-        className="fixed bottom-28 right-4 z-[110] w-14 h-14 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-lg flex items-center justify-center text-white"
+        className="fixed bottom-44 right-4 z-[110] w-14 h-14 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-lg flex items-center justify-center text-white"
         data-testid="ai-buddy-toggle"
       >
         <FiMessageCircle className="w-6 h-6" />

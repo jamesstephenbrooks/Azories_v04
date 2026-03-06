@@ -313,31 +313,32 @@ export default function PrintOrderModal({
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-full max-w-[600px] max-h-[90vh] overflow-y-auto p-0 gap-0 flex flex-col">
-        {/* Header */}
-        <div className="sticky top-0 bg-white dark:bg-slate-900 z-10 px-6 pt-5 pb-3 border-b">
-          <DialogHeader className="pb-0">
-            <DialogTitle className="flex items-center gap-2 text-base">
-              <FiPrinter className="text-purple-500" />
-              Order Printed Book
-            </DialogTitle>
-            <DialogDescription className="text-sm">
-              Get a beautiful printed copy of "{book?.title}"
-            </DialogDescription>
-          </DialogHeader>
+    <>
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="w-full max-w-[600px] max-h-[90vh] overflow-y-auto p-0 gap-0 flex flex-col">
+          {/* Header */}
+          <div className="sticky top-0 bg-white dark:bg-slate-900 z-10 px-6 pt-5 pb-3 border-b">
+            <DialogHeader className="pb-0">
+              <DialogTitle className="flex items-center gap-2 text-base">
+                <FiPrinter className="text-purple-500" />
+                Order Printed Book
+              </DialogTitle>
+              <DialogDescription className="text-sm">
+                Get a beautiful printed copy of "{book?.title}"
+              </DialogDescription>
+            </DialogHeader>
 
-          {/* Progress Steps */}
-          <div className="flex items-center justify-center mt-3">
-            {[1, 2, 3, 4].map((num, i) => (
-              <React.Fragment key={num}>
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium
-                  ${step >= num ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-500'}`}>
-                  {step > num ? <FiCheck size={12} /> : num}
-                </div>
-                {i < 3 && <div className={`w-6 h-0.5 ${step > num ? 'bg-purple-500' : 'bg-gray-200'}`} />}
-              </React.Fragment>
-            ))}
+            {/* Progress Steps */}
+            <div className="flex items-center justify-center mt-3">
+              {[1, 2, 3, 4].map((num, i) => (
+                <React.Fragment key={num}>
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium
+                    ${step >= num ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-500'}`}>
+                    {step > num ? <FiCheck size={12} /> : num}
+                  </div>
+                  {i < 3 && <div className={`w-6 h-0.5 ${step > num ? 'bg-purple-500' : 'bg-gray-200'}`} />}
+                </React.Fragment>
+              ))}
           </div>
         </div>
 
@@ -441,9 +442,14 @@ export default function PrintOrderModal({
             <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-4 border border-amber-200 dark:border-amber-800">
               <div className="flex items-center justify-between mb-2">
                 <div>
-                  <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">
-                    Bonus Pages
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">
+                      Bonus Pages
+                    </p>
+                    <span className="text-[10px] bg-green-500 text-white px-2 py-0.5 rounded-full font-medium">
+                      FREE
+                    </span>
+                  </div>
                   <p className="text-xs text-amber-700 dark:text-amber-300 mt-0.5">
                     7 special pages: Welcome, Dedication, The End, Thank You, Certificate, About Azora & Meet Azora
                   </p>
@@ -738,14 +744,15 @@ export default function PrintOrderModal({
         )}
         </div>{/* End of scrollable content */}
       </DialogContent>
-      
-      {/* Bonus pages preview modal */}
-      <BonusPagesPreview
-        isOpen={showBonusPreview}
-        onClose={() => setShowBonusPreview(false)}
-        bookTitle={book?.title}
-        childName={book?.main_character_name || book?.child_name}
-      />
     </Dialog>
+    
+    {/* Bonus pages preview modal - OUTSIDE Dialog to prevent interference */}
+    <BonusPagesPreview
+      isOpen={showBonusPreview}
+      onClose={() => setShowBonusPreview(false)}
+      bookTitle={book?.title}
+      childName={book?.main_character_name || book?.child_name}
+    />
+  </>
   );
 }

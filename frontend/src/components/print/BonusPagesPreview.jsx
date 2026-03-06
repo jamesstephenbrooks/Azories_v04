@@ -45,11 +45,17 @@ const BonusPagesPreview = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-4">
+    <div 
+      className="fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-4"
+      onClick={(e) => e.stopPropagation()}
+    >
       {/* Close button */}
       <button
-        onClick={onClose}
-        className="absolute top-4 right-4 text-white/80 hover:text-white p-2"
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}
+        className="absolute top-4 right-4 text-white/80 hover:text-white p-2 z-10"
       >
         <FiX className="w-6 h-6" />
       </button>
@@ -63,21 +69,30 @@ const BonusPagesPreview = ({
 
       {/* Navigation arrows */}
       <button
-        onClick={prevPage}
-        className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+        onClick={(e) => {
+          e.stopPropagation();
+          prevPage();
+        }}
+        className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors z-10"
       >
         <FiChevronLeft className="w-6 h-6" />
       </button>
 
       <button
-        onClick={nextPage}
-        className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+        onClick={(e) => {
+          e.stopPropagation();
+          nextPage();
+        }}
+        className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors z-10"
       >
         <FiChevronRight className="w-6 h-6" />
       </button>
 
-      {/* Page preview - 8x8 aspect ratio */}
-      <div className="w-full max-w-lg aspect-square bg-white rounded-lg shadow-2xl overflow-hidden">
+      {/* Page preview - 8x11 aspect ratio (portrait book format) */}
+      <div 
+        className="w-full max-w-sm bg-white rounded-lg shadow-2xl overflow-hidden"
+        style={{ aspectRatio: '8/11' }}
+      >
         {pages[currentPage].component}
       </div>
 
@@ -86,7 +101,10 @@ const BonusPagesPreview = ({
         {pages.map((_, idx) => (
           <button
             key={idx}
-            onClick={() => setCurrentPage(idx)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setCurrentPage(idx);
+            }}
             className={`w-2 h-2 rounded-full transition-colors ${
               idx === currentPage ? 'bg-white' : 'bg-white/30 hover:bg-white/50'
             }`}

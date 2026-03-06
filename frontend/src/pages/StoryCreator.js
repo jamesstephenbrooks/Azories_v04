@@ -802,7 +802,14 @@ export default function StoryCreator() {
                       <SelectContent>
                         {artStyles.map(style => (
                           <SelectItem key={style.id} value={style.id}>
-                            {style.emoji} {style.name}
+                            <span className="flex items-center gap-2">
+                              {style.emoji} {style.name}
+                              {style.badge && (
+                                <span className="text-[10px] bg-green-500 text-white px-1.5 py-0.5 rounded-full font-medium">
+                                  {style.badge}
+                                </span>
+                              )}
+                            </span>
                           </SelectItem>
                         ))}
                       </SelectContent>

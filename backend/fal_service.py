@@ -329,6 +329,75 @@ async def generate_image_flux(
         raise
 
 
+
+async def generate_image_ideogram(
+    prompt: str,
+    model: str = "ideogram-v3",
+    aspect_ratio: str = "4:5",  # Close to 8:10 portrait
+    style: str = "realistic",  # realistic, design, 3d, anime
+    magic_prompt: bool = True,  # Auto-enhance prompt
+    seed: Optional[int] = None,
+    negative_prompt: Optional[str] = None,
+    print_quality: bool = False
+) -> Dict[str, Any]:
+    """Generate images using Ideogram V3 models via fal.ai
+    
+    Args:
+        prompt: Text description of the image
+        model: Ideogram model variant (ideogram-v3, ideogram-v3-character)
+        aspect_ratio: Aspect ratio preset (1:1, 4:3, 3:4, 16:9, 9:16, 4:5, 5:4, etc.)
+        style: Style type (realistic, design, 3d, anime)
+        magic_prompt: Whether to auto-enhance the prompt
+        seed: Optional seed for reproducibility
+        negative_prompt: What to avoid in the image
+        print_quality: If True, use optimal settings for print
+        
+    Returns:
+        Dict with success status and generated images
+    """
+    _get_fal_key()  # Validate key exists
+    
+    # Map model names to fal.ai endpoint IDs
+    model_map = {
+        "ideogram-v3": "fal-ai/ideogram/v3",
+        "ideogram-v3-character": "fal-ai/ideogram/v3",  # Character mode uses same endpoint
+        "ideogram-realistic": "fal-ai/ideogram/v3",
+        "ideogram-storybook": "fal-ai/ideogram/v3"
+    }
+    
+    model_id = model_map.get(model, "fal-ai/ideogram/v3")
+    
+    # For print quality, use portrait aspect closest to 8:10
+    if print_quality:
+        aspect_ratio = "4:5"  # Closest standard ratio to 8:10
+    
+    arguments = {
+        "prompt": prompt,
+        "aspect_ratio": aspect_ratio,
+        "expand_prompt": magic_prompt,  # Ideogram calls it expand_prompt
+        "style": style
+    }
+    
+    if seed is not None:
+        arguments["seed"] = seed
+    
+    if negative_prompt:
+        arguments["negative_prompt"] = negative_prompt
+
+    try:
+        result = await _submit_with_retry(model_id, arguments, timeout=IMAGE_TIMEOUT)
+        return {
+            "success": True,
+            "images": result.get("images", []),
+            "seed": result.get("seed"),
+            "prompt": prompt
+        }
+    except Exception as e:
+        logger.error(f"Ideogram generation error: {str(e)}")
+        raise
+
+
+
 async def generate_with_face_id(
     prompt: str,
     reference_image_url: str,
