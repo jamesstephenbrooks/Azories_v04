@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { FiPrinter, FiTruck, FiCreditCard, FiCheck, FiPackage, FiAlertCircle, FiEye } from 'react-icons/fi';
 import { toast } from 'sonner';
 import BonusPagesPreview from './print/BonusPagesPreview';
+import BookPreview3D from './BookPreview3D';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -287,20 +288,51 @@ export default function PrintOrderModal({
           ))}
         </div>
 
-        {/* Step 1: Product Info */}
+        {/* Step 1: Product Info with 3D Preview */}
         {step === 1 && (
           <div className="space-y-4">
+            {/* 3D Book Preview */}
+            <div className="bg-gradient-to-br from-purple-50 via-white to-pink-50 rounded-xl p-6 border border-purple-100">
+              <BookPreview3D
+                coverImage={book?.cover_image || book?.cover_image_url}
+                title={book?.title}
+                authorName={book?.author_name}
+                pageCount={preparedData?.page_count || 24}
+              />
+            </div>
+            
+            {/* Product Details */}
             <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4">
-              <h4 className="font-semibold mb-2">8x8" Premium Photobook</h4>
+              <h4 className="font-semibold mb-2">8x10" Premium Hardcover Photobook</h4>
               <ul className="text-sm text-gray-600 space-y-1">
-                <li>• Softcover with matt lamination</li>
+                <li>• Premium hardcover with glossy lamination</li>
                 <li>• 170gsm coated silk pages</li>
                 <li>• Perfect bound (glued binding)</li>
-                <li>• Includes bonus activity pages</li>
+                <li>• Includes 7 bonus activity pages</li>
+                <li>• Print-ready quality images</li>
               </ul>
               <p className="mt-3 text-lg font-bold text-purple-600">
                 From £14.99 / $19.99
               </p>
+            </div>
+            
+            {/* Bonus Pages Preview */}
+            <div className="bg-gradient-to-r from-amber-50 to-purple-50 rounded-lg p-4">
+              <p className="text-sm text-gray-600 mb-2">
+                Each printed book includes <span className="font-semibold text-purple-600">7 bonus pages</span>:
+              </p>
+              <p className="text-xs text-gray-500 mb-3">
+                Welcome • Dedication • The End • Thank You • Certificate • About Azora • Meet Azora
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowBonusPreview(true)}
+                className="gap-2"
+              >
+                <FiEye className="w-4 h-4" />
+                Preview Bonus Pages
+              </Button>
             </div>
             
             <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
@@ -316,7 +348,7 @@ export default function PrintOrderModal({
               onClick={prepareBook}
               disabled={preparing}
             >
-              {preparing ? 'Preparing...' : 'Continue to Shipping Address'}
+              {preparing ? 'Preparing Your Book...' : 'Continue to Shipping Address'}
             </Button>
           </div>
         )}
