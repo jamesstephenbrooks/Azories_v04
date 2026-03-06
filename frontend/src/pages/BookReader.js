@@ -1751,7 +1751,7 @@ export default function BookReader() {
       
       {/* DESKTOP: Full header bar with all controls */}
       {!isMobilePortrait && !isMobileLandscape && (
-        <div className={`fixed top-0 left-0 right-0 z-40 ${currentPageData?.isBackCover ? 'bg-[#1a0a2e]/80' : 'bg-background/80'} backdrop-blur-xl border-b ${currentPageData?.isBackCover ? 'border-white/10' : 'border-border'}`}>
+        <div className={`fixed top-0 left-0 right-0 z-40 ${currentPageData?.isBackCover ? 'bg-[#1a0a2e] border-none' : 'bg-background/80 border-b border-border'} backdrop-blur-xl`}>
           <div className={`max-w-7xl mx-auto px-2 sm:px-4 py-1.5 sm:py-3 flex items-center justify-between`}>
             <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
               <Button
@@ -1843,8 +1843,8 @@ export default function BookReader() {
             </div>
           </div>
           
-          {/* Progress bar */}
-          {totalPages > 0 && (
+          {/* Progress bar - hidden on back cover */}
+          {totalPages > 0 && !currentPageData?.isBackCover && (
             <div className="h-0.5 sm:h-1 bg-muted">
               <div 
                 className="h-full bg-primary transition-all duration-300"
@@ -2053,7 +2053,7 @@ export default function BookReader() {
                 {/* Back Cover - Full page with dark background extending to edges */}
                 {currentPageData?.isBackCover ? (
                   <div 
-                    className="fixed inset-0 z-10"
+                    className="fixed inset-0 z-30"
                     style={{ backgroundColor: '#1a0a2e' }}
                   >
                     <img 
@@ -2503,7 +2503,7 @@ export default function BookReader() {
       
       {/* Bottom Controls - Hidden in landscape, and when Print Modal is open */}
       {!isMobileLandscape && !showPrintOrderModal && (
-        <div className={`fixed bottom-0 left-0 right-0 ${currentPageData?.isBackCover ? 'bg-[#1a0a2e]/90' : 'bg-background/90'} backdrop-blur-xl border-t ${currentPageData?.isBackCover ? 'border-white/10' : 'border-border'} z-[100] transition-transform duration-300 ${hideControls && !currentPageData?.isBackCover ? 'translate-y-full' : ''}`}>
+        <div className={`fixed bottom-0 left-0 right-0 ${currentPageData?.isBackCover ? 'bg-[#1a0a2e] border-none' : 'bg-background/90 border-t border-border'} backdrop-blur-xl z-[100] transition-transform duration-300 ${hideControls && !currentPageData?.isBackCover ? 'translate-y-full' : ''}`}>
           <div className={`max-w-4xl mx-auto px-2 sm:px-4 py-1.5 sm:py-4`}>
             {/* Navigation - 50% smaller on mobile */}
             <div className={`flex items-center justify-center gap-2 sm:gap-4 mb-1 sm:mb-4`}>
