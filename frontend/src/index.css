@@ -359,6 +359,10 @@ select option {
     padding-bottom: env(safe-area-inset-bottom, 20px);
   }
   
+  .pb-safe {
+    padding-bottom: max(env(safe-area-inset-bottom, 20px), 24px);
+  }
+  
   .safe-area-all {
     padding-top: env(safe-area-inset-top);
     padding-right: env(safe-area-inset-right);
