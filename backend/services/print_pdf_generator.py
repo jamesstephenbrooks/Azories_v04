@@ -56,8 +56,8 @@ BONUS_IMAGES = {
     'about': 'https://customer-assets.emergentagent.com/job_5f7e2b9e-d2a4-4bf3-b6c6-aac66cbef904/artifacts/dlulgnzy_Azora_Mascot.jpg',
     'certificate': 'https://customer-assets.emergentagent.com/job_5f7e2b9e-d2a4-4bf3-b6c6-aac66cbef904/artifacts/e45x5iez_azora%20library.png',
     'meet_azora': 'https://customer-assets.emergentagent.com/job_5f7e2b9e-d2a4-4bf3-b6c6-aac66cbef904/artifacts/o1xvfgto_azora%20librbary%201.png',
-    # Azora with dragon and magic book - for back cover
-    'back_cover': 'https://customer-assets.emergentagent.com/job_d074d9b2-20b0-488a-8289-b8b7671631f8/artifacts/802tmoct_azora_pose4_pointing.jpg',
+    # Azora & Blaze with transparent background - for back cover
+    'back_cover': 'https://res.cloudinary.com/dlbmjqmoy/image/upload/e_background_removal/v1772821413/azories/mascot/azora_blaze_back_cover.png',
     # Azora pointing with transparent background
     'pointing': 'https://res.cloudinary.com/dlbmjqmoy/image/upload/e_background_removal/v1772279592/azories/mascot/azora_pose4_pointing.png',
     # Filler page images - best mascot images
@@ -873,14 +873,24 @@ class PrintPDFGenerator:
                 img = self.create_gradient_background(PAGE_WIDTH_PX, PAGE_HEIGHT_PX, start_rgb, end_rgb)
                 draw = ImageDraw.Draw(img)
                 
-                # Add new Azora mascot image (girl with dragon and magic book)
+                # Add book summary/description at the TOP with LARGE text
+                description = book.get('back_cover_text') or book.get('description') or ""
+                if description:
+                    font_desc = self.get_font(52)  # Large text for summary
+                    lines = self.word_wrap_text(draw, description, font_desc, PAGE_WIDTH_PX - 250)
+                    y_offset = 120
+                    for line in lines[:6]:  # Up to 6 lines
+                        self.draw_text_centered(draw, line, y_offset, font_desc, '#ffffff', PAGE_WIDTH_PX)
+                        y_offset += 70
+                
+                # Add Azora & Blaze mascot image (transparent background)
                 mascot_url = BONUS_IMAGES.get('back_cover')
                 if mascot_url:
                     try:
                         mascot_img = await self.download_image(mascot_url)
                         if mascot_img:
-                            # Position mascot in center, nice size
-                            mascot_size = 1100
+                            # Position mascot in center
+                            mascot_size = 1000
                             # Maintain aspect ratio
                             aspect = mascot_img.width / mascot_img.height
                             if aspect > 1:
@@ -892,27 +902,29 @@ class PrintPDFGenerator:
                             
                             mascot_img = mascot_img.resize((new_width, new_height), Image.Resampling.LANCZOS)
                             mascot_x = (PAGE_WIDTH_PX - new_width) // 2
-                            mascot_y = 200
+                            mascot_y = 550  # Below the summary text
                             
-                            # Paste mascot image
+                            # Paste with transparency
                             if mascot_img.mode == 'RGBA':
                                 img.paste(mascot_img, (mascot_x, mascot_y), mascot_img)
                             else:
-                                img.paste(mascot_img, (mascot_x, mascot_y))
+                                # Convert to RGBA to handle any transparency
+                                mascot_img = mascot_img.convert('RGBA')
+                                img.paste(mascot_img, (mascot_x, mascot_y), mascot_img)
                     except Exception as e:
                         logger.warning(f"Could not load mascot for back cover: {e}")
                 
-                # Add "Azora" branding text - BIGGER
-                font_brand = self.get_font(180, bold=True)
-                self.draw_text_centered(draw, "Azora", PAGE_HEIGHT_PX - 550, font_brand, '#ffffff', PAGE_WIDTH_PX)
+                # Add "Azora" branding text at bottom - LARGE
+                font_brand = self.get_font(160, bold=True)
+                self.draw_text_centered(draw, "Azora", PAGE_HEIGHT_PX - 500, font_brand, '#ffffff', PAGE_WIDTH_PX)
                 
-                # Add tagline - BIGGER
-                font_tagline = self.get_font(72)
-                self.draw_text_centered(draw, "Where Stories Come Alive", PAGE_HEIGHT_PX - 350, font_tagline, '#ffffffdd', PAGE_WIDTH_PX)
+                # Add tagline - LARGE
+                font_tagline = self.get_font(64)
+                self.draw_text_centered(draw, "Where Stories Come Alive", PAGE_HEIGHT_PX - 320, font_tagline, '#ffffffdd', PAGE_WIDTH_PX)
                 
-                # Add website - BIGGER
-                font_url = self.get_font(56)
-                self.draw_text_centered(draw, "azories.com", PAGE_HEIGHT_PX - 200, font_url, '#a855f7', PAGE_WIDTH_PX)
+                # Add website - LARGE
+                font_url = self.get_font(52)
+                self.draw_text_centered(draw, "azories.com", PAGE_HEIGHT_PX - 180, font_url, '#a855f7', PAGE_WIDTH_PX)
         else:
             cover_url = book.get('cover_image')
             
