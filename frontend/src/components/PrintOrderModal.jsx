@@ -308,13 +308,13 @@ export default function PrintOrderModal({
         </div>
 
         {/* Content - scrollable */}
-        <div className="px-6 py-4">
+        <div className="px-5 py-4">
 
-        {/* Step 1: Product Info with 3D Preview */}
+        {/* Step 1: Product Info */}
         {step === 1 && (
-          <div className="space-y-4">
-            {/* PART 1: 3D Book Render - centered */}
-            <div className="bg-gradient-to-br from-slate-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-purple-900/20 rounded-xl p-4 border border-purple-100 dark:border-purple-800 flex justify-center">
+          <div className="space-y-3">
+            {/* Book Preview - compact and centered */}
+            <div className="bg-gradient-to-b from-purple-50 to-white dark:from-slate-800 dark:to-slate-900 rounded-xl p-3">
               <Suspense fallback={<Book3DFallback />}>
                 <BookPreview3D
                   coverImage={book?.cover_image || book?.cover_image_url}
@@ -324,63 +324,67 @@ export default function PrintOrderModal({
               </Suspense>
             </div>
             
-            {/* PART 2: Page Strip */}
-            <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+            {/* Page Thumbnails - clean illustration strip */}
+            <div className="bg-gray-50 dark:bg-slate-800 rounded-xl p-3">
               <BookPageStrip
                 pages={book?.chapters?.[0]?.pages || []}
                 coverImage={book?.cover_image || book?.cover_image_url}
-                title={book?.title}
               />
             </div>
             
-            {/* PART 3: Order Section */}
-            <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl p-5 text-white">
-              <h3 className="text-xl font-bold mb-1">{book?.title}</h3>
-              {book?.author_name && (
-                <p className="text-purple-200 text-sm mb-4">by {book?.author_name}</p>
-              )}
-              
-              {/* Pricing */}
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                <div className="bg-white/10 rounded-lg p-3 text-center">
-                  <FiBook className="w-6 h-6 mx-auto mb-1 opacity-80" />
-                  <p className="text-xs text-purple-200">Softcover</p>
-                  <p className="text-lg font-bold">£14.99</p>
-                  <p className="text-xs text-purple-200">$19.99 USD</p>
-                </div>
-                <div className="bg-white/20 rounded-lg p-3 text-center border-2 border-white/30">
-                  <FiBook className="w-6 h-6 mx-auto mb-1" />
-                  <p className="text-xs text-purple-200">Hardcover</p>
-                  <p className="text-lg font-bold">£19.99</p>
-                  <p className="text-xs text-purple-200">$24.99 USD</p>
-                  <span className="text-xs bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded-full font-medium">Popular</span>
-                </div>
-              </div>
-              
-              {/* Delivery estimate */}
-              <div className="flex items-center gap-2 text-sm text-purple-200 mb-4">
-                <FiTruck className="w-4 h-4" />
-                <span>Estimated delivery: 5-10 business days</span>
-              </div>
-              
-              {/* Order button */}
-              <Button 
-                className="w-full bg-white text-purple-600 hover:bg-purple-50 font-semibold py-6 text-lg shadow-lg hover:shadow-xl transition-all"
-                onClick={prepareBook}
-                disabled={preparing}
-              >
-                {preparing ? (
-                  <span className="flex items-center gap-2">
-                    <div className="w-5 h-5 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
-                    Preparing Your Book...
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-2">
-                    <FiPackage className="w-5 h-5" />
-                    Order Now
-                  </span>
+            {/* Pricing Section - clean card */}
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+              {/* Book title header */}
+              <div className="bg-gradient-to-r from-purple-600 to-pink-500 px-4 py-3 text-white">
+                <h3 className="font-semibold truncate">{book?.title}</h3>
+                {book?.author_name && (
+                  <p className="text-purple-200 text-xs">by {book?.author_name}</p>
                 )}
-              </Button>
+              </div>
+              
+              {/* Pricing options */}
+              <div className="p-4">
+                <div className="grid grid-cols-2 gap-3 mb-3">
+                  {/* Softcover */}
+                  <div className="bg-gray-50 dark:bg-slate-700 rounded-lg p-3 text-center border border-gray-200 dark:border-gray-600">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Softcover</p>
+                    <p className="text-xl font-bold text-gray-900 dark:text-white">£14.99</p>
+                    <p className="text-xs text-gray-400">$19.99 USD</p>
+                  </div>
+                  {/* Hardcover */}
+                  <div className="bg-purple-50 dark:bg-purple-900/30 rounded-lg p-3 text-center border-2 border-purple-400">
+                    <p className="text-xs text-purple-600 dark:text-purple-400 mb-1">Hardcover</p>
+                    <p className="text-xl font-bold text-purple-700 dark:text-purple-300">£19.99</p>
+                    <p className="text-xs text-purple-500 dark:text-purple-400">$24.99 USD</p>
+                    <span className="inline-block mt-1 text-[10px] bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded-full font-medium">Popular</span>
+                  </div>
+                </div>
+                
+                {/* Delivery */}
+                <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-3">
+                  <FiTruck className="w-3.5 h-3.5" />
+                  <span>Estimated delivery: 5-10 business days</span>
+                </div>
+                
+                {/* Order button */}
+                <Button 
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white font-semibold py-5"
+                  onClick={prepareBook}
+                  disabled={preparing}
+                >
+                  {preparing ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Preparing...
+                    </span>
+                  ) : (
+                    <span className="flex items-center justify-center gap-2">
+                      <FiPackage className="w-4 h-4" />
+                      Order Now
+                    </span>
+                  )}
+                </Button>
+              </div>
             </div>
             
             {/* Bonus pages info */}
