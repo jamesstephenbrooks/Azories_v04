@@ -43,6 +43,9 @@ DPI = 300
 PAGE_WIDTH_PX = int(PAGE_WIDTH_INCHES * DPI)   # 2400 pixels
 PAGE_HEIGHT_PX = int(PAGE_HEIGHT_INCHES * DPI)  # 3000 pixels
 
+# Background color for letterbox areas (cream)
+CREAM_BACKGROUND = (250, 250, 248)  # #FAFAF8
+
 # ReportLab uses points (72 points = 1 inch)
 PAGE_WIDTH_PT = PAGE_WIDTH_INCHES * inch   # 576 points
 PAGE_HEIGHT_PT = PAGE_HEIGHT_INCHES * inch  # 720 points
@@ -157,6 +160,54 @@ class PrintPDFGenerator:
         paste_x = center_x - radius
         paste_y = center_y - radius
         base.paste(circular_img, (paste_x, paste_y), circular_img)
+    
+    def fit_image_to_page(self, img: Image.Image, 
+                          target_width: int = PAGE_WIDTH_PX, 
+                          target_height: int = PAGE_HEIGHT_PX,
+                          background_color: tuple = CREAM_BACKGROUND) -> Image.Image:
+        """
+        Fit an image to target dimensions while preserving aspect ratio.
+        Uses cream background fill for letterbox areas instead of stretching.
+        
+        Args:
+            img: Source image
+            target_width: Target width in pixels
+            target_height: Target height in pixels  
+            background_color: RGB tuple for letterbox fill (default: cream #FAFAF8)
+            
+        Returns:
+            Image sized exactly to target dimensions with aspect ratio preserved
+        """
+        # Create background with cream color
+        result = Image.new('RGB', (target_width, target_height), background_color)
+        
+        # Calculate scaling to fit within target while preserving aspect ratio
+        img_aspect = img.width / img.height
+        target_aspect = target_width / target_height
+        
+        if img_aspect > target_aspect:
+            # Image is wider - fit to width, letterbox top/bottom
+            new_width = target_width
+            new_height = int(target_width / img_aspect)
+        else:
+            # Image is taller - fit to height, letterbox left/right
+            new_height = target_height
+            new_width = int(target_height * img_aspect)
+        
+        # Resize image with high quality
+        resized = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
+        
+        # Center on the background
+        x_offset = (target_width - new_width) // 2
+        y_offset = (target_height - new_height) // 2
+        
+        # Handle RGBA images
+        if resized.mode == 'RGBA':
+            result.paste(resized, (x_offset, y_offset), resized)
+        else:
+            result.paste(resized, (x_offset, y_offset))
+        
+        return result
     
     def get_font(self, size: int, bold: bool = False) -> ImageFont.FreeTypeFont:
         """Get a font - try system fonts, fall back to default"""
@@ -863,8 +914,8 @@ class PrintPDFGenerator:
             if cover_url:
                 cover_img = await self.download_image(cover_url)
                 if cover_img:
-                    cover_img = cover_img.resize((PAGE_WIDTH_PX, PAGE_HEIGHT_PX), Image.Resampling.LANCZOS)
-                    img.paste(cover_img, (0, 0))
+                    # Use aspect-ratio-preserving fit with cream background (no stretching)
+                    img = self.fit_image_to_page(cover_img)
             else:
                 # Create clean white back cover
                 img = Image.new('RGB', (PAGE_WIDTH_PX, PAGE_HEIGHT_PX), (255, 255, 255))
@@ -928,8 +979,8 @@ class PrintPDFGenerator:
             if cover_url:
                 cover_img = await self.download_image(cover_url)
                 if cover_img:
-                    cover_img = cover_img.resize((PAGE_WIDTH_PX, PAGE_HEIGHT_PX), Image.Resampling.LANCZOS)
-                    img.paste(cover_img, (0, 0))
+                    # Use aspect-ratio-preserving fit with cream background (no stretching)
+                    img = self.fit_image_to_page(cover_img)
             else:
                 gradient_start = book.get('cover_gradient_start', '#667eea')
                 gradient_end = book.get('cover_gradient_end', '#764ba2')

@@ -6585,13 +6585,15 @@ async def generate_single_image(prompt: str, style_desc: str) -> str:
             # Combine prompt with style description for better results
             full_prompt = f"{prompt}. {style_desc}. High quality, detailed illustration."
             
+            # Use print_quality for correct 8x10 ratio (2400x3000px at 300 DPI)
             result = await generate_image_flux(
                 prompt=full_prompt,
                 model="flux-dev",  # Use FLUX Dev for best quality/speed balance
-                image_size={"width": 1024, "height": 1344},  # Portrait 3:4 ratio for books
+                image_size="portrait_4_3",  # Fallback
                 num_images=1,
                 guidance_scale=3.5,
-                num_inference_steps=28
+                num_inference_steps=28,
+                print_quality=True  # Generate at correct 8x10 ratio for printing
             )
             
             if result.get("success") and result.get("images"):
@@ -7292,11 +7294,13 @@ Return ONLY the JSON array, no other text."""
                     logger.info(f"Generating image for page {idx + 1}: {full_prompt[:100]}...")
                     
                     # Use fal.ai FLUX for image generation
+                    # print_quality=True generates at 2400x3000 (8x10 at 300 DPI)
                     result = await generate_image_flux(
                         prompt=full_prompt,
                         model="flux-dev",
-                        image_size="portrait_4_3",  # Portrait for book pages
-                        num_images=1
+                        image_size="portrait_4_3",  # Fallback if print_quality doesn't work
+                        num_images=1,
+                        print_quality=True  # Generate at correct 8x10 ratio for printing
                     )
                     
                     if result and result.get("images") and len(result["images"]) > 0:
@@ -7356,11 +7360,13 @@ Return ONLY the JSON array, no other text."""
                 cover_prompt = f"{style_desc}. Book cover for '{story_data['title']}'. {story_data['description']}. {main_char_desc if main_char_desc else ''}"
                 
                 # Use fal.ai FLUX for cover image generation
+                # print_quality=True generates at 2400x3000 (8x10 at 300 DPI)
                 cover_result = await generate_image_flux(
                     prompt=cover_prompt,
                     model="flux-dev",
-                    image_size="portrait_4_3",  # Portrait for book cover
-                    num_images=1
+                    image_size="portrait_4_3",  # Fallback if print_quality doesn't work
+                    num_images=1,
+                    print_quality=True  # Generate at correct 8x10 ratio for printing
                 )
                 
                 if cover_result and cover_result.get("images") and len(cover_result["images"]) > 0:

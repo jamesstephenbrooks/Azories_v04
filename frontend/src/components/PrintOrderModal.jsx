@@ -113,6 +113,9 @@ export default function PrintOrderModal({
   // Product type selection (softcover or hardcover)
   const [selectedProductType, setSelectedProductType] = useState('hardcover'); // Default to hardcover (Popular)
   
+  // Bonus pages toggle
+  const [includeBonusPages, setIncludeBonusPages] = useState(true); // Default to include bonus pages
+  
   // Order result
   const [orderResult, setOrderResult] = useState(null);
 
@@ -202,7 +205,8 @@ export default function PrintOrderModal({
           product_type: productType,
           shipping_country: address.countryIsoCode,
           shipping_postal_code: address.postCode,
-          origin_url: window.location.origin
+          origin_url: window.location.origin,
+          include_bonus_pages: includeBonusPages  // Send bonus pages preference
         })
       });
       
@@ -433,20 +437,44 @@ export default function PrintOrderModal({
               </div>
             </div>
             
-            {/* Bonus pages info */}
+            {/* Bonus pages toggle */}
             <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-4 border border-amber-200 dark:border-amber-800">
-              <p className="text-sm text-amber-800 dark:text-amber-200">
-                <span className="font-semibold">Bonus!</span> Your book includes 7 special pages: Welcome, Dedication, The End, Thank You, Certificate, About Azora & Meet Azora
-              </p>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowBonusPreview(true)}
-                className="mt-2 text-amber-700 dark:text-amber-300 hover:text-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/30"
-              >
-                <FiEye className="w-4 h-4 mr-2" />
-                Preview Bonus Pages
-              </Button>
+              <div className="flex items-center justify-between mb-2">
+                <div>
+                  <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">
+                    Bonus Pages
+                  </p>
+                  <p className="text-xs text-amber-700 dark:text-amber-300 mt-0.5">
+                    7 special pages: Welcome, Dedication, The End, Thank You, Certificate, About Azora & Meet Azora
+                  </p>
+                </div>
+                <button
+                  onClick={() => setIncludeBonusPages(!includeBonusPages)}
+                  className={`relative w-11 h-6 rounded-full transition-colors ${
+                    includeBonusPages ? 'bg-amber-500' : 'bg-gray-300 dark:bg-gray-600'
+                  }`}
+                >
+                  <div className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
+                    includeBonusPages ? 'translate-x-5' : 'translate-x-0'
+                  }`} />
+                </button>
+              </div>
+              {includeBonusPages && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowBonusPreview(true)}
+                  className="text-amber-700 dark:text-amber-300 hover:text-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/30"
+                >
+                  <FiEye className="w-4 h-4 mr-2" />
+                  Preview Bonus Pages
+                </Button>
+              )}
+              {!includeBonusPages && (
+                <p className="text-xs text-amber-600 dark:text-amber-400 mt-2">
+                  These pages will be left blank in your printed book.
+                </p>
+              )}
             </div>
           </div>
         )}
@@ -710,6 +738,14 @@ export default function PrintOrderModal({
         )}
         </div>{/* End of scrollable content */}
       </DialogContent>
+      
+      {/* Bonus pages preview modal */}
+      <BonusPagesPreview
+        isOpen={showBonusPreview}
+        onClose={() => setShowBonusPreview(false)}
+        bookTitle={book?.title}
+        childName={book?.main_character_name || book?.child_name}
+      />
     </Dialog>
   );
 }

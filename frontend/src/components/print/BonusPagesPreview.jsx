@@ -5,7 +5,6 @@
 
 import { useState } from 'react';
 import { FiChevronLeft, FiChevronRight, FiX } from 'react-icons/fi';
-import { Button } from '@/components/ui/button';
 import {
   WelcomePage,
   DedicationPage,
@@ -46,7 +45,7 @@ const BonusPagesPreview = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-4">
       {/* Close button */}
       <button
         onClick={onClose}
