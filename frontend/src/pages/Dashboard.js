@@ -15,12 +15,13 @@ import { toast } from 'sonner';
 import { 
   FiPlus, FiEdit2, FiTrash2, FiBook, FiEye, FiEyeOff, FiZap, FiStar, FiAward, 
   FiCheck, FiBarChart2, FiLoader, FiLayers, FiLink, FiX, FiSearch, FiChevronDown, FiChevronUp, FiGlobe,
-  FiClock, FiSend, FiImage, FiDownload, FiCopy, FiRefreshCw
+  FiClock, FiSend, FiImage, FiDownload, FiCopy, FiRefreshCw, FiPackage
 } from 'react-icons/fi';
 import Navbar from '@/components/Navbar';
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
 import TrialBanner from '@/components/TrialBanner';
 import { StreakDisplay, BadgeCollection, useStreaksAndBadges, NewBadgePopup } from '@/components/ReadingStreaks';
+import PrintOrderModal from '@/components/PrintOrderModal';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -39,6 +40,8 @@ export default function Dashboard() {
   const [analyticsDialog, setAnalyticsDialog] = useState(null);
   const [analyticsData, setAnalyticsData] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');  // Search for books
+  const [printModalOpen, setPrintModalOpen] = useState(false);
+  const [selectedBookForPrint, setSelectedBookForPrint] = useState(null);
   const [newBook, setNewBook] = useState({
     title: '',
     description: '',
@@ -637,6 +640,34 @@ export default function Dashboard() {
                   <FiZap className="mr-2" />
                   🐉 AI Stories
                 </Button>
+              )}
+              
+              {/* Order Printed Copy - with book selector dropdown */}
+              {books.length > 0 && (
+                <Select onValueChange={(bookId) => {
+                  const book = books.find(b => b.id === bookId);
+                  if (book) {
+                    setSelectedBookForPrint(book);
+                    setPrintModalOpen(true);
+                  }
+                }}>
+                  <SelectTrigger className="rounded-full px-6 py-6 font-ui border-purple-300 text-purple-600 hover:bg-purple-50 w-auto gap-2">
+                    <FiPackage className="w-4 h-4" />
+                    <SelectValue placeholder="Order Printed Copy" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {books.map((book) => (
+                      <SelectItem key={book.id} value={book.id}>
+                        <div className="flex items-center gap-2">
+                          {book.cover_image && (
+                            <img src={book.cover_image} alt="" className="w-6 h-8 object-cover rounded" />
+                          )}
+                          <span className="truncate max-w-[200px]">{book.title}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               )}
               
               {/* Legacy AI Story Dialog - now redirects to /ai-stories page */}
@@ -1308,6 +1339,21 @@ export default function Dashboard() {
                               <FiLink className="w-4 h-4" />
                             </Button>
                           )}
+                          {/* Order Printed Copy button */}
+                          <Button 
+                            variant="outline" 
+                            size="icon" 
+                            className="rounded-full text-purple-600 hover:bg-purple-50 border-purple-200"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedBookForPrint(book);
+                              setPrintModalOpen(true);
+                            }}
+                            title="Order Printed Copy"
+                            data-testid={`print-book-${book.id}`}
+                          >
+                            <FiPackage className="w-4 h-4" />
+                          </Button>
                           <Button 
                             variant="outline" 
                             size="icon" 
@@ -1916,6 +1962,16 @@ export default function Dashboard() {
           </div>
         </DialogContent>
       </Dialog>
+      
+      {/* Print Order Modal */}
+      <PrintOrderModal
+        isOpen={printModalOpen}
+        onClose={() => {
+          setPrintModalOpen(false);
+          setSelectedBookForPrint(null);
+        }}
+        book={selectedBookForPrint}
+      />
     </div>
   );
 }

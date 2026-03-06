@@ -518,12 +518,11 @@ async def get_price_estimate(
         currency=currency
     )
     
-    # Add extra page cost if over 24 pages
+    # Extra pages are FREE - no additional cost
     extra_pages = max(0, page_count - 24)
-    extra_page_cost = extra_pages * 0.10  # £0.10 / $0.10 per extra page
     price["extra_pages"] = extra_pages
-    price["extra_page_cost"] = round(extra_page_cost, 2)
-    price["total"] = round(price["total"] + extra_page_cost, 2)
+    price["extra_page_cost"] = 0  # Free
+    # Total stays the same - no extra charge
     
     # Build shipping options
     shipping_options = [
