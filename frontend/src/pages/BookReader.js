@@ -246,9 +246,6 @@ export default function BookReader() {
     return result;
   }, []);
   
-  // Show navigation buttons on touch devices (iPad, iPhone, and other mobile)
-  const showMobileNavButtons = isIPad || isIPhone || isMobile;
-  
   // Listen to window resize for responsive book sizing
   useEffect(() => {
     const updateOrientation = () => {
@@ -441,6 +438,9 @@ export default function BookReader() {
   const isMobile = windowSize.width < 768 || windowSize.height < 500;
   const isMobileLandscape = forceLandscapeTest || (isMobile && isLandscapeOrientation);
   const isMobilePortrait = !forceLandscapeTest && isMobile && !isLandscapeOrientation;
+  
+  // Show navigation buttons on touch devices (iPad, iPhone, and other mobile)
+  const showMobileNavButtons = isIPad || isIPhone || isMobile;
   
   // Apply CSS to text containers for scroll support
   useEffect(() => {
