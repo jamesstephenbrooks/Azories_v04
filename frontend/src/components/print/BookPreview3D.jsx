@@ -1,143 +1,7 @@
-import React, { useRef, Suspense, useState } from 'react';
-import { Canvas, useFrame, useLoader } from '@react-three/fiber';
-import { OrbitControls, Environment, ContactShadows, Text } from '@react-three/drei';
-import * as THREE from 'three';
+import React, { useState } from 'react';
+import { FiBook, FiRotateCw } from 'react-icons/fi';
 
-// Azories mascot for back cover
-const AZORA_MASCOT = 'https://res.cloudinary.com/dlbmjqmoy/image/upload/e_background_removal/v1772821413/azories/mascot/azora_blaze_back_cover.png';
-
-function Book({ coverImage, backCoverImage, title, pageCount = 24, autoRotate = true }) {
-  const bookRef = useRef();
-  const [hovered, setHovered] = useState(false);
-  
-  // Book dimensions (8x10 aspect ratio)
-  const width = 2;
-  const height = 2.5;
-  const depth = Math.max(0.15, Math.min(0.5, pageCount * 0.008)); // Thickness based on pages
-  
-  // Load textures
-  const frontTexture = useLoader(THREE.TextureLoader, coverImage || '/placeholder-cover.png');
-  const backTexture = useLoader(THREE.TextureLoader, backCoverImage || AZORA_MASCOT);
-  
-  // Auto-rotation
-  useFrame((state, delta) => {
-    if (bookRef.current && autoRotate && !hovered) {
-      bookRef.current.rotation.y += delta * 0.3;
-    }
-  });
-
-  // Create gradient texture for spine and back
-  const createGradientTexture = () => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 256;
-    canvas.height = 256;
-    const ctx = canvas.getContext('2d');
-    const gradient = ctx.createLinearGradient(0, 0, 256, 256);
-    gradient.addColorStop(0, '#7c3aed');
-    gradient.addColorStop(0.5, '#9333ea');
-    gradient.addColorStop(1, '#6b21a8');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 256, 256);
-    return new THREE.CanvasTexture(canvas);
-  };
-
-  const purpleGradient = createGradientTexture();
-  
-  // Page edge texture (cream colored)
-  const createPageEdgeTexture = () => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 256;
-    canvas.height = 256;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#f5f0e6';
-    ctx.fillRect(0, 0, 256, 256);
-    // Add subtle page lines
-    ctx.strokeStyle = '#e8e3d9';
-    for (let i = 0; i < 50; i++) {
-      const y = (i / 50) * 256;
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(256, y);
-      ctx.stroke();
-    }
-    return new THREE.CanvasTexture(canvas);
-  };
-
-  const pageEdgeTexture = createPageEdgeTexture();
-
-  return (
-    <group 
-      ref={bookRef} 
-      onPointerOver={() => setHovered(true)}
-      onPointerOut={() => setHovered(false)}
-    >
-      {/* Front Cover */}
-      <mesh position={[0, 0, depth / 2 + 0.001]}>
-        <planeGeometry args={[width, height]} />
-        <meshStandardMaterial map={frontTexture} roughness={0.3} metalness={0.1} />
-      </mesh>
-      
-      {/* Back Cover - Purple gradient with mascot */}
-      <mesh position={[0, 0, -depth / 2 - 0.001]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[width, height]} />
-        <meshStandardMaterial map={purpleGradient} roughness={0.4} />
-      </mesh>
-      
-      {/* Spine (left side) */}
-      <mesh position={[-width / 2, 0, 0]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[depth, height]} />
-        <meshStandardMaterial map={purpleGradient} roughness={0.4} />
-      </mesh>
-      
-      {/* Spine Title */}
-      <Text
-        position={[-width / 2 - 0.01, 0, 0]}
-        rotation={[0, -Math.PI / 2, Math.PI / 2]}
-        fontSize={0.12}
-        color="white"
-        anchorX="center"
-        anchorY="middle"
-        maxWidth={height - 0.3}
-      >
-        {title?.substring(0, 30) || 'My Story Book'}
-      </Text>
-      
-      {/* Page edges (right side) */}
-      <mesh position={[width / 2, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[depth, height]} />
-        <meshStandardMaterial map={pageEdgeTexture} roughness={0.8} />
-      </mesh>
-      
-      {/* Top edge */}
-      <mesh position={[0, height / 2, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[width, depth]} />
-        <meshStandardMaterial map={pageEdgeTexture} roughness={0.8} />
-      </mesh>
-      
-      {/* Bottom edge */}
-      <mesh position={[0, -height / 2, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[width, depth]} />
-        <meshStandardMaterial map={pageEdgeTexture} roughness={0.8} />
-      </mesh>
-      
-      {/* Book body (filled box for depth) */}
-      <mesh>
-        <boxGeometry args={[width - 0.02, height - 0.02, depth]} />
-        <meshStandardMaterial color="#f5f0e6" roughness={0.9} />
-      </mesh>
-    </group>
-  );
-}
-
-function LoadingFallback() {
-  return (
-    <mesh>
-      <boxGeometry args={[2, 2.5, 0.2]} />
-      <meshStandardMaterial color="#9333ea" />
-    </mesh>
-  );
-}
-
+// Premium 3D-looking book preview using CSS transforms
 export default function BookPreview3D({ 
   coverImage, 
   backCoverImage,
@@ -145,50 +9,198 @@ export default function BookPreview3D({
   pageCount = 24,
   className = "" 
 }) {
+  const [showBack, setShowBack] = useState(false);
+  
+  // Calculate spine width based on page count (visual representation)
+  const spineWidth = Math.max(8, Math.min(20, pageCount * 0.5));
+  
   return (
-    <div className={`w-full h-[350px] ${className}`}>
-      <Canvas
-        camera={{ position: [0, 0, 5], fov: 45 }}
-        gl={{ antialias: true, alpha: true }}
-        style={{ background: 'transparent' }}
+    <div className={`w-full flex flex-col items-center justify-center py-8 ${className}`}>
+      {/* 3D Book Container */}
+      <div 
+        className="relative preserve-3d cursor-pointer group"
+        style={{ 
+          perspective: '1000px',
+          transformStyle: 'preserve-3d'
+        }}
+        onClick={() => setShowBack(!showBack)}
       >
-        {/* Warm lighting */}
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[5, 5, 5]} intensity={1} color="#fff5e6" />
-        <directionalLight position={[-5, 3, -5]} intensity={0.3} color="#e6e0ff" />
-        <pointLight position={[0, 3, 3]} intensity={0.5} color="#ffeedd" />
-        
-        <Suspense fallback={<LoadingFallback />}>
-          <Book 
-            coverImage={coverImage} 
-            backCoverImage={backCoverImage}
-            title={title}
-            pageCount={pageCount}
+        {/* Book */}
+        <div 
+          className="relative transition-transform duration-700 ease-in-out"
+          style={{
+            transformStyle: 'preserve-3d',
+            transform: showBack 
+              ? 'rotateY(180deg) rotateX(5deg)' 
+              : 'rotateY(-20deg) rotateX(5deg)',
+            width: '200px',
+            height: '270px'
+          }}
+        >
+          {/* Front Cover */}
+          <div 
+            className="absolute inset-0 rounded-r-sm shadow-2xl overflow-hidden backface-hidden"
+            style={{
+              backfaceVisibility: 'hidden',
+              transform: 'translateZ(10px)',
+            }}
+          >
+            {coverImage ? (
+              <img 
+                src={coverImage} 
+                alt={title}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-purple-600 via-purple-700 to-purple-900 flex items-center justify-center p-4">
+                <span className="text-white text-center font-bold text-lg leading-tight">
+                  {title || 'Your Book'}
+                </span>
+              </div>
+            )}
+          </div>
+          
+          {/* Back Cover */}
+          <div 
+            className="absolute inset-0 rounded-l-sm shadow-2xl overflow-hidden"
+            style={{
+              backfaceVisibility: 'hidden',
+              transform: 'translateZ(-10px) rotateY(180deg)',
+            }}
+          >
+            <div className="w-full h-full bg-gradient-to-br from-purple-700 via-purple-800 to-purple-900 flex flex-col items-center justify-center p-6">
+              {backCoverImage ? (
+                <img 
+                  src={backCoverImage} 
+                  alt="Back cover"
+                  className="w-24 h-24 object-contain mb-4 rounded-lg"
+                />
+              ) : (
+                <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mb-4">
+                  <FiBook className="w-10 h-10 text-white/60" />
+                </div>
+              )}
+              <p className="text-white/80 text-xs text-center">
+                Azories Storybooks
+              </p>
+              <p className="text-white/60 text-xs mt-2">
+                Premium Print Edition
+              </p>
+            </div>
+          </div>
+          
+          {/* Spine */}
+          <div 
+            className="absolute top-0 h-full bg-gradient-to-b from-purple-600 via-purple-700 to-purple-800"
+            style={{
+              width: `${spineWidth}px`,
+              left: `-${spineWidth / 2}px`,
+              transform: `translateZ(0px) rotateY(-90deg) translateX(-${spineWidth / 2}px)`,
+              transformOrigin: 'left center',
+            }}
+          >
+            <div className="h-full flex items-center justify-center">
+              <p 
+                className="text-white text-xs font-medium whitespace-nowrap"
+                style={{
+                  transform: 'rotate(-90deg)',
+                  width: '250px',
+                  textAlign: 'center',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}
+              >
+                {title?.substring(0, 40) || 'My Story Book'}
+              </p>
+            </div>
+          </div>
+          
+          {/* Page edges (right side) */}
+          <div 
+            className="absolute top-0 h-full"
+            style={{
+              width: `${spineWidth}px`,
+              right: `-${spineWidth / 2}px`,
+              transform: `translateZ(0px) rotateY(90deg) translateX(${spineWidth / 2}px)`,
+              transformOrigin: 'right center',
+              background: 'linear-gradient(to right, #f5f0e6, #e8e3d9)',
+            }}
           />
           
-          {/* Soft shadow under the book */}
-          <ContactShadows 
-            position={[0, -1.5, 0]} 
-            opacity={0.4} 
-            scale={5} 
-            blur={2.5} 
-            far={4}
+          {/* Top edge */}
+          <div 
+            className="absolute left-0 w-full"
+            style={{
+              height: `${spineWidth}px`,
+              top: `-${spineWidth / 2}px`,
+              transform: `translateZ(0px) rotateX(90deg) translateY(-${spineWidth / 2}px)`,
+              transformOrigin: 'top center',
+              background: '#f5f0e6',
+            }}
           />
-        </Suspense>
+          
+          {/* Bottom edge */}
+          <div 
+            className="absolute left-0 w-full"
+            style={{
+              height: `${spineWidth}px`,
+              bottom: `-${spineWidth / 2}px`,
+              transform: `translateZ(0px) rotateX(-90deg) translateY(${spineWidth / 2}px)`,
+              transformOrigin: 'bottom center',
+              background: '#f5f0e6',
+            }}
+          />
+          
+          {/* Inner shadow on front cover */}
+          <div 
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: 'linear-gradient(to right, rgba(0,0,0,0.3) 0%, transparent 15%)',
+              backfaceVisibility: 'hidden',
+              transform: 'translateZ(10px)',
+              borderRadius: '0 4px 4px 0'
+            }}
+          />
+        </div>
         
-        {/* User can drag to rotate */}
-        <OrbitControls 
-          enableZoom={false}
-          enablePan={false}
-          minPolarAngle={Math.PI / 4}
-          maxPolarAngle={Math.PI / 1.5}
-          autoRotate={false}
+        {/* Shadow */}
+        <div 
+          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-48 h-6 bg-black/20 blur-xl rounded-full transition-all duration-700"
+          style={{
+            transform: showBack 
+              ? 'translateX(-50%) translateY(30px) scaleX(0.8)' 
+              : 'translateX(-50%) translateY(30px) scaleX(1.2)'
+          }}
         />
-      </Canvas>
+      </div>
       
-      <p className="text-center text-xs text-muted-foreground mt-2">
-        Drag to rotate • Auto-rotates when idle
-      </p>
+      {/* Rotate instruction */}
+      <div className="flex items-center gap-2 mt-6 text-sm text-muted-foreground">
+        <FiRotateCw className="w-4 h-4" />
+        <span>Click to {showBack ? 'see front' : 'see back'}</span>
+      </div>
+      
+      {/* Book specs */}
+      <div className="flex items-center gap-4 mt-4 text-xs text-muted-foreground">
+        <span className="bg-purple-100 dark:bg-purple-900/30 px-3 py-1 rounded-full">
+          8" × 10" Premium
+        </span>
+        <span className="bg-purple-100 dark:bg-purple-900/30 px-3 py-1 rounded-full">
+          {pageCount} pages
+        </span>
+        <span className="bg-purple-100 dark:bg-purple-900/30 px-3 py-1 rounded-full">
+          Hardcover
+        </span>
+      </div>
+      
+      <style>{`
+        .preserve-3d {
+          transform-style: preserve-3d;
+        }
+        .backface-hidden {
+          backface-visibility: hidden;
+        }
+      `}</style>
     </div>
   );
 }

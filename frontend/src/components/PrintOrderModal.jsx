@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../components/ui/dialog';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -7,8 +7,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { FiPrinter, FiTruck, FiCreditCard, FiCheck, FiPackage, FiAlertCircle, FiEye, FiBook } from 'react-icons/fi';
 import { toast } from 'sonner';
 import BonusPagesPreview from './print/BonusPagesPreview';
-import BookPreview3D from './print/BookPreview3D';
 import BookPageStrip from './print/BookPageStrip';
+
+// Fallback component for 3D loading state
+function Book3DFallback() {
+  return (
+    <div className="flex flex-col items-center justify-center h-[350px]">
+      <div className="w-48 h-64 rounded-lg shadow-2xl overflow-hidden border-4 border-purple-200 bg-gradient-to-br from-purple-600 to-purple-900 flex items-center justify-center animate-pulse">
+        <FiBook className="w-16 h-16 text-white/50" />
+      </div>
+      <p className="text-sm text-muted-foreground mt-4">Loading 3D preview...</p>
+    </div>
+  );
+}
+
+// Lazy load the 3D component - requires browser environment (WebGL)
+const BookPreview3D = lazy(() => import('./print/BookPreview3D'));
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -294,11 +308,13 @@ export default function PrintOrderModal({
           <div className="space-y-6">
             {/* PART 1: 3D Book Render */}
             <div className="bg-gradient-to-br from-slate-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-purple-900/20 rounded-xl p-4 border border-purple-100 dark:border-purple-800">
-              <BookPreview3D
-                coverImage={book?.cover_image || book?.cover_image_url}
-                title={book?.title}
-                pageCount={prepData?.page_count || book?.chapters?.[0]?.pages?.length || 24}
-              />
+              <Suspense fallback={<Book3DFallback />}>
+                <BookPreview3D
+                  coverImage={book?.cover_image || book?.cover_image_url}
+                  title={book?.title}
+                  pageCount={prepData?.page_count || book?.chapters?.[0]?.pages?.length || 24}
+                />
+              </Suspense>
             </div>
             
             {/* PART 2: Page Strip */}
