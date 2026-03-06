@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
-// Clean page strip showing illustration thumbnails only
+// Page spread thumbnails - showing image + text side by side like the actual printed book
 export default function BookPageStrip({ 
   pages = [], 
   coverImage,
@@ -9,25 +9,38 @@ export default function BookPageStrip({
 }) {
   const scrollRef = useRef(null);
   
-  // Build array of images - cover + page illustrations
-  const allImages = [
-    coverImage && { image: coverImage, label: 'Cover' },
-    ...pages.map((page, index) => ({
+  // Build page spreads - cover first, then each page with image + text
+  const spreads = [];
+  
+  // Add cover as first item
+  if (coverImage) {
+    spreads.push({
+      type: 'cover',
+      image: coverImage,
+      label: 'Cover'
+    });
+  }
+  
+  // Add each page as a spread (image on left, text preview on right)
+  pages.forEach((page, index) => {
+    spreads.push({
+      type: 'page',
       image: page.image_url || page.imageUrl || page.image,
+      text: page.text || page.content || page.story_text || '',
       label: `Page ${index + 1}`
-    }))
-  ].filter(item => item && item.image);
+    });
+  });
 
   const scroll = (direction) => {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({
-        left: direction === 'left' ? -150 : 150,
+        left: direction === 'left' ? -180 : 180,
         behavior: 'smooth'
       });
     }
   };
 
-  if (allImages.length === 0) return null;
+  if (spreads.length === 0) return null;
 
   return (
     <div className={`w-full ${className}`}>
@@ -35,14 +48,14 @@ export default function BookPageStrip({
       <div className="flex items-center justify-between mb-2">
         <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">Preview All Pages</h4>
         <span className="text-xs text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/30 px-2 py-0.5 rounded-full">
-          {allImages.length} pages
+          {spreads.length} pages
         </span>
       </div>
       
-      {/* Scrollable thumbnail strip */}
+      {/* Scrollable spread strip */}
       <div className="relative">
         {/* Left arrow */}
-        {allImages.length > 4 && (
+        {spreads.length > 3 && (
           <button
             onClick={() => scroll('left')}
             className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-6 h-6 bg-white shadow-md rounded-full flex items-center justify-center hover:bg-gray-50"
@@ -51,35 +64,66 @@ export default function BookPageStrip({
           </button>
         )}
         
-        {/* Thumbnails */}
+        {/* Spreads */}
         <div
           ref={scrollRef}
-          className="flex gap-2 overflow-x-auto py-1 px-1"
+          className="flex gap-3 overflow-x-auto py-2 px-1"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {allImages.map((item, index) => (
-            <div key={index} className="flex-shrink-0 text-center">
-              {/* Thumbnail image - clean, no overlay */}
-              <div className={`w-16 h-20 rounded overflow-hidden shadow-sm border ${
-                index === 0 ? 'border-purple-400' : 'border-gray-200 dark:border-gray-600'
-              }`}>
-                <img
-                  src={item.image}
-                  alt={item.label}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-              </div>
-              {/* Label */}
-              <span className="text-[10px] text-gray-500 mt-0.5 block">
-                {item.label}
-              </span>
+          {spreads.map((spread, index) => (
+            <div key={index} className="flex-shrink-0">
+              {spread.type === 'cover' ? (
+                // Cover - single image
+                <div className="text-center">
+                  <div className="w-20 h-24 rounded shadow-md border border-gray-200 dark:border-gray-600 overflow-hidden bg-white">
+                    <img
+                      src={spread.image}
+                      alt="Cover"
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                  <span className="text-[10px] text-gray-500 mt-1 block font-medium">
+                    {spread.label}
+                  </span>
+                </div>
+              ) : (
+                // Page spread - image + text side by side
+                <div className="text-center">
+                  <div className="flex w-40 h-24 rounded shadow-md border border-gray-200 dark:border-gray-600 overflow-hidden bg-white">
+                    {/* Left side - illustration */}
+                    <div className="w-1/2 h-full overflow-hidden bg-gray-100">
+                      {spread.image ? (
+                        <img
+                          src={spread.image}
+                          alt={spread.label}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center">
+                          <span className="text-purple-400 text-[8px]">No image</span>
+                        </div>
+                      )}
+                    </div>
+                    {/* Right side - text preview */}
+                    <div className="w-1/2 h-full p-1.5 bg-white overflow-hidden">
+                      <p className="text-[6px] leading-tight text-gray-600 line-clamp-6 text-left">
+                        {spread.text || 'Story text will appear here in the printed book...'}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] text-gray-500 mt-1 block">
+                    {spread.label}
+                  </span>
+                </div>
+              )}
             </div>
           ))}
         </div>
         
         {/* Right arrow */}
-        {allImages.length > 4 && (
+        {spreads.length > 3 && (
           <button
             onClick={() => scroll('right')}
             className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-6 h-6 bg-white shadow-md rounded-full flex items-center justify-center hover:bg-gray-50"
@@ -91,6 +135,12 @@ export default function BookPageStrip({
       
       <style>{`
         div::-webkit-scrollbar { display: none; }
+        .line-clamp-6 {
+          display: -webkit-box;
+          -webkit-line-clamp: 6;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
       `}</style>
     </div>
   );
