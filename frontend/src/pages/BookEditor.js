@@ -48,6 +48,7 @@ export default function BookEditor() {
   const [selectedChapter, setSelectedChapter] = useState(null);
   const [pages, setPages] = useState([]);
   const [selectedPage, setSelectedPage] = useState(null);
+  const selectedPageRef = useRef(null); // Ref to always have latest selectedPage
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   
@@ -648,6 +649,9 @@ export default function BookEditor() {
   // This prevents data loss when switching between pages
   useEffect(() => {
     if (selectedPage) {
+      // Keep ref in sync for use in callbacks
+      selectedPageRef.current = selectedPage;
+      // Update pages array
       setPages(prevPages => 
         prevPages.map(p => 
           p.id === selectedPage.id ? { ...selectedPage } : p
@@ -656,27 +660,44 @@ export default function BookEditor() {
     }
   }, [selectedPage]);
 
-  // Handle page selection with proper state sync
+  // Handle page selection with proper state sync - FIXED VERSION
   const handlePageSelect = useCallback((pageId) => {
-    // Find the page from the current pages array (which is already synced)
+    // Get the current selectedPage from ref (always up-to-date)
+    const currentSelectedPage = selectedPageRef.current;
+    
+    // First, ensure current selectedPage is saved to pages array
+    // Then find and select the target page
     setPages(currentPages => {
-      const targetPage = currentPages.find(p => p.id === pageId);
-      if (targetPage) {
-        setSelectedPage(targetPage);
-        // Update lastSavedContent tracking for the new page
-        lastSavedContent.current = JSON.stringify({
-          text: targetPage.text_content,
-          image: targetPage.image_url,
-          video: targetPage.video_url,
-          useVideo: targetPage.use_video,
-          layoutType: targetPage.layout_type
-        });
-        setHasUnsavedChanges(false);
+      // Update the current page in the array first (if we have a selected page)
+      let updatedPages = currentPages;
+      if (currentSelectedPage) {
+        updatedPages = currentPages.map(p => 
+          p.id === currentSelectedPage.id ? { ...currentSelectedPage } : p
+        );
       }
-      return currentPages; // Don't modify pages
+      
+      // Now find the target page from the UPDATED pages array
+      const targetPage = updatedPages.find(p => p.id === pageId);
+      if (targetPage) {
+        // Use setTimeout to ensure state update happens after setPages completes
+        setTimeout(() => {
+          setSelectedPage({ ...targetPage }); // Clone to ensure new reference
+          selectedPageRef.current = { ...targetPage }; // Update ref too
+          // Update lastSavedContent tracking for the new page
+          lastSavedContent.current = JSON.stringify({
+            text: targetPage.text_content,
+            image: targetPage.image_url,
+            video: targetPage.video_url,
+            useVideo: targetPage.use_video,
+            layoutType: targetPage.layout_type
+          });
+          setHasUnsavedChanges(false);
+        }, 0);
+      }
+      return updatedPages; // Return the updated pages with current edits saved
     });
     setMobileSidebarOpen(false);
-  }, []);
+  }, []); // No dependencies needed - uses ref
 
   const savePage = async () => {
     if (!selectedPage) return;
