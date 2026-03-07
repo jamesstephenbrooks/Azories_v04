@@ -1,147 +1,152 @@
 <analysis>**original_problem_statement:**
-The user's initial goal was to build a Print on Demand (POD) book ordering feature using the Gelato API. Development was repeatedly diverted to fix critical bugs in the core AI Story Creation flow. After stabilizing the core app, the focus shifted to UI/UX improvements, including enhancing AI image quality with  and refining the mobile reading experience.
+The user initially requested an offline reading feature for their AI Story Creator app. During the session, the scope expanded significantly to include numerous bug fixes and new features.
 
-Work then returned to the POD feature. The user specified a premium, interactive preview, which led to a new UI with a Three.js 3D render. This introduced a critical client-side crash. The agent fixed the crash and has since been iteratively refining the Print Order Modal's UI/UX based on detailed user feedback. The most recent tasks involved restoring a missing button, fixing a pricing API, integrating Stripe checkout, and completely overhauling the modal's layout to be cleaner and more user-friendly. The latest iteration involves replacing a CSS-based book preview with realistic, AI-generated mockup images that have the user's actual book cover overlaid on them.
+**PRODUCT REQUIREMENTS:**
+-   **Offline Reading (Multi-phase):** Allow users to save books for offline access.
+-   **Free Book Creation:** New users should be able to create books and AI stories for free, removing Upgrade to Pro gates on core features.
+-   **Editor Enhancements:**
+    -   Make AI-generated stories fully editable (text and images).
+    -   Add on-demand AI image generation for any page, using the page's text as a prompt.
+    -   Implement an auto-save feature to prevent data loss.
+    -   Add a character/word count warning for pages to prevent text truncation during printing.
+-   **AI Story Creator Enhancements:**
+    -   Add a words per page option to control story length.
+-   **Image Generation Model:** Revert the  model to a higher-quality version ().
+-   **Bug Fixes:**
+    -   Keep me signed in functionality is broken.
+    -   Timeouts occurring during long story generation.
+    -   Running out of credits fails silently instead of redirecting.
+    -   **Critical:** Text changes in the editor are lost when switching pages.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a stable AI Story Creator.
-- The core story creation, viewing, and user library functionalities are stable.
-- A complete Print on Demand feature is in place, with backend services for Gelato (ordering), Stripe (payment), and PDF generation.
-- A functional  component handles the entire ordering process.
-- **Print Order Preview:** The modal features a sophisticated preview system:
-    - **Product Mockup:** It displays a realistic, AI-generated mockup of a softcover or hardcover book. The user's actual book cover is overlaid onto the mockup image using CSS. The user can toggle between the softcover and hardcover views.
-    - **Page Thumbnails:** Below the mockup, a horizontal strip shows thumbnails for each page. Each thumbnail displays a spread with the page's illustration on the left and a preview of the story text on the right, mimicking the final printed book.
-- **Recent Fixes:** The  500 error has been fixed, the Order Printed Copy button has been restored on the  and added to the  (My Books section), and the Stripe checkout flow is fully integrated. The modal's layout has been significantly improved for clarity and usability on both desktop and mobile.
+The application is a full-stack AI Story Creator with user authentication, a book library, a book editor, AI-driven story/image generation (), and a print-on-demand (POD) feature using Gelato/Stripe.
+
+In this session, the agent implemented Phase 1 UI for the offline reading feature, fixed the keep me signed in bug, made book creation free for all users, and added several major features to the book editor, including on-demand AI image generation, an art style selector, auto-saving, and a word count warning. Timeouts across the application were increased, and the image generation model was updated to .
 
 **Last working item**:
--   **Last item agent was working:** The agent was implementing the user's request for a photorealistic product preview in the . This involved generating custom softcover and hardcover book mockup images using , uploading them to Cloudinary, and using CSS absolute positioning to overlay the actual book cover onto the mockup. The softcover view has been implemented and refined.
+-   **Last item agent was working:** Investigating a **critical data loss bug** in the . When a user edits text on one page, switches to another page, and then returns, the text changes are gone. The agent had just started analyzing the state management and data-fetching logic in .
 -   **Status:** IN PROGRESS
--   **Agent Testing Done:** Y (Verified softcover view via screenshot)
--   **Which testing method agent to use?**  tool to verify the hardcover mockup view and adjust its CSS overlay.
+-   **Agent Testing Done:** N
+-   **Which testing method agent to use?** Frontend testing agent
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   Issue 1: Finalize and verify the AI mockup implementation in the Print Order Modal (P0)
--   Issue 2: AI story creation page has a half white screen on mobile (P2)
+-   **Issue 1 (P0):** Critical Bug: Text changes are lost when switching pages in the .
+-   **Issue 2 (P1):** On iPad, the expand menu dropdown and the purple play button do not respond to taps. (From previous fork)
+-   **Issue 3 (P1):** In the Pro Studio on mobile, images cannot be deleted and videos won't download. (From previous fork)
+-   **Issue 4 (P2):** The photorealistic art style produces anime-style images instead of realistic ones. (From previous fork)
+-   **Issue 5 (P2):** The checkbox for keep me signed in is too large on iPad. (From previous fork)
 
 **Issues Detail:**
--   **Issue 1: Finalize and verify the AI mockup implementation in the Print Order Modal (P0)**
-    -   **Attempted fixes:** The agent successfully generated two AI mockup images, uploaded them to Cloudinary, and implemented the CSS overlay logic in . The positioning for the softcover overlay has been adjusted and verified.
+-   **Issue 1: Critical Bug: Text changes are lost when switching pages in the .**
+    -   **Attempted fixes:** The agent began investigating , hypothesizing that the component re-fetches page data from the server upon navigation, overwriting any unsaved local state changes.
     -   **Next debug checklist:**
-        1.  In , review the CSS classes for the hardcover mockup ().
-        2.  Take a screenshot of the  with the Hardcover option selected.
-        3.  Adjust the , , , and  properties for the  to ensure the user's book cover aligns perfectly with the placeholder area on the hardcover mockup image.
-    -   **Why fix this issue and what will be achieved with the fix?** Completing this will fulfill the user's request for a photorealistic product preview, which is a critical part of the premium user experience for the POD feature.
+        1.  In , trace the state of the  array.
+        2.  Analyze the  hooks that trigger on  or  change.
+        3.  Verify if the  function saves the current state before switching.
+        4.  Ensure that both manual and auto-save functions correctly update the local  state and that this state is not discarded by a subsequent data fetch.
+    -   **Why fix this issue and what will be achieved with the fix?** This is a critical data loss bug rendering the editor unusable. Fixing it is essential for core application functionality.
     -   **Status:** IN PROGRESS
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** frontend
-    -   **Blocked on other issue:** None
-
--   **Issue 2: AI story creation page has a half white screen on mobile (P2)**
-    -   **Attempted fixes:** A  class was added to . This is a low-priority visual bug that has been carried over.
-    -   **Next debug checklist:** After completing higher-priority tasks, use the  tool with a mobile viewport to check the  page. If the issue persists, inspect the CSS of the main container in .
-    -   **Status:** NOT STARTED
     -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** frontend
     -   **Blocked on other issue:** None
 
 **In progress Task List**:
--   **Task 1: Complete Print on Demand UI (P0)**
-    -   **Where to resume:** . The immediate next step is to verify the hardcover mockup view and adjust its CSS overlay positioning to match the softcover's quality.
-    -   **What will be achieved with this?** A complete, premium, and fully functional UI for the Print on Demand feature.
-    -   **Status:** IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?** frontend
-    -   **Blocked on something:** None
+-   None.
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
--   **P1 - Full End-to-End POD Testing:** Once the mockup UI is finalized, perform a comprehensive test of the entire POD flow (modal opening, address entry, shipping selection, Stripe checkout, order creation).
--   **P2 - My Orders Section:** Build the new page for users to view their print order history, including order date, book title/cover, status, tracking number, and ETA.
--   **P3 - Deploy to Production:** After all POD features are verified.
+-   **P0 - Complete & Test Offline Reading Phase 1**: Thoroughly test the save/remove functionality.
+-   **P1 - Implement Offline Reading Phase 2**: Add offline indicators to book cards and implement the offline filter.
+-   **P2 - Implement Offline Reading Phase 3**: Add caching for narration audio files.
+-   **P2 - Perform full End-to-End POD test**: Conduct a comprehensive test of the entire print-on-demand flow.
 
 **Future Tasks:**
--   **Gift Feature:** Add an option during checkout to mark an order as a gift.
+-   User-facing My Orders section.
+-   Order tracking notifications.
+-   Gift feature for print orders.
 -   Creative Studio Rebuild.
--   Refactor and consolidate inconsistent gallery components.
--   Decompose large frontend components like .
+-   Decompose large components like .
 
 **Completed work in this session**
--   **Print Modal Crash (RESOLVED):** Fixed the P0 crash caused by React 19 incompatibility with  by upgrading libraries and replacing the buggy component.
--   **/api/print/price-estimate 500 Error (RESOLVED):** Fixed the backend endpoint to provide estimates without requiring a PDF URL.
--   **Missing Order Printed Copy Button (RESOLVED):** Restored the button's visibility in  on all devices and for all user states (guest/logged-in).
--   **Stripe Checkout Integration (RESOLVED):** Fully integrated the Stripe checkout flow into the .
--   **BookReader UI Layout (RESOLVED):** Fixed overlapping buttons and content centering issues.
--   **Print Order Modal Layout Overhaul (RESOLVED):** Performed a major redesign of the modal for clarity, correcting width, centering, overlay, and scrolling issues.
--   **Page Thumbnail Content (RESOLVED):** Fixed a bug causing incorrect content and updated thumbnails to show a side-by-side spread of the illustration and story text.
--   **Print Pricing (RESOLVED):** Removed the extra cost for additional pages.
--   **My Books Print Option (RESOLVED):** Added an Order Printed Copy dropdown and individual book print buttons to the  page.
--   **AI Mockup Generation (IN PROGRESS):** Generated softcover/hardcover mockups via , uploaded them, and implemented the softcover overlay.
+-   **Critical Bug Fix**: Fixed the Keep me signed in for 30 days functionality.
+-   **Feature**: Enabled free book creation for all users by removing backend and frontend Pro restrictions.
+-   **Feature**: Implemented on-demand AI image generation (with art style selection) within the .
+-   **Feature**: Added an auto-save mechanism (every 30 seconds) to the .
+-   **Feature**: Added a Words per Page selector to the .
+-   **Feature**: Made AI-generated stories editable by creating a default chapter structure on generation and migrating existing stories.
+-   **Bug Fix**: Increased timeouts across MongoDB, , and frontend APIs to prevent errors with long operations, setting the DB timeout to unlimited.
+-   **Bug Fix**: Implemented credit deduction for AI image generation and redirection to the top-up page on insufficient funds.
+-   **Improvement**: Switched the  model to  for higher-quality images.
+-   **Improvement**: Added a word count warning in the editor UI to prevent text from being truncated in printed versions.
+-   **UI Integration**: Completed the UI integration for Phase 1 of the offline reading feature in .
 
 **Code Architecture**
-allPagespages
+
 
 **Key Technical Concepts**
--   **CSS Overlay Positioning:** The current implementation relies on  to overlay a dynamic book cover image onto a static, AI-generated mockup image. This requires precise pixel measurements for , , , and  to create a realistic composite.
--   **AI Image Generation ():** The  integration was used to generate photorealistic product mockups for the softcover and hardcover books, serving as the base for the preview.
--   **Component Prop Drilling:** A bug with incorrect thumbnail content was solved by passing the correctly processed  array as a prop from the parent component () to the child modal () to ensure data consistency.
+-   **Modular FastAPI Routes:** Backend logic is split into files under . Authentication logic was found in , not the main .
+-   **On-the-fly Data Migration:** The  endpoint now transparently creates a chapter structure for older AI-books, making them compatible with the editor without a separate migration script.
+-   **Custom React Hooks:**  and  were created to encapsulate the auto-save logic, keeping the  component cleaner.
+-   **Robust Error Handling:** Implemented logic to catch  errors for insufficient credits and redirect the user to the top-up page.
+
+**key DB schema**
+-   **books**: Added  flag to distinguish AI stories.
+-   **chapters**: Now contains documents for AI-generated stories to make them editable.
+-   **pages**: Documents are now linked to a .
 
 **All files of reference**
--    (File to edit to finalize the hardcover mockup overlay)
--    (The main modal component)
--    (The page that initiates the print order flow)
--    (The My Books page where a print option was added)
--    (Contains the  API fix)
-
-**Areas that need refactoring**:
--    is over 2000 lines long and manages state for the reader, audio playback, print modal, and multiple UI layouts. It is a prime candidate for being broken down into smaller, more focused components to improve maintainability.
-
-**key api endpoints**
--   : Provides a price estimate for a printed book. (Fixed)
--   : Creates a Stripe checkout session for a print order. (Implemented)
--   : Endpoint used to fetch all page data for a book.
+-    (Primary file for the current critical bug and recent feature additions).
+-    (Location of most backend fixes and new editor-related endpoints).
+-    (Offline feature UI).
+-    (File containing the Keep me signed in fix).
+-    (Auto-save logic).
 
 **Critical Info for New Agent**
--   **Your immediate task is to finalize the product mockup UI.** Focus on . Verify the hardcover view and precisely adjust the CSS overlay for the book cover. The user is highly attentive to visual details, so accuracy is key.
--   **The app is a Create React App (CRA) project, not Next.js.** Avoid using Next.js-specific features.
--   **Always verify visual changes with the  tool.** The user provides detailed feedback based on what they see, so providing a screenshot with your summary is crucial for alignment.
+-   **TOP PRIORITY (P0):** You must immediately investigate and fix the critical data loss bug in . Text changes are being lost when a user navigates between pages, making the editor unusable. The previous agent suspected a state management issue where the component re-fetches data, overwriting local changes.
+-   **Production vs. Preview:** The user reported that features implemented here are missing from their live site. Remind the user that they must save the code from this preview environment to their GitHub repository and then deploy it to see the changes in production.
+-   **Backend Structure:** Be aware that the backend uses a modular routing system in . The fix for the login bug was in , not . Always verify the correct file is being edited.
+-   **Pending Verification:** Several UI fixes for iPad and mobile are awaiting user feedback.
 
 **documents and test reports created in this job**
--   /app/test_reports/iteration_1.json
--   /app/test_reports/iteration_2.json
+-    (Updated)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **[LATEST]** User asked to use mockups from Gelato's website and overlay the book cover. (Partially implemented using AI-generated mockups as a substitute).
-2.  User asked to regenerate AI mockups with better prompts for a 3/4 angled view. (Done).
-3.  User provided prompts for  to generate mockups. (Done).
-4.  User reported that page thumbnails showed incorrect content. (Resolved).
-5.  User requested page thumbnails show an image + text spread and for the preview to use a realistic mockup. (Implemented).
-6.  User asked to remove extra page costs and add a print button to the My Books page. (Done).
-7.  User reported a broken Print Order Modal layout on desktop. (Resolved).
-8.  User reported UI layout issues in the book reader (overlapping buttons). (Resolved).
-9.  User confirmed previous fixes and reported two new issues: the price-estimate API error and the missing Order Printed Copy button. (Both Resolved).
-10. Agent had just finished fixing the initial print modal crash.
+1.  **[LATEST]** Reports a critical bug: text is lost when switching between pages in the editor.
+2.  Requests auto-save every 30 seconds and for AI image generation to use page text.
+3.  Asks if the timeout fix is site-wide.
+4.  Asks if the MongoDB timeout can be unlimited.
+5.  Requests font size for print to go down to 12pt, a word count warning, and an art style selector for the editor's AI image generation. Also asks to increase timeout to 600s.
+6.  Reports timeout issues with long stories and that running out of credits does nothing. Asks how text overflow is handled in print.
+7.  Reports that AI-created books are not editable and that features are missing from production after they redeployed.
+8.  Requests to revert the image generation model and add AI image generation to the editor.
+9.  Requests that AI-created stories be editable in My Books.
+10. Requests an option for words per page in the AI story creator.
 
 **Project Health Check:**
--   **Mocked:** The 3D book preview is now a stable and visually appealing CSS overlay on top of static, AI-generated mockup images.
--   **Broken:** No critically broken functionality. The core POD flow is working, but the new mockup UI requires a final adjustment for the hardcover view.
+-   **Broken:** The  is critically broken due to a data loss bug that occurs when switching pages.
 
 **3rd Party Integrations**
--   **fal.ai:** Used for AI image generation (book mockups). Requires .
--   **Gelato API:** For Print on Demand order fulfillment. Requires .
--   **Stripe:** For payments. Requires .
--   **Cloudinary:** For image storage (mockup images are stored here).
+-   **fal.ai:** AI image generation. Model was switched to . Timeout increased to 10 minutes.
+-   **Gelato API:** Print on Demand order fulfillment.
+-   **Stripe:** Payments.
+-   **Cloudinary:** Image and PDF storage.
+-   **ElevenLabs:** Primary Text-to-Speech service.
+-   **OpenAI TTS:** Fallback Text-to-Speech service.
+-   **Resend:** Email service for sending alerts.
 
 **Testing status**
--   **Testing agent used after significant changes:** YES, to validate the Stripe backend integration.
--   **Test files created:** None.
--   **Known regressions:** None.
+-   **Testing agent used after significant changes:** NO
+-   **Troubleshoot agent used after agent stuck in loop:** NO
+-   **Test files created:** []
+-   **Known regressions:** A critical regression was introduced in the  causing data loss.
 
 **Credentials to test flow:**
 -   **Test user:** 
 -   **Test password:** 
 
 **What agent forgot to execute**
--   The agent initially used Next.js-specific features in a Create React App project, which caused an error. This was identified and corrected.
--   A data consistency bug (incorrect page content in thumbnails) occurred because processed data wasn't being passed down as a prop. This was also identified and corrected.</analysis>
+-   The agent did not successfully perform a full frontend verification via screenshots due to persistent login issues with the tool.
+-   A comprehensive end-to-end test of the Print on Demand (POD) flow is still pending.</analysis>

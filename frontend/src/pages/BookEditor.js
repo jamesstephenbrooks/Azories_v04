@@ -643,6 +643,40 @@ export default function BookEditor() {
     };
   }, [selectedPage?.text_content, selectedPage?.image_url, triggerAutoSave]);
 
+  // CRITICAL: Keep pages array in sync with selectedPage changes
+  // This prevents data loss when switching between pages
+  useEffect(() => {
+    if (selectedPage) {
+      setPages(prevPages => 
+        prevPages.map(p => 
+          p.id === selectedPage.id ? { ...selectedPage } : p
+        )
+      );
+    }
+  }, [selectedPage]);
+
+  // Handle page selection with proper state sync
+  const handlePageSelect = useCallback((pageId) => {
+    // Find the page from the current pages array (which is already synced)
+    setPages(currentPages => {
+      const targetPage = currentPages.find(p => p.id === pageId);
+      if (targetPage) {
+        setSelectedPage(targetPage);
+        // Update lastSavedContent tracking for the new page
+        lastSavedContent.current = JSON.stringify({
+          text: targetPage.text_content,
+          image: targetPage.image_url,
+          video: targetPage.video_url,
+          useVideo: targetPage.use_video,
+          layoutType: targetPage.layout_type
+        });
+        setHasUnsavedChanges(false);
+      }
+      return currentPages; // Don't modify pages
+    });
+    setMobileSidebarOpen(false);
+  }, []);
+
   const savePage = async () => {
     if (!selectedPage) return;
     
@@ -1111,13 +1145,13 @@ export default function BookEditor() {
     // First save current page
     await savePage();
     
-    // Find current page index
+    // Find current page index (use pages state which is now synced)
     const currentIndex = pages.findIndex(p => p.id === selectedPage?.id);
     
     if (currentIndex >= 0 && currentIndex < pages.length - 1) {
-      // Go to next page
+      // Go to next page using handlePageSelect
       const nextPage = pages[currentIndex + 1];
-      setSelectedPage(nextPage);
+      handlePageSelect(nextPage.id);
       toast.info(`Moved to page ${currentIndex + 2}`);
     } else {
       // Create new page if at the end
@@ -1399,10 +1433,7 @@ export default function BookEditor() {
                       ? 'bg-primary/10 text-primary' 
                       : 'hover:bg-muted'
                   }`}
-                  onClick={() => {
-                    setSelectedPage(page);
-                    setMobileSidebarOpen(false); // Close sidebar on mobile
-                  }}
+                  onClick={() => handlePageSelect(page.id)}
                   data-testid={`page-${page.id}`}
                 >
                   <div className="flex items-center gap-2">
