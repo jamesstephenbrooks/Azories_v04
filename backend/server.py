@@ -4372,11 +4372,11 @@ Key requirements:
         else:
             result = await generate_image_flux(
                 prompt=full_prompt,
-                model="flux-pro",  # Use FLUX Pro for best quality
+                model="flux-dev",  # Use standard FLUX for cost efficiency
                 image_size="portrait_4_3",
                 num_images=1,
-                guidance_scale=5.0,  # Increased from 3.5 for better prompt adherence
-                num_inference_steps=35,  # Increased from 28 for better quality
+                guidance_scale=5.0,  # Increased for better prompt adherence
+                num_inference_steps=35,  # Good quality
                 print_quality=True  # Generate at print quality (2400x3000)
             )
         
@@ -6960,7 +6960,7 @@ async def generate_single_image(prompt: str, style_desc: str) -> str:
             # Use print_quality for correct 8x10 ratio (2400x3000px at 300 DPI)
             result = await generate_image_flux(
                 prompt=full_prompt,
-                model="flux-pro",  # Use FLUX Pro for best quality
+                model="flux-dev",  # Use standard FLUX for cost efficiency
                 image_size="portrait_4_3",  # Fallback
                 num_images=1,
                 guidance_scale=3.5,
