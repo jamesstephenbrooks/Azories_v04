@@ -7953,7 +7953,12 @@ async def generate_tts(request: TTSRequest):
                 provider = "elevenlabs"
                 logger.info("Generated audio with ElevenLabs")
             except Exception as eleven_err:
-                logger.warning(f"ElevenLabs failed, falling back to OpenAI: {str(eleven_err)[:100]}")
+                error_msg = str(eleven_err)
+                if "missing_permissions" in error_msg or "401" in error_msg:
+                    logger.error(f"ElevenLabs API key missing text_to_speech permission. Please regenerate the key with proper permissions.")
+                else:
+                    logger.warning(f"ElevenLabs failed: {error_msg[:150]}")
+                # Fall through to OpenAI fallback
         
         # Fallback to OpenAI TTS if ElevenLabs failed
         if audio_bytes is None:

@@ -2639,12 +2639,26 @@ export default function BookReader() {
           
           {/* Audio Controls - Enhanced - Hidden on very small screens */}
           <div className="hidden sm:flex items-center justify-center gap-2 sm:gap-4 flex-wrap text-sm">
-            {/* Current Voice Display (read-only) */}
+            {/* Voice Selector Dropdown */}
             <div className="hidden md:flex items-center gap-2">
               <FiMic className="w-4 h-4 text-muted-foreground" />
-              <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-muted/50 text-xs text-muted-foreground">
-                <span>{voices.find(v => v.voice_id === narratorVoice)?.name || 'Default Voice'}</span>
-              </div>
+              <select
+                value={narratorVoice}
+                onChange={(e) => {
+                  setNarratorVoice(e.target.value);
+                  // Clear audio cache when voice changes
+                  audioCache.current.clear();
+                }}
+                disabled={narratorVoiceLocked}
+                className="px-3 py-1 rounded-full bg-muted/50 text-xs text-foreground border-none focus:ring-1 focus:ring-primary cursor-pointer"
+                data-testid="voice-selector"
+              >
+                {voices.map(v => (
+                  <option key={v.voice_id} value={v.voice_id}>
+                    {v.name} ({v.accent})
+                  </option>
+                ))}
+              </select>
             </div>
             
             {/* Volume Control */}
