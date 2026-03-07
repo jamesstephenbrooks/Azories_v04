@@ -57,6 +57,13 @@ const Credits = () => {
     setPurchasing(packageId);
 
     try {
+      // Save the current page URL to return to after payment
+      // Use referrer if available, otherwise current page
+      const returnUrl = document.referrer && document.referrer.includes(window.location.origin) 
+        ? document.referrer.replace(window.location.origin, '')
+        : '/dashboard';
+      sessionStorage.setItem('payment_return_url', returnUrl);
+      
       const response = await fetch(`${API_URL}/api/payments/create-checkout`, {
         method: 'POST',
         headers: {
@@ -291,7 +298,7 @@ const Credits = () => {
             onClick={() => navigate(-1)}
             className="text-gray-400 hover:text-white transition-colors"
           >
-            ← Back to Pro Studio
+            ← Go Back
           </button>
         </div>
       </div>

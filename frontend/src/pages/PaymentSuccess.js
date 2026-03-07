@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiCheck, FiX, FiLoader } from 'react-icons/fi';
+import { FiCheck, FiX, FiLoader, FiArrowLeft } from 'react-icons/fi';
 import { toast } from 'sonner';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -14,6 +14,9 @@ const PaymentSuccess = () => {
   const [attempts, setAttempts] = useState(0);
 
   const sessionId = searchParams.get('session_id');
+  
+  // Get the return URL from sessionStorage (set before redirecting to Stripe)
+  const returnUrl = sessionStorage.getItem('payment_return_url') || '/dashboard';
 
   useEffect(() => {
     if (sessionId) {
@@ -105,10 +108,14 @@ const PaymentSuccess = () => {
               </div>
             )}
             <button
-              onClick={() => navigate('/pro-studio')}
-              className="w-full bg-purple-600 hover:bg-purple-500 text-white font-semibold py-3 rounded-lg transition-colors"
+              onClick={() => {
+                sessionStorage.removeItem('payment_return_url');
+                navigate(returnUrl);
+              }}
+              className="w-full bg-purple-600 hover:bg-purple-500 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
             >
-              Go to Pro Studio
+              <FiArrowLeft className="w-5 h-5" />
+              Continue Where You Left Off
             </button>
           </>
         )}
@@ -139,10 +146,14 @@ const PaymentSuccess = () => {
               We couldn't verify your payment immediately. If you completed the payment, your credits will be added shortly.
             </p>
             <button
-              onClick={() => navigate('/pro-studio')}
-              className="w-full bg-purple-600 hover:bg-purple-500 text-white font-semibold py-3 rounded-lg transition-colors"
+              onClick={() => {
+                sessionStorage.removeItem('payment_return_url');
+                navigate(returnUrl);
+              }}
+              className="w-full bg-purple-600 hover:bg-purple-500 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
             >
-              Go to Pro Studio
+              <FiArrowLeft className="w-5 h-5" />
+              Continue Where You Left Off
             </button>
           </>
         )}
