@@ -1605,6 +1605,7 @@ async def login(user_data: UserLogin):
                 trial_hours_remaining = max(1, total_hours)  # At least 1 hour
     
     token = create_token(user["id"], user["email"], user["role"], user_data.remember_me)
+    logger.info(f"Login: remember_me={user_data.remember_me} for user {user['email']}")
     is_admin_value = user.get("is_admin", False) or user.get("role") == "admin"
     logger.info(f"Login: is_admin computed as {is_admin_value} for user {user['email']}")
     return TokenResponse(

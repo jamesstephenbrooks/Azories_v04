@@ -254,7 +254,7 @@ export default function Auth() {
               
               {/* Remember Me checkbox - only show for login */}
               {isLogin && (
-                <div className="flex items-center gap-2 sm:gap-2 scale-[0.6] sm:scale-100 origin-left">
+                <div className="flex items-center gap-2 scale-[0.6] md:scale-[0.6] lg:scale-100 origin-left">
                   <input
                     type="checkbox"
                     id="rememberMe"
