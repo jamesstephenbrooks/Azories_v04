@@ -52,7 +52,7 @@ from routes import setup_routes
 try:
     from fal_service import (
         generate_image_flux,
-        generate_ideogram,
+        generate_image_ideogram,
         generate_with_face_id,
         train_character_lora,
         check_training_status,
@@ -4361,7 +4361,7 @@ Key requirements:
         
         if use_ideogram:
             # Ideogram is better at following prompts accurately
-            result = await generate_ideogram(
+            result = await generate_image_ideogram(
                 prompt=full_prompt,
                 model="ideogram-v3",
                 aspect_ratio="4:5",  # Portrait for book pages
