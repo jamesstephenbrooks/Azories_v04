@@ -21,6 +21,12 @@ from fal_client import AsyncClient
 
 logger = logging.getLogger(__name__)
 
+# Alert tracking to prevent spam
+_alert_state = {
+    "last_sent": None,
+    "cooldown_hours": 24  # Only send one alert per 24 hours
+}
+
 # Available fal.ai models
 FAL_MODELS = {
     "flux-dev": {
@@ -98,6 +104,7 @@ async def validate_fal_key_on_startup() -> dict:
     """
     Validate FAL_KEY on startup and cache the result.
     Returns status dict with valid, last_checked, error_message.
+    Sends email alert if balance is exhausted.
     """
     global _fal_key_status
     from datetime import datetime
@@ -167,6 +174,17 @@ async def validate_fal_key_on_startup() -> dict:
                 logger.error(f"❌ FAL_KEY INVALID: {str(e)[:100]}")
                 logger.error("⚠️ fal.ai features will fall back to Emergent Key (more expensive)")
                 return _fal_key_status
+            # Check for exhausted balance
+            elif 'exhausted balance' in error_str or 'locked' in error_str:
+                _fal_key_status = {
+                    "valid": False,
+                    "last_checked": datetime.utcnow().isoformat(),
+                    "error_message": f"fal.ai balance exhausted: {str(e)[:100]}"
+                }
+                logger.error(f"🚨 FAL.AI BALANCE EXHAUSTED: {str(e)[:100]}")
+                # Send alert email
+                asyncio.create_task(send_fal_balance_alert("exhausted", str(e)))
+                return _fal_key_status
             else:
                 # Other errors (timeout, rate limit, etc) - key might be OK
                 _fal_key_status = {
@@ -230,6 +248,7 @@ async def _submit_with_retry(model_id: str, arguments: dict, timeout: int = IMAG
     Creates a fresh client for each submission to ensure current key is used.
     Retries on transient errors with exponential backoff.
     Does NOT retry on auth errors (401) or timeouts.
+    Sends email alert if balance is exhausted.
     """
     client = _get_client()
     last_error = None
@@ -253,6 +272,17 @@ async def _submit_with_retry(model_id: str, arguments: dict, timeout: int = IMAG
                     f"fal.ai authentication failed (401 Unauthorized). "
                     f"Your FAL_KEY may be invalid or expired. "
                     f"Please get a new key from https://fal.ai/dashboard/keys and update your .env file."
+                )
+            
+            # Check for exhausted balance and send alert
+            if 'exhausted balance' in error_str or 'user is locked' in error_str:
+                logger.error(f"🚨 fal.ai balance exhausted: {e}")
+                # Send alert in background
+                asyncio.create_task(send_fal_balance_alert("exhausted", str(e)))
+                raise Exception(
+                    f"fal.ai account balance exhausted. "
+                    f"Please top up your balance at https://fal.ai/dashboard. "
+                    f"An alert has been sent to the admin."
                 )
             
             # Don't retry rate limit errors immediately
@@ -961,4 +991,136 @@ def is_fal_configured() -> bool:
         key = os.environ.get('FAL_KEY', '')
         return bool(key and len(key) > 10)
     except Exception:
+        return False
+
+
+async def send_fal_balance_alert(alert_type: str, error_message: str = "") -> bool:
+    """
+    Send an email alert when fal.ai balance is low or exhausted.
+    
+    Args:
+        alert_type: 'exhausted' or 'low'
+        error_message: The original error message from fal.ai
+        
+    Returns:
+        True if email sent successfully, False otherwise
+    """
+    from datetime import datetime, timedelta
+    global _alert_state
+    
+    # Check cooldown to prevent spam
+    if _alert_state["last_sent"]:
+        cooldown = timedelta(hours=_alert_state["cooldown_hours"])
+        if datetime.utcnow() - _alert_state["last_sent"] < cooldown:
+            logger.info(f"Skipping fal.ai alert - cooldown active (last sent: {_alert_state['last_sent']})")
+            return False
+    
+    try:
+        # Import email service
+        from services.email_service import send_email, is_configured as email_configured
+        
+        if not email_configured():
+            logger.warning("Email not configured - cannot send fal.ai balance alert")
+            return False
+        
+        alert_email = os.environ.get("FAL_ALERT_EMAIL", "books@azories.com")
+        
+        if alert_type == "exhausted":
+            subject = "🚨 URGENT: fal.ai Balance Exhausted - AI Stories Disabled"
+            status_color = "#DC2626"
+            status_text = "EXHAUSTED"
+            urgency = "URGENT"
+        else:
+            subject = "⚠️ Warning: fal.ai Balance Running Low"
+            status_color = "#F59E0B"
+            status_text = "LOW"
+            urgency = "WARNING"
+        
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f5f5f5;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 20px;">
+                <tr>
+                    <td align="center">
+                        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                            <!-- Header -->
+                            <tr>
+                                <td style="background: {status_color}; padding: 30px; text-align: center;">
+                                    <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: bold;">
+                                        {urgency}: fal.ai Balance {status_text}
+                                    </h1>
+                                </td>
+                            </tr>
+                            
+                            <!-- Content -->
+                            <tr>
+                                <td style="padding: 30px;">
+                                    <div style="background-color: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; padding: 20px; margin-bottom: 25px;">
+                                        <p style="margin: 0; color: #991B1B; font-size: 16px; font-weight: 600;">
+                                            ⚠️ AI Story Creation is Currently Disabled
+                                        </p>
+                                        <p style="margin: 10px 0 0; color: #7F1D1D; font-size: 14px;">
+                                            Users attempting to create AI stories will see errors until the balance is topped up.
+                                        </p>
+                                    </div>
+                                    
+                                    <h2 style="margin: 0 0 15px; color: #1f2937; font-size: 18px;">What happened:</h2>
+                                    <p style="margin: 0 0 20px; color: #4b5563; font-size: 14px; line-height: 1.6;">
+                                        The fal.ai API key for Azories has run out of credits. This powers all AI image generation for stories.
+                                    </p>
+                                    
+                                    {f'<div style="background-color: #F3F4F6; border-radius: 8px; padding: 15px; margin-bottom: 20px; font-family: monospace; font-size: 12px; color: #6B7280; overflow-wrap: break-word;">{error_message[:200]}</div>' if error_message else ''}
+                                    
+                                    <h2 style="margin: 0 0 15px; color: #1f2937; font-size: 18px;">Action Required:</h2>
+                                    <ol style="margin: 0 0 25px; color: #4b5563; font-size: 14px; line-height: 1.8; padding-left: 20px;">
+                                        <li>Go to <a href="https://fal.ai/dashboard" style="color: #7C3AED;">fal.ai/dashboard</a></li>
+                                        <li>Add credits to your account</li>
+                                        <li>AI story creation will resume automatically</li>
+                                    </ol>
+                                    
+                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td align="center">
+                                                <a href="https://fal.ai/dashboard" style="display: inline-block; background: #7C3AED; color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 50px; font-size: 16px; font-weight: 600;">
+                                                    Top Up fal.ai Balance →
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            
+                            <!-- Footer -->
+                            <tr>
+                                <td style="background-color: #f9fafb; padding: 20px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+                                    <p style="margin: 0; color: #9ca3af; font-size: 12px;">
+                                        This is an automated alert from Azories. Sent at {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </body>
+        </html>
+        """
+        
+        result = await send_email(alert_email, subject, html_content)
+        
+        if result.get("success"):
+            _alert_state["last_sent"] = datetime.utcnow()
+            logger.info(f"✅ fal.ai balance alert sent to {alert_email}")
+            return True
+        else:
+            logger.error(f"Failed to send fal.ai alert: {result.get('error')}")
+            return False
+            
+    except Exception as e:
+        logger.error(f"Error sending fal.ai balance alert: {str(e)}")
         return False
