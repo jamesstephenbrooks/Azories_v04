@@ -4043,6 +4043,37 @@ async def get_chapters(book_id: str, response: Response):
     response.headers["Expires"] = "0"
     
     chapters = await db.chapters.find({"book_id": book_id}, {"_id": 0}).sort("order", 1).to_list(100)
+    
+    # If no chapters exist but book has pages (AI-generated book), create a default chapter
+    if not chapters:
+        # Check if book has pages in the pages collection
+        existing_pages = await db.pages.find({"book_id": book_id}, {"_id": 0}).to_list(1)
+        if existing_pages:
+            # Create default chapter for legacy AI books
+            now = datetime.now(timezone.utc)
+            chapter_id = str(uuid.uuid4())
+            default_chapter = {
+                "id": chapter_id,
+                "book_id": book_id,
+                "title": "Story",
+                "order": 0,
+                "created_at": now.isoformat(),
+                "updated_at": now.isoformat()
+            }
+            await db.chapters.insert_one({k: v for k, v in default_chapter.items() if k != "_id"})
+            
+            # Update all orphan pages to belong to this chapter
+            await db.pages.update_many(
+                {"book_id": book_id, "chapter_id": {"$exists": False}},
+                {"$set": {"chapter_id": chapter_id}}
+            )
+            await db.pages.update_many(
+                {"book_id": book_id, "chapter_id": None},
+                {"$set": {"chapter_id": chapter_id}}
+            )
+            
+            chapters = [default_chapter]
+    
     return [ChapterResponse(**c) for c in chapters]
 
 @api_router.delete("/chapters/{chapter_id}")
@@ -4107,7 +4138,12 @@ async def get_pages(chapter_id: str, response: Response):
     response.headers["Pragma"] = "no-cache"
     response.headers["Expires"] = "0"
     
-    pages = await db.pages.find({"chapter_id": chapter_id}, {"_id": 0}).sort("order", 1).to_list(100)
+    # First try to find pages by chapter_id
+    pages = await db.pages.find({"chapter_id": chapter_id}, {"_id": 0}).to_list(100)
+    
+    # Sort by order if available, otherwise by page_number (for AI-generated books)
+    pages.sort(key=lambda p: (p.get("order", 0), p.get("page_number", 0)))
+    
     for page in pages:
         page.setdefault("image_url_2", "")
         page.setdefault("image_url_3", "")
@@ -4119,6 +4155,9 @@ async def get_pages(chapter_id: str, response: Response):
         page.setdefault("font_family", "default")
         page.setdefault("font_size", "medium")
         page.setdefault("text_align", "left")
+        # Ensure order is set for editor compatibility
+        if "order" not in page:
+            page["order"] = page.get("page_number", 0)
     return [PageResponse(**p) for p in pages]
 
 @api_router.put("/pages/{page_id}", response_model=PageResponse)
@@ -6371,6 +6410,18 @@ async def run_story_generation_job(job_id: str, request_data: dict, user_data: d
         style_prompts = get_style_prompts()
         style_desc = style_prompts.get(selected_style, style_prompts["3d-pixar"])
         
+        # Create default chapter for AI story (required for BookEditor compatibility)
+        chapter_id = str(uuid.uuid4())
+        default_chapter = {
+            "id": chapter_id,
+            "book_id": book_id,
+            "title": "Story",
+            "order": 0,
+            "created_at": now,
+            "updated_at": now
+        }
+        await db.chapters.insert_one({k: v for k, v in default_chapter.items() if k != "_id"})
+        
         # Create book document with all required fields for compatibility
         book = {
             "id": book_id,
@@ -6391,6 +6442,8 @@ async def run_story_generation_job(job_id: str, request_data: dict, user_data: d
             "generation_job_id": job_id,
             "cover_image": "",  # Will be populated after cover generation
             "back_cover_image": "",
+            "ai_generated": True,  # Flag to identify AI-generated stories
+            "default_chapter_id": chapter_id,  # Reference to the default chapter
         }
         
         await db.books.insert_one({k: v for k, v in book.items() if k != "_id"})
@@ -6460,6 +6513,7 @@ async def run_story_generation_job(job_id: str, request_data: dict, user_data: d
                 page_doc = {
                     "id": str(uuid.uuid4()),
                     "book_id": book_id,
+                    "chapter_id": chapter_id,  # Link to the default chapter for editor compatibility
                     "page_number": page_num,
                     "text_content": page.get("text", ""),
                     "image_url": image_url,
@@ -6493,6 +6547,7 @@ async def run_story_generation_job(job_id: str, request_data: dict, user_data: d
                 page_doc = {
                     "id": str(uuid.uuid4()),
                     "book_id": book_id,
+                    "chapter_id": chapter_id,  # Link to the default chapter for editor compatibility
                     "page_number": page_num,
                     "text_content": page.get("text", ""),
                     "image_url": None,  # No image
