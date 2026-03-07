@@ -925,3 +925,283 @@ async def add_shipping_to_order(order_id: str, shipping_address: ShippingAddress
         "status": "processing",
         "message": "Shipping details added. Order is being prepared for production."
     }
+
+
+# ==================== ADMIN ORDER MANAGEMENT ENDPOINTS ====================
+
+@router.get("/admin/orders")
+async def get_all_orders_admin(
+    status: Optional[str] = None,
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None,
+    limit: int = 100
+):
+    """
+    Get all print orders with financial breakdown (admin only).
+    Returns orders with cost, revenue, and profit calculations.
+    """
+    db = get_db()
+    
+    # Build query filter
+    query = {}
+    if status:
+        query["status"] = status
+    
+    if date_from:
+        try:
+            from_date = datetime.fromisoformat(date_from.replace('Z', '+00:00'))
+            query["created_at"] = {"$gte": from_date}
+        except:
+            pass
+    
+    if date_to:
+        try:
+            to_date = datetime.fromisoformat(date_to.replace('Z', '+00:00'))
+            if "created_at" in query:
+                query["created_at"]["$lte"] = to_date
+            else:
+                query["created_at"] = {"$lte": to_date}
+        except:
+            pass
+    
+    # Fetch orders
+    orders = await db.print_orders.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    # Enrich with financial data
+    enriched_orders = []
+    total_revenue = 0
+    total_cost = 0
+    total_profit = 0
+    
+    for order in orders:
+        product_type = order.get("product_type", "softcover_8x10")
+        currency = order.get("currency", "GBP").lower()
+        
+        # Get product costs
+        product = PRINT_PRODUCTS.get(product_type, PRINT_PRODUCTS["softcover_8x10"])
+        
+        if currency == "gbp":
+            retail_price = product["price_gbp"]
+            gelato_cost = product["gelato_cost_gbp"]
+        else:
+            retail_price = product["price_usd"]
+            gelato_cost = product["gelato_cost_usd"]
+        
+        # Calculate financials
+        amount_paid = order.get("amount_paid", retail_price)
+        discount_amount = order.get("discount_amount", 0)
+        shipping_cost = order.get("shipping_cost", 5.99 if currency == "gbp" else 7.99)
+        
+        # Estimated Gelato shipping cost (varies by destination)
+        gelato_shipping = 3.50 if currency == "gbp" else 4.50
+        
+        total_gelato_cost = gelato_cost + gelato_shipping
+        revenue = float(amount_paid)
+        profit = revenue - total_gelato_cost
+        
+        enriched_order = {
+            **order,
+            "financial": {
+                "retail_price": retail_price,
+                "discount_applied": discount_amount,
+                "amount_charged": revenue,
+                "gelato_product_cost": gelato_cost,
+                "gelato_shipping_cost": gelato_shipping,
+                "total_cost": total_gelato_cost,
+                "profit": round(profit, 2),
+                "profit_margin": round((profit / revenue * 100), 1) if revenue > 0 else 0,
+                "currency": currency.upper()
+            }
+        }
+        
+        enriched_orders.append(enriched_order)
+        
+        # Aggregate totals (only for paid/completed orders)
+        if order.get("status") in ["paid", "processing", "shipped", "delivered", "completed"]:
+            total_revenue += revenue
+            total_cost += total_gelato_cost
+            total_profit += profit
+    
+    return {
+        "orders": enriched_orders,
+        "summary": {
+            "total_orders": len(enriched_orders),
+            "total_revenue": round(total_revenue, 2),
+            "total_cost": round(total_cost, 2),
+            "total_profit": round(total_profit, 2),
+            "average_profit_margin": round((total_profit / total_revenue * 100), 1) if total_revenue > 0 else 0
+        },
+        "status_breakdown": {
+            status: len([o for o in enriched_orders if o.get("status") == status])
+            for status in set(o.get("status") for o in enriched_orders)
+        }
+    }
+
+
+@router.get("/admin/orders/{order_id}")
+async def get_order_admin(order_id: str):
+    """Get detailed order information for admin"""
+    db = get_db()
+    
+    order = await db.print_orders.find_one({"id": order_id}, {"_id": 0})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    # Get associated transaction
+    transaction = await db.payment_transactions.find_one(
+        {"order_reference": order.get("order_reference")},
+        {"_id": 0}
+    )
+    
+    # Get book details
+    book = await db.books.find_one({"id": order.get("book_id")}, {"_id": 0, "pages": 0})
+    
+    # Get Gelato status if available
+    gelato_info = None
+    if order.get("gelato_order_id"):
+        gelato_status = await gelato_service.get_order_status(order["gelato_order_id"])
+        if gelato_status.get("success"):
+            gelato_info = gelato_status
+    
+    # Calculate financials
+    product_type = order.get("product_type", "softcover_8x10")
+    currency = order.get("currency", "GBP").lower()
+    product = PRINT_PRODUCTS.get(product_type, PRINT_PRODUCTS["softcover_8x10"])
+    
+    if currency == "gbp":
+        gelato_cost = product["gelato_cost_gbp"]
+    else:
+        gelato_cost = product["gelato_cost_usd"]
+    
+    gelato_shipping = 3.50 if currency == "gbp" else 4.50
+    amount_paid = order.get("amount_paid", 0)
+    total_cost = gelato_cost + gelato_shipping
+    profit = float(amount_paid) - total_cost
+    
+    return {
+        "order": order,
+        "transaction": transaction,
+        "book": book,
+        "gelato": gelato_info,
+        "financial": {
+            "amount_paid": amount_paid,
+            "gelato_product_cost": gelato_cost,
+            "gelato_shipping_cost": gelato_shipping,
+            "total_cost": total_cost,
+            "profit": round(profit, 2),
+            "currency": currency.upper()
+        }
+    }
+
+
+@router.put("/admin/orders/{order_id}/status")
+async def update_order_status(order_id: str, status: str, notes: Optional[str] = None):
+    """Update order status manually (admin)"""
+    db = get_db()
+    
+    valid_statuses = ["pending", "paid", "processing", "submitted", "in_production", "shipped", "delivered", "completed", "cancelled", "refunded"]
+    if status not in valid_statuses:
+        raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {valid_statuses}")
+    
+    result = await db.print_orders.update_one(
+        {"id": order_id},
+        {"$set": {
+            "status": status,
+            "admin_notes": notes,
+            "updated_at": datetime.utcnow()
+        }}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    return {"success": True, "order_id": order_id, "new_status": status}
+
+
+@router.get("/admin/financial-summary")
+async def get_financial_summary(
+    period: str = "all",  # all, today, week, month, year
+):
+    """
+    Get financial summary for print orders.
+    """
+    db = get_db()
+    
+    # Build date filter
+    query = {"status": {"$in": ["paid", "processing", "shipped", "delivered", "completed"]}}
+    
+    now = datetime.utcnow()
+    if period == "today":
+        query["created_at"] = {"$gte": now.replace(hour=0, minute=0, second=0, microsecond=0)}
+    elif period == "week":
+        from datetime import timedelta
+        query["created_at"] = {"$gte": now - timedelta(days=7)}
+    elif period == "month":
+        from datetime import timedelta
+        query["created_at"] = {"$gte": now - timedelta(days=30)}
+    elif period == "year":
+        from datetime import timedelta
+        query["created_at"] = {"$gte": now - timedelta(days=365)}
+    
+    orders = await db.print_orders.find(query, {"_id": 0}).to_list(1000)
+    
+    # Calculate totals
+    gbp_revenue = 0
+    gbp_cost = 0
+    usd_revenue = 0
+    usd_cost = 0
+    
+    orders_by_status = {}
+    orders_by_product = {}
+    daily_revenue = {}
+    
+    for order in orders:
+        currency = order.get("currency", "GBP").lower()
+        product_type = order.get("product_type", "softcover_8x10")
+        product = PRINT_PRODUCTS.get(product_type, PRINT_PRODUCTS["softcover_8x10"])
+        
+        amount = float(order.get("amount_paid", 0))
+        
+        if currency == "gbp":
+            cost = product["gelato_cost_gbp"] + 3.50
+            gbp_revenue += amount
+            gbp_cost += cost
+        else:
+            cost = product["gelato_cost_usd"] + 4.50
+            usd_revenue += amount
+            usd_cost += cost
+        
+        # Count by status
+        status = order.get("status", "unknown")
+        orders_by_status[status] = orders_by_status.get(status, 0) + 1
+        
+        # Count by product
+        orders_by_product[product_type] = orders_by_product.get(product_type, 0) + 1
+        
+        # Daily breakdown
+        date_key = order.get("created_at", now).strftime("%Y-%m-%d") if order.get("created_at") else "unknown"
+        if date_key not in daily_revenue:
+            daily_revenue[date_key] = {"revenue": 0, "orders": 0}
+        daily_revenue[date_key]["revenue"] += amount
+        daily_revenue[date_key]["orders"] += 1
+    
+    return {
+        "period": period,
+        "total_orders": len(orders),
+        "financials": {
+            "gbp": {
+                "revenue": round(gbp_revenue, 2),
+                "cost": round(gbp_cost, 2),
+                "profit": round(gbp_revenue - gbp_cost, 2)
+            },
+            "usd": {
+                "revenue": round(usd_revenue, 2),
+                "cost": round(usd_cost, 2),
+                "profit": round(usd_revenue - usd_cost, 2)
+            },
+            "combined_profit_gbp": round((gbp_revenue - gbp_cost) + (usd_revenue - usd_cost) * 0.79, 2)  # USD to GBP approx
+        },
+        "orders_by_status": orders_by_status,
+        "orders_by_product": orders_by_product,
+        "daily_breakdown": dict(sorted(daily_revenue.items(), reverse=True)[:30])  # Last 30 days
+    }
