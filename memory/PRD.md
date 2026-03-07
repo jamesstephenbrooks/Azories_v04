@@ -41,7 +41,7 @@ Build a "Print on Demand" (POD) book ordering feature using the Gelato API for a
 - **Gelato API**: Print on Demand fulfillment
 - **Stripe**: Payment processing
 - **Cloudinary**: Image/PDF storage (using chunked upload for large files)
-- **ElevenLabs**: Text-to-speech narration
+- **ElevenLabs**: Text-to-speech narration (primary, with OpenAI TTS fallback)
 
 ## POD E2E Test Results (March 7, 2026)
 
@@ -70,6 +70,10 @@ Build a "Print on Demand" (POD) book ordering feature using the Gelato API for a
 - ✅ Added lazy loading to book cover thumbnails in Dashboard for faster loading
 - ✅ Fixed bonus preview modal closing when navigating (pointer-events-none when preview open)
 - ✅ Implemented BookActionsDropdown component for cleaner "My Books" card actions
+- ✅ Switched TTS to ElevenLabs with OpenAI fallback for high-quality narration
+- ✅ Added mobile-friendly Prev/Next buttons to BonusPagesPreview
+- ✅ Photorealistic style now routes to Ideogram V3 (realistic mode) for true photorealistic results
+- ✅ Added fal.ai balance alert system - emails books@azories.com when balance is exhausted
 
 ## Pending Verification
 - **P1**: Verify ElevenLabs narration integration

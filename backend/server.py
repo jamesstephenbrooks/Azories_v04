@@ -7902,33 +7902,16 @@ async def get_voices():
 
 @api_router.post("/tts/generate")
 async def generate_tts(request: TTSRequest):
-    """Generate TTS audio using OpenAI TTS (via Emergent LLM Key) with Cloudinary caching"""
+    """Generate TTS audio using ElevenLabs with OpenAI fallback, with Cloudinary caching"""
     import hashlib
     import base64
     
     try:
-        emergent_key = os.environ.get("EMERGENT_LLM_KEY")
-        if not emergent_key:
-            raise HTTPException(status_code=500, detail="TTS service not configured")
-        
-        # Map ElevenLabs voice IDs to OpenAI voices
-        voice_mapping = {
-            "21m00Tcm4TlvDq8ikWAM": "nova",      # Rachel -> nova (warm, friendly)
-            "AZnzlk1XvdvUeBnXmlld": "shimmer",   # Domi -> shimmer (bright)
-            "EXAVITQu4vr4xnSDxMaL": "alloy",     # Bella -> alloy (neutral)
-            "ErXwobaYiN019PkySvjV": "onyx",      # Antoni -> onyx (deep)
-            "MF3mGyEYCl7XYWbV9V6O": "coral",     # Elli -> coral (warm)
-            "TxGEqnHWrfWFTfGW9XjX": "echo",      # Josh -> echo (smooth)
-            "VR6AewLTigWG4xSOukaG": "fable",     # Arnold -> fable (expressive)
-            "pNInz6obpgDQGcFmaJgB": "sage",      # Adam -> sage (wise)
-            "yoZ06aMxZJJ28mfd3POQ": "ash",       # Sam -> ash (clear)
-        }
-        
-        # Get OpenAI voice name (default to nova for storytelling)
-        openai_voice = voice_mapping.get(request.voice_id, "nova")
+        # Use the voice_id directly (it's already an ElevenLabs voice ID)
+        voice_id = request.voice_id or "21m00Tcm4TlvDq8ikWAM"  # Default to Rachel
         
         # Create a cache key based on text content and voice
-        cache_key = hashlib.sha256(f"{request.text}:{openai_voice}".encode()).hexdigest()
+        cache_key = hashlib.sha256(f"{request.text}:{voice_id}:tts".encode()).hexdigest()
         
         # Check if we have a Cloudinary URL cached
         cached_audio = await db.audio_cache.find_one({"cache_key": cache_key})
@@ -7944,24 +7927,68 @@ async def generate_tts(request: TTSRequest):
         # Not in cache - generate new audio
         logger.info(f"TTS cache miss, generating for key: {cache_key[:16]}...")
         
-        # Initialize OpenAI TTS
-        tts = OpenAITextToSpeech(api_key=emergent_key)
+        audio_bytes = None
+        provider = "unknown"
         
-        # Generate speech as base64
-        audio_base64 = await tts.generate_speech_base64(
-            text=request.text,
-            model="tts-1",
-            voice=openai_voice,
-            response_format="mp3"
-        )
+        # Try ElevenLabs first
+        if eleven_client:
+            try:
+                audio_generator = eleven_client.text_to_speech.convert(
+                    voice_id=voice_id,
+                    text=request.text,
+                    model_id="eleven_multilingual_v2",
+                    voice_settings=VoiceSettings(
+                        stability=0.5,
+                        similarity_boost=0.75,
+                        style=0.0,
+                        use_speaker_boost=True
+                    )
+                )
+                audio_bytes = b"".join(audio_generator)
+                provider = "elevenlabs"
+                logger.info("Generated audio with ElevenLabs")
+            except Exception as eleven_err:
+                logger.warning(f"ElevenLabs failed, falling back to OpenAI: {str(eleven_err)[:100]}")
+        
+        # Fallback to OpenAI TTS if ElevenLabs failed
+        if audio_bytes is None:
+            emergent_key = os.environ.get("EMERGENT_LLM_KEY")
+            if not emergent_key:
+                raise HTTPException(status_code=500, detail="TTS service not configured")
+            
+            # Map ElevenLabs voice IDs to OpenAI voices
+            voice_mapping = {
+                "21m00Tcm4TlvDq8ikWAM": "nova",
+                "AZnzlk1XvdvUeBnXmlld": "shimmer",
+                "EXAVITQu4vr4xnSDxMaL": "alloy",
+                "ErXwobaYiN019PkySvjV": "onyx",
+                "MF3mGyEYCl7XYWbV9V6O": "coral",
+                "TxGEqnHWrfWFTfGW9XjX": "echo",
+                "VR6AewLTigWG4xSOukaG": "fable",
+                "pNInz6obpgDQGcFmaJgB": "sage",
+                "yoZ06aMxZJJ28mfd3POQ": "ash",
+            }
+            openai_voice = voice_mapping.get(voice_id, "nova")
+            
+            tts = OpenAITextToSpeech(api_key=emergent_key)
+            audio_base64 = await tts.generate_speech_base64(
+                text=request.text,
+                model="tts-1",
+                voice=openai_voice,
+                response_format="mp3"
+            )
+            audio_bytes = base64.b64decode(audio_base64)
+            provider = "openai"
+            logger.info("Generated audio with OpenAI TTS (fallback)")
+        
+        audio_base64 = base64.b64encode(audio_bytes).decode('utf-8')
         
         # Upload to Cloudinary
         cloudinary_url = None
         try:
-            audio_bytes = base64.b64decode(audio_base64)
             upload_result = cloudinary.uploader.upload(
                 audio_bytes,
-                resource_type="video",  # Cloudinary uses "video" for audio files
+                resource_type="video",
                 folder="azories/audio/narration",
                 public_id=f"tts_{cache_key[:16]}",
                 format="mp3"
@@ -7970,7 +7997,6 @@ async def generate_tts(request: TTSRequest):
             logger.info(f"Audio uploaded to Cloudinary: {cloudinary_url}")
         except Exception as upload_error:
             logger.warning(f"Failed to upload audio to Cloudinary: {upload_error}")
-            # Continue with base64 fallback
         
         # Store in cache with Cloudinary URL
         await db.audio_cache.update_one(
@@ -7980,7 +8006,8 @@ async def generate_tts(request: TTSRequest):
                     "cache_key": cache_key,
                     "cloudinary_url": cloudinary_url,
                     "audio_base64": audio_base64 if not cloudinary_url else None,
-                    "voice": openai_voice,
+                    "voice": voice_id,
+                    "provider": provider,
                     "text_preview": request.text[:100],
                     "created_at": datetime.now(timezone.utc),
                     "expires_at": datetime.now(timezone.utc) + timedelta(days=365)
@@ -8020,7 +8047,10 @@ async def batch_prepare_tts(request: BatchTTSRequest, background_tasks: Backgrou
     if not pages_to_process:
         return {"success": True, "message": "All pages already have audio", "pages_processed": 0}
     
-    # Voice mapping
+    # Use ElevenLabs voice_id directly
+    voice_id = request.voice_id or "21m00Tcm4TlvDq8ikWAM"  # Default to Rachel
+    
+    # Voice mapping for OpenAI fallback
     voice_mapping = {
         "21m00Tcm4TlvDq8ikWAM": "nova",
         "AZnzlk1XvdvUeBnXmlld": "shimmer",
@@ -8032,15 +8062,12 @@ async def batch_prepare_tts(request: BatchTTSRequest, background_tasks: Backgrou
         "pNInz6obpgDQGcFmaJgB": "sage",
         "yoZ06aMxZJJ28mfd3POQ": "ash",
     }
-    openai_voice = voice_mapping.get(request.voice_id, "nova")
+    openai_voice = voice_mapping.get(voice_id, "nova")
     
     async def process_pages():
         emergent_key = os.environ.get("EMERGENT_LLM_KEY")
-        if not emergent_key:
-            return
         
         try:
-            tts = OpenAITextToSpeech(api_key=emergent_key)
             processed = 0
             max_pages = 10  # Limit concurrent processing to prevent memory issues
             
@@ -8050,7 +8077,7 @@ async def batch_prepare_tts(request: BatchTTSRequest, background_tasks: Backgrou
                     if not text:
                         continue
                         
-                    cache_key = hashlib.sha256(f"{text}:{openai_voice}".encode()).hexdigest()
+                    cache_key = hashlib.sha256(f"{text}:{voice_id}:tts".encode()).hexdigest()
                     
                     # Check cache first
                     cached = await db.audio_cache.find_one({"cache_key": cache_key})
@@ -8063,18 +8090,45 @@ async def batch_prepare_tts(request: BatchTTSRequest, background_tasks: Backgrou
                         processed += 1
                         continue
                     
-                    # Generate new audio
-                    audio_base64 = await tts.generate_speech_base64(
-                        text=text,
-                        model="tts-1",
-                        voice=openai_voice,
-                        response_format="mp3"
-                    )
+                    audio_bytes = None
+                    provider = "unknown"
                     
-                    # Upload to Cloudinary - clear memory immediately after
-                    audio_bytes = base64.b64decode(audio_base64)
-                    del audio_base64  # Free memory immediately
+                    # Try ElevenLabs first
+                    if eleven_client:
+                        try:
+                            audio_generator = eleven_client.text_to_speech.convert(
+                                voice_id=voice_id,
+                                text=text,
+                                model_id="eleven_multilingual_v2",
+                                voice_settings=VoiceSettings(
+                                    stability=0.5,
+                                    similarity_boost=0.75,
+                                    style=0.0,
+                                    use_speaker_boost=True
+                                )
+                            )
+                            audio_bytes = b"".join(audio_generator)
+                            provider = "elevenlabs"
+                        except Exception as eleven_err:
+                            logger.warning(f"ElevenLabs batch failed, falling back to OpenAI: {str(eleven_err)[:50]}")
                     
+                    # Fallback to OpenAI
+                    if audio_bytes is None and emergent_key:
+                        tts = OpenAITextToSpeech(api_key=emergent_key)
+                        audio_base64 = await tts.generate_speech_base64(
+                            text=text,
+                            model="tts-1",
+                            voice=openai_voice,
+                            response_format="mp3"
+                        )
+                        audio_bytes = base64.b64decode(audio_base64)
+                        provider = "openai"
+                    
+                    if audio_bytes is None:
+                        logger.error("No TTS provider available")
+                        continue
+                    
+                    # Upload to Cloudinary
                     upload_result = cloudinary.uploader.upload(
                         audio_bytes,
                         resource_type="video",
@@ -8092,7 +8146,8 @@ async def batch_prepare_tts(request: BatchTTSRequest, background_tasks: Backgrou
                         {"$set": {
                             "cache_key": cache_key,
                             "cloudinary_url": cloudinary_url,
-                            "voice": openai_voice,
+                            "voice": voice_id,
+                            "provider": provider,
                             "created_at": datetime.now(timezone.utc)
                         }},
                         upsert=True
@@ -8103,7 +8158,7 @@ async def batch_prepare_tts(request: BatchTTSRequest, background_tasks: Backgrou
                         {"$set": {"pages.$.audio_url": cloudinary_url}}
                     )
                     processed += 1
-                    logger.info(f"Batch TTS: Processed page {page.get('page_number')} for book {request.book_id}")
+                    logger.info(f"Batch TTS ({provider}): Processed page {page.get('page_number')} for book {request.book_id}")
                     
                 except Exception as e:
                     logger.error(f"Batch TTS error for page {page.get('page_number')}: {e}")
@@ -8129,7 +8184,7 @@ async def generate_tts_for_page(
     voice_id: str = "21m00Tcm4TlvDq8ikWAM",
     current_user: dict = Depends(get_current_user)
 ):
-    """Generate and cache TTS audio for a specific page, saving URL to the page document"""
+    """Generate and cache TTS audio for a specific page using ElevenLabs with OpenAI fallback"""
     import hashlib
     import base64
     
@@ -8148,35 +8203,56 @@ async def generate_tts_for_page(
         if not text.strip():
             return {"audio_url": None, "cached": False, "success": True, "message": "No text to narrate"}
         
-        emergent_key = os.environ.get("EMERGENT_LLM_KEY")
-        if not emergent_key:
-            raise HTTPException(status_code=500, detail="TTS service not configured")
+        audio_bytes = None
+        provider = "unknown"
         
-        # Voice mapping
-        voice_mapping = {
-            "21m00Tcm4TlvDq8ikWAM": "nova",
-            "AZnzlk1XvdvUeBnXmlld": "shimmer",
-            "EXAVITQu4vr4xnSDxMaL": "alloy",
-            "ErXwobaYiN019PkySvjV": "onyx",
-            "MF3mGyEYCl7XYWbV9V6O": "coral",
-            "TxGEqnHWrfWFTfGW9XjX": "echo",
-            "VR6AewLTigWG4xSOukaG": "fable",
-            "pNInz6obpgDQGcFmaJgB": "sage",
-            "yoZ06aMxZJJ28mfd3POQ": "ash",
-        }
-        openai_voice = voice_mapping.get(voice_id, "nova")
+        # Try ElevenLabs first
+        if eleven_client:
+            try:
+                audio_generator = eleven_client.text_to_speech.convert(
+                    voice_id=voice_id,
+                    text=text,
+                    model_id="eleven_multilingual_v2",
+                    voice_settings=VoiceSettings(
+                        stability=0.5,
+                        similarity_boost=0.75,
+                        style=0.0,
+                        use_speaker_boost=True
+                    )
+                )
+                audio_bytes = b"".join(audio_generator)
+                provider = "elevenlabs"
+            except Exception as eleven_err:
+                logger.warning(f"ElevenLabs failed for page TTS, falling back to OpenAI: {str(eleven_err)[:50]}")
         
-        # Generate TTS
-        tts = OpenAITextToSpeech(api_key=emergent_key)
-        audio_base64 = await tts.generate_speech_base64(
-            text=text,
-            model="tts-1",
-            voice=openai_voice,
-            response_format="mp3"
-        )
-        
-        # Upload to Cloudinary
-        audio_bytes = base64.b64decode(audio_base64)
+        # Fallback to OpenAI
+        if audio_bytes is None:
+            emergent_key = os.environ.get("EMERGENT_LLM_KEY")
+            if not emergent_key:
+                raise HTTPException(status_code=500, detail="TTS service not configured")
+            
+            voice_mapping = {
+                "21m00Tcm4TlvDq8ikWAM": "nova",
+                "AZnzlk1XvdvUeBnXmlld": "shimmer",
+                "EXAVITQu4vr4xnSDxMaL": "alloy",
+                "ErXwobaYiN019PkySvjV": "onyx",
+                "MF3mGyEYCl7XYWbV9V6O": "coral",
+                "TxGEqnHWrfWFTfGW9XjX": "echo",
+                "VR6AewLTigWG4xSOukaG": "fable",
+                "pNInz6obpgDQGcFmaJgB": "sage",
+                "yoZ06aMxZJJ28mfd3POQ": "ash",
+            }
+            openai_voice = voice_mapping.get(voice_id, "nova")
+            
+            tts = OpenAITextToSpeech(api_key=emergent_key)
+            audio_base64 = await tts.generate_speech_base64(
+                text=text,
+                model="tts-1",
+                voice=openai_voice,
+                response_format="mp3"
+            )
+            audio_bytes = base64.b64decode(audio_base64)
+            provider = "openai"
         
         # Get book info for folder organization
         chapter = await db.chapters.find_one({"id": page.get("chapter_id")})
@@ -8197,7 +8273,7 @@ async def generate_tts_for_page(
             {"$set": {"audio_url": cloudinary_url}}
         )
         
-        logger.info(f"Generated and cached audio for page {page_id}: {cloudinary_url}")
+        logger.info(f"Generated and cached {provider} audio for page {page_id}: {cloudinary_url}")
         return {"audio_url": cloudinary_url, "cached": False, "success": True}
         
     except Exception as e:

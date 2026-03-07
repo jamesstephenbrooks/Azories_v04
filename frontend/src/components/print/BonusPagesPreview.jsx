@@ -34,11 +34,19 @@ const BonusPagesPreview = ({
     { name: 'Meet Azora', component: <MeetAzoraPage /> },
   ];
 
-  const nextPage = () => {
+  const nextPage = (e) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
     setCurrentPage((prev) => (prev + 1) % pages.length);
   };
 
-  const prevPage = () => {
+  const prevPage = (e) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
     setCurrentPage((prev) => (prev - 1 + pages.length) % pages.length);
   };
 
@@ -60,7 +68,7 @@ const BonusPagesPreview = ({
           e.stopPropagation();
           onClose();
         }}
-        className="absolute top-4 right-4 text-white/80 hover:text-white p-2 z-10"
+        className="absolute top-4 right-4 text-white/80 hover:text-white p-2 z-10 touch-manipulation"
       >
         <FiX className="w-6 h-6" />
       </button>
@@ -72,23 +80,17 @@ const BonusPagesPreview = ({
         <p className="text-sm text-white/60 mt-1">{currentPage + 1} of {pages.length}</p>
       </div>
 
-      {/* Navigation arrows */}
+      {/* Desktop Navigation arrows - hidden on mobile */}
       <button
-        onClick={(e) => {
-          e.stopPropagation();
-          prevPage();
-        }}
-        className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors z-10"
+        onClick={prevPage}
+        className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 items-center justify-center text-white transition-colors z-10 touch-manipulation"
       >
         <FiChevronLeft className="w-6 h-6" />
       </button>
 
       <button
-        onClick={(e) => {
-          e.stopPropagation();
-          nextPage();
-        }}
-        className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors z-10"
+        onClick={nextPage}
+        className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 items-center justify-center text-white transition-colors z-10 touch-manipulation"
       >
         <FiChevronRight className="w-6 h-6" />
       </button>
@@ -103,8 +105,26 @@ const BonusPagesPreview = ({
         </div>
       </div>
 
+      {/* Mobile Navigation buttons - shown only on mobile, positioned below the preview */}
+      <div className="md:hidden absolute bottom-20 left-1/2 -translate-x-1/2 flex items-center gap-4 z-10">
+        <button
+          onClick={prevPage}
+          className="flex items-center gap-2 px-5 py-3 rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white font-medium transition-colors touch-manipulation"
+        >
+          <FiChevronLeft className="w-5 h-5" />
+          Prev
+        </button>
+        <button
+          onClick={nextPage}
+          className="flex items-center gap-2 px-5 py-3 rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white font-medium transition-colors touch-manipulation"
+        >
+          Next
+          <FiChevronRight className="w-5 h-5" />
+        </button>
+      </div>
+
       {/* Page dots */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+      <div className="absolute bottom-4 md:bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
         {pages.map((_, idx) => (
           <button
             key={idx}
@@ -112,7 +132,7 @@ const BonusPagesPreview = ({
               e.stopPropagation();
               setCurrentPage(idx);
             }}
-            className={`w-2 h-2 rounded-full transition-colors ${
+            className={`w-3 h-3 md:w-2 md:h-2 rounded-full transition-colors touch-manipulation ${
               idx === currentPage ? 'bg-white' : 'bg-white/30 hover:bg-white/50'
             }`}
           />
