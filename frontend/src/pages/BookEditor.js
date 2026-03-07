@@ -97,6 +97,7 @@ export default function BookEditor() {
   const [imageUploadProgress, setImageUploadProgress] = useState(0);
   const [videoUploadProgress, setVideoUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false);  // AI image generation state
   
   // Expanded image/video viewer
   const [expandedMedia, setExpandedMedia] = useState(null); // {type: 'image'|'video', url: string, name: string}
@@ -926,6 +927,51 @@ export default function BookEditor() {
       setVideoUploadProgress(0);
     }
   };
+
+  // AI Image Generation handler
+  const handleGenerateAIImage = async (customPrompt = null) => {
+    if (!selectedPage?.id) {
+      toast.error('Please select a page first');
+      return;
+    }
+    
+    // Use page text if no custom prompt
+    const pageText = selectedPage.text_content?.trim();
+    if (!customPrompt && !pageText) {
+      toast.error('Please add some text to the page first, or provide a custom prompt');
+      return;
+    }
+    
+    setIsGeneratingAI(true);
+    
+    try {
+      const token = localStorage.getItem('azories-token');
+      const res = await axios.post(`${API}/ai/generate-page-image`, {
+        page_id: selectedPage.id,
+        prompt: customPrompt || null,
+        art_style: book?.art_style || '3d-pixar',
+        use_page_text: !customPrompt
+      }, {
+        headers: { 'Authorization': `Bearer ${token}` },
+        timeout: 120000  // 2 minute timeout for image generation
+      });
+      
+      if (res.data.success && res.data.image_url) {
+        // Update the page with the new image
+        setSelectedPage({ ...selectedPage, image_url: res.data.image_url });
+        toast.success('AI image generated successfully!');
+      } else {
+        throw new Error('No image returned');
+      }
+    } catch (error) {
+      console.error('AI image generation error:', error);
+      const message = error.response?.data?.detail || error.message || 'Failed to generate AI image';
+      toast.error(message);
+    } finally {
+      setIsGeneratingAI(false);
+    }
+  };
+
 
   const handleCoverUpload = async (e, isBack = false) => {
     const file = e.target.files?.[0];
@@ -1780,6 +1826,28 @@ export default function BookEditor() {
                               Upload Image
                             </Button>
                           </div>
+                          <div>
+                            {/* AI Generate Image Button */}
+                            <Button
+                              variant="outline"
+                              onClick={() => handleGenerateAIImage()}
+                              className="w-full rounded-full bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-purple-500/30 hover:border-purple-500/50"
+                              data-testid="generate-ai-image-btn"
+                              disabled={isGeneratingAI || !selectedPage?.text_content?.trim()}
+                              title={!selectedPage?.text_content?.trim() ? 'Add text to the page first' : 'Generate AI image based on page text'}
+                            >
+                              {isGeneratingAI ? (
+                                <FiLoader className="mr-2 w-4 h-4 animate-spin" />
+                              ) : (
+                                <FiZap className="mr-2 w-4 h-4" />
+                              )}
+                              {isGeneratingAI ? 'Generating...' : 'AI Image'}
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        {/* Upload Video Row */}
+                        <div className="grid grid-cols-1 gap-2">
                           <div>
                             <input
                               type="file"

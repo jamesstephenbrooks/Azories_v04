@@ -4247,6 +4247,120 @@ async def generate_image(request: ImageGenerateRequest, current_user: dict = Dep
         logger.error(f"Error generating image: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error generating image: {str(e)}")
 
+
+class PageImageGenerateRequest(BaseModel):
+    """Request model for generating AI image for a specific page"""
+    page_id: str
+    prompt: Optional[str] = None  # If not provided, uses page text
+    art_style: Optional[str] = "3d-pixar"  # Art style to use
+    use_page_text: bool = True  # Whether to use page text as prompt base
+
+@api_router.post("/ai/generate-page-image")
+async def generate_page_image(request: PageImageGenerateRequest, current_user: dict = Depends(get_current_user)):
+    """Generate an AI image for a specific page using FLUX Pro.
+    Uses the page's text content as the prompt basis.
+    """
+    try:
+        # Get the page
+        page = await db.pages.find_one({"id": request.page_id}, {"_id": 0})
+        if not page:
+            raise HTTPException(status_code=404, detail="Page not found")
+        
+        # Get the book - pages may have book_id directly or through chapter_id
+        book = None
+        book_id = page.get("book_id")
+        
+        if book_id:
+            book = await db.books.find_one({"id": book_id}, {"_id": 0})
+        
+        # If no book_id, try to get it through chapter
+        if not book and page.get("chapter_id"):
+            chapter = await db.chapters.find_one({"id": page["chapter_id"]}, {"_id": 0})
+            if chapter:
+                book_id = chapter.get("book_id")
+                book = await db.books.find_one({"id": book_id}, {"_id": 0})
+        
+        if not book:
+            raise HTTPException(status_code=404, detail="Book not found for this page")
+        
+        if book.get("author_id") != current_user["id"] and book.get("user_id") != current_user["id"]:
+            raise HTTPException(status_code=403, detail="Not authorized to edit this book")
+        
+        # Determine the prompt
+        if request.use_page_text and page.get("text_content"):
+            base_prompt = page.get("text_content", "")
+            # If custom prompt provided, combine them
+            if request.prompt:
+                image_prompt = f"{request.prompt}. Scene context: {base_prompt[:200]}"
+            else:
+                image_prompt = f"Illustration for: {base_prompt}"
+        else:
+            image_prompt = request.prompt or "A beautiful illustration"
+        
+        # Get the art style description
+        art_style = request.art_style or book.get("art_style", "3d-pixar")
+        style_prompts = get_style_prompts()
+        style_desc = style_prompts.get(art_style, style_prompts.get("3d-pixar", ""))
+        
+        # Generate the image using FLUX Pro
+        if not FAL_AVAILABLE:
+            raise HTTPException(status_code=500, detail="Image generation service not available")
+        
+        full_prompt = f"{image_prompt}. {style_desc}. High quality, detailed illustration suitable for a children's book."
+        
+        result = await generate_image_flux(
+            prompt=full_prompt,
+            model="flux-pro",  # Use FLUX Pro for best quality
+            image_size="portrait_4_3",
+            num_images=1,
+            guidance_scale=3.5,
+            num_inference_steps=28,
+            print_quality=True  # Generate at print quality (2400x3000)
+        )
+        
+        if not result.get("success") or not result.get("images"):
+            raise HTTPException(status_code=500, detail="Image generation failed")
+        
+        image_data = result["images"][0]
+        image_url = image_data.get("url")
+        
+        if not image_url:
+            raise HTTPException(status_code=500, detail="No image URL in response")
+        
+        # Upload to Cloudinary for permanent storage
+        if CLOUDINARY_AVAILABLE:
+            upload_result = cloudinary.uploader.upload(
+                image_url,
+                folder="azories/story_pages"
+            )
+            final_url = upload_result.get("secure_url")
+        else:
+            final_url = image_url
+        
+        # Update the page with the new image
+        await db.pages.update_one(
+            {"id": request.page_id},
+            {"$set": {
+                "image_url": final_url,
+                "image_prompt": image_prompt,
+                "updated_at": datetime.now(timezone.utc)
+            }}
+        )
+        
+        return {
+            "success": True,
+            "image_url": final_url,
+            "prompt_used": full_prompt[:200]
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error generating page image: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error generating image: {str(e)}")
+
+
+
 @api_router.post("/ai/generate-video")
 async def generate_video(request: VideoGenerateRequest, current_user: dict = Depends(get_current_user)):
     try:
@@ -6669,7 +6783,7 @@ async def generate_single_image(prompt: str, style_desc: str) -> str:
             # Use print_quality for correct 8x10 ratio (2400x3000px at 300 DPI)
             result = await generate_image_flux(
                 prompt=full_prompt,
-                model="flux-dev",  # Use FLUX Dev for best quality/speed balance
+                model="flux-pro",  # Use FLUX Pro for best quality
                 image_size="portrait_4_3",  # Fallback
                 num_images=1,
                 guidance_scale=3.5,

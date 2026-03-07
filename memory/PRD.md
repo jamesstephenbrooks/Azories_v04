@@ -115,3 +115,32 @@ Build a "Print on Demand" (POD) book ordering feature using the Gelato API for a
 - `GET /api/pricing` - Get art style pricing
 - `POST /api/print/prepare/{book_id}` - Prepare book PDF
 - `POST /api/print/checkout/create-session` - Create Stripe checkout
+
+## Latest Updates (March 7, 2026 - Session 2)
+
+### Image Generation Model Change
+- **Switched from FLUX Dev to FLUX Pro** for AI story image generation
+- Settings remain: 2400x3000px (print quality), 28 inference steps, 3.5 guidance scale
+- FLUX Pro provides higher quality images suitable for print
+
+### AI Image Generation in Book Editor - NEW FEATURE
+- Added "AI Image" button next to "Upload Image" in the Book Editor
+- Uses page text content as the prompt basis
+- Generates images using FLUX Pro at print quality (2400x3000px)
+- Works for both AI-generated and manually created stories
+- Images automatically uploaded to Cloudinary for permanent storage
+
+**Backend endpoint**: `POST /api/ai/generate-page-image`
+- Parameters: `page_id`, `prompt` (optional), `art_style`, `use_page_text`
+- Uses book's art style for consistent imagery
+- Returns Cloudinary URL for the generated image
+
+### Words per Page Option - NEW FEATURE  
+- Added "Words per Page" dropdown to AI Story Creator
+- Options: Short (~50), Medium (~100), Long (~150), Extended (~200 - Studio only)
+- Allows users to control story text density
+
+### AI Stories Now Fully Editable
+- AI-generated stories now create a default chapter for editor compatibility
+- Auto-migration creates chapters for legacy AI books without them
+- Pages properly linked to chapters for full editing support
