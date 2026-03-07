@@ -22,6 +22,7 @@ import AnalyticsDashboard from '@/components/AnalyticsDashboard';
 import TrialBanner from '@/components/TrialBanner';
 import { StreakDisplay, BadgeCollection, useStreaksAndBadges, NewBadgePopup } from '@/components/ReadingStreaks';
 import PrintOrderModal from '@/components/PrintOrderModal';
+import BookActionsDropdown from '@/components/BookActionsDropdown';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -1316,89 +1317,34 @@ export default function Dashboard() {
                       </div>
                       
                       <div className="flex items-center justify-between gap-3">
-                        {/* Left side - Edit and utility buttons */}
+                        {/* Clean action buttons: Edit + Dropdown */}
                         <div className="flex items-center gap-2">
-                          <Button variant="default" size="sm" className="rounded-full" onClick={() => navigate(`/editor/${book.id}`)}>
+                          <Button 
+                            variant="default" 
+                            size="sm" 
+                            className="rounded-full bg-purple-600 hover:bg-purple-700" 
+                            onClick={() => navigate(`/editor/${book.id}`)}
+                            data-testid={`edit-book-${book.id}`}
+                          >
                             <FiEdit2 className="mr-2 w-4 h-4" />
                             Edit
                           </Button>
-                          <Button variant="outline" size="icon" className="rounded-full" onClick={() => fetchAnalytics(book.id)}>
-                            <FiBarChart2 className="w-4 h-4" />
-                          </Button>
-                          {!book.series_id && (
-                            <Button 
-                              variant="outline" 
-                              size="icon" 
-                              className="rounded-full"
-                              onClick={() => {
-                                setSelectedBookForSeries(book);
-                                setIsAddToSeriesOpen(true);
-                              }}
-                              title="Add to Series"
-                            >
-                              <FiLink className="w-4 h-4" />
-                            </Button>
-                          )}
-                          {/* Order Printed Copy button */}
-                          <Button 
-                            variant="outline" 
-                            size="icon" 
-                            className="rounded-full text-purple-600 hover:bg-purple-50 border-purple-200"
-                            onClick={(e) => {
-                              e.stopPropagation();
+                          <BookActionsDropdown
+                            book={book}
+                            onAnalytics={() => fetchAnalytics(book.id)}
+                            onCopyLink={() => {
+                              const url = `${window.location.origin}/read/${book.id}`;
+                              navigator.clipboard.writeText(url);
+                              toast.success('Link copied to clipboard!');
+                            }}
+                            onOrderPrint={() => {
                               setSelectedBookForPrint(book);
                               setPrintModalOpen(true);
                             }}
-                            title="Order Printed Copy"
-                            data-testid={`print-book-${book.id}`}
-                          >
-                            <FiPackage className="w-4 h-4" />
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            size="icon" 
-                            className="rounded-full text-destructive hover:bg-destructive hover:text-destructive-foreground"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteBook(book.id);
-                            }}
-                            data-testid={`delete-book-${book.id}`}
-                          >
-                            <FiTrash2 className="w-4 h-4" />
-                          </Button>
+                            onTogglePublish={() => togglePublish(book)}
+                            onDelete={() => deleteBook(book.id)}
+                          />
                         </div>
-                        
-                        {/* Right side - Publish button */}
-                        <Button 
-                          variant={book.is_published || book.publish_status === 'published' ? "outline" : "default"}
-                          size="sm"
-                          className={`rounded-full px-3 text-xs ${
-                            book.is_published || book.publish_status === 'published'
-                              ? 'border-green-500 text-green-600 hover:bg-green-50'
-                              : book.publish_status === 'pending_review'
-                                ? 'bg-amber-500 hover:bg-amber-600 text-white'
-                                : 'bg-purple-600 hover:bg-purple-700 text-white'
-                          }`}
-                          onClick={() => togglePublish(book)}
-                          data-testid={`publish-btn-${book.id}`}
-                        >
-                          {book.is_published || book.publish_status === 'published' ? (
-                            <>
-                              <FiEyeOff className="mr-1 w-3 h-3" />
-                              Unpublish
-                            </>
-                          ) : book.publish_status === 'pending_review' ? (
-                            <>
-                              <FiClock className="mr-1 w-3 h-3" />
-                              Coming Soon
-                            </>
-                          ) : (
-                            <>
-                              <FiSend className="mr-1 w-3 h-3" />
-                              Publish
-                            </>
-                          )}
-                        </Button>
                       </div>
                     </CardContent>
                   </Card>
