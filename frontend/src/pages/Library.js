@@ -26,8 +26,9 @@ const imageCache = new Map();
 const getOptimizedThumbnailUrl = (url, width = 300) => {
   if (!url) return url;
   if (url.includes('res.cloudinary.com')) {
-    // Add aggressive optimization: f_auto (best format), q_auto (auto quality), w_300
-    return url.replace('/upload/', `/upload/f_auto,q_auto,w_${width},c_limit/`);
+    // Aggressive optimization: f_auto (webp/avif), q_auto:low (smaller file), w_300, dpr_auto
+    // Also add fl_progressive for progressive loading
+    return url.replace('/upload/', `/upload/f_auto,q_auto:low,w_${width},c_limit,fl_progressive/`);
   }
   return url;
 };
@@ -92,7 +93,7 @@ const setBookCache = (data) => {
 // ============================================
 
 // Lazy-loaded image component with intersection observer, caching, and purple shimmer
-const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 300 }) => {
+const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 300, priority = false }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const imgRef = useRef(null);
@@ -136,7 +137,7 @@ const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 300
         </div>
       )}
       
-      {/* Actual image - always render, use native lazy loading */}
+      {/* Actual image - always render, use native lazy loading or eager for priority */}
       {!hasError && (
         <img
           src={optimizedSrc}
@@ -144,8 +145,9 @@ const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 300
           className={`w-full h-full object-cover transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
           onLoad={handleLoad}
           onError={() => setHasError(true)}
-          loading="lazy"
+          loading={priority ? "eager" : "lazy"}
           decoding="async"
+          fetchPriority={priority ? "high" : "auto"}
         />
       )}
       
@@ -466,14 +468,14 @@ export default function Library() {
       >
         <div className="book-perspective">
           <div className={`relative bg-card rounded-3xl overflow-hidden border border-border book-3d ${isFeatured ? 'ring-2 ring-primary/50' : ''} ${isComingSoon ? 'opacity-90' : ''}`}>
-          {/* Summary/Back cover button - Top Right (hide for coming soon) */}
+          {/* Summary/Back cover button - Top Right (always visible, not just hover) */}
           {!isComingSoon && (
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 setSummaryBook(book);
               }}
-              className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-all duration-200 opacity-0 group-hover:opacity-100"
+              className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 active:bg-black/80 text-white flex items-center justify-center transition-all duration-200 touch-manipulation cursor-pointer"
               title="View Summary"
               data-testid={`summary-btn-${book.id}`}
             >
@@ -481,9 +483,9 @@ export default function Library() {
             </button>
           )}
           
-          {/* NEW badge for recently published */}
+          {/* NEW badge for recently published - positioned below info button */}
           {isNew && !isComingSoon && (
-            <div className="absolute top-3 right-3 z-20">
+            <div className="absolute top-12 right-3 z-20">
               <span className="px-2 py-1 rounded-full bg-green-500 text-white text-xs font-bold animate-pulse">
                 NEW
               </span>
@@ -528,6 +530,7 @@ export default function Library() {
                 alt={book.title}
                 className="w-full h-full"
                 thumbnailWidth={300}
+                priority={index < 6} // Eagerly load first 6 books
               />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">

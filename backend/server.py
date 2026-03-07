@@ -2362,12 +2362,14 @@ async def get_newly_added_books():
 async def get_coming_soon_books():
     """Get books marked as coming soon OR books with pending_regeneration/draft status"""
     # Include explicitly marked coming_soon books AND books being worked on
+    # EXCLUDE books that are already published
     query = {
         "$or": [
             {"coming_soon": True},
             {"status": {"$in": ["pending_regeneration", "draft"]}}
         ],
-        "hidden": {"$ne": True}
+        "hidden": {"$ne": True},
+        "is_published": {"$ne": True}  # Exclude published books
     }
     
     books = await db.books.find(query, {"_id": 0}).sort([("coming_soon_order", 1), ("created_at", -1)]).to_list(20)
@@ -6959,7 +6961,39 @@ async def generate_single_image(prompt: str, style_desc: str) -> str:
             logger.warning(f"fal.ai generation failed, falling back to OpenAI: {e}")
             # Fall through to OpenAI fallback
     
-    # Fallback to OpenAI if fal.ai not available or fails
+    # Fallback to fal.ai standard model if Pro fails
+    if FAL_AVAILABLE:
+        try:
+            logger.info("Attempting fallback to fal.ai FLUX standard model")
+            full_prompt = f"{prompt}. {style_desc}. High quality illustration."
+            
+            result = await generate_image_flux(
+                prompt=full_prompt,
+                model="flux",  # Standard FLUX model as fallback
+                image_size="portrait_4_3",
+                num_images=1,
+                guidance_scale=3.5,
+                num_inference_steps=28,
+                print_quality=True
+            )
+            
+            if result.get("success") and result.get("images"):
+                image_data = result["images"][0]
+                image_url = image_data.get("url")
+                
+                if image_url:
+                    if CLOUDINARY_AVAILABLE:
+                        upload_result = cloudinary.uploader.upload(
+                            image_url,
+                            folder="azories/story_pages"
+                        )
+                        return upload_result.get("secure_url")
+                    return image_url
+                    
+        except Exception as e2:
+            logger.error(f"fal.ai standard fallback also failed: {e2}")
+    
+    # Final fallback to OpenAI only if fal.ai completely unavailable
     if not EMERGENT_LLM_KEY:
         raise Exception("Image generation not available")
     
@@ -12056,6 +12090,9 @@ async def admin_approve_book(book_id: str, background_tasks: BackgroundTasks, ad
         {"$set": {
             "publish_status": "published",
             "is_published": True,
+            "coming_soon": False,  # Clear coming_soon flag when published
+            "status": "published",  # Update status to published
+            "published_at": datetime.now(timezone.utc).isoformat(),  # Track when published
             "approved_by": admin.get("username", "Admin"),
             "approved_at": datetime.now(timezone.utc).isoformat()
         }}
