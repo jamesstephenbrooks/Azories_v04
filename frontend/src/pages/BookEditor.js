@@ -1878,47 +1878,79 @@ export default function BookEditor() {
                             </Button>
                           </div>
                           
-                          {/* AI Generate Image Section */}
-                          <div className="space-y-2">
-                            {/* Art Style Selector */}
-                            <Select
-                              value={aiImageStyle || book?.art_style || '3d-pixar'}
-                              onValueChange={setAiImageStyle}
-                            >
-                              <SelectTrigger className="w-full rounded-full text-sm" data-testid="ai-art-style-select">
-                                <SelectValue placeholder="Select art style" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="3d-pixar">3D Pixar Style</SelectItem>
-                                <SelectItem value="storybook">Storybook Illustration</SelectItem>
-                                <SelectItem value="watercolor">Watercolor</SelectItem>
-                                <SelectItem value="cartoon">Cartoon</SelectItem>
-                                <SelectItem value="anime">Anime Style</SelectItem>
-                                <SelectItem value="photorealistic">Photorealistic</SelectItem>
-                                <SelectItem value="sketch">Pencil Sketch</SelectItem>
-                                <SelectItem value="flat-vector">Flat Vector</SelectItem>
-                                <SelectItem value="ideogram-storybook">Ideogram Storybook</SelectItem>
-                                <SelectItem value="ideogram-character">Ideogram Character</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            
-                            {/* Generate Button */}
-                            <Button
-                              variant="outline"
-                              onClick={() => handleGenerateAIImage()}
-                              className="w-full rounded-full bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-purple-500/30 hover:border-purple-500/50"
-                              data-testid="generate-ai-image-btn"
-                              disabled={isGeneratingAI || !selectedPage?.text_content?.trim()}
-                              title={!selectedPage?.text_content?.trim() ? 'Add text to the page first' : 'Generate AI image based on page text (2 credits)'}
-                            >
-                              {isGeneratingAI ? (
-                                <FiLoader className="mr-2 w-4 h-4 animate-spin" />
-                              ) : (
-                                <FiZap className="mr-2 w-4 h-4" />
-                              )}
-                              {isGeneratingAI ? 'Generating...' : 'Generate AI Image (2 credits)'}
-                            </Button>
-                          </div>
+                          {/* AI Generate Image Section - Dialog with Art Style Selection */}
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className="w-full rounded-full bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-purple-500/30 hover:border-purple-500/50"
+                                data-testid="generate-ai-image-btn"
+                                disabled={isGeneratingAI || !selectedPage?.text_content?.trim()}
+                                title={!selectedPage?.text_content?.trim() ? 'Add text to the page first' : 'Generate AI image based on page text'}
+                              >
+                                {isGeneratingAI ? (
+                                  <FiLoader className="mr-2 w-4 h-4 animate-spin" />
+                                ) : (
+                                  <FiZap className="mr-2 w-4 h-4" />
+                                )}
+                                {isGeneratingAI ? 'Generating...' : 'Generate AI Image'}
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-md">
+                              <DialogHeader>
+                                <DialogTitle className="font-heading">Generate AI Image</DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-4 pt-4">
+                                <div className="space-y-2">
+                                  <Label className="text-sm font-medium">Art Style</Label>
+                                  <Select
+                                    value={aiImageStyle || book?.art_style || '3d-pixar'}
+                                    onValueChange={setAiImageStyle}
+                                  >
+                                    <SelectTrigger className="w-full rounded-lg" data-testid="ai-art-style-select">
+                                      <SelectValue placeholder="Select art style" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="3d-pixar">3D Pixar Style</SelectItem>
+                                      <SelectItem value="storybook">Storybook Illustration</SelectItem>
+                                      <SelectItem value="watercolor">Watercolor</SelectItem>
+                                      <SelectItem value="cartoon">Cartoon</SelectItem>
+                                      <SelectItem value="anime">Anime Style</SelectItem>
+                                      <SelectItem value="photorealistic">Photorealistic</SelectItem>
+                                      <SelectItem value="sketch">Pencil Sketch</SelectItem>
+                                      <SelectItem value="oil-painting">Oil Painting</SelectItem>
+                                      <SelectItem value="comic-book">Comic Book</SelectItem>
+                                      <SelectItem value="ideogram-storybook">Ideogram Storybook</SelectItem>
+                                      <SelectItem value="ideogram-character">Ideogram Character</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                
+                                <div className="text-sm text-muted-foreground bg-muted/50 rounded-lg p-3">
+                                  <p>The AI will generate an image based on this page's text content using the selected art style.</p>
+                                  <p className="mt-1 font-medium text-purple-600">Cost: 2 credits</p>
+                                </div>
+                                
+                                <Button
+                                  onClick={() => handleGenerateAIImage()}
+                                  className="w-full rounded-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                                  disabled={isGeneratingAI}
+                                >
+                                  {isGeneratingAI ? (
+                                    <>
+                                      <FiLoader className="mr-2 w-4 h-4 animate-spin" />
+                                      Generating...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <FiZap className="mr-2 w-4 h-4" />
+                                      Generate Image
+                                    </>
+                                  )}
+                                </Button>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
                         </div>
                         
                         {/* Upload Video Row */}

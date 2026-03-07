@@ -1510,6 +1510,7 @@ async def register(user_data: UserCreate, background_tasks: BackgroundTasks):
         "pro_trial_expires_at": trial_expires,  # Trial expiration
         "free_stories_remaining": 3,  # 3 free AI story creations
         "free_stories_used": 0,  # Track usage
+        "credits": 0,  # Initialize credits to 0 (users must purchase)
         "created_at": now_iso
     }
     await db.users.insert_one(user)
