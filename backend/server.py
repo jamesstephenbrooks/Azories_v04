@@ -4083,7 +4083,7 @@ async def delete_chapter(chapter_id: str, current_user: dict = Depends(get_curre
         raise HTTPException(status_code=404, detail="Chapter not found")
     
     book = await db.books.find_one({"id": chapter["book_id"]}, {"_id": 0})
-    if book["author_id"] != current_user["id"]:
+    if book["author_id"] != current_user["id"] and book.get("user_id") != current_user["id"]:
         raise HTTPException(status_code=403, detail="Not authorized")
     
     await db.pages.delete_many({"chapter_id": chapter_id})
@@ -4099,7 +4099,7 @@ async def create_page(chapter_id: str, page_data: PageCreate, current_user: dict
         raise HTTPException(status_code=404, detail="Chapter not found")
     
     book = await db.books.find_one({"id": chapter["book_id"]}, {"_id": 0})
-    if book["author_id"] != current_user["id"]:
+    if book["author_id"] != current_user["id"] and book.get("user_id") != current_user["id"]:
         raise HTTPException(status_code=403, detail="Not authorized")
     
     page_id = str(uuid.uuid4())
@@ -4168,7 +4168,9 @@ async def update_page(page_id: str, page_data: PageUpdate, current_user: dict = 
     
     chapter = await db.chapters.find_one({"id": page["chapter_id"]}, {"_id": 0})
     book = await db.books.find_one({"id": chapter["book_id"]}, {"_id": 0})
-    if book["author_id"] != current_user["id"]:
+    
+    # Check authorization - allow if user is author_id OR user_id (for AI-generated books)
+    if book.get("author_id") != current_user["id"] and book.get("user_id") != current_user["id"]:
         raise HTTPException(status_code=403, detail="Not authorized")
     
     update_data = {k: v for k, v in page_data.model_dump().items() if v is not None}
@@ -4202,7 +4204,7 @@ async def delete_page(page_id: str, current_user: dict = Depends(get_current_use
     
     chapter = await db.chapters.find_one({"id": page["chapter_id"]}, {"_id": 0})
     book = await db.books.find_one({"id": chapter["book_id"]}, {"_id": 0})
-    if book["author_id"] != current_user["id"]:
+    if book["author_id"] != current_user["id"] and book.get("user_id") != current_user["id"]:
         raise HTTPException(status_code=403, detail="Not authorized")
     
     await db.pages.delete_one({"id": page_id})
