@@ -787,6 +787,49 @@ export default function StoryCreator() {
                     </Select>
                   </div>
                   
+                  {/* Words per Page */}
+                  <div>
+                    <Label className={creatorMode === 'kids' ? 'text-purple-700' : 'text-gray-300'}>
+                      Words per Page
+                    </Label>
+                    <Select
+                      value={formData.words_per_page}
+                      onValueChange={(v) => setFormData(prev => ({ ...prev, words_per_page: v }))}
+                    >
+                      <SelectTrigger className={creatorMode === 'kids' ? 'border-purple-200' : 'bg-gray-700 border-gray-600'} data-testid="words-per-page-select">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="short">
+                          <span className="flex items-center gap-2">
+                            Short (~50 words)
+                            <span className="text-xs text-muted-foreground">Quick reads</span>
+                          </span>
+                        </SelectItem>
+                        <SelectItem value="medium">
+                          <span className="flex items-center gap-2">
+                            Medium (~100 words)
+                            <span className="text-xs text-muted-foreground">Recommended</span>
+                          </span>
+                        </SelectItem>
+                        <SelectItem value="long">
+                          <span className="flex items-center gap-2">
+                            Long (~150 words)
+                            <span className="text-xs text-muted-foreground">More detail</span>
+                          </span>
+                        </SelectItem>
+                        {creatorMode === 'studio' && (
+                          <SelectItem value="long_adult">
+                            <span className="flex items-center gap-2">
+                              Extended (~200 words)
+                              <span className="text-xs text-muted-foreground">Novel-style</span>
+                            </span>
+                          </SelectItem>
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
                   {/* Art Style */}
                   <div>
                     <Label className={creatorMode === 'kids' ? 'text-purple-700' : 'text-gray-300'}>
