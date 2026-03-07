@@ -2425,8 +2425,8 @@ export default function BookReader() {
       
       {/* Hide/Show Controls Toggle + Floating Listen button - visible when controls are hidden, hide when modal open */}
       {hideControls && !showPrintOrderModal && (
-        <div className="fixed bottom-8 right-4 z-50 flex flex-col items-center gap-2">
-          {/* Floating Listen/Pause button */}
+        <div className="fixed bottom-8 right-4 z-[250] flex flex-col items-center gap-2">
+          {/* Floating Listen/Pause button - z-index higher than tap zones (z-200) for iPad */}
           <button
             onClick={() => {
               if (isPlaying) {
@@ -2442,7 +2442,7 @@ export default function BookReader() {
                 startListening();
               }
             }}
-            className="w-10 h-10 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white shadow-lg flex items-center justify-center transition-colors"
+            className="w-10 h-10 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white shadow-lg flex items-center justify-center transition-colors touch-manipulation cursor-pointer"
             data-testid="floating-listen-btn"
           >
             {isPlaying ? (
@@ -2455,7 +2455,7 @@ export default function BookReader() {
           {/* Show controls button */}
           <button
             onClick={() => setHideControls(false)}
-            className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-purple-400 text-purple-600 dark:text-purple-300 shadow-lg flex items-center justify-center hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors"
+            className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-purple-400 text-purple-600 dark:text-purple-300 shadow-lg flex items-center justify-center hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors touch-manipulation cursor-pointer"
             data-testid="show-controls-btn"
           >
             <FiChevronUp className="w-5 h-5" />
@@ -2465,8 +2465,8 @@ export default function BookReader() {
       
       {/* Hide controls button - visible when controls are shown (not on back cover), hide when modal open */}
       {!hideControls && !currentPageData?.isBackCover && !isMobileLandscape && !showPrintOrderModal && (
-        <div className="fixed bottom-6 right-4 z-[101] flex flex-col items-center gap-2">
-          {/* Play button */}
+        <div className="fixed bottom-6 right-4 z-[250] flex flex-col items-center gap-2">
+          {/* Play button - z-index higher than tap zones (z-200) for iPad */}
           <button
             onClick={() => {
               if (isPlaying) {
@@ -2480,7 +2480,7 @@ export default function BookReader() {
                 startListening();
               }
             }}
-            className="w-10 h-10 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white shadow-lg flex items-center justify-center transition-colors"
+            className="w-10 h-10 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white shadow-lg flex items-center justify-center transition-colors touch-manipulation cursor-pointer"
             data-testid="floating-listen-btn-visible"
           >
             {isPlaying ? (
@@ -2493,7 +2493,7 @@ export default function BookReader() {
           {/* Hide controls button */}
           <button
             onClick={() => setHideControls(true)}
-            className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-purple-400 text-purple-600 dark:text-purple-300 shadow-lg flex items-center justify-center hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors"
+            className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-purple-400 text-purple-600 dark:text-purple-300 shadow-lg flex items-center justify-center hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors touch-manipulation cursor-pointer"
             data-testid="hide-controls-btn"
           >
             <FiChevronDown className="w-5 h-5" />

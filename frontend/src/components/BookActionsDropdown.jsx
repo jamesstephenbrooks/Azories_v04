@@ -103,7 +103,7 @@ export default function BookActionsDropdown({
         >
           {/* Analytics */}
           <button
-            className="w-full px-4 py-2.5 text-left flex items-center gap-3 hover:bg-gray-50 transition-colors text-sm text-gray-700"
+            className="w-full px-4 py-2.5 text-left flex items-center gap-3 hover:bg-gray-50 active:bg-gray-100 transition-colors text-sm text-gray-700 touch-manipulation cursor-pointer"
             onClick={(e) => handleAction(e, onAnalytics)}
             data-testid={`action-analytics-${book.id}`}
           >
@@ -113,7 +113,7 @@ export default function BookActionsDropdown({
 
           {/* Copy Link */}
           <button
-            className="w-full px-4 py-2.5 text-left flex items-center gap-3 hover:bg-gray-50 transition-colors text-sm text-gray-700"
+            className="w-full px-4 py-2.5 text-left flex items-center gap-3 hover:bg-gray-50 active:bg-gray-100 transition-colors text-sm text-gray-700 touch-manipulation cursor-pointer"
             onClick={(e) => handleAction(e, onCopyLink)}
             data-testid={`action-copy-link-${book.id}`}
           >
@@ -123,7 +123,7 @@ export default function BookActionsDropdown({
 
           {/* Order Printed Copy */}
           <button
-            className="w-full px-4 py-2.5 text-left flex items-center gap-3 hover:bg-gray-50 transition-colors text-sm text-gray-700"
+            className="w-full px-4 py-2.5 text-left flex items-center gap-3 hover:bg-gray-50 active:bg-gray-100 transition-colors text-sm text-gray-700 touch-manipulation cursor-pointer"
             onClick={(e) => handleAction(e, onOrderPrint)}
             data-testid={`action-print-${book.id}`}
           >
@@ -133,7 +133,7 @@ export default function BookActionsDropdown({
 
           {/* Publish / Unpublish toggle */}
           <button
-            className="w-full px-4 py-2.5 text-left flex items-center gap-3 hover:bg-gray-50 transition-colors text-sm text-gray-700"
+            className="w-full px-4 py-2.5 text-left flex items-center gap-3 hover:bg-gray-50 active:bg-gray-100 transition-colors text-sm text-gray-700 touch-manipulation cursor-pointer"
             onClick={(e) => handleAction(e, onTogglePublish)}
             data-testid={`action-publish-${book.id}`}
           >
@@ -155,7 +155,7 @@ export default function BookActionsDropdown({
 
           {/* Delete - Red */}
           <button
-            className="w-full px-4 py-2.5 text-left flex items-center gap-3 hover:bg-red-50 transition-colors text-sm text-red-600"
+            className="w-full px-4 py-2.5 text-left flex items-center gap-3 hover:bg-red-50 active:bg-red-100 transition-colors text-sm text-red-600 touch-manipulation cursor-pointer"
             onClick={(e) => handleAction(e, onDelete)}
             data-testid={`action-delete-${book.id}`}
           >

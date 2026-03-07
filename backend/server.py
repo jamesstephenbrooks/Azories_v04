@@ -4328,7 +4328,12 @@ async def generate_page_image(request: PageImageGenerateRequest, current_user: d
             )
             raise HTTPException(status_code=500, detail="Image generation service not available")
         
-        full_prompt = f"{image_prompt}. {style_desc}. High quality, detailed illustration suitable for a children's book."
+        # Build prompt based on style - photorealistic styles need different handling
+        if art_style in ["photorealistic", "realistic", "ideogram-realistic"]:
+            # For photorealistic, don't add children's book language
+            full_prompt = f"{image_prompt}. {style_desc}. Ultra realistic, no cartoon elements, no anime, no stylization, real photograph quality, DSLR camera, professional lighting."
+        else:
+            full_prompt = f"{image_prompt}. {style_desc}. High quality, detailed illustration suitable for a children's book."
         
         result = await generate_image_flux(
             prompt=full_prompt,
@@ -6779,8 +6784,8 @@ def get_style_prompts():
         "hand-drawn": "Hand-drawn illustration, artistic linework, warm colors, whimsical style",
         "comic-book": "Comic book style, bold outlines, dynamic poses, vibrant colors, graphic novel aesthetic",
         "storybook": "Classic storybook illustration, warm colors, nostalgic, timeless, whimsical, vintage children's book",
-        "realistic": "Photorealistic digital art, detailed, cinematic lighting, dramatic composition",
-        "photorealistic": "Photorealistic style, hyper-detailed, professional photography quality, dramatic lighting",
+        "realistic": "Ultra photorealistic, hyperdetailed, professional DSLR photography, real life, no stylization, no cartoon, natural lighting, sharp focus",
+        "photorealistic": "Ultra photorealistic style, hyperdetailed like a real photograph, professional photography quality, DSLR camera, natural lighting, NO cartoon, NO anime, NO illustration, real life quality",
         "anime": "Anime/manga style illustration, big expressive eyes, colorful, dynamic, Japanese animation quality",
         "manga": "Manga style, detailed linework, dramatic shading, Japanese comic aesthetic",
         "oil-painting": "Classical oil painting style, rich colors, dramatic brushwork, museum quality, fine art aesthetic",
@@ -7227,8 +7232,8 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
             "storybook": "Classic storybook illustration, warm colors, nostalgic, timeless, whimsical, vintage children's book",
             
             # Story Studio styles (for older readers)
-            "realistic": "Photorealistic digital art, detailed, cinematic lighting, dramatic composition",
-            "photorealistic": "Photorealistic style, hyper-detailed, professional photography quality, dramatic lighting",
+            "realistic": "Ultra photorealistic, hyperdetailed, professional DSLR photography, real life, no stylization, no cartoon, natural lighting, sharp focus",
+            "photorealistic": "Ultra photorealistic style, hyperdetailed like a real photograph, professional photography quality, DSLR camera, natural lighting, NO cartoon, NO anime, NO illustration, real life quality",
             "anime": "Anime/manga style illustration, big expressive eyes, colorful, dynamic, Japanese animation quality",
             "manga": "Manga style, detailed linework, dramatic shading, Japanese comic aesthetic",
             "oil-painting": "Classical oil painting style, rich colors, dramatic brushwork, museum quality, fine art aesthetic",
@@ -7236,7 +7241,7 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
             "dark-fantasy": "Dark fantasy art, moody atmosphere, dramatic lighting, gothic elements, epic fantasy style",
             
             # Ideogram styles (NEW - Character consistency)
-            "ideogram-realistic": "Photorealistic style, cinematic quality, natural lighting, detailed textures, professional photography",
+            "ideogram-realistic": "Ultra photorealistic style, hyperdetailed like a real photograph, professional DSLR photography, natural lighting, NO cartoon, NO anime, real life quality",
             "ideogram-storybook": "Charming children's book illustration style, soft pastel colors, warm lighting, whimsical and friendly",
             "ideogram-character": "Illustrated character style, consistent character appearance, expressive features, warm colors, storybook quality",
             
