@@ -274,13 +274,28 @@ async def prepare_print_order(
         try:
             import cloudinary
             import cloudinary.uploader
+            import os as os_module
             
-            upload_result = cloudinary.uploader.upload(
-                output_path,
-                resource_type="raw",
-                folder="azories/print_pdfs",
-                public_id=f"print_{book_id}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"
-            )
+            # Check file size - use chunked upload for large files
+            file_size = os_module.path.getsize(output_path)
+            
+            if file_size > 10 * 1024 * 1024:  # > 10MB
+                # Use upload_large for chunked upload
+                upload_result = cloudinary.uploader.upload_large(
+                    output_path,
+                    resource_type="raw",
+                    folder="azories/print_pdfs",
+                    public_id=f"print_{book_id}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}",
+                    chunk_size=6000000  # 6MB chunks
+                )
+            else:
+                # Standard upload for smaller files
+                upload_result = cloudinary.uploader.upload(
+                    output_path,
+                    resource_type="raw",
+                    folder="azories/print_pdfs",
+                    public_id=f"print_{book_id}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"
+                )
             pdf_url = upload_result.get("secure_url")
         except Exception as upload_error:
             logger.warning(f"Could not upload PDF to Cloudinary: {upload_error}")

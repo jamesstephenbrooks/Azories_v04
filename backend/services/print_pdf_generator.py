@@ -1080,7 +1080,8 @@ class PrintPDFGenerator:
         # Add all images to PDF
         for name, img in all_images:
             img_buffer = io.BytesIO()
-            img.save(img_buffer, format='JPEG', quality=95, dpi=(DPI, DPI))
+            # Use quality=75 to reduce file size while maintaining good print quality
+            img.save(img_buffer, format='JPEG', quality=75, dpi=(DPI, DPI), optimize=True)
             img_buffer.seek(0)
             
             c.drawImage(
