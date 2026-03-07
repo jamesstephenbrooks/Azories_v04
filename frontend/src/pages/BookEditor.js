@@ -16,7 +16,7 @@ import { toast } from 'sonner';
 import { 
   FiArrowLeft, FiPlus, FiSave, FiTrash2, FiImage, FiVideo, FiUpload,
   FiBook, FiSettings, FiLoader, FiGrid, FiLayout, FiBookOpen, FiMic, FiZap, FiDownload,
-  FiUsers, FiUser, FiLayers, FiX, FiMaximize2
+  FiUsers, FiUser, FiLayers, FiX, FiMaximize2, FiAlertTriangle
 } from 'react-icons/fi';
 import CollaborativeWriting from '@/components/CollaborativeWriting';
 import { MediaGalleryPicker } from '@/components/MediaGallery';
@@ -98,6 +98,10 @@ export default function BookEditor() {
   const [videoUploadProgress, setVideoUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);  // AI image generation state
+  const [aiImageStyle, setAiImageStyle] = useState('');  // Art style for AI image generation
+  
+  // Max recommended words per page for print (at 12pt font)
+  const MAX_RECOMMENDED_WORDS = 350;
   
   // Expanded image/video viewer
   const [expandedMedia, setExpandedMedia] = useState(null); // {type: 'image'|'video', url: string, name: string}
@@ -928,6 +932,12 @@ export default function BookEditor() {
     }
   };
 
+  // Word count helper
+  const getWordCount = (text) => {
+    if (!text) return 0;
+    return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+  };
+
   // AI Image Generation handler
   const handleGenerateAIImage = async (customPrompt = null) => {
     if (!selectedPage?.id) {
@@ -942,6 +952,9 @@ export default function BookEditor() {
       return;
     }
     
+    // Use selected art style or fall back to book's style
+    const styleToUse = aiImageStyle || book?.art_style || '3d-pixar';
+    
     setIsGeneratingAI(true);
     
     try {
@@ -949,11 +962,11 @@ export default function BookEditor() {
       const res = await axios.post(`${API}/ai/generate-page-image`, {
         page_id: selectedPage.id,
         prompt: customPrompt || null,
-        art_style: book?.art_style || '3d-pixar',
+        art_style: styleToUse,
         use_page_text: !customPrompt
       }, {
         headers: { 'Authorization': `Bearer ${token}` },
-        timeout: 120000  // 2 minute timeout for image generation
+        timeout: 180000  // 3 minute timeout for image generation
       });
       
       if (res.data.success && res.data.image_url) {
@@ -1833,22 +1846,46 @@ export default function BookEditor() {
                               Upload Image
                             </Button>
                           </div>
-                          <div>
-                            {/* AI Generate Image Button */}
+                          
+                          {/* AI Generate Image Section */}
+                          <div className="space-y-2">
+                            {/* Art Style Selector */}
+                            <Select
+                              value={aiImageStyle || book?.art_style || '3d-pixar'}
+                              onValueChange={setAiImageStyle}
+                            >
+                              <SelectTrigger className="w-full rounded-full text-sm" data-testid="ai-art-style-select">
+                                <SelectValue placeholder="Select art style" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="3d-pixar">3D Pixar Style</SelectItem>
+                                <SelectItem value="storybook">Storybook Illustration</SelectItem>
+                                <SelectItem value="watercolor">Watercolor</SelectItem>
+                                <SelectItem value="cartoon">Cartoon</SelectItem>
+                                <SelectItem value="anime">Anime Style</SelectItem>
+                                <SelectItem value="photorealistic">Photorealistic</SelectItem>
+                                <SelectItem value="sketch">Pencil Sketch</SelectItem>
+                                <SelectItem value="flat-vector">Flat Vector</SelectItem>
+                                <SelectItem value="ideogram-storybook">Ideogram Storybook</SelectItem>
+                                <SelectItem value="ideogram-character">Ideogram Character</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            
+                            {/* Generate Button */}
                             <Button
                               variant="outline"
                               onClick={() => handleGenerateAIImage()}
                               className="w-full rounded-full bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-purple-500/30 hover:border-purple-500/50"
                               data-testid="generate-ai-image-btn"
                               disabled={isGeneratingAI || !selectedPage?.text_content?.trim()}
-                              title={!selectedPage?.text_content?.trim() ? 'Add text to the page first' : 'Generate AI image based on page text'}
+                              title={!selectedPage?.text_content?.trim() ? 'Add text to the page first' : 'Generate AI image based on page text (2 credits)'}
                             >
                               {isGeneratingAI ? (
                                 <FiLoader className="mr-2 w-4 h-4 animate-spin" />
                               ) : (
                                 <FiZap className="mr-2 w-4 h-4" />
                               )}
-                              {isGeneratingAI ? 'Generating...' : 'AI Image'}
+                              {isGeneratingAI ? 'Generating...' : 'Generate AI Image (2 credits)'}
                             </Button>
                           </div>
                         </div>
@@ -2067,9 +2104,28 @@ export default function BookEditor() {
                     )}
                   </div>
                   
-                  <p className="text-sm text-muted-foreground mt-3">
-                    {selectedPage.text_content?.length || 0} characters
-                  </p>
+                  {/* Word count with warning */}
+                  <div className="mt-3 space-y-1">
+                    <p className="text-sm text-muted-foreground">
+                      {selectedPage.text_content?.length || 0} characters • {getWordCount(selectedPage.text_content)} words
+                    </p>
+                    {getWordCount(selectedPage.text_content) > MAX_RECOMMENDED_WORDS && (
+                      <div className="flex items-center gap-2 p-2 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                        <FiAlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                        <p className="text-xs text-amber-600 dark:text-amber-400">
+                          <strong>Warning:</strong> This page has {getWordCount(selectedPage.text_content)} words. 
+                          For best print quality, keep under {MAX_RECOMMENDED_WORDS} words per page. 
+                          Consider adding another page.
+                        </p>
+                      </div>
+                    )}
+                    {getWordCount(selectedPage.text_content) > MAX_RECOMMENDED_WORDS * 0.8 && 
+                     getWordCount(selectedPage.text_content) <= MAX_RECOMMENDED_WORDS && (
+                      <p className="text-xs text-amber-500">
+                        Approaching recommended limit ({MAX_RECOMMENDED_WORDS} words max for print)
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             </>

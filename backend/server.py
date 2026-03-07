@@ -216,7 +216,7 @@ def get_mongo_connection():
         mongo_url,
         serverSelectionTimeoutMS=5000,  # 5s to select server
         connectTimeoutMS=5000,           # 5s to connect
-        socketTimeoutMS=120000,          # 120s for socket operations (increased for long writes)
+        socketTimeoutMS=600000,          # 600s (10 min) for socket operations - long AI generations
         maxPoolSize=50,                  # Connection pool size
         retryWrites=True
     )
