@@ -16,7 +16,7 @@ import { toast } from 'sonner';
 import { 
   FiArrowLeft, FiPlus, FiSave, FiTrash2, FiImage, FiVideo, FiUpload,
   FiBook, FiSettings, FiLoader, FiGrid, FiLayout, FiBookOpen, FiMic, FiZap, FiDownload,
-  FiUsers, FiUser, FiLayers, FiX, FiMaximize2, FiAlertTriangle
+  FiUsers, FiUser, FiLayers, FiX, FiMaximize2, FiAlertTriangle, FiEdit3
 } from 'react-icons/fi';
 import CollaborativeWriting from '@/components/CollaborativeWriting';
 import { MediaGalleryPicker } from '@/components/MediaGallery';
@@ -99,6 +99,7 @@ export default function BookEditor() {
   const [isUploading, setIsUploading] = useState(false);
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);  // AI image generation state
   const [aiImageStyle, setAiImageStyle] = useState('');  // Art style for AI image generation
+  const [isEnhancingText, setIsEnhancingText] = useState(false);  // AI text enhancement state
   
   // Max recommended words per page for print (at 12pt font)
   const MAX_RECOMMENDED_WORDS = 350;
@@ -1023,6 +1024,49 @@ export default function BookEditor() {
       }
     } finally {
       setIsGeneratingAI(false);
+    }
+  };
+
+  // AI Text Enhancement - polish user's text with professional author quality
+  const handleEnhanceText = async () => {
+    if (!selectedPage?.text_content?.trim()) {
+      toast.error('Please add some text to enhance first');
+      return;
+    }
+    
+    setIsEnhancingText(true);
+    
+    try {
+      const token = localStorage.getItem('azories-token');
+      const res = await axios.post(`${API}/ai/enhance-text`, {
+        text: selectedPage.text_content,
+        style: book?.age_group === 'adult' ? 'adult' : 
+               book?.age_group === 'young_adult' ? 'young_adult' : 'children',
+        preserve_names: true
+      }, {
+        headers: { 'Authorization': `Bearer ${token}` },
+        timeout: 60000  // 1 minute timeout
+      });
+      
+      if (res.data.success && res.data.enhanced_text) {
+        // Update the page with enhanced text
+        setSelectedPage({ ...selectedPage, text_content: res.data.enhanced_text });
+        toast.success('Text enhanced by AI! (1 credit used)');
+      } else {
+        throw new Error('No enhanced text returned');
+      }
+    } catch (error) {
+      console.error('AI text enhancement error:', error);
+      const message = error.response?.data?.detail || error.message || 'Failed to enhance text';
+      
+      if (error.response?.status === 402) {
+        toast.error('Insufficient credits. Redirecting to top up...');
+        setTimeout(() => navigate('/credits'), 1500);
+      } else {
+        toast.error(message);
+      }
+    } finally {
+      setIsEnhancingText(false);
     }
   };
 
@@ -2084,6 +2128,24 @@ export default function BookEditor() {
                       </SelectContent>
                     </Select>
                   </div>
+                  
+                  {/* AI Author Polish Button */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleEnhanceText}
+                    disabled={isEnhancingText || !selectedPage?.text_content?.trim()}
+                    className="rounded-full bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/30 hover:border-amber-500/50 text-amber-700 dark:text-amber-400"
+                    title="Polish your text with AI - makes it publication-ready (1 credit)"
+                    data-testid="ai-enhance-text-btn"
+                  >
+                    {isEnhancingText ? (
+                      <FiLoader className="mr-1.5 w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <FiEdit3 className="mr-1.5 w-3.5 h-3.5" />
+                    )}
+                    {isEnhancingText ? 'Polishing...' : 'AI Polish'}
+                  </Button>
                 </div>
                 
                 <div className="flex-1 flex flex-col">

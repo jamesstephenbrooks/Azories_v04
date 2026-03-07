@@ -4395,6 +4395,119 @@ async def generate_page_image(request: PageImageGenerateRequest, current_user: d
         raise HTTPException(status_code=500, detail=f"Error generating image: {str(e)}")
 
 
+# Credit cost for AI text enhancement
+CREDITS_PER_TEXT_ENHANCE = 1
+
+class TextEnhanceRequest(BaseModel):
+    """Request model for AI text enhancement"""
+    text: str
+    style: Optional[str] = "children"  # "children", "young_adult", "adult"
+    preserve_names: bool = True  # Keep character names unchanged
+
+@api_router.post("/ai/enhance-text")
+async def enhance_text(request: TextEnhanceRequest, current_user: dict = Depends(get_current_user)):
+    """Enhance user's text with AI to make it more polished and author-quality.
+    
+    Takes raw user text and improves grammar, flow, vocabulary while preserving
+    the original meaning and story events.
+    
+    Cost: 1 credit per enhancement
+    """
+    try:
+        if not request.text or not request.text.strip():
+            raise HTTPException(status_code=400, detail="No text provided to enhance")
+        
+        # Check user has enough credits
+        user_credits = current_user.get("credits", 0)
+        if user_credits < CREDITS_PER_TEXT_ENHANCE:
+            raise HTTPException(
+                status_code=402, 
+                detail=f"Insufficient credits. Need {CREDITS_PER_TEXT_ENHANCE} credit(s), have {user_credits}"
+            )
+        
+        # Deduct credits first
+        await db.users.update_one(
+            {"id": current_user["id"]},
+            {"$inc": {"credits": -CREDITS_PER_TEXT_ENHANCE}}
+        )
+        
+        # Determine writing style based on audience
+        style_instructions = {
+            "children": "Write for children aged 4-8. Use simple, clear language. Short sentences. Vivid but simple descriptions. Keep it warm, friendly, and magical.",
+            "young_adult": "Write for young adults aged 12-18. More sophisticated vocabulary. Can include mild tension or drama. Engaging prose with good pacing.",
+            "adult": "Write for adults. Rich, literary prose. Sophisticated vocabulary and sentence structure. Can be more nuanced and complex."
+        }
+        
+        style_guide = style_instructions.get(request.style, style_instructions["children"])
+        
+        # Create the enhancement prompt
+        system_prompt = f"""You are a professional children's book author and editor. Your task is to take the user's draft text and polish it into professional, publication-ready prose.
+
+STYLE GUIDE:
+{style_guide}
+
+RULES:
+1. PRESERVE the original story events, characters, and meaning exactly
+2. IMPROVE grammar, sentence flow, and word choice
+3. ADD vivid sensory details where appropriate
+4. MAINTAIN the author's voice - enhance, don't replace
+5. Keep the same approximate length (within 20%)
+6. {"Keep all character names exactly as written" if request.preserve_names else "You may suggest better character names"}
+7. Make it sound like a professionally published book
+
+Return ONLY the enhanced text, nothing else. No explanations or commentary."""
+
+        user_prompt = f"Please enhance this text:\n\n{request.text}"
+        
+        try:
+            from emergentintegrations.llm.chat import LlmChat, UserMessage
+            
+            chat = LlmChat(
+                api_key=os.environ.get("EMERGENT_LLM_KEY"),
+                session_id=f"enhance-{current_user['id']}-{str(uuid.uuid4())[:8]}",
+                system_message=system_prompt
+            ).with_model("openai", "gpt-4o-mini")  # Fast and cost-effective
+            
+            response = await chat.send_message(UserMessage(text=user_prompt))
+            
+            enhanced_text = response.strip() if response else ""
+            
+            if not enhanced_text:
+                # Refund credits if enhancement failed
+                await db.users.update_one(
+                    {"id": current_user["id"]},
+                    {"$inc": {"credits": CREDITS_PER_TEXT_ENHANCE}}
+                )
+                raise HTTPException(status_code=500, detail="AI enhancement returned empty result")
+            
+            return {
+                "success": True,
+                "original_text": request.text,
+                "enhanced_text": enhanced_text,
+                "credits_used": CREDITS_PER_TEXT_ENHANCE,
+                "style": request.style
+            }
+            
+        except ImportError:
+            # Refund credits
+            await db.users.update_one(
+                {"id": current_user["id"]},
+                {"$inc": {"credits": CREDITS_PER_TEXT_ENHANCE}}
+            )
+            raise HTTPException(status_code=500, detail="AI text enhancement not available")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        # Refund credits on error
+        await db.users.update_one(
+            {"id": current_user["id"]},
+            {"$inc": {"credits": CREDITS_PER_TEXT_ENHANCE}}
+        )
+        logger.error(f"Error enhancing text: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error enhancing text: {str(e)}")
+
+
 
 @api_router.post("/ai/generate-video")
 async def generate_video(request: VideoGenerateRequest, current_user: dict = Depends(get_current_user)):

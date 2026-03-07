@@ -502,9 +502,9 @@ export default function StoryCreator() {
       : 'bg-gradient-to-b from-gray-950 via-gray-900 to-purple-950'}`}>
       <Navbar />
       
-      <div className="max-w-4xl mx-auto px-4 pt-20 pb-24">
-        {/* Mode Toggle */}
-        <div className="flex justify-center mb-8">
+      <div className="max-w-4xl mx-auto px-4 pt-24 md:pt-20 pb-24">
+        {/* Mode Toggle - extra top margin on mobile/tablet to avoid header overlap */}
+        <div className="flex justify-center mb-8 mt-4 md:mt-0">
           <div className={`inline-flex rounded-full p-1 ${creatorMode === 'kids' ? 'bg-white shadow-lg' : 'bg-gray-800'}`}>
             <button
               onClick={() => handleModeChange('kids')}
