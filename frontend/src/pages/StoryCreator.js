@@ -648,6 +648,32 @@ export default function StoryCreator() {
           <Card className={creatorMode === 'kids' ? 'bg-white shadow-xl' : 'bg-gray-800 border-gray-700'}>
             <CardContent className="p-6 space-y-6">
               
+              {/* Book Title Section */}
+              <div className="space-y-4">
+                <h3 className={`font-semibold flex items-center gap-2 ${creatorMode === 'kids' ? 'text-purple-800' : 'text-white'}`}>
+                  <FiBook className="text-purple-500" /> Book Title
+                </h3>
+                
+                <div>
+                  <Label className={creatorMode === 'kids' ? 'text-purple-700' : 'text-gray-300'}>
+                    {creatorMode === 'kids' ? "What's your story called?" : 'Book Title'}
+                  </Label>
+                  <Input
+                    value={formData.title}
+                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                    placeholder={creatorMode === 'kids' 
+                      ? "e.g., The Magic Garden, Luna's Big Adventure"
+                      : "e.g., The Last Kingdom, Echoes of Tomorrow"
+                    }
+                    className={creatorMode === 'kids' ? 'border-purple-200' : 'bg-gray-700 border-gray-600'}
+                    data-testid="book-title-input"
+                  />
+                  <p className={`text-xs mt-1 ${creatorMode === 'kids' ? 'text-purple-600' : 'text-gray-400'}`}>
+                    This will appear on your book's cover! Leave blank for AI to create one.
+                  </p>
+                </div>
+              </div>
+              
               {/* Character Section */}
               <div className="space-y-4">
                 <h3 className={`font-semibold flex items-center gap-2 ${creatorMode === 'kids' ? 'text-purple-800' : 'text-white'}`}>

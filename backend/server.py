@@ -6693,6 +6693,7 @@ async def run_story_generation_job(job_id: str, request_data: dict, user_data: d
             "author_id": user_data["id"],  # Also set author_id for My Books compatibility
             "author_name": user_data.get("name", ""),
             "title": story_data.get("title", "Untitled Story"),
+            "cover_title": story_data.get("title", "Untitled Story"),  # Store title for cover display
             "description": story_data.get("description", ""),
             "back_cover_text": story_data.get("back_cover_text", ""),
             "main_character_description": story_data.get("main_character_description", ""),
@@ -6720,7 +6721,8 @@ async def run_story_generation_job(job_id: str, request_data: dict, user_data: d
         
         # ============ STEP 3: Generate Cover Image ============
         try:
-            cover_prompt = f"Book cover illustration for '{story_data.get('title', 'Story')}'. {story_data.get('main_character_description', '')}. {style_desc}. Professional book cover design, centered composition, appealing to readers."
+            book_title = story_data.get('title', 'Story')
+            cover_prompt = f"Children's book cover design with the title '{book_title}' prominently displayed. {story_data.get('main_character_description', '')}. {style_desc}. Professional book cover layout with title text at the top, eye-catching illustration, appealing to readers, centered composition."
             
             cover_url = await generate_single_image(cover_prompt, style_desc)
             
@@ -7117,6 +7119,10 @@ Return ONLY valid JSON."""
             story_data = json.loads(json_match.group())
         else:
             raise Exception("Failed to parse story data")
+    
+    # If user specified a title, use it instead of AI-generated one
+    if request.title and request.title.strip():
+        story_data["title"] = request.title.strip()
     
     return story_data
 
