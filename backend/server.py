@@ -2228,8 +2228,7 @@ async def get_book_with_counts(book: dict) -> dict:
 
 @api_router.post("/books", response_model=BookResponse)
 async def create_book(book_data: BookCreate, current_user: dict = Depends(get_current_user)):
-    if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
-        raise HTTPException(status_code=403, detail="Pro subscription required to create books")
+    # Book creation is free for all users
     
     book_id = str(uuid.uuid4())
     now = datetime.now(timezone.utc).isoformat()
@@ -3835,9 +3834,7 @@ async def get_book_analytics(book_id: str, current_user: dict = Depends(get_curr
 
 @api_router.post("/series")
 async def create_series(series_data: SeriesCreate, current_user: dict = Depends(get_current_user)):
-    """Create a new book series"""
-    if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
-        raise HTTPException(status_code=403, detail="Pro subscription required")
+    """Create a new book series - free for all users"""
     
     series_id = str(uuid.uuid4())
     now = datetime.now(timezone.utc).isoformat()

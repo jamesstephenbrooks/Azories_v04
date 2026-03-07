@@ -56,7 +56,8 @@ def setup(database, email_funcs: dict):
 
 JWT_SECRET = os.environ.get("JWT_SECRET", "azories-jwt-secret-key-2024")
 JWT_ALGORITHM = "HS256"
-JWT_EXPIRATION_HOURS = int(os.environ.get("JWT_EXPIRATION_HOURS", 720))  # 30 days default
+JWT_EXPIRATION_HOURS = int(os.environ.get("JWT_EXPIRATION_HOURS", 24))  # Default session: 24 hours
+JWT_REMEMBER_ME_DAYS = int(os.environ.get("JWT_REMEMBER_ME_DAYS", 30))  # Remember me: 30 days
 
 VIP_USERS = os.environ.get("VIP_USERS", "").split(",")
 
@@ -71,6 +72,7 @@ class UserCreate(BaseModel):
 class UserLogin(BaseModel):
     email: str
     password: str
+    remember_me: bool = False  # Extended session (30 days) if True
 
 class UserResponse(BaseModel):
     id: str
@@ -108,13 +110,25 @@ def verify_password(password: str, hashed: str) -> bool:
     """Verify a password against its hash."""
     return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
 
-def create_token(user_id: str, email: str, role: str) -> str:
-    """Create a JWT token for a user."""
+def create_token(user_id: str, email: str, role: str, remember_me: bool = False) -> str:
+    """Create a JWT token for a user.
+    
+    Args:
+        user_id: The user's unique ID
+        email: The user's email
+        role: The user's role
+        remember_me: If True, token expires in 30 days; if False, expires in 24 hours
+    """
+    if remember_me:
+        expiration = datetime.now(timezone.utc) + timedelta(days=JWT_REMEMBER_ME_DAYS)
+    else:
+        expiration = datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRATION_HOURS)
+    
     payload = {
         "sub": user_id,
         "email": email,
         "role": role,
-        "exp": datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRATION_HOURS)
+        "exp": expiration
     }
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
@@ -256,7 +270,8 @@ async def login(user_data: UserLogin):
             {"$set": {"subscription": subscription, "pro_trial": pro_trial}}
         )
     
-    token = create_token(user["id"], user["email"], user["role"])
+    # Pass remember_me to create_token for extended session duration
+    token = create_token(user["id"], user["email"], user["role"], user_data.remember_me)
     return TokenResponse(
         access_token=token,
         user=UserResponse(

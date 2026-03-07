@@ -15,7 +15,7 @@ import { toast } from 'sonner';
 import { 
   FiPlus, FiEdit2, FiTrash2, FiBook, FiEye, FiEyeOff, FiZap, FiStar, FiAward, 
   FiCheck, FiBarChart2, FiLoader, FiLayers, FiLink, FiX, FiSearch, FiChevronDown, FiChevronUp, FiGlobe,
-  FiClock, FiSend, FiImage, FiDownload, FiCopy, FiRefreshCw, FiPackage
+  FiClock, FiSend, FiImage, FiDownload, FiCopy, FiRefreshCw, FiPackage, FiWifiOff
 } from 'react-icons/fi';
 import Navbar from '@/components/Navbar';
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
@@ -23,12 +23,26 @@ import TrialBanner from '@/components/TrialBanner';
 import { StreakDisplay, BadgeCollection, useStreaksAndBadges, NewBadgePopup } from '@/components/ReadingStreaks';
 import PrintOrderModal from '@/components/PrintOrderModal';
 import BookActionsDropdown from '@/components/BookActionsDropdown';
+import SaveOfflineButton from '@/components/SaveOfflineButton';
+import OfflineBanner from '@/components/OfflineBanner';
+import useOffline from '@/hooks/useOffline';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 export default function Dashboard() {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  
+  // Offline support
+  const { 
+    isOnline, 
+    isOffline, 
+    offlineBooks, 
+    isBookOffline, 
+    saveBookOffline, 
+    removeBookOffline,
+    storageStats 
+  } = useOffline();
   
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,6 +55,7 @@ export default function Dashboard() {
   const [analyticsDialog, setAnalyticsDialog] = useState(null);
   const [analyticsData, setAnalyticsData] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');  // Search for books
+  const [showOfflineOnly, setShowOfflineOnly] = useState(false);  // Filter for offline books
   const [printModalOpen, setPrintModalOpen] = useState(false);
   const [selectedBookForPrint, setSelectedBookForPrint] = useState(null);
   const [newBook, setNewBook] = useState({
@@ -324,8 +339,14 @@ export default function Dashboard() {
     }
   };
   
-  // Filter books based on search query
+  // Filter books based on search query and offline filter
   const filteredBooks = books.filter(book => {
+    // Apply offline filter first
+    if (showOfflineOnly && !isBookOffline(book.id)) {
+      return false;
+    }
+    
+    // Then apply search filter
     if (!searchQuery.trim()) return true;
     const query = searchQuery.toLowerCase();
     return (
@@ -587,6 +608,9 @@ export default function Dashboard() {
     <div className="min-h-screen min-h-[100dvh] bg-background">
       <Navbar />
       
+      {/* Offline Banner - shows when user is offline */}
+      <OfflineBanner isOffline={isOffline} offlineBookCount={offlineBooks.length} />
+      
       {/* New Badge Celebration Popup */}
       {newBadge && (
         <NewBadgePopup badge={newBadge} onClose={() => setNewBadge(null)} />
@@ -607,41 +631,30 @@ export default function Dashboard() {
             <div>
               <div className="flex items-center gap-3 mb-2">
                 <h1 className="font-heading text-4xl md:text-5xl font-bold">My Books</h1>
-                <span className={`px-3 py-1 rounded-full text-sm font-ui ${
-                  isPro ? 'bg-secondary/20 text-secondary' : 'bg-muted text-muted-foreground'
-                }`}>
-                  {isPro ? (user.pro_trial ? 'Pro Trial' : 'Pro') : 'Free'}
-                </span>
+                {isPro && (
+                  <span className={`px-3 py-1 rounded-full text-sm font-ui ${
+                    isPro ? 'bg-secondary/20 text-secondary' : 'bg-muted text-muted-foreground'
+                  }`}>
+                    {user.pro_trial ? 'Pro Trial' : 'Pro'}
+                  </span>
+                )}
               </div>
               <p className="font-body text-lg text-muted-foreground">
-                Welcome back, {user.name}! {isPro ? 'Create and manage your stories.' : 'Upgrade to Pro to start creating!'}
+                Welcome back, {user.name}! Create and manage your stories.
               </p>
             </div>
             
             <div className="flex gap-3 flex-wrap">
-              {!isPro && (
-                <Button 
-                  variant="outline"
-                  className="rounded-full px-6 py-6 font-ui border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground"
-                  onClick={() => setIsUpgradeOpen(true)}
-                  data-testid="upgrade-to-pro-btn"
-                >
-                  <FiZap className="mr-2" />
-                  Upgrade to Pro
-                </Button>
-              )}
-              
-              {isPro && (
-                <Button 
-                  variant="outline"
-                  className="rounded-full px-6 py-6 font-ui border-accent text-accent hover:bg-accent hover:text-accent-foreground"
-                  onClick={() => navigate('/ai-stories')}
-                  data-testid="ai-story-btn"
-                >
-                  <FiZap className="mr-2" />
-                  🐉 AI Stories
-                </Button>
-              )}
+              {/* AI Stories button - available to all users */}
+              <Button 
+                variant="outline"
+                className="rounded-full px-6 py-6 font-ui border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+                onClick={() => navigate('/ai-stories')}
+                data-testid="ai-story-btn"
+              >
+                <FiZap className="mr-2" />
+                🐉 AI Stories
+              </Button>
               
               {/* Order Printed Copy - with book selector dropdown */}
               {books.length > 0 && (
@@ -989,7 +1002,6 @@ export default function Dashboard() {
                   <Button 
                     className="rounded-full px-6 py-6 font-ui text-lg"
                     data-testid="create-book-btn"
-                    disabled={!isPro}
                   >
                     <FiPlus className="mr-2" />
                     New Book
@@ -1234,6 +1246,34 @@ export default function Dashboard() {
             )}
           </div>
           
+          {/* Offline Filter & Storage Stats */}
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <button
+              onClick={() => setShowOfflineOnly(!showOfflineOnly)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-ui transition-colors touch-manipulation ${
+                showOfflineOnly 
+                  ? 'bg-green-500/20 text-green-400 border border-green-500/50' 
+                  : 'bg-muted/50 text-muted-foreground border border-transparent hover:bg-muted'
+              }`}
+              data-testid="offline-filter-btn"
+            >
+              <FiWifiOff className="w-4 h-4" />
+              {showOfflineOnly ? 'Showing Offline Only' : 'Offline Books'}
+              {offlineBooks.length > 0 && (
+                <span className="px-1.5 py-0.5 rounded-full bg-green-500/30 text-xs">
+                  {offlineBooks.length}
+                </span>
+              )}
+            </button>
+            
+            {storageStats && storageStats.bookCount > 0 && (
+              <div className="text-xs text-muted-foreground flex items-center gap-1">
+                <FiDownload className="w-3 h-3" />
+                {storageStats.bookCount} book{storageStats.bookCount !== 1 ? 's' : ''} saved — {storageStats.totalMB}MB used
+              </div>
+            )}
+          </div>
+          
           {/* Books Grid */}
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1299,6 +1339,12 @@ export default function Dashboard() {
                             </div>
                             <div className="flex flex-col gap-1 items-end ml-2">
                               {getPublishStatusBadge(book)}
+                              {isBookOffline(book.id) && (
+                                <span className="px-2 py-0.5 rounded text-xs bg-green-500/20 text-green-400 flex items-center gap-1">
+                                  <FiWifiOff className="w-3 h-3" />
+                                  Offline
+                                </span>
+                              )}
                               {book.age_rating !== 'All Ages' && (
                                 <span className="px-2 py-0.5 rounded text-xs bg-primary/10 text-primary">
                                   {book.age_rating}
@@ -1318,7 +1364,7 @@ export default function Dashboard() {
                       </div>
                       
                       <div className="flex items-center justify-between gap-3">
-                        {/* Clean action buttons: Edit + Dropdown */}
+                        {/* Clean action buttons: Edit + Save Offline + Dropdown */}
                         <div className="flex items-center gap-2">
                           <Button 
                             variant="default" 
@@ -1330,6 +1376,14 @@ export default function Dashboard() {
                             <FiEdit2 className="mr-2 w-4 h-4" />
                             Edit
                           </Button>
+                          <SaveOfflineButton
+                            book={book}
+                            isOffline={isBookOffline(book.id)}
+                            onSave={saveBookOffline}
+                            onRemove={removeBookOffline}
+                            variant="compact"
+                            data-testid={`save-offline-${book.id}`}
+                          />
                           <BookActionsDropdown
                             book={book}
                             onAnalytics={() => fetchAnalytics(book.id)}
@@ -1376,25 +1430,18 @@ export default function Dashboard() {
                 </div>
                 <h3 className="font-heading text-2xl">No books yet</h3>
                 <p className="font-body text-muted-foreground max-w-md mx-auto">
-                  {isPro ? 'Start your storytelling journey!' : 'Upgrade to Pro to start creating!'}
+                  Start your storytelling journey!
                 </p>
-                {isPro ? (
-                  <div className="flex gap-3 justify-center">
-                    <Button className="rounded-full" onClick={() => setIsCreateOpen(true)}>
-                      <FiPlus className="mr-2" />
-                      Create Book
-                    </Button>
-                    <Button variant="outline" className="rounded-full" onClick={() => setIsAIStoryOpen(true)}>
-                      <FiZap className="mr-2" />
-                      AI Story
-                    </Button>
-                  </div>
-                ) : (
-                  <Button className="rounded-full bg-secondary hover:bg-secondary/90" onClick={() => setIsUpgradeOpen(true)}>
-                    <FiZap className="mr-2" />
-                    Upgrade to Pro
+                <div className="flex gap-3 justify-center">
+                  <Button className="rounded-full" onClick={() => setIsCreateOpen(true)}>
+                    <FiPlus className="mr-2" />
+                    Create Book
                   </Button>
-                )}
+                  <Button variant="outline" className="rounded-full" onClick={() => setIsAIStoryOpen(true)}>
+                    <FiZap className="mr-2" />
+                    AI Story
+                  </Button>
+                </div>
               </motion.div>
             </div>
           )}
