@@ -52,6 +52,7 @@ from routes import setup_routes
 try:
     from fal_service import (
         generate_image_flux,
+        generate_ideogram,
         generate_with_face_id,
         train_character_lora,
         check_training_status,
@@ -4298,14 +4299,24 @@ async def generate_page_image(request: PageImageGenerateRequest, current_user: d
         if book.get("author_id") != current_user["id"] and book.get("user_id") != current_user["id"]:
             raise HTTPException(status_code=403, detail="Not authorized to edit this book")
         
-        # Determine the prompt
+        # Determine the prompt - enhance with better prompt engineering for accuracy
         if request.use_page_text and page.get("text_content"):
-            base_prompt = page.get("text_content", "")
-            # If custom prompt provided, combine them
+            base_text = page.get("text_content", "").strip()
+            
+            # Extract key visual elements from the text for better image accuracy
+            # Create a structured prompt that focuses on the scene described
             if request.prompt:
-                image_prompt = f"{request.prompt}. Scene context: {base_prompt[:200]}"
+                # User provided custom prompt, use it with scene context
+                image_prompt = f"{request.prompt}. Scene from story: {base_text[:300]}"
             else:
-                image_prompt = f"Illustration for: {base_prompt}"
+                # Generate prompt from page text - be specific about visual elements
+                image_prompt = f"""Create an illustration depicting this exact scene: "{base_text[:400]}"
+
+Key requirements:
+- Show the specific characters, objects, and setting described in the text
+- Capture the mood and action of the scene
+- Include all visual details mentioned in the text
+- Make the illustration match the story moment precisely"""
         else:
             image_prompt = request.prompt or "A beautiful illustration"
         
@@ -4345,15 +4356,29 @@ async def generate_page_image(request: PageImageGenerateRequest, current_user: d
         else:
             full_prompt = f"{image_prompt}. {style_desc}. High quality, detailed illustration suitable for a children's book."
         
-        result = await generate_image_flux(
-            prompt=full_prompt,
-            model="flux-pro",  # Use FLUX Pro for best quality
-            image_size="portrait_4_3",
-            num_images=1,
-            guidance_scale=3.5,
-            num_inference_steps=28,
-            print_quality=True  # Generate at print quality (2400x3000)
-        )
+        # Use Ideogram for styles that need better prompt adherence, FLUX Pro for others
+        use_ideogram = art_style in ["ideogram-storybook", "ideogram-character", "ideogram-realistic", "storybook", "realistic", "photorealistic"]
+        
+        if use_ideogram:
+            # Ideogram is better at following prompts accurately
+            result = await generate_ideogram(
+                prompt=full_prompt,
+                model="ideogram-v3",
+                aspect_ratio="4:5",  # Portrait for book pages
+                style="realistic" if art_style in ["photorealistic", "realistic", "ideogram-realistic"] else "general",
+                magic_prompt=True,  # Let Ideogram enhance the prompt
+                print_quality=True
+            )
+        else:
+            result = await generate_image_flux(
+                prompt=full_prompt,
+                model="flux-pro",  # Use FLUX Pro for best quality
+                image_size="portrait_4_3",
+                num_images=1,
+                guidance_scale=5.0,  # Increased from 3.5 for better prompt adherence
+                num_inference_steps=35,  # Increased from 28 for better quality
+                print_quality=True  # Generate at print quality (2400x3000)
+            )
         
         if not result.get("success") or not result.get("images"):
             raise HTTPException(status_code=500, detail="Image generation failed")
