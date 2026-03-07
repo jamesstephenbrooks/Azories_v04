@@ -2204,6 +2204,16 @@ def set_book_defaults(book: dict) -> dict:
 async def get_book_with_counts(book: dict) -> dict:
     """Add chapter and page counts to book"""
     book = set_book_defaults(book)
+    
+    # First check if book has embedded pages array (AI-generated books)
+    embedded_pages = book.get("pages", [])
+    if embedded_pages and len(embedded_pages) > 0:
+        # AI-generated book with embedded pages - count from the array
+        book["chapter_count"] = 1  # AI books typically have 1 chapter
+        book["total_pages"] = len(embedded_pages)
+        return book
+    
+    # Fallback to chapters/pages collections (traditional books)
     chapters = await db.chapters.find({"book_id": book["id"]}, {"_id": 0}).to_list(100)
     book["chapter_count"] = len(chapters)
     total_pages = 0

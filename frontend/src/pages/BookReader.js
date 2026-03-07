@@ -1686,7 +1686,7 @@ export default function BookReader() {
 
   if (loading || authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-900/95 to-slate-900">
+      <div className="min-h-screen min-h-[100dvh] flex items-center justify-center bg-gradient-to-b from-purple-900/95 to-slate-900">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="font-body text-muted-foreground">Opening book...</p>
@@ -1696,7 +1696,7 @@ export default function BookReader() {
   }
 
   return (
-    <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#1a1a2e]' : 'bg-[#f8f5f0]'} ${currentPageData?.isBackCover ? '!bg-[#1a0a2e]' : ''}`}>
+    <div className={`min-h-screen min-h-[100dvh] ${theme === 'dark' ? 'bg-[#1a1a2e]' : 'bg-[#f8f5f0]'} ${currentPageData?.isBackCover ? '!bg-[#1a0a2e]' : ''}`}>
       {/* Header - Hidden in landscape mode for maximum book space */}
       {/* MOBILE: Minimal floating UI - back button, share button */}
       {(isMobilePortrait || isMobileLandscape) && (

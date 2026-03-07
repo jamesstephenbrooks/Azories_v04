@@ -495,7 +495,7 @@ export default function StoryCreator() {
   }
   
   return (
-    <div className={`min-h-screen pb-safe ${creatorMode === 'kids' 
+    <div className={`min-h-screen min-h-[100dvh] pb-safe ${creatorMode === 'kids' 
       ? 'bg-gradient-to-b from-purple-100 via-pink-50 to-amber-50' 
       : 'bg-gradient-to-b from-gray-950 via-gray-900 to-purple-950'}`}>
       <Navbar />

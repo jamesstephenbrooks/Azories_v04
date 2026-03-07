@@ -65,14 +65,19 @@ Build a "Print on Demand" (POD) book ordering feature using the Gelato API for a
 - ✅ Fixed bonus page text overflow - Welcome page title now wraps properly
 - ✅ Made all bonus pages responsive with proper text containment
 - ✅ Updated landing page book cover to "The Wizard's Apprentice"
+- ✅ Fixed "0 ch 0 pg" display bug for AI books - now correctly counts pages from embedded pages array
+- ✅ Fixed mobile white bottom on StoryCreator and BookReader pages using min-h-[100dvh]
+- ✅ Added lazy loading to book cover thumbnails in Dashboard for faster loading
+- ✅ Fixed bonus preview modal closing when navigating (pointer-events-none when preview open)
+- ✅ Implemented BookActionsDropdown component for cleaner "My Books" card actions
 
 ## Pending Verification
 - **P1**: Verify ElevenLabs narration integration
 - **P1**: Verify AI story creation end-to-end
 - **P1**: Test Ideogram Character style for consistency
+- **P2**: Full E2E POD test (payment through to Gelato order creation)
 
 ## Future/Backlog
-- P2: Fix mobile white screen on AI story page
 - P2: Build "My Orders" page for order history
 - Order tracking notifications (email/SMS)
 - Gift feature for checkout

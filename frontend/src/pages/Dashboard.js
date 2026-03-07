@@ -584,7 +584,7 @@ export default function Dashboard() {
   const isPro = subscription === 'pro';
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen min-h-[100dvh] bg-background">
       <Navbar />
       
       {/* New Badge Celebration Popup */}
@@ -592,7 +592,7 @@ export default function Dashboard() {
         <NewBadgePopup badge={newBadge} onClose={() => setNewBadge(null)} />
       )}
       
-      <div className="pt-28 pb-12 px-6 md:px-12">
+      <div className="pt-28 pb-12 px-4 sm:px-6 md:px-12">
         <div className="max-w-7xl mx-auto">
           {/* Trial Banner */}
           <TrialBanner />
@@ -1261,6 +1261,7 @@ export default function Dashboard() {
                               src={book.cover_image} 
                               alt={book.title}
                               className="w-full h-full object-cover"
+                              loading="lazy"
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">

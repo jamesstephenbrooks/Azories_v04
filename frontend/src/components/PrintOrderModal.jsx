@@ -370,8 +370,8 @@ export default function PrintOrderModal({
 
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="w-full max-w-[600px] max-h-[90vh] overflow-y-auto p-0 gap-0 flex flex-col">
+      <Dialog open={isOpen} onOpenChange={showBonusPreview ? undefined : onClose}>
+        <DialogContent className={`w-full max-w-[600px] max-h-[90vh] overflow-y-auto p-0 gap-0 flex flex-col ${showBonusPreview ? 'pointer-events-none' : ''}`}>
           {/* Header */}
           <div className="sticky top-0 bg-white dark:bg-slate-900 z-10 px-6 pt-5 pb-3 border-b">
             <DialogHeader className="pb-0">
