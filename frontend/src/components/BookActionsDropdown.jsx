@@ -65,11 +65,13 @@ export default function BookActionsDropdown({
 
   const handleToggle = (e) => {
     e.stopPropagation();
+    e.preventDefault();
     setIsOpen(!isOpen);
   };
 
   const handleAction = (e, action) => {
     e.stopPropagation();
+    e.preventDefault();
     setIsOpen(false);
     action();
   };
@@ -83,7 +85,7 @@ export default function BookActionsDropdown({
         ref={buttonRef}
         variant="outline"
         size="icon"
-        className="rounded-full w-9 h-9 border-gray-200 hover:bg-gray-100"
+        className="rounded-full w-9 h-9 border-gray-200 hover:bg-gray-100 touch-manipulation cursor-pointer"
         onClick={handleToggle}
         data-testid={`book-actions-${book.id}`}
       >

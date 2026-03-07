@@ -7326,13 +7326,13 @@ Return ONLY the JSON array, no other text."""
                     
                     logger.info(f"Generating image for page {idx + 1}: {full_prompt[:100]}...")
                     
-                    # Check if using Ideogram style
-                    if final_style.startswith("ideogram-"):
-                        # Use Ideogram for character consistency
+                    # Check if using Ideogram style OR photorealistic (which works better with Ideogram)
+                    if final_style.startswith("ideogram-") or final_style == "photorealistic":
+                        # Use Ideogram for character consistency and photorealistic styles
                         from fal_service import generate_image_ideogram
                         
                         ideogram_style = "design"  # Default
-                        if final_style == "ideogram-realistic":
+                        if final_style == "ideogram-realistic" or final_style == "photorealistic":
                             ideogram_style = "realistic"
                         elif final_style == "ideogram-storybook":
                             ideogram_style = "design"

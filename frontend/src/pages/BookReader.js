@@ -1958,7 +1958,7 @@ export default function BookReader() {
                   </button>
                   <button
                     onClick={startListening}
-                    className="px-5 py-2.5 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 active:scale-95 text-white font-medium flex items-center gap-2 transition-colors shadow-lg text-sm"
+                    className="px-5 py-2.5 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 active:scale-95 text-white font-medium flex items-center gap-2 transition-colors shadow-lg text-sm touch-manipulation cursor-pointer"
                     data-testid="cover-listen-overlay-btn"
                   >
                     <FiPlay className="w-4 h-4" />
@@ -2011,7 +2011,7 @@ export default function BookReader() {
                   </button>
                   <button
                     onClick={startListening}
-                    className={`${isMobileLandscape ? 'px-6 py-3' : 'px-5 py-2.5'} rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 active:scale-95 text-white font-medium flex items-center gap-2 transition-colors shadow-lg text-sm`}
+                    className={`${isMobileLandscape ? 'px-6 py-3' : 'px-5 py-2.5'} rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 active:scale-95 text-white font-medium flex items-center gap-2 transition-colors shadow-lg text-sm touch-manipulation cursor-pointer`}
                     data-testid="cover-listen-overlay-btn"
                   >
                     <FiPlay className="w-4 h-4" />
