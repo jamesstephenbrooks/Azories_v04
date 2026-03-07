@@ -29,6 +29,15 @@ import useOffline from '@/hooks/useOffline';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
+// Optimized Cloudinary URL generator for faster thumbnail loading
+const getOptimizedUrl = (url, width = 250) => {
+  if (!url) return url;
+  if (url.includes('res.cloudinary.com')) {
+    return url.replace('/upload/', `/upload/f_auto,q_auto:eco,w_${width},c_limit,fl_progressive,dpr_1.0/`);
+  }
+  return url;
+};
+
 export default function Dashboard() {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -674,7 +683,7 @@ export default function Dashboard() {
                       <SelectItem key={book.id} value={book.id}>
                         <div className="flex items-center gap-2">
                           {book.cover_image && (
-                            <img src={book.cover_image} alt="" className="w-6 h-8 object-cover rounded" />
+                            <img src={getOptimizedUrl(book.cover_image, 50)} alt="" className="w-6 h-8 object-cover rounded" loading="lazy" />
                           )}
                           <span className="truncate max-w-[200px]">{book.title}</span>
                         </div>
@@ -1298,7 +1307,7 @@ export default function Dashboard() {
                         >
                           {book.cover_image ? (
                             <img 
-                              src={book.cover_image} 
+                              src={getOptimizedUrl(book.cover_image, 100)} 
                               alt={book.title}
                               className="w-full h-full object-cover"
                               loading="lazy"
@@ -1621,7 +1630,7 @@ export default function Dashboard() {
                                 onClick={() => navigate(`/editor/${book.id}`)}
                               >
                                 {book.cover_image ? (
-                                  <img src={book.cover_image} alt={book.title} className="w-full h-full object-cover" />
+                                  <img src={getOptimizedUrl(book.cover_image, 150)} alt={book.title} className="w-full h-full object-cover" loading="lazy" />
                                 ) : (
                                   <div className="w-full h-full flex items-center justify-center">
                                     <FiBook className="w-8 h-8 text-muted-foreground" />
@@ -1823,7 +1832,7 @@ export default function Dashboard() {
                                     {idx + 1}
                                   </span>
                                   {book.cover_image ? (
-                                    <img src={book.cover_image} alt="" className="w-8 h-10 object-cover rounded" />
+                                    <img src={getOptimizedUrl(book.cover_image, 50)} alt="" className="w-8 h-10 object-cover rounded" loading="lazy" />
                                   ) : (
                                     <div className="w-8 h-10 bg-muted rounded flex items-center justify-center">
                                       <FiBook className="w-4 h-4 text-muted-foreground" />

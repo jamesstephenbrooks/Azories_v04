@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FiSearch, FiBook, FiHeadphones, FiUser, FiStar, FiAward, FiTrendingUp, FiGrid, FiInfo, FiRefreshCw, FiBookOpen } from 'react-icons/fi';
+import { FiSearch, FiBook, FiHeadphones, FiUser, FiStar, FiAward, FiTrendingUp, FiGrid, FiInfo, FiRefreshCw, FiBookOpen, FiWifiOff, FiDownload } from 'react-icons/fi';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import Navbar from '@/components/Navbar';
@@ -14,6 +14,8 @@ import BookRecommendations from '@/components/BookRecommendations';
 import { getThumbnailUrl, preloadImages, AZORIES_PLACEHOLDER, handleImageError } from '@/utils/imageOptimizer';
 import { AZORA_ASSETS } from '@/components/AzoraMascot';
 import { useAuth } from '@/context/AuthContext';
+import useOffline from '@/hooks/useOffline';
+import SaveOfflineButton from '@/components/SaveOfflineButton';
 
 // ============================================
 // THUMBNAIL CACHING UTILITIES
@@ -22,19 +24,24 @@ import { useAuth } from '@/context/AuthContext';
 // Cache for preloaded images (persists during session)
 const imageCache = new Map();
 
-// Optimized Cloudinary URL generator
+// Optimized Cloudinary URL generator with aggressive compression
 const getOptimizedThumbnailUrl = (url, width = 300) => {
   if (!url) return url;
   if (url.includes('res.cloudinary.com')) {
-    // Aggressive optimization: f_auto (webp/avif), q_auto:low (smaller file), w_300, dpr_auto
-    // Also add fl_progressive for progressive loading
-    return url.replace('/upload/', `/upload/f_auto,q_auto:low,w_${width},c_limit,fl_progressive/`);
+    // Super aggressive optimization for fast loading:
+    // f_auto = best format (webp/avif)
+    // q_auto:eco = economy quality (smaller files, still looks good)
+    // w_X = resize to width
+    // c_limit = don't upscale
+    // fl_progressive = progressive loading
+    // dpr_1.0 = force 1x DPI (prevents 2x/3x on retina)
+    return url.replace('/upload/', `/upload/f_auto,q_auto:eco,w_${width},c_limit,fl_progressive,dpr_1.0/`);
   }
   return url;
 };
 
 // Preload image and cache it
-const preloadAndCacheImage = (url, width = 300) => {
+const preloadAndCacheImage = (url, width = 250) => {
   if (!url || imageCache.has(url)) return Promise.resolve();
   
   const optimizedUrl = getOptimizedThumbnailUrl(url, width);
@@ -92,16 +99,25 @@ const setBookCache = (data) => {
 // LAZY IMAGE COMPONENT WITH CACHING
 // ============================================
 
-// Lazy-loaded image component with intersection observer, caching, and purple shimmer
-const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 300, priority = false }) => {
+// Lazy-loaded image component with blur-up placeholder, caching, and purple shimmer
+const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 250, priority = false }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const imgRef = useRef(null);
+
+  // Check if already cached for instant display
+  const isCached = useMemo(() => imageCache.has(src), [src]);
 
   // Get optimized thumbnail URL with aggressive Cloudinary optimization
   const optimizedSrc = useMemo(() => {
     return getOptimizedThumbnailUrl(src, thumbnailWidth);
   }, [src, thumbnailWidth]);
+
+  // Tiny placeholder for blur-up effect (20px wide, heavily compressed)
+  const tinyPlaceholder = useMemo(() => {
+    if (!src || !src.includes('res.cloudinary.com')) return null;
+    return src.replace('/upload/', '/upload/f_auto,q_10,w_20,e_blur:500/');
+  }, [src]);
 
   // Handle successful image load
   const handleLoad = useCallback(() => {
@@ -126,15 +142,25 @@ const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 300
 
   return (
     <div ref={imgRef} className={`relative ${className}`}>
-      {/* Purple shimmer skeleton placeholder */}
-      {!isLoaded && !hasError && (
-        <div className={`absolute inset-0 bg-gradient-to-br ${getPlaceholderGradient()} overflow-hidden`}>
-          {/* Animated shimmer effect */}
-          <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <FiBook className="w-10 h-10 text-white/40" />
-          </div>
-        </div>
+      {/* Blur-up placeholder or shimmer skeleton - only show if not cached */}
+      {!isLoaded && !hasError && !isCached && (
+        <>
+          {tinyPlaceholder ? (
+            <img 
+              src={tinyPlaceholder} 
+              alt="" 
+              className="absolute inset-0 w-full h-full object-cover scale-105 blur-sm"
+              aria-hidden="true"
+            />
+          ) : (
+            <div className={`absolute inset-0 bg-gradient-to-br ${getPlaceholderGradient()} overflow-hidden`}>
+              <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <FiBook className="w-10 h-10 text-white/40" />
+              </div>
+            </div>
+          )}
+        </>
       )}
       
       {/* Actual image - always render, use native lazy loading or eager for priority */}
@@ -142,7 +168,7 @@ const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 300
         <img
           src={optimizedSrc}
           alt={alt}
-          className={`w-full h-full object-cover transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+          className={`w-full h-full object-cover transition-opacity duration-200 ${isLoaded || isCached ? 'opacity-100' : 'opacity-0'}`}
           onLoad={handleLoad}
           onError={() => setHasError(true)}
           loading={priority ? "eager" : "lazy"}
@@ -204,8 +230,18 @@ export default function Library() {
   const [selectedBook, setSelectedBook] = useState(null);
   const [summaryBook, setSummaryBook] = useState(null);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [showOfflineOnly, setShowOfflineOnly] = useState(false); // Offline filter
   const navigate = useNavigate();
   const { user, token } = useAuth();
+  
+  // Offline support
+  const { 
+    isOnline, 
+    offlineBooks, 
+    isBookOffline, 
+    saveBookOffline, 
+    removeBookOffline 
+  } = useOffline();
 
   // Fetch Continue Reading books for logged-in users
   const fetchContinueReading = useCallback(async () => {
@@ -449,6 +485,28 @@ export default function Library() {
     return publishDate > sevenDaysAgo;
   };
 
+  // Filter books based on offline toggle
+  const displayBooks = useMemo(() => {
+    if (!showOfflineOnly) return books;
+    return books.filter(book => isBookOffline(book.id));
+  }, [books, showOfflineOnly, isBookOffline]);
+
+  // Filter featured, newly added, etc. based on offline toggle
+  const displayFeaturedBooks = useMemo(() => {
+    if (!showOfflineOnly) return featuredBooks;
+    return featuredBooks.filter(book => isBookOffline(book.id));
+  }, [featuredBooks, showOfflineOnly, isBookOffline]);
+
+  const displayNewlyAddedBooks = useMemo(() => {
+    if (!showOfflineOnly) return newlyAddedBooks;
+    return newlyAddedBooks.filter(book => isBookOffline(book.id));
+  }, [newlyAddedBooks, showOfflineOnly, isBookOffline]);
+
+  const displayBestOfWeek = useMemo(() => {
+    if (!showOfflineOnly) return bestOfWeek;
+    return bestOfWeek.filter(book => isBookOffline(book.id));
+  }, [bestOfWeek, showOfflineOnly, isBookOffline]);
+
   const BookCard = ({ book, index, isFeatured = false, isComingSoon = false }) => {
     const isNew = isNewBook(book);
     
@@ -522,6 +580,28 @@ export default function Library() {
             </div>
           )}
           
+          {/* Offline indicator - show if book is saved offline */}
+          {isBookOffline(book.id) && !isComingSoon && (
+            <div className="absolute bottom-3 left-3 z-20">
+              <span className="px-2 py-1 rounded-full bg-purple-600/90 text-white text-xs font-medium flex items-center gap-1">
+                <FiWifiOff className="w-3 h-3" /> Offline
+              </span>
+            </div>
+          )}
+          
+          {/* Save Offline Button - bottom right, only for non-coming-soon books */}
+          {!isComingSoon && (
+            <div className="absolute bottom-3 right-3 z-20" onClick={(e) => e.stopPropagation()}>
+              <SaveOfflineButton
+                book={book}
+                isOffline={isBookOffline(book.id)}
+                onSave={saveBookOffline}
+                onRemove={removeBookOffline}
+                compact={true}
+              />
+            </div>
+          )}
+          
           {/* Book Cover */}
           <div className={`aspect-[3/4] relative overflow-hidden bg-muted/30 ${isComingSoon ? 'filter blur-[4px]' : ''}`}>
             {book.cover_image ? (
@@ -529,8 +609,8 @@ export default function Library() {
                 src={book.cover_image} 
                 alt={book.title}
                 className="w-full h-full"
-                thumbnailWidth={300}
-                priority={index < 6} // Eagerly load first 6 books
+                thumbnailWidth={250}
+                priority={index < 8} // Eagerly load first 8 books for faster initial render
               />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
@@ -692,22 +772,22 @@ export default function Library() {
   // Newly Added Section - Horizontal scroll row
   const NewlyAddedSection = () => {
     // Show skeleton while loading
-    if (loading && newlyAddedBooks.length === 0) {
+    if (loading && displayNewlyAddedBooks.length === 0) {
       return <SectionSkeleton title="Newly Added" icon="🆕" />;
     }
     
-    if (newlyAddedBooks.length === 0) return null;
+    if (displayNewlyAddedBooks.length === 0) return null;
     
     return (
       <div className="mb-12">
         <div className="flex items-center gap-3 mb-6">
           <span className="text-2xl">🆕</span>
           <h2 className="font-heading text-2xl font-bold">Newly Added</h2>
-          <span className="text-sm text-muted-foreground">({newlyAddedBooks.length} new stories)</span>
+          <span className="text-sm text-muted-foreground">({displayNewlyAddedBooks.length} new stories)</span>
         </div>
         <div className="relative">
           <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent">
-            {newlyAddedBooks.map((book, index) => (
+            {displayNewlyAddedBooks.map((book, index) => (
               <div key={book.id} className="flex-shrink-0 w-48">
                 <BookCard book={book} index={index} />
               </div>
@@ -843,6 +923,21 @@ export default function Library() {
                     ))}
                   </SelectContent>
                 </Select>
+                
+                {/* Offline Filter Toggle */}
+                {offlineBooks.length > 0 && (
+                  <Button
+                    variant={showOfflineOnly ? 'default' : 'outline'}
+                    onClick={() => setShowOfflineOnly(!showOfflineOnly)}
+                    className={`rounded-full h-12 px-4 gap-2 ${showOfflineOnly ? 'bg-purple-600 hover:bg-purple-700' : ''}`}
+                    data-testid="offline-filter-btn"
+                    title={showOfflineOnly ? 'Show all books' : 'Show offline books only'}
+                  >
+                    <FiWifiOff className="w-4 h-4" />
+                    <span className="hidden sm:inline">Offline</span>
+                    <span className="text-xs bg-white/20 px-1.5 py-0.5 rounded-full">{offlineBooks.length}</span>
+                  </Button>
+                )}
                 
                 {/* View Mode Toggle */}
                 <div className="flex gap-2 bg-muted/50 p-1 rounded-full items-center">
@@ -1029,9 +1124,9 @@ export default function Library() {
                     </div>
                   ))}
                 </div>
-              ) : books.length > 0 ? (
+              ) : displayBooks.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                  {books.map((book, index) => (
+                  {displayBooks.map((book, index) => (
                     <BookCard key={book.id} book={book} index={index} />
                   ))}
                 </div>
@@ -1045,12 +1140,14 @@ export default function Library() {
                     transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                   />
                   <h3 className="font-heading text-xl text-muted-foreground">
-                    {loadError ? 'Oops! Something went wrong' : 'No books found'}
+                    {loadError ? 'Oops! Something went wrong' : showOfflineOnly ? 'No offline books' : 'No books found'}
                   </h3>
                   <p className="font-body text-muted-foreground mt-2">
                     {loadError 
                       ? 'We couldn\'t load the library. Please try again.' 
-                      : 'Try adjusting your search or filters'
+                      : showOfflineOnly
+                        ? 'Save some books for offline reading first!'
+                        : 'Try adjusting your search or filters'
                     }
                   </p>
                   {loadError && (
