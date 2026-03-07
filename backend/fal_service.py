@@ -29,6 +29,12 @@ _alert_state = {
 
 # Available fal.ai models
 FAL_MODELS = {
+    "flux-schnell": {
+        "id": "fal-ai/flux/schnell",
+        "name": "FLUX.1 Schnell",
+        "description": "Ultra-fast, cost-effective generation (1-4 steps)",
+        "type": "text-to-image"
+    },
     "flux-dev": {
         "id": "fal-ai/flux/dev",
         "name": "FLUX.1 Dev",
@@ -302,29 +308,29 @@ async def _submit_with_retry(model_id: str, arguments: dict, timeout: int = IMAG
 
 async def generate_image_flux(
     prompt: str,
-    model: str = "flux-dev",
+    model: str = "flux-schnell",  # Default to schnell for speed and cost efficiency
     image_size: str = "portrait_4_3",
     num_images: int = 1,
     seed: Optional[int] = None,
     guidance_scale: float = 3.5,
-    num_inference_steps: int = 28,
+    num_inference_steps: int = 4,  # schnell works best with 1-4 steps
     print_quality: bool = False
 ) -> Dict[str, Any]:
     """Generate images using FLUX models
     
     Args:
         prompt: Text description of the image
-        model: FLUX model variant (flux-dev, flux-pro, etc.)
+        model: FLUX model variant (flux-schnell, flux-dev, flux-pro)
         image_size: Preset size string OR custom dict {"width": X, "height": Y}
         num_images: Number of images to generate
         seed: Optional seed for reproducibility
         guidance_scale: How closely to follow the prompt
-        num_inference_steps: Number of denoising steps
+        num_inference_steps: Number of denoising steps (4 for schnell, 28 for dev/pro)
         print_quality: If True, generates at 2400x3000 (300 DPI for 8x10 print)
     """
     _get_fal_key()  # Validate key exists
     
-    model_id = FAL_MODELS.get(model, {}).get("id", "fal-ai/flux/dev")
+    model_id = FAL_MODELS.get(model, {}).get("id", "fal-ai/flux/schnell")
 
     # For print quality, use high resolution suitable for 8x10 inch at 300 DPI
     if print_quality:

@@ -4372,11 +4372,11 @@ Key requirements:
         else:
             result = await generate_image_flux(
                 prompt=full_prompt,
-                model="flux-dev",  # Use standard FLUX for cost efficiency
+                model="flux-schnell",  # Use standard FLUX for cost efficiency
                 image_size="portrait_4_3",
                 num_images=1,
                 guidance_scale=5.0,  # Increased for better prompt adherence
-                num_inference_steps=35,  # Good quality
+                num_inference_steps=4,  # Good quality
                 print_quality=True  # Generate at print quality (2400x3000)
             )
         
@@ -4983,7 +4983,7 @@ async def create_character(request: CharacterCreate, current_user: dict = Depend
                 try:
                     result = await generate_image_flux(
                         prompt=gen_prompt,
-                        model="flux-dev",
+                        model="flux-schnell",
                         image_size="square_hd",
                         num_images=1
                     )
@@ -5159,7 +5159,7 @@ async def generate_character_thumbnail(character_id: str, current_user: dict = D
         
         result = await generate_image_flux(
             prompt=gen_prompt,
-            model="flux-dev",
+            model="flux-schnell",
             image_size="square_hd",
             num_images=1
         )
@@ -5373,7 +5373,7 @@ async def regenerate_character_thumbnail(character_id: str, current_user: dict =
         if FAL_AVAILABLE:
             result = await generate_image_flux(
                 prompt=gen_prompt,
-                model="flux-dev",
+                model="flux-schnell",
                 image_size="square_hd",
                 num_images=1
             )
@@ -5486,7 +5486,7 @@ async def create_scene(request: SceneCreate, current_user: dict = Depends(get_cu
             try:
                 result = await generate_image_flux(
                     prompt=gen_prompt,
-                    model="flux-dev",
+                    model="flux-schnell",
                     image_size="landscape_16_9",
                     num_images=1
                 )
@@ -5686,7 +5686,7 @@ async def generate_scene_image(scene_id: str, request: dict, current_user: dict 
         if FAL_AVAILABLE:
             result = await generate_image_flux(
                 prompt=full_prompt,
-                model="flux-dev",
+                model="flux-schnell",
                 image_size=request.get("image_size", "landscape_16_9"),
                 num_images=1
             )
@@ -6960,11 +6960,11 @@ async def generate_single_image(prompt: str, style_desc: str) -> str:
             # Use print_quality for correct 8x10 ratio (2400x3000px at 300 DPI)
             result = await generate_image_flux(
                 prompt=full_prompt,
-                model="flux-dev",  # Use standard FLUX for cost efficiency
+                model="flux-schnell",  # Use standard FLUX for cost efficiency
                 image_size="portrait_4_3",  # Fallback
                 num_images=1,
                 guidance_scale=3.5,
-                num_inference_steps=28,
+                num_inference_steps=4,
                 print_quality=True  # Generate at correct 8x10 ratio for printing
             )
             
@@ -6996,11 +6996,11 @@ async def generate_single_image(prompt: str, style_desc: str) -> str:
             
             result = await generate_image_flux(
                 prompt=full_prompt,
-                model="flux",  # Standard FLUX model as fallback
+                model="flux-schnell",  # Standard FLUX model as fallback
                 image_size="portrait_4_3",
                 num_images=1,
                 guidance_scale=3.5,
-                num_inference_steps=28,
+                num_inference_steps=4,
                 print_quality=True
             )
             
@@ -7736,7 +7736,7 @@ Return ONLY the JSON array, no other text."""
                         # print_quality=True generates at 2400x3000 (8x10 at 300 DPI)
                         result = await generate_image_flux(
                             prompt=full_prompt,
-                            model="flux-dev",
+                            model="flux-schnell",
                             image_size="portrait_4_3",  # Fallback if print_quality doesn't work
                             num_images=1,
                             print_quality=True  # Generate at correct 8x10 ratio for printing
@@ -7802,7 +7802,7 @@ Return ONLY the JSON array, no other text."""
                 # print_quality=True generates at 2400x3000 (8x10 at 300 DPI)
                 cover_result = await generate_image_flux(
                     prompt=cover_prompt,
-                    model="flux-dev",
+                    model="flux-schnell",
                     image_size="portrait_4_3",  # Fallback if print_quality doesn't work
                     num_images=1,
                     print_quality=True  # Generate at correct 8x10 ratio for printing
@@ -11215,7 +11215,7 @@ async def generate_starter_library_images(
             # Generate image using fal.ai flux-dev
             image_result = await generate_image_flux(
                 prompt=item['prompt'],
-                model="flux-dev",
+                model="flux-schnell",
                 image_size="square_hd",
                 num_images=1
             )
