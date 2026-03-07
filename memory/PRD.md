@@ -62,7 +62,8 @@ Build a "Print on Demand" (POD) book ordering feature using the Gelato API for a
 - ✅ Fixed PDF upload with chunked upload for large files (>10MB)
 - ✅ Reduced JPEG quality from 95 to 75 for smaller file sizes
 - ✅ Fixed navigation arrows closing the modal (stopPropagation)
-- ✅ Fixed bonus page text overflow with responsive scaling
+- ✅ Fixed bonus page text overflow - Welcome page title now wraps properly
+- ✅ Made all bonus pages responsive with proper text containment
 - ✅ Updated landing page book cover to "The Wizard's Apprentice"
 
 ## Pending Verification

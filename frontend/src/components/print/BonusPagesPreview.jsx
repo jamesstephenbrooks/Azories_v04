@@ -93,7 +93,9 @@ const BonusPagesPreview = ({
         className="w-full max-w-sm bg-white rounded-lg shadow-2xl overflow-hidden"
         style={{ aspectRatio: '8/11' }}
       >
-        {pages[currentPage].component}
+        <div className="w-full h-full overflow-hidden">
+          {pages[currentPage].component}
+        </div>
       </div>
 
       {/* Page dots */}

@@ -58,17 +58,17 @@ export const WelcomePage = ({ bookTitle, childName }) => (
     <div className="absolute top-10 left-10 sm:top-20 sm:left-20 text-purple-400 text-base sm:text-xl">✦</div>
     <div className="absolute bottom-12 right-12 sm:bottom-24 sm:right-24 text-pink-400 text-sm sm:text-lg">✦</div>
     
-    {/* Main content - scaled for preview */}
-    <div className="text-center mb-3 sm:mb-6 px-2">
-      <p className="text-purple-600 text-xs sm:text-lg font-medium tracking-widest uppercase mb-1 sm:mb-2">A Magical Story</p>
-      <h1 className="text-xl sm:text-4xl md:text-5xl font-bold text-gray-800 mb-1 sm:mb-2 font-serif leading-tight truncate max-w-full">{bookTitle || 'Your Story'}</h1>
-      <p className="text-purple-500 text-sm sm:text-xl">Created especially for</p>
-      <p className="text-lg sm:text-3xl font-bold text-purple-700 mt-0.5 sm:mt-1 truncate max-w-full">{childName || 'You'}</p>
+    {/* Main content - scaled for preview with proper text containment */}
+    <div className="text-center mb-3 sm:mb-6 px-4 sm:px-8 w-full max-w-[90%]">
+      <p className="text-purple-600 text-[10px] sm:text-lg font-medium tracking-widest uppercase mb-1 sm:mb-2">A Magical Story</p>
+      <h1 className="text-base sm:text-3xl md:text-4xl font-bold text-gray-800 mb-1 sm:mb-2 font-serif leading-tight text-center break-words" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>{bookTitle || 'Your Story'}</h1>
+      <p className="text-purple-500 text-xs sm:text-xl">Created especially for</p>
+      <p className="text-sm sm:text-2xl font-bold text-purple-700 mt-0.5 sm:mt-1 break-words">{childName || 'You'}</p>
     </div>
     
     {/* Image in decorative frame - smaller for preview */}
     <div className="relative flex-shrink-0">
-      <div className="w-28 h-28 sm:w-56 sm:h-56 rounded-full bg-gradient-to-br from-purple-200 to-pink-200 p-1 sm:p-2 shadow-xl">
+      <div className="w-24 h-24 sm:w-48 sm:h-48 rounded-full bg-gradient-to-br from-purple-200 to-pink-200 p-1 sm:p-2 shadow-xl">
         <div className="w-full h-full rounded-full overflow-hidden bg-white">
           <img 
             src={BONUS_PAGE_IMAGES.welcome}
