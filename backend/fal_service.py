@@ -62,7 +62,7 @@ FAL_MODELS = {
 }
 
 # Timeout constants
-IMAGE_TIMEOUT = 120   # 2 minutes for image generation
+IMAGE_TIMEOUT = 600   # 10 minutes for image generation (increased for complex generations)
 VIDEO_TIMEOUT = 360   # 6 minutes for video generation
 STATUS_TIMEOUT = 30   # 30 seconds for status checks
 
