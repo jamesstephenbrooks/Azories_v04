@@ -7063,32 +7063,36 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
         # Use the art_style from request, fallback to image_style for backwards compatibility
         selected_style = request.art_style or request.image_style or "3d-pixar"
         
-        # Detect style from the story description (takes priority)
+        # Detect style from the story description ONLY if user didn't explicitly select a style
         story_lower = story_idea.lower()
         detected_style = None
-        style_keywords = {
-            "pixar": ["pixar", "3d", "disney", "animated movie"],
-            "anime": ["anime", "manga", "japanese", "studio ghibli"],
-            "comic": ["comic", "superhero", "marvel", "dc"],
-            "watercolour": ["watercolor", "watercolour", "painted", "painterly"],
-            "realistic": ["realistic", "photorealistic", "real", "photograph"],
-            "scifi": ["sci-fi", "scifi", "space", "futuristic", "robot"],
-            "sketch": ["sketch", "pencil", "drawn", "line art"],
-            "fantasy": ["fantasy", "magical", "enchanted", "fairy"],
-            "storybook": ["classic", "storybook", "traditional", "vintage"]
-        }
         
-        for style, keywords in style_keywords.items():
-            if any(kw in story_lower for kw in keywords):
-                detected_style = style
-                logger.info(f"Detected style '{style}' from story description")
-                break
+        # Only auto-detect style if user is using the default style
+        if selected_style == "3d-pixar":
+            style_keywords = {
+                "pixar": ["pixar", "disney", "animated movie"],
+                "anime": ["anime", "manga", "japanese", "studio ghibli"],
+                "comic": ["comic", "superhero", "marvel", "dc"],
+                "watercolour": ["watercolor", "watercolour", "painted", "painterly"],
+                "photorealistic": ["photorealistic", "photograph", "photo realistic", "photo-realistic"],
+                "realistic": ["realistic", "real life", "lifelike"],
+                "scifi": ["sci-fi", "scifi", "space", "futuristic", "robot"],
+                "sketch": ["sketch", "pencil", "drawn", "line art"],
+                "fantasy": ["fantasy", "magical", "enchanted", "fairy"],
+                "storybook": ["classic", "storybook", "traditional", "vintage"]
+            }
+            
+            for style, keywords in style_keywords.items():
+                if any(kw in story_lower for kw in keywords):
+                    detected_style = style
+                    logger.info(f"Auto-detected style '{style}' from story description")
+                    break
         
-        # Use detected style if found, otherwise use the selected style
-        final_style = detected_style if detected_style else selected_style
+        # Use selected style (user's explicit choice takes priority), fall back to detected
+        final_style = selected_style if selected_style != "3d-pixar" else (detected_style or selected_style)
         style_desc = style_prompts.get(final_style, style_prompts["3d-pixar"])
         
-        logger.info(f"Using style: {final_style} (detected: {detected_style}, selected: {selected_style})")
+        logger.info(f"Using style: {final_style} (selected: {selected_style}, detected: {detected_style})")
         
         # Build the title instruction
         title_instruction = f'Use the title: "{request.title}"' if request.title.strip() else 'Create an engaging, memorable title'
