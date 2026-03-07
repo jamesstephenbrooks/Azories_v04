@@ -4396,7 +4396,7 @@ async def generate_page_image(request: PageImageGenerateRequest, current_user: d
 
 
 # Credit cost for AI text enhancement
-CREDITS_PER_TEXT_ENHANCE = 1
+CREDITS_PER_TEXT_ENHANCE = 2
 
 class TextEnhanceRequest(BaseModel):
     """Request model for AI text enhancement"""

@@ -52,7 +52,11 @@ export default function TrialBanner() {
               Pro Trial: {getTimeDisplay() || 'Active'}
             </p>
             <p className="text-xs text-white/50">
-              48-hour access to all Pro features!
+              {hoursRemaining !== null && hoursRemaining !== undefined 
+                ? 'Your free Pro trial - enjoy all features!'
+                : daysRemaining && daysRemaining > 2 
+                  ? 'Enjoy all Pro features during your trial!'
+                  : '48-hour access to all Pro features!'}
             </p>
           </div>
         </div>

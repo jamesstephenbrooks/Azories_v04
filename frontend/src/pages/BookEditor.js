@@ -1051,7 +1051,7 @@ export default function BookEditor() {
       if (res.data.success && res.data.enhanced_text) {
         // Update the page with enhanced text
         setSelectedPage({ ...selectedPage, text_content: res.data.enhanced_text });
-        toast.success('Text enhanced by AI! (1 credit used)');
+        toast.success('Text enhanced by AI! (2 credits used)');
       } else {
         throw new Error('No enhanced text returned');
       }
@@ -2136,7 +2136,7 @@ export default function BookEditor() {
                     onClick={handleEnhanceText}
                     disabled={isEnhancingText || !selectedPage?.text_content?.trim()}
                     className="rounded-full bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/30 hover:border-amber-500/50 text-amber-700 dark:text-amber-400"
-                    title="Polish your text with AI - makes it publication-ready (1 credit)"
+                    title="Polish your text with AI - makes it publication-ready (2 credits)"
                     data-testid="ai-enhance-text-btn"
                   >
                     {isEnhancingText ? (
