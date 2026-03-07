@@ -4,7 +4,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { FiPrinter, FiTruck, FiCreditCard, FiCheck, FiPackage, FiAlertCircle, FiEye, FiBook } from 'react-icons/fi';
+import { FiPrinter, FiTruck, FiCreditCard, FiCheck, FiPackage, FiAlertCircle, FiEye, FiBook, FiTag } from 'react-icons/fi';
 import { toast } from 'sonner';
 import BonusPagesPreview from './print/BonusPagesPreview';
 import BookPageStrip from './print/BookPageStrip';
@@ -118,6 +118,61 @@ export default function PrintOrderModal({
   
   // Order result
   const [orderResult, setOrderResult] = useState(null);
+  
+  // Coupon code
+  const [couponCode, setCouponCode] = useState('');
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponApplied, setCouponApplied] = useState(null);
+  const [couponError, setCouponError] = useState('');
+
+  // Validate coupon code
+  const validateCoupon = async () => {
+    if (!couponCode.trim()) {
+      setCouponError('Please enter a coupon code');
+      return;
+    }
+    
+    setCouponLoading(true);
+    setCouponError('');
+    
+    try {
+      const currency = address.countryIsoCode === 'GB' ? 'gbp' : 'usd';
+      const productType = selectedProductType === 'hardcover' ? 'hardcover_8x10' : 'softcover_8x10';
+      
+      const response = await fetch(`${API_URL}/api/print/validate-coupon`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          coupon_code: couponCode,
+          product_type: productType,
+          currency: currency
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setCouponApplied(data);
+        setCouponError('');
+      } else {
+        const error = await response.json();
+        setCouponError(error.detail || 'Invalid coupon code');
+        setCouponApplied(null);
+      }
+    } catch (error) {
+      setCouponError('Failed to validate coupon');
+      setCouponApplied(null);
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  // Clear coupon when product type changes
+  useEffect(() => {
+    if (couponApplied) {
+      setCouponApplied(null);
+      setCouponCode('');
+    }
+  }, [selectedProductType]);
 
   // Fetch product info on mount
   useEffect(() => {
@@ -206,7 +261,8 @@ export default function PrintOrderModal({
           shipping_country: address.countryIsoCode,
           shipping_postal_code: address.postCode,
           origin_url: window.location.origin,
-          include_bonus_pages: includeBonusPages  // Send bonus pages preference
+          include_bonus_pages: includeBonusPages,  // Send bonus pages preference
+          coupon_code: couponApplied ? couponCode : null  // Send coupon code if applied
         })
       });
       
@@ -688,6 +744,59 @@ export default function PrintOrderModal({
                 {address.city}, {address.postCode}<br />
                 {COUNTRIES.find(c => c.code === address.countryIsoCode)?.name}
               </p>
+            </div>
+
+            {/* Coupon Code Input */}
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h4 className="font-medium mb-2 flex items-center gap-2">
+                <FiTag className="text-purple-500" />
+                Coupon Code
+              </h4>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Enter coupon code"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                  className="flex-1"
+                  disabled={couponApplied}
+                />
+                {couponApplied ? (
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      setCouponApplied(null);
+                      setCouponCode('');
+                      setCouponError('');
+                    }}
+                    className="text-red-500 border-red-200"
+                  >
+                    Remove
+                  </Button>
+                ) : (
+                  <Button 
+                    variant="outline" 
+                    onClick={validateCoupon}
+                    disabled={couponLoading || !couponCode.trim()}
+                    className="border-purple-200"
+                  >
+                    {couponLoading ? 'Checking...' : 'Apply'}
+                  </Button>
+                )}
+              </div>
+              {couponError && (
+                <p className="text-sm text-red-500 mt-2">{couponError}</p>
+              )}
+              {couponApplied && (
+                <div className="mt-2 p-2 bg-green-50 rounded border border-green-200">
+                  <div className="flex items-center gap-2 text-green-700">
+                    <FiCheck className="flex-shrink-0" />
+                    <span className="text-sm font-medium">{couponApplied.description}</span>
+                  </div>
+                  <p className="text-sm text-green-600 mt-1">
+                    You save {formatPrice(couponApplied.discount_amount, couponApplied.currency)} ({couponApplied.discount_percent}% off)
+                  </p>
+                </div>
+              )}
             </div>
 
             {priceEstimate && (

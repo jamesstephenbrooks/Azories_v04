@@ -30,13 +30,41 @@ PRINT_PRODUCTS = {
         "name": "Softcover Book",
         "price_gbp": 14.99,
         "price_usd": 19.99,
+        "gelato_cost_gbp": 8.99,  # Actual Gelato cost
+        "gelato_cost_usd": 11.99,
         "description": "Premium softcover photobook"
     },
     "hardcover_8x10": {
         "name": "Hardcover Book", 
         "price_gbp": 19.99,
         "price_usd": 24.99,
+        "gelato_cost_gbp": 12.99,  # Actual Gelato cost
+        "gelato_cost_usd": 16.99,
         "description": "Premium hardcover photobook"
+    }
+}
+
+# Coupon codes - owner gets cost price, others get percentage discounts
+COUPONS = {
+    "AZORIES-OWNER": {
+        "type": "cost_price",  # Special: charges only Gelato cost
+        "description": "Owner - Cost Price Only",
+        "active": True,
+        "uses_remaining": None,  # Unlimited
+    },
+    "LAUNCH10": {
+        "type": "percentage",
+        "discount": 10,  # 10% off
+        "description": "Launch Discount - 10% Off",
+        "active": True,
+        "uses_remaining": 100,
+    },
+    "FRIENDS20": {
+        "type": "percentage", 
+        "discount": 20,  # 20% off
+        "description": "Friends & Family - 20% Off",
+        "active": True,
+        "uses_remaining": 50,
     }
 }
 
@@ -121,6 +149,71 @@ async def get_product_info():
         ],
         "gelato_configured": gelato_service.is_configured(),
         "coming_soon": not gelato_service.is_configured()  # Show coming soon if not configured
+    }
+
+
+class CouponValidateRequest(BaseModel):
+    coupon_code: str
+    product_type: str
+    currency: str = "gbp"
+
+
+@router.post("/validate-coupon")
+async def validate_coupon(request: CouponValidateRequest):
+    """
+    Validate a coupon code and return discount information.
+    """
+    code = request.coupon_code.upper().strip()
+    
+    if code not in COUPONS:
+        raise HTTPException(status_code=400, detail="Invalid coupon code")
+    
+    coupon = COUPONS[code]
+    
+    if not coupon.get("active"):
+        raise HTTPException(status_code=400, detail="This coupon is no longer active")
+    
+    if coupon.get("uses_remaining") is not None and coupon["uses_remaining"] <= 0:
+        raise HTTPException(status_code=400, detail="This coupon has been fully redeemed")
+    
+    # Get product pricing
+    if request.product_type not in PRINT_PRODUCTS:
+        raise HTTPException(status_code=400, detail="Invalid product type")
+    
+    product = PRINT_PRODUCTS[request.product_type]
+    currency = request.currency.lower()
+    
+    if currency == "gbp":
+        original_price = product["price_gbp"]
+        cost_price = product.get("gelato_cost_gbp", original_price)
+    else:
+        original_price = product["price_usd"]
+        cost_price = product.get("gelato_cost_usd", original_price)
+    
+    # Calculate discount
+    if coupon["type"] == "cost_price":
+        discount_amount = round(original_price - cost_price, 2)
+        final_price = cost_price
+        discount_percent = round((discount_amount / original_price) * 100, 0)
+    elif coupon["type"] == "percentage":
+        discount_percent = coupon["discount"]
+        discount_amount = round(original_price * (discount_percent / 100), 2)
+        final_price = round(original_price - discount_amount, 2)
+    else:
+        discount_amount = 0
+        final_price = original_price
+        discount_percent = 0
+    
+    return {
+        "valid": True,
+        "code": code,
+        "description": coupon["description"],
+        "discount_type": coupon["type"],
+        "discount_percent": discount_percent,
+        "discount_amount": discount_amount,
+        "original_price": original_price,
+        "final_price": final_price,
+        "currency": currency.upper()
     }
 
 
@@ -578,12 +671,14 @@ class CheckoutRequest(BaseModel):
     shipping_country: str = "GB"
     shipping_postal_code: str = ""
     origin_url: str  # Frontend origin for success/cancel URLs
+    coupon_code: Optional[str] = None  # Optional coupon code
 
 
 class CheckoutResponse(BaseModel):
     checkout_url: str
     session_id: str
     order_reference: str
+    discount_applied: Optional[float] = None
 
 
 @router.post("/checkout/create-session")
@@ -591,6 +686,7 @@ async def create_checkout_session(request: CheckoutRequest, http_request: Reques
     """
     Create a Stripe checkout session for a print order.
     Price is determined server-side based on product_type - never from frontend.
+    Supports coupon codes for discounts.
     """
     from emergentintegrations.payments.stripe.checkout import (
         StripeCheckout, 
@@ -613,6 +709,24 @@ async def create_checkout_session(request: CheckoutRequest, http_request: Reques
     product = PRINT_PRODUCTS[request.product_type]
     currency = "gbp" if request.shipping_country == "GB" else "usd"
     base_price = product["price_gbp"] if currency == "gbp" else product["price_usd"]
+    cost_price = product.get("gelato_cost_gbp" if currency == "gbp" else "gelato_cost_usd", base_price)
+    
+    # Apply coupon if provided
+    discount_amount = 0
+    coupon_description = None
+    if request.coupon_code:
+        code = request.coupon_code.upper().strip()
+        if code in COUPONS:
+            coupon = COUPONS[code]
+            if coupon.get("active") and (coupon.get("uses_remaining") is None or coupon["uses_remaining"] > 0):
+                if coupon["type"] == "cost_price":
+                    discount_amount = round(base_price - cost_price, 2)
+                    base_price = cost_price
+                    coupon_description = "Owner Discount"
+                elif coupon["type"] == "percentage":
+                    discount_amount = round(base_price * (coupon["discount"] / 100), 2)
+                    base_price = round(base_price - discount_amount, 2)
+                    coupon_description = f"{coupon['discount']}% Off"
     
     # TODO: Add shipping cost from Gelato quote once fully integrated
     # For now, estimate shipping
@@ -642,7 +756,9 @@ async def create_checkout_session(request: CheckoutRequest, http_request: Reques
             "book_title": book.get("title", "Untitled"),
             "product_type": request.product_type,
             "shipping_country": request.shipping_country,
-            "type": "print_order"
+            "type": "print_order",
+            "coupon_code": request.coupon_code or "",
+            "discount_amount": str(discount_amount)
         }
     )
     
@@ -663,11 +779,13 @@ async def create_checkout_session(request: CheckoutRequest, http_request: Reques
             "currency": currency.upper(),
             "payment_status": "initiated",
             "shipping_country": request.shipping_country,
+            "coupon_code": request.coupon_code,
+            "discount_amount": discount_amount,
             "created_at": datetime.utcnow(),
             "updated_at": datetime.utcnow()
         })
         
-        logger.info(f"Created checkout session {session.session_id} for order {order_reference}")
+        logger.info(f"Created checkout session {session.session_id} for order {order_reference}, discount: {discount_amount}")
         
         return {
             "checkout_url": session.url,
