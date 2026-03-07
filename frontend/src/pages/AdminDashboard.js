@@ -14,7 +14,7 @@ import {
   FiShield, FiBook, FiCheck, FiX, FiAlertTriangle, 
   FiEye, FiEyeOff, FiClock, FiUser, FiArrowLeft, FiLogIn, FiSearch, FiRefreshCw,
   FiUsers, FiBarChart2, FiStar, FiAward, FiTrash2, FiLock, FiLogOut, FiDatabase, FiFilter, FiImage,
-  FiChevronLeft, FiChevronRight, FiSettings, FiKey, FiSave, FiCalendar, FiTrendingUp
+  FiChevronLeft, FiChevronRight, FiSettings, FiKey, FiSave, FiCalendar, FiTrendingUp, FiPackage, FiDollarSign, FiTruck
 } from 'react-icons/fi';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -728,6 +728,9 @@ export default function AdminDashboard() {
             <TabsTrigger value="users" className="rounded-full data-[state=active]:bg-purple-600 text-white">
               <FiUsers className="w-4 h-4 mr-2" /> Users ({users.length})
             </TabsTrigger>
+            <TabsTrigger value="print-orders" className="rounded-full data-[state=active]:bg-purple-600 text-white">
+              <FiPackage className="w-4 h-4 mr-2" /> Print Orders
+            </TabsTrigger>
             <TabsTrigger value="analytics" className="rounded-full data-[state=active]:bg-purple-600 text-white">
               <FiBarChart2 className="w-4 h-4 mr-2" /> Analytics
             </TabsTrigger>
@@ -1149,6 +1152,58 @@ export default function AdminDashboard() {
               )}
             </div>
           </TabsContent>
+
+          {/* Print Orders Tab */}
+          <TabsContent value="print-orders">
+            <Card className="bg-white/5 border-white/10">
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <CardTitle className="text-white text-lg flex items-center gap-2">
+                    <FiPackage className="w-5 h-5" />
+                    Print Orders Management
+                  </CardTitle>
+                  <Button 
+                    onClick={() => navigate('/admin/print-orders')}
+                    className="bg-purple-600 hover:bg-purple-700"
+                  >
+                    Open Full Dashboard
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <FiPackage className="w-16 h-16 mx-auto mb-4 text-purple-400" />
+                  <h3 className="text-xl font-semibold text-white mb-2">Physical Book Order Tracking</h3>
+                  <p className="text-gray-400 mb-6 max-w-md mx-auto">
+                    Track all print orders, view order status, manage fulfillment, and see financial breakdowns including costs, revenue, and profit.
+                  </p>
+                  <div className="flex justify-center gap-4 flex-wrap">
+                    <div className="bg-white/5 rounded-lg p-4 min-w-[140px]">
+                      <FiDollarSign className="w-8 h-8 mx-auto mb-2 text-green-400" />
+                      <p className="text-sm text-gray-400">Revenue & Profit</p>
+                    </div>
+                    <div className="bg-white/5 rounded-lg p-4 min-w-[140px]">
+                      <FiTruck className="w-8 h-8 mx-auto mb-2 text-blue-400" />
+                      <p className="text-sm text-gray-400">Order Tracking</p>
+                    </div>
+                    <div className="bg-white/5 rounded-lg p-4 min-w-[140px]">
+                      <FiBarChart2 className="w-8 h-8 mx-auto mb-2 text-purple-400" />
+                      <p className="text-sm text-gray-400">Financial Reports</p>
+                    </div>
+                  </div>
+                  <Button 
+                    onClick={() => navigate('/admin/print-orders')}
+                    className="mt-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                    size="lg"
+                  >
+                    <FiPackage className="w-5 h-5 mr-2" />
+                    Go to Print Orders Dashboard
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
 
           {/* Analytics Tab */}
           <TabsContent value="analytics">
