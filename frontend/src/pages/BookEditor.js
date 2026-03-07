@@ -959,14 +959,21 @@ export default function BookEditor() {
       if (res.data.success && res.data.image_url) {
         // Update the page with the new image
         setSelectedPage({ ...selectedPage, image_url: res.data.image_url });
-        toast.success('AI image generated successfully!');
+        toast.success('AI image generated successfully! (2 credits used)');
       } else {
         throw new Error('No image returned');
       }
     } catch (error) {
       console.error('AI image generation error:', error);
       const message = error.response?.data?.detail || error.message || 'Failed to generate AI image';
-      toast.error(message);
+      
+      // Check if it's an insufficient credits error (402)
+      if (error.response?.status === 402) {
+        toast.error('Insufficient credits. Redirecting to top up...');
+        setTimeout(() => navigate('/credits'), 1500);
+      } else {
+        toast.error(message);
+      }
     } finally {
       setIsGeneratingAI(false);
     }

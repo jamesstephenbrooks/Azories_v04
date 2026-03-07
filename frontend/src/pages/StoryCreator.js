@@ -257,7 +257,9 @@ export default function StoryCreator() {
     const isFree = canCreateFree();
     
     if (!isFree && credits < creditsNeeded) {
-      toast.error(`You need ${creditsNeeded} credits. You have ${credits}.`);
+      toast.error(`You need ${creditsNeeded} credits. You have ${credits}. Redirecting to top up...`);
+      // Redirect to credits page after a short delay
+      setTimeout(() => navigate('/credits'), 1500);
       return;
     }
     

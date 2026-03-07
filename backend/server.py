@@ -216,7 +216,7 @@ def get_mongo_connection():
         mongo_url,
         serverSelectionTimeoutMS=5000,  # 5s to select server
         connectTimeoutMS=5000,           # 5s to connect
-        socketTimeoutMS=10000,           # 10s for socket operations
+        socketTimeoutMS=120000,          # 120s for socket operations (increased for long writes)
         maxPoolSize=50,                  # Connection pool size
         retryWrites=True
     )
@@ -4304,8 +4304,28 @@ async def generate_page_image(request: PageImageGenerateRequest, current_user: d
         style_prompts = get_style_prompts()
         style_desc = style_prompts.get(art_style, style_prompts.get("3d-pixar", ""))
         
+        # Deduct credits for AI image generation (2 credits per image)
+        CREDITS_PER_PAGE_IMAGE = 2
+        user_credits = current_user.get("credits", 0)
+        if user_credits < CREDITS_PER_PAGE_IMAGE:
+            raise HTTPException(
+                status_code=402, 
+                detail=f"Insufficient credits. You need {CREDITS_PER_PAGE_IMAGE} credits, but have {user_credits}. Please top up your credits."
+            )
+        
+        # Deduct credits before generation
+        await db.users.update_one(
+            {"id": current_user["id"]},
+            {"$inc": {"credits": -CREDITS_PER_PAGE_IMAGE}}
+        )
+        
         # Generate the image using FLUX Pro
         if not FAL_AVAILABLE:
+            # Refund credits if service not available
+            await db.users.update_one(
+                {"id": current_user["id"]},
+                {"$inc": {"credits": CREDITS_PER_PAGE_IMAGE}}
+            )
             raise HTTPException(status_code=500, detail="Image generation service not available")
         
         full_prompt = f"{image_prompt}. {style_desc}. High quality, detailed illustration suitable for a children's book."

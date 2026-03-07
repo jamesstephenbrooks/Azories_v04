@@ -322,8 +322,9 @@ class PrintPDFGenerator:
         # Story text with auto-sizing
         if text_content:
             # Try different font sizes from large to small until text fits
-            font_sizes = [72, 66, 60, 56, 52, 48, 44, 40, 36]
-            line_height_ratios = [1.45, 1.42, 1.40, 1.38, 1.36, 1.34, 1.32, 1.30, 1.28]
+            # Extended range to support more text per page
+            font_sizes = [72, 66, 60, 56, 52, 48, 44, 40, 36, 32, 28, 24]
+            line_height_ratios = [1.45, 1.42, 1.40, 1.38, 1.36, 1.34, 1.32, 1.30, 1.28, 1.26, 1.24, 1.22]
             
             best_font_size = font_sizes[-1]  # Default to smallest
             best_lines = []
