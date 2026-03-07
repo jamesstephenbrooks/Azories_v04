@@ -2217,13 +2217,50 @@ export default function ProStudio() {
   };
 
   // Download image/video
-  const downloadMedia = (url, filename) => {
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const downloadMedia = async (url, filename) => {
+    try {
+      // For mobile and cross-origin, fetch the file first
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename;
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      setTimeout(() => {
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(blobUrl);
+      }, 100);
+      
+      toast.success('Download started');
+    } catch (error) {
+      console.error('Download error:', error);
+      // Fallback: open in new tab
+      window.open(url, '_blank');
+      toast.info('Opening in new tab - long press to save');
+    }
+  };
+
+  // Delete gallery item (images/videos)
+  const deleteGalleryItem = async (itemId, itemType = 'image') => {
+    try {
+      // Determine the correct endpoint based on context
+      let endpoint = `${API_URL}/api/art-studio/gallery/${itemId}`;
+      
+      await api.delete(endpoint);
+      
+      // Refresh gallery
+      setGalleryItems(prev => prev.filter(item => item.id !== itemId));
+      toast.success(`${itemType === 'video' ? 'Video' : 'Image'} deleted`);
+    } catch (error) {
+      console.error('Delete error:', error);
+      toast.error('Failed to delete item');
+    }
   };
 
   // Crop handlers
@@ -5372,7 +5409,21 @@ export default function ProStudio() {
                                     (item.image_url && item.image_url.includes('video/'));
                     
                     return (
-                    <div key={item.id} className="relative group rounded-lg overflow-hidden bg-gray-800 border border-gray-700 hover:border-purple-500/50 transition-colors">
+                    <div 
+                      key={item.id} 
+                      className="relative group rounded-lg overflow-hidden bg-gray-800 border border-gray-700 hover:border-purple-500/50 transition-colors cursor-pointer touch-manipulation"
+                      onClick={() => {
+                        // Direct click opens lightbox on mobile
+                        setExpandedItem({
+                          type: isVideo ? 'video' : 'image',
+                          url: item.medium_url || item.image_url || item.url,
+                          fullUrl: item.image_url || item.url,
+                          name: item.prompt || item.name || 'Gallery item',
+                          id: item.id,
+                          onDelete: (id) => deleteGalleryItem(id, isVideo ? 'video' : 'image')
+                        });
+                      }}
+                    >
                       {/* Media Preview */}
                       {isVideo ? (
                         <div className="relative w-full aspect-square bg-purple-900/50">
@@ -5473,7 +5524,9 @@ export default function ProStudio() {
                                 type: isVideo ? 'video' : 'image',
                                 url: item.medium_url || item.image_url || item.url,
                                 fullUrl: item.image_url || item.url,
-                                name: item.prompt || item.name || 'Gallery item'
+                                name: item.prompt || item.name || 'Gallery item',
+                                id: item.id,
+                                onDelete: (id) => deleteGalleryItem(id, isVideo ? 'video' : 'image')
                               });
                             }}
                             title={isVideo ? "Play Video" : "Expand"}
@@ -5488,7 +5541,10 @@ export default function ProStudio() {
                             size="sm" 
                             variant="ghost" 
                             className="bg-white/10 hover:bg-white/20"
-                            onClick={() => downloadMedia(item.image_url || item.url, `gallery-${item.id}.${item.type === 'video' ? 'mp4' : 'png'}`)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              downloadMedia(item.image_url || item.url, `gallery-${item.id}.${item.type === 'video' ? 'mp4' : 'png'}`);
+                            }}
                             title="Download"
                           >
                             <FiDownload className="text-white w-4 h-4" />
@@ -5497,7 +5553,8 @@ export default function ProStudio() {
                             size="sm" 
                             variant="ghost" 
                             className="bg-white/10 hover:bg-white/20"
-                            onClick={() => {
+                            onClick={(e) => {
+                              e.stopPropagation();
                               setSelectedHeroFrame({ id: item.id, url: item.image_url || item.url, prompt: item.prompt });
                               toast.success('Selected as source image');
                             }}
@@ -5510,7 +5567,8 @@ export default function ProStudio() {
                               size="sm" 
                               variant="ghost" 
                               className="bg-white/10 hover:bg-white/20"
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 setVideoSourceType('upload');
                                 setVideoUploadedImage(item.image_url || item.url);
                                 setVideoPrompt(item.prompt || '');
@@ -6475,24 +6533,46 @@ export default function ProStudio() {
             className="fixed inset-0 bg-black/95 z-[200] flex items-center justify-center p-4"
             onClick={() => setExpandedItem(null)}
           >
-            {/* Close button */}
-            <button
-              onClick={() => setExpandedItem(null)}
-              className="absolute top-4 right-4 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors z-10"
-            >
-              <FiX className="w-6 h-6" />
-            </button>
-            
-            {/* Download button */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                downloadMedia(expandedItem.fullUrl || expandedItem.url, `azories-${expandedItem.type}-${Date.now()}.${expandedItem.type === 'video' ? 'mp4' : 'png'}`);
-              }}
-              className="absolute top-4 right-16 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors z-10"
-            >
-              <FiDownload className="w-6 h-6" />
-            </button>
+            {/* Top action bar */}
+            <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+              {/* Delete button */}
+              {expandedItem.id && expandedItem.onDelete && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (window.confirm('Delete this item permanently?')) {
+                      expandedItem.onDelete(expandedItem.id);
+                      setExpandedItem(null);
+                    }
+                  }}
+                  className="text-red-400 hover:text-red-300 bg-white/10 hover:bg-red-500/20 p-3 rounded-full transition-colors touch-manipulation"
+                  title="Delete"
+                >
+                  <FiTrash2 className="w-6 h-6" />
+                </button>
+              )}
+              
+              {/* Download button */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  downloadMedia(expandedItem.fullUrl || expandedItem.url, `azories-${expandedItem.type}-${Date.now()}.${expandedItem.type === 'video' ? 'mp4' : 'png'}`);
+                }}
+                className="text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-3 rounded-full transition-colors touch-manipulation"
+                title="Download"
+              >
+                <FiDownload className="w-6 h-6" />
+              </button>
+              
+              {/* Close button */}
+              <button
+                onClick={() => setExpandedItem(null)}
+                className="text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-3 rounded-full transition-colors touch-manipulation"
+                title="Close"
+              >
+                <FiX className="w-6 h-6" />
+              </button>
+            </div>
             
             {/* Media content */}
             <motion.div
@@ -6530,7 +6610,7 @@ export default function ProStudio() {
               )}
               
               {/* Caption */}
-              <p className="text-center text-white/70 mt-3 text-sm">
+              <p className="text-center text-white/70 mt-3 text-sm px-4 line-clamp-2">
                 {expandedItem.name}
               </p>
             </motion.div>
