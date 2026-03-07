@@ -60,23 +60,23 @@ export const Navbar = () => {
           
           {user && (
             <Link 
-              to="/creators" 
-              className="font-ui text-foreground/80 hover:text-foreground transition-colors flex items-center gap-1.5"
-              data-testid="nav-creators"
-            >
-              <span className="text-base">✍️</span>
-              Image Creator
-            </Link>
-          )}
-          
-          {user && (
-            <Link 
               to="/ai-stories" 
               className="font-ui text-foreground/80 hover:text-foreground transition-colors flex items-center gap-1.5"
               data-testid="nav-ai-stories"
             >
               <span className="text-base">🐉</span>
               AI Stories
+            </Link>
+          )}
+          
+          {user && (
+            <Link 
+              to="/creators" 
+              className="font-ui text-foreground/80 hover:text-foreground transition-colors flex items-center gap-1.5"
+              data-testid="nav-creators"
+            >
+              <span className="text-base">✍️</span>
+              Image Creator
             </Link>
           )}
           
@@ -150,18 +150,18 @@ export const Navbar = () => {
                   My Books
                 </DropdownMenuItem>
                 <DropdownMenuItem 
-                  onClick={() => navigate('/creators')}
-                  data-testid="menu-creators"
-                >
-                  <span className="mr-2">✍️</span>
-                  Image Creator
-                </DropdownMenuItem>
-                <DropdownMenuItem 
                   onClick={() => navigate('/ai-stories')}
                   data-testid="menu-ai-stories"
                 >
                   <span className="mr-2">🐉</span>
                   AI Stories
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => navigate('/creators')}
+                  data-testid="menu-creators"
+                >
+                  <span className="mr-2">✍️</span>
+                  Image Creator
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={() => navigate('/pro-studio')}
@@ -233,17 +233,6 @@ export const Navbar = () => {
           )}
           {user && (
             <Link 
-              to="/creators" 
-              className="block px-4 py-3 font-ui rounded-xl hover:bg-muted min-h-[44px] flex items-center gap-2"
-              onClick={() => setMobileOpen(false)}
-              data-testid="mobile-nav-creators"
-            >
-              <span className="text-base">✍️</span>
-              Image Creator
-            </Link>
-          )}
-          {user && (
-            <Link 
               to="/ai-stories" 
               className="block px-4 py-3 font-ui rounded-xl hover:bg-muted min-h-[44px] flex items-center gap-2"
               onClick={() => setMobileOpen(false)}
@@ -251,6 +240,17 @@ export const Navbar = () => {
             >
               <span className="text-base">🐉</span>
               AI Stories
+            </Link>
+          )}
+          {user && (
+            <Link 
+              to="/creators" 
+              className="block px-4 py-3 font-ui rounded-xl hover:bg-muted min-h-[44px] flex items-center gap-2"
+              onClick={() => setMobileOpen(false)}
+              data-testid="mobile-nav-creators"
+            >
+              <span className="text-base">✍️</span>
+              Image Creator
             </Link>
           )}
           {user && (
