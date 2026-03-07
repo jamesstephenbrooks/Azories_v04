@@ -47,7 +47,12 @@ const BonusPagesPreview = ({
   return (
     <div 
       className="fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-4"
-      onClick={(e) => e.stopPropagation()}
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+      }}
+      onMouseDown={(e) => e.stopPropagation()}
+      onTouchStart={(e) => e.stopPropagation()}
     >
       {/* Close button */}
       <button

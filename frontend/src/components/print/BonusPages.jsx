@@ -223,7 +223,7 @@ export const ThankYouPage = ({ childName }) => (
  * About Azories Page - Platform information
  */
 export const AboutAzoriesPage = () => (
-  <div className="bonus-page about-page w-full h-full bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 flex flex-col items-center justify-center p-4 sm:p-8 text-white relative overflow-hidden">
+  <div className="bonus-page about-page w-full h-full bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 flex flex-col items-center justify-start pt-6 sm:pt-10 p-4 sm:p-8 text-white relative overflow-hidden">
     {/* Background pattern - smaller */}
     <div className="absolute inset-0 opacity-10">
       <div className="absolute top-5 left-5 sm:top-10 sm:left-10 text-3xl sm:text-6xl">✦</div>
@@ -232,11 +232,11 @@ export const AboutAzoriesPage = () => (
       <div className="absolute bottom-20 right-8 sm:bottom-40 sm:right-16 text-xl sm:text-3xl">✦</div>
     </div>
     
-    <h1 className="text-xl sm:text-3xl font-bold mb-1 sm:mb-2">About</h1>
-    <h2 className="text-3xl sm:text-5xl font-bold mb-4 sm:mb-8 font-serif tracking-wide">Azories</h2>
+    <h1 className="text-lg sm:text-2xl font-bold mb-0.5 sm:mb-1">About</h1>
+    <h2 className="text-2xl sm:text-4xl font-bold mb-3 sm:mb-6 font-serif tracking-wide">Azories</h2>
     
     {/* Image in frame - smaller */}
-    <div className="w-28 h-28 sm:w-48 sm:h-48 rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl border-2 sm:border-4 border-white/20 mb-4 sm:mb-8 flex-shrink-0">
+    <div className="w-24 h-24 sm:w-40 sm:h-40 rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl border-2 sm:border-4 border-white/20 mb-3 sm:mb-6 flex-shrink-0">
       <img 
         src={BONUS_PAGE_IMAGES.aboutAzories}
         alt="Azora and her dragon"
@@ -244,18 +244,18 @@ export const AboutAzoriesPage = () => (
       />
     </div>
     
-    <p className="text-center text-xs sm:text-lg leading-snug sm:leading-relaxed max-w-[90%] sm:max-w-sm mb-3 sm:mb-6 text-purple-100">
+    <p className="text-center text-[10px] sm:text-base leading-snug sm:leading-relaxed max-w-[90%] sm:max-w-sm mb-2 sm:mb-4 text-purple-100">
       Azories creates personalized AI-powered stories that bring imagination to life. 
       Every story is unique, just like you!
     </p>
     
-    <div className="flex items-center gap-3 sm:gap-6 text-purple-200 text-[10px] sm:text-sm">
+    <div className="flex items-center gap-2 sm:gap-4 text-purple-200 text-[8px] sm:text-xs">
       <span>✦ AI-Powered</span>
       <span>✦ Personalized</span>
       <span>✦ Magical</span>
     </div>
     
-    <p className="mt-4 sm:mt-8 text-purple-300 text-[10px] sm:text-sm">www.azories.com</p>
+    <p className="mt-2 sm:mt-4 text-purple-300 text-[8px] sm:text-xs">www.azories.com</p>
   </div>
 );
 
