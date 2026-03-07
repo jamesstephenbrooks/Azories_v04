@@ -10,7 +10,7 @@ import { AZORA_ASSETS, AZORIES_TAGLINE } from '@/components/AzoraMascot';
 // Sample book covers from our library
 const FEATURED_BOOK_COVERS = [
   'https://res.cloudinary.com/dlbmjqmoy/image/upload/w_200,q_70/v1772261904/azories/books/the_wizards_apprentice/cover_clean.jpg',
-  'https://res.cloudinary.com/dlbmjqmoy/image/upload/w_200,q_70/v1772217091/azories/books/colors_of_the_world/cover.png',
+  'https://res.cloudinary.com/dlbmjqmoy/image/upload/w_200,q_70/v1772262247/azories/books/gadget_girl_and_the_invention_fair/cover_clean.jpg',
   'https://res.cloudinary.com/dlbmjqmoy/image/upload/w_200,q_70/v1772271593/azories/books/super_silly_superhero/cover.png',
 ];
 
