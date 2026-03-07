@@ -2465,7 +2465,7 @@ export default function BookReader() {
       
       {/* Hide controls button - visible when controls are shown (not on back cover), hide when modal open */}
       {!hideControls && !currentPageData?.isBackCover && !isMobileLandscape && !showPrintOrderModal && (
-        <div className="fixed bottom-28 right-4 z-[101] flex flex-col items-center gap-2">
+        <div className="fixed bottom-6 right-4 z-[101] flex flex-col items-center gap-2">
           {/* Play button */}
           <button
             onClick={() => {

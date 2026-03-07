@@ -9,7 +9,7 @@ import { AZORA_ASSETS, AZORIES_TAGLINE } from '@/components/AzoraMascot';
 
 // Sample book covers from our library
 const FEATURED_BOOK_COVERS = [
-  'https://res.cloudinary.com/dlbmjqmoy/image/upload/w_200,q_70/v1772271593/azories/books/robot_best_friend/cover.png',
+  'https://res.cloudinary.com/dlbmjqmoy/image/upload/w_200,q_70/v1772271593/azories/books/the_wizards_apprentice/cover.png',
   'https://res.cloudinary.com/dlbmjqmoy/image/upload/w_200,q_70/v1772217091/azories/books/colors_of_the_world/cover.png',
   'https://res.cloudinary.com/dlbmjqmoy/image/upload/w_200,q_70/v1772271593/azories/books/super_silly_superhero/cover.png',
 ];
@@ -254,7 +254,7 @@ export default function Landing() {
           
           <div className="flex justify-center gap-6 flex-wrap">
             {[
-              { url: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/w_300,q_80/v1772271593/azories/books/robot_best_friend/cover.png', title: 'Robot Best Friend' },
+              { url: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/w_300,q_80/v1772271593/azories/books/the_wizards_apprentice/cover.png', title: "The Wizard's Apprentice" },
               { url: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/w_300,q_80/v1772217091/azories/books/colors_of_the_world/cover.png', title: 'Colors of the World' },
               { url: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/w_300,q_80/v1772271593/azories/books/super_silly_superhero/cover.png', title: 'Super Silly Superhero' },
               { url: 'https://res.cloudinary.com/dlbmjqmoy/image/upload/w_300,q_80/v1772217089/azories/books/the_case_of_the_missing_cookie/cover.jpg', title: 'Missing Cookies' },

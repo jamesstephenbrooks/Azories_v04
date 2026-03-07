@@ -75,7 +75,10 @@ export default function BookPageStrip({
         {/* Left arrow */}
         {spreads.length > 3 && (
           <button
-            onClick={() => scroll('left')}
+            onClick={(e) => {
+              e.stopPropagation();
+              scroll('left');
+            }}
             className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-6 h-6 bg-white shadow-md rounded-full flex items-center justify-center hover:bg-gray-50"
           >
             <FiChevronLeft className="w-4 h-4 text-gray-600" />
@@ -87,6 +90,9 @@ export default function BookPageStrip({
           ref={scrollRef}
           className="flex gap-3 overflow-x-auto py-2 px-1"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
         >
           {spreads.map((spread, index) => (
             <div key={index} className="flex-shrink-0">
@@ -143,7 +149,10 @@ export default function BookPageStrip({
         {/* Right arrow */}
         {spreads.length > 3 && (
           <button
-            onClick={() => scroll('right')}
+            onClick={(e) => {
+              e.stopPropagation();
+              scroll('right');
+            }}
             className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-6 h-6 bg-white shadow-md rounded-full flex items-center justify-center hover:bg-gray-50"
           >
             <FiChevronRight className="w-4 h-4 text-gray-600" />
