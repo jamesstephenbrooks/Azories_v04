@@ -2342,15 +2342,28 @@ async def get_newly_added_books():
 
 @api_router.get("/books/coming-soon")
 async def get_coming_soon_books():
-    """Get books marked as coming soon"""
+    """Get books marked as coming soon OR books with pending_regeneration/draft status"""
+    # Include explicitly marked coming_soon books AND books being worked on
     query = {
-        "coming_soon": True,
+        "$or": [
+            {"coming_soon": True},
+            {"status": {"$in": ["pending_regeneration", "draft"]}}
+        ],
         "hidden": {"$ne": True}
     }
     
-    books = await db.books.find(query, {"_id": 0}).sort("coming_soon_order", 1).to_list(20)
+    books = await db.books.find(query, {"_id": 0}).sort([("coming_soon_order", 1), ("created_at", -1)]).to_list(20)
     result = []
     for book in books:
+        # Add a default coming_soon_label if not set
+        if not book.get("coming_soon_label"):
+            if book.get("status") == "pending_regeneration":
+                book["coming_soon_label"] = "Being Updated"
+            elif book.get("status") == "draft":
+                book["coming_soon_label"] = "In Progress"
+            else:
+                book["coming_soon_label"] = "Coming Soon"
+        book["coming_soon"] = True  # Mark as coming soon for frontend
         book = await get_book_with_counts(book)
         result.append(book)
     return result
