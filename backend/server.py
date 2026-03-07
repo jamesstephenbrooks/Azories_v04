@@ -981,6 +981,13 @@ def get_budget_error_response():
 
 # Credit packages for purchase (with 50% profit margin)
 CREDIT_PACKAGES = {
+    "mini": {
+        "credits": 40,
+        "price": 2.50,
+        "currency": "gbp",
+        "description": "~4 AI images",
+        "popular": False
+    },
     "starter": {
         "credits": 100,
         "price": 5.00,
