@@ -162,7 +162,7 @@ export default function ProStudio() {
   const [selectedLens, setSelectedLens] = useState('panavision-series');
   const [selectedFocalLength, setSelectedFocalLength] = useState('35mm');
   const [selectedLighting, setSelectedLighting] = useState('natural');
-  const [aspectRatio, setAspectRatio] = useState('16:9');
+  const [aspectRatio, setAspectRatio] = useState('3:4'); // Portrait default - fits book pages
   const [cinemaArtStyle, setCinemaArtStyle] = useState('cinematic'); // Art style for Cinema Studio
   
   // Video state

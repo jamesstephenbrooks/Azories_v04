@@ -1418,7 +1418,7 @@ class FalGenerateWithFaceRequest(BaseModel):
     prompt: str
     reference_image: str  # Face reference image (base64 or URL)
     id_weight: Optional[float] = 1.0
-    image_size: Optional[str] = "landscape_16_9"
+    image_size: Optional[str] = "portrait_4_3"
     seed: Optional[int] = None
 
 class FalGenerateWithLoraRequest(BaseModel):
@@ -1426,13 +1426,13 @@ class FalGenerateWithLoraRequest(BaseModel):
     lora_url: str
     trigger_word: str
     lora_scale: Optional[float] = 1.0
-    image_size: Optional[str] = "landscape_16_9"
+    image_size: Optional[str] = "portrait_4_3"
     seed: Optional[int] = None
 
 class FalGenerateImageRequest(BaseModel):
     prompt: str
     model: Optional[str] = "flux-dev"  # flux-dev, flux-pro
-    image_size: Optional[str] = "landscape_16_9"
+    image_size: Optional[str] = "portrait_4_3"
     num_images: Optional[int] = 1
     seed: Optional[int] = None
 
@@ -5551,7 +5551,7 @@ async def create_scene(request: SceneCreate, current_user: dict = Depends(get_cu
                 result = await generate_image_flux(
                     prompt=gen_prompt,
                     model="flux-schnell",
-                    image_size="landscape_16_9",
+                    image_size="portrait_4_3",
                     num_images=1
                 )
                 if result.get("images"):
@@ -5756,7 +5756,7 @@ async def generate_scene_image(scene_id: str, request: dict, current_user: dict 
             result = await generate_image_flux(
                 prompt=full_prompt,
                 model="flux-schnell",
-                image_size=request.get("image_size", "landscape_16_9"),
+                image_size=request.get("image_size", "portrait_4_3"),
                 num_images=1
             )
             if result.get("images"):

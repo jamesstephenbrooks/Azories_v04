@@ -666,7 +666,7 @@ export default function ArtStudio() {
   // PRO FEATURES STATE
   const [showStylePreview, setShowStylePreview] = useState(false);
   const [negativePrompt, setNegativePrompt] = useState('');
-  const [aspectRatio, setAspectRatio] = useState('1:1'); // 1:1, 16:9, 9:16, 4:3, 3:4
+  const [aspectRatio, setAspectRatio] = useState('3:4'); // Portrait default - fits book pages
   const [qualityLevel, setQualityLevel] = useState('high'); // low, medium, high, ultra
   const [variationCount, setVariationCount] = useState(1); // 1-4 variations
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
