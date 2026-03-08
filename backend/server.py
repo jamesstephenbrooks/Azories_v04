@@ -14475,12 +14475,30 @@ async def stripe_webhook(request: Request):
 
 app.include_router(api_router)
 
+# CORS Configuration - Explicitly allow production domains
+allowed_origins = [
+    "https://azories.com",
+    "https://www.azories.com",
+    "http://localhost:3000",  # Local development
+    "http://localhost:3001",  # Local development alt
+]
+
+# Also allow origins from environment variable if set
+env_origins = os.environ.get('CORS_ORIGINS', '')
+if env_origins and env_origins != '*':
+    allowed_origins.extend([o.strip() for o in env_origins.split(',') if o.strip()])
+
+# If CORS_ORIGINS is explicitly set to *, allow all
+if env_origins == '*':
+    allowed_origins = ["*"]
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_origins=allowed_origins,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # Note: Shutdown handler moved to lifespan context manager above
