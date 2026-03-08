@@ -5206,6 +5206,10 @@ async def generate_character_thumbnail(character_id: str, current_user: dict = D
     if not FAL_AVAILABLE:
         raise HTTPException(status_code=503, detail="Image generation not available")
     
+    # Deduct credits for thumbnail generation (1 credit)
+    if not await deduct_credits(current_user["id"], "flux_generate"):
+        raise HTTPException(status_code=402, detail="Insufficient credits. Thumbnail generation requires 1 credit.")
+    
     try:
         style_info = next((s for s in CHARACTER_STYLES if s["id"] == character.get("style")), {"name": "illustration"})
         
@@ -5418,6 +5422,10 @@ async def regenerate_character_thumbnail(character_id: str, current_user: dict =
     
     if not character:
         raise HTTPException(status_code=404, detail="Character not found")
+    
+    # Deduct credits for thumbnail regeneration (1 credit)
+    if not await deduct_credits(current_user["id"], "flux_generate"):
+        raise HTTPException(status_code=402, detail="Insufficient credits. Thumbnail regeneration requires 1 credit.")
     
     try:
         thumbnail = None
@@ -6547,7 +6555,7 @@ async def train_character_consistency(character_id: str, current_user: dict = De
 async def generate_consistent_character_image(
     character_id: str,
     prompt: str = Form(...),
-    image_size: str = Form("landscape_16_9"),
+    image_size: str = Form("portrait_4_3"),
     seed: Optional[int] = Form(None),
     scene_id: Optional[str] = Form(None),
     id_strength: str = Form("high"),  # "high", "medium", "low" - face similarity strength

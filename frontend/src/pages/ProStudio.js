@@ -1517,7 +1517,24 @@ export default function ProStudio() {
         };
         setGeneratedImages(prev => [newImage, ...prev]);
         setSelectedHeroFrame(newImage);
-        toast.success('Hero frame generated!');
+        
+        // Auto-save to character folder if a character is selected
+        if (selectedCharacter?.id) {
+          try {
+            const token = localStorage.getItem('azories-token');
+            await fetch(`${API_URL}/api/pro-studio/characters/${selectedCharacter.id}/gallery`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+              body: JSON.stringify({ image_url: data.image_url, prompt: fullPrompt, source: 'cinema' })
+            });
+            toast.success('Hero frame generated and saved to character folder!');
+            loadCharacterGallery(selectedCharacter.id);
+          } catch (e) {
+            toast.success('Hero frame generated!');
+          }
+        } else {
+          toast.success('Hero frame generated!');
+        }
       } else {
         const error = await response.json();
         toast.error(error.detail || 'Generation failed');
@@ -2128,6 +2145,21 @@ export default function ProStudio() {
             };
             setGeneratedVideos(prev => [newVideo, ...prev]);
             toast.success('Video generated!');
+            
+            // Auto-save to character folder if character is selected
+            if (selectedCharacter?.id) {
+              try {
+                await saveToCharacterFolder(
+                  selectedCharacter.id,
+                  `data:video/mp4;base64,${data.video_base64}`,
+                  `Cinema video - ${prompt || 'animation'}`,
+                  'video'
+                );
+              } catch (e) { console.error('Auto-save video error:', e); }
+            }
+            // Save to general gallery
+            await saveToGallery(newVideo, 'Cinema video', 'video', selectedHeroFrame?.url);
+            
             setIsLoading(false);
             setLoadingMessage('');
             setLoadingProgress(0);
@@ -4686,8 +4718,11 @@ export default function ProStudio() {
                           }`}
                           onClick={() => setSelectedHeroFrame(img)}
                         >
-                          <img src={img.url} alt="Generated" className="w-full aspect-video object-cover" />
+                          <img src={img.url} alt="Generated" className={`w-full object-cover ${aspectRatio === '9:16' ? 'aspect-[9/16]' : aspectRatio === '3:4' ? 'aspect-[3/4]' : aspectRatio === '4:3' ? 'aspect-[4/3]' : aspectRatio === '1:1' ? 'aspect-square' : 'aspect-video'}`} />
                           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                            <Button size="sm" variant="ghost" className="min-w-[44px] min-h-[44px]" onClick={(e) => { e.stopPropagation(); setPreviewImage({ url: img.url, prompt: img.prompt }); }}>
+                              <FiMaximize2 className="text-white" />
+                            </Button>
                             <Button size="sm" variant="ghost" className="min-w-[44px] min-h-[44px]" onClick={(e) => { e.stopPropagation(); saveToGallery(img); }}>
                               <FiSave className="text-white" />
                             </Button>
