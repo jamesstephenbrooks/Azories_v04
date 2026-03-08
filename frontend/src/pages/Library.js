@@ -43,9 +43,9 @@ const getOptimizedThumbnailUrl = (url, width = 300) => {
 // Preload image and cache it
 const preloadAndCacheImage = (url, width = 250) => {
   if (!url || imageCache.has(url)) return Promise.resolve();
-  
+
   const optimizedUrl = getOptimizedThumbnailUrl(url, width);
-  
+
   return new Promise((resolve) => {
     const img = new Image();
     img.onload = () => {
@@ -68,8 +68,8 @@ const getBookCache = () => {
     if (cached) {
       const parsed = JSON.parse(cached);
       // Check version and expiry
-      if (parsed.version === CACHE_VERSION && 
-          parsed.timestamp && 
+      if (parsed.version === CACHE_VERSION &&
+          parsed.timestamp &&
           Date.now() - parsed.timestamp < CACHE_EXPIRY) {
         return parsed.data;
       }
@@ -146,9 +146,9 @@ const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 250
       {!isLoaded && !hasError && !isCached && (
         <>
           {tinyPlaceholder ? (
-            <img 
-              src={tinyPlaceholder} 
-              alt="" 
+            <img
+              src={tinyPlaceholder}
+              alt=""
               className="absolute inset-0 w-full h-full object-cover scale-105 blur-sm"
               aria-hidden="true"
             />
@@ -162,7 +162,7 @@ const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 250
           )}
         </>
       )}
-      
+
       {/* Actual image - always render, use native lazy loading or eager for priority */}
       {!hasError && (
         <img
@@ -176,12 +176,12 @@ const LazyImage = ({ src, alt, className, placeholderColor, thumbnailWidth = 250
           fetchPriority={priority ? "high" : "auto"}
         />
       )}
-      
+
       {/* Error fallback - Azories branded placeholder */}
       {hasError && (
-        <img 
-          src={AZORIES_PLACEHOLDER} 
-          alt={alt} 
+        <img
+          src={AZORIES_PLACEHOLDER}
+          alt={alt}
           className="absolute inset-0 w-full h-full object-cover"
         />
       )}
@@ -233,18 +233,18 @@ export default function Library() {
   const [showOfflineOnly, setShowOfflineOnly] = useState(false); // Offline filter
   const navigate = useNavigate();
   const { user, token } = useAuth();
-  
+
   // Offline support
-  const { 
-    isOnline, 
-    offlineBooks, 
-    isBookOffline, 
-    saveBookOffline, 
+  const {
+    isOnline,
+    offlineBooks,
+    isBookOffline,
+    saveBookOffline,
     removeBookOffline,
     hasOfflineNarration,
     getOfflineBook
   } = useOffline();
-  
+
   // State for offline books with cover URLs (created from blobs)
   const [offlineBooksWithCovers, setOfflineBooksWithCovers] = useState([]);
   const offlineCoverUrlsRef = useRef(new Map()); // Track created URLs for cleanup
@@ -262,9 +262,9 @@ export default function Library() {
           try {
             // Get full offline book data including coverBlob/coverBuffer
             const fullOfflineBook = await getOfflineBook(book.id);
-            
+
             let coverUrl = book.coverUrl; // Fallback to stored URL
-            
+
             // getOfflineBook (fixed version) converts coverBuffer -> coverBlob automatically.
             // Also handle legacy records that stored coverBlob directly.
             const coverBlob = fullOfflineBook?.coverBlob;
@@ -276,7 +276,7 @@ export default function Library() {
               coverUrl = URL.createObjectURL(coverBlob);
               offlineCoverUrlsRef.current.set(book.id, coverUrl);
             }
-            
+
             return {
               id: book.id,
               title: book.title,
@@ -302,7 +302,7 @@ export default function Library() {
           }
         })
       );
-      
+
       setOfflineBooksWithCovers(booksWithCovers);
     }
 
@@ -369,11 +369,11 @@ export default function Library() {
     // Check cache first for instant display - but ONLY if it has valid books
     if (!skipCache) {
       const cached = getBookCache();
-      const hasValidCache = cached && 
-                           cached.books && 
-                           Array.isArray(cached.books) && 
+      const hasValidCache = cached &&
+                           cached.books &&
+                           Array.isArray(cached.books) &&
                            cached.books.length > 0;
-      
+
       if (hasValidCache) {
         setBooks(cached.books);
         setFeaturedBooks(cached.featuredBooks || []);
@@ -384,7 +384,7 @@ export default function Library() {
         setLoading(false);
         setLoadError(false);
         setInitialLoadComplete(true);
-        
+
         // Preload images from cache
         const allCoverUrls = [
           ...(cached.books || []).map(b => b.cover_image),
@@ -392,15 +392,15 @@ export default function Library() {
           ...(cached.newlyAddedBooks || []).map(b => b.cover_image),
         ].filter(Boolean).slice(0, 12);
         allCoverUrls.forEach(url => preloadAndCacheImage(url, 300));
-        
+
         return; // Use cache, skip network fetch
       }
     }
-    
+
     // No valid cache or skip cache - fetch from server
     setLoading(true);
     setLoadError(false);
-    
+
     try {
       // OPTIMIZATION: Fetch main books first for instant display, then others
       // This reduces perceived load time significantly
@@ -411,9 +411,9 @@ export default function Library() {
           axios.get(`${API}/books/coming-soon`),
           axios.get(`${API}/genres`)
         ]);
-      
+
       const cacheData = {};
-      
+
       // Process main books IMMEDIATELY when they arrive
       try {
         const mainBooksRes = await mainBooksPromise;
@@ -430,10 +430,10 @@ export default function Library() {
         console.error('Main books fetch failed:', mainError);
         setLoadError(true);
       }
-      
+
       // Process secondary data in background (doesn't block initial render)
       const results = await secondaryPromises;
-        
+
         if (results[0].status === 'fulfilled') {
           const featuredData = results[0].value.data || [];
           const featured = featuredData.filter(b => b.is_featured);
@@ -447,7 +447,7 @@ export default function Library() {
             if (b.cover_image) preloadAndCacheImage(b.cover_image, 300);
           });
         }
-        
+
         if (results[1].status === 'fulfilled') {
           const newlyAdded = results[1].value.data || [];
           setNewlyAddedBooks(newlyAdded);
@@ -457,13 +457,13 @@ export default function Library() {
             if (b.cover_image) preloadAndCacheImage(b.cover_image, 300);
           });
         }
-        
+
         if (results[2].status === 'fulfilled') {
           const comingSoon = results[2].value.data || [];
           setComingSoonBooks(comingSoon);
           cacheData.comingSoonBooks = comingSoon;
         }
-        
+
         if (results[3].status === 'fulfilled' && results[3].value.data?.genres) {
           const genresData = ['All', ...results[3].value.data.genres];
           setGenres(genresData);
@@ -472,7 +472,7 @@ export default function Library() {
           setGenres(['All']); // Fallback
           cacheData.genres = ['All'];
         }
-        
+
         // Only cache if we got valid books data
         if (cacheData.books && cacheData.books.length > 0) {
           setBookCache(cacheData);
@@ -481,7 +481,7 @@ export default function Library() {
           // No books loaded at all - show error state
           setLoadError(true);
         }
-        
+
       } catch (error) {
         console.error('Error loading library data:', error);
         // On error, try a simple fallback fetch
@@ -521,11 +521,11 @@ export default function Library() {
   useEffect(() => {
     if (!initialLoadComplete) return; // Skip if initial load not done
     if (activeTab !== 'all') return; // Only fetch when on 'all' tab
-    
+
     // Skip if all filters are at default values (initial load already fetched this)
     const hasActiveFilters = debouncedSearch || genre !== 'All' || ageRange !== 'All';
     if (!hasActiveFilters) return;
-    
+
     const fetchFilteredBooks = async () => {
       try {
         setLoading(true);
@@ -535,7 +535,7 @@ export default function Library() {
         if (ageRange && ageRange !== 'All') params.append('age_rating', ageRange);
         params.append('published_only', 'true');
         params.append('limit', '12');
-        
+
         const res = await axios.get(`${API}/books?${params.toString()}`);
         setBooks(res.data || []);
       } catch (error) {
@@ -544,7 +544,7 @@ export default function Library() {
         setLoading(false);
       }
     };
-    
+
     fetchFilteredBooks();
   }, [debouncedSearch, genre, ageRange, activeTab, initialLoadComplete]);
 
@@ -590,7 +590,7 @@ export default function Library() {
 
   const BookCard = ({ book, index, isFeatured = false, isComingSoon = false }) => {
     const isNew = isNewBook(book);
-    
+
     const handleClick = () => {
       if (isComingSoon) {
         toast.info('This story is almost ready — check back soon! 🐉');
@@ -598,7 +598,7 @@ export default function Library() {
       }
       navigate(`/read/${book.id}`);
     };
-    
+
     return (
       <div
         className="book-card group cursor-pointer"
@@ -621,7 +621,7 @@ export default function Library() {
               <FiInfo className="w-4 h-4" />
             </button>
           )}
-          
+
           {/* NEW badge for recently published - positioned below info button */}
           {isNew && !isComingSoon && (
             <div className="absolute top-12 right-3 z-20">
@@ -630,7 +630,7 @@ export default function Library() {
               </span>
             </div>
           )}
-          
+
           {/* Coming Soon overlay */}
           {isComingSoon && (
             <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/40 backdrop-blur-sm">
@@ -644,7 +644,7 @@ export default function Library() {
               </div>
             </div>
           )}
-          
+
           {/* Featured/Best badges */}
           {(book.is_featured || book.is_best_of_week) && !isComingSoon && (
             <div className="absolute top-3 left-3 z-10 flex gap-2">
@@ -660,7 +660,7 @@ export default function Library() {
               )}
             </div>
           )}
-          
+
           {/* Offline indicator - show if book is saved offline */}
           {isBookOffline(book.id) && !isComingSoon && (
             <div className="absolute top-3 right-12 z-20 flex gap-1">
@@ -674,12 +674,12 @@ export default function Library() {
               )}
             </div>
           )}
-          
+
           {/* Book Cover */}
           <div className={`aspect-[3/4] relative overflow-hidden bg-muted/30 ${isComingSoon ? 'filter blur-[4px]' : ''}`}>
             {book.cover_image ? (
-              <LazyImage 
-                src={book.cover_image} 
+              <LazyImage
+                src={book.cover_image}
                 alt={book.title}
                 className="w-full h-full"
                 thumbnailWidth={250}
@@ -693,10 +693,10 @@ export default function Library() {
                 </div>
               </div>
             )}
-            
+
             {/* Hover overlay */}
             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4">
-              <Button 
+              <Button
                 className="rounded-full"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -707,8 +707,8 @@ export default function Library() {
                 <FiBook className="mr-2" />
                 Read
               </Button>
-              <Button 
-                variant="secondary" 
+              <Button
+                variant="secondary"
                 className="rounded-full"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -721,7 +721,7 @@ export default function Library() {
               </Button>
             </div>
           </div>
-          
+
           {/* Book Info */}
           <div className="p-5 space-y-2">
             <h3 className="font-heading text-lg font-semibold line-clamp-1">
@@ -739,7 +739,7 @@ export default function Library() {
                 {book.genre}
               </span>
             </div>
-            
+
             {/* Save for Offline Button - Centered on mobile */}
             {!isComingSoon && (
               <div className="mt-3 flex justify-center" onClick={(e) => e.stopPropagation()}>
@@ -813,7 +813,7 @@ export default function Library() {
         </div>
       );
     }
-    
+
     return (
       <div className="mb-16">
         <div className="flex items-center gap-3 mb-6">
@@ -828,7 +828,7 @@ export default function Library() {
           </div>
         ) : (
           <div className="flex flex-col items-center text-center py-12 bg-muted/30 rounded-3xl">
-            <motion.img 
+            <motion.img
               src={AZORA_ASSETS.readingCozy}
               alt="Azora reading"
               className="w-32 h-40 object-contain mb-4 opacity-70"
@@ -848,9 +848,9 @@ export default function Library() {
     if (loading && displayNewlyAddedBooks.length === 0) {
       return <SectionSkeleton title="Newly Added" icon="🆕" />;
     }
-    
+
     if (displayNewlyAddedBooks.length === 0) return null;
-    
+
     return (
       <div className="mb-12">
         <div className="flex items-center gap-3 mb-6">
@@ -877,9 +877,9 @@ export default function Library() {
     if (loading && comingSoonBooks.length === 0) {
       return <SectionSkeleton title="Coming Soon" icon="👀" />;
     }
-    
+
     if (comingSoonBooks.length === 0) return null;
-    
+
     return (
       <div className="mb-12">
         <div className="flex items-center gap-3 mb-6">
@@ -903,7 +903,7 @@ export default function Library() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       {/* Header - no opacity animation to prevent purple flash */}
       <div className="pt-28 pb-8 px-6 md:px-12">
         <div className="max-w-7xl mx-auto">
@@ -917,29 +917,29 @@ export default function Library() {
           </div>
         </div>
       </div>
-      
+
       {/* Tabs and Content */}
       <div className="px-6 md:px-12 pb-20">
         <div className="max-w-7xl mx-auto">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="mb-8 bg-muted/50 p-1 rounded-full inline-flex flex-wrap sm:flex-nowrap gap-1">
-              <TabsTrigger 
-                value="all" 
+              <TabsTrigger
+                value="all"
                 className="rounded-full px-3 sm:px-6 text-sm sm:text-base data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                 data-testid="tab-all-books"
               >
                 All Books
               </TabsTrigger>
-              <TabsTrigger 
-                value="featured" 
+              <TabsTrigger
+                value="featured"
                 className="rounded-full px-3 sm:px-6 text-sm sm:text-base data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                 data-testid="tab-featured"
               >
                 <FiStar className="mr-1 sm:mr-2 w-3 h-3 sm:w-4 sm:h-4" />
                 Featured
               </TabsTrigger>
-              <TabsTrigger 
-                value="best" 
+              <TabsTrigger
+                value="best"
                 className="rounded-full px-3 sm:px-6 text-sm sm:text-base data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap"
                 data-testid="tab-best-week"
               >
@@ -948,7 +948,7 @@ export default function Library() {
                 <span className="hidden sm:inline">Best of Week</span>
               </TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="all">
               {/* Search, Filters, and View Toggle */}
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
@@ -963,9 +963,9 @@ export default function Library() {
                     data-testid="library-search-input"
                   />
                 </div>
-                
+
                 <Select value={genre} onValueChange={setGenre}>
-                  <SelectTrigger 
+                  <SelectTrigger
                     className="w-full sm:w-48 rounded-full border-2 h-12"
                     data-testid="genre-select"
                   >
@@ -979,10 +979,10 @@ export default function Library() {
                     ))}
                   </SelectContent>
                 </Select>
-                
+
                 {/* Age Range Filter */}
                 <Select value={ageRange} onValueChange={setAgeRange}>
-                  <SelectTrigger 
+                  <SelectTrigger
                     className="w-full sm:w-40 rounded-full border-2 h-12"
                     data-testid="age-range-select"
                   >
@@ -996,7 +996,7 @@ export default function Library() {
                     ))}
                   </SelectContent>
                 </Select>
-                
+
                 {/* Offline Filter Toggle */}
                 {offlineBooks.length > 0 && (
                   <Button
@@ -1011,7 +1011,7 @@ export default function Library() {
                     <span className="text-xs bg-white/20 px-1.5 py-0.5 rounded-full">{offlineBooks.length}</span>
                   </Button>
                 )}
-                
+
                 {/* View Mode Toggle */}
                 <div className="flex gap-2 bg-muted/50 p-1 rounded-full items-center">
                   <Button
@@ -1026,24 +1026,24 @@ export default function Library() {
                   </Button>
                 </div>
               </div>
-              
+
               {/* 3D Grand Library Promotional Card - Only show in grid view when not searching */}
               {viewMode === 'grid' && !debouncedSearch && (
-                <div 
+                <div
                   className="mb-8 relative overflow-hidden rounded-3xl cursor-pointer group"
                   onClick={() => setViewMode('immersive')}
                   data-testid="grand-library-promo"
                 >
                   <div className="relative h-40 sm:h-48 md:h-64 overflow-hidden">
                     {/* Background Image */}
-                    <img 
+                    <img
                       src="https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772378060/azories/library/grand_library_entrance.jpg"
                       alt="Grand Library"
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                     {/* Gradient Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
-                    
+
                     {/* Content */}
                     <div className="absolute inset-0 flex items-center p-4 sm:p-8 md:p-12">
                       <div className="max-w-lg">
@@ -1058,7 +1058,7 @@ export default function Library() {
                         <p className="text-white/70 text-xs sm:text-sm md:text-base mb-2 sm:mb-4 max-w-md line-clamp-2 sm:line-clamp-none">
                           Walk through towering bookshelves in our magical 3D library.
                         </p>
-                        <Button 
+                        <Button
                           size="sm"
                           className="rounded-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-lg shadow-purple-500/30 group-hover:scale-105 transition-transform text-xs sm:text-sm"
                         >
@@ -1067,7 +1067,7 @@ export default function Library() {
                         </Button>
                       </div>
                     </div>
-                    
+
                     {/* Floating particles effect */}
                     <div className="absolute inset-0 pointer-events-none">
                       <div className="absolute top-1/4 right-1/4 w-2 h-2 bg-yellow-400/60 rounded-full animate-pulse" />
@@ -1077,7 +1077,7 @@ export default function Library() {
                   </div>
                 </div>
               )}
-              
+
               {/* Immersive 3D Gothic Library View */}
               {viewMode === 'immersive' ? (
                 <Suspense fallback={
@@ -1089,7 +1089,7 @@ export default function Library() {
                     </div>
                   </div>
                 }>
-                  <ImmersiveLibrary3D 
+                  <ImmersiveLibrary3D
                     books={books}
                     onClose={() => setViewMode('grid')}
                     onSelectBook={(book) => navigate(`/read/${book.id}`)}
@@ -1107,12 +1107,12 @@ export default function Library() {
                     </div>
                     <h2 className="text-xl sm:text-2xl font-heading font-bold">Continue Reading</h2>
                   </div>
-                  
+
                   {/* Horizontal scroll container */}
                   <div className="relative">
                     <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
                       {continueReadingBooks.map((item, index) => (
-                        <div 
+                        <div
                           key={item.book_id}
                           className="flex-shrink-0 w-48 sm:w-56 snap-start cursor-pointer group"
                           onClick={() => navigate(`/read/${item.book_id}`)}
@@ -1130,7 +1130,7 @@ export default function Library() {
                               {/* Progress overlay */}
                               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-3 pt-8">
                                 <div className="w-full bg-white/20 rounded-full h-1.5 mb-1">
-                                  <div 
+                                  <div
                                     className="bg-gradient-to-r from-emerald-400 to-teal-400 h-1.5 rounded-full transition-all"
                                     style={{ width: `${item.progress_percent}%` }}
                                   />
@@ -1140,7 +1140,7 @@ export default function Library() {
                                 </p>
                               </div>
                             </div>
-                            
+
                             {/* Book Info */}
                             <div className="p-3">
                               <h3 className="font-semibold text-sm line-clamp-1 mb-0.5">{item.title}</h3>
@@ -1153,24 +1153,24 @@ export default function Library() {
                   </div>
                 </div>
               )}
-              
+
               {/* Newly Added Section - Show at top when not searching */}
               {!debouncedSearch && (
                 <NewlyAddedSection />
               )}
-              
+
               {/* Coming Soon Section - Show after Newly Added */}
               {!debouncedSearch && (
-                {/* <ComingSoonSection /> — hidden until needed */}
+                <ComingSoonSection />
               )}
-              
+
               {/* Recommendations Section - Hide when searching */}
               {!debouncedSearch && (
                 <div className="mb-12">
                   <BookRecommendations />
                 </div>
               )}
-              
+
               {/* Search Results Header - Show when searching */}
               {debouncedSearch && (
                 <div className="mb-6">
@@ -1182,7 +1182,7 @@ export default function Library() {
                   </p>
                 </div>
               )}
-              
+
               {/* Books Grid */}
               {loading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
@@ -1205,7 +1205,7 @@ export default function Library() {
                 </div>
               ) : (
                 <div className="text-center py-20">
-                  <motion.img 
+                  <motion.img
                     src={AZORA_ASSETS.readingCozy}
                     alt="Azora searching"
                     className="w-36 h-44 object-contain mx-auto mb-4 opacity-70"
@@ -1216,15 +1216,15 @@ export default function Library() {
                     {loadError ? 'Oops! Something went wrong' : showOfflineOnly ? 'No offline books' : 'No books found'}
                   </h3>
                   <p className="font-body text-muted-foreground mt-2">
-                    {loadError 
-                      ? 'We couldn\'t load the library. Please try again.' 
+                    {loadError
+                      ? 'We couldn\'t load the library. Please try again.'
                       : showOfflineOnly
                         ? 'Save some books for offline reading first!'
                         : 'Try adjusting your search or filters'
                     }
                   </p>
                   {loadError && (
-                    <Button 
+                    <Button
                       onClick={handleRetry}
                       className="mt-4 gap-2"
                       data-testid="retry-load-btn"
@@ -1238,19 +1238,19 @@ export default function Library() {
               </>
               )}
             </TabsContent>
-            
+
             <TabsContent value="featured">
-              <FeaturedSection 
-                title="Featured Books" 
+              <FeaturedSection
+                title="Featured Books"
                 icon={<FiStar className="w-6 h-6 text-primary" />}
                 books={featuredBooks}
                 emptyMessage="No featured books at the moment. Check back soon!"
               />
             </TabsContent>
-            
+
             <TabsContent value="best">
-              <FeaturedSection 
-                title="Best of the Week" 
+              <FeaturedSection
+                title="Best of the Week"
                 icon={<FiAward className="w-6 h-6 text-secondary" />}
                 books={bestOfWeek}
                 emptyMessage="Best of the week books will appear here!"
@@ -1259,7 +1259,7 @@ export default function Library() {
           </Tabs>
         </div>
       </div>
-      
+
       {/* Summary/Back Cover Popup Dialog */}
       <Dialog open={!!summaryBook} onOpenChange={() => setSummaryBook(null)}>
         <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -1279,15 +1279,15 @@ export default function Library() {
               {summaryBook?.back_cover_image && (
                 <div className="md:w-1/3 flex-shrink-0">
                   <div className="rounded-xl overflow-hidden aspect-[3/4]">
-                    <LazyImage 
-                      src={summaryBook.back_cover_image} 
-                      alt="Back cover" 
+                    <LazyImage
+                      src={summaryBook.back_cover_image}
+                      alt="Back cover"
                       className="w-full h-full"
                     />
                   </div>
                 </div>
               )}
-              
+
               {/* Summary text */}
               <div className={`flex-1 ${summaryBook?.back_cover_image ? '' : 'w-full'}`}>
                 <div className="p-4 rounded-xl bg-muted/50 space-y-3 h-full">
@@ -1298,7 +1298,7 @@ export default function Library() {
                 </div>
               </div>
             </div>
-            
+
             {/* Quick info */}
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               {summaryBook?.age_rating && summaryBook.age_rating !== 'All Ages' && (
@@ -1311,10 +1311,10 @@ export default function Library() {
                 {summaryBook?.author_name}
               </span>
             </div>
-            
+
             {/* Action buttons */}
             <div className="flex gap-3 pt-2">
-              <Button 
+              <Button
                 className="flex-1 rounded-full hidden sm:flex"
                 onClick={() => {
                   setSummaryBook(null);
@@ -1325,7 +1325,7 @@ export default function Library() {
                 <FiBook className="mr-2" />
                 Start Reading
               </Button>
-              <Button 
+              <Button
                 variant="outline"
                 className="flex-1 rounded-full hidden sm:flex"
                 onClick={() => {
@@ -1338,7 +1338,7 @@ export default function Library() {
                 Listen
               </Button>
               {/* Mobile: Single centered button to read */}
-              <Button 
+              <Button
                 className="w-full rounded-full sm:hidden"
                 onClick={() => {
                   setSummaryBook(null);
@@ -1365,11 +1365,11 @@ export default function Library() {
           data-testid="back-to-top-btn"
           aria-label="Back to top"
         >
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            className="h-5 w-5 sm:h-6 sm:w-6" 
-            fill="none" 
-            viewBox="0 0 24 24" 
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 sm:h-6 sm:w-6"
+            fill="none"
+            viewBox="0 0 24 24"
             stroke="currentColor"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
