@@ -52,20 +52,30 @@ export default function StoryCreator() {
   const [trialStatus, setTrialStatus] = useState({ has_free_stories: false, free_stories_remaining: 0 });
   
   // Form state
-  const [formData, setFormData] = useState({
-    title: '',
-    character_name: '',
-    character_description: '',
-    story_description: '',
-    age_range: '6-8',
-    num_pages: 5,
-    words_per_page: 'medium',
-    art_style: '3d-pixar',
-    // Studio mode extras
-    genre: 'Adventure',
-    tone: '',
-    plot_summary: '',
-    chapter_structure: false
+  const [formData, setFormData] = useState(() => {
+    // Restore draft if user navigated away to buy credits on mobile
+    try {
+      const draft = localStorage.getItem('azories-story-draft');
+      if (draft) {
+        localStorage.removeItem('azories-story-draft');
+        return JSON.parse(draft);
+      }
+    } catch (e) {}
+    return {
+      title: '',
+      character_name: '',
+      character_description: '',
+      story_description: '',
+      age_range: '6-8',
+      num_pages: 5,
+      words_per_page: 'medium',
+      art_style: '3d-pixar',
+      // Studio mode extras
+      genre: 'Adventure',
+      tone: '',
+      plot_summary: '',
+      chapter_structure: false
+    };
   });
   
   // Generation state
@@ -258,8 +268,14 @@ export default function StoryCreator() {
     
     if (!isFree && credits < creditsNeeded) {
       toast.error(`You need ${creditsNeeded} credits. You have ${credits}. Opening credits page...`);
-      // Open in new tab so form data is not lost
-      setTimeout(() => window.open('/credits', '_blank'), 500);
+      const isMobile = window.innerWidth < 768;
+      if (isMobile) {
+        // Save draft before navigating on mobile
+        localStorage.setItem('azories-story-draft', JSON.stringify(formData));
+        setTimeout(() => navigate('/credits'), 500);
+      } else {
+        setTimeout(() => window.open('/credits', '_blank'), 500);
+      }
       return;
     }
     
@@ -617,7 +633,14 @@ export default function StoryCreator() {
             {!canCreateFree() && credits < getCreditsNeeded() && (
               <Button
                 size="sm"
-                onClick={() => window.open('/credits', '_blank')}
+                onClick={() => {
+                  if (window.innerWidth < 768) {
+                    localStorage.setItem('azories-story-draft', JSON.stringify(formData));
+                    navigate('/credits');
+                  } else {
+                    window.open('/credits', '_blank');
+                  }
+                }}
                 className="bg-amber-500 hover:bg-amber-600 text-white"
               >
                 Buy Credits

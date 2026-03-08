@@ -54,12 +54,24 @@ export default function ProStudio() {
   // Character state
   const [characters, setCharacters] = useState([]);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
-  const [characterName, setCharacterName] = useState('');
+  const [characterName, setCharacterName] = useState(() => {
+    try {
+      const draft = localStorage.getItem('azories-prostudio-draft');
+      if (draft) return JSON.parse(draft).characterName || '';
+    } catch(e) {}
+    return '';
+  });
   const [characterImages, setCharacterImages] = useState([]);
   const [isCreatingCharacter, setIsCreatingCharacter] = useState(false);
   
   // New character creation options
-  const [characterDescription, setCharacterDescription] = useState('');
+  const [characterDescription, setCharacterDescription] = useState(() => {
+    try {
+      const draft = localStorage.getItem('azories-prostudio-draft');
+      if (draft) { const d = JSON.parse(draft); localStorage.removeItem('azories-prostudio-draft'); return d.characterDescription || ''; }
+    } catch(e) {}
+    return '';
+  });
   const [characterStyle, setCharacterStyle] = useState('illustration');
   const [characterGenre, setCharacterGenre] = useState('fantasy');
   const [characterStyles, setCharacterStyles] = useState([]);
@@ -364,7 +376,16 @@ export default function ProStudio() {
 
   // Navigate to Credits page for purchasing
   const goToPurchaseCredits = () => {
-    window.open('/credits', '_blank');
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) {
+      // Save character form state before navigating
+      localStorage.setItem('azories-prostudio-draft', JSON.stringify({
+        characterName, characterDescription
+      }));
+      navigate('/credits');
+    } else {
+      window.open('/credits', '_blank');
+    }
   };
 
   // Check if user has enough credits, redirect to credits page if not
@@ -375,7 +396,7 @@ export default function ProStudio() {
           <span className="font-medium">{actionName} requires {requiredCredits} credit{requiredCredits > 1 ? 's' : ''}</span>
           <span className="text-sm opacity-80">You have {credits} credits remaining</span>
           <button 
-            onClick={() => window.open('/credits', '_blank')}
+            onClick={goToPurchaseCredits}
             className="mt-1 px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded text-sm font-medium hover:from-purple-600 hover:to-pink-600"
           >
             Get Credits →
@@ -395,7 +416,7 @@ export default function ProStudio() {
         <span className="font-medium">Insufficient credits!</span>
         <span className="text-sm opacity-80">{errorDetail || 'Please purchase more credits'}</span>
         <button 
-          onClick={() => window.open('/credits', '_blank')}
+          onClick={goToPurchaseCredits}
           className="mt-1 px-3 py-1 bg-amber-500 text-black rounded text-sm font-medium hover:bg-amber-400"
         >
           Buy Credits
