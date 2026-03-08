@@ -853,10 +853,31 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
     }
   }, [isMobileDevice]);
 
-  const onTouchEnd = useCallback(() => {
+  const onTouchEnd = useCallback((e) => {
     joystickRef.current = { active: false, angle: 0, distance: 0 };
     touchMoveRef.current = { active: false, x: 0, y: 0 };
     keysPressed.current = { forward: false, backward: false, left: false, right: false };
+
+    // Detect tap on Azora — check if touch didn't move much (i.e. it's a tap not a drag)
+    if (!isExploringRef.current || !cameraRef.current || !azoraRef.current) return;
+    const touch = e.changedTouches[0];
+    if (!touch) return;
+    const dx = touch.clientX - touchStartRef.current.x;
+    const dy = touch.clientY - touchStartRef.current.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist > 15) return; // Was a drag, not a tap
+
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const mouse = new THREE.Vector2(
+      ((touch.clientX - rect.left) / rect.width) * 2 - 1,
+      -((touch.clientY - rect.top) / rect.height) * 2 + 1
+    );
+    raycasterRef.current.setFromCamera(mouse, cameraRef.current);
+    const azoraHits = raycasterRef.current.intersectObject(azoraRef.current, true);
+    if (azoraHits.length > 0) {
+      setShowAzoraChat(true);
+    }
   }, []);
 
   // Click on book in 3D - show info card first
@@ -911,17 +932,16 @@ export default function ImmersiveLibrary3D({ books = [], onClose }) {
       }
     }
     
-    if (isMobileDevice) return; // Skip book click handling on mobile
-    
-    // Check for Azora click first
+    // Check for Azora click BEFORE mobile bail-out — Azora must be clickable on all devices
     if (azoraRef.current) {
       const azoraHits = raycasterRef.current.intersectObject(azoraRef.current, true);
       if (azoraHits.length > 0) {
-        // Clicked on Azora - show chat
         setShowAzoraChat(true);
         return;
       }
     }
+
+    if (isMobileDevice) return; // Skip book click handling on mobile (Azora handled above)
     
     // Then check for book clicks - also start rotation if clicking on highlighted book
     const hits = raycasterRef.current.intersectObjects(bookMeshesRef.current, true);
