@@ -1484,7 +1484,7 @@ export default function BookEditor() {
               <FiX className="w-5 h-5" />
             </Button>
           </div>
-          <div className="p-4 border-b border-border flex flex-col" style={{maxHeight: '40%'}}>
+          <div className="p-4 border-b border-border flex flex-col" style={{maxHeight: '55vh', minHeight: '100px'}}>
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-heading font-semibold lg:text-lg">Chapters</h3>
               <Dialog open={newChapterOpen} onOpenChange={setNewChapterOpen}>
