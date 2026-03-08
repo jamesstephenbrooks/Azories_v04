@@ -16,12 +16,11 @@ import { toast } from 'sonner';
 import { 
   FiArrowLeft, FiPlus, FiSave, FiTrash2, FiImage, FiVideo, FiUpload,
   FiBook, FiSettings, FiLoader, FiGrid, FiLayout, FiBookOpen, FiMic, FiZap, FiDownload,
-  FiUsers, FiUser, FiLayers, FiX, FiMaximize2, FiAlertTriangle, FiEdit3, FiHelpCircle
+  FiUsers, FiUser, FiLayers, FiX, FiMaximize2, FiAlertTriangle, FiEdit3
 } from 'react-icons/fi';
 import CollaborativeWriting from '@/components/CollaborativeWriting';
 import { MediaGalleryPicker } from '@/components/MediaGallery';
 import { AZORIES_PLACEHOLDER, AZORIES_VIDEO_PLACEHOLDER, handleImageError } from '@/utils/imageOptimizer';
-import EditorTourGuide, { useEditorTour } from '@/components/EditorTourGuide';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -43,10 +42,6 @@ export default function BookEditor() {
   const videoInputRef = useRef(null);
   const coverInputRef = useRef(null);
   const backCoverInputRef = useRef(null);
-  
-  // Editor tour for first-time users
-  const { shouldShowTour, completeTour, resetTour } = useEditorTour();
-  const [showTour, setShowTour] = useState(false);
   
   const [book, setBook] = useState(null);
   const [chapters, setChapters] = useState([]);
@@ -133,6 +128,10 @@ export default function BookEditor() {
   const [newChapterOpen, setNewChapterOpen] = useState(false);
   const [newChapterTitle, setNewChapterTitle] = useState('');
   const [creatingChapter, setCreatingChapter] = useState(false);
+  
+  // Chapter rename state
+  const [editingChapterId, setEditingChapterId] = useState(null);
+  const [editingChapterTitle, setEditingChapterTitle] = useState('');
   
   // Mobile responsive state
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -497,10 +496,6 @@ export default function BookEditor() {
       navigate('/dashboard');
     } finally {
       setLoading(false);
-      // Show tour for first-time users after book loads
-      if (shouldShowTour) {
-        setTimeout(() => setShowTour(true), 500);
-      }
     }
   };
 
@@ -586,6 +581,30 @@ export default function BookEditor() {
     }
   };
 
+  const renameChapter = async (chapterId, newTitle) => {
+    if (!newTitle.trim()) {
+      toast.error('Chapter name cannot be empty');
+      return;
+    }
+    const token = localStorage.getItem('azories-token');
+    try {
+      await axios.put(`${API}/chapters/${chapterId}`, {
+        title: newTitle.trim()
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      // Update local state immediately
+      setChapters(prev => prev.map(c => c.id === chapterId ? { ...c, title: newTitle.trim() } : c));
+      if (selectedChapter?.id === chapterId) {
+        setSelectedChapter(prev => ({ ...prev, title: newTitle.trim() }));
+      }
+      setEditingChapterId(null);
+      toast.success('Chapter renamed');
+    } catch (error) {
+      toast.error('Failed to rename chapter');
+    }
+  };
+
   const createPage = async () => {
     if (!selectedChapter) {
       toast.error('Please select or create a chapter first');
@@ -663,7 +682,17 @@ export default function BookEditor() {
         clearTimeout(autoSaveTimeoutRef.current);
       }
     };
-  }, [selectedPage?.text_content, selectedPage?.image_url, triggerAutoSave]);
+  }, [
+    selectedPage?.text_content,
+    selectedPage?.image_url,
+    selectedPage?.image_url_2,
+    selectedPage?.image_url_3,
+    selectedPage?.image_url_4,
+    selectedPage?.video_url,
+    selectedPage?.use_video,
+    selectedPage?.layout_type,
+    triggerAutoSave
+  ]);
 
   // CRITICAL: Keep pages array in sync with selectedPage changes
   // This prevents data loss when switching between pages
@@ -1351,28 +1380,39 @@ export default function BookEditor() {
                   </span>
                 )}
               </div>
-              <p className="font-body text-xs lg:text-sm text-muted-foreground line-clamp-1">
-                {selectedChapter?.title || 'No chapter selected'}
-              </p>
+              {selectedChapter ? (
+                editingChapterId === selectedChapter.id ? (
+                  <input
+                    autoFocus
+                    className="font-body text-xs lg:text-sm text-muted-foreground bg-transparent border-b border-primary outline-none"
+                    value={editingChapterTitle}
+                    onChange={(e) => setEditingChapterTitle(e.target.value)}
+                    onBlur={() => renameChapter(selectedChapter.id, editingChapterTitle)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') renameChapter(selectedChapter.id, editingChapterTitle);
+                      if (e.key === 'Escape') setEditingChapterId(null);
+                    }}
+                  />
+                ) : (
+                  <p
+                    className="font-body text-xs lg:text-sm text-muted-foreground line-clamp-1 cursor-pointer hover:text-primary transition-colors group flex items-center gap-1"
+                    onDoubleClick={() => {
+                      setEditingChapterId(selectedChapter.id);
+                      setEditingChapterTitle(selectedChapter.title);
+                    }}
+                    title="Double-click to rename chapter"
+                  >
+                    {selectedChapter.title}
+                    <FiEdit3 className="w-3 h-3 opacity-0 group-hover:opacity-50" />
+                  </p>
+                )
+              ) : (
+                <p className="font-body text-xs lg:text-sm text-muted-foreground">No chapter selected</p>
+              )}
             </div>
           </div>
           
           <div className="flex items-center gap-1 lg:gap-2">
-            {/* Help/Tour Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full w-8 h-8"
-              onClick={() => {
-                resetTour();
-                setShowTour(true);
-              }}
-              title="Show editor tour"
-              data-testid="editor-help-btn"
-            >
-              <FiHelpCircle className="w-4 h-4" />
-            </Button>
-            
             {/* Collaborative Writing Button - hidden on small screens */}
             <div className="hidden md:block">
               <CollaborativeWriting 
@@ -1516,18 +1556,59 @@ export default function BookEditor() {
                   onClick={() => setSelectedChapter(chapter)}
                   data-testid={`chapter-${chapter.id}`}
                 >
-                  <span className="font-ui text-sm truncate flex-1">{chapter.title}</span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="w-6 h-6 opacity-0 group-hover:opacity-100"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteChapter(chapter.id);
-                    }}
-                  >
-                    <FiTrash2 className="w-3 h-3" />
-                  </Button>
+                  {editingChapterId === chapter.id ? (
+                    <input
+                      autoFocus
+                      className="font-ui text-sm flex-1 bg-transparent border-b border-primary outline-none px-0 py-0"
+                      value={editingChapterTitle}
+                      onChange={(e) => setEditingChapterTitle(e.target.value)}
+                      onBlur={() => renameChapter(chapter.id, editingChapterTitle)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') renameChapter(chapter.id, editingChapterTitle);
+                        if (e.key === 'Escape') setEditingChapterId(null);
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  ) : (
+                    <span
+                      className="font-ui text-sm truncate flex-1"
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        setEditingChapterId(chapter.id);
+                        setEditingChapterTitle(chapter.title);
+                      }}
+                      title="Double-click to rename"
+                    >
+                      {chapter.title}
+                    </span>
+                  )}
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="w-6 h-6"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingChapterId(chapter.id);
+                        setEditingChapterTitle(chapter.title);
+                      }}
+                      title="Rename chapter"
+                    >
+                      <FiEdit3 className="w-3 h-3" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="w-6 h-6"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteChapter(chapter.id);
+                      }}
+                      title="Delete chapter"
+                    >
+                      <FiTrash2 className="w-3 h-3" />
+                    </Button>
+                  </div>
                 </div>
               ))}
               {chapters.length === 0 && (
@@ -1548,7 +1629,6 @@ export default function BookEditor() {
                 onClick={createPage}
                 disabled={!selectedChapter}
                 data-testid="add-page-btn"
-                data-tour="add-page"
               >
                 <FiPlus className="w-4 h-4" />
               </Button>
@@ -2015,7 +2095,6 @@ export default function BookEditor() {
                                 variant="outline"
                                 className="w-full rounded-full bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-purple-500/30 hover:border-purple-500/50"
                                 data-testid="generate-ai-image-btn"
-                                data-tour="generate-image"
                                 disabled={isGeneratingAI || !selectedPage?.text_content?.trim()}
                                 title={!selectedPage?.text_content?.trim() ? 'Add text to the page first' : 'Generate AI image based on page text'}
                               >
@@ -2225,7 +2304,6 @@ export default function BookEditor() {
                     className="rounded-full bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/30 hover:border-amber-500/50 text-amber-700 dark:text-amber-400"
                     title="Polish your text with AI - makes it publication-ready (2 credits)"
                     data-testid="ai-enhance-text-btn"
-                    data-tour="ai-polish"
                   >
                     {isEnhancingText ? (
                       <FiLoader className="mr-1.5 w-3.5 h-3.5 animate-spin" />
@@ -2236,7 +2314,7 @@ export default function BookEditor() {
                   </Button>
                 </div>
                 
-                <div className="flex-1 flex flex-col" data-tour="text-editor">
+                <div className="flex-1 flex flex-col">
                   <Textarea
                     placeholder="Write your story here..."
                     value={selectedPage.text_content}
@@ -3392,17 +3470,6 @@ export default function BookEditor() {
           </Button>
         </div>
       </div>
-      
-      {/* Editor Tour Guide for first-time users */}
-      {showTour && (
-        <EditorTourGuide 
-          isOpen={showTour} 
-          onComplete={() => {
-            setShowTour(false);
-            completeTour();
-          }} 
-        />
-      )}
     </div>
   );
 }
