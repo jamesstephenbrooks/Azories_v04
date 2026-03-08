@@ -10092,7 +10092,7 @@ async def get_payment_status(session_id: str, http_request: Request, current_use
 
 @api_router.post("/webhook/stripe")
 async def stripe_webhook(request: Request):
-    """Handle Stripe webhooks"""
+    """Handle Stripe webhooks for both credit purchases and print orders"""
     try:
         body = await request.body()
         signature = request.headers.get("Stripe-Signature")
@@ -10103,83 +10103,121 @@ async def stripe_webhook(request: Request):
         
         webhook_response = await stripe_checkout.handle_webhook(body, signature)
         
-        if webhook_response.payment_status == "paid":
+        logger.info(f"Stripe webhook received: event_type={webhook_response.event_type}, payment_status={webhook_response.payment_status}")
+        
+        # Process checkout.session.completed events
+        if webhook_response.event_type == "checkout.session.completed" or webhook_response.payment_status == "paid":
             session_id = webhook_response.session_id
-            metadata = webhook_response.metadata
+            metadata = webhook_response.metadata or {}
             
-            # Find and update transaction
+            # Find the transaction
             transaction = await db.payment_transactions.find_one({"session_id": session_id})
+            
             if transaction and transaction.get("payment_status") != "paid":
-                user_id = metadata.get("user_id")
-                credits = int(metadata.get("credits", 0))
-                amount = metadata.get("amount", "unknown")
+                transaction_type = transaction.get("type") or metadata.get("type", "credits")
+                user_id = transaction.get("user_id") or metadata.get("user_id")
                 
-                # Add credits
-                user = await db.users.find_one({"id": user_id})
-                if user:
-                    current_credits = user.get("credits", 0)
-                    await db.users.update_one(
-                        {"id": user_id},
-                        {"$set": {"credits": current_credits + credits}}
-                    )
-                    
-                    # Send admin notification for credit purchase
-                    if email_configured():
-                        admin_email = os.environ.get("ADMIN_NOTIFY_EMAIL", "books@azories.com")
-                        user_email = user.get("email", "unknown")
-                        user_name = user.get("name", "Unknown")
-                        admin_subject = f"💰 Credit Purchase: {credits} credits by {user_name}"
-                        admin_html = f"""
-                        <html>
-                        <body style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
-                            <div style="background: linear-gradient(135deg, #f59e0b, #d97706); padding: 20px; border-radius: 12px 12px 0 0;">
-                                <h1 style="color: white; margin: 0; font-size: 24px;">💰 New Credit Purchase!</h1>
-                            </div>
-                            <div style="background: #ffffff; padding: 20px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
-                                <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
-                                    <tr>
-                                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>User:</strong></td>
-                                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">{user_name}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>Email:</strong></td>
-                                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">{user_email}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>Credits:</strong></td>
-                                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">{credits} credits</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>Amount:</strong></td>
-                                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${amount}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>New Balance:</strong></td>
-                                        <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">{current_credits + credits} credits</td>
-                                    </tr>
-                                </table>
-                                <p style="color: #16a34a; font-weight: bold; margin-top: 20px;">✅ Payment processed successfully via Stripe</p>
-                            </div>
-                        </body>
-                        </html>
-                        """
-                        # Send in background (can't use background_tasks in webhook, use asyncio.create_task)
-                        asyncio.create_task(send_email(admin_email, admin_subject, admin_html))
-                
-                # Update transaction
+                # Update transaction status
                 await db.payment_transactions.update_one(
                     {"session_id": session_id},
                     {"$set": {
                         "status": "complete",
                         "payment_status": "paid",
-                        "completed_at": datetime.now(timezone.utc).isoformat()
+                        "event_id": webhook_response.event_id,
+                        "completed_at": datetime.now(timezone.utc).isoformat(),
+                        "updated_at": datetime.now(timezone.utc)
                     }}
                 )
+                
+                # Handle CREDIT PURCHASE
+                if transaction_type == "credits":
+                    credits = int(metadata.get("credits", 0)) or int(transaction.get("credits", 0))
+                    amount = metadata.get("amount") or transaction.get("amount", "unknown")
+                    
+                    # Add credits to user
+                    user = await db.users.find_one({"id": user_id})
+                    if user and credits > 0:
+                        current_credits = user.get("credits", 0)
+                        await db.users.update_one(
+                            {"id": user_id},
+                            {"$set": {"credits": current_credits + credits}}
+                        )
+                        logger.info(f"Added {credits} credits to user {user_id}. New balance: {current_credits + credits}")
+                        
+                        # Send admin notification for credit purchase
+                        if email_configured():
+                            admin_email = os.environ.get("ADMIN_NOTIFY_EMAIL", "books@azories.com")
+                            user_email = user.get("email", "unknown")
+                            user_name = user.get("name", "Unknown")
+                            admin_subject = f"💰 Credit Purchase: {credits} credits by {user_name}"
+                            admin_html = f"""
+                            <html>
+                            <body style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+                                <div style="background: linear-gradient(135deg, #f59e0b, #d97706); padding: 20px; border-radius: 12px 12px 0 0;">
+                                    <h1 style="color: white; margin: 0; font-size: 24px;">💰 New Credit Purchase!</h1>
+                                </div>
+                                <div style="background: #ffffff; padding: 20px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+                                    <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+                                        <tr>
+                                            <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>User:</strong></td>
+                                            <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">{user_name}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>Email:</strong></td>
+                                            <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">{user_email}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>Credits:</strong></td>
+                                            <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">{credits} credits</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>Amount:</strong></td>
+                                            <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">${amount}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>New Balance:</strong></td>
+                                            <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">{current_credits + credits} credits</td>
+                                        </tr>
+                                    </table>
+                                    <p style="color: #16a34a; font-weight: bold; margin-top: 20px;">✅ Payment processed successfully via Stripe</p>
+                                </div>
+                            </body>
+                            </html>
+                            """
+                            asyncio.create_task(send_email(admin_email, admin_subject, admin_html))
+                
+                # Handle PRINT ORDER
+                elif transaction_type == "print_order":
+                    # Check if print order already exists
+                    existing_order = await db.print_orders.find_one({
+                        "payment_session_id": session_id
+                    })
+                    
+                    if not existing_order:
+                        order_id = str(uuid.uuid4())
+                        await db.print_orders.insert_one({
+                            "id": order_id,
+                            "order_reference": transaction.get("order_reference"),
+                            "book_id": transaction.get("book_id"),
+                            "book_title": transaction.get("book_title"),
+                            "user_id": user_id,
+                            "product_type": transaction.get("product_type"),
+                            "status": "paid",
+                            "payment_session_id": session_id,
+                            "amount_paid": transaction.get("amount"),
+                            "currency": transaction.get("currency"),
+                            "shipping_country": transaction.get("shipping_country"),
+                            "created_at": datetime.now(timezone.utc),
+                            "updated_at": datetime.now(timezone.utc)
+                        })
+                        logger.info(f"Print order created via webhook: {order_id}")
         
-        return {"status": "ok"}
+        return {"received": True, "status": "ok"}
+        
     except Exception as e:
-        logger.error(f"Webhook error: {e}")
-        return {"status": "error", "message": str(e)}
+        logger.error(f"Stripe webhook error: {e}")
+        # Return 200 to acknowledge receipt (Stripe will retry on non-200)
+        return {"received": True, "error": str(e)}
 
 # Note: Admin Analytics routes moved to /app/backend/routes/admin.py
 
@@ -14431,77 +14469,6 @@ async def download_bonus_pages_preview(book_id: str):
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to generate PDF: {str(e)}")
-
-
-# ==================== STRIPE WEBHOOK ====================
-@api_router.post("/webhook/stripe")
-async def stripe_webhook(request: Request):
-    """Handle Stripe webhook events for payment confirmations"""
-    from emergentintegrations.payments.stripe.checkout import StripeCheckout
-    
-    STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY")
-    
-    try:
-        # Get raw body
-        body = await request.body()
-        signature = request.headers.get("Stripe-Signature")
-        
-        # Initialize Stripe checkout (webhook URL not needed for handling)
-        stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url="")
-        
-        # Handle the webhook
-        webhook_response = await stripe_checkout.handle_webhook(body, signature)
-        
-        logger.info(f"Stripe webhook received: {webhook_response.event_type}")
-        
-        # Process payment confirmation
-        if webhook_response.event_type == "checkout.session.completed":
-            session_id = webhook_response.session_id
-            
-            # Update transaction status
-            await db.payment_transactions.update_one(
-                {"session_id": session_id},
-                {"$set": {
-                    "payment_status": webhook_response.payment_status,
-                    "event_id": webhook_response.event_id,
-                    "updated_at": datetime.utcnow()
-                }}
-            )
-            
-            # If paid, check if print order needs to be created
-            if webhook_response.payment_status == "paid":
-                transaction = await db.payment_transactions.find_one({"session_id": session_id})
-                if transaction:
-                    # Check if print order already exists
-                    existing_order = await db.print_orders.find_one({
-                        "payment_session_id": session_id
-                    })
-                    
-                    if not existing_order:
-                        order_id = str(uuid.uuid4())
-                        await db.print_orders.insert_one({
-                            "id": order_id,
-                            "order_reference": transaction.get("order_reference"),
-                            "book_id": transaction.get("book_id"),
-                            "book_title": transaction.get("book_title"),
-                            "user_id": transaction.get("user_id"),
-                            "product_type": transaction.get("product_type"),
-                            "status": "paid",
-                            "payment_session_id": session_id,
-                            "amount_paid": transaction.get("amount"),
-                            "currency": transaction.get("currency"),
-                            "shipping_country": transaction.get("shipping_country"),
-                            "created_at": datetime.utcnow(),
-                            "updated_at": datetime.utcnow()
-                        })
-                        logger.info(f"Print order created via webhook: {order_id}")
-        
-        return {"received": True}
-        
-    except Exception as e:
-        logger.error(f"Stripe webhook error: {e}")
-        # Return 200 to acknowledge receipt (Stripe will retry on non-200)
-        return {"received": True, "error": str(e)}
 
 
 app.include_router(api_router)
