@@ -599,39 +599,50 @@ export default function BookEditor() {
     }
   };
 
-  // Auto-save functionality
+  // Auto-save functionality - uses ref to get correct page data
   const autoSaveTimeoutRef = useRef(null);
+  const pendingAutoSaveRef = useRef(null); // Store page data to be saved
   
   const triggerAutoSave = useCallback(() => {
     if (autoSaveTimeoutRef.current) {
       clearTimeout(autoSaveTimeoutRef.current);
     }
     
+    // Capture the current page state NOW (not when timeout fires)
+    const pageToSave = selectedPageRef.current;
+    if (!pageToSave) return;
+    
+    // Store the page data to be saved
+    pendingAutoSaveRef.current = { ...pageToSave };
+    
     autoSaveTimeoutRef.current = setTimeout(async () => {
-      if (selectedPage) {
-        const token = localStorage.getItem('azories-token');
-        if (!token) return;
-        
-        try {
-          await axios.put(`${API}/pages/${selectedPage.id}`, {
-            text_content: selectedPage.text_content,
-            image_url: selectedPage.image_url,
-            image_url_2: selectedPage.image_url_2,
-            image_url_3: selectedPage.image_url_3,
-            image_url_4: selectedPage.image_url_4,
-            video_url: selectedPage.video_url,
-            use_video: selectedPage.use_video,
-            layout_type: selectedPage.layout_type
-          }, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          // Silent save - no toast for auto-save
-        } catch (error) {
-          console.error('Auto-save failed:', error);
-        }
+      // Use the captured page data, not current selectedPage
+      const savedPageData = pendingAutoSaveRef.current;
+      if (!savedPageData) return;
+      
+      const token = localStorage.getItem('azories-token');
+      if (!token) return;
+      
+      try {
+        await axios.put(`${API}/pages/${savedPageData.id}`, {
+          text_content: savedPageData.text_content,
+          image_url: savedPageData.image_url,
+          image_url_2: savedPageData.image_url_2,
+          image_url_3: savedPageData.image_url_3,
+          image_url_4: savedPageData.image_url_4,
+          video_url: savedPageData.video_url,
+          use_video: savedPageData.use_video,
+          layout_type: savedPageData.layout_type
+        }, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        // Silent save - no toast for auto-save
+        pendingAutoSaveRef.current = null;
+      } catch (error) {
+        console.error('Auto-save failed:', error);
       }
     }, 2000); // Auto-save after 2 seconds of no changes
-  }, [selectedPage]);
+  }, []); // No dependencies - uses refs
 
   // Trigger auto-save when page content changes
   useEffect(() => {
@@ -661,9 +672,38 @@ export default function BookEditor() {
   }, [selectedPage]);
 
   // Handle page selection with proper state sync - FIXED VERSION
-  const handlePageSelect = useCallback((pageId) => {
+  const handlePageSelect = useCallback(async (pageId) => {
     // Get the current selectedPage from ref (always up-to-date)
     const currentSelectedPage = selectedPageRef.current;
+    
+    // Clear any pending auto-save since we're manually saving now
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+    
+    // Save current page to backend first if there are changes
+    if (currentSelectedPage && pendingAutoSaveRef.current) {
+      const token = localStorage.getItem('azories-token');
+      if (token) {
+        try {
+          await axios.put(`${API}/pages/${currentSelectedPage.id}`, {
+            text_content: currentSelectedPage.text_content,
+            image_url: currentSelectedPage.image_url,
+            image_url_2: currentSelectedPage.image_url_2,
+            image_url_3: currentSelectedPage.image_url_3,
+            image_url_4: currentSelectedPage.image_url_4,
+            video_url: currentSelectedPage.video_url,
+            use_video: currentSelectedPage.use_video,
+            layout_type: currentSelectedPage.layout_type
+          }, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          pendingAutoSaveRef.current = null;
+        } catch (error) {
+          console.error('Failed to save page before switch:', error);
+        }
+      }
+    }
     
     // First, ensure current selectedPage is saved to pages array
     // Then find and select the target page

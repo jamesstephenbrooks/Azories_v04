@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#7c3aed" />
+  <title>Offline - Azories</title>
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: white;
+    }
+    
+    .container {
+      text-align: center;
+      max-width: 400px;
+    }
+    
+    .mascot {
+      width: 120px;
+      height: auto;
+      margin-bottom: 24px;
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    .logo {
+      font-size: 32px;
+      font-weight: bold;
+      background: linear-gradient(135deg, #a78bfa, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+    
+    .offline-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(139, 92, 246, 0.2);
+      border: 1px solid rgba(139, 92, 246, 0.5);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+    
+    .offline-badge svg {
+      width: 16px;
+      height: 16px;
+    }
+    
+    h1 {
+      font-size: 24px;
+      margin-bottom: 12px;
+      color: #e2e8f0;
+    }
+    
+    p {
+      color: #94a3b8;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+    
+    .saved-books {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 20px;
+      margin-top: 24px;
+    }
+    
+    .saved-books h2 {
+      font-size: 16px;
+      color: #a78bfa;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .book-list {
+      list-style: none;
+    }
+    
+    .book-list li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .book-list li:hover {
+      background: rgba(139, 92, 246, 0.2);
+    }
+    
+    .book-cover {
+      width: 40px;
+      height: 52px;
+      background: linear-gradient(135deg, #7c3aed, #ec4899);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .book-cover svg {
+      width: 20px;
+      height: 20px;
+      color: white;
+    }
+    
+    .book-info {
+      text-align: left;
+      flex: 1;
+    }
+    
+    .book-title {
+      font-size: 14px;
+      color: #e2e8f0;
+      margin-bottom: 2px;
+    }
+    
+    .book-pages {
+      font-size: 12px;
+      color: #64748b;
+    }
+    
+    .no-books {
+      color: #64748b;
+      font-style: italic;
+      padding: 20px;
+    }
+    
+    .retry-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #7c3aed, #9333ea);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 25px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .retry-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+    }
+    
+    .footer {
+      margin-top: 40px;
+      color: #64748b;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Azora Mascot -->
+    <img 
+      src="/images/azora/azora-reading.png" 
+      alt="Azora" 
+      class="mascot"
+      onerror="this.style.display='none'"
+    />
+    
+    <!-- Logo -->
+    <div class="logo">Azories</div>
+    
+    <!-- Offline Badge -->
+    <div class="offline-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="1" y1="1" x2="23" y2="23"></line>
+        <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+        <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+        <path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+        <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+        <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+        <line x1="12" y1="20" x2="12.01" y2="20"></line>
+      </svg>
+      You are offline
+    </div>
+    
+    <h1>No Internet Connection</h1>
+    <p>
+      Don't worry! Your saved books are still available for reading. 
+      Connect to the internet to access more stories.
+    </p>
+    
+    <!-- Saved Books Section -->
+    <div class="saved-books">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+        </svg>
+        Your Saved Books
+      </h2>
+      <ul class="book-list" id="offlineBookList">
+        <li class="no-books">Loading saved books...</li>
+      </ul>
+    </div>
+    
+    <button class="retry-btn" onclick="window.location.reload()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+        <polyline points="23 4 23 10 17 10"></polyline>
+        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+      </svg>
+      Try Again
+    </button>
+    
+    <div class="footer">
+      Azories - Stories that come alive
+    </div>
+  </div>
+
+  <script>
+    // Load offline books from IndexedDB
+    async function loadOfflineBooks() {
+      const bookList = document.getElementById('offlineBookList');
+      
+      try {
+        const db = await new Promise((resolve, reject) => {
+          const request = indexedDB.open('azories-offline', 1);
+          request.onerror = () => reject(request.error);
+          request.onsuccess = () => resolve(request.result);
+        });
+        
+        const tx = db.transaction('books', 'readonly');
+        const store = tx.objectStore('books');
+        
+        const books = await new Promise((resolve, reject) => {
+          const request = store.getAll();
+          request.onerror = () => reject(request.error);
+          request.onsuccess = () => resolve(request.result);
+        });
+        
+        if (books && books.length > 0) {
+          bookList.innerHTML = books.map(book => `
+            <li onclick="window.location.href='/read/${book.bookId}'">
+              <div class="book-cover">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+              </div>
+              <div class="book-info">
+                <div class="book-title">${book.title || 'Untitled Book'}</div>
+                <div class="book-pages">${book.pages ? book.pages.length : 0} pages</div>
+              </div>
+            </li>
+          `).join('');
+        } else {
+          bookList.innerHTML = '<li class="no-books">No books saved for offline reading</li>';
+        }
+      } catch (error) {
+        console.error('Error loading offline books:', error);
+        bookList.innerHTML = '<li class="no-books">No books saved for offline reading</li>';
+      }
+    }
+    
+    loadOfflineBooks();
+  </script>
+</body>
+</html>

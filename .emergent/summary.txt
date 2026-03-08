@@ -1,152 +1,195 @@
 <analysis>**original_problem_statement:**
-The user initially requested an offline reading feature for their AI Story Creator app. During the session, the scope expanded significantly to include numerous bug fixes and new features.
+The user's core objective is to build a full-featured AI Story Creator application named Azories. The initial request for an offline reading feature quickly expanded to encompass a wide range of functionalities, bug fixes, and user experience enhancements.
 
 **PRODUCT REQUIREMENTS:**
--   **Offline Reading (Multi-phase):** Allow users to save books for offline access.
--   **Free Book Creation:** New users should be able to create books and AI stories for free, removing Upgrade to Pro gates on core features.
--   **Editor Enhancements:**
-    -   Make AI-generated stories fully editable (text and images).
-    -   Add on-demand AI image generation for any page, using the page's text as a prompt.
-    -   Implement an auto-save feature to prevent data loss.
-    -   Add a character/word count warning for pages to prevent text truncation during printing.
--   **AI Story Creator Enhancements:**
-    -   Add a words per page option to control story length.
--   **Image Generation Model:** Revert the  model to a higher-quality version ().
--   **Bug Fixes:**
-    -   Keep me signed in functionality is broken.
-    -   Timeouts occurring during long story generation.
-    -   Running out of credits fails silently instead of redirecting.
-    -   **Critical:** Text changes in the editor are lost when switching pages.
+*   **Offline First Application:** The entire application shell must be cached and load without an internet connection, allowing users to access previously saved books.
+*   **Offline Reading (Phases 1-3):** Allow users to save books (including metadata, pages, images, and narration audio) for full offline access. Provide UI indicators and filters for offline content.
+*   **AI Story Creator:**
+    *   Allow users to specify a book title, which should be used on the cover.
+    *   Provide options for words per page to control story length.
+    *   Adjust image generation for Child vs. Older Reader modes.
+*   **Book Editor:**
+    *   **Critical:** Text edits must be saved reliably without data loss when switching between pages.
+    *   Implement an AI Author Polish feature to enhance user-written text using an LLM.
+    *   Allow on-demand AI image generation for any page, using the page's text as the prompt. The art style selector should be part of this flow.
+    *   Implement an auto-save mechanism.
+    *   Add a character/word count warning.
+*   **Image Generation Quality & Cost:**
+    *   Revert the general image generation model from  to the previous, higher-quality model () as quality is paramount.
+    *   Ensure the Pro Studio (a paid feature) uses a model that guarantees character consistency (PuLID).
+    *   Fix the photorealistic art style to produce realistic images.
+*   **Bug Fixes & UX:**
+    *   Thumbnails load too slowly.
+    *   Coming soon books should disappear from the list once published.
+    *   Add an always-visible info 'i' button on library book cards.
+    *   After purchasing credits, the user should be redirected to their previous page, not a hardcoded one.
+    *   Fix UI layout issues on mobile/iPad (overlapping elements, button tap issues).
+    *   Fix a bug where new users were created without a  field in the database.
+    *   Address conflicting text on the Pro Trial banner.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a full-stack AI Story Creator with user authentication, a book library, a book editor, AI-driven story/image generation (), and a print-on-demand (POD) feature using Gelato/Stripe.
+The application is a full-stack AI Story Creator with user authentication, a book library, a book editor, and multiple AI integrations. The core features include creating stories with AI, editing them, generating images via  (using different models like , , and  for different features), and a print-on-demand flow.
 
-In this session, the agent implemented Phase 1 UI for the offline reading feature, fixed the keep me signed in bug, made book creation free for all users, and added several major features to the book editor, including on-demand AI image generation, an art style selector, auto-saving, and a word count warning. Timeouts across the application were increased, and the image generation model was updated to .
+The agent has implemented all three phases of the offline reading feature (saving books, UI indicators, and audio caching). However, the app shell itself does not load offline, which is the current critical task. Numerous bug fixes and features were added, including an AI Author Polish tool, a new credit package, and UI redesigns for the library cards.
 
 **Last working item**:
--   **Last item agent was working:** Investigating a **critical data loss bug** in the . When a user edits text on one page, switches to another page, and then returns, the text changes are gone. The agent had just started analyzing the state management and data-fetching logic in .
+-   **Last item agent was working:** The agent was in the process of making the application work offline by implementing a Service Worker. The user requested this to ensure the app shell loads without an internet connection, making the offline books truly accessible. The agent created , , and an  fallback page. The final step was to add a  event listener to the service worker file as specified by the user.
 -   **Status:** IN PROGRESS
 -   **Agent Testing Done:** N
--   **Which testing method agent to use?** Frontend testing agent
+-   **Which testing method agent to use?** Frontend testing agent. The agent should instruct the testing agent to simulate being offline in the browser, then attempt to load the app and access a cached book.
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1 (P0):** Critical Bug: Text changes are lost when switching pages in the .
--   **Issue 2 (P1):** On iPad, the expand menu dropdown and the purple play button do not respond to taps. (From previous fork)
--   **Issue 3 (P1):** In the Pro Studio on mobile, images cannot be deleted and videos won't download. (From previous fork)
--   **Issue 4 (P2):** The photorealistic art style produces anime-style images instead of realistic ones. (From previous fork)
--   **Issue 5 (P2):** The checkbox for keep me signed in is too large on iPad. (From previous fork)
+-   **Issue 1 (P0):** Critical Bug: Text changes are lost when switching pages in .
+-   **Issue 2 (P1):** In the Pro Studio on mobile, images cannot be deleted and videos won't download.
+-   **Issue 3 (P2):** Slow loading thumbnails on the library and dashboard pages.
+-   **Issue 4 (P2):** The checkbox for keep me signed in is too large on iPad.
 
 **Issues Detail:**
--   **Issue 1: Critical Bug: Text changes are lost when switching pages in the .**
-    -   **Attempted fixes:** The agent began investigating , hypothesizing that the component re-fetches page data from the server upon navigation, overwriting any unsaved local state changes.
+-   **Issue 1: Critical Bug: Text changes are lost when switching pages in .**
+    -   **Attempted fixes:** The agent first implemented a fix using  to sync state, but the user reported the issue persisted. A second, more robust fix was implemented using a  to hold the current  state, preventing stale closures during page navigation. This second fix has not been verified by the user.
     -   **Next debug checklist:**
-        1.  In , trace the state of the  array.
-        2.  Analyze the  hooks that trigger on  or  change.
-        3.  Verify if the  function saves the current state before switching.
-        4.  Ensure that both manual and auto-save functions correctly update the local  state and that this state is not discarded by a subsequent data fetch.
-    -   **Why fix this issue and what will be achieved with the fix?** This is a critical data loss bug rendering the editor unusable. Fixing it is essential for core application functionality.
+        1.  Use the  to rigorously test the . The test should involve: logging in, opening a book, editing text on page 1, switching to page 2, switching back to page 1, and verifying the edited text is still present.
+        2.  If the test fails, investigate  for any  hooks that might be re-fetching page data from the server unnecessarily upon navigation (e.g., triggered by  changes).
+        3.  Manually inspect the  function and the  implementation in  to ensure the logic is sound.
+    -   **Why fix this issue and what will be achieved with the fix?** This is a critical data loss bug that makes the core editor functionality unusable. Fixing it is the highest priority for application stability.
     -   **Status:** IN PROGRESS
+    -   **Is recurring issue?** Y
+    -   **Should Test frontend/backend/both after fix?** frontend
+    -   **Blocked on other issue:** None
+
+-   **Issue 2: In the Pro Studio on mobile, images cannot be deleted and videos won't download.**
+    -   **Attempted fixes:** None.
+    -   **Next debug checklist:**
+        1.  Inspect the component responsible for rendering the Pro Studio UI (likely ).
+        2.  Examine the  or  event handlers for the delete image and download video buttons.
+        3.  Check for CSS  conflicts or overlaying elements that might be intercepting tap events on mobile screen sizes.
+    -   **Why fix this issue and what will be achieved with the fix?** Key functionality of a paid feature is broken on mobile devices, leading to a poor user experience.
+    -   **Status:** NOT STARTED
     -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** frontend
     -   **Blocked on other issue:** None
 
 **In progress Task List**:
--   None.
+-   **Task 1: Implement App Shell Caching with Service Worker (P0)**
+    -   **Where to resume:** Open  and add the  event listener provided by the user in the last message (). This listener serves cached files first and provides an offline fallback page.
+    -   **What will be achieved with this?** The application will become a true Progressive Web App (PWA), loading its main interface even without an internet connection. This is the final and most critical piece of the offline reading feature.
+    -   **Status:** IN PROGRESS
+    -   **Should Test frontend/backend/both after fix?** frontend
+    -   **Blocked on something:** None
+
+-   **Task 2: Revert Image Generation Model to  for Quality (P0)**
+    -   **Where to resume:** The user has requested reverting the image model from the cost-saving  back to the previous, higher-quality one. Search the codebase, primarily in , for all instances where image generation models are specified (e.g., ) and change them back to . The Pro Studio's  model should remain unchanged.
+    -   **What will be achieved with this?** Image quality will improve across the app, aligning with the user's priority of quality over cost savings.
+    -   **Status:** NOT STARTED
+    -   **Should Test frontend/backend/both after fix?** backend
+    -   **Blocked on something:** None
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
--   **P0 - Complete & Test Offline Reading Phase 1**: Thoroughly test the save/remove functionality.
--   **P1 - Implement Offline Reading Phase 2**: Add offline indicators to book cards and implement the offline filter.
--   **P2 - Implement Offline Reading Phase 3**: Add caching for narration audio files.
--   **P2 - Perform full End-to-End POD test**: Conduct a comprehensive test of the entire print-on-demand flow.
+*   **P1 - End-to-End Print-on-Demand (POD) Test:** Conduct a full test of the entire POD flow, from book creation to placing a test order via Gelato/Stripe.
+*   **P1 - Address remaining mobile/iPad UI bugs** (Issues #2 and #4 in the pending list).
 
 **Future Tasks:**
--   User-facing My Orders section.
--   Order tracking notifications.
--   Gift feature for print orders.
--   Creative Studio Rebuild.
--   Decompose large components like .
+*   Implement a user-facing My Orders section.
+*   Add order tracking notifications.
+*   Add a gift feature for print orders.
+*   Decompose large components like  and  for better maintainability.
 
 **Completed work in this session**
--   **Critical Bug Fix**: Fixed the Keep me signed in for 30 days functionality.
--   **Feature**: Enabled free book creation for all users by removing backend and frontend Pro restrictions.
--   **Feature**: Implemented on-demand AI image generation (with art style selection) within the .
--   **Feature**: Added an auto-save mechanism (every 30 seconds) to the .
--   **Feature**: Added a Words per Page selector to the .
--   **Feature**: Made AI-generated stories editable by creating a default chapter structure on generation and migrating existing stories.
--   **Bug Fix**: Increased timeouts across MongoDB, , and frontend APIs to prevent errors with long operations, setting the DB timeout to unlimited.
--   **Bug Fix**: Implemented credit deduction for AI image generation and redirection to the top-up page on insufficient funds.
--   **Improvement**: Switched the  model to  for higher-quality images.
--   **Improvement**: Added a word count warning in the editor UI to prevent text from being truncated in printed versions.
--   **UI Integration**: Completed the UI integration for Phase 1 of the offline reading feature in .
+-   **Feature**: Completed Offline Reading (Phase 2 & 3), adding library integration and audio caching.
+-   **Feature**: Implemented AI Author Polish tool in the book editor.
+-   **Feature**: Added a Book Title input field to the AI Story Creator.
+-   **Bug Fix**: Attempted a robust fix for the critical  page-saving bug using a .
+-   **Bug Fix**: Corrected the user registration flow to initialize a  field and ran a migration for existing users.
+-   **Bug Fix**: Fixed post-payment redirection to return users to their previous page.
+-   **Backend**: Ensured the Pro Studio feature uses the PuLID model for character consistency.
+-   **UI/UX**: Redesigned library book cards on mobile to fix overlapping elements.
+-   **UI/UX**: Made the info 'i' button on book cards always visible.
+-   **Cost Management**: Adjusted  models based on user feedback regarding cost vs. quality (Pro -> Dev -> Schnell).
+
+**Earlier issues found/mentioned but not fixed**
+-   **Issue 1: Slow thumbnail loading.**
+    -   **Debug checklist:** The user reported this is still an issue on production (). Previous fixes (optimizing Cloudinary URLs, lazy/eager loading) were insufficient. Next steps should be to use browser dev tools to analyze the network waterfall on a throttled connection and consider implementing a virtualized list/grid for the library.
+    -   **Why to solve this issue and what will be achieved with this?** Improves initial page load time and user experience.
+    -   **Should Test frontend/backend/both after fix:** frontend
+    -   **Is recurring issue?** Y
+
+**Known issue recurrence from previous fork**
+-   **Issue recurrence in previous fork:** Critical data loss bug in  where text changes are lost on page navigation.
+-   **Recurrence count:** 2 (Reported in the initial handoff, and again by the user in  after an attempted fix).
+-   **Status:** IN PROGRESS (A second fix has been implemented but awaits verification).
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Modular FastAPI Routes:** Backend logic is split into files under . Authentication logic was found in , not the main .
--   **On-the-fly Data Migration:** The  endpoint now transparently creates a chapter structure for older AI-books, making them compatible with the editor without a separate migration script.
--   **Custom React Hooks:**  and  were created to encapsulate the auto-save logic, keeping the  component cleaner.
--   **Robust Error Handling:** Implemented logic to catch  errors for insufficient credits and redirect the user to the top-up page.
+-   **Service Workers:** A new, critical concept for enabling offline application functionality by caching the app shell and intercepting network requests.
+-   **PuLID:** A specific  model used to maintain character face consistency in the paid Pro Studio feature.
+-   **React State & Closures:** The root of the recurring  bug is likely a race condition or stale state within a closure. The latest fix attempt uses  to mitigate this.
+-   **Cloudinary URL Transformations:** Used extensively for image optimization (, , , blur-up placeholders).
+-   **IndexedDB:** The browser storage mechanism used by the offline feature to cache book data, images, and audio.
 
 **key DB schema**
--   **books**: Added  flag to distinguish AI stories.
--   **chapters**: Now contains documents for AI-generated stories to make them editable.
--   **pages**: Documents are now linked to a .
+-   **users**: The  field is now initialized to  for all new users.
+-   **books**: The  flag is now correctly set to  upon publishing. A  field was added.
 
 **All files of reference**
--    (Primary file for the current critical bug and recent feature additions).
--    (Location of most backend fixes and new editor-related endpoints).
--    (Offline feature UI).
--    (File containing the Keep me signed in fix).
--    (Auto-save logic).
+-    (Key file for the current primary task)
+-    (Where the service worker is registered)
+-    (Contains the unverified fix for the P0 data loss bug)
+-    (File to modify for reverting the image generation model)
+-    (Contains major UI and offline feature changes)
+-    (Contains the offline audio caching logic)
 
 **Critical Info for New Agent**
--   **TOP PRIORITY (P0):** You must immediately investigate and fix the critical data loss bug in . Text changes are being lost when a user navigates between pages, making the editor unusable. The previous agent suspected a state management issue where the component re-fetches data, overwriting local changes.
--   **Production vs. Preview:** The user reported that features implemented here are missing from their live site. Remind the user that they must save the code from this preview environment to their GitHub repository and then deploy it to see the changes in production.
--   **Backend Structure:** Be aware that the backend uses a modular routing system in . The fix for the login bug was in , not . Always verify the correct file is being edited.
--   **Pending Verification:** Several UI fixes for iPad and mobile are awaiting user feedback.
+-   **Top Priorities are P0:**
+    1.  **Finish the Service Worker:** Immediately continue the work by adding the  event listener to  as requested by the user.
+    2.  **Revert Image Model:** Change the default image generation model in  from  back to  to improve quality.
+    3.  **Verify the  Bug Fix:** After completing the above, you MUST rigorously test if the critical data loss bug in  is truly fixed. This is a recurring issue and a major source of user frustration.
+-   **Production vs. Preview DB:** Be mindful that this preview environment has a separate database from production. Any user data (like credits or accounts) mentioned by the user likely refers to their production environment and will not be present here.
 
 **documents and test reports created in this job**
--    (Updated)
+-   None.
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **[LATEST]** Reports a critical bug: text is lost when switching between pages in the editor.
-2.  Requests auto-save every 30 seconds and for AI image generation to use page text.
-3.  Asks if the timeout fix is site-wide.
-4.  Asks if the MongoDB timeout can be unlimited.
-5.  Requests font size for print to go down to 12pt, a word count warning, and an art style selector for the editor's AI image generation. Also asks to increase timeout to 600s.
-6.  Reports timeout issues with long stories and that running out of credits does nothing. Asks how text overflow is handled in print.
-7.  Reports that AI-created books are not editable and that features are missing from production after they redeployed.
-8.  Requests to revert the image generation model and add AI image generation to the editor.
-9.  Requests that AI-created stories be editable in My Books.
-10. Requests an option for words per page in the AI story creator.
+1.  **LATEST:** Asks to continue with Phase 3 offline reading and to fix a mobile UI overlap on book cards.
+2.  Provides a screenshot of the mobile UI overlap.
+3.  Asks about downloading books offline.
+4.  Asks to give 500 credits to a user (on production).
+5.  Requests a book title input for the AI Story Creator.
+6.  Reports Coming soon books aren't disappearing, requests an 'i' button on library cards, and reports slow thumbnails again.
+7.  Reports conflicting Pro Trial banner text, wants AI text enhancement to cost 2 credits, and asks to verify image APIs for different story modes.
+8.  Requests an AI Author Polish feature and a UI fix for iPad story creator.
+9.  Asks to add a new credit package (40 for £2.50) and confirms the AI image generator uses the correct page text.
+10. Reports a critical credit visibility bug and wants the art style dropdown to be part of the Generate AI Image flow.
 
 **Project Health Check:**
--   **Broken:** The  is critically broken due to a data loss bug that occurs when switching pages.
+-   **Broken:**
+    -   The  should be considered broken until the critical data loss bug is confirmed to be fixed by testing.
+    -   The application is not yet truly offline-capable as the app shell does not load without an internet connection.
 
 **3rd Party Integrations**
--   **fal.ai:** AI image generation. Model was switched to . Timeout increased to 10 minutes.
--   **Gelato API:** Print on Demand order fulfillment.
--   **Stripe:** Payments.
+-   **fal.ai:** Used for AI image generation. The current plan is to use  for general story creation,  for specific styles requiring high prompt adherence, and  for character consistency in the Pro Studio.
+-   **Stripe:** Used for payments. The post-payment redirect has been fixed. The agent has clarified that SMS verification is part of Stripe's Link feature and is configured in the Stripe dashboard.
+-   **Emergent LLM Key:** Used for the AI Author Polish text enhancement feature via .
+-   **Gelato API:** Print on Demand (POD).
 -   **Cloudinary:** Image and PDF storage.
--   **ElevenLabs:** Primary Text-to-Speech service.
--   **OpenAI TTS:** Fallback Text-to-Speech service.
--   **Resend:** Email service for sending alerts.
+-   **ElevenLabs / OpenAI TTS:** Text-to-Speech services.
+-   **Resend:** Email service.
 
 **Testing status**
--   **Testing agent used after significant changes:** NO
+-   **Testing agent used after significant changes:** NO (Agent called it, but no results were processed before the user reported the bug was still present).
 -   **Troubleshoot agent used after agent stuck in loop:** NO
 -   **Test files created:** []
--   **Known regressions:** A critical regression was introduced in the  causing data loss.
+-   **Known regressions:** The critical page saving bug in  has recurred at least once.
 
 **Credentials to test flow:**
 -   **Test user:** 
 -   **Test password:** 
 
 **What agent forgot to execute**
--   The agent did not successfully perform a full frontend verification via screenshots due to persistent login issues with the tool.
--   A comprehensive end-to-end test of the Print on Demand (POD) flow is still pending.</analysis>
+-   The agent did not add the  event listener to  as requested by the user in their final message. This is the immediate next step.
+-   The agent has not addressed the P1/P2 mobile/iPad UI bugs mentioned in the initial handoff summary (Pro Studio mobile bugs, large checkbox on iPad).</analysis>

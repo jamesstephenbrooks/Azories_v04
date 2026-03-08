@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "@/index.css";
 import App from "@/App";
+import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 // Comprehensive ResizeObserver error suppression
 // This error is benign - it occurs when ResizeObserver cannot deliver 
@@ -43,3 +44,13 @@ root.render(
     <App />
   </React.StrictMode>,
 );
+
+// Register service worker for offline support
+serviceWorkerRegistration.register({
+  onSuccess: (registration) => {
+    console.log('[Azories] App is available offline');
+  },
+  onUpdate: (registration) => {
+    console.log('[Azories] New version available - refresh to update');
+  }
+});

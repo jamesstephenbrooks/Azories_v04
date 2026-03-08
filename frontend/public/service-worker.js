@@ -1,155 +1,157 @@
-/* eslint-disable no-restricted-globals */
+/**
+ * Azories Service Worker
+ * Enables offline support by caching the app shell and handling offline requests
+ */
 
-const CACHE_NAME = 'azories-v2';
+const CACHE_NAME = 'azories-v1';
 const OFFLINE_URL = '/offline.html';
 
-// Assets to cache on install
-const PRECACHE_ASSETS = [
+// Core app shell files to cache
+const APP_SHELL = [
   '/',
   '/index.html',
-  '/static/js/main.js',
-  '/static/css/main.css',
+  '/offline.html',
   '/manifest.json',
+  '/favicon.ico',
+  '/favicon-16x16.png',
+  '/favicon-32x32.png',
+  '/apple-touch-icon.png',
+  '/android-chrome-192x192.png',
+  '/android-chrome-512x512.png',
+  // Azora mascot images
+  '/images/azora/azora-reading.png',
+  '/images/azora/azora-happy.png',
+  '/images/azora/azora-mascot.png',
+  // Logo
+  '/images/logo.png'
 ];
 
-// Install event - cache core assets
+// Install event - cache the app shell
 self.addEventListener('install', (event) => {
+  console.log('[Azories SW] Installing service worker');
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('Caching core assets');
-      return cache.addAll(PRECACHE_ASSETS);
-    })
+    caches.open(CACHE_NAME)
+      .then((cache) => {
+        console.log('[Azories SW] Caching app shell');
+        // Cache files that exist, don't fail if some are missing
+        return Promise.allSettled(
+          APP_SHELL.map(url => 
+            cache.add(url).catch(err => {
+              console.warn(`[Azories SW] Failed to cache ${url}:`, err.message);
+            })
+          )
+        );
+      })
+      .then(() => {
+        console.log('[Azories SW] App shell cached successfully');
+        return self.skipWaiting();
+      })
   );
-  self.skipWaiting();
 });
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
+  console.log('[Azories SW] Activating service worker');
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames
-          .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
-      );
-    })
-  );
-  self.clients.claim();
-});
-
-// Fetch event - network first, then cache
-self.addEventListener('fetch', (event) => {
-  const { request } = event;
-  const url = new URL(request.url);
-
-  // Skip non-GET requests
-  if (request.method !== 'GET') return;
-
-  // API requests - ALWAYS fetch from network, never cache book content
-  if (url.pathname.startsWith('/api')) {
-    event.respondWith(
-      fetch(request, { cache: 'no-store' }).catch(() => {
-        return new Response(
-          JSON.stringify({ error: 'You are offline', offline: true }),
-          { headers: { 'Content-Type': 'application/json' } }
+    caches.keys()
+      .then((cacheNames) => {
+        return Promise.all(
+          cacheNames
+            .filter((cacheName) => cacheName !== CACHE_NAME)
+            .map((cacheName) => {
+              console.log('[Azories SW] Deleting old cache:', cacheName);
+              return caches.delete(cacheName);
+            })
         );
       })
-    );
+      .then(() => {
+        console.log('[Azories SW] Service worker activated');
+        return self.clients.claim();
+      })
+  );
+});
+
+// Fetch event - smart caching strategy
+self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+  
+  // Skip non-GET requests
+  if (event.request.method !== 'GET') {
     return;
   }
-
-  // For book images - cache first, then network
-  if (request.url.includes('book-images') || request.url.includes('cover')) {
+  
+  // Skip API requests - always go to network for fresh data
+  if (url.pathname.startsWith('/api')) {
+    return;
+  }
+  
+  // Skip external URLs (Cloudinary images, etc.) - let them use browser cache
+  if (url.origin !== self.location.origin) {
+    return;
+  }
+  
+  // For navigation requests (HTML pages), use network-first with offline fallback
+  if (event.request.mode === 'navigate') {
     event.respondWith(
-      caches.match(request).then((cached) => {
-        if (cached) return cached;
-        
-        return fetch(request).then((response) => {
+      fetch(event.request)
+        .then(response => {
+          // Cache successful HTML responses for offline
           if (response.ok) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(request, clone);
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, responseClone);
             });
           }
           return response;
-        });
-      })
+        })
+        .catch(() => {
+          // Offline - try to serve cached version or offline page
+          return caches.match(event.request)
+            .then(cached => cached || caches.match('/offline.html'));
+        })
     );
     return;
   }
-
-  // For everything else - network first, cache fallback
+  
+  // For other app shell assets (JS, CSS, images), use cache-first strategy
   event.respondWith(
-    fetch(request)
-      .then((response) => {
-        if (response.ok) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, clone);
-          });
+    caches.match(event.request)
+      .then(cached => {
+        if (cached) {
+          return cached;
         }
-        return response;
-      })
-      .catch(() => {
-        return caches.match(request).then((cached) => {
-          if (cached) return cached;
-          
-          // Return offline page for navigation requests
-          if (request.mode === 'navigate') {
-            return caches.match(OFFLINE_URL);
-          }
-          
-          return new Response('Offline', { status: 503 });
-        });
+        
+        // Not in cache, fetch from network
+        return fetch(event.request)
+          .then(response => {
+            // Don't cache non-successful responses
+            if (!response || response.status !== 200 || response.type !== 'basic') {
+              return response;
+            }
+            
+            // Cache the fetched response for future
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, responseClone);
+            });
+            
+            return response;
+          })
+          .catch(() => {
+            // Offline and not cached - return offline page for HTML
+            if (event.request.headers.get('accept').includes('text/html')) {
+              return caches.match('/offline.html');
+            }
+            // For other assets, just fail
+            return new Response('Offline', { status: 503 });
+          });
       })
   );
 });
 
-// Listen for messages from the app
+// Handle messages from the app
 self.addEventListener('message', (event) => {
-  if (event.data.type === 'CACHE_BOOK') {
-    const { bookId, pages } = event.data;
-    
-    caches.open(CACHE_NAME).then((cache) => {
-      // Cache book data
-      const bookData = JSON.stringify({ id: bookId, pages, cached: true });
-      cache.put(
-        new Request(`/offline-book/${bookId}`),
-        new Response(bookData, { headers: { 'Content-Type': 'application/json' } })
-      );
-      
-      // Cache all page images
-      pages.forEach((page) => {
-        if (page.image) {
-          fetch(page.image).then((response) => {
-            if (response.ok) {
-              cache.put(new Request(page.image), response);
-            }
-          });
-        }
-      });
-      
-      // Notify the app
-      event.source.postMessage({ type: 'BOOK_CACHED', bookId });
-    });
-  }
-  
-  if (event.data.type === 'GET_CACHED_BOOKS') {
-    caches.open(CACHE_NAME).then((cache) => {
-      cache.keys().then((keys) => {
-        const bookKeys = keys.filter((k) => k.url.includes('/offline-book/'));
-        Promise.all(bookKeys.map((k) => cache.match(k).then((r) => r.json()))).then((books) => {
-          event.source.postMessage({ type: 'CACHED_BOOKS', books });
-        });
-      });
-    });
-  }
-  
-  if (event.data.type === 'REMOVE_CACHED_BOOK') {
-    const { bookId } = event.data;
-    caches.open(CACHE_NAME).then((cache) => {
-      cache.delete(new Request(`/offline-book/${bookId}`));
-      event.source.postMessage({ type: 'BOOK_REMOVED', bookId });
-    });
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
   }
 });
