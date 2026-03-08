@@ -257,9 +257,9 @@ export default function StoryCreator() {
     const isFree = canCreateFree();
     
     if (!isFree && credits < creditsNeeded) {
-      toast.error(`You need ${creditsNeeded} credits. You have ${credits}. Redirecting to top up...`);
-      // Redirect to credits page after a short delay
-      setTimeout(() => navigate('/credits'), 1500);
+      toast.error(`You need ${creditsNeeded} credits. You have ${credits}. Opening credits page...`);
+      // Open in new tab so form data is not lost
+      setTimeout(() => window.open('/credits', '_blank'), 500);
       return;
     }
     
@@ -617,7 +617,7 @@ export default function StoryCreator() {
             {!canCreateFree() && credits < getCreditsNeeded() && (
               <Button
                 size="sm"
-                onClick={() => navigate('/credits')}
+                onClick={() => window.open('/credits', '_blank')}
                 className="bg-amber-500 hover:bg-amber-600 text-white"
               >
                 Buy Credits

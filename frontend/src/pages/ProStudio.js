@@ -364,7 +364,7 @@ export default function ProStudio() {
 
   // Navigate to Credits page for purchasing
   const goToPurchaseCredits = () => {
-    navigate('/credits');
+    window.open('/credits', '_blank');
   };
 
   // Check if user has enough credits, redirect to credits page if not
@@ -375,7 +375,7 @@ export default function ProStudio() {
           <span className="font-medium">{actionName} requires {requiredCredits} credit{requiredCredits > 1 ? 's' : ''}</span>
           <span className="text-sm opacity-80">You have {credits} credits remaining</span>
           <button 
-            onClick={() => navigate('/credits')}
+            onClick={() => window.open('/credits', '_blank')}
             className="mt-1 px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded text-sm font-medium hover:from-purple-600 hover:to-pink-600"
           >
             Get Credits →
@@ -395,7 +395,7 @@ export default function ProStudio() {
         <span className="font-medium">Insufficient credits!</span>
         <span className="text-sm opacity-80">{errorDetail || 'Please purchase more credits'}</span>
         <button 
-          onClick={() => navigate('/credits')}
+          onClick={() => window.open('/credits', '_blank')}
           className="mt-1 px-3 py-1 bg-amber-500 text-black rounded text-sm font-medium hover:bg-amber-400"
         >
           Buy Credits
