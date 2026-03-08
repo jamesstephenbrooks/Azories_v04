@@ -955,6 +955,10 @@ class UserLogin(BaseModel):
     password: str
     remember_me: bool = False  # Extended session (30 days) if True
 
+class UpdateUserCreditsRequest(BaseModel):
+    email: str
+    credits: int
+
 class UserResponse(BaseModel):
     """User data response model - includes is_admin flag"""
     model_config = ConfigDict(extra="ignore")
@@ -12878,6 +12882,50 @@ async def get_user_details(user_id: str, admin: dict = Depends(get_admin_user)):
         "recent_activity": user_activity,
         "credit_history": credit_history
     }
+
+
+@api_router.post("/admin/users/update-credits")
+async def admin_update_user_credits(request: UpdateUserCreditsRequest, admin: dict = Depends(get_admin_user)):
+    """
+    Admin endpoint to set a user's credits to a specific value.
+    Protected by admin token authentication.
+    """
+    try:
+        # Find the user
+        user = await db.users.find_one({"email": request.email.lower()})
+        if not user:
+            raise HTTPException(status_code=404, detail=f"User not found: {request.email}")
+        
+        old_credits = user.get("credits", 0)
+        
+        # Update credits
+        result = await db.users.update_one(
+            {"email": request.email.lower()},
+            {"$set": {"credits": request.credits, "updated_at": datetime.now(timezone.utc)}}
+        )
+        
+        if result.modified_count > 0:
+            logger.info(f"Admin updated credits for {request.email}: {old_credits} -> {request.credits}")
+            return {
+                "success": True,
+                "email": request.email,
+                "old_credits": old_credits,
+                "new_credits": request.credits,
+                "message": f"Credits updated from {old_credits} to {request.credits}"
+            }
+        else:
+            return {
+                "success": True,
+                "email": request.email,
+                "old_credits": old_credits,
+                "new_credits": request.credits,
+                "message": "No changes made (credits already at this value)"
+            }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to update credits for {request.email}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to update credits: {str(e)}")
 
 
 # ============ AUDIO CACHING / PRE-GENERATION ============
