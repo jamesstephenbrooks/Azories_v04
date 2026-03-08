@@ -16,11 +16,12 @@ import { toast } from 'sonner';
 import { 
   FiArrowLeft, FiPlus, FiSave, FiTrash2, FiImage, FiVideo, FiUpload,
   FiBook, FiSettings, FiLoader, FiGrid, FiLayout, FiBookOpen, FiMic, FiZap, FiDownload,
-  FiUsers, FiUser, FiLayers, FiX, FiMaximize2, FiAlertTriangle, FiEdit3
+  FiUsers, FiUser, FiLayers, FiX, FiMaximize2, FiAlertTriangle, FiEdit3, FiHelpCircle
 } from 'react-icons/fi';
 import CollaborativeWriting from '@/components/CollaborativeWriting';
 import { MediaGalleryPicker } from '@/components/MediaGallery';
 import { AZORIES_PLACEHOLDER, AZORIES_VIDEO_PLACEHOLDER, handleImageError } from '@/utils/imageOptimizer';
+import EditorTourGuide, { useEditorTour } from '@/components/EditorTourGuide';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -42,6 +43,10 @@ export default function BookEditor() {
   const videoInputRef = useRef(null);
   const coverInputRef = useRef(null);
   const backCoverInputRef = useRef(null);
+  
+  // Editor tour for first-time users
+  const { shouldShowTour, completeTour, resetTour } = useEditorTour();
+  const [showTour, setShowTour] = useState(false);
   
   const [book, setBook] = useState(null);
   const [chapters, setChapters] = useState([]);
@@ -492,6 +497,10 @@ export default function BookEditor() {
       navigate('/dashboard');
     } finally {
       setLoading(false);
+      // Show tour for first-time users after book loads
+      if (shouldShowTour) {
+        setTimeout(() => setShowTour(true), 500);
+      }
     }
   };
 
@@ -1349,6 +1358,21 @@ export default function BookEditor() {
           </div>
           
           <div className="flex items-center gap-1 lg:gap-2">
+            {/* Help/Tour Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full w-8 h-8"
+              onClick={() => {
+                resetTour();
+                setShowTour(true);
+              }}
+              title="Show editor tour"
+              data-testid="editor-help-btn"
+            >
+              <FiHelpCircle className="w-4 h-4" />
+            </Button>
+            
             {/* Collaborative Writing Button - hidden on small screens */}
             <div className="hidden md:block">
               <CollaborativeWriting 
@@ -1524,6 +1548,7 @@ export default function BookEditor() {
                 onClick={createPage}
                 disabled={!selectedChapter}
                 data-testid="add-page-btn"
+                data-tour="add-page"
               >
                 <FiPlus className="w-4 h-4" />
               </Button>
@@ -1990,6 +2015,7 @@ export default function BookEditor() {
                                 variant="outline"
                                 className="w-full rounded-full bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-purple-500/30 hover:border-purple-500/50"
                                 data-testid="generate-ai-image-btn"
+                                data-tour="generate-image"
                                 disabled={isGeneratingAI || !selectedPage?.text_content?.trim()}
                                 title={!selectedPage?.text_content?.trim() ? 'Add text to the page first' : 'Generate AI image based on page text'}
                               >
@@ -2199,6 +2225,7 @@ export default function BookEditor() {
                     className="rounded-full bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/30 hover:border-amber-500/50 text-amber-700 dark:text-amber-400"
                     title="Polish your text with AI - makes it publication-ready (2 credits)"
                     data-testid="ai-enhance-text-btn"
+                    data-tour="ai-polish"
                   >
                     {isEnhancingText ? (
                       <FiLoader className="mr-1.5 w-3.5 h-3.5 animate-spin" />
@@ -2209,7 +2236,7 @@ export default function BookEditor() {
                   </Button>
                 </div>
                 
-                <div className="flex-1 flex flex-col">
+                <div className="flex-1 flex flex-col" data-tour="text-editor">
                   <Textarea
                     placeholder="Write your story here..."
                     value={selectedPage.text_content}
@@ -3365,6 +3392,17 @@ export default function BookEditor() {
           </Button>
         </div>
       </div>
+      
+      {/* Editor Tour Guide for first-time users */}
+      {showTour && (
+        <EditorTourGuide 
+          isOpen={showTour} 
+          onComplete={() => {
+            setShowTour(false);
+            completeTour();
+          }} 
+        />
+      )}
     </div>
   );
 }
