@@ -35,8 +35,11 @@ api.interceptors.response.use(
       const { status, data } = error.response;
       
       if (status === 401) {
-        // Unauthorized - clear token and redirect to login
-        localStorage.removeItem('azories-token');
+        // Only clear token if /auth/me fails (genuine session expiry).
+        // Other 401s (recommendations, restricted content) must NOT log the user out —
+        // backend instability causes spurious 401s that were wiping valid 30-day tokens.
+        const isAuthEndpoint = error.config?.url?.includes('/auth/me');
+        if (isAuthEndpoint) localStorage.removeItem('azories-token');
         errorMessage = 'Session expired. Please log in again.';
         // Don't redirect here - let the component handle it
       } else if (status === 402) {
