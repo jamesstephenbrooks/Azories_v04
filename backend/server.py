@@ -14476,27 +14476,33 @@ async def stripe_webhook(request: Request):
 app.include_router(api_router)
 
 # CORS Configuration - Explicitly allow production domains
+# Note: When allow_credentials=True, origins cannot be "*" - must be explicit
 allowed_origins = [
     "https://azories.com",
     "https://www.azories.com",
-    "http://localhost:3000",  # Local development
-    "http://localhost:3001",  # Local development alt
+    "http://localhost:3000",
+    "http://localhost:3001",
 ]
 
 # Also allow origins from environment variable if set
 env_origins = os.environ.get('CORS_ORIGINS', '')
-if env_origins and env_origins != '*':
-    allowed_origins.extend([o.strip() for o in env_origins.split(',') if o.strip()])
+if env_origins:
+    for origin in env_origins.split(','):
+        origin = origin.strip()
+        if origin and origin != '*' and origin not in allowed_origins:
+            allowed_origins.append(origin)
 
-# If CORS_ORIGINS is explicitly set to *, allow all
-if env_origins == '*':
-    allowed_origins = ["*"]
+# Add any preview/staging domains
+allowed_origins.extend([
+    "https://ai-narrative-hub-3.preview.emergentagent.com",
+    "https://book-print-flow.emergent.host",
+])
 
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
     allow_origins=allowed_origins,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"],
     allow_headers=["*"],
     expose_headers=["*"],
 )
