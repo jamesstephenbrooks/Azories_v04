@@ -89,3 +89,7 @@ frontend/build/downloads/mongodb_export.zip
 frontend/node_modules/.cache/default-development/0.pack
 frontend/node_modules/.cache/default-development/10.pack
 glb_optimization/gothic_library_14_cycles.glb
+-e 
+# Environment files
+*.env
+*.env.*
