@@ -986,6 +986,7 @@ CREDIT_COSTS = {
     "shots_generate": 5,       # 6 angle shots generation
     "expression_generate": 2,  # Expression generation
     "ai_story_create": 5,      # AI Story Creator (covers all page images)
+    "scene_generate": 5,       # Scene generation with character consistency
 }
 
 # Actual costs to us (for tracking VIP usage)
@@ -999,6 +1000,7 @@ ACTUAL_COSTS = {
     "shots_generate": 0.25,    # $0.25 for 6 shots
     "expression_generate": 0.05, # $0.05 per expression
     "ai_story_create": 0.50,   # $0.50 for story with images
+    "scene_generate": 0.10,    # $0.10 per scene image
 }
 
 # Note: VIP_USERS is now defined at the top of the file from environment variable
@@ -5713,6 +5715,11 @@ async def generate_scene_image(scene_id: str, request: dict, current_user: dict 
     if not scene:
         raise HTTPException(status_code=404, detail="Scene not found")
     
+    # Deduct credits for scene generation (5 credits)
+    if not await deduct_credits(current_user["id"], "scene_generate"):
+        credits_needed = CREDIT_COSTS.get("scene_generate", 5)
+        raise HTTPException(status_code=402, detail=f"Insufficient credits. Scene generation requires {credits_needed} credits. Please purchase more credits.")
+    
     try:
         additional_prompt = request.get("prompt", "")
         character_id = request.get("character_id")
@@ -5763,10 +5770,20 @@ async def generate_scene_image(scene_id: str, request: dict, current_user: dict 
                 image_base64 = base64.b64encode(images[0]).decode('utf-8')
                 return {"success": True, "image_url": f"data:image/png;base64,{image_base64}", "prompt": full_prompt}
         
+        # Refund credits if generation failed
+        await db.users.update_one(
+            {"id": current_user["id"]},
+            {"$inc": {"credits": CREDIT_COSTS.get("scene_generate", 5)}}
+        )
         raise HTTPException(status_code=500, detail="No generation method available")
         
     except Exception as e:
         logger.error(f"Scene generation error: {str(e)}")
+        # Refund credits on unexpected error
+        await db.users.update_one(
+            {"id": current_user["id"]},
+            {"$inc": {"credits": CREDIT_COSTS.get("scene_generate", 5)}}
+        )
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.post("/pro-studio/generate-image")
@@ -6114,11 +6131,17 @@ async def generate_expression(request: GenerateExpressionRequest, current_user: 
         # Build prompt with expression
         expression_desc = EXPRESSION_PROMPTS.get(request.expression, "neutral expression")
         
+        # Get the character's art style and match it for consistency
+        char_style = character.get("style", "realistic")
+        style_prompts = get_style_prompts()
+        style_desc = style_prompts.get(char_style, style_prompts.get("realistic", "professional photography, high quality"))
+
         prompt_parts = [
             character.get("description", f"Portrait of {character['name']}"),
             expression_desc,
             request.base_prompt if request.base_prompt else "",
-            "professional portrait photography, high quality, consistent appearance, same person"
+            style_desc,
+            "consistent appearance, same person, same character"
         ]
         
         full_prompt = ", ".join(filter(None, prompt_parts))

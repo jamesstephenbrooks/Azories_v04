@@ -2163,7 +2163,7 @@ export default function BookEditor() {
                           </Dialog>
                         </div>
 
-                        {/* Create Scene in Pro Studio */}
+                        {/* Pro Studio Shortcuts */}
                         <div className="grid grid-cols-1 gap-2">
                           <Button
                             variant="outline"
@@ -2176,6 +2176,16 @@ export default function BookEditor() {
                           >
                             <FiExternalLink className="mr-2 w-4 h-4" />
                             Create Scene with Characters
+                          </Button>
+                          <Button
+                            variant="outline"
+                            className="w-full rounded-full border-purple-500/30 hover:border-purple-500/50 text-purple-600 hover:text-purple-700"
+                            onClick={() => {
+                              window.open('/pro-studio?tab=characters', '_blank');
+                            }}
+                          >
+                            <FiUsers className="mr-2 w-4 h-4" />
+                            Generate Consistent Character
                           </Button>
                         </div>
                         
