@@ -74,15 +74,17 @@ agenthub/agents/youtube/db
 
 # Build caches
 .cache/
-frontend/node_modules/.cache/
 
 # GLB files (large 3D assets)
 *.glb
 
-# Export files
+# Environment files
+*.env
+*.env.*
 exports/full_db_export.json
 frontend/public/downloads/mongodb_export.zip
 exports/mongodb_export.zip
+frontend/node_modules/.cache/
 frontend/build/downloads/mongodb_export.zip
 frontend/node_modules/.cache/default-development/0.pack
 frontend/node_modules/.cache/default-development/10.pack
