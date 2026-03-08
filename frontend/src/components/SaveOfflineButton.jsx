@@ -6,6 +6,9 @@ import { useState, useCallback } from 'react';
 import { FiDownload, FiCheck, FiWifiOff, FiTrash2, FiLoader } from 'react-icons/fi';
 import { Button } from './ui/button';
 import { toast } from 'sonner';
+import axios from 'axios';
+
+const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 function SaveOfflineButton({ 
   book, 
@@ -24,16 +27,39 @@ function SaveOfflineButton({
   const effectiveVariant = compact ? 'compact' : (showLabel ? 'label' : variant);
 
   const handleSave = useCallback(async () => {
-    if (!book || !book.pages || book.pages.length === 0) {
-      toast.error('This book has no pages to save');
-      return;
-    }
-
     setIsSaving(true);
-    setProgress({ current: 0, total: book.pages.length + 1, message: 'Starting...' });
+    setProgress({ current: 0, total: 1, message: 'Preparing book...' });
 
     try {
-      const result = await onSave(book, (current, total, message) => {
+      // If book doesn't have pages, fetch the full book data first
+      let bookToSave = book;
+      
+      if (!book.pages || book.pages.length === 0) {
+        setProgress({ current: 0, total: 1, message: 'Fetching book data...' });
+        
+        try {
+          // Fetch full book with pages from API (use the /full endpoint)
+          const response = await axios.get(`${API}/books/${book.id}/full`);
+          const fullBook = response.data;
+          
+          if (!fullBook.pages || fullBook.pages.length === 0) {
+            toast.error('This book has no pages to save');
+            setIsSaving(false);
+            return;
+          }
+          
+          bookToSave = fullBook;
+        } catch (fetchError) {
+          console.error('Failed to fetch book data:', fetchError);
+          toast.error('Failed to load book data');
+          setIsSaving(false);
+          return;
+        }
+      }
+
+      setProgress({ current: 0, total: bookToSave.pages.length + 1, message: 'Starting download...' });
+
+      const result = await onSave(bookToSave, (current, total, message) => {
         setProgress({ current, total, message });
       });
 

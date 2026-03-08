@@ -138,10 +138,12 @@ Build a "Print on Demand" (POD) book ordering feature using the Gelato API for a
 
 ### Offline Reading Phase 1 - COMPLETED
 - ✅ Save books for offline via "Save for Offline" button on book cards
+- ✅ **NEW**: `/api/books/{book_id}/full` endpoint fetches complete book with pages
 - ✅ IndexedDB stores book metadata, cover, and page images
 - ✅ Offline indicator badge on saved books in Library
 - ✅ "Offline" filter button to show only saved books
 - ✅ Storage stats display (MB used)
+- ✅ **FIXED**: "This book has no pages" error on mobile - now fetches pages before saving
 - **Note**: Narration audio caching deferred to Phase 3
 
 ### BookEditor Page Switching Bug - FIXED
@@ -162,10 +164,7 @@ Full flow tested and passing:
 6. Order review with coupon validation (LAUNCH10 = 10% off)
 7. Stripe checkout redirect working
 
-**API Endpoints Verified**:
-- `GET /api/print/product-info` - Returns products, gelato_configured: true
-- `POST /api/print/checkout/create-session` - Creates Stripe checkout
-- `POST /api/print/validate-coupon` - Validates discount codes
+**POD Status**: LIVE (no Coming Soon badge, Gelato configured)
 
 ## Previous Updates (March 7, 2026)
 

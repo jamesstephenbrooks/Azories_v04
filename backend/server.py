@@ -2465,6 +2465,33 @@ async def get_book(book_id: str, response: Response):
     book = await get_book_with_counts(book)
     return BookResponse(**book)
 
+
+@api_router.get("/books/{book_id}/full")
+async def get_book_full(book_id: str):
+    """Get complete book data with all pages - used for offline saving"""
+    book = await db.books.find_one({"id": book_id}, {"_id": 0})
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    # Check if book has embedded pages (AI-generated books)
+    pages = book.get("pages", [])
+    
+    # If no embedded pages, fetch from chapters/pages collections
+    if not pages or len(pages) == 0:
+        chapters = await db.chapters.find({"book_id": book_id}, {"_id": 0}).sort("order", 1).to_list(100)
+        for chapter in chapters:
+            chapter_pages = await db.pages.find({"chapter_id": chapter["id"]}, {"_id": 0}).sort("page_number", 1).to_list(100)
+            pages.extend(chapter_pages)
+    
+    book["pages"] = pages
+    book = await get_book_with_counts(book)
+    
+    return {
+        **book,
+        "pages": pages
+    }
+
+
 @api_router.put("/books/{book_id}", response_model=BookResponse)
 async def update_book(book_id: str, book_data: BookUpdate, current_user: dict = Depends(get_current_user)):
     book = await db.books.find_one({"id": book_id}, {"_id": 0})

@@ -75,7 +75,7 @@ const LazyImage = ({ src, alt, className, onLoad, thumbnailWidth = 300 }) => {
           onError={() => setHasError(true)}
           loading="lazy"
           decoding="async"
-          fetchpriority="low"
+          fetchPriority="low"
         />
       )}
       
