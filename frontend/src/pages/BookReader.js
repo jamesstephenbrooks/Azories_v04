@@ -35,7 +35,7 @@ export default function BookReader() {
   const audioRef = useRef(null);
   
   // Offline support for audio caching
-  const { isOnline, isBookOffline, getOfflineAudio, saveAudioOffline } = useOffline();
+  const { isOnline, isBookOffline, getOfflineAudio, saveAudioOffline, getOfflineBook, getOfflinePages } = useOffline();
   const [isOfflineMode, setIsOfflineMode] = useState(false);
   
   const [book, setBook] = useState(null);
@@ -99,6 +99,35 @@ export default function BookReader() {
   const clearAllTimeouts = useCallback(() => {
     activeTimeoutsRef.current.forEach(id => clearTimeout(id));
     activeTimeoutsRef.current.clear();
+  }, []);
+  
+  // Track blob URLs for cleanup
+  const blobUrlsRef = useRef(new Map());
+  
+  // Helper to get image source - handles offline blobs
+  const getImageSource = useCallback((page) => {
+    if (!page) return null;
+    
+    // If we have an offline blob, create/reuse object URL
+    if (page.offline_image_blob) {
+      const pageKey = page.id || page.pageNumber;
+      if (!blobUrlsRef.current.has(pageKey)) {
+        const blobUrl = URL.createObjectURL(page.offline_image_blob);
+        blobUrlsRef.current.set(pageKey, blobUrl);
+      }
+      return blobUrlsRef.current.get(pageKey);
+    }
+    
+    // Otherwise use the regular URL
+    return page.image_url || page.imageUrl;
+  }, []);
+  
+  // Cleanup blob URLs on unmount
+  useEffect(() => {
+    return () => {
+      blobUrlsRef.current.forEach(url => URL.revokeObjectURL(url));
+      blobUrlsRef.current.clear();
+    };
   }, []);
   
   // Comprehensive cleanup function (called on unmount AND before navigation)
@@ -641,6 +670,85 @@ export default function BookReader() {
       // Check if component is still mounted
       if (!mountedRef.current) return;
       
+      // Check if book is available offline first
+      if (!isOnline || isBookOffline(bookId)) {
+        console.log('[BookReader] Attempting to load offline book:', bookId);
+        try {
+          const offlineBook = await getOfflineBook(bookId);
+          const offlinePages = await getOfflinePages(bookId);
+          
+          if (offlineBook && offlinePages && offlinePages.length > 0) {
+            console.log('[BookReader] Loaded from offline storage:', offlineBook.title, offlinePages.length, 'pages');
+            setIsOfflineMode(true);
+            
+            // Build book object from offline data
+            // Create blob URL for cover if available
+            let coverImageUrl = offlineBook.coverUrl;
+            if (offlineBook.coverBlob) {
+              coverImageUrl = URL.createObjectURL(offlineBook.coverBlob);
+              blobUrlsRef.current.set('cover', coverImageUrl);
+            }
+            
+            const bookData = {
+              id: offlineBook.id,
+              title: offlineBook.title,
+              cover_image: coverImageUrl,
+              author_name: offlineBook.authorName,
+              child_name: offlineBook.childName,
+              requires_auth: false,
+              pages: offlinePages.map((page, index) => ({
+                id: page.id,
+                page_number: page.pageNumber || index,
+                text_content: page.textContent || page.text_content || '',
+                image_url: page.imageUrl || page.image_url,
+                // Create object URL from blob for offline images
+                offline_image_blob: page.imageBlob
+              }))
+            };
+            
+            if (!mountedRef.current) return;
+            
+            setBook(bookData);
+            
+            // Process pages for display
+            const pages = bookData.pages.map((page, index) => ({
+              ...page,
+              chapterTitle: bookData.title,
+              chapterNumber: 1
+            }));
+            
+            setAllPages(pages);
+            setRequiresAuth(false);
+            
+            // Check for continue reading position
+            try {
+              const savedPosition = localStorage.getItem(`azories-reading-${bookId}`);
+              if (savedPosition) {
+                const { page } = JSON.parse(savedPosition);
+                if (page > 0 && page < pages.length) {
+                  setSavedPageNumber(page);
+                  setShowContinuePrompt(true);
+                }
+              }
+            } catch (e) {}
+            
+            setLoading(false);
+            return; // Successfully loaded offline
+          }
+        } catch (offlineError) {
+          console.warn('[BookReader] Failed to load offline book:', offlineError);
+        }
+        
+        // If we're offline and couldn't load from storage, show error
+        if (!isOnline) {
+          console.error('[BookReader] Offline and book not available');
+          toast.error('This book is not available offline');
+          setLoading(false);
+          return;
+        }
+      }
+      
+      // Online mode - fetch from API
       // Ensure we have the latest token
       const currentToken = localStorage.getItem('azories-token');
       const headers = currentToken ? { Authorization: `Bearer ${currentToken}` } : {};
@@ -2104,7 +2212,7 @@ export default function BookReader() {
                     style={{ backgroundColor: '#1a0a2e' }}
                   >
                     <img 
-                      src={currentPageData.image_url}
+                      src={getImageSource(currentPageData) || currentPageData.image_url}
                       alt="Back Cover"
                       style={{
                         position: 'absolute',
@@ -2128,7 +2236,7 @@ export default function BookReader() {
                 >
                   {currentPageData?.image_url ? (
                     <img 
-                      src={currentPageData.image_url}
+                      src={getImageSource(currentPageData) || currentPageData.image_url}
                       alt=""
                       style={{
                         position: 'absolute',
@@ -2212,7 +2320,7 @@ export default function BookReader() {
                   >
                     <div className="relative h-full aspect-[3/4] max-w-[50vw] rounded-lg overflow-hidden shadow-2xl">
                       <img 
-                        src={currentPageData.image_url}
+                        src={getImageSource(currentPageData) || currentPageData.image_url}
                         alt="Back Cover"
                         style={{
                           position: 'absolute',
@@ -2258,7 +2366,7 @@ export default function BookReader() {
                     >
                       {currentPageData?.image_url ? (
                         <img 
-                          src={currentPageData.image_url}
+                          src={getImageSource(currentPageData) || currentPageData.image_url}
                           alt=""
                           style={{
                             position: 'absolute',
