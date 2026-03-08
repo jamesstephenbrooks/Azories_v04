@@ -655,6 +655,33 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# CORS Configuration - MUST be added immediately after app creation
+# This ensures OPTIONS preflight requests are handled correctly
+cors_allowed_origins = [
+    "https://azories.com",
+    "https://www.azories.com",
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "https://ai-narrative-hub-3.preview.emergentagent.com",
+]
+
+# Add any additional origins from environment
+cors_env = os.environ.get('CORS_ORIGINS', '')
+if cors_env:
+    for origin in cors_env.split(','):
+        origin = origin.strip()
+        if origin and origin not in cors_allowed_origins:
+            cors_allowed_origins.append(origin)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=cors_allowed_origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"],
+    allow_headers=["*"],
+    expose_headers=["*"],
+)
+
 # Global exception handler to prevent server crashes
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
@@ -14475,36 +14502,5 @@ async def stripe_webhook(request: Request):
 
 app.include_router(api_router)
 
-# CORS Configuration - Explicitly allow production domains
-# Note: When allow_credentials=True, origins cannot be "*" - must be explicit
-allowed_origins = [
-    "https://azories.com",
-    "https://www.azories.com",
-    "http://localhost:3000",
-    "http://localhost:3001",
-]
-
-# Also allow origins from environment variable if set
-env_origins = os.environ.get('CORS_ORIGINS', '')
-if env_origins:
-    for origin in env_origins.split(','):
-        origin = origin.strip()
-        if origin and origin != '*' and origin not in allowed_origins:
-            allowed_origins.append(origin)
-
-# Add any preview/staging domains
-allowed_origins.extend([
-    "https://ai-narrative-hub-3.preview.emergentagent.com",
-    "https://book-print-flow.emergent.host",
-])
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_credentials=True,
-    allow_origins=allowed_origins,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"],
-    allow_headers=["*"],
-    expose_headers=["*"],
-)
-
-# Note: Shutdown handler moved to lifespan context manager above
+# Note: CORS middleware is configured at the top of the file, right after app creation
+# This ensures OPTIONS preflight requests are handled correctly
