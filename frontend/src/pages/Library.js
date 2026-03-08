@@ -582,23 +582,10 @@ export default function Library() {
           
           {/* Offline indicator - show if book is saved offline */}
           {isBookOffline(book.id) && !isComingSoon && (
-            <div className="absolute bottom-3 left-3 z-20">
+            <div className="absolute top-3 right-12 z-20">
               <span className="px-2 py-1 rounded-full bg-purple-600/90 text-white text-xs font-medium flex items-center gap-1">
-                <FiWifiOff className="w-3 h-3" /> Offline
+                <FiWifiOff className="w-3 h-3" />
               </span>
-            </div>
-          )}
-          
-          {/* Save Offline Button - bottom right, only for non-coming-soon books */}
-          {!isComingSoon && (
-            <div className="absolute bottom-3 right-3 z-20" onClick={(e) => e.stopPropagation()}>
-              <SaveOfflineButton
-                book={book}
-                isOffline={isBookOffline(book.id)}
-                onSave={saveBookOffline}
-                onRemove={removeBookOffline}
-                compact={true}
-              />
             </div>
           )}
           
@@ -667,19 +654,19 @@ export default function Library() {
               </span>
             </div>
             
-            {/* Start Reading Button - Always visible */}
-            <Button 
-              className="w-full mt-3 rounded-full"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                navigate(`/read/${book.id}`);
-              }}
-              data-testid={`start-reading-btn-${book.id}`}
-            >
-              <FiBook className="mr-2 w-4 h-4" />
-              Start Reading
-            </Button>
+            {/* Save for Offline Button - Clean standalone design */}
+            {!isComingSoon && (
+              <div className="mt-3" onClick={(e) => e.stopPropagation()}>
+                <SaveOfflineButton
+                  book={book}
+                  isOffline={isBookOffline(book.id)}
+                  onSave={saveBookOffline}
+                  onRemove={removeBookOffline}
+                  compact={false}
+                  showLabel={true}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

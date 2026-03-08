@@ -330,13 +330,24 @@ class OfflineStorageService {
 
   /**
    * Save audio for offline playback (Phase 3)
+   * @param {string} bookId - Book ID
+   * @param {number} pageNumber - Page number
+   * @param {string|Blob} audioData - Either a URL to fetch or a Blob directly
    */
-  async saveAudioForOffline(bookId, pageNumber, audioUrl) {
+  async saveAudioForOffline(bookId, pageNumber, audioData) {
     await this.ensureDb();
 
     try {
-      const response = await fetch(audioUrl);
-      const audioBlob = await response.blob();
+      let audioBlob;
+      
+      // Check if audioData is already a Blob
+      if (audioData instanceof Blob) {
+        audioBlob = audioData;
+      } else {
+        // It's a URL, fetch it
+        const response = await fetch(audioData);
+        audioBlob = await response.blob();
+      }
 
       const tx = this.db.transaction(STORE_AUDIO, 'readwrite');
       const store = tx.objectStore(STORE_AUDIO);

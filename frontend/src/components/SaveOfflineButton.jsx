@@ -13,10 +13,15 @@ function SaveOfflineButton({
   onSave, 
   onRemove, 
   variant = 'default', // 'default', 'icon', 'compact'
+  compact = false, // Shortcut for compact variant
+  showLabel = false, // Show full label button in card footer
   className = '' 
 }) {
   const [isSaving, setIsSaving] = useState(false);
   const [progress, setProgress] = useState({ current: 0, total: 0, message: '' });
+
+  // Use compact variant if compact prop is true
+  const effectiveVariant = compact ? 'compact' : (showLabel ? 'label' : variant);
 
   const handleSave = useCallback(async () => {
     if (!book || !book.pages || book.pages.length === 0) {
@@ -61,7 +66,7 @@ function SaveOfflineButton({
   }, [book, onRemove]);
 
   // Icon-only variant (for book cards)
-  if (variant === 'icon') {
+  if (effectiveVariant === 'icon') {
     if (isSaving) {
       return (
         <div className={`flex items-center justify-center w-8 h-8 rounded-full bg-purple-500/20 ${className}`}>
@@ -103,7 +108,7 @@ function SaveOfflineButton({
   }
 
   // Compact variant (smaller button with text)
-  if (variant === 'compact') {
+  if (effectiveVariant === 'compact') {
     if (isSaving) {
       return (
         <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-500/20 text-sm ${className}`}>
@@ -140,6 +145,56 @@ function SaveOfflineButton({
         <FiDownload className="w-4 h-4 text-white/70" />
         <span className="text-white/70">Save Offline</span>
       </button>
+    );
+  }
+
+  // Label variant - Full width button with label for card footer
+  if (effectiveVariant === 'label') {
+    if (isSaving) {
+      return (
+        <Button 
+          disabled 
+          variant="outline"
+          size="sm"
+          className={`w-full rounded-full ${className}`}
+        >
+          <FiLoader className="mr-2 w-4 h-4 animate-spin" />
+          Saving... {progress.current}/{progress.total}
+        </Button>
+      );
+    }
+
+    if (isOffline) {
+      return (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleRemove();
+          }}
+          className={`w-full rounded-full bg-green-500/10 border-green-500/30 hover:bg-red-500/10 hover:border-red-500/30 group ${className}`}
+        >
+          <FiWifiOff className="mr-2 w-4 h-4 text-green-500 group-hover:text-red-500" />
+          <span className="text-green-600 group-hover:hidden">Available Offline</span>
+          <span className="text-red-500 hidden group-hover:inline">Remove Offline</span>
+        </Button>
+      );
+    }
+
+    return (
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={(e) => {
+          e.stopPropagation();
+          handleSave();
+        }}
+        className={`w-full rounded-full hover:bg-purple-500/10 hover:border-purple-500/30 ${className}`}
+      >
+        <FiDownload className="mr-2 w-4 h-4" />
+        Save for Offline
+      </Button>
     );
   }
 

@@ -11,7 +11,7 @@ import {
   FiArrowLeft, FiChevronLeft, FiChevronRight, FiChevronUp, FiChevronDown,
   FiMaximize2, FiMinimize2, FiPlay, FiPause, FiVolume2, FiVolumeX, 
   FiSun, FiMoon, FiLock, FiBook, FiAward, FiTrendingUp, FiMic, FiX,
-  FiPrinter, FiDownload, FiShare2, FiHome, FiBookmark, FiPackage
+  FiPrinter, FiDownload, FiShare2, FiHome, FiBookmark, FiPackage, FiWifiOff
 } from 'react-icons/fi';
 import confetti from 'canvas-confetti';
 import { useTheme } from '@/context/ThemeContext';
@@ -22,6 +22,7 @@ import RealisticPageFlip from '@/components/RealisticPageFlip';
 import PWAPrompt from '@/components/PWAPrompt';
 import { AZORA_ASSETS } from '@/components/AzoraMascot';
 import PrintOrderModal from '@/components/PrintOrderModal';
+import useOffline from '@/hooks/useOffline';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -32,6 +33,10 @@ export default function BookReader() {
   const { theme, toggleTheme } = useTheme();
   const { user, token, loading: authLoading, logout, refreshUser } = useAuth();
   const audioRef = useRef(null);
+  
+  // Offline support for audio caching
+  const { isOnline, isBookOffline, getOfflineAudio, saveAudioOffline } = useOffline();
+  const [isOfflineMode, setIsOfflineMode] = useState(false);
   
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -1160,7 +1165,7 @@ export default function BookReader() {
       audioElement.currentTime = 0;
     }
 
-    // Check if audio is already cached
+    // Check if audio is already cached in memory
     let cachedAudio = audioCache.current.get(pageIndex);
     
     // Check if page has pre-cached audio URL from database
@@ -1169,8 +1174,24 @@ export default function BookReader() {
       audioCache.current.set(pageIndex, cachedAudio);
     }
     
+    // Phase 3: Check offline storage for cached audio
+    if (!cachedAudio && isBookOffline(bookId)) {
+      const offlineAudio = await getOfflineAudio(bookId, pageIndex);
+      if (offlineAudio && offlineAudio.success && offlineAudio.blob) {
+        cachedAudio = { type: 'blob', data: offlineAudio.blob };
+        audioCache.current.set(pageIndex, cachedAudio);
+        console.log(`[Offline] Using cached audio for page ${pageIndex}`);
+      }
+    }
+    
     if (!cachedAudio) {
-      // Not cached - need to generate
+      // Not cached - need to generate (only if online)
+      if (!isOnline) {
+        toast.error('You are offline. Audio not available for this page.');
+        setAudioLoading(false);
+        return;
+      }
+      
       setAudioLoading(true);
       try {
         const res = await axios.post(`${API}/tts/generate`, {
@@ -1187,6 +1208,19 @@ export default function BookReader() {
         // Prefer Cloudinary URL for faster loading
         if (res.data.audio_url) {
           cachedAudio = { type: 'url', url: res.data.audio_url };
+          
+          // Phase 3: Save audio to offline storage if book is saved offline
+          if (isBookOffline(bookId)) {
+            try {
+              // Fetch the audio file and save as blob
+              const audioResponse = await fetch(res.data.audio_url);
+              const audioBlob = await audioResponse.blob();
+              await saveAudioOffline(bookId, pageIndex, audioBlob);
+              console.log(`[Offline] Saved audio for page ${pageIndex}`);
+            } catch (err) {
+              console.warn('[Offline] Failed to cache audio:', err);
+            }
+          }
         } else if (res.data.audio_base64) {
           cachedAudio = { type: 'base64', data: res.data.audio_base64 };
         }
@@ -1236,6 +1270,9 @@ export default function BookReader() {
       // Set the new source - changing src doesn't lose the user interaction permission
       if (cachedAudio.type === 'url') {
         audio.src = cachedAudio.url;
+      } else if (cachedAudio.type === 'blob') {
+        // Phase 3: Handle blob from offline storage
+        audio.src = URL.createObjectURL(cachedAudio.data);
       } else {
         audio.src = `data:audio/mpeg;base64,${cachedAudio.data}`;
       }
@@ -1702,15 +1739,25 @@ export default function BookReader() {
       {(isMobilePortrait || isMobileLandscape) && (
         <>
           {/* Floating back button - top left */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleBackToLibrary}
-            className="fixed top-3 left-3 z-50 w-7 h-7 rounded-full bg-black/20 backdrop-blur-md text-white/90 hover:bg-black/40 hover:text-white shadow-lg"
-            data-testid="mobile-back-btn"
-          >
-            <FiArrowLeft className="w-4 h-4" />
-          </Button>
+          <div className="fixed top-3 left-3 z-50 flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleBackToLibrary}
+              className="w-7 h-7 rounded-full bg-black/20 backdrop-blur-md text-white/90 hover:bg-black/40 hover:text-white shadow-lg"
+              data-testid="mobile-back-btn"
+            >
+              <FiArrowLeft className="w-4 h-4" />
+            </Button>
+            
+            {/* Offline indicator */}
+            {isBookOffline(bookId) && (
+              <span className="px-2 py-1 rounded-full bg-purple-600/80 backdrop-blur-md text-white text-xs font-medium flex items-center gap-1 shadow-lg">
+                <FiWifiOff className="w-3 h-3" />
+                Offline
+              </span>
+            )}
+          </div>
           
           {/* Floating buttons - top right */}
           <div className="fixed top-3 right-3 z-50 flex items-center gap-2">
