@@ -1318,12 +1318,19 @@ export default function ArtStudio() {
           <div className="flex items-center gap-4">
             <Button 
               variant="ghost" 
-              onClick={() => navigate('/library')}
+              onClick={() => navigate('/dashboard')}
               className="text-white/70 hover:text-white"
               data-testid="back-button"
             >
               <FiArrowLeft className="w-5 h-5 mr-2" />
-              Back
+              My Books
+            </Button>
+            <Button 
+              variant="ghost" 
+              onClick={() => navigate('/library')}
+              className="text-white/70 hover:text-white"
+            >
+              Library
             </Button>
             <div>
               <h1 className="text-2xl font-bold text-white flex items-center gap-2">

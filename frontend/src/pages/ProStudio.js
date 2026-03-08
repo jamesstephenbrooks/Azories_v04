@@ -2644,7 +2644,7 @@ export default function ProStudio() {
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-3">
           {/* Mobile Header - Simplified */}
           <div className="flex items-center justify-between sm:hidden">
-            <Button variant="ghost" size="sm" onClick={() => navigate('/art-studio')} className="text-gray-400 hover:text-white p-2">
+            <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')} className="text-gray-400 hover:text-white p-2">
               <FiArrowLeft className="w-5 h-5" />
             </Button>
             <div className="flex items-center gap-2">
@@ -2662,8 +2662,14 @@ export default function ProStudio() {
           {/* Desktop Header - Full */}
           <div className="hidden sm:flex items-center justify-between">
             <div className="flex items-center gap-4">
+              <Button variant="ghost" onClick={() => navigate('/dashboard')} className="text-gray-400 hover:text-white">
+                <FiArrowLeft className="mr-2" /> My Books
+              </Button>
+              <Button variant="ghost" onClick={() => navigate('/library')} className="text-gray-400 hover:text-white">
+                Library
+              </Button>
               <Button variant="ghost" onClick={() => navigate('/art-studio')} className="text-gray-400 hover:text-white">
-                <FiArrowLeft className="mr-2" /> Back to Art Studio
+                Image Creator
               </Button>
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
