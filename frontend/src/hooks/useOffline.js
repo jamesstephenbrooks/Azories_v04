@@ -108,6 +108,12 @@ export function useOffline() {
     return offlineStorage.saveAudioForOffline(bookId, pageNumber, audioUrl);
   }, []);
 
+  // Check if offline book has narration cached
+  const hasOfflineNarration = useCallback((bookId) => {
+    const book = offlineBooks.find(b => b.id === bookId);
+    return book?.hasNarration || false;
+  }, [offlineBooks]);
+
   return {
     isOnline,
     isOffline: !isOnline,
@@ -122,6 +128,7 @@ export function useOffline() {
     getOfflinePages,
     getOfflineAudio,
     saveAudioOffline,
+    hasOfflineNarration,
     refreshOfflineBooks
   };
 }

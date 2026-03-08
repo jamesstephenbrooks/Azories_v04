@@ -240,7 +240,8 @@ export default function Library() {
     offlineBooks, 
     isBookOffline, 
     saveBookOffline, 
-    removeBookOffline 
+    removeBookOffline,
+    hasOfflineNarration
   } = useOffline();
 
   // Fetch Continue Reading books for logged-in users
@@ -582,10 +583,15 @@ export default function Library() {
           
           {/* Offline indicator - show if book is saved offline */}
           {isBookOffline(book.id) && !isComingSoon && (
-            <div className="absolute top-3 right-12 z-20">
-              <span className="px-2 py-1 rounded-full bg-purple-600/90 text-white text-xs font-medium flex items-center gap-1">
+            <div className="absolute top-3 right-12 z-20 flex gap-1">
+              <span className="px-2 py-1 rounded-full bg-purple-600/90 text-white text-xs font-medium flex items-center gap-1" title="Available offline">
                 <FiWifiOff className="w-3 h-3" />
               </span>
+              {hasOfflineNarration(book.id) && (
+                <span className="px-2 py-1 rounded-full bg-green-600/90 text-white text-xs font-medium flex items-center gap-1" title="Narration cached">
+                  <FiHeadphones className="w-3 h-3" />
+                </span>
+              )}
             </div>
           )}
           

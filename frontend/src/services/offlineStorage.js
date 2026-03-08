@@ -66,17 +66,22 @@ class OfflineStorageService {
   }
 
   /**
-   * Save a book for offline reading
+   * Save a book for offline reading (including narration audio)
    * @param {Object} book - Book data with pages array
-   * @param {Function} onProgress - Progress callback (current, total)
+   * @param {Function} onProgress - Progress callback (current, total, message)
+   * @param {Object} options - Options { includeAudio: true/false }
    * @returns {Promise<Object>} - Result with success status
    */
-  async saveBookForOffline(book, onProgress = () => {}) {
+  async saveBookForOffline(book, onProgress = () => {}, options = { includeAudio: true }) {
     await this.ensureDb();
 
     const bookId = book.id;
     const pages = book.pages || [];
-    const totalItems = pages.length + 1; // +1 for cover image
+    const includeAudio = options.includeAudio !== false;
+    
+    // Count total items: cover + pages + audio (if included)
+    const audioPages = includeAudio ? pages.filter(p => p.audio_url) : [];
+    const totalItems = 1 + pages.length + audioPages.length; // cover + pages + audio
     let savedItems = 0;
     let totalBytes = 0;
 
@@ -85,6 +90,7 @@ class OfflineStorageService {
       let coverBlob = null;
       if (book.cover_image) {
         try {
+          onProgress(savedItems, totalItems, 'Downloading cover...');
           const coverResponse = await fetch(book.cover_image);
           coverBlob = await coverResponse.blob();
           totalBytes += coverBlob.size;
@@ -93,7 +99,7 @@ class OfflineStorageService {
         }
       }
       savedItems++;
-      onProgress(savedItems, totalItems, 'Saving cover...');
+      onProgress(savedItems, totalItems, 'Cover saved');
 
       // Save each page
       const pageData = [];
@@ -105,6 +111,7 @@ class OfflineStorageService {
         const imageUrl = page.image_url || page.illustration_url;
         if (imageUrl) {
           try {
+            onProgress(savedItems, totalItems, `Downloading page ${i + 1} image...`);
             const response = await fetch(imageUrl);
             imageBlob = await response.blob();
             totalBytes += imageBlob.size;
@@ -121,10 +128,48 @@ class OfflineStorageService {
           imageUrl: imageUrl,
           textContent: page.text_content || page.text || '',
           title: page.title || '',
+          hasAudio: !!page.audio_url,
         });
 
         savedItems++;
-        onProgress(savedItems, totalItems, `Saving page ${i + 1}/${pages.length}...`);
+        onProgress(savedItems, totalItems, `Page ${i + 1}/${pages.length} saved`);
+      }
+
+      // Save audio for each page that has narration
+      if (includeAudio && audioPages.length > 0) {
+        for (let i = 0; i < audioPages.length; i++) {
+          const page = audioPages[i];
+          const pageNumber = page.page_number || pages.indexOf(page);
+          
+          try {
+            onProgress(savedItems, totalItems, `Downloading narration ${i + 1}/${audioPages.length}...`);
+            const audioResponse = await fetch(page.audio_url);
+            const audioBlob = await audioResponse.blob();
+            totalBytes += audioBlob.size;
+            
+            // Save audio to audio store
+            const audioTx = this.db.transaction(STORE_AUDIO, 'readwrite');
+            const audioStore = audioTx.objectStore(STORE_AUDIO);
+            
+            await new Promise((resolve, reject) => {
+              const request = audioStore.put({
+                id: `${bookId}_audio_${pageNumber}`,
+                bookId: bookId,
+                pageNumber: pageNumber,
+                audioBlob: audioBlob,
+                audioUrl: page.audio_url,
+                savedAt: Date.now()
+              });
+              request.onsuccess = resolve;
+              request.onerror = () => reject(request.error);
+            });
+          } catch (e) {
+            console.warn(`Failed to cache audio for page ${pageNumber}:`, e);
+          }
+          
+          savedItems++;
+          onProgress(savedItems, totalItems, `Narration ${i + 1}/${audioPages.length} saved`);
+        }
       }
 
       // Store pages in IndexedDB
@@ -139,6 +184,8 @@ class OfflineStorageService {
         coverBlob: coverBlob,
         coverUrl: book.cover_image,
         pageCount: pages.length,
+        audioPageCount: audioPages.length,
+        hasNarration: audioPages.length > 0,
         authorName: book.author_name || book.child_name,
         childName: book.child_name,
         savedAt: Date.now(),
@@ -161,10 +208,13 @@ class OfflineStorageService {
         });
       }
 
+      onProgress(totalItems, totalItems, 'Complete!');
+
       return {
         success: true,
         bookId: bookId,
         pageCount: pages.length,
+        audioPageCount: audioPages.length,
         sizeBytes: totalBytes,
         sizeMB: (totalBytes / (1024 * 1024)).toFixed(2)
       };

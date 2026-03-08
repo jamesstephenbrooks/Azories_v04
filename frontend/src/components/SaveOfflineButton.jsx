@@ -64,7 +64,10 @@ function SaveOfflineButton({
       });
 
       if (result.success) {
-        toast.success(`"${book.title}" saved for offline reading (${result.sizeMB}MB)`);
+        const audioInfo = result.audioPageCount > 0 
+          ? ` with ${result.audioPageCount} narrations` 
+          : '';
+        toast.success(`"${book.title}" saved for offline${audioInfo} (${result.sizeMB}MB)`);
       } else {
         toast.error(`Failed to save: ${result.error || 'Unknown error'}`);
       }
