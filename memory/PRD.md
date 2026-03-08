@@ -77,31 +77,40 @@ Build a "Print on Demand" (POD) book ordering feature using the Gelato API for a
 
 **Note**: New users automatically get 3-day Pro trial with `subscription: "pro"`. AI story generation has its own free tier (3 free stories in Kids Mode, 5 pages).
 
-### Offline Reading Feature - Phase 1 IN PROGRESS
+### Offline Reading Feature - Phase 1 COMPLETED
 **Implemented**:
 - `offlineStorage.js` - IndexedDB service for caching books
 - `useOffline.js` - React hook for offline state management
 - `SaveOfflineButton.jsx` - Save/remove offline button component
 - `OfflineBanner.jsx` - Shows when user is offline
-- Dashboard integration with offline filter and storage stats
+- Dashboard & Library integration with offline filter and storage stats
+- Service Worker for app shell caching
 
-**Pending**:
-- Phase 2: Offline indicators on book cards, offline-only filter in library
+**Phase 1 Complete**:
+- ✅ Cache book images and text when user taps "Save for Offline"
+- ✅ Show offline indicator on saved books
+- ✅ Offline filter to show only saved books
+
+**Pending Phases**:
+- Phase 2: None (integrated into Phase 1)
 - Phase 3: Cache narration audio files
 
 ## Pending Verification (by User)
 - **P1**: iPad button responsiveness (expand menu, play button) - `touch-manipulation` fix applied
-- **P1**: Pro Studio mobile fixes (lightbox, delete, download) - refactored gallery
-- **P1**: Photorealistic art style fix - now prioritizes selected_style over detected_style
 - **P2**: Checkbox size on iPad - `md:scale-[0.6]` fix applied
 
+## Known Issues - Deferred
+- **P1**: Pro Studio mobile bugs (image deletion, video download) - User requested deferral
+- **P2**: Slow thumbnail loading in Library - Needs investigation
+
 ## Future/Backlog
-- P1: Complete Offline Reading Phase 2 & 3
-- P2: Full E2E POD test (payment through to Gelato order creation)
+- P1: Complete Offline Reading Phase 3 (audio caching)
+- P1: Pro Studio mobile bugs (image deletion, video download)
 - P2: Build "My Orders" page for order history
-- Order tracking notifications (email/SMS)
-- Gift feature for checkout
-- Decompose BookReader.js (>2000 lines)
+- P2: Slow thumbnail loading optimization
+- P3: Order tracking notifications (email/SMS)
+- P3: Gift feature for checkout
+- P3: Decompose BookReader.js (>2000 lines)
 
 ## Test Credentials
 - Email: test@printtest.com
@@ -116,7 +125,49 @@ Build a "Print on Demand" (POD) book ordering feature using the Gelato API for a
 - `POST /api/print/prepare/{book_id}` - Prepare book PDF
 - `POST /api/print/checkout/create-session` - Create Stripe checkout
 
-## Latest Updates (March 7, 2026 - Session 2)
+## Latest Updates (March 8, 2026)
+
+### Service Worker & Offline App Shell - COMPLETED
+- Service Worker registered in `/app/frontend/src/index.js`
+- Smart caching strategy in `/app/frontend/public/service-worker.js`:
+  - Network-first for navigation (HTML pages)
+  - Cache-first for app shell assets (JS, CSS, images)
+  - Bypasses API requests for fresh data
+- Offline fallback page (`/app/frontend/public/offline.html`)
+- Console shows `[Azories SW] Service worker registered` on load
+
+### Offline Reading Phase 1 - COMPLETED
+- ✅ Save books for offline via "Save for Offline" button on book cards
+- ✅ IndexedDB stores book metadata, cover, and page images
+- ✅ Offline indicator badge on saved books in Library
+- ✅ "Offline" filter button to show only saved books
+- ✅ Storage stats display (MB used)
+- **Note**: Narration audio caching deferred to Phase 3
+
+### BookEditor Page Switching Bug - FIXED
+**Root Cause**: Stale closure in auto-save timeout captured old `selectedPage` state
+**Fix Applied**:
+- Added `pendingAutoSaveRef` to capture page data at edit time, not timeout fire time
+- `handlePageSelect` now saves current page to backend before switching
+- `selectedPageRef` keeps page state always up-to-date for callbacks
+- Tested: Text preserved after 4+ page switches (verified by testing agent)
+
+### Print on Demand E2E - VERIFIED WORKING
+Full flow tested and passing:
+1. Login → Open book → "Order Printed Copy" button visible
+2. 4-step wizard modal with 3D book preview
+3. Product selection (Softcover £14.99 / Hardcover £19.99)
+4. Shipping address form with country selection
+5. Shipping method selection (Standard/Express/Overnight)
+6. Order review with coupon validation (LAUNCH10 = 10% off)
+7. Stripe checkout redirect working
+
+**API Endpoints Verified**:
+- `GET /api/print/product-info` - Returns products, gelato_configured: true
+- `POST /api/print/checkout/create-session` - Creates Stripe checkout
+- `POST /api/print/validate-coupon` - Validates discount codes
+
+## Previous Updates (March 7, 2026)
 
 ### Image Generation Model Change
 - **Switched from FLUX Dev to FLUX Pro** for AI story image generation
