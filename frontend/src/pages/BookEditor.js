@@ -1471,10 +1471,10 @@ export default function BookEditor() {
       
       <div className="pt-14 lg:pt-20 flex flex-col lg:flex-row h-[calc(100vh-3.5rem)] lg:h-[calc(100vh-5rem)]">
         {/* Left Sidebar - Chapters & Pages - Collapsible on mobile */}
-        <div className={`${mobileSidebarOpen ? 'fixed inset-0 z-50 bg-background' : 'hidden'} lg:relative lg:block w-full lg:w-64 border-r border-border bg-card flex flex-col`}>
+        <div className={`${mobileSidebarOpen ? 'fixed inset-0 z-50 bg-background' : 'hidden'} lg:relative lg:block w-full lg:w-80 border-r border-border bg-card flex flex-col`}>
           {/* Mobile close button */}
           <div className="lg:hidden flex items-center justify-between p-4 border-b border-border">
-            <h3 className="font-heading font-semibold">Pages & Chapters</h3>
+            <h3 className="font-heading font-semibold lg:text-lg">Pages & Chapters</h3>
             <Button
               variant="ghost"
               size="icon"
@@ -1484,9 +1484,9 @@ export default function BookEditor() {
               <FiX className="w-5 h-5" />
             </Button>
           </div>
-          <div className="p-4 border-b border-border">
+          <div className="p-4 border-b border-border flex flex-col" style={{maxHeight: '40%'}}>
             <div className="flex items-center justify-between mb-3">
-              <h3 className="font-heading font-semibold">Chapters</h3>
+              <h3 className="font-heading font-semibold lg:text-lg">Chapters</h3>
               <Dialog open={newChapterOpen} onOpenChange={setNewChapterOpen}>
                 <DialogTrigger asChild>
                   <Button 
@@ -1544,11 +1544,11 @@ export default function BookEditor() {
               </Dialog>
             </div>
             
-            <ScrollArea className="h-32">
+            <ScrollArea className="flex-1 min-h-[2rem]">
               {chapters.map((chapter) => (
                 <div
                   key={chapter.id}
-                  className={`flex items-center justify-between p-2 rounded-lg cursor-pointer mb-1 group ${
+                  className={`flex items-center justify-between p-2 lg:p-3 rounded-lg cursor-pointer mb-1 group ${
                     selectedChapter?.id === chapter.id 
                       ? 'bg-primary/10 text-primary' 
                       : 'hover:bg-muted'
@@ -1571,7 +1571,7 @@ export default function BookEditor() {
                     />
                   ) : (
                     <span
-                      className="font-ui text-sm truncate flex-1"
+                      className="font-ui text-sm lg:text-base truncate flex-1"
                       onDoubleClick={(e) => {
                         e.stopPropagation();
                         setEditingChapterId(chapter.id);
@@ -1621,7 +1621,7 @@ export default function BookEditor() {
           
           <div className="p-4 flex-1 flex flex-col">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="font-heading font-semibold">Pages</h3>
+              <h3 className="font-heading font-semibold lg:text-lg">Pages</h3>
               <Button 
                 variant="ghost" 
                 size="icon" 
@@ -1638,7 +1638,7 @@ export default function BookEditor() {
               {pages.map((page, index) => (
                 <div
                   key={page.id}
-                  className={`flex items-center justify-between p-2 rounded-lg cursor-pointer mb-1 group ${
+                  className={`flex items-center justify-between p-2 lg:p-3 rounded-lg cursor-pointer mb-1 group ${
                     selectedPage?.id === page.id 
                       ? 'bg-primary/10 text-primary' 
                       : 'hover:bg-muted'
@@ -1647,7 +1647,7 @@ export default function BookEditor() {
                   data-testid={`page-${page.id}`}
                 >
                   <div className="flex items-center gap-2">
-                    <span className="font-ui text-sm">Page {index + 1}</span>
+                    <span className="font-ui text-sm lg:text-base">Page {index + 1}</span>
                     {page.layout_type?.startsWith('comic') && (
                       <FiGrid className="w-3 h-3 text-secondary" />
                     )}
@@ -1934,15 +1934,15 @@ export default function BookEditor() {
               {/* Left - Visual Content Panel with Scroll */}
               <div className={`${mobileActivePanel === 'visual' ? 'flex' : 'hidden'} lg:flex w-full lg:w-1/2 border-r border-border flex-col`}>
                 <ScrollArea className="flex-1">
-                  <div className="p-4 lg:p-6 space-y-4 lg:space-y-6">
+                  <div className="p-4 lg:p-8 space-y-4 lg:space-y-6">
                     <div className="flex items-center justify-between">
-                      <h3 className="font-heading font-semibold text-sm lg:text-base">Visual Content</h3>
+                      <h3 className="font-heading font-semibold text-sm lg:text-lg">Visual Content</h3>
                       {isComicMode && (
                         <Select 
                           value={selectedPage.layout_type || 'single'} 
                           onValueChange={(v) => setSelectedPage({ ...selectedPage, layout_type: v })}
                         >
-                          <SelectTrigger className="w-32 lg:w-40 rounded-full text-sm">
+                          <SelectTrigger className="w-32 lg:w-48 rounded-full text-sm lg:text-base">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -2242,9 +2242,9 @@ export default function BookEditor() {
               </div>
               
               {/* Right - Text Panel */}
-              <div className={`${mobileActivePanel === 'text' ? 'flex' : 'hidden'} lg:flex w-full lg:w-1/2 p-4 lg:p-6 flex-col`}>
+              <div className={`${mobileActivePanel === 'text' ? 'flex' : 'hidden'} lg:flex w-full lg:w-1/2 p-4 lg:p-8 flex-col`}>
                 <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-4 gap-2">
-                  <h3 className="font-heading font-semibold text-sm lg:text-base">Story Text</h3>
+                  <h3 className="font-heading font-semibold text-sm lg:text-lg">Story Text</h3>
                   
                   {/* Text Formatting Controls - Scrollable on mobile */}
                   <div className="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 w-full lg:w-auto">
@@ -2252,7 +2252,7 @@ export default function BookEditor() {
                       value={selectedPage.font_family || 'default'} 
                       onValueChange={(value) => setSelectedPage({ ...selectedPage, font_family: value })}
                     >
-                      <SelectTrigger className="w-24 lg:w-32 h-8 text-xs rounded-full flex-shrink-0">
+                      <SelectTrigger className="w-24 lg:w-36 h-8 lg:h-10 text-xs lg:text-sm rounded-full flex-shrink-0">
                         <SelectValue placeholder="Font" />
                       </SelectTrigger>
                       <SelectContent>
@@ -2319,7 +2319,7 @@ export default function BookEditor() {
                     placeholder="Write your story here..."
                     value={selectedPage.text_content}
                     onChange={(e) => setSelectedPage({ ...selectedPage, text_content: e.target.value })}
-                    className={`flex-1 min-h-[200px] lg:min-h-[400px] rounded-2xl border-2 resize-none text-base ${
+                    className={`flex-1 min-h-[200px] lg:min-h-[500px] rounded-2xl border-2 resize-none text-base ${
                       selectedPage.font_family === 'serif' ? 'font-serif' :
                       selectedPage.font_family === 'sans' ? 'font-sans' :
                       selectedPage.font_family === 'mono' ? 'font-mono' :
