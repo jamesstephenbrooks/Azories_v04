@@ -12,10 +12,13 @@ import { AZORA_ASSETS } from "@/components/AzoraMascot";
 import { usePageTracking } from "@/hooks/useAnalytics";
 import "@/App.css";
 
-// Lazy load all pages — they only download when navigated to
+// BookReader is statically imported to ensure it's available offline
+// (lazy loading creates separate chunks that may not be cached by service worker)
+import BookReader from "@/pages/BookReader";
+
+// Lazy load all other pages — they only download when navigated to
 const Landing = lazy(() => import("@/pages/Landing"));
 const Library = lazy(() => import("@/pages/Library"));
-const BookReader = lazy(() => import("@/pages/BookReader"));
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const BookEditor = lazy(() => import("@/pages/BookEditor"));
 const MySeries = lazy(() => import("@/pages/MySeries"));

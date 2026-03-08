@@ -97,3 +97,4 @@ glb_optimization/gothic_library_14_cycles.glb
 # Environment files
 *.env
 *.env.*
+frontend/node_modules/.cache/default-development/4.pack
