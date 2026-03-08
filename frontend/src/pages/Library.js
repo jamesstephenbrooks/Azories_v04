@@ -654,9 +654,9 @@ export default function Library() {
               </span>
             </div>
             
-            {/* Save for Offline Button - Clean standalone design */}
+            {/* Save for Offline Button - Centered on mobile */}
             {!isComingSoon && (
-              <div className="mt-3" onClick={(e) => e.stopPropagation()}>
+              <div className="mt-3 flex justify-center" onClick={(e) => e.stopPropagation()}>
                 <SaveOfflineButton
                   book={book}
                   isOffline={isBookOffline(book.id)}
@@ -1229,7 +1229,7 @@ export default function Library() {
             {/* Action buttons */}
             <div className="flex gap-3 pt-2">
               <Button 
-                className="flex-1 rounded-full"
+                className="flex-1 rounded-full hidden sm:flex"
                 onClick={() => {
                   setSummaryBook(null);
                   navigate(`/read/${summaryBook?.id}`);
@@ -1241,7 +1241,7 @@ export default function Library() {
               </Button>
               <Button 
                 variant="outline"
-                className="flex-1 rounded-full"
+                className="flex-1 rounded-full hidden sm:flex"
                 onClick={() => {
                   setSummaryBook(null);
                   navigate(`/read/${summaryBook?.id}?audio=true`);
@@ -1250,6 +1250,18 @@ export default function Library() {
               >
                 <FiHeadphones className="mr-2" />
                 Listen
+              </Button>
+              {/* Mobile: Single centered button to read */}
+              <Button 
+                className="w-full rounded-full sm:hidden"
+                onClick={() => {
+                  setSummaryBook(null);
+                  navigate(`/read/${summaryBook?.id}`);
+                }}
+                data-testid="summary-read-mobile-btn"
+              >
+                <FiBook className="mr-2" />
+                Read Story
               </Button>
             </div>
           </div>
