@@ -241,8 +241,77 @@ export default function Library() {
     isBookOffline, 
     saveBookOffline, 
     removeBookOffline,
-    hasOfflineNarration
+    hasOfflineNarration,
+    getOfflineBook
   } = useOffline();
+  
+  // State for offline books with cover URLs (created from blobs)
+  const [offlineBooksWithCovers, setOfflineBooksWithCovers] = useState([]);
+  const offlineCoverUrlsRef = useRef(new Map()); // Track created URLs for cleanup
+
+  // Load offline books with cover images when showOfflineOnly is enabled or offlineBooks changes
+  useEffect(() => {
+    async function loadOfflineBooksWithCovers() {
+      if (offlineBooks.length === 0) {
+        setOfflineBooksWithCovers([]);
+        return;
+      }
+
+      const booksWithCovers = await Promise.all(
+        offlineBooks.map(async (book) => {
+          try {
+            // Get full offline book data including coverBlob
+            const fullOfflineBook = await getOfflineBook(book.id);
+            
+            let coverUrl = book.coverUrl; // Fallback to stored URL
+            
+            // If we have a coverBlob, create an Object URL
+            if (fullOfflineBook?.coverBlob) {
+              // Revoke old URL if exists
+              if (offlineCoverUrlsRef.current.has(book.id)) {
+                URL.revokeObjectURL(offlineCoverUrlsRef.current.get(book.id));
+              }
+              coverUrl = URL.createObjectURL(fullOfflineBook.coverBlob);
+              offlineCoverUrlsRef.current.set(book.id, coverUrl);
+            }
+            
+            return {
+              id: book.id,
+              title: book.title,
+              cover_image: coverUrl,
+              author_name: book.authorName,
+              child_name: book.childName,
+              pageCount: book.pageCount,
+              hasNarration: book.hasNarration,
+              savedAt: book.savedAt,
+              sizeBytes: book.sizeBytes,
+              // Mark as offline-loaded for display purposes
+              _isOfflineBook: true
+            };
+          } catch (err) {
+            console.warn(`Failed to load cover for offline book ${book.id}:`, err);
+            return {
+              id: book.id,
+              title: book.title,
+              cover_image: book.coverUrl,
+              author_name: book.authorName,
+              _isOfflineBook: true
+            };
+          }
+        })
+      );
+      
+      setOfflineBooksWithCovers(booksWithCovers);
+    }
+
+    loadOfflineBooksWithCovers();
+
+    // Cleanup Object URLs on unmount
+    return () => {
+      offlineCoverUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+      offlineCoverUrlsRef.current.clear();
+    };
+  }, [offlineBooks, getOfflineBook]);
 
   // Fetch Continue Reading books for logged-in users
   const fetchContinueReading = useCallback(async () => {
@@ -489,24 +558,26 @@ export default function Library() {
   // Filter books based on offline toggle
   const displayBooks = useMemo(() => {
     if (!showOfflineOnly) return books;
-    return books.filter(book => isBookOffline(book.id));
-  }, [books, showOfflineOnly, isBookOffline]);
+    // When showing offline only, use the offlineBooksWithCovers which have Object URLs for images
+    return offlineBooksWithCovers;
+  }, [books, showOfflineOnly, offlineBooksWithCovers]);
 
   // Filter featured, newly added, etc. based on offline toggle
   const displayFeaturedBooks = useMemo(() => {
     if (!showOfflineOnly) return featuredBooks;
-    return featuredBooks.filter(book => isBookOffline(book.id));
-  }, [featuredBooks, showOfflineOnly, isBookOffline]);
+    // When offline only, don't show featured section - just show all offline books in main grid
+    return [];
+  }, [featuredBooks, showOfflineOnly]);
 
   const displayNewlyAddedBooks = useMemo(() => {
     if (!showOfflineOnly) return newlyAddedBooks;
-    return newlyAddedBooks.filter(book => isBookOffline(book.id));
-  }, [newlyAddedBooks, showOfflineOnly, isBookOffline]);
+    return [];
+  }, [newlyAddedBooks, showOfflineOnly]);
 
   const displayBestOfWeek = useMemo(() => {
     if (!showOfflineOnly) return bestOfWeek;
-    return bestOfWeek.filter(book => isBookOffline(book.id));
-  }, [bestOfWeek, showOfflineOnly, isBookOffline]);
+    return [];
+  }, [bestOfWeek, showOfflineOnly]);
 
   const BookCard = ({ book, index, isFeatured = false, isComingSoon = false }) => {
     const isNew = isNewBook(book);

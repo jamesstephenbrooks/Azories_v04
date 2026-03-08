@@ -1145,7 +1145,24 @@ export default function BookReader() {
     const pageData = allPages[pageIndex];
     if (!pageData?.text_content || !narratorVoice) return;
     
-    // Check if page already has a cached Cloudinary URL from database
+    // PRIORITY 1: Check offline storage first when offline or book is saved offline
+    if (!isOnline || isBookOffline(book?.id)) {
+      try {
+        const offlineAudio = await getOfflineAudio(book?.id, pageIndex);
+        if (offlineAudio && offlineAudio.success && offlineAudio.url) {
+          audioCache.current.set(pageIndex, { type: 'url', url: offlineAudio.url });
+          console.log(`[Preload Offline] Cached audio for page ${pageIndex}`);
+          return;
+        }
+      } catch (e) {
+        console.warn(`[Preload Offline] Failed to get audio for page ${pageIndex}:`, e);
+      }
+      
+      // If offline and no cached audio, don't try to fetch from API
+      if (!isOnline) return;
+    }
+    
+    // PRIORITY 2: Check if page already has a cached Cloudinary URL from database
     if (pageData.audio_url && pageData.audio_url.startsWith('https://')) {
       audioCache.current.set(pageIndex, { type: 'url', url: pageData.audio_url });
       return;
@@ -1175,7 +1192,7 @@ export default function BookReader() {
     } finally {
       preloadingPages.current.delete(pageIndex);
     }
-  }, [allPages, narratorVoice]);
+  }, [allPages, narratorVoice, isOnline, isBookOffline, getOfflineAudio, book?.id]);
 
   // Pre-load audio for first few pages when book is ready - START IMMEDIATELY
   useEffect(() => {
@@ -1276,19 +1293,30 @@ export default function BookReader() {
     // Check if audio is already cached in memory
     let cachedAudio = audioCache.current.get(pageIndex);
     
-    // Check if page has pre-cached audio URL from database
-    if (!cachedAudio && pageData.audio_url && pageData.audio_url.startsWith('https://')) {
-      cachedAudio = { type: 'url', url: pageData.audio_url };
-      audioCache.current.set(pageIndex, cachedAudio);
+    // PRIORITY 1: Check offline storage FIRST when offline or book is saved offline
+    // This ensures we use cached audio even when we have audio_url but no network
+    if (!cachedAudio && (!isOnline || isBookOffline(bookId))) {
+      const offlineAudio = await getOfflineAudio(bookId, pageIndex);
+      if (offlineAudio && offlineAudio.success) {
+        // getOfflineAudio returns { success: true, url, blob } where url is already an Object URL
+        if (offlineAudio.url) {
+          cachedAudio = { type: 'url', url: offlineAudio.url };
+          audioCache.current.set(pageIndex, cachedAudio);
+          console.log(`[Offline] Using cached audio URL for page ${pageIndex}`);
+        } else if (offlineAudio.blob) {
+          cachedAudio = { type: 'blob', data: offlineAudio.blob };
+          audioCache.current.set(pageIndex, cachedAudio);
+          console.log(`[Offline] Using cached audio blob for page ${pageIndex}`);
+        }
+      }
     }
     
-    // Phase 3: Check offline storage for cached audio
-    if (!cachedAudio && isBookOffline(bookId)) {
-      const offlineAudio = await getOfflineAudio(bookId, pageIndex);
-      if (offlineAudio && offlineAudio.success && offlineAudio.blob) {
-        cachedAudio = { type: 'blob', data: offlineAudio.blob };
+    // PRIORITY 2: Check if page has pre-cached audio URL from database (online fallback)
+    if (!cachedAudio && pageData.audio_url && pageData.audio_url.startsWith('https://')) {
+      // Only use network URL if we're online
+      if (isOnline) {
+        cachedAudio = { type: 'url', url: pageData.audio_url };
         audioCache.current.set(pageIndex, cachedAudio);
-        console.log(`[Offline] Using cached audio for page ${pageIndex}`);
       }
     }
     
