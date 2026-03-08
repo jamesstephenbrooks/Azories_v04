@@ -5709,12 +5709,17 @@ async def generate_scene_image(scene_id: str, request: dict, current_user: dict 
 
 @api_router.post("/pro-studio/generate-image")
 async def pro_studio_generate_image(request: ProStudioImageRequest, current_user: dict = Depends(get_current_user)):
-    """Generate a hero frame with Cinema Studio settings"""
+    """Generate a hero frame with Cinema Studio settings - uses PuLID for character consistency"""
     if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Pro subscription required")
     
-    if not EMERGENT_LLM_KEY:
-        raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
+    if not FAL_AVAILABLE:
+        raise HTTPException(status_code=500, detail="fal.ai service not configured")
+    
+    # Deduct credits
+    if not await deduct_credits(current_user["id"], "pulid_generate"):
+        credits_needed = CREDIT_COSTS.get("pulid_generate", 3)
+        raise HTTPException(status_code=402, detail=f"Insufficient credits. Image generation requires {credits_needed} credits.")
     
     # Art style mapping
     ART_STYLE_PROMPTS = {
@@ -5733,14 +5738,19 @@ async def pro_studio_generate_image(request: ProStudioImageRequest, current_user
         # Build full prompt with cinema settings
         prompt_parts = [request.prompt]
         
-        # Add character description if provided
+        # Check if character has reference image for PuLID
+        reference_image = None
+        character = None
         if request.character_id:
             character = await db.pro_studio_characters.find_one(
                 {"id": request.character_id, "user_id": current_user["id"]},
                 {"_id": 0}
             )
-            if character and character.get("description"):
-                prompt_parts.insert(0, character["description"])
+            if character:
+                if character.get("description"):
+                    prompt_parts.insert(0, character["description"])
+                # Get reference image for PuLID
+                reference_image = character.get("thumbnail_url") or (character.get("reference_images", [None])[0] if character.get("reference_images") else None)
         
         # Add camera settings
         camera_desc = CAMERA_CONFIGS.get(request.camera, "")
@@ -5767,32 +5777,70 @@ async def pro_studio_generate_image(request: ProStudioImageRequest, current_user
         full_prompt = ", ".join(prompt_parts)
         
         # Determine size based on aspect ratio
-        aspect_sizes = {
-            "1:1": "1024x1024",
-            "16:9": "1536x1024",
-            "9:16": "1024x1536",
-            "4:3": "1024x768",
-            "3:4": "768x1024",
-            "21:9": "1536x640",
-            "2:3": "683x1024"
+        aspect_to_fal_size = {
+            "1:1": "square",
+            "16:9": "landscape_16_9",
+            "9:16": "portrait_9_16",
+            "4:3": "landscape_4_3",
+            "3:4": "portrait_4_3",
+            "21:9": "landscape_16_9",  # closest match
+            "2:3": "portrait_4_3"  # closest match
         }
-        size = aspect_sizes.get(request.aspect_ratio, "1024x1024")
+        image_size = aspect_to_fal_size.get(request.aspect_ratio, "landscape_16_9")
         
-        # Generate image
-        image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
-        images = await image_gen.generate_images(
-            prompt=full_prompt,
-            model="gpt-image-1",
-            number_of_images=1
-        )
-        
-        if images and len(images) > 0:
-            image_base64 = base64.b64encode(images[0]).decode('utf-8')
-            image_url = f"data:image/png;base64,{image_base64}"
-            return {"image_url": image_url, "success": True}
-        else:
-            raise HTTPException(status_code=500, detail="No image was generated")
+        # Use PuLID if character has reference image, otherwise use FLUX
+        if reference_image:
+            # PuLID for character consistency
+            result = await generate_with_face_id(
+                prompt=full_prompt,
+                reference_image_url=reference_image,
+                id_weight=1.0,
+                image_size=image_size,
+                mode="fidelity",
+                character_appearance=character.get("appearance", "") if character else "",
+                art_style=request.art_style
+            )
             
+            if result.get("success") and result.get("images"):
+                image_url = result["images"][0].get("url")
+                
+                # Upload to Cloudinary
+                if image_url and CLOUDINARY_AVAILABLE:
+                    upload_result = cloudinary.uploader.upload(
+                        image_url,
+                        folder=f"azories/pro_studio/{current_user['id']}/images"
+                    )
+                    image_url = upload_result.get("secure_url", image_url)
+                
+                return {"image_url": image_url, "success": True, "method": "pulid"}
+        else:
+            # Use FLUX-dev for better quality (Pro Studio is paid)
+            result = await generate_image_flux(
+                prompt=full_prompt,
+                model="flux-dev",  # Use better quality model for paid Pro Studio
+                image_size=image_size,
+                num_images=1,
+                guidance_scale=4.0,
+                num_inference_steps=25
+            )
+            
+            if result.get("success") and result.get("images"):
+                image_url = result["images"][0].get("url")
+                
+                # Upload to Cloudinary
+                if image_url and CLOUDINARY_AVAILABLE:
+                    upload_result = cloudinary.uploader.upload(
+                        image_url,
+                        folder=f"azories/pro_studio/{current_user['id']}/images"
+                    )
+                    image_url = upload_result.get("secure_url", image_url)
+                
+                return {"image_url": image_url, "success": True, "method": "flux-dev"}
+        
+        raise HTTPException(status_code=500, detail="No image was generated")
+            
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error generating pro studio image: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error generating image: {str(e)}")
@@ -5973,12 +6021,17 @@ async def generate_shots(request: GenerateShotsRequest, background_tasks: Backgr
 
 @api_router.post("/pro-studio/generate-expression")
 async def generate_expression(request: GenerateExpressionRequest, current_user: dict = Depends(get_current_user)):
-    """Generate character with a specific expression"""
+    """Generate character with a specific expression using PuLID for consistency"""
     if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Pro subscription required")
     
-    if not EMERGENT_LLM_KEY:
-        raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
+    if not FAL_AVAILABLE:
+        raise HTTPException(status_code=500, detail="fal.ai service not configured")
+    
+    # Deduct credits
+    if not await deduct_credits(current_user["id"], "expression_generate"):
+        credits_needed = CREDIT_COSTS.get("expression_generate", 2)
+        raise HTTPException(status_code=402, detail=f"Insufficient credits. Expression generation requires {credits_needed} credits.")
     
     try:
         # Get character
@@ -5990,6 +6043,12 @@ async def generate_expression(request: GenerateExpressionRequest, current_user: 
         if not character:
             raise HTTPException(status_code=404, detail="Character not found")
         
+        # Get reference image for PuLID (use thumbnail or first reference)
+        reference_image = character.get("thumbnail_url") or (character.get("reference_images", [None])[0] if character.get("reference_images") else None)
+        
+        if not reference_image:
+            raise HTTPException(status_code=400, detail="Character needs a reference image for expression generation")
+        
         # Build prompt with expression
         expression_desc = EXPRESSION_PROMPTS.get(request.expression, "neutral expression")
         
@@ -5997,26 +6056,39 @@ async def generate_expression(request: GenerateExpressionRequest, current_user: 
             character.get("description", f"Portrait of {character['name']}"),
             expression_desc,
             request.base_prompt if request.base_prompt else "",
-            "professional portrait photography, high quality, consistent appearance"
+            "professional portrait photography, high quality, consistent appearance, same person"
         ]
         
         full_prompt = ", ".join(filter(None, prompt_parts))
         
-        # Generate image
-        image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
-        images = await image_gen.generate_images(
+        # Use PuLID for face consistency
+        result = await generate_with_face_id(
             prompt=full_prompt,
-            model="gpt-image-1",
-            number_of_images=1
+            reference_image_url=reference_image,
+            id_weight=1.0,  # High weight for strong consistency
+            image_size="square",  # Good for portraits
+            mode="fidelity",
+            character_appearance=character.get("appearance", ""),
+            art_style=character.get("art_style", "realistic")
         )
         
-        if images and len(images) > 0:
-            image_base64 = base64.b64encode(images[0]).decode('utf-8')
-            image_url = f"data:image/png;base64,{image_base64}"
-            return {"image_url": image_url, "success": True, "expression": request.expression}
+        if result.get("success") and result.get("images"):
+            image_url = result["images"][0].get("url")
+            
+            # Upload to Cloudinary for permanent storage
+            if image_url and CLOUDINARY_AVAILABLE:
+                upload_result = cloudinary.uploader.upload(
+                    image_url,
+                    folder=f"azories/pro_studio/{current_user['id']}/expressions"
+                )
+                image_url = upload_result.get("secure_url", image_url)
+            
+            return {"image_url": image_url, "success": True, "expression": request.expression, "method": "pulid"}
         else:
             raise HTTPException(status_code=500, detail="No image was generated")
             
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error generating expression: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error generating expression: {str(e)}")
