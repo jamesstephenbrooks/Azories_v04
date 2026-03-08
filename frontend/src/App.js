@@ -12,13 +12,10 @@ import { AZORA_ASSETS } from "@/components/AzoraMascot";
 import { usePageTracking } from "@/hooks/useAnalytics";
 import "@/App.css";
 
-// BookReader is statically imported to ensure it's available offline
-// (lazy loading creates separate chunks that may not be cached by service worker)
-import BookReader from "@/pages/BookReader";
-
-// Lazy load all other pages — they only download when navigated to
+// Lazy load all pages — they only download when navigated to
 const Landing = lazy(() => import("@/pages/Landing"));
 const Library = lazy(() => import("@/pages/Library"));
+const BookReader = lazy(() => import("@/pages/BookReader"));
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const BookEditor = lazy(() => import("@/pages/BookEditor"));
 const MySeries = lazy(() => import("@/pages/MySeries"));
@@ -45,7 +42,7 @@ const PrivacyPolicy = lazy(() => import("@/pages/Legal").then(m => ({ default: m
 function PageLoader() {
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-b from-purple-900/95 to-slate-900">
-      <img 
+      <img
         src={AZORA_ASSETS.pointing}
         alt="Azora welcomes you"
         className="w-36 h-44 object-contain mb-6"
@@ -53,7 +50,7 @@ function PageLoader() {
       />
       <h2 className="text-xl font-bold text-white mb-3">Welcome to Azories</h2>
       <p className="text-white/60 text-sm mb-6">Loading magical adventures...</p>
-      <img 
+      <img
         src={AZORA_ASSETS.dragonIcon}
         alt="Loading"
         className="w-12 h-12 object-contain rounded-full"
@@ -99,14 +96,16 @@ function AppContent() {
   const location = useLocation();
   const isAdminPage = location.pathname.startsWith("/admin");
   const isBookReaderPage = location.pathname.startsWith("/read/") || location.pathname.startsWith("/book/");
-  
+  // Only show onboarding on library/dashboard for logged-in users, not on landing or public pages
+  const isOnboardingPage = location.pathname === "/library" || location.pathname === "/dashboard";
+
   // Track page views automatically
   usePageTracking();
 
   return (
     <ErrorBoundary>
       <OfflineIndicator />
-      {shouldShow && !isAdminPage && !isBookReaderPage && (
+      {shouldShow && isOnboardingPage && !isAdminPage && !isBookReaderPage && (
         <OnboardingTutorial onComplete={completeOnboarding} />
       )}
       <Suspense fallback={<PageLoader />}>
