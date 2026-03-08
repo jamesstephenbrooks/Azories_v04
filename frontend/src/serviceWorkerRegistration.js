@@ -37,6 +37,11 @@ function registerValidSW(swUrl, config) {
     .then((registration) => {
       console.log('[Azories SW] Service worker registered');
       
+      // Check for updates periodically
+      setInterval(() => {
+        registration.update();
+      }, 60 * 60 * 1000); // Check every hour
+      
       registration.onupdatefound = () => {
         const installingWorker = registration.installing;
         if (installingWorker == null) {
@@ -51,6 +56,8 @@ function registerValidSW(swUrl, config) {
               }
             } else {
               console.log('[Azories SW] Content cached for offline use.');
+              // After first install, pre-cache important routes
+              precacheImportantRoutes();
               if (config && config.onSuccess) {
                 config.onSuccess(registration);
               }
@@ -62,6 +69,27 @@ function registerValidSW(swUrl, config) {
     .catch((error) => {
       console.error('[Azories SW] Error during service worker registration:', error);
     });
+}
+
+/**
+ * Pre-cache important routes to ensure they're available offline
+ */
+async function precacheImportantRoutes() {
+  if (!navigator.serviceWorker.controller) return;
+  
+  // Send message to service worker to cache important URLs
+  const urlsToCache = [
+    '/',
+    '/library',
+    '/dashboard'
+  ];
+  
+  navigator.serviceWorker.controller.postMessage({
+    type: 'CACHE_URLS',
+    urls: urlsToCache
+  });
+  
+  console.log('[Azories SW] Requested pre-caching of important routes');
 }
 
 function checkValidServiceWorker(swUrl, config) {

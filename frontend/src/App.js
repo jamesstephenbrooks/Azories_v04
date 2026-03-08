@@ -7,6 +7,7 @@ import OnboardingTutorial, { useOnboarding } from "@/components/OnboardingTutori
 import { OfflineIndicator } from "@/components/OfflineReading";
 import CookieConsent from "@/components/CookieConsent";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import InstallPrompt from "@/components/InstallPrompt";
 import { AZORA_ASSETS } from "@/components/AzoraMascot";
 import { usePageTracking } from "@/hooks/useAnalytics";
 import "@/App.css";
@@ -145,6 +146,7 @@ function AppContent() {
       </Suspense>
       <Toaster position="bottom-right" richColors />
       <CookieConsent />
+      <InstallPrompt />
     </ErrorBoundary>
   );
 }

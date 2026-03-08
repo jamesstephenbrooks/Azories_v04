@@ -3,53 +3,68 @@
  * Enables offline support by caching the app shell and handling offline requests
  */
 
-const CACHE_NAME = 'azories-v1';
+const CACHE_NAME = 'azories-v2';
 const OFFLINE_URL = '/offline.html';
 
-// Core app shell files to cache
+// Core app shell files to pre-cache
 const APP_SHELL = [
   '/',
   '/index.html',
   '/offline.html',
   '/manifest.json',
-  '/favicon.ico',
-  '/favicon-16x16.png',
-  '/favicon-32x32.png',
-  '/apple-touch-icon.png',
-  '/android-chrome-192x192.png',
-  '/android-chrome-512x512.png',
-  // Azora mascot images
-  '/images/azora/azora-reading.png',
-  '/images/azora/azora-happy.png',
-  '/images/azora/azora-mascot.png',
-  // Logo
-  '/images/logo.png'
+  '/favicon.ico'
 ];
 
-// Install event - cache the app shell
+// Install event - cache the app shell and all initial assets
 self.addEventListener('install', (event) => {
-  console.log('[Azories SW] Installing service worker');
+  console.log('[Azories SW] Installing service worker v2');
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => {
+      .then(async (cache) => {
         console.log('[Azories SW] Caching app shell');
-        // Cache files that exist, don't fail if some are missing
-        return Promise.allSettled(
+        
+        // Cache static files first
+        await Promise.allSettled(
           APP_SHELL.map(url => 
             cache.add(url).catch(err => {
               console.warn(`[Azories SW] Failed to cache ${url}:`, err.message);
             })
           )
         );
-      })
-      .then(() => {
+        
+        // Fetch and cache the main page to get JS/CSS bundle URLs
+        try {
+          const response = await fetch('/');
+          if (response.ok) {
+            const html = await response.text();
+            
+            // Extract JS and CSS URLs from the HTML
+            const jsMatches = html.match(/\/static\/js\/[^"']+\.js/g) || [];
+            const cssMatches = html.match(/\/static\/css\/[^"']+\.css/g) || [];
+            
+            const allAssets = [...new Set([...jsMatches, ...cssMatches])];
+            console.log('[Azories SW] Found assets to cache:', allAssets.length);
+            
+            // Cache all discovered assets
+            await Promise.allSettled(
+              allAssets.map(url => 
+                cache.add(url).catch(err => {
+                  console.warn(`[Azories SW] Failed to cache asset ${url}:`, err.message);
+                })
+              )
+            );
+          }
+        } catch (e) {
+          console.warn('[Azories SW] Could not fetch index for asset discovery:', e);
+        }
+        
         console.log('[Azories SW] App shell cached successfully');
         return self.skipWaiting();
       })
   );
 });
 
-// Activate event - clean up old caches
+// Activate event - clean up old caches and take control immediately
 self.addEventListener('activate', (event) => {
   console.log('[Azories SW] Activating service worker');
   event.waitUntil(
@@ -57,7 +72,7 @@ self.addEventListener('activate', (event) => {
       .then((cacheNames) => {
         return Promise.all(
           cacheNames
-            .filter((cacheName) => cacheName !== CACHE_NAME)
+            .filter((cacheName) => cacheName.startsWith('azories-') && cacheName !== CACHE_NAME)
             .map((cacheName) => {
               console.log('[Azories SW] Deleting old cache:', cacheName);
               return caches.delete(cacheName);
@@ -85,7 +100,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   
-  // Skip external URLs (Cloudinary images, etc.) - let them use browser cache
+  // Skip external URLs (Cloudinary, etc.) - except for cached offline book images
   if (url.origin !== self.location.origin) {
     return;
   }
@@ -104,48 +119,83 @@ self.addEventListener('fetch', (event) => {
           }
           return response;
         })
-        .catch(() => {
-          // Offline - try to serve cached version or offline page
-          return caches.match(event.request)
-            .then(cached => cached || caches.match('/offline.html'));
+        .catch(async () => {
+          // Offline - try to serve cached version
+          const cached = await caches.match(event.request);
+          if (cached) return cached;
+          
+          // Try the index page
+          const indexCached = await caches.match('/');
+          if (indexCached) return indexCached;
+          
+          // Last resort - offline page
+          return caches.match('/offline.html');
         })
     );
     return;
   }
   
-  // For other app shell assets (JS, CSS, images), use cache-first strategy
-  event.respondWith(
-    caches.match(event.request)
-      .then(cached => {
-        if (cached) {
-          return cached;
-        }
-        
-        // Not in cache, fetch from network
-        return fetch(event.request)
-          .then(response => {
-            // Don't cache non-successful responses
-            if (!response || response.status !== 200 || response.type !== 'basic') {
+  // For static assets (JS, CSS, fonts, images), use cache-first strategy
+  // This is crucial for offline functionality
+  const isStaticAsset = url.pathname.startsWith('/static/') || 
+                        url.pathname.endsWith('.js') || 
+                        url.pathname.endsWith('.css') ||
+                        url.pathname.endsWith('.woff2') ||
+                        url.pathname.endsWith('.woff') ||
+                        url.pathname.match(/\.(png|jpg|jpeg|gif|svg|ico|webp)$/);
+  
+  if (isStaticAsset) {
+    event.respondWith(
+      caches.match(event.request)
+        .then(cached => {
+          if (cached) {
+            // Return cached version immediately, but update cache in background
+            fetch(event.request).then(response => {
+              if (response.ok) {
+                caches.open(CACHE_NAME).then(cache => {
+                  cache.put(event.request, response);
+                });
+              }
+            }).catch(() => {});
+            return cached;
+          }
+          
+          // Not in cache, fetch and cache
+          return fetch(event.request)
+            .then(response => {
+              if (response.ok) {
+                const responseClone = response.clone();
+                caches.open(CACHE_NAME).then(cache => {
+                  cache.put(event.request, responseClone);
+                });
+              }
               return response;
-            }
-            
-            // Cache the fetched response for future
-            const responseClone = response.clone();
-            caches.open(CACHE_NAME).then(cache => {
-              cache.put(event.request, responseClone);
+            })
+            .catch(() => {
+              // Return a placeholder for images if offline
+              if (url.pathname.match(/\.(png|jpg|jpeg|gif|svg|webp)$/)) {
+                return new Response('', { status: 404 });
+              }
+              return new Response('Offline', { status: 503 });
             });
-            
-            return response;
-          })
-          .catch(() => {
-            // Offline and not cached - return offline page for HTML
-            if (event.request.headers.get('accept').includes('text/html')) {
-              return caches.match('/offline.html');
-            }
-            // For other assets, just fail
-            return new Response('Offline', { status: 503 });
+        })
+    );
+    return;
+  }
+  
+  // Default: network-first for everything else
+  event.respondWith(
+    fetch(event.request)
+      .then(response => {
+        if (response.ok) {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseClone);
           });
+        }
+        return response;
       })
+      .catch(() => caches.match(event.request))
   );
 });
 
@@ -153,5 +203,17 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
+  }
+  
+  // Allow the app to request caching of specific URLs
+  if (event.data && event.data.type === 'CACHE_URLS') {
+    const urls = event.data.urls || [];
+    caches.open(CACHE_NAME).then(cache => {
+      urls.forEach(url => {
+        cache.add(url).catch(err => {
+          console.warn(`[Azories SW] Failed to cache requested URL ${url}:`, err.message);
+        });
+      });
+    });
   }
 });
