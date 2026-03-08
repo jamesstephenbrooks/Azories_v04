@@ -486,9 +486,19 @@ export default function StoryCreator() {
             
             {/* Can navigate away message */}
             {!['completed', 'partial', 'failed'].includes(jobStatus.status) && (
-              <p className="text-xs text-purple-400 mt-8">
-                You can close this page and come back later — your story will keep generating!
-              </p>
+              <>
+                <p className="text-xs text-purple-400 mt-8">
+                  You can close this page and come back later — your story will keep generating!
+                </p>
+                <Button
+                  variant="ghost"
+                  onClick={cancelGeneration}
+                  className="mt-4 text-purple-400 hover:text-purple-300 hover:bg-purple-900/30"
+                  data-testid="cancel-generation-btn"
+                >
+                  <FiX className="mr-2" /> Cancel & Start Fresh
+                </Button>
+              </>
             )}
           </motion.div>
         </div>
