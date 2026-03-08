@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -44,6 +44,16 @@ export default function ProStudio() {
   const { user, token } = useAuth();
   const isAuthenticated = !!user;
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Read URL params — e.g. from BookEditor "Create Scene" button
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tabParam = params.get('tab');
+    const promptParam = params.get('prompt');
+    if (tabParam) setActiveTab(tabParam);
+    if (promptParam && tabParam === 'scenes') setSceneDescription(decodeURIComponent(promptParam));
+  }, []);
   
   // Main state
   const [activeTab, setActiveTab] = useState('characters');
@@ -2159,6 +2169,15 @@ export default function ProStudio() {
       
       // Handle both object format {url, name, prompt} and direct URL
       const imageUrl = typeof imageUrlOrItem === 'string' ? imageUrlOrItem : imageUrlOrItem?.url;
+      
+      // Duplicate check - don't save if this URL is already in the gallery
+      const isDuplicate = gallery.some(item => 
+        (item.image_url || item.url) === imageUrl
+      );
+      if (isDuplicate) {
+        toast.info('Already saved to gallery');
+        return;
+      }
       const name = typeof imageUrlOrItem === 'object' ? (imageUrlOrItem?.name || imageUrlOrItem?.prompt || promptOrName) : promptOrName;
       const prompt = typeof imageUrlOrItem === 'object' ? (imageUrlOrItem?.prompt || '') : promptOrName;
       // Get thumbnail from object or use provided thumbnailUrl
@@ -2753,17 +2772,10 @@ export default function ProStudio() {
                     size="sm" 
                     onClick={(e) => {
                       e.stopPropagation();
-                      // Create download link
-                      const link = document.createElement('a');
-                      link.href = previewImage.url;
-                      link.download = previewImage.isVideo 
+                      const filename = previewImage.isVideo 
                         ? `character-video-${Date.now()}.mp4`
                         : `character-image-${Date.now()}.png`;
-                      link.target = '_blank';
-                      document.body.appendChild(link);
-                      link.click();
-                      document.body.removeChild(link);
-                      toast.success('Download started');
+                      downloadMedia(previewImage.url, filename);
                     }}
                     className="bg-purple-600 hover:bg-purple-700 active:bg-purple-800 active:scale-95"
                   >

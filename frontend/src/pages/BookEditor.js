@@ -16,7 +16,7 @@ import { toast } from 'sonner';
 import { 
   FiArrowLeft, FiPlus, FiSave, FiTrash2, FiImage, FiVideo, FiUpload,
   FiBook, FiSettings, FiLoader, FiGrid, FiLayout, FiBookOpen, FiMic, FiZap, FiDownload,
-  FiUsers, FiUser, FiLayers, FiX, FiMaximize2, FiAlertTriangle, FiEdit3
+  FiUsers, FiUser, FiLayers, FiX, FiMaximize2, FiAlertTriangle, FiEdit3, FiExternalLink
 } from 'react-icons/fi';
 import CollaborativeWriting from '@/components/CollaborativeWriting';
 import { MediaGalleryPicker } from '@/components/MediaGallery';
@@ -2161,6 +2161,22 @@ export default function BookEditor() {
                               </div>
                             </DialogContent>
                           </Dialog>
+                        </div>
+
+                        {/* Create Scene in Pro Studio */}
+                        <div className="grid grid-cols-1 gap-2">
+                          <Button
+                            variant="outline"
+                            className="w-full rounded-full border-purple-500/30 hover:border-purple-500/50 text-purple-600 hover:text-purple-700"
+                            onClick={() => {
+                              const pageText = selectedPage?.text_content?.trim();
+                              const url = '/pro-studio?tab=scenes' + (pageText ? `&prompt=${encodeURIComponent(pageText.slice(0, 200))}` : '');
+                              window.open(url, '_blank');
+                            }}
+                          >
+                            <FiExternalLink className="mr-2 w-4 h-4" />
+                            Create Scene with Characters
+                          </Button>
                         </div>
                         
                         {/* Upload Video Row */}
