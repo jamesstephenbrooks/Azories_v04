@@ -20,10 +20,26 @@ const STORE_AUDIO = 'audio';
 // Convert to ArrayBuffer before storing, back to Blob when reading.
 async function blobToArrayBuffer(blob) {
   if (!blob) return null;
+  
+  // Add timeout to prevent hanging on corrupted blobs
   return new Promise((resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      reject(new Error('blobToArrayBuffer timeout after 30s'));
+    }, 30000);
+    
     const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(reader.error);
+    reader.onload = () => {
+      clearTimeout(timeoutId);
+      resolve(reader.result);
+    };
+    reader.onerror = () => {
+      clearTimeout(timeoutId);
+      reject(reader.error || new Error('FileReader error'));
+    };
+    reader.onabort = () => {
+      clearTimeout(timeoutId);
+      reject(new Error('FileReader aborted'));
+    };
     reader.readAsArrayBuffer(blob);
   });
 }
@@ -110,6 +126,20 @@ class OfflineStorageService {
     let savedItems = 0;
     let totalBytes = 0;
 
+    // Helper function to fetch with timeout
+    const fetchWithTimeout = async (url, timeoutMs = 30000) => {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        const response = await fetch(url, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        return response;
+      } catch (e) {
+        clearTimeout(timeoutId);
+        throw e;
+      }
+    };
+
     try {
       // --- Step 1: Fetch cover image ---
       let coverBuffer = null;
@@ -117,7 +147,10 @@ class OfflineStorageService {
       if (book.cover_image) {
         try {
           onProgress(savedItems, totalItems, 'Downloading cover...');
-          const coverResponse = await fetch(book.cover_image);
+          const coverResponse = await fetchWithTimeout(book.cover_image);
+          if (!coverResponse.ok) {
+            throw new Error(`HTTP ${coverResponse.status}`);
+          }
           const blob = await coverResponse.blob();
           coverMime = blob.type || 'image/jpeg';
           // FIX 1: Store as ArrayBuffer
@@ -125,6 +158,7 @@ class OfflineStorageService {
           totalBytes += coverBuffer.byteLength;
         } catch (e) {
           console.warn('Failed to fetch cover image:', e);
+          // Continue without cover - don't freeze
         }
       }
       savedItems++;
@@ -141,7 +175,10 @@ class OfflineStorageService {
         if (imageUrl) {
           try {
             onProgress(savedItems, totalItems, `Downloading page ${i + 1} image...`);
-            const response = await fetch(imageUrl);
+            const response = await fetchWithTimeout(imageUrl);
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status}`);
+            }
             const blob = await response.blob();
             imageMime = blob.type || 'image/jpeg';
             // FIX 1: Store as ArrayBuffer
@@ -149,6 +186,7 @@ class OfflineStorageService {
             totalBytes += imageBuffer.byteLength;
           } catch (e) {
             console.warn(`Failed to fetch image for page ${i + 1}:`, e);
+            // Continue without this image - don't freeze
           }
         }
 
@@ -179,7 +217,10 @@ class OfflineStorageService {
 
           try {
             onProgress(savedItems, totalItems, `Downloading narration ${i + 1}/${audioPages.length}...`);
-            const audioResponse = await fetch(page.audio_url);
+            const audioResponse = await fetchWithTimeout(page.audio_url, 60000); // 60s for audio
+            if (!audioResponse.ok) {
+              throw new Error(`HTTP ${audioResponse.status}`);
+            }
             const audioBlob = await audioResponse.blob();
             const audioBuffer = await blobToArrayBuffer(audioBlob);
             totalBytes += audioBuffer.byteLength;
@@ -195,6 +236,7 @@ class OfflineStorageService {
             });
           } catch (e) {
             console.warn(`Failed to cache audio for page ${pageNumber}:`, e);
+            // Continue without this audio - don't freeze
           }
 
           savedItems++;
