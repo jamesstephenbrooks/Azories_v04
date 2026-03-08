@@ -656,31 +656,35 @@ app = FastAPI(
 )
 
 # CORS Configuration - MUST be added immediately after app creation
-# This ensures OPTIONS preflight requests are handled correctly
-cors_allowed_origins = [
-    "https://azories.com",
-    "https://www.azories.com",
-    "http://localhost:3000",
-    "http://localhost:3001",
-    "https://ai-narrative-hub-3.preview.emergentagent.com",
-]
+# Using allow_origins=["*"] for maximum compatibility across all deployments
+cors_env = os.environ.get('CORS_ORIGINS', '*')
 
-# Add any additional origins from environment
-cors_env = os.environ.get('CORS_ORIGINS', '')
-if cors_env:
-    for origin in cors_env.split(','):
-        origin = origin.strip()
-        if origin and origin not in cors_allowed_origins:
-            cors_allowed_origins.append(origin)
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=cors_allowed_origins,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"],
-    allow_headers=["*"],
-    expose_headers=["*"],
-)
+if cors_env == '*':
+    # Allow all origins - works with all deployment environments
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=False,  # Must be False when using wildcard origins
+        allow_methods=["*"],
+        allow_headers=["*"],
+        expose_headers=["*"],
+    )
+else:
+    # Explicit origins list
+    cors_allowed_origins = [o.strip() for o in cors_env.split(',') if o.strip()]
+    cors_allowed_origins.extend([
+        "https://azories.com",
+        "https://www.azories.com",
+        "http://localhost:3000",
+    ])
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=cors_allowed_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+        expose_headers=["*"],
+    )
 
 # Global exception handler to prevent server crashes
 @app.exception_handler(Exception)
