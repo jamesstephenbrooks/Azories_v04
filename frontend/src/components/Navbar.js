@@ -167,7 +167,7 @@ export const Navbar = () => {
                   onClick={() => navigate('/pro-studio')}
                   data-testid="menu-pro-studio"
                 >
-                  <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/fc9fef9d7b633d89adb1ccc493f764c017dd83f2ca7c75cef8eae82037761b14.png" alt="" className="w-5 h-5 mr-2 object-contain" />
+                  <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/9de85d575bb699661553a31cef27fb34df03f2a5edf7d04dd8f27eda40e2df80.png" alt="" className="w-5 h-5 mr-2 object-contain" />
                   Pro Studio
                 </DropdownMenuItem>
                 <DropdownMenuItem 
