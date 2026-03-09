@@ -227,6 +227,8 @@ async def register(user_data: UserCreate, background_tasks: BackgroundTasks):
         "is_vip": is_vip,
         "pro_trial": True,
         "pro_trial_expires_at": trial_expires,
+        "free_stories_remaining": 3,  # 3 free AI story creations
+        "free_stories_used": 0,  # Track usage
         "created_at": now_iso
     }
     await db.users.insert_one(user)
