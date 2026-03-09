@@ -267,10 +267,10 @@ export default function StoryCreator() {
   };
   
   const canCreateFree = () => {
+    // Free stories available for both kids and older_kids modes, any page count
     return trialStatus.has_free_stories && 
            trialStatus.free_stories_remaining > 0 && 
-           creatorMode === 'kids' && 
-           formData.num_pages <= 5;
+           (creatorMode === 'kids' || creatorMode === 'older_kids');
   };
   
   const handleSubmit = async (e) => {
@@ -902,7 +902,7 @@ export default function StoryCreator() {
                       <SelectContent>
                         {pageOptions.map(pages => (
                           <SelectItem key={pages} value={String(pages)}>
-                            {pages} pages ({pricing?.page_credits?.[pages] || pages} credits)
+                            {pages} pages {canCreateFree() ? '(FREE)' : `(${pricing?.page_credits?.[pages] || pages} credits)`}
                           </SelectItem>
                         ))}
                       </SelectContent>
