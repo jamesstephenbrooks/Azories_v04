@@ -332,7 +332,7 @@ export default function StoryCreator() {
   // Story templates for Kids Mode - Using custom generated icons
   const kidsTemplates = [
     { 
-      icon: 'https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/fef9f9b3a6c26dadc5456b86cbcb791e3ac4c7d2cf16c62a65bc0123f0f797a3.png',
+      icon: 'https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/e4683f4e6fd446e9d42b43b684bb626d31dedf1a1c3c13eb07267c59e97823fc.png',
       emoji: '🐉', // Keep emoji as fallback
       title: 'Dragon Friend', 
       character: 'A kind child', 
@@ -361,6 +361,9 @@ export default function StoryCreator() {
     },
   ];
   
+  // Blaze the dragon - main mascot icon
+  const blazeDragonIcon = 'https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/e4683f4e6fd446e9d42b43b684bb626d31dedf1a1c3c13eb07267c59e97823fc.png';
+  
   // Render progress page when generating
   if (isGenerating && jobStatus) {
     return (
@@ -373,7 +376,7 @@ export default function StoryCreator() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            {/* Azora Animation */}
+            {/* Blaze Animation */}
             <div className="relative mb-8">
               <motion.div
                 animate={{ 
@@ -384,8 +387,8 @@ export default function StoryCreator() {
                 className="w-32 h-32 mx-auto"
               >
                 <img 
-                  src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/fef9f9b3a6c26dadc5456b86cbcb791e3ac4c7d2cf16c62a65bc0123f0f797a3.png"
-                  alt="Azora Dragon"
+                  src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/e4683f4e6fd446e9d42b43b684bb626d31dedf1a1c3c13eb07267c59e97823fc.png"
+                  alt="Blaze the Dragon"
                   className="w-full h-full rounded-full object-cover shadow-lg"
                 />
               </motion.div>
@@ -612,8 +615,8 @@ export default function StoryCreator() {
           {creatorMode === 'kids' ? (
             <>
               <img 
-                src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/fef9f9b3a6c26dadc5456b86cbcb791e3ac4c7d2cf16c62a65bc0123f0f797a3.png" 
-                alt="Azora Dragon" 
+                src={blazeDragonIcon}
+                alt="Blaze the Dragon" 
                 className="w-24 h-24 mx-auto mb-4 rounded-2xl object-cover"
               />
               <h1 className="text-4xl font-bold text-purple-900 mb-2">
@@ -632,7 +635,7 @@ export default function StoryCreator() {
                 Create sophisticated stories for teens and adults
               </p>
             </>
-          )}}
+          )}}}
         </div>
         
         {/* Credits/Free Stories Banner */}
