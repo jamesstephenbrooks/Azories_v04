@@ -5088,7 +5088,7 @@ async def create_character(request: CharacterCreate, current_user: dict = Depend
                 try:
                     result = await generate_image_flux(
                         prompt=gen_prompt,
-                        model="flux-schnell",
+                        model="flux-dev",
                         image_size="square_hd",
                         num_images=1
                     )
@@ -5268,7 +5268,7 @@ async def generate_character_thumbnail(character_id: str, current_user: dict = D
         
         result = await generate_image_flux(
             prompt=gen_prompt,
-            model="flux-schnell",
+            model="flux-dev",
             image_size="square_hd",
             num_images=1
         )
@@ -5486,7 +5486,7 @@ async def regenerate_character_thumbnail(character_id: str, current_user: dict =
         if FAL_AVAILABLE:
             result = await generate_image_flux(
                 prompt=gen_prompt,
-                model="flux-schnell",
+                model="flux-dev",
                 image_size="square_hd",
                 num_images=1
             )
@@ -5599,7 +5599,7 @@ async def create_scene(request: SceneCreate, current_user: dict = Depends(get_cu
             try:
                 result = await generate_image_flux(
                     prompt=gen_prompt,
-                    model="flux-schnell",
+                    model="flux-dev",
                     image_size="portrait_4_3",
                     num_images=1
                 )
@@ -5814,7 +5814,7 @@ async def generate_scene_image(scene_id: str, request: dict, current_user: dict 
         if FAL_AVAILABLE:
             result = await generate_image_flux(
                 prompt=full_prompt,
-                model="flux-schnell",
+                model="flux-dev",
                 image_size=request.get("image_size", "portrait_4_3"),
                 num_images=1
             )
@@ -7210,7 +7210,7 @@ async def generate_single_image(prompt: str, style_desc: str) -> str:
             # Use print_quality for correct 8x10 ratio (2400x3000px at 300 DPI)
             result = await generate_image_flux(
                 prompt=full_prompt,
-                model="flux-schnell",
+                model="flux-dev",
                 image_size="portrait_4_3",
                 num_images=1,
                 print_quality=True
@@ -7244,7 +7244,7 @@ async def generate_single_image(prompt: str, style_desc: str) -> str:
             
             result = await generate_image_flux(
                 prompt=full_prompt,
-                model="flux-schnell",  # Standard FLUX model as fallback
+                model="flux-dev",  # Standard FLUX model as fallback
                 image_size="portrait_4_3",
                 num_images=1,
                 guidance_scale=3.5,
@@ -7410,16 +7410,16 @@ async def generate_story_async(request: AIStoryRequest, background_tasks: Backgr
     page_count = request.num_pages
     credits_needed = AI_STORY_PAGE_CREDITS.get(page_count, 5)
     
-    # Check free stories (for both Kids Mode and Older Kids Mode, 5 pages max)
+    # Check free stories (for both Kids Mode and Older Kids Mode, any page count)
     free_stories_remaining = current_user.get("free_stories_remaining")
     free_stories_used = current_user.get("free_stories_used", 0)
     
     if free_stories_remaining is None:
         free_stories_remaining = max(0, 3 - free_stories_used)
     
-    # Free stories available for both kids and older_kids modes (shared pool of 3)
+    # Free stories available for both kids and older_kids modes (shared pool of 3, any page count)
     is_kids_or_older_kids = request.creator_mode in ["kids", "older_kids"]
-    is_free_eligible = is_kids_or_older_kids and page_count <= 5
+    is_free_eligible = is_kids_or_older_kids  # No page count restriction
     has_free_stories = free_stories_remaining > 0 and is_free_eligible
     
     if has_free_stories:
@@ -7562,7 +7562,7 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
     """Generate a complete story from an idea using AI, with images
     
     Business Logic:
-    - First 3 stories are FREE for all users (Kids Mode only, max 5 pages)
+    - First 3 stories are FREE for all users (Kids Mode or Older Kids Mode, any page count)
     - After free stories, credits scale with page count
     - Story Studio mode always requires credits
     """
@@ -7579,9 +7579,9 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
     if free_stories_remaining is None:
         free_stories_remaining = max(0, 3 - free_stories_used)
     
-    # Free stories for Kids Mode OR Older Kids Mode with 5 pages (shared pool of 3)
+    # Free stories for Kids Mode OR Older Kids Mode (shared pool of 3, any page count)
     is_kids_or_older_kids = request.creator_mode in ["kids", "older_kids"]
-    is_free_eligible = is_kids_or_older_kids and page_count <= 5
+    is_free_eligible = is_kids_or_older_kids  # No page count restriction
     has_free_stories = free_stories_remaining > 0 and is_free_eligible
     
     if has_free_stories:
@@ -7986,7 +7986,7 @@ Return ONLY the JSON array, no other text."""
                         # print_quality=True generates at 2400x3000 (8x10 at 300 DPI)
                         result = await generate_image_flux(
                             prompt=full_prompt,
-                            model="flux-schnell",
+                            model="flux-dev",
                             image_size="portrait_4_3",  # Fallback if print_quality doesn't work
                             num_images=1,
                             print_quality=True  # Generate at correct 8x10 ratio for printing
@@ -8052,7 +8052,7 @@ Return ONLY the JSON array, no other text."""
                 # print_quality=True generates at 2400x3000 (8x10 at 300 DPI)
                 cover_result = await generate_image_flux(
                     prompt=cover_prompt,
-                    model="flux-schnell",
+                    model="flux-dev",
                     image_size="portrait_4_3",  # Fallback if print_quality doesn't work
                     num_images=1,
                     print_quality=True  # Generate at correct 8x10 ratio for printing
@@ -11510,7 +11510,7 @@ async def generate_starter_library_images(
             # Generate image using fal.ai flux-dev
             image_result = await generate_image_flux(
                 prompt=item['prompt'],
-                model="flux-schnell",
+                model="flux-dev",
                 image_size="square_hd",
                 num_images=1
             )
