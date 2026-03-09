@@ -342,8 +342,8 @@ async def forgot_password(request: ForgotPasswordRequest, background_tasks: Back
     })
     print(f"[FORGOT-PASSWORD] Reset token stored for user {user['id']}")
     
-    # Get app URL for reset link
-    app_url = os.environ.get("APP_URL", "https://azories.com")
+    # Get app URL for reset link - ALWAYS use azories.com for production emails
+    app_url = "https://azories.com"  # Hardcoded to prevent misconfigured env vars
     reset_url = f"{app_url}/reset-password?token={reset_token}"
     
     # Debug email configuration

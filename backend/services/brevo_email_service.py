@@ -21,7 +21,7 @@ BREVO_SMTP_PORT = 587
 SENDER_EMAIL = os.environ.get("BREVO_SENDER_EMAIL", "noreply@azories.com")
 SENDER_NAME = os.environ.get("BREVO_SENDER_NAME", "Azories")
 APP_NAME = "Azories"
-APP_URL = os.environ.get("APP_URL", "https://azories.com")
+APP_URL = "https://azories.com"  # Hardcoded to prevent misconfigured env vars
 
 
 def is_configured() -> bool:
