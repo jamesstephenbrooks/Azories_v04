@@ -6705,7 +6705,7 @@ async def generate_consistent_character_image(
             genre_desc = character.get('genre', 'fantasy')
             
             # Build character appearance string from stored traits
-            physical_traits = character.get('physical_traits', {})
+            physical_traits = character.get('physical_traits') or {}  # Handle None explicitly
             appearance_parts = []
             if physical_traits.get('hair_color'):
                 appearance_parts.append(f"{physical_traits['hair_color']} hair")
@@ -6784,6 +6784,9 @@ async def generate_consistent_character_image(
         
         raise HTTPException(status_code=500, detail="No generation method available")
         
+    except HTTPException:
+        # Re-raise HTTP exceptions as-is (preserve status codes like 402)
+        raise
     except Exception as e:
         logger.error(f"Consistent character generation error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
