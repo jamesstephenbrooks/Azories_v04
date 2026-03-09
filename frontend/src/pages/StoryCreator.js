@@ -329,12 +329,36 @@ export default function StoryCreator() {
   const ageRanges = pricing?.age_ranges?.[creatorMode] || [];
   const pageOptions = pricing?.page_options?.[creatorMode] || [5, 10, 15];
   
-  // Story templates for Kids Mode
+  // Story templates for Kids Mode - Using custom generated icons
   const kidsTemplates = [
-    { emoji: '🐉', title: 'Dragon Friend', character: 'A kind child', story: 'Finds a tiny lost dragon egg in the garden and must help it hatch and find its family' },
-    { emoji: '🧙', title: 'Magic School', character: 'A curious young wizard', story: 'Discovers a hidden door that leads to a magical world full of friendly creatures' },
-    { emoji: '🚀', title: 'Space Explorer', character: 'A brave young astronaut', story: 'Crash lands on a friendly alien planet and must find their way home' },
-    { emoji: '🦁', title: 'Animal Friends', character: 'A small lion cub', story: 'Leo is scared of the dark and learns to be brave with help from woodland friends' },
+    { 
+      icon: 'https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/fef9f9b3a6c26dadc5456b86cbcb791e3ac4c7d2cf16c62a65bc0123f0f797a3.png',
+      emoji: '🐉', // Keep emoji as fallback
+      title: 'Dragon Friend', 
+      character: 'A kind child', 
+      story: 'Finds a tiny lost dragon egg in the garden and must help it hatch and find its family' 
+    },
+    { 
+      icon: 'https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/0b181929949bf753e2858b4d0491d4a6a4bd6b86aa9fd8a34c3e29559eea1ce6.png',
+      emoji: '🧙', 
+      title: 'Magic School', 
+      character: 'A curious young wizard', 
+      story: 'Discovers a hidden door that leads to a magical world full of friendly creatures' 
+    },
+    { 
+      icon: 'https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/853e6c81774dbbc19988f585e9aad05ac84990a243dd3b416937c926f7258352.png',
+      emoji: '🚀', 
+      title: 'Space Explorer', 
+      character: 'A brave young astronaut', 
+      story: 'Crash lands on a friendly alien planet and must find their way home' 
+    },
+    { 
+      icon: 'https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/a36ee88afe791ec43e72c22ad14f7925b359ade24194eba7e53ae3d5438459c5.png',
+      emoji: '🦁', 
+      title: 'Animal Friends', 
+      character: 'A small lion cub', 
+      story: 'Leo is scared of the dark and learns to be brave with help from woodland friends' 
+    },
   ];
   
   // Render progress page when generating
@@ -359,9 +383,11 @@ export default function StoryCreator() {
                 transition={{ duration: 3, repeat: Infinity }}
                 className="w-32 h-32 mx-auto"
               >
-                <div className="w-full h-full rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-6xl">
-                  🐉
-                </div>
+                <img 
+                  src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/fef9f9b3a6c26dadc5456b86cbcb791e3ac4c7d2cf16c62a65bc0123f0f797a3.png"
+                  alt="Azora Dragon"
+                  className="w-full h-full rounded-full object-cover shadow-lg"
+                />
               </motion.div>
               
               {/* Magic sparkles */}
@@ -585,7 +611,11 @@ export default function StoryCreator() {
         <div className="text-center mb-8">
           {creatorMode === 'kids' ? (
             <>
-              <div className="w-24 h-24 mx-auto mb-4 text-6xl">🐉</div>
+              <img 
+                src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/fef9f9b3a6c26dadc5456b86cbcb791e3ac4c7d2cf16c62a65bc0123f0f797a3.png" 
+                alt="Azora Dragon" 
+                className="w-24 h-24 mx-auto mb-4 rounded-2xl object-cover"
+              />
               <h1 className="text-4xl font-bold text-purple-900 mb-2">
                 AI Story Creator
               </h1>
@@ -602,7 +632,7 @@ export default function StoryCreator() {
                 Create sophisticated stories for teens and adults
               </p>
             </>
-          )}
+          )}}
         </div>
         
         {/* Credits/Free Stories Banner */}
@@ -668,7 +698,11 @@ export default function StoryCreator() {
                   className="p-4 rounded-xl bg-white shadow-md hover:shadow-lg border-2 border-transparent hover:border-purple-300 transition-all text-center"
                   data-testid={`template-${template.title.toLowerCase().replace(' ', '-')}`}
                 >
-                  <div className="text-3xl mb-2">{template.emoji}</div>
+                  {template.icon ? (
+                    <img src={template.icon} alt={template.title} className="w-12 h-12 mx-auto mb-2 rounded-lg object-cover" />
+                  ) : (
+                    <div className="text-3xl mb-2">{template.emoji}</div>
+                  )}
                   <div className="text-sm font-medium text-purple-800">{template.title}</div>
                 </button>
               ))}
