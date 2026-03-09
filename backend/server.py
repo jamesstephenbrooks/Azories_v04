@@ -7410,15 +7410,16 @@ async def generate_story_async(request: AIStoryRequest, background_tasks: Backgr
     page_count = request.num_pages
     credits_needed = AI_STORY_PAGE_CREDITS.get(page_count, 5)
     
-    # Check free stories (only for Kids Mode, 5 pages)
+    # Check free stories (for both Kids Mode and Older Kids Mode, 5 pages max)
     free_stories_remaining = current_user.get("free_stories_remaining")
     free_stories_used = current_user.get("free_stories_used", 0)
     
     if free_stories_remaining is None:
         free_stories_remaining = max(0, 3 - free_stories_used)
     
-    is_kids_mode = request.creator_mode == "kids"
-    is_free_eligible = is_kids_mode and page_count <= 5
+    # Free stories available for both kids and older_kids modes (shared pool of 3)
+    is_kids_or_older_kids = request.creator_mode in ["kids", "older_kids"]
+    is_free_eligible = is_kids_or_older_kids and page_count <= 5
     has_free_stories = free_stories_remaining > 0 and is_free_eligible
     
     if has_free_stories:
@@ -7570,7 +7571,7 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
     credits_needed = AI_STORY_PAGE_CREDITS.get(page_count, 5)
     
     # Check if user has free stories remaining (3 free stories for new users)
-    # Free stories only available for Kids Mode and 5 pages
+    # Free stories available for both Kids Mode and Older Kids Mode (shared pool)
     free_stories_remaining = current_user.get("free_stories_remaining")
     free_stories_used = current_user.get("free_stories_used", 0)
     
@@ -7578,9 +7579,9 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
     if free_stories_remaining is None:
         free_stories_remaining = max(0, 3 - free_stories_used)
     
-    # Free stories only for Kids Mode with 5 pages
-    is_kids_mode = request.creator_mode == "kids"
-    is_free_eligible = is_kids_mode and page_count <= 5
+    # Free stories for Kids Mode OR Older Kids Mode with 5 pages (shared pool of 3)
+    is_kids_or_older_kids = request.creator_mode in ["kids", "older_kids"]
+    is_free_eligible = is_kids_or_older_kids and page_count <= 5
     has_free_stories = free_stories_remaining > 0 and is_free_eligible
     
     if has_free_stories:
