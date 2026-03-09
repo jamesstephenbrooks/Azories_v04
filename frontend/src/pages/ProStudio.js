@@ -129,6 +129,7 @@ export default function ProStudio() {
   const [sceneName, setSceneName] = useState('');
   const [sceneDescription, setSceneDescription] = useState('');
   const [sceneStyle, setSceneStyle] = useState('illustration');
+  const [sceneSelectedCharacters, setSceneSelectedCharacters] = useState([]);
   const [sceneGenre, setSceneGenre] = useState('fantasy');
   const [sceneLocationType, setSceneLocationType] = useState('outdoor');
   const [sceneLighting, setSceneLighting] = useState('natural');
@@ -1290,7 +1291,8 @@ export default function ProStudio() {
           lighting: sceneLighting,
           mood: sceneMood,
           time_of_day: sceneTimeOfDay,
-          weather: sceneWeather
+          weather: sceneWeather,
+          character_ids: sceneSelectedCharacters.map(c => c.id)
         })
       });
 
@@ -1303,6 +1305,7 @@ export default function ProStudio() {
         setSceneDescription('');
         setSceneTimeOfDay('');
         setSceneWeather('');
+        setSceneSelectedCharacters([]);
       } else {
         const error = await response.json();
         toast.error(error.detail || 'Error creating scene');
@@ -3292,10 +3295,11 @@ export default function ProStudio() {
                   </Button>
                   <div className="w-px h-8 bg-gray-700" />
                   <img 
-                    src={viewingScene.thumbnail || viewingScene.reference_images?.[0]} 
+                    src={viewingScene.thumbnail || viewingScene.reference_images?.[0] || ''} 
                     alt={viewingScene.name}
                     className="w-16 h-10 rounded-lg object-cover cursor-pointer"
-                    onClick={() => setPreviewImage({ url: viewingScene.thumbnail, prompt: viewingScene.name })}
+                    onError={(e) => e.target.style.display='none'}
+                    onClick={() => viewingScene.thumbnail && setPreviewImage({ url: viewingScene.thumbnail, prompt: viewingScene.name })}
                   />
                   <div>
                     <h2 className="text-xl font-bold text-white">{viewingScene.name}</h2>
@@ -4282,6 +4286,61 @@ export default function ProStudio() {
                   />
                 </div>
 
+                {/* Character Selector */}
+                <div className="mb-4">
+                  <label className="text-gray-400 text-xs mb-2 block flex items-center gap-1">
+                    <FiUser className="w-3 h-3" /> Add Characters to Scene (optional, up to 4)
+                  </label>
+                  {characters.length === 0 ? (
+                    <p className="text-gray-600 text-xs italic">No characters yet — create one in the Characters tab</p>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {characters.slice(0, 8).map((char) => {
+                        const isSelected = sceneSelectedCharacters.some(c => c.id === char.id);
+                        return (
+                          <button
+                            key={char.id}
+                            type="button"
+                            onClick={() => {
+                              if (isSelected) {
+                                setSceneSelectedCharacters(prev => prev.filter(c => c.id !== char.id));
+                              } else if (sceneSelectedCharacters.length < 4) {
+                                setSceneSelectedCharacters(prev => [...prev, char]);
+                              } else {
+                                toast.error('Maximum 4 characters per scene');
+                              }
+                            }}
+                            className={`relative rounded-lg overflow-hidden border-2 transition-all text-left ${
+                              isSelected ? 'border-purple-500' : 'border-gray-700 hover:border-purple-500/50'
+                            }`}
+                          >
+                            {char.thumbnail_url ? (
+                              <img src={char.thumbnail_url} alt={char.name} className="w-full aspect-square object-cover" />
+                            ) : (
+                              <div className="w-full aspect-square bg-gray-800 flex items-center justify-center">
+                                <FiUser className="text-gray-500 w-6 h-6" />
+                              </div>
+                            )}
+                            <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-1 py-0.5">
+                              <p className="text-white text-xs truncate">{char.name}</p>
+                            </div>
+                            {isSelected && (
+                              <div className="absolute top-1 right-1 bg-purple-500 rounded-full w-5 h-5 flex items-center justify-center">
+                                <FiCheck className="text-white w-3 h-3" />
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                  {sceneSelectedCharacters.length > 0 && (
+                    <p className="text-purple-400 text-xs mt-2">
+                      {sceneSelectedCharacters.map(c => c.name).join(', ')} will appear in this scene
+                    </p>
+                  )}
+                </div>
+
                 {/* Create Button - Hidden on mobile (floating button used instead) */}
                 <Button 
                   onClick={() => {
@@ -4362,9 +4421,9 @@ export default function ProStudio() {
                             <Button
                               size="sm"
                               variant="ghost"
-                              onClick={() => openSceneView(scene)}
+                              onClick={(e) => { e.stopPropagation(); openSceneView(scene); }}
                               className="text-purple-400 hover:bg-purple-500/20 p-1"
-                              title="View scene folder"
+                              title="Open scene folder"
                             >
                               <FiFolder size={14} />
                             </Button>
