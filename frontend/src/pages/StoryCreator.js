@@ -523,12 +523,12 @@ export default function StoryCreator() {
   }
   
   return (
-    <div className={`min-h-screen min-h-[100dvh] pb-safe ${creatorMode === 'kids' 
+    <div className={`ai-story-creator-page min-h-screen min-h-[100dvh] pb-safe flex flex-col ${creatorMode === 'kids' 
       ? 'bg-gradient-to-b from-purple-100 via-pink-50 to-amber-50' 
       : 'bg-gradient-to-b from-gray-950 via-gray-900 to-purple-950'}`}>
       <Navbar />
       
-      <div className="max-w-4xl mx-auto px-4 pt-24 md:pt-20 pb-24">
+      <div className="max-w-4xl mx-auto px-4 pt-24 md:pt-20 pb-24 flex-1">
         {/* Mode Toggle - extra top margin on mobile/tablet to avoid header overlap */}
         <div className="flex justify-center mb-8 mt-4 md:mt-0">
           <div className={`inline-flex rounded-full p-1 ${creatorMode === 'kids' ? 'bg-white shadow-lg' : 'bg-gray-800'}`}>

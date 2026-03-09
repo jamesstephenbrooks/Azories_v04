@@ -438,3 +438,8 @@ textarea:focus {
   touch-action: inherit;
   pointer-events: auto;
 }
+/* AI Story Creator page - ensure gradient covers full height */
+.ai-story-creator-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
