@@ -210,8 +210,8 @@ async def register(user_data: UserCreate, background_tasks: BackgroundTasks):
     now = datetime.now(timezone.utc)
     now_iso = now.isoformat()
     
-    # 3-day free Pro trial for all new users
-    trial_expires = (now + timedelta(days=3)).isoformat()
+    # 48-hour (2-day) free Pro trial for all new users
+    trial_expires = (now + timedelta(hours=48)).isoformat()
     
     # VIP users get credits
     is_vip = is_vip_user(user_data.email)
@@ -249,7 +249,7 @@ async def register(user_data: UserCreate, background_tasks: BackgroundTasks):
             created_at=now_iso,
             pro_trial=True,
             pro_trial_expires_at=trial_expires,
-            trial_days_remaining=3
+            trial_days_remaining=2
         )
     )
 

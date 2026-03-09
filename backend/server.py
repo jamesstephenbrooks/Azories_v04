@@ -1614,7 +1614,7 @@ async def register(user_data: UserCreate, background_tasks: BackgroundTasks):
             created_at=now_iso,
             pro_trial=True,
             pro_trial_expires_at=trial_expires,
-            trial_days_remaining=3
+            trial_days_remaining=2
         )
     )
 
