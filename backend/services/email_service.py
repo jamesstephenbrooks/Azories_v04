@@ -34,7 +34,7 @@ if BREVO_API_KEY:
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
 BREVO_SENDER_EMAIL = os.environ.get("BREVO_SENDER_EMAIL", "noreply@azories.com")
 APP_NAME = "Azories"
-APP_URL = os.environ.get("APP_URL", "https://azories.com")
+APP_URL = "https://azories.com"  # Hardcoded to prevent misconfigured env vars
 
 # Prefer Resend if configured (Brevo has auth issues), fallback to Brevo
 EMAIL_PROVIDER = "resend" if RESEND_API_KEY else ("brevo" if BREVO_API_KEY else None)
