@@ -86,7 +86,7 @@ export const Navbar = () => {
               className="font-ui text-foreground/80 hover:text-foreground transition-colors flex items-center gap-1.5"
               data-testid="nav-pro-studio"
             >
-              <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/fc9fef9d7b633d89adb1ccc493f764c017dd83f2ca7c75cef8eae82037761b14.png" alt="" className="w-5 h-5 object-contain" />
+              <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/9de85d575bb699661553a31cef27fb34df03f2a5edf7d04dd8f27eda40e2df80.png" alt="" className="w-5 h-5 object-contain" />
               Pro Studio
             </Link>
           )}
@@ -174,7 +174,7 @@ export const Navbar = () => {
                   onClick={() => navigate('/credits')}
                   data-testid="menu-buy-credits"
                 >
-                  <FiDollarSign className="mr-2 text-green-500" />
+                  <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/1501b83d52263b743e57ba5b1060fd241424e47c1a4e7cb89ffdcb01e3177e1b.png" alt="" className="w-5 h-5 mr-2 object-contain" />
                   Buy Credits
                 </DropdownMenuItem>
                 <DropdownMenuItem 
@@ -182,7 +182,7 @@ export const Navbar = () => {
                   className="text-destructive"
                   data-testid="menu-logout"
                 >
-                  <FiLogOut className="mr-2" />
+                  <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/8fd79389761db4e4b8898ec4e7cdcdc944784be1c379c7516f96ab3dfcbd2819.png" alt="" className="w-5 h-5 mr-2 object-contain" />
                   Logout
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -260,7 +260,7 @@ export const Navbar = () => {
               onClick={() => setMobileOpen(false)}
               data-testid="mobile-nav-pro-studio"
             >
-              <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/fc9fef9d7b633d89adb1ccc493f764c017dd83f2ca7c75cef8eae82037761b14.png" alt="" className="w-5 h-5 object-contain" />
+              <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/9de85d575bb699661553a31cef27fb34df03f2a5edf7d04dd8f27eda40e2df80.png" alt="" className="w-5 h-5 object-contain" />
               Pro Studio
             </Link>
           )}
