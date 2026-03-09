@@ -140,7 +140,7 @@ export const Navbar = () => {
                   onClick={() => navigate('/profile')}
                   data-testid="menu-profile"
                 >
-                  <FiUser className="mr-2" />
+                  <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/dd54d8ddc076c4bfe57f8e7e70c2d0367c499aa73e3e19892aefb7cd61f724ba.png" alt="" className="w-5 h-5 mr-2 object-contain" />
                   My Profile
                 </DropdownMenuItem>
                 <DropdownMenuItem 
