@@ -442,4 +442,16 @@ textarea:focus {
 .ai-story-creator-page {
   min-height: 100vh;
   min-height: 100dvh;
+  background-size: 100% 100%;
+  background-attachment: scroll;
+}
+
+/* Kids mode - extend the gradient background color to fill any gaps */
+.ai-story-creator-page.kids-mode-bg {
+  background-color: #fffbeb; /* amber-50 - the end color of the gradient */
+}
+
+/* Studio mode - extend the gradient background color */
+.ai-story-creator-page.studio-mode-bg {
+  background-color: #1e1b4b; /* purple-950 - the end color of the gradient */
 }

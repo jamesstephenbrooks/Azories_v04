@@ -119,6 +119,24 @@ export default function StoryCreator() {
     };
   }, []);
   
+  // Set body background to match page gradient
+  useEffect(() => {
+    const originalBg = document.body.style.background;
+    if (creatorMode === 'kids') {
+      document.body.style.background = 'linear-gradient(to bottom, #f3e8ff, #fdf2f8, #fffbeb)';
+    } else {
+      document.body.style.background = 'linear-gradient(to bottom, #030712, #111827, #1e1b4b)';
+    }
+    document.body.style.backgroundAttachment = 'fixed';
+    document.body.style.minHeight = '100vh';
+    
+    return () => {
+      document.body.style.background = originalBg;
+      document.body.style.backgroundAttachment = '';
+      document.body.style.minHeight = '';
+    };
+  }, [creatorMode]);
+  
   const fetchPricing = async () => {
     try {
       const res = await axios.get(`${API}/ai/story-pricing`);
@@ -555,12 +573,15 @@ export default function StoryCreator() {
   }
   
   return (
-    <div className={`ai-story-creator-page min-h-screen min-h-[100dvh] pb-safe flex flex-col ${creatorMode === 'kids' 
-      ? 'bg-gradient-to-b from-purple-100 via-pink-50 to-amber-50' 
-      : 'bg-gradient-to-b from-gray-950 via-gray-900 to-purple-950'}`}>
+    <div 
+      className={`ai-story-creator-page pb-safe flex flex-col ${creatorMode === 'kids' 
+        ? 'kids-mode-bg bg-gradient-to-b from-purple-100 via-pink-50 to-amber-50' 
+        : 'studio-mode-bg bg-gradient-to-b from-gray-950 via-gray-900 to-purple-950'}`}
+      style={{ minHeight: '100vh', minHeight: '100dvh' }}
+    >
       <Navbar />
       
-      <div className="max-w-4xl mx-auto px-4 pt-28 md:pt-24 pb-24 flex-1">
+      <div className="max-w-4xl mx-auto px-4 pt-28 md:pt-24 pb-24 flex-grow w-full">
         {/* Mode Toggle - extra top margin on mobile/tablet to avoid header overlap */}
         <div className="flex justify-center mb-8 mt-2 md:mt-0">
           <div className={`inline-flex rounded-full p-1 ${creatorMode === 'kids' ? 'bg-white shadow-lg' : 'bg-gray-800'}`}>
