@@ -329,27 +329,31 @@ export default function StoryCreator() {
   const ageRanges = pricing?.age_ranges?.[creatorMode] || [];
   const pageOptions = pricing?.page_options?.[creatorMode] || [5, 10, 15];
   
-  // Story templates for Kids Mode - Using emoji icons
+  // Story templates for Kids Mode - Using 3D rendered icons
   const kidsTemplates = [
     { 
+      icon: 'https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/1b806f848197b998b33b856d9282019b9ea2119f0a36e2ea506ab5fd84a59a9e.png',
       emoji: '🐲',
       title: 'Dragon Friend', 
       character: 'A kind child', 
       story: 'Finds a tiny lost dragon egg in the garden and must help it hatch and find its family' 
     },
     { 
+      icon: 'https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/a0bc34f9d851501000b51915f50539af2a5a01567d4388af484920147de470b2.png',
       emoji: '✨', 
       title: 'Magic School', 
       character: 'A curious young wizard', 
       story: 'Discovers a hidden door that leads to a magical world full of friendly creatures' 
     },
     { 
+      icon: 'https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/3c2a09b7978d2fb9cc1713066d6768042acf45490044cf9ef57c79f7b83da87f.png',
       emoji: '🚀', 
       title: 'Space Explorer', 
       character: 'A brave young astronaut', 
       story: 'Crash lands on a friendly alien planet and must find their way home' 
     },
     { 
+      icon: 'https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/37847c20998bd6ff544f00b13055a35f5d802e3ddcae0eefbdaacee7b2c25f0f.png',
       emoji: '🦊', 
       title: 'Animal Friends', 
       character: 'A small lion cub', 
@@ -697,7 +701,11 @@ export default function StoryCreator() {
                   className="p-4 rounded-xl bg-white shadow-md hover:shadow-lg border-2 border-transparent hover:border-purple-300 transition-all text-center"
                   data-testid={`template-${template.title.toLowerCase().replace(' ', '-')}`}
                 >
-                  <div className="text-3xl mb-2">{template.emoji}</div>
+                  {template.icon ? (
+                    <img src={template.icon} alt={template.title} className="w-12 h-12 mx-auto mb-2 rounded-lg object-cover" />
+                  ) : (
+                    <div className="text-3xl mb-2">{template.emoji}</div>
+                  )}
                   <div className="text-sm font-medium text-purple-800">{template.title}</div>
                 </button>
               ))}
