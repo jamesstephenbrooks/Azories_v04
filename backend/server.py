@@ -4152,6 +4152,32 @@ async def get_chapters(book_id: str, response: Response):
     
     return [ChapterResponse(**c) for c in chapters]
 
+@api_router.put("/chapters/{chapter_id}")
+async def update_chapter(chapter_id: str, request: dict, current_user: dict = Depends(get_current_user)):
+    """Update chapter title/properties"""
+    chapter = await db.chapters.find_one({"id": chapter_id}, {"_id": 0})
+    if not chapter:
+        raise HTTPException(status_code=404, detail="Chapter not found")
+    
+    book = await db.books.find_one({"id": chapter["book_id"]}, {"_id": 0})
+    if not book or (book.get("author_id") != current_user["id"] and book.get("user_id") != current_user["id"]):
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    update_fields = {}
+    if "title" in request:
+        update_fields["title"] = request["title"].strip()
+    if "order" in request:
+        update_fields["order"] = request["order"]
+    
+    if not update_fields:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    
+    update_fields["updated_at"] = datetime.now(timezone.utc).isoformat()
+    await db.chapters.update_one({"id": chapter_id}, {"$set": update_fields})
+    
+    updated = await db.chapters.find_one({"id": chapter_id}, {"_id": 0})
+    return updated
+
 @api_router.delete("/chapters/{chapter_id}")
 async def delete_chapter(chapter_id: str, current_user: dict = Depends(get_current_user)):
     chapter = await db.chapters.find_one({"id": chapter_id}, {"_id": 0})
