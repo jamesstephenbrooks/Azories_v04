@@ -1394,6 +1394,7 @@ class SceneCreate(BaseModel):
     time_of_day: Optional[str] = None  # Morning, afternoon, night, etc.
     weather: Optional[str] = None  # Weather conditions
     location_type: Optional[str] = None  # Indoor, outdoor, urban, nature, etc.
+    character_ids: Optional[List[str]] = []  # Characters associated with this scene
 
 class SceneUpdate(BaseModel):
     name: Optional[str] = None
@@ -5591,6 +5592,7 @@ async def create_scene(request: SceneCreate, current_user: dict = Depends(get_cu
             "weather": request.weather,
             "reference_images": converted_reference_images,
             "thumbnail": thumbnail,
+            "character_ids": request.character_ids or [],
             "created_at": now,
             "updated_at": now
         }
@@ -5731,6 +5733,9 @@ async def generate_scene_image(scene_id: str, request: dict, current_user: dict 
     try:
         additional_prompt = request.get("prompt", "")
         character_id = request.get("character_id")
+        character_ids = request.get("character_ids", [])
+        # Merge both single and multi character IDs
+        all_character_ids = list(set(([character_id] if character_id else []) + character_ids))
         
         # Build scene prompt
         style_info = next((s for s in CHARACTER_STYLES if s["id"] == scene.get("style")), {"name": "illustration"})
@@ -5749,17 +5754,23 @@ async def generate_scene_image(scene_id: str, request: dict, current_user: dict 
             "detailed background, scenic"
         ])
         
-        # If a character is specified, add character to the scene
-        if character_id:
-            character = await db.pro_studio_characters.find_one(
-                {"id": character_id, "user_id": current_user["id"]}
-            )
-            if character:
-                prompt_parts.insert(0, f"{character.get('description_prompt', character['name'])}, ")
+        # Add all selected characters to the scene prompt
+        if all_character_ids:
+            character_descriptions = []
+            for cid in all_character_ids:
+                character = await db.pro_studio_characters.find_one(
+                    {"id": cid, "user_id": current_user["id"]}
+                )
+                if character:
+                    desc = character.get("description_prompt") or character.get("name", "")
+                    character_descriptions.append(desc)
+            if character_descriptions:
+                prompt_parts.insert(0, "featuring " + " and ".join(character_descriptions) + ", ")
         
         full_prompt = ", ".join([p for p in prompt_parts if p])
         
         # Generate image
+        image_url = None
         if FAL_AVAILABLE:
             result = await generate_image_flux(
                 prompt=full_prompt,
@@ -5768,15 +5779,39 @@ async def generate_scene_image(scene_id: str, request: dict, current_user: dict 
                 num_images=1
             )
             if result.get("images"):
-                return {"success": True, "image_url": result["images"][0].get("url"), "prompt": full_prompt}
+                image_url = result["images"][0].get("url")
         
         # Fallback to OpenAI
-        if EMERGENT_LLM_KEY:
+        if not image_url and EMERGENT_LLM_KEY:
             image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
             images = await image_gen.generate_images(prompt=full_prompt, model="gpt-image-1", number_of_images=1)
             if images:
                 image_base64 = base64.b64encode(images[0]).decode('utf-8')
-                return {"success": True, "image_url": f"data:image/png;base64,{image_base64}", "prompt": full_prompt}
+                image_url = f"data:image/png;base64,{image_base64}"
+        
+        if image_url:
+            # Auto-save generated image to scene folder
+            try:
+                scene_image_entry = {
+                    "id": str(uuid.uuid4()),
+                    "scene_id": scene_id,
+                    "user_id": current_user["id"],
+                    "image_url": image_url,
+                    "prompt": full_prompt,
+                    "character_ids": all_character_ids,
+                    "created_at": datetime.utcnow().isoformat()
+                }
+                await db.pro_studio_scene_images.insert_one(scene_image_entry)
+                # Update scene thumbnail if it doesn't have one
+                if not scene.get("thumbnail"):
+                    await db.pro_studio_scenes.update_one(
+                        {"id": scene_id},
+                        {"$set": {"thumbnail": image_url}}
+                    )
+            except Exception as save_err:
+                logger.warning(f"Could not save image to scene folder: {save_err}")
+            
+            return {"success": True, "image_url": image_url, "prompt": full_prompt}
         
         # Refund credits if generation failed
         await db.users.update_one(

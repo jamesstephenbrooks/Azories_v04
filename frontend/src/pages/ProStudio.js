@@ -1361,7 +1361,8 @@ export default function ProStudio() {
         body: JSON.stringify({
           prompt: prompt,
           character_id: selectedCharacter?.id,
-          image_size: aspectRatio === '16:9' ? 'landscape_16_9' : aspectRatio === '9:16' ? 'portrait_16_9' : 'square_hd'
+          character_ids: selectedScene?.character_ids || [],
+          image_size: aspectRatio === '16:9' ? 'landscape_16_9' : aspectRatio === '9:16' ? 'portrait_16_9' : aspectRatio === '3:4' ? 'portrait_4_3' : 'square_hd'
         })
       });
 
@@ -4314,8 +4315,8 @@ export default function ProStudio() {
                               isSelected ? 'border-purple-500' : 'border-gray-700 hover:border-purple-500/50'
                             }`}
                           >
-                            {char.thumbnail_url ? (
-                              <img src={char.thumbnail_url} alt={char.name} className="w-full aspect-square object-cover" />
+                            {char.thumbnail ? (
+                              <img src={char.thumbnail} alt={char.name} className="w-full aspect-square object-cover" />
                             ) : (
                               <div className="w-full aspect-square bg-gray-800 flex items-center justify-center">
                                 <FiUser className="text-gray-500 w-6 h-6" />
