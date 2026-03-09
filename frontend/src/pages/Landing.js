@@ -122,7 +122,7 @@ export default function Landing() {
                       className="rounded-full px-8 py-6 text-lg font-ui border-2 border-secondary text-secondary"
                     >
                       <FiZap className="mr-2" />
-                      Upgrade to Pro
+                      Go to Dashboard
                     </Button>
                   )
                 ) : (

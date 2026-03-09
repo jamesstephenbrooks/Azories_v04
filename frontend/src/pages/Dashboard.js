@@ -420,7 +420,7 @@ export default function Dashboard() {
       navigate(`/editor/${res.data.id}`);
     } catch (error) {
       if (error.response?.status === 403) {
-        toast.error('Pro subscription required to create books');
+        toast.error('Credits required to create books');
         setIsUpgradeOpen(true);
       } else {
         toast.error('Failed to create book');
@@ -644,7 +644,7 @@ export default function Dashboard() {
                   <span className={`px-3 py-1 rounded-full text-sm font-ui ${
                     isPro ? 'bg-secondary/20 text-secondary' : 'bg-muted text-muted-foreground'
                   }`}>
-                    {user.pro_trial ? 'Pro Trial' : 'Pro'}
+                    {user.pro_trial ? 'Pro Studio Trial (48hrs)' : 'Pro'}
                   </span>
                 )}
               </div>
@@ -1084,25 +1084,27 @@ export default function Dashboard() {
             </div>
           </motion.div>
           
-          {/* Upgrade Dialog */}
+          {/* Buy Credits Dialog - No monthly subscription, users buy credits instead */}
           <Dialog open={isUpgradeOpen} onOpenChange={setIsUpgradeOpen}>
             <DialogContent className="sm:max-w-lg">
               <DialogHeader>
                 <DialogTitle className="font-heading text-2xl flex items-center gap-2">
                   <FiZap className="text-secondary" />
-                  Upgrade to Pro
+                  Get Credits
                 </DialogTitle>
               </DialogHeader>
               <div className="pt-4 space-y-6">
+                <p className="text-muted-foreground">
+                  Purchase credits to create more books and use AI features. Credits never expire!
+                </p>
+                
                 <div className="space-y-4">
                   {[
-                    'Create unlimited books',
                     'AI-powered image generation',
-                    'AI video generation with Sora',
                     'AI Story Creator - full stories from ideas',
+                    'Pro Studio - character consistency tools',
                     'Multiple narrator voices',
-                    'Comic book layouts',
-                    'Book analytics'
+                    'Comic book layouts'
                   ].map((feature) => (
                     <div key={feature} className="flex items-center gap-3">
                       <div className="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center">
@@ -1113,14 +1115,15 @@ export default function Dashboard() {
                   ))}
                 </div>
                 
-                <div className="p-4 rounded-2xl bg-muted/50 text-center">
-                  <p className="text-sm text-muted-foreground mb-2">Test Mode</p>
-                  <p className="font-heading text-3xl font-bold">Free</p>
-                </div>
-                
-                <Button onClick={handleUpgrade} className="w-full rounded-full py-6 text-lg font-ui bg-secondary hover:bg-secondary/90">
+                <Button 
+                  onClick={() => {
+                    setIsUpgradeOpen(false);
+                    navigate('/credits');
+                  }} 
+                  className="w-full rounded-full py-6 text-lg font-ui bg-secondary hover:bg-secondary/90"
+                >
                   <FiZap className="mr-2" />
-                  Upgrade Now
+                  Buy Credits
                 </Button>
               </div>
             </DialogContent>
