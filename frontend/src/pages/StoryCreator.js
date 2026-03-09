@@ -329,32 +329,28 @@ export default function StoryCreator() {
   const ageRanges = pricing?.age_ranges?.[creatorMode] || [];
   const pageOptions = pricing?.page_options?.[creatorMode] || [5, 10, 15];
   
-  // Story templates for Kids Mode - Using custom generated icons
+  // Story templates for Kids Mode - Using emoji icons
   const kidsTemplates = [
     { 
-      icon: 'https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/e4683f4e6fd446e9d42b43b684bb626d31dedf1a1c3c13eb07267c59e97823fc.png',
-      emoji: '🐉', // Keep emoji as fallback
+      emoji: '🐲',
       title: 'Dragon Friend', 
       character: 'A kind child', 
       story: 'Finds a tiny lost dragon egg in the garden and must help it hatch and find its family' 
     },
     { 
-      icon: 'https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/0b181929949bf753e2858b4d0491d4a6a4bd6b86aa9fd8a34c3e29559eea1ce6.png',
-      emoji: '🧙', 
+      emoji: '✨', 
       title: 'Magic School', 
       character: 'A curious young wizard', 
       story: 'Discovers a hidden door that leads to a magical world full of friendly creatures' 
     },
     { 
-      icon: 'https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/853e6c81774dbbc19988f585e9aad05ac84990a243dd3b416937c926f7258352.png',
       emoji: '🚀', 
       title: 'Space Explorer', 
       character: 'A brave young astronaut', 
       story: 'Crash lands on a friendly alien planet and must find their way home' 
     },
     { 
-      icon: 'https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/a36ee88afe791ec43e72c22ad14f7925b359ade24194eba7e53ae3d5438459c5.png',
-      emoji: '🦁', 
+      emoji: '🦊', 
       title: 'Animal Friends', 
       character: 'A small lion cub', 
       story: 'Leo is scared of the dark and learns to be brave with help from woodland friends' 
@@ -701,11 +697,7 @@ export default function StoryCreator() {
                   className="p-4 rounded-xl bg-white shadow-md hover:shadow-lg border-2 border-transparent hover:border-purple-300 transition-all text-center"
                   data-testid={`template-${template.title.toLowerCase().replace(' ', '-')}`}
                 >
-                  {template.icon ? (
-                    <img src={template.icon} alt={template.title} className="w-12 h-12 mx-auto mb-2 rounded-lg object-cover" />
-                  ) : (
-                    <div className="text-3xl mb-2">{template.emoji}</div>
-                  )}
+                  <div className="text-3xl mb-2">{template.emoji}</div>
                   <div className="text-sm font-medium text-purple-800">{template.title}</div>
                 </button>
               ))}
