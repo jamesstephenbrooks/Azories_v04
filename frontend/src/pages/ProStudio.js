@@ -1031,11 +1031,17 @@ export default function ProStudio() {
           loadCredits();
         }
       } else {
-        const error = await response.json();
+        let errorDetail = 'Generation failed';
+        try {
+          const error = await response.json();
+          errorDetail = error.detail || errorDetail;
+        } catch (e) { /* body already read or not JSON */ }
         if (response.status === 402) {
-          handleCreditError(error.detail);
+          handleCreditError(errorDetail);
+        } else if (response.status === 500) {
+          toast.error('Server error — please try again in a moment');
         } else {
-          toast.error(error.detail || 'Generation failed');
+          toast.error(errorDetail);
         }
       }
     } catch (error) {
@@ -1934,11 +1940,15 @@ export default function ProStudio() {
         
         toast.success(`${expressionData.name} expression generated and saved!`);
       } else {
-        const error = await response.json();
+        let errorDetail = 'Failed to generate expression';
+        try {
+          const error = await response.json();
+          errorDetail = error.detail || errorDetail;
+        } catch (e) { /* body already read or not JSON */ }
         if (response.status === 402) {
-          handleCreditError(error.detail);
+          handleCreditError(errorDetail);
         } else {
-          toast.error(error.detail || 'Failed to generate expression');
+          toast.error(errorDetail);
         }
       }
     } catch (error) {
@@ -3783,9 +3793,12 @@ export default function ProStudio() {
                                 src={char.thumbnail || char.reference_images?.[0] || '/placeholder-character.png'} 
                                 alt={char.name}
                                 className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover cursor-pointer hover:ring-2 hover:ring-purple-500 transition-all"
-                                onClick={() => openCharacterView(char)}
+                                onClick={(e) => { e.stopPropagation(); openCharacterView(char); }}
                               />
-                              <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <div 
+                                className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
+                                onClick={(e) => { e.stopPropagation(); openCharacterView(char); }}
+                              >
                                 <FiEye className="text-white" size={16} />
                               </div>
                             </div>

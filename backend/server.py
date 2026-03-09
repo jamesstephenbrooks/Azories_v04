@@ -792,8 +792,6 @@ async def health_check_fal():
 # Admin authentication helper (used by remaining admin endpoints)
 async def get_admin_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Verify admin JWT token"""
-    if credentials is None:
-        raise HTTPException(status_code=401, detail="Admin authentication required")
     try:
         payload = jwt.decode(credentials.credentials, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         # Check for admin role in the payload
@@ -5884,7 +5882,7 @@ async def pro_studio_generate_image(request: ProStudioImageRequest, current_user
                 if character.get("description"):
                     prompt_parts.insert(0, character["description"])
                 # Get reference image for PuLID
-                reference_image = character.get("thumbnail_url") or (character.get("reference_images", [None])[0] if character.get("reference_images") else None)
+                reference_image = character.get("thumbnail") or (character.get("reference_images", [None])[0] if character.get("reference_images") else None)
         
         # Add camera settings
         camera_desc = CAMERA_CONFIGS.get(request.camera, "")
@@ -6159,9 +6157,6 @@ async def generate_expression(request: GenerateExpressionRequest, current_user: 
     if current_user.get("subscription", "free") != "pro" and current_user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Pro subscription required")
     
-    if not FAL_AVAILABLE:
-        raise HTTPException(status_code=500, detail="fal.ai service not configured")
-    
     # Deduct credits
     if not await deduct_credits(current_user["id"], "expression_generate"):
         credits_needed = CREDIT_COSTS.get("expression_generate", 2)
@@ -6178,7 +6173,7 @@ async def generate_expression(request: GenerateExpressionRequest, current_user: 
             raise HTTPException(status_code=404, detail="Character not found")
         
         # Get reference image for PuLID (use thumbnail or first reference)
-        reference_image = character.get("thumbnail_url") or (character.get("reference_images", [None])[0] if character.get("reference_images") else None)
+        reference_image = character.get("thumbnail") or (character.get("reference_images", [None])[0] if character.get("reference_images") else None)
         
         if not reference_image:
             raise HTTPException(status_code=400, detail="Character needs a reference image for expression generation")
@@ -6224,8 +6219,20 @@ async def generate_expression(request: GenerateExpressionRequest, current_user: 
                 image_url = upload_result.get("secure_url", image_url)
             
             return {"image_url": image_url, "success": True, "expression": request.expression, "method": "pulid"}
-        else:
-            raise HTTPException(status_code=500, detail="No image was generated")
+        
+        # Fallback to OpenAI if PuLID failed or FAL not available
+        if EMERGENT_LLM_KEY:
+            image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
+            images = await image_gen.generate_images(prompt=full_prompt, model="gpt-image-1", number_of_images=1)
+            if images:
+                image_base64 = base64.b64encode(images[0]).decode('utf-8')
+                image_url = f"data:image/png;base64,{image_base64}"
+                if CLOUDINARY_AVAILABLE:
+                    upload_result = cloudinary.uploader.upload(image_url, folder=f"azories/pro_studio/{current_user['id']}/expressions")
+                    image_url = upload_result.get("secure_url", image_url)
+                return {"image_url": image_url, "success": True, "expression": request.expression, "method": "openai"}
+        
+        raise HTTPException(status_code=500, detail="No image was generated - generation service unavailable")
             
     except HTTPException:
         raise
@@ -6705,7 +6712,7 @@ async def generate_consistent_character_image(
             genre_desc = character.get('genre', 'fantasy')
             
             # Build character appearance string from stored traits
-            physical_traits = character.get('physical_traits') or {}  # Handle None explicitly
+            physical_traits = character.get('physical_traits', {})
             appearance_parts = []
             if physical_traits.get('hair_color'):
                 appearance_parts.append(f"{physical_traits['hair_color']} hair")
@@ -6784,9 +6791,6 @@ async def generate_consistent_character_image(
         
         raise HTTPException(status_code=500, detail="No generation method available")
         
-    except HTTPException:
-        # Re-raise HTTP exceptions as-is (preserve status codes like 402)
-        raise
     except Exception as e:
         logger.error(f"Consistent character generation error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
