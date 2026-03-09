@@ -313,7 +313,7 @@ async def generate_image_flux(
     num_images: int = 1,
     seed: Optional[int] = None,
     guidance_scale: float = 3.5,
-    num_inference_steps: int = 4,  # schnell works best with 1-4 steps
+    num_inference_steps: Optional[int] = None,  # Auto-detect based on model
     print_quality: bool = False
 ) -> Dict[str, Any]:
     """Generate images using FLUX models
@@ -325,12 +325,19 @@ async def generate_image_flux(
         num_images: Number of images to generate
         seed: Optional seed for reproducibility
         guidance_scale: How closely to follow the prompt
-        num_inference_steps: Number of denoising steps (4 for schnell, 28 for dev/pro)
+        num_inference_steps: Number of denoising steps (auto: 4 for schnell, 28 for dev/pro)
         print_quality: If True, generates at 2400x3000 (300 DPI for 8x10 print)
     """
     _get_fal_key()  # Validate key exists
     
     model_id = FAL_MODELS.get(model, {}).get("id", "fal-ai/flux/schnell")
+    
+    # Auto-detect inference steps based on model if not specified
+    if num_inference_steps is None:
+        if model == "flux-schnell":
+            num_inference_steps = 4
+        else:
+            num_inference_steps = 28  # flux-dev and flux-pro need more steps for quality
 
     # For print quality, use high resolution suitable for 8x10 inch at 300 DPI
     if print_quality:
