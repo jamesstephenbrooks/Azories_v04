@@ -792,6 +792,8 @@ async def health_check_fal():
 # Admin authentication helper (used by remaining admin endpoints)
 async def get_admin_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Verify admin JWT token"""
+    if credentials is None:
+        raise HTTPException(status_code=401, detail="Admin authentication required")
     try:
         payload = jwt.decode(credentials.credentials, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         # Check for admin role in the payload
@@ -4416,33 +4418,43 @@ Key requirements:
         
         # Build prompt based on style - photorealistic styles need different handling
         if art_style in ["photorealistic", "realistic", "ideogram-realistic"]:
-            # For photorealistic, don't add children's book language
             full_prompt = f"{image_prompt}. {style_desc}. Ultra realistic, no cartoon elements, no anime, no stylization, real photograph quality, DSLR camera, professional lighting."
+        elif art_style in ["3d-pixar", "pixar"]:
+            full_prompt = f"{image_prompt}. {style_desc}. 3D CGI render, NOT a 2D illustration, NOT flat art, NOT watercolor, NOT hand-drawn, fully three-dimensional."
         else:
             full_prompt = f"{image_prompt}. {style_desc}. High quality, detailed illustration suitable for a children's book."
         
-        # Use Ideogram for styles that need better prompt adherence, FLUX Pro for others
-        use_ideogram = art_style in ["ideogram-storybook", "ideogram-character", "ideogram-realistic", "storybook", "realistic", "photorealistic"]
+        # Only use Ideogram for explicit ideogram styles - use FLUX for everything else
+        use_ideogram = art_style in ["ideogram-storybook", "ideogram-character", "ideogram-realistic"]
         
         if use_ideogram:
-            # Ideogram is better at following prompts accurately
-            result = await generate_image_ideogram(
-                prompt=full_prompt,
-                model="ideogram-v3",
-                aspect_ratio="4:5",  # Portrait for book pages
-                style="realistic" if art_style in ["photorealistic", "realistic", "ideogram-realistic"] else "general",
-                magic_prompt=True,  # Let Ideogram enhance the prompt
-                print_quality=True
-            )
+            try:
+                result = await generate_image_ideogram(
+                    prompt=full_prompt,
+                    model="ideogram-v3",
+                    aspect_ratio="4:5",
+                    style="realistic" if art_style == "ideogram-realistic" else "general",
+                    magic_prompt=True,
+                    print_quality=True
+                )
+                if not result.get("success") or not result.get("images"):
+                    raise Exception("Ideogram returned no images")
+            except Exception as ideogram_err:
+                logger.warning(f"Ideogram failed, falling back to FLUX: {ideogram_err}")
+                result = await generate_image_flux(
+                    prompt=full_prompt,
+                    model="flux-schnell",
+                    image_size="portrait_4_3",
+                    num_images=1,
+                    print_quality=True
+                )
         else:
             result = await generate_image_flux(
                 prompt=full_prompt,
-                model="flux-dev",  # Higher quality model for paid generation (2 credits)
+                model="flux-schnell",
                 image_size="portrait_4_3",
                 num_images=1,
-                guidance_scale=7.5,  # Higher guidance = better style adherence
-                num_inference_steps=28,  # More steps = much better quality
-                print_quality=True  # Generate at print quality (2400x3000)
+                print_quality=True
             )
         
         if not result.get("success") or not result.get("images"):
@@ -7142,6 +7154,7 @@ def get_style_prompts():
         "vintage-storybook": "Vintage 1950s children's book illustration, aged paper texture, muted earthy palette, classic mid-century style, nostalgic fairy tale atmosphere",
         "dark-fantasy": "Epic dark fantasy oil painting, moody dramatic atmosphere, chiaroscuro lighting, intricate gothic details, Frank Frazetta or Magic the Gathering card art quality",
         "illustration": "Professional digital children's book illustration, colorful, friendly, whimsical, clean linework, bright palette",
+        "cartoon": "Bold colorful cartoon illustration, thick outlines, flat vibrant colors, expressive characters, Saturday morning cartoon style, NOT realistic, NOT photo",
         "comic": "Comic book panel style, bold ink outlines, dynamic poses, vibrant flat colors, graphic novel aesthetic",
         "sketch": "Clean pencil sketch illustration, expressive linework, light hatching shading, artistic and detailed",
         "fantasy": "Epic fantasy digital painting, magical glowing effects, ethereal lighting, richly detailed environments, concept art quality",
@@ -7160,12 +7173,10 @@ async def generate_single_image(prompt: str, style_desc: str) -> str:
             # Use print_quality for correct 8x10 ratio (2400x3000px at 300 DPI)
             result = await generate_image_flux(
                 prompt=full_prompt,
-                model="flux-dev",  # Higher quality for paid generation
+                model="flux-schnell",
                 image_size="portrait_4_3",
                 num_images=1,
-                guidance_scale=7.5,
-                num_inference_steps=28,
-                print_quality=True  # Generate at correct 8x10 ratio for printing
+                print_quality=True
             )
             
             if result.get("success") and result.get("images"):

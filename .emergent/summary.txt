@@ -1,170 +1,189 @@
 <analysis>**original_problem_statement:**
-The user's core objective is to build a full-featured AI Story Creator application named Azories. The initial request for an offline reading feature quickly expanded to encompass a wide range of functionalities, bug fixes, and user experience enhancements.
+The user's core objective is to build a full-featured AI Story Creator application named Azories. The project involves developing and maintaining a complex full-stack application with a React frontend, FastAPI backend, and MongoDB database. Key features include AI-powered story and image generation, a comprehensive book editor, print-on-demand (POD) integration, and robust offline reading capabilities. The development process is highly iterative, with the user frequently providing complete code files for replacement, alongside requests for new features, bug fixes, and UX enhancements. A persistent challenge has been the stability of the production environment, which frequently suffers from deployment-related issues that manifest as CORS errors, blocking user access.
 
 **PRODUCT REQUIREMENTS:**
-*   **Offline First Application:** The entire application shell must be cached and load without an internet connection, allowing users to access previously saved books.
-*   **Offline Reading (Phases 1-3):** Allow users to save books (including metadata, pages, images, and narration audio) for full offline access. Provide UI indicators and filters for offline content.
-*   **AI Story Creator:** Allow users to specify a book title, words per page, and adjust image generation for different reader ages.
-*   **Book Editor:** Text edits must be saved reliably. Implement an AI Author Polish feature, on-demand AI image generation, an auto-save mechanism, and character/word count warnings.
-*   **Image Generation Quality & Cost:** Use high-quality models for general use () and character consistency (). Fix the photorealistic art style.
-*   **Bug Fixes & UX:** Fix slow thumbnails, UI layout issues on mobile/iPad, incorrect post-payment redirection, and database inconsistencies for new users. Ensure the app is stable and usable.
-*   **Print-on-Demand (POD):** Implement and test an end-to-end POD flow using Gelato/Stripe.
+*   **Offline First Application:** Ensure the app shell and saved books (including text, images, and audio) are accessible without an internet connection, particularly on iOS Safari.
+*   **AI Story & Art Creator:** Provide tools for users to create stories and artwork, including an AI Author Polish feature, character consistency tools, and management of generation credits.
+*   **Book Editor:** Implement a robust editor with features like inline chapter renaming, reliable autosave on all content changes, and a first-time user tutorial.
+*   **Bug Fixes & UX:** Address numerous bugs, including critical production login failures (CORS), offline functionality crashes, data loss, and UI issues on various devices.
+*   **Production Stability:** Resolve recurring deployment and infrastructure issues that cause backend instability (502/520 errors) and data discrepancies between preview and production environments.
+*   **Admin Functionality:** Create and maintain admin-level endpoints for user management, such as updating credits.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a full-stack AI Story Creator (React + FastAPI + MongoDB) with user authentication, a book library, a book editor, and AI integrations (fal.ai, Stripe, Gelato, Cloudinary, ElevenLabs). The agent has implemented a service worker for offline functionality, fixed a critical data-loss bug in the , and verified the end-to-end Print-on-Demand (POD) flow.
+The application is a full-stack AI Story Creator (React + FastAPI + MongoDB) with user authentication, a book library, a book editor, AI story/art generation (Pro Studio), and integrations with Stripe, Gelato, Cloudinary, and fal.ai. The agent has implemented a high volume of file replacements provided by the user, addressing bugs and adding features iteratively. Key recent work includes fixing offline storage for iOS, merging duplicate Stripe webhooks, adding an admin endpoint to update user credits, and implementing a tooltip tour for the Book Editor.
 
-However, the production environment is currently down due to a critical CORS issue that prevents users from logging in. The agent has implemented a code fix, but it appears to be a deployment or infrastructure problem on the production server, as the fix works in the preview environment but has not been successfully applied to production despite multiple attempts.
+However, the production environment is highly unstable and suffers from recurring infrastructure issues (intermittent 502/520 errors) that users perceive as CORS failures, blocking login. There's also a significant data discrepancy between the preview and production databases, leading to missing user accounts and books on the live site.
 
 **Last working item**:
--   **Last item agent was working:** Diagnosing a critical production CORS bug. The production backend () was not returning the  header for requests from the production frontend (), blocking all user logins. The agent confirmed the code fix (moving the CORS middleware to the top of ) works in the preview environment but concluded the issue persists on production due to a deployment/infrastructure problem. The final action was to advise the user to escalate to Emergent Support.
+-   **Last item agent was working:** Investigating a user's report of another lost book, Tara the circus performer. The agent searched the current preview database and available backups.
 -   **Status:** BLOCKED
--   **Agent Testing Done:** Y
--   **Which testing method agent to use?** Manual testing by curl. The next agent MUST NOT proceed until the user confirms the infrastructure issue is resolved. Then, verify the fix on production by running: Deployment not found. A successful fix will return a  status with the  header.
--   **User Testing Done:** Y
+-   **Agent Testing Done:** N/A
+-   **Which testing method agent to use?** N/A. The next step is to communicate to the user that the book does not exist in the preview environment's data and likely only ever existed on the production database, which may have been lost due to data integrity issues.
+-   **User Testing Done:** N/A
 
 **All Pending/In progress Issue list**:
--   Issue 1: **(P0) CRITICAL: Production Login is Broken Due to CORS Failure**
--   Issue 2: **(P0) Offline books error and don’t load when selected.**
--   Issue 3: **(P0) App shell doesn't load offline on iOS Safari.**
+-   Issue 1: **(P0) CRITICAL: Production Environment is Unstable**
+-   Issue 2: **(P0) CRITICAL: Offline Reading Functionality is Unverified**
+-   Issue 3: **(P1) Data Discrepancy Between Preview and Production**
 -   Issue 4: **(P1) Slow thumbnail loading on library/dashboard pages.**
--   Issue 5: **(P2) In the Pro Studio on mobile, images cannot be deleted and videos won't download.**
--   Issue 6: **(P2) The checkbox for keep me signed in is too large on iPad.**
+-   Issue 5: **(P2) Unaddressed Mobile UI Bugs**
 
 **Issues Detail:**
--   **Issue 1: (P0) CRITICAL: Production Login is Broken Due to CORS Failure**
-    -   **Attempted fixes:**
-        1.  Added  to  in the CORS middleware in .
-        2.  Changed  to  with .
-        3.  **Correct Fix (implemented but not live on prod):** Moved the  definition to execute immediately after  is instantiated in . This is crucial for handling preflight  requests correctly.
+-   **Issue 1: (P0) CRITICAL: Production Environment is Unstable**
+    -   **Attempted fixes:** The agent has repeatedly confirmed the CORS configuration in  is correct (). The issue has been diagnosed as intermittent 502/520 errors from the infrastructure (Cloudflare/nginx), not a code-level CORS problem. The backend itself is crashing or unreachable after deployments.
+    -   **Next debug checklist:** This is an infrastructure issue that requires escalation to Emergent Support. The agent cannot fix this. The user must be informed that repeated deployments will likely continue to fail until the underlying platform instability is resolved.
+    -   **Why fix this issue and what will be achieved with the fix?** This is a complete blocker for the application. Users cannot log in or use the app reliably on production.
+    -   **Status:** BLOCKED
+    -   **Is recurring issue?** Y
+    -   **Should Test frontend/backend/both after fix?** both
+    -   **Blocked on other issue:** Emergent Platform Support action.
+
+-   **Issue 2: (P0) CRITICAL: Offline Reading Functionality is Unverified**
+    -   **Attempted fixes:** Numerous fixes were applied across , , and  to handle  storage for iOS compatibility, create Object URLs for display, and fix audio playback. The  component was also briefly changed to a static import and then reverted to lazy-loaded by the user.
+    -   **Next debug checklist:** The fixes are implemented in the preview environment but require manual, real-world testing by the user on  after a successful deployment.
+        1.  Test saving a book for offline.
+        2.  Go offline (Airplane Mode) and try to read the saved book, confirming images and audio load correctly.
+        3.  Test on an iOS device (Safari, Add to Home Screen) to confirm the app shell loads offline.
+    -   **Why fix this issue and what will be achieved with the fix?** This is a core product requirement that is reportedly broken on production.
+    -   **Status:** USER VERIFICATION PENDING
+    -   **Is recurring issue?** Y
+    -   **Should Test frontend/backend/both after fix?** frontend
+    -   **Blocked on other issue:** Issue 1: Production Environment is Unstable.
+
+-   **Issue 3: (P1) Data Discrepancy Between Preview and Production**
+    -   **Attempted fixes:** The agent recreated missing user accounts (, ) and added credits in the *preview* database. The agent has repeatedly explained to the user that these changes do not affect the production database.
     -   **Next debug checklist:**
-        1.  Wait for user confirmation that Emergent Support has resolved the deployment/infrastructure issue.
-        2.  Run Deployment not found to verify the  header is present in the production response.
-        3.  Once verified, test the login flow on .
-    -   **Why fix this issue and what will be achieved with the fix?** This is a complete blocker for all users. The application is unusable until this is fixed.
+        1.  After a stable production deployment, the user needs to manually recreate the missing accounts on production (either via API, admin panel, or by having the users sign up again).
+        2.  The  migration still needs to be run on the production database.
+    -   **Why fix this issue and what will be achieved with the fix?** Restores access for lost users and ensures data consistency.
     -   **Status:** BLOCKED
     -   **Is recurring issue?** Y
     -   **Should Test frontend/backend/both after fix?** backend
-    -   **Blocked on other issue:** User/Platform Support action required.
-
--   **Issue 2: (P0) Offline books error and don’t load when selected.**
-    -   **Attempted fixes:** The agent modified  to fetch book data and images from IndexedDB first when the browser is offline. Blobs are created from the stored data for rendering.
-    -   **Next debug checklist:**
-        1.  Use the frontend testing agent.
-        2.  Test plan: Log in, save a book with images and text for offline, go offline (in browser dev tools), refresh the app, navigate to the offline book, and confirm it loads and displays correctly without errors.
-    -   **Why fix this issue and what will be achieved with the fix?** Fixes a core part of the offline reading feature, which is currently broken.
-    -   **Status:** TESTING PENDING
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** frontend
-    -   **Blocked on other issue:** None (but depends on P0 CORS issue to be able to log in and save books).
-
--   **Issue 3: (P0) App shell doesn't load offline on iOS Safari.**
-    -   **Attempted fixes:**
-        1.  Improved the service worker caching strategy to be more aggressive.
-        2.  Added necessary iOS PWA meta tags to .
-        3.  Implemented an  component to prompt iOS users, as this is often required for full PWA offline functionality on Safari.
-    -   **Next debug checklist:** Requires testing on a real iOS device. The test involves visiting the site, adding it to the home screen, turning on airplane mode, and then launching the app from the home screen icon.
-    -   **Why fix this issue and what will be achieved with the fix?** Delivers the offline first requirement for iOS users.
-    -   **Status:** USER VERIFICATION PENDING
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** frontend
-    -   **Blocked on other issue:** None.
+    -   **Blocked on other issue:** Issue 1: Production Environment is Unstable.
 
 -   **Issue 4: (P1) Slow thumbnail loading on library/dashboard pages.**
-    -   **Attempted fixes:** None in this session. The issue was inherited from the previous fork.
-    -   **Next debug checklist:**
-        1.  Analyze network waterfall in browser dev tools on a throttled connection.
-        2.  Consider implementing a virtualized grid/list for the library (e.g., using  or ).
-        3.  Further optimize Cloudinary URL transformations for placeholders and lazy loading.
-    -   **Why fix this issue and what will be achieved with the fix?** Improves initial page load performance and user experience, especially on mobile.
+    -   **Attempted fixes:** None. Inherited from a previous session.
+    -   **Next debug checklist:** Analyze network waterfall; consider UI virtualization () or further image optimization.
+    -   **Why fix this issue and what will be achieved with the fix?** Improves initial page load performance and user experience.
     -   **Status:** NOT STARTED
     -   **Is recurring issue?** Y
     -   **Should Test frontend/backend/both after fix?** frontend
     -   **Blocked on other issue:** None.
 
-**In progress Task List**:
--   **Task 1: Implement Narration Audio Caching (P2)**
-    -   **Where to resume:** The agent has integrated audio caching into the  flow in , and the  component already contains logic to use offline audio. The  was updated to show a headphone icon for offline books with audio.
-    -   **What will be achieved with this?** Completes Phase 3 of the offline reading feature.
-    -   **Status:** IN PROGRESS
+-   **Issue 5: (P2) Unaddressed Mobile UI Bugs**
+    -   **Attempted fixes:** None. Inherited from a previous session.
+    -   **Next debug checklist:** Address the issues on the Pro Studio page (image deletion, video download) and the oversized keep me signed in checkbox on iPad.
+    -   **Why fix this issue and what will be achieved with the fix?** Improves usability on mobile and tablet devices.
+    -   **Status:** NOT STARTED
+    -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** frontend
-    -   **Blocked on something:** Needs end-to-end testing after the primary offline bugs are fixed.
+    -   **Blocked on other issue:** None.
+
+**In progress Task List**:
+-   **Task 1: Complete and Verify Offline Narration Audio (P2)**
+    -   **Where to resume:** The agent implemented fixes in  to prioritize loading audio from IndexedDB. This is part of the larger offline functionality verification.
+    -   **What will be achieved with this?** Completes a core requirement for the offline reading feature.
+    -   **Status:** USER VERIFICATION PENDING
+    -   **Should Test frontend/backend/both after fix?** frontend
+    -   **Blocked on something:** Blocked on Issue 1 and requires manual user testing as part of Issue 2.
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
-*   **P0 - Run production database migration:** After the deployment is fixed, run the command requested by the user:  on the production database.
+*   **P0 - Run production database migration:** After the deployment is fixed, run  on the production database.
 *   **P1 -  page:** Create a new page for users to view and track their print orders.
-*   **P2 - Revert Image Generation Model:** Change the default image model in  back to  for higher quality, as requested in the initial handoff.
+*   **P2 - Revert Image Generation Model:** Change the default image model in  back to .
 
 **Future Tasks:**
-*   **Download All Books button:** Add a feature in the user profile area to save multiple books for offline at once (user put this on hold).
+*   Add a Download All Books button.
 *   Add order tracking notifications.
 *   Add a gift feature for print orders.
 *   Add  as a separate art style option.
 *   Decompose large components like  and .
 
 **Completed work in this session**
--   **Bug Fix (Critical):** Fixed the  data loss bug where text was lost when switching pages. Verified with testing agent.
--   **Feature & Testing:** Completed and verified the end-to-end Print-on-Demand (POD) flow.
--   **Feature (Offline):** Implemented a Service Worker for app shell caching.
--   **Feature (Offline):** Created an  prompt and added iOS meta tags to improve the PWA experience.
--   **Bug Fix (Offline):** Added a  endpoint and updated  to correctly fetch and save books that don't have their pages pre-loaded in the library view.
--   **Bug Fix (Offline):** Refactored  to attempt loading book data from IndexedDB before making a network request, aiming to fix crashes when reading offline.
--   **Bug Fix (UI):** Fixed an issue on mobile where Start Reading and Save for Offline buttons were overlapping on book cards.
--   **Documentation:** Updated .
+-   **Infrastructure:** Fixed  corruption that was blocking deployments.
+-   **Admin:** Created a new admin endpoint  and updated a user's credits in the preview DB.
+-   **Bug Fix:** Merged two duplicate Stripe webhook handlers in  that were causing credit purchase logic to be ignored.
+-   **Bug Fix:** Corrected a bug where user books were not displaying due to an / mismatch.
+-   **Bug Fix:** Addressed spurious user logouts by refining the 401 error handling in .
+-   **Offline Functionality:** Implemented numerous user-provided fixes to , , and  to resolve offline crashes, display issues with images, and fix audio playback.
+-   **Feature:** Added a Cancel button to the AI story generation page.
+-   **Feature:** Added a first-time user interactive tooltip tour to the .
+-   **File Replacements:** Applied over 20 user-provided file updates across , , , , , and  to implement UI/UX improvements and bug fixes.
+-   **Reverts:** Rolled back breaking changes to  and  that caused crashes on iPad and the web.
+
+**Earlier issues found/mentioned but not fixed**
+-   **Issue 1: Slow thumbnail loading:** Inherited from the initial handoff, acknowledged but not prioritized or worked on.
+-   **Issue 2: Mobile UI bugs in Pro Studio:** Inherited from the initial handoff, acknowledged but not prioritized or worked on (inability to delete images/download videos, oversized checkbox on iPad).
 
 **Known issue recurrence from previous fork**
--   **Issue recurrence in previous fork:** Critical CORS bug on production.
--   **Recurrence count:** 4+ attempts to fix have failed due to deployment/infrastructure issues.
+-   **Issue recurrence in previous fork:** Critical Production CORS/Deployment Instability.
+-   **Recurrence count:** 5+ times in this session alone.
 -   **Status:** BLOCKED
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **FastAPI CORS Middleware:** The placement of the middleware is critical. It must be added to the app instance *before* any routers are included to correctly handle preflight  requests.
--   **Service Workers & PWA:** Implemented a service worker for offline caching. Key takeaway is that for a robust offline experience on iOS Safari, users must use the Add to Home Screen feature.
--   **IndexedDB for Offline Storage:** Used to store book text, metadata, image blobs, and audio blobs for offline access.  was refactored to read from IndexedDB as the primary source when offline.
+-   **Production vs. Preview Environments:** The core challenge of the session. The agent and user struggled with the fact that the preview environment (code, DB) is completely isolated from production. Changes in preview require a separate, manual action on production (deployment for code, direct DB modification for data).
+-   **Infrastructure Instability:** The root cause of the CORS errors was identified as intermittent 502/520 gateway errors on the production infrastructure, likely due to deployment issues, cold starts, or resource constraints. This is a platform-level issue, not a code issue.
+-   **Offline Storage ():** Advanced debugging was performed to handle data storage for offline use. Key fixes included converting image/audio  to  for robust storage (especially on iOS Safari) and then converting them back to Object URLs in the UI components for rendering.
+-   **Component Decomposition:** The need for this is critical. Files like  (14,598 lines),  (6,891 lines), and  (3,501 lines) are extremely large and difficult to maintain.
 
 **key DB schema**
--   No schema changes were made in this session. A pending migration () needs to be run on production.
+-   No schema changes. The  collection was modified to add/restore users and update their . A pending migration to update the  collection is still outstanding.
+  -   : {email, password_hash, name, credits, ...}
+  -   : {title, author_id, user_id, pages, ...}
 
 **All files of reference**
--    (Location of the critical CORS fix)
--    (Contains the unverified fix for the offline book loading crash)
--    (Core of the offline functionality)
--    (Handles all IndexedDB operations)
--    (UI fixes and offline indicators)
--    (iOS PWA meta tags)
+-   : Contains all backend logic, including the corrected Stripe webhook and new admin endpoint. Critical but very large.
+-   : Contains the core logic for saving and retrieving books for offline use. Was replaced with a user-provided version.
+-   : Logic for displaying books, including the complex handling of online vs. offline images and audio.
+-   : Logic for displaying the book library, including the new fixes for showing offline books and their covers correctly.
+-   : The book editing interface. Heavily modified with new features and UI tweaks.
+-   : The AI art generation interface. Heavily modified.
+
+**Areas that need refactoring**:
+-   **:** At over 14,500 lines, this file is unmaintainable. It should be broken down into multiple files by functionality (e.g., , , ).
+-   ** (6.8k lines),  (3.5k lines),  (3.1k lines),  (4.1k lines):** These large React components are complex and difficult to debug. They should be decomposed into smaller, more focused sub-components.
+
+**key api endpoints**
+-   : (NEW) An admin-protected endpoint to set a user's credit balance.
+-   : (MODIFIED) Merged handler for both credit purchases and print-on-demand order creation.
+-   : The endpoint that frequently fails on production due to infrastructure issues, leading to perceived CORS errors.
 
 **Critical Info for New Agent**
--   **DO NOT START ANY WORK** until the user confirms the production CORS issue is resolved by Emergent Support. The entire application is blocked. Your first action must be to verify their claim by running the  command provided in the Last working item section.
--   After the CORS bug is fixed, the next P0 priority is to thoroughly test the offline functionality, as users have reported that both the app shell and saved books fail to load offline.
--   A database migration  needs to be run on the production database. Remind the user about this once the deployment and login are stable.
--   The user's production environment ( / ) has different code than this preview environment. Do not assume fixes made here are live until a successful deployment is confirmed.
+-   **PRODUCTION IS UNSTABLE AND DIFFERENT FROM PREVIEW.** The most critical issue is the production environment returning intermittent 502/520 errors after deployments, which browsers report as CORS failures. This is an infrastructure problem that you cannot fix with code. Do not waste time debugging CORS in the code.
+-   **DATA IS NOT SYNCED.** The preview database is separate from production. Any users or data you create/modify in preview (e.g., ) will NOT exist on production. You must remind the user that these changes need to be made manually on the production database.
+-   **USER PROVIDES FILES.** The user's workflow often involves them providing complete, modified files for you to replace in the codebase. Your job is to perform the replacement, restart services, and verify the app is still running.
+-   **OFFLINE FUNCTIONALITY REQUIRES MANUAL TESTING.** The complex offline features have many fixes implemented but can only be properly verified by the user on a real device and a stable production environment. Do not assume it is fixed until the user confirms.
+-   **PRIORITIZE STABILITY.** Before adding new features, the top priority should be to work with the user to achieve a stable production deployment. This involves communicating the nature of the infrastructure issues and guiding them to escalate to Emergent Support.
 
 **documents and test reports created in this job**
--   /app/test_reports/iteration_1.json
--   /app/test_reports/iteration_2.json
--   /app/memory/PRD.md
+-   /app/test_reports/iteration_55.json
+-   /app/test_reports/iteration_56.json
+-   /app/test_reports/iteration_57.json
+-   /app/memory/PRD.md (Was not updated by the previous agent and is now out of date).
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **LATEST:** Reports the login is still broken with the same CORS errors and feels no progress is being made. Provides a direct message to escalate to Emergent Support. (IN PROGRESS - BLOCKED)
-2.  Reports that deployments have been done but the production model isn't being updated. (IN PROGRESS - BLOCKED)
-3.  Confirms CORS is still broken and provides a  command to verify the issue on the production server. (IN PROGRESS - BLOCKED)
-4.  Reports that the CORS fix did not work. (IN PROGRESS - BLOCKED)
-5.  Provides instructions to fix the CORS issue and deploy, believing it's a code issue. (RESOLVED, but deployment failed)
-6.  Reports a critical bug that they cannot sign in on . (IN PROGRESS - BLOCKED)
-7.  Reports that saved offline books error and don't load. (IN PROGRESS -  fix implemented, needs testing)
-8.  Reports that the app is still not working without internet on Safari, even when added to the home screen. (IN PROGRESS - Service Worker and  fixes implemented, needs testing)
-9.  Reports that the mobile buttons are still overlapping on production. (RESOLVED - Confirmed as a deployment issue; fix is working in preview)
-10. Asks to proceed with narration audio caching. (IN PROGRESS)
+1.  **LATEST:** Asks for the current MongoDB backup policy and how to restore data. (IN PROGRESS)
+2.  Reports another lost book, Tara the circus performer, and asks the agent to find it. (IN PROGRESS - Agent investigated and could not find it).
+3.  Asks for the passwords for two users; one exists, one does not. (RESOLVED)
+4.  Provides updated  and  files for replacement. (DONE)
+5.  Reports a 502 error on the backend after deployment and asks for logs. (RESOLVED - Agent found no startup error, diagnosed as prod instability).
+6.  Provides an updated  file for replacement. (DONE)
+7.  Provides updated  and  files for replacement. (DONE)
+8.  Provides an updated  file for replacement. (DONE)
+9.  Calls the deployment agent for a health check. (DONE)
+10. Provides updated  and  files with fixes for cinema hero frames and video saving. (DONE)
 
 **Project Health Check:**
 -   **Broken:**
-    -   **Production Environment:** Completely unusable. User login is blocked by a persistent CORS issue.
-    -   **Offline Reading Feature:** Reported as non-functional by the user. Saved books allegedly crash the app when opened offline.
+    -   **Production Environment:** Critically unstable. Users cannot reliably log in or use the application due to intermittent 502/520 errors manifesting as CORS failures.
+    -   **Data Integrity:** User accounts and books are missing from the production database. There is a severe desynchronization between preview and production data.
+    -   **Offline Functionality (on Prod):** Reported as broken by the user (books freezing on save). Fixes have been implemented in preview but are pending a stable deployment and user verification.
 
 **3rd Party Integrations**
 -   **fal.ai:** AI image generation.
@@ -176,14 +195,16 @@ However, the production environment is currently down due to a critical CORS iss
 -   **Emergent LLM Key:** Used for AI Author Polish.
 
 **Testing status**
--   **Testing agent used after significant changes:** YES (for BookEditor bug and POD flow)
+-   **Testing agent used after significant changes:** NO. Comprehensive tests were run early in the session, but since then, dozens of files have been replaced by the user without subsequent full regression testing.
 -   **Troubleshoot agent used after agent stuck in loop:** NO
 -   **Test files created:** []
--   **Known regressions:** The production deployment is not reflecting code changes, causing the CORS bug to persist despite a valid fix being present in the codebase.
+-   **Known regressions:** The production deployment is unstable and not reflecting the latest stable code from the preview environment. The  page was crashing on production due to a bad deployment.
 
 **Credentials to test flow:**
--   **Test user:** 
--   **Test password:** 
+-   **Test user:**  | 
+-   **Test user 2:**  |  (Exists only in preview DB)
 
 **What agent forgot to execute**
--   The agent did not execute the production database migration () because the persistent CORS deployment blocker took precedence. This is a pending task for after the main blocker is resolved.</analysis>
+-   **Update PRD.md:** The agent completed a massive amount of work but did not update the  file to reflect the new features, bug fixes, or the current state of the project.
+-   **Run Production DB Migration:** The pending migration  was not executed.
+-   **Address Inherited Issues:** The agent did not work on the slow thumbnail loading or the mobile UI bugs mentioned in the initial handoff.</analysis>
