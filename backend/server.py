@@ -4441,17 +4441,21 @@ Key requirements:
                 logger.warning(f"Ideogram failed, falling back to FLUX: {ideogram_err}")
                 result = await generate_image_flux(
                     prompt=full_prompt,
-                    model="flux-schnell",
+                    model="flux-dev",
                     image_size="portrait_4_3",
                     num_images=1,
+                    guidance_scale=7.5,
+                    num_inference_steps=28,
                     print_quality=True
                 )
         else:
             result = await generate_image_flux(
                 prompt=full_prompt,
-                model="flux-schnell",
+                model="flux-dev",
                 image_size="portrait_4_3",
                 num_images=1,
+                guidance_scale=7.5,
+                num_inference_steps=28,
                 print_quality=True
             )
         
@@ -7626,23 +7630,24 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
         # Expanded image style mapping for prompts
         style_prompts = {
             # Kids Mode styles
-            "3d-pixar": "Pixar 3D animation style, Disney quality, vibrant colors, expressive characters, magical lighting, cinematic composition",
-            "pixar": "Pixar 3D animation style, Disney quality, vibrant colors, expressive characters, magical lighting, cinematic composition",
-            "watercolour": "Soft watercolor illustration, gentle colors, dreamy atmosphere, hand-painted feel, children's book quality",
-            "watercolor": "Soft watercolor illustration, gentle colors, dreamy atmosphere, hand-painted feel",
-            "pencil-sketch": "Pencil sketch illustration, hand-drawn feel, artistic linework, detailed textures, warm and inviting",
-            "hand-drawn": "Hand-drawn illustration, artistic linework, warm colors, whimsical style",
-            "comic-book": "Comic book style, bold outlines, dynamic poses, vibrant colors, graphic novel aesthetic",
-            "storybook": "Classic storybook illustration, warm colors, nostalgic, timeless, whimsical, vintage children's book",
+            "3d-pixar": "Pixar 3D CGI animation style, exactly like Toy Story, Coco, or Encanto, smooth 3D rendered characters, subsurface scattering skin, volumetric lighting, rich saturated colors, expressive cartoon faces, cinematic depth of field, Disney-Pixar quality render, NOT flat illustration, NOT 2D art",
+            "pixar": "Pixar 3D CGI animation style, exactly like Toy Story, Coco, or Encanto, smooth 3D rendered characters, subsurface scattering skin, volumetric lighting, rich saturated colors, expressive cartoon faces, cinematic depth of field, Disney-Pixar quality render, NOT flat illustration, NOT 2D art",
+            "watercolour": "Soft watercolor illustration, delicate washes of color, wet-on-wet bleeding edges, translucent layers, hand-painted texture, visible paper grain, children's picture book quality",
+            "watercolor": "Soft watercolor illustration, delicate washes of color, wet-on-wet bleeding edges, translucent layers, hand-painted texture, visible paper grain",
+            "pencil-sketch": "Detailed pencil sketch on white paper, graphite shading, cross-hatching, hand-drawn linework, artistic texture",
+            "hand-drawn": "Hand-drawn pen and ink illustration with watercolor wash, warm colors, whimsical expressive style",
+            "comic-book": "Comic book panel art, bold black ink outlines, Ben-Day dot shading, vibrant flat colors, dynamic poses, Marvel/DC graphic novel quality",
+            "storybook": "Classic golden-age children's storybook illustration, warm amber tones, detailed painterly scenes, vintage fairy tale aesthetic",
+            "cartoon": "Bold colorful cartoon illustration, thick outlines, flat vibrant colors, expressive characters, Saturday morning cartoon style",
             
             # Story Studio styles (for older readers)
             "realistic": "Ultra photorealistic, hyperdetailed, professional DSLR photography, real life, no stylization, no cartoon, natural lighting, sharp focus",
             "photorealistic": "Ultra photorealistic style, hyperdetailed like a real photograph, professional photography quality, DSLR camera, natural lighting, NO cartoon, NO anime, NO illustration, real life quality",
-            "anime": "Anime/manga style illustration, big expressive eyes, colorful, dynamic, Japanese animation quality",
-            "manga": "Manga style, detailed linework, dramatic shading, Japanese comic aesthetic",
-            "oil-painting": "Classical oil painting style, rich colors, dramatic brushwork, museum quality, fine art aesthetic",
-            "vintage-storybook": "Vintage storybook illustration, aged paper texture, classic fairy tale style, ornate details",
-            "dark-fantasy": "Dark fantasy art, moody atmosphere, dramatic lighting, gothic elements, epic fantasy style",
+            "anime": "High quality anime illustration style, big expressive eyes, clean cel-shading, vibrant colors, detailed backgrounds, Studio Ghibli or modern anime quality",
+            "manga": "Black and white manga panel art, detailed screentone shading, dynamic action lines, expressive character designs",
+            "oil-painting": "Classical oil painting on canvas, visible brushstrokes, impasto texture, rich layered colors, dramatic chiaroscuro lighting, Old Masters quality",
+            "vintage-storybook": "Vintage 1950s children's book illustration, aged paper texture, muted earthy palette, classic mid-century style",
+            "dark-fantasy": "Epic dark fantasy oil painting, moody dramatic atmosphere, chiaroscuro lighting, intricate gothic details",
             
             # Ideogram styles (NEW - Character consistency)
             "ideogram-realistic": "Ultra photorealistic style, hyperdetailed like a real photograph, professional DSLR photography, natural lighting, NO cartoon, NO anime, real life quality",
@@ -7650,11 +7655,11 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
             "ideogram-character": "Illustrated character style, consistent character appearance, expressive features, warm colors, storybook quality",
             
             # Legacy fallbacks
-            "illustration": "Professional children's book illustration, colorful, friendly, whimsical, hand-drawn feel",
-            "comic": "Comic book panel style, bold outlines, dynamic poses, vibrant colors",
-            "sketch": "Pencil sketch illustration, hand-drawn, artistic, detailed linework",
-            "fantasy": "Fantasy art style, magical, ethereal, detailed environments",
-            "scifi": "Futuristic sci-fi style, neon colors, advanced technology, space themes"
+            "illustration": "Professional digital children's book illustration, colorful, friendly, whimsical, clean linework, bright palette",
+            "comic": "Comic book panel style, bold ink outlines, dynamic poses, vibrant flat colors",
+            "sketch": "Clean pencil sketch illustration, expressive linework, light hatching shading",
+            "fantasy": "Epic fantasy digital painting, magical glowing effects, ethereal lighting, richly detailed environments",
+            "scifi": "Futuristic sci-fi concept art, sleek technology, neon accent lighting, deep space atmosphere"
         }
         
         # Use the art_style from request, fallback to image_style for backwards compatibility
