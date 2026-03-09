@@ -1976,13 +1976,13 @@ export default function ProStudio() {
         toast.error('Please select an image from the character gallery');
         return;
       }
-    } else if (videoSourceType === 'upload') {
+    } else if (videoSourceType === 'upload' || videoSourceType === 'scene') {
       if (!videoUploadedImage) {
-        toast.error('Please upload an image to animate');
+        toast.error(videoSourceType === 'scene' ? 'Please select a scene image first' : 'Please upload an image to animate');
         return;
       }
       sourceImageUrl = videoUploadedImage;
-      sourceName = 'uploaded image';
+      sourceName = videoSourceType === 'scene' ? 'scene image' : 'uploaded image';
     }
 
     setIsLoading(true);
@@ -5166,6 +5166,14 @@ export default function ProStudio() {
                     >
                       Upload
                     </Button>
+                    <Button
+                      size="sm"
+                      variant={videoSourceType === 'scene' ? 'default' : 'outline'}
+                      onClick={() => setVideoSourceType('scene')}
+                      className={`min-h-[44px] flex-1 sm:flex-none ${videoSourceType === 'scene' ? 'bg-purple-600' : 'border-gray-600 text-gray-300'}`}
+                    >
+                      <FiLayers className="w-3 h-3 mr-1" /> Scene
+                    </Button>
                   </div>
 
                   {/* Hero Frame Source */}
@@ -5308,6 +5316,52 @@ export default function ProStudio() {
                   )}
 
                   {/* Upload Source */}
+                  {videoSourceType === 'scene' && (
+                    <div className="space-y-3">
+                      {scenes.length === 0 ? (
+                        <div className="text-center py-6 text-gray-500 border-2 border-dashed border-gray-700 rounded-lg">
+                          <FiLayers className="w-6 h-6 mx-auto mb-2 opacity-50" />
+                          <p className="text-sm">No scenes yet</p>
+                          <p className="text-xs mt-1">Create a scene in the Scenes tab first</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          <p className="text-gray-400 text-xs">Select a scene image to animate:</p>
+                          <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
+                            {scenes.map((scene) => (
+                              <button
+                                key={scene.id}
+                                type="button"
+                                onClick={() => {
+                                  if (scene.thumbnail) {
+                                    setVideoUploadedImage(scene.thumbnail);
+                                    setVideoPrompt(scene.description_prompt || scene.name);
+                                    setVideoSourceType('upload');
+                                    toast.success(`Scene "${scene.name}" selected`);
+                                  } else {
+                                    toast.error('This scene has no generated image yet. Generate an image in the Scenes tab first.');
+                                  }
+                                }}
+                                className="relative rounded-lg overflow-hidden border-2 border-gray-700 hover:border-purple-500 transition-all"
+                              >
+                                {scene.thumbnail ? (
+                                  <img src={scene.thumbnail} alt={scene.name} className="w-full aspect-[3/4] object-cover" />
+                                ) : (
+                                  <div className="w-full aspect-[3/4] bg-gray-800 flex items-center justify-center">
+                                    <FiLayers className="text-gray-600 w-6 h-6" />
+                                  </div>
+                                )}
+                                <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-1 py-1">
+                                  <p className="text-white text-xs truncate">{scene.name}</p>
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {videoSourceType === 'upload' && (
                     <div className="space-y-3">
                       {videoUploadedImage ? (
@@ -5418,7 +5472,8 @@ export default function ProStudio() {
                     disabled={isLoading || (
                       (videoSourceType === 'hero' && !selectedHeroFrame) ||
                       (videoSourceType === 'character' && !videoSelectedImage?.url && !videoSourceCharacter?.thumbnail) ||
-                      (videoSourceType === 'upload' && !videoUploadedImage)
+                      (videoSourceType === 'upload' && !videoUploadedImage) ||
+                      (videoSourceType === 'scene' && !videoUploadedImage)
                     )}
                     className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 min-h-[48px] text-base hidden sm:flex"
                     data-testid="animate-video-btn"

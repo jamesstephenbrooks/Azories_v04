@@ -11405,11 +11405,18 @@ async def get_starter_library(category: Optional[str] = None):
         for img in STARTER_LIBRARY_IMAGES_OLD:
             img_copy = img.copy()
             if not img_copy.get("url", "").startswith("http"):
-                # Use Cloudinary's text overlay feature to create a branded placeholder
-                # This creates a purple square with category name - works without uploading any image
-                category = img_copy.get("category", "image")[:15]  # Limit text length
-                name = img_copy.get("name", "")[:20]  # Limit text length
-                placeholder_url = f"https://res.cloudinary.com/dlbmjqmoy/image/upload/w_400,h_400,c_fill/co_white,l_text:Arial_16_bold:{category}/fl_layer_apply,g_center,y_-20/co_white,l_text:Arial_12:{name.replace(' ', '%20')}/fl_layer_apply,g_center,y_20/c_fill,w_400,h_400,b_rgb:7c3aed/sample.jpg"
+                # Use category-specific Cloudinary samples to avoid all showing same image
+                cat = img_copy.get("category", "image")
+                name = img_copy.get("name", "")[:20]
+                # Map categories to different cloudinary sample images
+                sample_map = {
+                    "characters": "cld-sample-2",
+                    "settings": "cld-sample-3", 
+                    "objects": "cld-sample-4",
+                    "actions": "cld-sample-5",
+                }
+                sample_img = sample_map.get(cat, "cld-sample")
+                placeholder_url = f"https://res.cloudinary.com/dlbmjqmoy/image/upload/w_400,h_400,c_fill/{sample_img}.jpg"
                 img_copy["url"] = placeholder_url
                 img_copy["thumbnail_url"] = placeholder_url
             images.append(img_copy)
