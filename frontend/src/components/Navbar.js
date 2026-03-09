@@ -64,7 +64,7 @@ export const Navbar = () => {
               className="font-ui text-foreground/80 hover:text-foreground transition-colors flex items-center gap-1.5"
               data-testid="nav-ai-stories"
             >
-              <span className="text-base">🐉</span>
+              <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/8515ab60b7ad93f5867e025fe18e43b3916962f27b5c15dc8d66d45d6c530105.png" alt="" className="w-5 h-5 object-contain" />
               AI Stories
             </Link>
           )}
@@ -75,7 +75,7 @@ export const Navbar = () => {
               className="font-ui text-foreground/80 hover:text-foreground transition-colors flex items-center gap-1.5"
               data-testid="nav-creators"
             >
-              <span className="text-base">✍️</span>
+              <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/6abddb8323c8f308894f61fd3e7e9e87169635a50bed38649e770085b66c0a5b.png" alt="" className="w-5 h-5 object-contain" />
               Image Creator
             </Link>
           )}
@@ -86,7 +86,7 @@ export const Navbar = () => {
               className="font-ui text-foreground/80 hover:text-foreground transition-colors flex items-center gap-1.5"
               data-testid="nav-pro-studio"
             >
-              <span className="text-base">⚡</span>
+              <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/fc9fef9d7b633d89adb1ccc493f764c017dd83f2ca7c75cef8eae82037761b14.png" alt="" className="w-5 h-5 object-contain" />
               Pro Studio
             </Link>
           )}
@@ -153,21 +153,21 @@ export const Navbar = () => {
                   onClick={() => navigate('/ai-stories')}
                   data-testid="menu-ai-stories"
                 >
-                  <span className="mr-2">🐉</span>
+                  <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/8515ab60b7ad93f5867e025fe18e43b3916962f27b5c15dc8d66d45d6c530105.png" alt="" className="w-5 h-5 mr-2 object-contain" />
                   AI Stories
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={() => navigate('/creators')}
                   data-testid="menu-creators"
                 >
-                  <span className="mr-2">✍️</span>
+                  <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/6abddb8323c8f308894f61fd3e7e9e87169635a50bed38649e770085b66c0a5b.png" alt="" className="w-5 h-5 mr-2 object-contain" />
                   Image Creator
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={() => navigate('/pro-studio')}
                   data-testid="menu-pro-studio"
                 >
-                  <span className="mr-2">⚡</span>
+                  <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/fc9fef9d7b633d89adb1ccc493f764c017dd83f2ca7c75cef8eae82037761b14.png" alt="" className="w-5 h-5 mr-2 object-contain" />
                   Pro Studio
                 </DropdownMenuItem>
                 <DropdownMenuItem 
@@ -238,7 +238,7 @@ export const Navbar = () => {
               onClick={() => setMobileOpen(false)}
               data-testid="mobile-nav-ai-stories"
             >
-              <span className="text-base">🐉</span>
+              <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/8515ab60b7ad93f5867e025fe18e43b3916962f27b5c15dc8d66d45d6c530105.png" alt="" className="w-5 h-5 object-contain" />
               AI Stories
             </Link>
           )}
@@ -249,7 +249,7 @@ export const Navbar = () => {
               onClick={() => setMobileOpen(false)}
               data-testid="mobile-nav-creators"
             >
-              <span className="text-base">✍️</span>
+              <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/6abddb8323c8f308894f61fd3e7e9e87169635a50bed38649e770085b66c0a5b.png" alt="" className="w-5 h-5 object-contain" />
               Image Creator
             </Link>
           )}
@@ -260,7 +260,7 @@ export const Navbar = () => {
               onClick={() => setMobileOpen(false)}
               data-testid="mobile-nav-pro-studio"
             >
-              <span className="text-base">⚡</span>
+              <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/fc9fef9d7b633d89adb1ccc493f764c017dd83f2ca7c75cef8eae82037761b14.png" alt="" className="w-5 h-5 object-contain" />
               Pro Studio
             </Link>
           )}

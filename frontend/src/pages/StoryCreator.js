@@ -364,6 +364,9 @@ export default function StoryCreator() {
   // Blaze the dragon - main mascot icon
   const blazeDragonIcon = 'https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/e4683f4e6fd446e9d42b43b684bb626d31dedf1a1c3c13eb07267c59e97823fc.png';
   
+  // Azora - the main character with magic book
+  const azoraImage = 'https://customer-assets.emergentagent.com/job_145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/artifacts/03z1pd8h_azora_pose4_pointing.jpg';
+  
   // Render progress page when generating
   if (isGenerating && jobStatus) {
     return (
@@ -615,9 +618,9 @@ export default function StoryCreator() {
           {creatorMode === 'kids' ? (
             <>
               <img 
-                src={blazeDragonIcon}
-                alt="Blaze the Dragon" 
-                className="w-24 h-24 mx-auto mb-4 rounded-2xl object-cover"
+                src={azoraImage}
+                alt="Azora" 
+                className="w-28 h-28 mx-auto mb-4 rounded-2xl object-cover shadow-lg"
               />
               <h1 className="text-4xl font-bold text-purple-900 mb-2">
                 AI Story Creator
@@ -635,7 +638,7 @@ export default function StoryCreator() {
                 Create sophisticated stories for teens and adults
               </p>
             </>
-          )}}}
+          )}}}}
         </div>
         
         {/* Credits/Free Stories Banner */}
