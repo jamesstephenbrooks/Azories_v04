@@ -4503,13 +4503,55 @@ Key requirements:
             )
             raise HTTPException(status_code=500, detail="Image generation service not available")
         
-        # Build prompt based on style - photorealistic styles need different handling
+        # Build prompt based on style - photorealistic styles need STRONG enforcement
         if art_style in ["photorealistic", "realistic", "ideogram-realistic"]:
-            full_prompt = f"{image_prompt}. {style_desc}. Ultra realistic photograph, no cartoon elements, no anime, no illustration, no stylization whatsoever, real photograph taken with professional camera, natural lighting, sharp focus."
+            # For photorealistic, the style MUST override everything else
+            full_prompt = f"""CRITICAL STYLE REQUIREMENT: This image MUST be PHOTOREALISTIC - exactly like a real photograph.
+
+Scene to depict: {image_prompt}
+
+MANDATORY PHOTOREALISTIC REQUIREMENTS:
+- Must look like a real photograph taken with a Canon/Sony DSLR camera
+- Real human skin textures with pores and natural imperfections
+- Natural environmental lighting with realistic shadows
+- Actual depth of field like a real camera lens
+- NO cartoon elements, NO anime, NO illustration, NO stylization
+- NO exaggerated features, NO unrealistic colors
+- This must be INDISTINGUISHABLE from actual photography
+
+{style_desc}"""
         elif art_style in ["3d-pixar", "pixar"]:
-            full_prompt = f"{image_prompt}. {style_desc}. CRITICAL: This MUST look like a still frame from a Pixar/Disney 3D animated movie. Full 3D CGI render with volumetric lighting, subsurface scattering on skin, ray-traced reflections. Absolutely NOT 2D illustration, NOT flat art, NOT watercolor, NOT hand-drawn. Pure three-dimensional computer graphics."
+            full_prompt = f"""CRITICAL STYLE REQUIREMENT: This image MUST be 3D CGI ANIMATION like Pixar/Disney movies.
+
+Scene to depict: {image_prompt}
+
+MANDATORY 3D CGI REQUIREMENTS:
+- Three-dimensional computer-rendered characters (NOT 2D, NOT flat)
+- Smooth plastic-like skin with subsurface scattering
+- Volumetric lighting with ray-traced reflections
+- Big expressive cartoon eyes
+- Looks like a frame from Toy Story, Coco, or Encanto
+- Pure 3D computer graphics render
+- Absolutely NOT hand-drawn, NOT watercolor, NOT flat illustration
+
+{style_desc}"""
+        elif art_style in ["anime"]:
+            full_prompt = f"""CRITICAL STYLE REQUIREMENT: This image MUST be Japanese ANIME style.
+
+Scene to depict: {image_prompt}
+
+MANDATORY ANIME REQUIREMENTS:
+- Large expressive anime eyes with highlight reflections
+- Clean cel-shaded coloring
+- Vibrant saturated colors
+- Studio Ghibli or Makoto Shinkai quality
+- Japanese animation aesthetic
+
+{style_desc}"""
         else:
             full_prompt = f"{image_prompt}. {style_desc}. High quality, detailed illustration suitable for a children's book."
+        
+        logger.info(f"[generate_page_image] Art style: {art_style}, Full prompt length: {len(full_prompt)}")
         
         # Only use Ideogram for explicit ideogram styles - use FLUX for everything else
         use_ideogram = art_style in ["ideogram-storybook", "ideogram-character", "ideogram-realistic"]
@@ -7353,6 +7395,50 @@ def get_style_prompts():
 async def generate_single_image(prompt: str, style_desc: str) -> str:
     """Generate a single image and return its URL using fal.ai FLUX"""
     
+    # Detect if this is a photorealistic style and enforce it strongly
+    is_photorealistic = any(term in style_desc.lower() for term in ["photorealistic", "photograph", "dslr", "real photo"])
+    is_pixar_3d = any(term in style_desc.lower() for term in ["3d cgi", "pixar", "disney", "volumetric", "subsurface"])
+    is_anime = any(term in style_desc.lower() for term in ["anime", "manga", "cel-shad", "ghibli"])
+    
+    # Build a strong prompt based on style
+    if is_photorealistic:
+        full_prompt = f"""CRITICAL: Generate a PHOTOREALISTIC image that looks like a real photograph.
+
+Scene: {prompt}
+
+REQUIREMENTS:
+- Must look like actual photography from a professional DSLR camera
+- Real skin textures, natural lighting, accurate shadows
+- NO cartoon, NO anime, NO illustration, NO stylization
+- Indistinguishable from a real photo
+
+{style_desc}"""
+    elif is_pixar_3d:
+        full_prompt = f"""CRITICAL: Generate a 3D CGI ANIMATED image like Pixar/Disney movies.
+
+Scene: {prompt}
+
+REQUIREMENTS:
+- Three-dimensional computer-rendered characters
+- Volumetric lighting, subsurface scattering
+- Looks like Toy Story, Coco, or Encanto
+- NOT 2D, NOT flat illustration, NOT hand-drawn
+
+{style_desc}"""
+    elif is_anime:
+        full_prompt = f"""CRITICAL: Generate a Japanese ANIME style image.
+
+Scene: {prompt}
+
+REQUIREMENTS:
+- Large expressive anime eyes with highlights
+- Clean cel-shading, vibrant colors
+- Studio Ghibli or Makoto Shinkai quality
+
+{style_desc}"""
+    else:
+        full_prompt = f"{prompt}. {style_desc}. High quality, detailed illustration."
+    
     # Use fal.ai FLUX for high-quality image generation
     if FAL_AVAILABLE:
         try:
@@ -7392,7 +7478,7 @@ async def generate_single_image(prompt: str, style_desc: str) -> str:
     if FAL_AVAILABLE:
         try:
             logger.info("Attempting fallback to fal.ai FLUX standard model")
-            full_prompt = f"{prompt}. {style_desc}. High quality illustration."
+            # Use the same full_prompt with style enforcement
             
             result = await generate_image_flux(
                 prompt=full_prompt,
@@ -7400,7 +7486,7 @@ async def generate_single_image(prompt: str, style_desc: str) -> str:
                 image_size="portrait_4_3",
                 num_images=1,
                 guidance_scale=3.5,
-                num_inference_steps=4,
+                num_inference_steps=28,  # Use correct inference steps for flux-dev
                 print_quality=True
             )
             
