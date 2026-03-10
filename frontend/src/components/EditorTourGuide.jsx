@@ -216,9 +216,6 @@ export default function EditorTourGuide({ onComplete, isOpen = true }) {
   };
 
   if (!isOpen) return null;
-  
-  // Check if mobile
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
   return (
     <AnimatePresence>
@@ -226,35 +223,33 @@ export default function EditorTourGuide({ onComplete, isOpen = true }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[200] flex items-center justify-center"
+        className="fixed inset-0 z-[9999]"
+        style={{ zIndex: 9999 }}
       >
-        {/* Dark overlay with cutout for highlighted element */}
-        <div className="absolute inset-0 bg-black/70" onClick={handleSkip} />
-        
-        {/* Highlight cutout for target element - hide on mobile */}
-        {!isMobile && targetRect && step.highlight && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="absolute z-[201] rounded-lg ring-4 ring-purple-500 ring-offset-2 ring-offset-transparent"
-            style={{
-              top: targetRect.top - 8,
-              left: targetRect.left - 8,
-              width: targetRect.width + 16,
-              height: targetRect.height + 16,
-              boxShadow: '0 0 0 9999px rgba(0,0,0,0.7), 0 0 30px rgba(147, 51, 234, 0.5)'
-            }}
-          />
-        )}
+        {/* Dark overlay/backdrop */}
+        <div 
+          className="fixed inset-0 bg-black/80" 
+          style={{ zIndex: 9999 }}
+          onClick={handleSkip} 
+        />
 
-        {/* Tooltip card - always centered */}
+        {/* Tooltip card - ALWAYS centered with inline styles */}
         <motion.div
           key={currentStep}
-          initial={{ opacity: 0, y: 20, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -20, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.3 }}
-          className="relative z-[202] w-[90vw] max-w-[340px] bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl border border-purple-500/30 overflow-hidden mx-4"
+          className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl border border-purple-500/30 overflow-hidden"
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '90vw',
+            maxWidth: '340px',
+            zIndex: 10000
+          }}
         >
           {/* Header with mascot or icon */}
           <div className="p-4 bg-gradient-to-r from-purple-600 to-pink-600">
