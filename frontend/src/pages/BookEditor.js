@@ -2280,7 +2280,7 @@ export default function BookEditor() {
               
               {/* Right - Text Panel */}
               <div className={`${mobileActivePanel === 'text' ? 'flex' : 'hidden'} lg:flex w-full lg:w-1/2 p-4 lg:p-8 flex-col overflow-y-auto`}>
-                <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-4 gap-2">
+                <div className="flex flex-col gap-2 mb-4">
                   <div className="flex items-center gap-3">
                     <h3 className="font-heading font-semibold text-sm lg:text-lg">Story Text</h3>
                     {/* Page counter - visible on desktop */}
@@ -2289,13 +2289,13 @@ export default function BookEditor() {
                     </span>
                   </div>
                   
-                  {/* Text Formatting Controls - Scrollable on mobile */}
-                  <div className="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 w-full lg:w-auto">
+                  {/* Text Formatting Controls + AI Polish - on second row */}
+                  <div className="flex items-center gap-2 flex-wrap">
                     <Select 
                       value={selectedPage.font_family || 'default'} 
                       onValueChange={(value) => setSelectedPage({ ...selectedPage, font_family: value })}
                     >
-                      <SelectTrigger className="w-24 lg:w-36 h-8 lg:h-10 text-xs lg:text-sm rounded-full flex-shrink-0">
+                      <SelectTrigger className="w-24 lg:w-32 h-8 text-xs rounded-full flex-shrink-0">
                         <SelectValue placeholder="Font" />
                       </SelectTrigger>
                       <SelectContent>
@@ -2311,7 +2311,7 @@ export default function BookEditor() {
                       value={selectedPage.font_size || 'medium'} 
                       onValueChange={(value) => setSelectedPage({ ...selectedPage, font_size: value })}
                     >
-                      <SelectTrigger className="w-20 lg:w-24 h-8 text-xs rounded-full flex-shrink-0">
+                      <SelectTrigger className="w-20 h-8 text-xs rounded-full flex-shrink-0">
                         <SelectValue placeholder="Size" />
                       </SelectTrigger>
                       <SelectContent>
@@ -2326,7 +2326,7 @@ export default function BookEditor() {
                       value={selectedPage.text_align || 'left'} 
                       onValueChange={(value) => setSelectedPage({ ...selectedPage, text_align: value })}
                     >
-                      <SelectTrigger className="w-20 lg:w-24 h-8 text-xs rounded-full flex-shrink-0">
+                      <SelectTrigger className="w-20 h-8 text-xs rounded-full flex-shrink-0">
                         <SelectValue placeholder="Align" />
                       </SelectTrigger>
                       <SelectContent>
@@ -2336,25 +2336,25 @@ export default function BookEditor() {
                         <SelectItem value="justify">Justify</SelectItem>
                       </SelectContent>
                     </Select>
+                    
+                    {/* AI Author Polish Button */}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleEnhanceText}
+                      disabled={isEnhancingText || !selectedPage?.text_content?.trim()}
+                      className="rounded-full bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/30 hover:border-amber-500/50 text-amber-700 dark:text-amber-400 ml-auto"
+                      title="Polish your text with AI - makes it publication-ready (2 credits)"
+                      data-testid="ai-enhance-text-btn"
+                    >
+                      {isEnhancingText ? (
+                        <FiLoader className="mr-1.5 w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <FiEdit3 className="mr-1.5 w-3.5 h-3.5" />
+                      )}
+                      {isEnhancingText ? 'Polishing...' : 'AI Polish'}
+                    </Button>
                   </div>
-                  
-                  {/* AI Author Polish Button */}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleEnhanceText}
-                    disabled={isEnhancingText || !selectedPage?.text_content?.trim()}
-                    className="rounded-full bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/30 hover:border-amber-500/50 text-amber-700 dark:text-amber-400"
-                    title="Polish your text with AI - makes it publication-ready (2 credits)"
-                    data-testid="ai-enhance-text-btn"
-                  >
-                    {isEnhancingText ? (
-                      <FiLoader className="mr-1.5 w-3.5 h-3.5 animate-spin" />
-                    ) : (
-                      <FiEdit3 className="mr-1.5 w-3.5 h-3.5" />
-                    )}
-                    {isEnhancingText ? 'Polishing...' : 'AI Polish'}
-                  </Button>
                 </div>
                 
                 <div className="flex-1 flex flex-col">

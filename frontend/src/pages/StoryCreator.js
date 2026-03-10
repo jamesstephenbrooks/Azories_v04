@@ -193,12 +193,24 @@ export default function StoryCreator() {
       });
       
       if (res.data.jobs && res.data.jobs.length > 0) {
-        // Resume the most recent active job
+        // Only resume jobs that are recent (less than 15 minutes old)
         const activeJob = res.data.jobs[0];
-        setCurrentJobId(activeJob.job_id);
-        setJobStatus(activeJob);
-        setIsGenerating(true);
-        startPolling(activeJob.job_id);
+        const jobAge = activeJob.updated_at 
+          ? (Date.now() - new Date(activeJob.updated_at).getTime()) / 1000 / 60
+          : activeJob.created_at
+            ? (Date.now() - new Date(activeJob.created_at).getTime()) / 1000 / 60
+            : 999;
+        
+        if (jobAge < 15) {
+          // Job is recent, resume it
+          setCurrentJobId(activeJob.job_id);
+          setJobStatus(activeJob);
+          setIsGenerating(true);
+          startPolling(activeJob.job_id);
+        } else {
+          // Job is stale, don't auto-resume
+          console.log(`[StoryCreator] Skipping stale job ${activeJob.job_id} (${Math.round(jobAge)} min old)`);
+        }
       }
     } catch (error) {
       console.error('Failed to check active jobs:', error);
