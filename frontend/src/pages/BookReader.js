@@ -395,12 +395,12 @@ export default function BookReader() {
     if (isFullscreen) {
       // Fullscreen mode - maximize usage
       if (isLandscape) {
-        const bookWidth = Math.min(vw * 0.38, 700);
-        const bookHeight = Math.min(vh * 0.85, 900);
+        const bookWidth = Math.min(vw * 0.42, 750);
+        const bookHeight = Math.min(vh * 0.90, 950);
         return { width: bookWidth, height: bookHeight };
       } else {
-        const bookWidth = Math.min(vw * 0.45, 600);
-        const bookHeight = Math.min(vh * 0.70, 800);
+        const bookWidth = Math.min(vw * 0.50, 650);
+        const bookHeight = Math.min(vh * 0.80, 900);
         return { width: bookWidth, height: bookHeight };
       }
     }
@@ -430,14 +430,14 @@ export default function BookReader() {
     
     if (isTablet) {
       if (isLandscape) {
-        // Tablet landscape (iPad) - EXPANDED to fill more screen
-        const bookWidth = Math.min(vw * 0.42, 600);
-        const bookHeight = Math.min(vh * 0.82, 800);
+        // Tablet landscape (iPad) - Fill screen aggressively
+        const bookWidth = Math.min(vw * 0.46, 680);
+        const bookHeight = Math.min(vh * 0.88, 900);
         return { width: bookWidth, height: bookHeight };
       } else {
-        // Tablet portrait - EXPANDED to fill more screen
-        const bookWidth = Math.min(vw * 0.55, 550);
-        const bookHeight = Math.min(vh * 0.70, 750);
+        // Tablet portrait - Fill screen aggressively
+        const bookWidth = Math.min(vw * 0.72, 640);
+        const bookHeight = Math.min(vh * 0.80, 880);
         return { width: bookWidth, height: bookHeight };
       }
     }
@@ -1807,35 +1807,30 @@ export default function BookReader() {
       return;
     }
     
+    const scrollTextContainer = (container, progress) => {
+      if (!container) return;
+      const scrollableHeight = container.scrollHeight - container.clientHeight;
+      if (scrollableHeight > 0) {
+        const targetScroll = Math.min(progress * 1.1, 1) * scrollableHeight;
+        const currentScroll = container.scrollTop;
+        const diff = targetScroll - currentScroll;
+        if (Math.abs(diff) > 2) {
+          container.scrollTop = currentScroll + (diff * 0.15);
+        }
+      }
+    };
+    
     const handleTimeUpdate = () => {
       if (audioElement.duration && audioElement.duration > 0) {
         const progress = audioElement.currentTime / audioElement.duration;
         setAudioProgress(progress);
         
-        // Auto-scroll the text container based on audio progress
-        const textContainer = textScrollRef.current;
-        if (textContainer) {
-          const scrollableHeight = textContainer.scrollHeight - textContainer.clientHeight;
-          if (scrollableHeight > 0) {
-            // Use a slight ease-out curve for more natural scrolling
-            // Don't scroll all the way - leave some buffer at the end
-            const targetScroll = Math.min(progress * 1.1, 1) * scrollableHeight;
-            
-            // Smooth scroll with requestAnimationFrame for performance
-            const currentScroll = textContainer.scrollTop;
-            const diff = targetScroll - currentScroll;
-            
-            // Only scroll if difference is significant (avoid jitter)
-            if (Math.abs(diff) > 2) {
-              // Smooth interpolation - move 15% of the way each update
-              textContainer.scrollTop = currentScroll + (diff * 0.15);
-            }
-          }
-        }
+        // Auto-scroll both portrait and landscape text containers
+        scrollTextContainer(textScrollRef.current, progress);
+        scrollTextContainer(textScrollRefLandscape.current, progress);
       }
     };
     
-    // Listen to timeupdate events
     audioElement.addEventListener('timeupdate', handleTimeUpdate);
     
     return () => {
@@ -1846,9 +1841,12 @@ export default function BookReader() {
   // Reset audio progress and scroll when page changes
   useEffect(() => {
     setAudioProgress(0);
-    // Reset scroll position when page changes
+    // Reset scroll position when page changes (both orientations)
     if (textScrollRef.current) {
       textScrollRef.current.scrollTop = 0;
+    }
+    if (textScrollRefLandscape.current) {
+      textScrollRefLandscape.current.scrollTop = 0;
     }
   }, [currentPage]);
 
@@ -1963,7 +1961,7 @@ export default function BookReader() {
       
       {/* DESKTOP: Full header bar with all controls */}
       {!isMobilePortrait && !isMobileLandscape && (
-        <div className={`fixed top-0 left-0 right-0 z-40 ${currentPageData?.isBackCover ? 'bg-[#1a0a2e] border-none' : 'bg-background/80 border-b border-border'} backdrop-blur-xl`}>
+        <div className={`fixed top-0 left-0 right-0 z-[210] ${currentPageData?.isBackCover ? 'bg-[#1a0a2e] border-none' : 'bg-background/80 border-b border-border'} backdrop-blur-xl`}>
           <div className={`max-w-7xl mx-auto px-2 sm:px-4 py-1.5 sm:py-3 flex items-center justify-between`}>
             <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
               <Button
@@ -1982,7 +1980,7 @@ export default function BookReader() {
               </div>
             </div>
             
-            <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 flex-shrink-0">
               {/* Reading Progress */}
               {user && readingProgress > 0 && (
                 <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full">
@@ -2063,8 +2061,8 @@ export default function BookReader() {
               <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full w-8 h-8 sm:w-10 sm:h-10">
                 {theme === 'dark' ? <FiSun className="w-4 h-4 sm:w-5 sm:h-5" /> : <FiMoon className="w-4 h-4 sm:w-5 sm:h-5" />}
               </Button>
-              <Button variant="ghost" size="icon" onClick={toggleFullscreen} className="rounded-full w-8 h-8 sm:w-10 sm:h-10">
-                {isFullscreen ? <FiMinimize2 className="w-4 h-4 sm:w-5 sm:h-5" /> : <FiMaximize2 className="w-4 h-4 sm:w-5 sm:h-5" />}
+              <Button variant="ghost" size="icon" onClick={toggleFullscreen} className="rounded-full w-10 h-10 md:w-12 md:h-12 ml-1" data-testid="fullscreen-toggle-btn">
+                {isFullscreen ? <FiMinimize2 className="w-5 h-5" /> : <FiMaximize2 className="w-5 h-5" />}
               </Button>
             </div>
           </div>
@@ -2116,8 +2114,8 @@ export default function BookReader() {
         className={`${
           isMobilePortrait ? 'pt-0 pb-16' : 
           isMobileLandscape ? 'pt-0 pb-0' : 
-          'pt-16 sm:pt-20 pb-16 sm:pb-20'
-        } px-1 sm:px-2 flex items-center justify-center min-h-screen transition-all duration-300 ${
+          'pt-14 sm:pt-16 pb-10 sm:pb-14'
+        } px-1 sm:px-2 md:px-1 flex items-center justify-center min-h-screen transition-all duration-300 ${
           isFullscreen ? 'bg-black/95 fixed inset-0 z-50 pt-4 sm:pt-6 pb-4 sm:pb-6' : ''
         }`}
         data-testid="book-container"
