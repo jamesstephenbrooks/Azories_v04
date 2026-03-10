@@ -1437,18 +1437,6 @@ export default function BookEditor() {
               />
             </div>
             
-            {/* PDF button - icon only on mobile */}
-            <Button
-              variant="outline"
-              size="icon"
-              className="rounded-full w-8 h-8 lg:w-auto lg:h-auto lg:px-4"
-              onClick={downloadBook}
-              data-testid="download-book-btn"
-            >
-              <FiDownload className="w-4 h-4 lg:mr-2" />
-              <span className="hidden lg:inline">PDF</span>
-            </Button>
-            
             {/* Preview button - icon only on mobile */}
             <Button
               variant="outline"
