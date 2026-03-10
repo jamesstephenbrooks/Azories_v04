@@ -2082,15 +2082,15 @@ async def run_shots_generation_task(task_id: str, user_id: str, source_image: st
         
         # Build style prompt based on selection
         style_prompts = {
-            "realistic": "photorealistic, professional photography, natural lighting, high detail",
-            "cinematic": "cinematic, movie still, dramatic lighting, film grain, professional color grading",
-            "cartoon": "cartoon style, animated, bold colors, clean lines, expressive",
-            "anime": "anime style, manga, Japanese animation, vibrant colors, detailed eyes",
-            "pixar": "Pixar style, 3D animated, smooth render, family-friendly, expressive features",
-            "watercolor": "watercolor painting, soft edges, artistic, painterly style, delicate colors",
-            "comic": "comic book style, bold outlines, dynamic shading, graphic novel",
-            "fantasy": "fantasy art style, magical, ethereal, detailed, imaginative",
-            "storybook": "children's book illustration, soft colors, whimsical, gentle, friendly"
+            "realistic": "PHOTOREALISTIC - looks exactly like a real photograph taken with a professional DSLR camera. Natural lighting, accurate shadows, real skin textures, no stylization, no cartoon elements",
+            "cinematic": "Cinematic movie still, dramatic film lighting, professional color grading, shallow depth of field, anamorphic lens flare, Hollywood blockbuster quality",
+            "cartoon": "Bold cartoon style with thick black outlines, flat vibrant cel-shaded colors, exaggerated proportions, animated TV show quality",
+            "anime": "High quality Japanese anime style, large expressive eyes with detailed highlights, clean cel-shading, vibrant saturated colors, Studio Ghibli or Makoto Shinkai quality",
+            "pixar": "MUST BE 3D CGI ANIMATION like Pixar/Disney movies. Three-dimensional rendered characters, smooth plastic-like skin, volumetric lighting, subsurface scattering. NOT 2D, NOT flat, NOT hand-drawn",
+            "watercolor": "Traditional watercolor painting on textured paper, visible wet-on-wet bleeds, transparent color washes, soft organic edges, hand-painted fine art quality",
+            "comic": "American comic book art style, bold black ink outlines, flat cel-shaded colors, dynamic action poses, Marvel/DC superhero comic aesthetic",
+            "fantasy": "Epic fantasy digital painting, magical glowing effects, ethereal dramatic lighting, richly detailed environments, concept art quality",
+            "storybook": "Classic Golden Book children's illustration, warm nostalgic palette, detailed painterly technique, vintage fairy tale aesthetic"
         }
         
         # Use character style if "character" is selected and available
@@ -4384,16 +4384,16 @@ async def generate_image(request: ImageGenerateRequest, current_user: dict = Dep
             raise HTTPException(status_code=500, detail="Emergent LLM key not configured")
         
         style_prompts = {
-            "illustration": "Children's book illustration style, colorful, friendly, magical, whimsical, suitable for children",
-            "comic": "Comic book panel style, bold lines, dynamic, colorful, speech bubble friendly, manga-inspired",
-            "realistic": "Photorealistic style, detailed, cinematic lighting, professional photography",
-            "scifi": "Science fiction style, futuristic, space themes, neon colors, advanced technology, cosmic landscapes, sleek spacecraft, alien worlds, holographic elements",
-            "sketch": "Hand-drawn pencil sketch style, black and white with subtle shading, artistic hatching, rough texture, storyboard feel",
-            "watercolor": "Watercolor painting style, soft blended colors, artistic brush strokes, dreamy atmosphere, gentle gradients",
-            "anime": "Japanese anime style, big expressive eyes, vibrant colors, clean lines, manga-inspired character design",
-            "fantasy": "Epic fantasy art style, magical lighting, dramatic composition, detailed environments, mystical creatures",
-            "pixar": "3D animated Pixar style, smooth textures, expressive characters, warm lighting, playful and appealing design",
-            "storybook": "Classic storybook illustration, vintage children's book style, warm earthy tones, gentle and cozy atmosphere"
+            "illustration": "Professional children's book illustration, bright cheerful colors, clean polished lines, friendly whimsical characters, high quality commercial art",
+            "comic": "American comic book art style, bold black ink outlines, flat cel-shaded colors, dynamic action poses, graphic novel quality",
+            "realistic": "PHOTOREALISTIC - looks exactly like a real photograph. Professional DSLR camera quality, natural lighting, real textures, no stylization whatsoever",
+            "scifi": "Futuristic science fiction concept art, sleek advanced technology, neon accent lighting, cinematic space atmosphere, Blade Runner aesthetic",
+            "sketch": "Detailed graphite pencil drawing on paper, realistic hatching and cross-hatching, visible paper texture, professional artist sketch",
+            "watercolor": "Traditional watercolor painting on textured paper, visible wet-on-wet bleeds, transparent color washes, soft organic edges, fine art quality",
+            "anime": "High quality Japanese anime style, large expressive eyes with detailed highlights, clean cel-shading, vibrant saturated colors, Studio Ghibli quality",
+            "fantasy": "Epic fantasy digital painting, magical glowing effects, ethereal dramatic lighting, richly detailed environments, concept art masterwork",
+            "pixar": "MUST BE 3D CGI ANIMATION like Pixar/Disney movies. Three-dimensional rendered characters, volumetric lighting, subsurface scattering. NOT 2D, NOT flat illustration",
+            "storybook": "Classic Golden Book children's illustration, warm nostalgic palette, detailed painterly technique, vintage 1950s fairy tale aesthetic"
         }
         style_desc = style_prompts.get(request.style, style_prompts["illustration"])
         full_prompt = f"{request.prompt}. Style: {style_desc}"
@@ -4718,14 +4718,14 @@ async def generate_video(request: VideoGenerateRequest, current_user: dict = Dep
             duration = min(valid_durations, key=lambda x: abs(x - duration))
         
         style_prompts = {
-            "animation": "colorful, friendly, magical animation suitable for children",
-            "scifi": "futuristic science fiction style with space themes, neon colors, advanced technology, cosmic visuals",
-            "realistic": "photorealistic cinematic style with professional lighting",
-            "comic": "animated comic book style with bold colors and dynamic movement",
-            "anime": "Japanese anime animation style with vibrant colors and expressive characters",
-            "fantasy": "magical fantasy style with enchanted worlds and mystical creatures",
-            "pixar": "3D animated Pixar-style with smooth textures and expressive characters",
-            "watercolor": "dreamy watercolor animation with soft blended colors and artistic brush strokes"
+            "animation": "High quality 3D animation, smooth motion, vibrant colors, professional Pixar-quality render, suitable for children",
+            "scifi": "Futuristic science fiction, sleek technology, neon lighting, cinematic space visuals, Blade Runner aesthetic",
+            "realistic": "PHOTOREALISTIC video, looks like real footage from a professional camera, natural lighting, no stylization",
+            "comic": "Bold comic book animation style, thick outlines, flat cel-shaded colors, dynamic motion, graphic novel aesthetic",
+            "anime": "High quality Japanese anime animation, clean cel-shading, vibrant colors, expressive characters, Studio Ghibli quality motion",
+            "fantasy": "Epic fantasy animation, magical glowing effects, ethereal lighting, richly detailed mystical environments",
+            "pixar": "MUST BE 3D CGI ANIMATION like Pixar/Disney movies, three-dimensional characters, volumetric lighting, smooth motion",
+            "watercolor": "Artistic watercolor animation style, soft flowing colors, painterly texture, dreamy atmospheric effects"
         }
         style_desc = style_prompts.get(request.style, style_prompts["animation"])
         
@@ -6037,15 +6037,15 @@ async def pro_studio_generate_image(request: ProStudioImageRequest, current_user
     
     # Art style mapping
     ART_STYLE_PROMPTS = {
-        "realistic": "photorealistic, professional photography, natural lighting, high detail",
-        "cinematic": "cinematic, movie still, dramatic lighting, film grain, professional color grading",
-        "cartoon": "cartoon style, animated, bold colors, clean lines, expressive",
-        "anime": "anime style, manga, Japanese animation, vibrant colors, detailed eyes",
-        "pixar": "Pixar style, 3D animated, smooth render, family-friendly, expressive features",
-        "watercolor": "watercolor painting, soft edges, artistic, painterly style, delicate colors",
-        "comic": "comic book style, bold outlines, dynamic shading, graphic novel",
-        "fantasy": "fantasy art style, magical, ethereal, detailed, imaginative",
-        "storybook": "children's book illustration, soft colors, whimsical, gentle, friendly"
+        "realistic": "PHOTOREALISTIC - looks exactly like a real photograph taken with professional DSLR camera, natural lighting, real textures, no stylization",
+        "cinematic": "Cinematic movie still, dramatic film lighting, professional color grading, shallow depth of field, Hollywood blockbuster quality",
+        "cartoon": "Bold cartoon style with thick black outlines, flat vibrant cel-shaded colors, exaggerated proportions, animated TV show quality",
+        "anime": "High quality Japanese anime style, large expressive eyes with detailed highlights, clean cel-shading, vibrant colors, Studio Ghibli quality",
+        "pixar": "MUST BE 3D CGI ANIMATION like Pixar/Disney movies, three-dimensional rendered characters, volumetric lighting, subsurface scattering, NOT 2D",
+        "watercolor": "Traditional watercolor painting on textured paper, visible wet-on-wet bleeds, transparent color washes, soft organic edges, fine art quality",
+        "comic": "American comic book art style, bold black ink outlines, flat cel-shaded colors, dynamic action poses, Marvel/DC aesthetic",
+        "fantasy": "Epic fantasy digital painting, magical glowing effects, ethereal dramatic lighting, richly detailed environments, concept art quality",
+        "storybook": "Classic Golden Book children's illustration, warm nostalgic palette, detailed painterly technique, vintage fairy tale aesthetic"
     }
     
     try:
@@ -6219,15 +6219,15 @@ async def generate_variant(request: GenerateVariantRequest, current_user: dict =
         
         # Art style mapping
         ART_STYLE_PROMPTS = {
-            "realistic": "photorealistic, professional photography, natural lighting, high detail",
-            "cinematic": "cinematic, movie still, dramatic lighting, film grain, professional color grading",
-            "cartoon": "cartoon style, animated, bold colors, clean lines, expressive",
-            "anime": "anime style, manga, Japanese animation, vibrant colors, detailed eyes",
-            "pixar": "Pixar style, 3D animated, smooth render, family-friendly, expressive features",
-            "watercolor": "watercolor painting, soft edges, artistic, painterly style, delicate colors",
-            "comic": "comic book style, bold outlines, dynamic shading, graphic novel",
-            "fantasy": "fantasy art style, magical, ethereal, detailed, imaginative",
-            "storybook": "children's book illustration, soft colors, whimsical, gentle, friendly"
+            "realistic": "PHOTOREALISTIC - looks exactly like a real photograph taken with professional DSLR camera, natural lighting, real textures, no stylization",
+            "cinematic": "Cinematic movie still, dramatic film lighting, professional color grading, shallow depth of field, Hollywood blockbuster quality",
+            "cartoon": "Bold cartoon style with thick black outlines, flat vibrant cel-shaded colors, exaggerated proportions, animated TV show quality",
+            "anime": "High quality Japanese anime style, large expressive eyes with detailed highlights, clean cel-shading, vibrant colors, Studio Ghibli quality",
+            "pixar": "MUST BE 3D CGI ANIMATION like Pixar/Disney movies, three-dimensional rendered characters, volumetric lighting, subsurface scattering, NOT 2D",
+            "watercolor": "Traditional watercolor painting on textured paper, visible wet-on-wet bleeds, transparent color washes, soft organic edges, fine art quality",
+            "comic": "American comic book art style, bold black ink outlines, flat cel-shaded colors, dynamic action poses, Marvel/DC aesthetic",
+            "fantasy": "Epic fantasy digital painting, magical glowing effects, ethereal dramatic lighting, richly detailed environments, concept art quality",
+            "storybook": "Classic Golden Book children's illustration, warm nostalgic palette, detailed painterly technique, vintage fairy tale aesthetic"
         }
         
         # Build full prompt with cinema settings
@@ -7809,36 +7809,36 @@ async def generate_story(request: AIStoryRequest, current_user: dict = Depends(g
         # Expanded image style mapping for prompts
         style_prompts = {
             # Kids Mode styles
-            "3d-pixar": "Pixar 3D CGI animation style, exactly like Toy Story, Coco, or Encanto, smooth 3D rendered characters, subsurface scattering skin, volumetric lighting, rich saturated colors, expressive cartoon faces, cinematic depth of field, Disney-Pixar quality render, NOT flat illustration, NOT 2D art",
-            "pixar": "Pixar 3D CGI animation style, exactly like Toy Story, Coco, or Encanto, smooth 3D rendered characters, subsurface scattering skin, volumetric lighting, rich saturated colors, expressive cartoon faces, cinematic depth of field, Disney-Pixar quality render, NOT flat illustration, NOT 2D art",
-            "watercolour": "Soft watercolor illustration, delicate washes of color, wet-on-wet bleeding edges, translucent layers, hand-painted texture, visible paper grain, children's picture book quality",
-            "watercolor": "Soft watercolor illustration, delicate washes of color, wet-on-wet bleeding edges, translucent layers, hand-painted texture, visible paper grain",
-            "pencil-sketch": "Detailed pencil sketch on white paper, graphite shading, cross-hatching, hand-drawn linework, artistic texture",
-            "hand-drawn": "Hand-drawn pen and ink illustration with watercolor wash, warm colors, whimsical expressive style",
-            "comic-book": "Comic book panel art, bold black ink outlines, Ben-Day dot shading, vibrant flat colors, dynamic poses, Marvel/DC graphic novel quality",
-            "storybook": "Classic golden-age children's storybook illustration, warm amber tones, detailed painterly scenes, vintage fairy tale aesthetic",
-            "cartoon": "Bold colorful cartoon illustration, thick outlines, flat vibrant colors, expressive characters, Saturday morning cartoon style",
+            "3d-pixar": "MUST BE 3D CGI ANIMATION exactly like Pixar/Disney movies (Toy Story, Coco, Encanto). Three-dimensional rendered characters with smooth plastic-like skin, volumetric lighting, subsurface scattering, ray-traced reflections. CRITICAL: NOT 2D illustration, NOT flat art, NOT watercolor, NOT hand-drawn. Pure computer graphics 3D render.",
+            "pixar": "MUST BE 3D CGI ANIMATION exactly like Pixar/Disney movies (Toy Story, Coco, Encanto). Three-dimensional rendered characters with smooth plastic-like skin, volumetric lighting, subsurface scattering, ray-traced reflections. CRITICAL: NOT 2D illustration, NOT flat art, NOT watercolor, NOT hand-drawn. Pure computer graphics 3D render.",
+            "watercolour": "Traditional watercolor painting on textured paper, visible wet-on-wet bleeding edges, transparent layered washes, soft organic forms, hand-painted fine art quality, children's picture book illustration",
+            "watercolor": "Traditional watercolor painting on textured paper, visible wet-on-wet bleeding edges, transparent layered washes, soft organic forms, hand-painted fine art quality",
+            "pencil-sketch": "Detailed graphite pencil drawing on white paper, realistic hatching and cross-hatching, visible paper texture, professional artist sketch, tonal shading",
+            "hand-drawn": "Traditional hand-drawn pen and ink illustration with watercolor wash, warm colors, whimsical expressive linework, storybook quality",
+            "comic-book": "American comic book panel art, bold black ink outlines, Ben-Day dot shading, flat cel-shaded colors, dynamic action poses, Marvel/DC graphic novel quality",
+            "storybook": "Classic Golden Book children's illustration, warm nostalgic amber tones, detailed painterly technique, vintage 1950s fairy tale aesthetic",
+            "cartoon": "Bold cartoon style with thick black outlines, flat vibrant cel-shaded colors, exaggerated proportions, animated TV show quality",
             
             # Story Studio styles (for older readers)
-            "realistic": "Ultra photorealistic, hyperdetailed, professional DSLR photography, real life, no stylization, no cartoon, natural lighting, sharp focus",
-            "photorealistic": "Ultra photorealistic style, hyperdetailed like a real photograph, professional photography quality, DSLR camera, natural lighting, NO cartoon, NO anime, NO illustration, real life quality",
-            "anime": "High quality anime illustration style, big expressive eyes, clean cel-shading, vibrant colors, detailed backgrounds, Studio Ghibli or modern anime quality",
-            "manga": "Black and white manga panel art, detailed screentone shading, dynamic action lines, expressive character designs",
-            "oil-painting": "Classical oil painting on canvas, visible brushstrokes, impasto texture, rich layered colors, dramatic chiaroscuro lighting, Old Masters quality",
-            "vintage-storybook": "Vintage 1950s children's book illustration, aged paper texture, muted earthy palette, classic mid-century style",
-            "dark-fantasy": "Epic dark fantasy oil painting, moody dramatic atmosphere, chiaroscuro lighting, intricate gothic details",
+            "realistic": "ULTRA PHOTOREALISTIC - must look exactly like a real photograph taken with a professional DSLR camera. Real skin textures, natural lighting, accurate shadows, NO stylization whatsoever, NO cartoon elements, NO illustration style. Indistinguishable from actual photography.",
+            "photorealistic": "ULTRA PHOTOREALISTIC - must look exactly like a real photograph taken with a professional DSLR camera. Real skin textures, natural lighting, accurate shadows, NO stylization whatsoever, NO cartoon elements, NO illustration style. Indistinguishable from actual photography.",
+            "anime": "High quality Japanese anime style, large expressive eyes with detailed highlights and reflections, clean cel-shading, vibrant saturated colors, detailed backgrounds, Studio Ghibli or Makoto Shinkai quality",
+            "manga": "Black and white Japanese manga panel art, detailed screentone patterns, sharp ink linework, dramatic speed lines, expressive character designs, professional manga quality",
+            "oil-painting": "Classical oil painting on canvas, visible impasto brushstrokes, rich layered glazes, dramatic chiaroscuro lighting, Rembrandt or Vermeer quality, museum-worthy fine art",
+            "vintage-storybook": "Vintage 1950s children's book illustration, nostalgic muted earth tones, textured paper appearance, classic mid-century modern style",
+            "dark-fantasy": "Epic dark fantasy digital painting, moody dramatic atmosphere, chiaroscuro lighting, intricate gothic details, concept art masterwork quality",
             
-            # Ideogram styles (NEW - Character consistency)
-            "ideogram-realistic": "Ultra photorealistic style, hyperdetailed like a real photograph, professional DSLR photography, natural lighting, NO cartoon, NO anime, real life quality",
-            "ideogram-storybook": "Charming children's book illustration style, soft pastel colors, warm lighting, whimsical and friendly",
-            "ideogram-character": "Illustrated character style, consistent character appearance, expressive features, warm colors, storybook quality",
+            # Ideogram styles (Character consistency)
+            "ideogram-realistic": "ULTRA PHOTOREALISTIC - must look exactly like a real photograph, professional DSLR quality, natural lighting, NO cartoon, NO anime, NO illustration, real photography only",
+            "ideogram-storybook": "Classic children's book illustration style, soft pastel colors, warm nostalgic lighting, whimsical and friendly characters",
+            "ideogram-character": "Illustrated character style, consistent character appearance, expressive features, warm colors, professional storybook quality",
             
             # Legacy fallbacks
-            "illustration": "Professional digital children's book illustration, colorful, friendly, whimsical, clean linework, bright palette",
-            "comic": "Comic book panel style, bold ink outlines, dynamic poses, vibrant flat colors",
-            "sketch": "Clean pencil sketch illustration, expressive linework, light hatching shading",
-            "fantasy": "Epic fantasy digital painting, magical glowing effects, ethereal lighting, richly detailed environments",
-            "scifi": "Futuristic sci-fi concept art, sleek technology, neon accent lighting, deep space atmosphere"
+            "illustration": "Professional digital children's book illustration, bright cheerful colors, clean polished linework, friendly whimsical characters",
+            "comic": "American comic book art style, bold black ink outlines, flat cel-shaded colors, dynamic action poses, graphic novel quality",
+            "sketch": "Detailed graphite pencil sketch, expressive confident linework, artistic hatching shading, professional artist quality",
+            "fantasy": "Epic fantasy digital painting, magical glowing effects, ethereal dramatic lighting, richly detailed environments and characters",
+            "scifi": "Futuristic science fiction concept art, sleek advanced technology, neon accent lighting, cinematic space atmosphere"
         }
         
         # Use the art_style from request, fallback to image_style for backwards compatibility
@@ -8345,10 +8345,10 @@ async def generate_all_images(request: GenerateAllImagesRequest, current_user: d
     try:
         
         style_prompts = {
-            "illustration": "Children's book illustration style, colorful, friendly, magical, whimsical",
-            "comic": "Comic book panel style, bold lines, dynamic, colorful",
-            "realistic": "Photorealistic style, detailed, cinematic lighting",
-            "scifi": "Science fiction style, futuristic, space themes, neon colors, advanced technology"
+            "illustration": "Professional children's book illustration, bright cheerful colors, clean polished lines, friendly whimsical characters, high quality commercial art",
+            "comic": "American comic book art style, bold black ink outlines, flat cel-shaded colors, dynamic action poses, graphic novel quality",
+            "realistic": "PHOTOREALISTIC - looks exactly like a real photograph taken with professional DSLR camera, natural lighting, real textures, no stylization",
+            "scifi": "Futuristic science fiction concept art, sleek advanced technology, neon accent lighting, cinematic space atmosphere"
         }
         style_desc = style_prompts.get(request.style, style_prompts["illustration"])
         
@@ -8416,10 +8416,10 @@ async def generate_images_from_text(request: GenerateImagesFromTextRequest, curr
     try:
         
         style_prompts = {
-            "illustration": "Children's book illustration style, colorful, friendly, magical, whimsical",
-            "comic": "Comic book panel style, bold lines, dynamic, colorful",
-            "realistic": "Photorealistic style, detailed, cinematic lighting",
-            "scifi": "Science fiction style, futuristic, space themes, neon colors, advanced technology"
+            "illustration": "Professional children's book illustration, bright cheerful colors, clean polished lines, friendly whimsical characters, high quality commercial art",
+            "comic": "American comic book art style, bold black ink outlines, flat cel-shaded colors, dynamic action poses, graphic novel quality",
+            "realistic": "PHOTOREALISTIC - looks exactly like a real photograph taken with professional DSLR camera, natural lighting, real textures, no stylization",
+            "scifi": "Futuristic science fiction concept art, sleek advanced technology, neon accent lighting, cinematic space atmosphere"
         }
         style_desc = style_prompts.get(request.style, style_prompts["illustration"])
         
@@ -10805,7 +10805,7 @@ async def generate_consistent_character(
         # Add style
         style_to_use = style or (profile.get("style_preferences", ["fantasy"])[0] if profile.get("style_preferences") else "fantasy")
         style_prompts = {
-            "realistic": "Photorealistic style, detailed, cinematic lighting",
+            "realistic": "PHOTOREALISTIC - looks exactly like a real photograph taken with professional DSLR camera, natural lighting, real textures, no stylization",
             "anime": "Japanese anime style, vibrant colors, clean lines",
             "fantasy": "Epic fantasy art style, magical lighting, detailed",
             "cartoon": "Colorful cartoon style, bold outlines",
