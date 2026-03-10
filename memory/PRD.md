@@ -33,6 +33,16 @@ Build a full-featured AI Story Creator application named "Azories" with:
 
 ## Recent Fixes (December 2026)
 
+### Session v1.0.19 (March 2026)
+- [x] **BookReader Redesign** - Removed black header bar, moved all controls to floating vertical sidebar on right side with purple-themed circular buttons. Back button moved to top-left corner
+- [x] **AI Book Editor Fix** - Fixed ChapterResponse/PageResponse datetime serialization (datetime objects → isoformat strings), enabling AI books to load chapters and pages correctly
+- [x] **Bonus Pages Preview Fix** - Rewrote BonusPagesPreview.jsx with onTouchEnd handlers, pointerEvents:auto, and proper z-index for iPad touch compatibility
+- [x] **Editor Layout Fix** - Reorganized text controls from single cramped row to multi-row layout (Title+PageCount on row 1, Font/Size/Align+AIPolish on row 2)
+- [x] **Cover Buttons Centered** - Moved Read/Listen buttons from top:82% to top:65% so they're centered on the book cover
+- [x] **AI Stories Auto-Load Fix** - Added 15-minute staleness check so old generation jobs don't auto-resume when visiting AI Stories page
+- [x] **CRITICAL: Image Quality Upgrade** - Upgraded from flux-dev to flux-pro for all story image generation. Fixed cover prompt to NOT render text (FLUX garbles text). Added seed consistency across all pages in a book for consistent art style
+- [x] **Image Prompt Bug Fix** - Fixed generate_single_image() where line 7535 was overwriting carefully built style-specific prompts with a generic prompt
+
 ### Session v1.0.18 (March 2026)
 - [x] **iPad Layout Fix** - Expanded tablet book dimensions (portrait: 72% width/80% height, landscape: 46% width/88% height), reduced container padding
 - [x] **Fullscreen Button Fix** - Raised header z-index to z-[210] above tap zones z-[200], enlarged fullscreen button touch target, added spacing

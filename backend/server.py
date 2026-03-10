@@ -4676,24 +4676,20 @@ Create this image in the exact style described above. High quality, detailed ill
                 if not result.get("success") or not result.get("images"):
                     raise Exception("Ideogram returned no images")
             except Exception as ideogram_err:
-                logger.warning(f"Ideogram failed, falling back to FLUX: {ideogram_err}")
+                logger.warning(f"Ideogram failed, falling back to FLUX Pro: {ideogram_err}")
                 result = await generate_image_flux(
                     prompt=full_prompt,
-                    model="flux-dev",
+                    model="flux-pro",
                     image_size="portrait_4_3",
                     num_images=1,
-                    guidance_scale=7.5,
-                    num_inference_steps=28,
                     print_quality=True
                 )
         else:
             result = await generate_image_flux(
                 prompt=full_prompt,
-                model="flux-dev",
+                model="flux-pro",
                 image_size="portrait_4_3",
                 num_images=1,
-                guidance_scale=7.5,
-                num_inference_steps=28,
                 print_quality=True
             )
         
@@ -7295,11 +7291,18 @@ async def run_story_generation_job(job_id: str, request_data: dict, user_data: d
         })
         
         # ============ STEP 3: Generate Cover Image ============
+        # Generate a consistent seed for this book to use across all images
+        import hashlib
+        book_seed = int(hashlib.md5(book_id.encode()).hexdigest()[:8], 16) % 2147483647
+        
         try:
             book_title = story_data.get('title', 'Story')
-            cover_prompt = f"Children's book cover design with the title '{book_title}' prominently displayed. {story_data.get('main_character_description', '')}. {style_desc}. Professional book cover layout with title text at the top, eye-catching illustration, appealing to readers, centered composition."
+            char_desc = story_data.get('main_character_description', '')
+            # IMPORTANT: Do NOT ask FLUX to render text - it produces garbled results
+            # The UI overlays the title separately
+            cover_prompt = f"Beautiful children's book cover illustration. {char_desc}. Centered composition, eye-catching and colorful, appealing to young readers. The main character should be prominent and inviting."
             
-            cover_url = await generate_single_image(cover_prompt, style_desc)
+            cover_url = await generate_single_image(cover_prompt, style_desc, seed=book_seed)
             
             # Store in both fields for compatibility (cover_image for BookResponse, cover_image_url for legacy)
             await db.books.update_one(
@@ -7344,11 +7347,13 @@ async def run_story_generation_job(job_id: str, request_data: dict, user_data: d
                 if not image_prompt:
                     image_prompt = f"Illustration for: {page.get('text', '')[:100]}"
                 
-                # Add character and style to prompt
+                # Add character and style to prompt, use consistent seed
                 char_desc = story_data.get("main_character_description", "")
                 full_prompt = f"{image_prompt}. {char_desc}. {style_desc}"
                 
-                image_url = await generate_single_image(full_prompt, style_desc)
+                # Use book seed + page number for consistent but varied images
+                page_seed = (book_seed + page_num * 7) % 2147483647
+                image_url = await generate_single_image(full_prompt, style_desc, seed=page_seed)
                 
                 # Create page document
                 page_doc = {
@@ -7499,8 +7504,8 @@ def get_style_prompts():
         "scifi": "Futuristic science fiction concept art, sleek technology, neon accent lighting, cinematic space atmosphere"
     }
 
-async def generate_single_image(prompt: str, style_desc: str) -> str:
-    """Generate a single image and return its URL using fal.ai FLUX"""
+async def generate_single_image(prompt: str, style_desc: str, seed: int = None) -> str:
+    """Generate a single image and return its URL using fal.ai FLUX Pro"""
     
     # Detect if this is a photorealistic style and enforce it strongly
     is_photorealistic = any(term in style_desc.lower() for term in ["photorealistic", "photograph", "dslr", "real photo"])
@@ -7509,57 +7514,27 @@ async def generate_single_image(prompt: str, style_desc: str) -> str:
     
     # Build a strong prompt based on style
     if is_photorealistic:
-        full_prompt = f"""CRITICAL: Generate a PHOTOREALISTIC image that looks like a real photograph.
-
-Scene: {prompt}
-
-REQUIREMENTS:
-- Must look like actual photography from a professional DSLR camera
-- Real skin textures, natural lighting, accurate shadows
-- NO cartoon, NO anime, NO illustration, NO stylization
-- Indistinguishable from a real photo
-
-{style_desc}"""
+        full_prompt = f"""PHOTOREALISTIC photograph. {prompt}. Shot on professional DSLR camera, natural lighting, real skin textures, accurate shadows. {style_desc}"""
     elif is_pixar_3d:
-        full_prompt = f"""CRITICAL: Generate a 3D CGI ANIMATED image like Pixar/Disney movies.
-
-Scene: {prompt}
-
-REQUIREMENTS:
-- Three-dimensional computer-rendered characters
-- Volumetric lighting, subsurface scattering
-- Looks like Toy Story, Coco, or Encanto
-- NOT 2D, NOT flat illustration, NOT hand-drawn
-
-{style_desc}"""
+        full_prompt = f"""3D CGI animated scene like a Pixar/Disney movie. {prompt}. Three-dimensional computer-rendered characters with smooth skin, volumetric lighting, subsurface scattering, big expressive eyes. Looks like Toy Story, Coco, or Encanto. {style_desc}"""
     elif is_anime:
-        full_prompt = f"""CRITICAL: Generate a Japanese ANIME style image.
-
-Scene: {prompt}
-
-REQUIREMENTS:
-- Large expressive anime eyes with highlights
-- Clean cel-shading, vibrant colors
-- Studio Ghibli or Makoto Shinkai quality
-
-{style_desc}"""
+        full_prompt = f"""Japanese anime illustration. {prompt}. Large expressive anime eyes, clean cel-shading, vibrant colors, Studio Ghibli quality. {style_desc}"""
     else:
         full_prompt = f"{prompt}. {style_desc}. High quality, detailed illustration."
     
-    # Use fal.ai FLUX for high-quality image generation
+    # Use fal.ai FLUX Pro for high-quality image generation
     if FAL_AVAILABLE:
         try:
-            # Use the style-specific full_prompt built above (do NOT overwrite it)
-            logger.info(f"[generate_single_image] Using style-specific prompt, length: {len(full_prompt)}")
+            logger.info(f"[generate_single_image] Using flux-pro, prompt length: {len(full_prompt)}, seed: {seed}")
             
-            # Use print_quality for correct 8x10 ratio (2400x3000px at 300 DPI)
             result = await generate_image_flux(
                 prompt=full_prompt,
-                model="flux-dev",
+                model="flux-pro",
                 image_size="portrait_4_3",
                 num_images=1,
                 guidance_scale=7.5,
                 num_inference_steps=28,
+                seed=seed,
                 print_quality=True
             )
             

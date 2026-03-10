@@ -351,10 +351,16 @@ async def generate_image_flux(
         "prompt": prompt,
         "image_size": actual_image_size,
         "num_images": num_images,
-        "guidance_scale": guidance_scale,
-        "num_inference_steps": num_inference_steps,
         "enable_safety_checker": True
     }
+    
+    # flux-pro v1.1 uses different params than flux-dev/schnell
+    if model != "flux-pro":
+        arguments["guidance_scale"] = guidance_scale
+        arguments["num_inference_steps"] = num_inference_steps
+    else:
+        # flux-pro only supports: prompt, image_size, num_images, seed, safety_tolerance
+        arguments["safety_tolerance"] = "2"  # moderate
 
     if seed is not None:
         arguments["seed"] = seed
