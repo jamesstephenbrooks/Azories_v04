@@ -216,6 +216,9 @@ export default function EditorTourGuide({ onComplete, isOpen = true }) {
   };
 
   if (!isOpen) return null;
+  
+  // Check if mobile
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
   return (
     <AnimatePresence>
@@ -223,13 +226,13 @@ export default function EditorTourGuide({ onComplete, isOpen = true }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[200]"
+        className="fixed inset-0 z-[200] flex items-center justify-center"
       >
         {/* Dark overlay with cutout for highlighted element */}
-        <div className="absolute inset-0 bg-black/70" />
+        <div className="absolute inset-0 bg-black/70" onClick={handleSkip} />
         
-        {/* Highlight cutout for target element */}
-        {targetRect && step.highlight && (
+        {/* Highlight cutout for target element - hide on mobile */}
+        {!isMobile && targetRect && step.highlight && (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -244,15 +247,14 @@ export default function EditorTourGuide({ onComplete, isOpen = true }) {
           />
         )}
 
-        {/* Tooltip card */}
+        {/* Tooltip card - always centered */}
         <motion.div
           key={currentStep}
           initial={{ opacity: 0, y: 20, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -20, scale: 0.95 }}
           transition={{ duration: 0.3 }}
-          className="z-[202] w-[calc(100vw-32px)] sm:w-80 max-w-[320px] bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl border border-purple-500/30 overflow-hidden"
-          style={getTooltipStyle()}
+          className="relative z-[202] w-[90vw] max-w-[340px] bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl border border-purple-500/30 overflow-hidden mx-4"
         >
           {/* Header with mascot or icon */}
           <div className="p-4 bg-gradient-to-r from-purple-600 to-pink-600">
