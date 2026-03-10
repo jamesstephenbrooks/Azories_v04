@@ -4505,9 +4505,9 @@ Key requirements:
         
         # Build prompt based on style - photorealistic styles need different handling
         if art_style in ["photorealistic", "realistic", "ideogram-realistic"]:
-            full_prompt = f"{image_prompt}. {style_desc}. Ultra realistic, no cartoon elements, no anime, no stylization, real photograph quality, DSLR camera, professional lighting."
+            full_prompt = f"{image_prompt}. {style_desc}. Ultra realistic photograph, no cartoon elements, no anime, no illustration, no stylization whatsoever, real photograph taken with professional camera, natural lighting, sharp focus."
         elif art_style in ["3d-pixar", "pixar"]:
-            full_prompt = f"{image_prompt}. {style_desc}. 3D CGI render, NOT a 2D illustration, NOT flat art, NOT watercolor, NOT hand-drawn, fully three-dimensional."
+            full_prompt = f"{image_prompt}. {style_desc}. CRITICAL: This MUST look like a still frame from a Pixar/Disney 3D animated movie. Full 3D CGI render with volumetric lighting, subsurface scattering on skin, ray-traced reflections. Absolutely NOT 2D illustration, NOT flat art, NOT watercolor, NOT hand-drawn. Pure three-dimensional computer graphics."
         else:
             full_prompt = f"{image_prompt}. {style_desc}. High quality, detailed illustration suitable for a children's book."
         
@@ -7325,29 +7325,29 @@ async def refund_story_credits(user_id: str, num_pages: int):
     logger.info(f"Refunded {credits_to_refund} credits to user {user_id}")
 
 def get_style_prompts():
-    """Get style prompt mappings - simplified for better results"""
+    """Get style prompt mappings - ENHANCED for accurate style reproduction"""
     return {
-        "3d-pixar": "3D animated Pixar style, like Toy Story or Coco, smooth 3D characters, vibrant colors, expressive faces, warm cinematic lighting",
-        "pixar": "3D animated Pixar style, like Toy Story or Coco, smooth 3D characters, vibrant colors, expressive faces, warm cinematic lighting",
-        "watercolour": "Soft watercolor illustration, delicate washes of color, hand-painted texture, children's picture book style",
-        "watercolor": "Soft watercolor illustration, delicate washes of color, hand-painted texture, children's picture book style",
-        "pencil-sketch": "Detailed pencil sketch, graphite shading, hand-drawn linework, artistic texture",
-        "hand-drawn": "Hand-drawn illustration with watercolor wash, warm colors, whimsical expressive style",
-        "comic-book": "Comic book art style, bold black outlines, vibrant flat colors, dynamic poses, graphic novel quality",
-        "storybook": "Classic children's storybook illustration, warm tones, detailed painterly scenes, vintage fairy tale aesthetic",
-        "realistic": "Photorealistic, detailed, natural lighting, sharp focus, professional photography quality",
-        "photorealistic": "Ultra photorealistic, like a real photograph, professional DSLR quality, natural lighting",
-        "anime": "High quality anime style, expressive eyes, clean cel-shading, vibrant colors, Studio Ghibli quality",
-        "manga": "Black and white manga style, detailed screentone shading, dynamic action lines, expressive characters",
-        "oil-painting": "Classical oil painting style, visible brushstrokes, rich layered colors, dramatic lighting",
-        "vintage-storybook": "Vintage 1950s children's book illustration, muted earthy palette, nostalgic classic style",
-        "dark-fantasy": "Epic dark fantasy art, dramatic atmosphere, chiaroscuro lighting, intricate gothic details",
-        "illustration": "Professional children's book illustration, colorful, friendly, whimsical, bright palette",
-        "cartoon": "Bold colorful cartoon style, thick outlines, flat vibrant colors, expressive characters",
-        "comic": "Comic book panel style, bold ink outlines, dynamic poses, vibrant flat colors",
-        "sketch": "Clean pencil sketch, expressive linework, light hatching shading",
-        "fantasy": "Epic fantasy digital painting, magical effects, ethereal lighting, richly detailed",
-        "scifi": "Futuristic sci-fi concept art, sleek technology, neon lighting, deep space atmosphere"
+        "3d-pixar": "MUST BE 3D CGI ANIMATION STYLE like Pixar movies (Toy Story, Coco, Inside Out). Three-dimensional rendered characters with smooth plastic-like skin, volumetric lighting, subsurface scattering, rounded forms, big expressive eyes. NOT 2D, NOT flat illustration, NOT hand-drawn, NOT watercolor. Pure 3D computer graphics render.",
+        "pixar": "MUST BE 3D CGI ANIMATION STYLE like Pixar movies (Toy Story, Coco, Inside Out). Three-dimensional rendered characters with smooth plastic-like skin, volumetric lighting, subsurface scattering, rounded forms, big expressive eyes. NOT 2D, NOT flat illustration, NOT hand-drawn, NOT watercolor. Pure 3D computer graphics render.",
+        "watercolour": "Soft watercolor painting on textured paper, visible wet-on-wet bleeds, delicate transparent color washes, organic flowing edges, hand-painted traditional art, children's picture book illustration",
+        "watercolor": "Soft watercolor painting on textured paper, visible wet-on-wet bleeds, delicate transparent color washes, organic flowing edges, hand-painted traditional art, children's picture book illustration",
+        "pencil-sketch": "Detailed graphite pencil drawing, realistic hatching and cross-hatching, visible paper texture, professional artist sketch, tonal shading",
+        "hand-drawn": "Traditional hand-drawn illustration with loose brushwork, visible artistic strokes, warm color palette, whimsical storybook feel",
+        "comic-book": "American comic book art style, bold black ink outlines, flat cel-shaded colors, Ben-Day dots, dynamic action poses, superhero comic aesthetic",
+        "storybook": "Classic Golden Book children's illustration, detailed painterly technique, warm nostalgic palette, fairy tale aesthetic, mid-century illustration style",
+        "realistic": "PHOTOREALISTIC - looks exactly like a real photograph taken with a professional camera. Natural lighting, accurate shadows, real textures, no stylization, no cartoon elements whatsoever",
+        "photorealistic": "ULTRA PHOTOREALISTIC - indistinguishable from a real DSLR photograph. Professional studio lighting, shallow depth of field, real skin textures, actual photograph quality",
+        "anime": "Japanese anime style, large expressive eyes with detailed highlights, clean cel-shading, vibrant saturated colors, Studio Ghibli or Makoto Shinkai quality",
+        "manga": "Black and white Japanese manga style, detailed screentone patterns, sharp ink linework, dramatic speed lines, professional manga panel art",
+        "oil-painting": "Classical oil painting on canvas, visible impasto brushstrokes, rich layered glazes, Rembrandt-style lighting, museum quality fine art",
+        "vintage-storybook": "1950s retro children's book illustration, muted earth tones, nostalgic mid-century modern style, textured paper appearance",
+        "dark-fantasy": "Epic dark fantasy digital painting, dramatic chiaroscuro lighting, intricate gothic details, moody atmospheric effects",
+        "illustration": "Professional digital children's book illustration, clean lines, bright cheerful colors, friendly characters, polished commercial quality",
+        "cartoon": "Bold cartoon style with thick black outlines, flat vibrant colors, exaggerated proportions, fun and playful aesthetic",
+        "comic": "Comic panel illustration, strong ink outlines, flat color fills, dynamic compositions, graphic novel quality",
+        "sketch": "Clean pencil or ink sketch, expressive confident linework, minimal shading, artistic quick-capture style",
+        "fantasy": "Epic fantasy digital painting, magical glowing effects, ethereal lighting, richly detailed environments and characters",
+        "scifi": "Futuristic science fiction concept art, sleek technology, neon accent lighting, cinematic space atmosphere"
     }
 
 async def generate_single_image(prompt: str, style_desc: str) -> str:

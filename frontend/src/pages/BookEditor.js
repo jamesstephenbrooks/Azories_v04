@@ -3500,17 +3500,6 @@ export default function BookEditor() {
             <FiSave className="w-5 h-5" />
             <span className="text-xs">{saving ? 'Saving' : 'Save'}</span>
           </Button>
-          
-          {/* Download Button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={downloadBook}
-            className="flex-1 flex flex-col items-center gap-1 h-auto py-2"
-          >
-            <FiDownload className="w-5 h-5" />
-            <span className="text-xs">PDF</span>
-          </Button>
         </div>
       </div>
       
