@@ -11,7 +11,8 @@ import {
   FiArrowLeft, FiChevronLeft, FiChevronRight, FiChevronUp, FiChevronDown,
   FiMaximize2, FiMinimize2, FiPlay, FiPause, FiVolume2, FiVolumeX, 
   FiSun, FiMoon, FiLock, FiBook, FiAward, FiTrendingUp, FiMic, FiX,
-  FiPrinter, FiDownload, FiShare2, FiHome, FiBookmark, FiPackage, FiWifiOff
+  FiPrinter, FiDownload, FiShare2, FiHome, FiBookmark, FiPackage, FiWifiOff,
+  FiEdit2
 } from 'react-icons/fi';
 import confetti from 'canvas-confetti';
 import { useTheme } from '@/context/ThemeContext';
@@ -1928,6 +1929,19 @@ export default function BookReader() {
             >
               <FiShare2 className="w-4 h-4" />
             </Button>
+            
+            {/* Edit button - Only visible to book owner */}
+            {user && book && (book.author_id === user.id || book.user_id === user.id) && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate(`/editor/${book.id}`)}
+                className="w-7 h-7 rounded-full bg-black/20 backdrop-blur-md text-white/90 hover:bg-black/40 hover:text-white shadow-lg"
+                data-testid="mobile-edit-btn"
+              >
+                <FiEdit2 className="w-4 h-4" />
+              </Button>
+            )}
           </div>
         </>
       )}
@@ -2016,6 +2030,20 @@ export default function BookReader() {
               >
                 <FiShare2 className="w-4 h-4 sm:w-5 sm:h-5" />
               </Button>
+              
+              {/* Edit Book Button - Only visible to book owner */}
+              {user && book && (book.author_id === user.id || book.user_id === user.id) && (
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => navigate(`/editor/${book.id}`)} 
+                  className="rounded-full w-8 h-8 sm:w-10 sm:h-10"
+                  title="Edit this book"
+                  data-testid="edit-book-btn"
+                >
+                  <FiEdit2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                </Button>
+              )}
               
               <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full w-8 h-8 sm:w-10 sm:h-10">
                 {theme === 'dark' ? <FiSun className="w-4 h-4 sm:w-5 sm:h-5" /> : <FiMoon className="w-4 h-4 sm:w-5 sm:h-5" />}
