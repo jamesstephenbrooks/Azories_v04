@@ -418,7 +418,7 @@ export default function StoryCreator() {
       <div className="min-h-screen bg-gradient-to-b from-purple-950 via-purple-900 to-indigo-950">
         <Navbar />
         
-        <div className="max-w-2xl mx-auto px-4 pt-20 pb-12">
+        <div className="max-w-2xl mx-auto px-4 pt-24 pb-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

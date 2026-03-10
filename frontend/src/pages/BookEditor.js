@@ -1471,7 +1471,7 @@ export default function BookEditor() {
         </div>
       </div>
       
-      <div className="pt-14 lg:pt-20 flex flex-col lg:flex-row h-[calc(100vh-3.5rem)] lg:h-[calc(100vh-5rem)]">
+      <div className="pt-16 lg:pt-20 flex flex-col lg:flex-row h-[calc(100vh-4rem)] lg:h-[calc(100vh-5rem)]">
         {/* Left Sidebar - Chapters & Pages - Collapsible on mobile */}
         <div className={`${mobileSidebarOpen ? 'fixed inset-0 z-50 bg-background' : 'hidden'} lg:relative lg:block w-full lg:w-80 border-r border-border bg-card flex flex-col`}>
           {/* Mobile close button */}

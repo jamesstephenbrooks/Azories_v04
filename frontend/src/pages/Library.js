@@ -912,7 +912,7 @@ export default function Library() {
       <Navbar />
 
       {/* Header - no opacity animation to prevent purple flash */}
-      <div className="pt-28 pb-8 px-6 md:px-12">
+      <div className="pt-32 pb-8 px-6 md:px-12">
         <div className="max-w-7xl mx-auto">
           <div>
             <h1 className="font-heading text-4xl md:text-5xl font-bold mb-4">

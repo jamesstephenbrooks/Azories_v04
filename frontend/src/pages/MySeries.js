@@ -219,7 +219,7 @@ export default function MySeries() {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      <div className="pt-28 pb-12 px-6 md:px-12">
+      <div className="pt-32 pb-12 px-6 md:px-12">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <motion.div
