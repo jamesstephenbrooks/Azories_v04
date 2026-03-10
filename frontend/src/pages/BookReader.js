@@ -430,15 +430,16 @@ export default function BookReader() {
     
     if (isTablet) {
       if (isLandscape) {
-        // Tablet landscape (iPad) - No header bar, fill screen aggressively
-        // Reserve ~60px on right for floating button sidebar
-        const bookWidth = Math.min((vw - 60) * 0.48, 720);
+        // Tablet landscape (iPad) - Fill screen, buttons are top-right now
+        const bookWidth = Math.min(vw * 0.46, 720);
         const bookHeight = Math.min(vh * 0.92, 950);
         return { width: bookWidth, height: bookHeight };
       } else {
-        // Tablet portrait - No header bar, maximize book area
-        const bookWidth = Math.min(vw * 0.75, 680);
-        const bookHeight = Math.min(vh * 0.88, 950);
+        // Tablet portrait - Ensure full spread fits with visible book edges
+        // Spread = 2 * bookWidth, must fit within viewport with padding
+        const maxSpreadWidth = vw - 40; // 20px padding each side
+        const bookWidth = Math.min(maxSpreadWidth / 2, 400);
+        const bookHeight = Math.min(vh * 0.82, 850);
         return { width: bookWidth, height: bookHeight };
       }
     }
