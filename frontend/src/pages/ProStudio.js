@@ -3564,7 +3564,7 @@ export default function ProStudio() {
 
           {/* Characters Tab */}
           <TabsContent value="characters" className="space-y-4 sm:space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:items-start">
               {/* Create Character Panel - UNIFIED FORM */}
               <div className="bg-black/40 rounded-xl border border-purple-500/20 p-4 sm:p-6">
                 <h2 className="text-lg sm:text-xl font-bold text-white mb-2 flex items-center gap-2">
@@ -3750,9 +3750,9 @@ export default function ProStudio() {
                 </Button>
               </div>
 
-              {/* My Characters Panel */}
-              <div className="bg-black/40 rounded-xl border border-purple-500/20 p-6">
-                <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+              {/* My Characters Panel - Expands to fill available vertical space */}
+              <div className="bg-black/40 rounded-xl border border-purple-500/20 p-6 flex flex-col" style={{ minHeight: 'calc(100vh - 380px)', maxHeight: 'calc(100vh - 280px)' }}>
+                <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2 flex-shrink-0">
                   <FiUser className="text-purple-400" /> My Characters
                   {falKeyError ? (
                     <span className="ml-auto text-xs bg-red-500/20 text-red-400 px-2 py-1 rounded-full flex items-center gap-1">
@@ -3766,13 +3766,13 @@ export default function ProStudio() {
                 </h2>
                 
                 {characters.length === 0 ? (
-                  <div className="text-center py-12">
+                  <div className="text-center py-12 flex-1 flex flex-col items-center justify-center">
                     <FiUser className="w-12 h-12 text-gray-600 mx-auto mb-3" />
                     <p className="text-gray-400">No characters yet</p>
                     <p className="text-gray-500 text-sm">Create your first character to get started</p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 gap-4 max-h-96 overflow-y-auto">
+                  <div className="grid grid-cols-1 gap-4 flex-1 overflow-y-auto pr-1" style={{ minHeight: '200px' }}>
                     {characters.map((char) => (
                       <div
                         key={char.id}
