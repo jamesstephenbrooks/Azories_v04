@@ -430,14 +430,14 @@ export default function BookReader() {
     
     if (isTablet) {
       if (isLandscape) {
-        // Tablet landscape (iPad)
-        const bookWidth = Math.min(vw * 0.32, 450);
-        const bookHeight = Math.min(vh * 0.65, 600);
+        // Tablet landscape (iPad) - EXPANDED to fill more screen
+        const bookWidth = Math.min(vw * 0.42, 600);
+        const bookHeight = Math.min(vh * 0.82, 800);
         return { width: bookWidth, height: bookHeight };
       } else {
-        // Tablet portrait
-        const bookWidth = Math.min(vw * 0.40, 400);
-        const bookHeight = Math.min(vh * 0.50, 550);
+        // Tablet portrait - EXPANDED to fill more screen
+        const bookWidth = Math.min(vw * 0.55, 550);
+        const bookHeight = Math.min(vh * 0.70, 750);
         return { width: bookWidth, height: bookHeight };
       }
     }
