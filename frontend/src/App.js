@@ -30,6 +30,7 @@ const StoryCreator = lazy(() => import("@/pages/StoryCreator"));
 const ComingSoon = lazy(() => import("@/pages/ComingSoon"));
 const Credits = lazy(() => import("@/pages/Credits"));
 const PaymentSuccess = lazy(() => import("@/pages/PaymentSuccess"));
+const PrintSuccess = lazy(() => import("@/pages/PrintSuccess"));
 const Contact = lazy(() => import("@/pages/Contact"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const PrintOrdersCMS = lazy(() => import("@/pages/admin/PrintOrdersCMS"));
@@ -137,6 +138,7 @@ function AppContent() {
           <Route path="/pro-studio" element={<ProtectedRoute><ProStudio /></ProtectedRoute>} />
           <Route path="/credits" element={<ProtectedRoute><Credits /></ProtectedRoute>} />
           <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
+          <Route path="/print-success" element={<ProtectedRoute><PrintSuccess /></ProtectedRoute>} />
 
           {/* Admin routes — AdminDashboard handles its own authentication */}
           <Route path="/admin" element={<AdminDashboard />} />
