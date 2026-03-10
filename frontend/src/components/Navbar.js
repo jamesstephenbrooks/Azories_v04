@@ -34,7 +34,7 @@ export const Navbar = () => {
   }, [user]);
 
   return (
-    <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-6xl">
+    <nav className="fixed top-[max(1.5rem,env(safe-area-inset-top,1rem))] left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-6xl">
       <div className="glass rounded-full px-6 py-3 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2" data-testid="navbar-logo">
