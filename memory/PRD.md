@@ -33,6 +33,12 @@ Build a full-featured AI Story Creator application named "Azories" with:
 
 ## Recent Fixes (December 2026)
 
+### Session v1.0.18 (March 2026)
+- [x] **iPad Layout Fix** - Expanded tablet book dimensions (portrait: 72% width/80% height, landscape: 46% width/88% height), reduced container padding
+- [x] **Fullscreen Button Fix** - Raised header z-index to z-[210] above tap zones z-[200], enlarged fullscreen button touch target, added spacing
+- [x] **Narration Auto-Scroll Fix** - Fixed auto-scroll to work in both portrait AND landscape mobile views (was only scrolling portrait ref)
+- [x] **Fullscreen Dimensions** - Increased fullscreen book size (landscape: 42%/90%, portrait: 50%/80%)
+
 ### Session v1.0.9 (March 2026)
 - [x] **CRITICAL: Fixed AI Story Editing** - AI-generated books now load chapters and pages correctly in the editor
   - Root cause: AI books store pages EMBEDDED in the book document, not in the `pages` collection
