@@ -672,6 +672,7 @@ class CheckoutRequest(BaseModel):
     shipping_postal_code: str = ""
     origin_url: str  # Frontend origin for success/cancel URLs
     coupon_code: Optional[str] = None  # Optional coupon code
+    include_bonus_pages: Optional[bool] = True  # Include bonus pages in print
 
 
 class CheckoutResponse(BaseModel):
