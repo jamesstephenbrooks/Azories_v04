@@ -4107,7 +4107,7 @@ async def create_chapter(book_id: str, chapter_data: ChapterCreate, current_user
         "book_id": book_id,
         "title": chapter_data.title,
         "order": chapter_data.order,
-        "created_at": now
+        "created_at": now.isoformat()
     }
     await db.chapters.insert_one(chapter)
     return ChapterResponse(**chapter)
@@ -4188,6 +4188,13 @@ async def get_chapters(book_id: str, response: Response):
             )
             
             chapters = [default_chapter]
+    
+    # Serialize datetime fields before creating response
+    for c in chapters:
+        if isinstance(c.get('created_at'), datetime):
+            c['created_at'] = c['created_at'].isoformat()
+        elif not c.get('created_at'):
+            c['created_at'] = datetime.now(timezone.utc).isoformat()
     
     return [ChapterResponse(**c) for c in chapters]
 
@@ -4323,6 +4330,11 @@ async def get_pages(chapter_id: str, response: Response):
         # Ensure order is set for editor compatibility
         if "order" not in page:
             page["order"] = page.get("page_number", 0)
+        # Serialize datetime fields
+        if isinstance(page.get('created_at'), datetime):
+            page['created_at'] = page['created_at'].isoformat()
+        elif not page.get('created_at'):
+            page['created_at'] = datetime.now(timezone.utc).isoformat()
     return [PageResponse(**p) for p in pages]
 
 @api_router.put("/pages/{page_id}", response_model=PageResponse)
@@ -4359,6 +4371,12 @@ async def update_page(page_id: str, page_data: PageUpdate, current_user: dict = 
     updated.setdefault("font_family", "default")
     updated.setdefault("font_size", "medium")
     updated.setdefault("text_align", "left")
+    if isinstance(updated.get('created_at'), datetime):
+        updated['created_at'] = updated['created_at'].isoformat()
+    elif not updated.get('created_at'):
+        updated['created_at'] = datetime.now(timezone.utc).isoformat()
+    if "order" not in updated:
+        updated["order"] = updated.get("page_number", 0)
     return PageResponse(**updated)
 
 @api_router.delete("/pages/{page_id}")
