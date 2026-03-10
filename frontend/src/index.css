@@ -438,12 +438,14 @@ textarea:focus {
   touch-action: inherit;
   pointer-events: auto;
 }
-/* AI Story Creator page - ensure gradient covers full height */
+/* AI Story Creator page - ensure gradient covers full height including mobile keyboard */
 .ai-story-creator-page {
   min-height: 100vh;
   min-height: 100dvh;
-  background-size: 100% 100%;
-  background-attachment: scroll;
+  min-height: -webkit-fill-available;
+  background-size: cover;
+  background-attachment: fixed;
+  position: relative;
 }
 
 /* Kids mode - extend the gradient background color to fill any gaps */
@@ -454,4 +456,15 @@ textarea:focus {
 /* Studio mode - extend the gradient background color */
 .ai-story-creator-page.studio-mode-bg {
   background-color: #1e1b4b; /* purple-950 - the end color of the gradient */
+}
+
+/* Ensure html and body don't show through with wrong color */
+html:has(.ai-story-creator-page.kids-mode-bg),
+body:has(.ai-story-creator-page.kids-mode-bg) {
+  background-color: #fffbeb !important;
+}
+
+html:has(.ai-story-creator-page.studio-mode-bg),
+body:has(.ai-story-creator-page.studio-mode-bg) {
+  background-color: #1e1b4b !important;
 }

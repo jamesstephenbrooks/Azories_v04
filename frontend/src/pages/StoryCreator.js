@@ -122,18 +122,33 @@ export default function StoryCreator() {
   // Set body background to match page gradient
   useEffect(() => {
     const originalBg = document.body.style.background;
-    if (creatorMode === 'kids') {
-      document.body.style.background = 'linear-gradient(to bottom, #f3e8ff, #fdf2f8, #fffbeb)';
-    } else {
-      document.body.style.background = 'linear-gradient(to bottom, #030712, #111827, #1e1b4b)';
-    }
+    const originalHtml = document.documentElement.style.background;
+    
+    // Set both body and html backgrounds to ensure full coverage on mobile (keyboard open/close)
+    const gradient = creatorMode === 'kids' 
+      ? 'linear-gradient(to bottom, #f3e8ff, #fdf2f8, #fffbeb)'
+      : 'linear-gradient(to bottom, #030712, #111827, #1e1b4b)';
+    const solidColor = creatorMode === 'kids' ? '#fffbeb' : '#1e1b4b';
+    
+    document.body.style.background = gradient;
     document.body.style.backgroundAttachment = 'fixed';
-    document.body.style.minHeight = '100vh';
+    document.body.style.backgroundColor = solidColor;
+    document.body.style.minHeight = '100%';
+    
+    document.documentElement.style.background = gradient;
+    document.documentElement.style.backgroundAttachment = 'fixed';
+    document.documentElement.style.backgroundColor = solidColor;
+    document.documentElement.style.minHeight = '100%';
     
     return () => {
       document.body.style.background = originalBg;
       document.body.style.backgroundAttachment = '';
+      document.body.style.backgroundColor = '';
       document.body.style.minHeight = '';
+      document.documentElement.style.background = originalHtml;
+      document.documentElement.style.backgroundAttachment = '';
+      document.documentElement.style.backgroundColor = '';
+      document.documentElement.style.minHeight = '';
     };
   }, [creatorMode]);
   
