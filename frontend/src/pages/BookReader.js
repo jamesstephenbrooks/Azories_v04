@@ -1957,17 +1957,19 @@ export default function BookReader() {
       
       {/* DESKTOP: Full header bar with all controls */}
       {!isMobilePortrait && !isMobileLandscape && (
-        <div className="fixed right-4 top-1/2 -translate-y-1/2 z-[210] flex flex-col items-center gap-2.5" data-testid="desktop-sidebar-controls">
-          {/* Back Button */}
-          <button
-            onClick={handleBackToLibrary}
-            className="w-11 h-11 rounded-full bg-background/80 backdrop-blur-md border border-border/50 shadow-lg flex items-center justify-center hover:bg-background hover:shadow-xl transition-all duration-200 text-foreground/80 hover:text-foreground"
-            title="Back to Library"
-            data-testid="desktop-back-btn"
-          >
-            <FiArrowLeft className="w-5 h-5" />
-          </button>
+        <>
+        {/* Back button - top left corner */}
+        <button
+          onClick={handleBackToLibrary}
+          className="fixed top-4 left-4 z-[210] w-11 h-11 rounded-full bg-purple-600/90 backdrop-blur-md shadow-lg flex items-center justify-center hover:bg-purple-500 hover:shadow-xl transition-all duration-200 text-white"
+          title="Back to Library"
+          data-testid="desktop-back-btn"
+        >
+          <FiArrowLeft className="w-5 h-5" />
+        </button>
 
+        {/* Floating sidebar - right side */}
+        <div className="fixed right-4 top-1/2 -translate-y-1/2 z-[210] flex flex-col items-center gap-2.5" data-testid="desktop-sidebar-controls">
           {/* Order Printed Copy - circular icon */}
           <button 
             onClick={() => {
@@ -1996,7 +1998,7 @@ export default function BookReader() {
           {/* Share */}
           <button
             onClick={shareBook}
-            className="w-11 h-11 rounded-full bg-background/80 backdrop-blur-md border border-border/50 shadow-lg flex items-center justify-center hover:bg-background hover:shadow-xl transition-all duration-200 text-foreground/80 hover:text-foreground"
+            className="w-11 h-11 rounded-full bg-purple-600/80 backdrop-blur-md shadow-lg flex items-center justify-center hover:bg-purple-500 hover:shadow-xl transition-all duration-200 text-white"
             title="Share this book"
             data-testid="share-book-btn"
           >
@@ -2007,7 +2009,7 @@ export default function BookReader() {
           {user && book && (book.author_id === user.id || book.user_id === user.id) && (
             <button
               onClick={() => navigate(`/editor/${book.id}`)}
-              className="w-11 h-11 rounded-full bg-background/80 backdrop-blur-md border border-border/50 shadow-lg flex items-center justify-center hover:bg-background hover:shadow-xl transition-all duration-200 text-foreground/80 hover:text-foreground"
+              className="w-11 h-11 rounded-full bg-purple-600/80 backdrop-blur-md shadow-lg flex items-center justify-center hover:bg-purple-500 hover:shadow-xl transition-all duration-200 text-white"
               title="Edit this book"
               data-testid="edit-book-btn"
             >
@@ -2018,7 +2020,7 @@ export default function BookReader() {
           {/* Theme toggle */}
           <button
             onClick={toggleTheme}
-            className="w-11 h-11 rounded-full bg-background/80 backdrop-blur-md border border-border/50 shadow-lg flex items-center justify-center hover:bg-background hover:shadow-xl transition-all duration-200 text-foreground/80 hover:text-foreground"
+            className="w-11 h-11 rounded-full bg-purple-600/80 backdrop-blur-md shadow-lg flex items-center justify-center hover:bg-purple-500 hover:shadow-xl transition-all duration-200 text-white"
             title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
             data-testid="theme-toggle-btn"
           >
@@ -2028,13 +2030,14 @@ export default function BookReader() {
           {/* Fullscreen */}
           <button
             onClick={toggleFullscreen}
-            className="w-11 h-11 rounded-full bg-background/80 backdrop-blur-md border border-border/50 shadow-lg flex items-center justify-center hover:bg-background hover:shadow-xl transition-all duration-200 text-foreground/80 hover:text-foreground"
+            className="w-11 h-11 rounded-full bg-purple-600/80 backdrop-blur-md shadow-lg flex items-center justify-center hover:bg-purple-500 hover:shadow-xl transition-all duration-200 text-white"
             title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
             data-testid="fullscreen-toggle-btn"
           >
             {isFullscreen ? <FiMinimize2 className="w-5 h-5" /> : <FiMaximize2 className="w-5 h-5" />}
           </button>
         </div>
+        </>
       )}
       
       {/* Rotate phone prompt - only on mobile portrait */}

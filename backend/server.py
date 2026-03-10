@@ -7531,8 +7531,8 @@ REQUIREMENTS:
     # Use fal.ai FLUX for high-quality image generation
     if FAL_AVAILABLE:
         try:
-            # Combine prompt with style description for better results
-            full_prompt = f"{prompt}. {style_desc}. High quality, detailed illustration."
+            # Use the style-specific full_prompt built above (do NOT overwrite it)
+            logger.info(f"[generate_single_image] Using style-specific prompt, length: {len(full_prompt)}")
             
             # Use print_quality for correct 8x10 ratio (2400x3000px at 300 DPI)
             result = await generate_image_flux(
@@ -7540,6 +7540,8 @@ REQUIREMENTS:
                 model="flux-dev",
                 image_size="portrait_4_3",
                 num_images=1,
+                guidance_scale=7.5,
+                num_inference_steps=28,
                 print_quality=True
             )
             
@@ -7574,7 +7576,7 @@ REQUIREMENTS:
                 model="flux-dev",  # Standard FLUX model as fallback
                 image_size="portrait_4_3",
                 num_images=1,
-                guidance_scale=3.5,
+                guidance_scale=7.5,
                 num_inference_steps=28,  # Use correct inference steps for flux-dev
                 print_quality=True
             )
