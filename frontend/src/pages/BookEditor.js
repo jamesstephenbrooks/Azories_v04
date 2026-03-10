@@ -21,6 +21,7 @@ import {
 import CollaborativeWriting from '@/components/CollaborativeWriting';
 import { MediaGalleryPicker } from '@/components/MediaGallery';
 import { AZORIES_PLACEHOLDER, AZORIES_VIDEO_PLACEHOLDER, handleImageError } from '@/utils/imageOptimizer';
+import EditorTourGuide, { useEditorTour } from '@/components/EditorTourGuide';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -42,6 +43,10 @@ export default function BookEditor() {
   const videoInputRef = useRef(null);
   const coverInputRef = useRef(null);
   const backCoverInputRef = useRef(null);
+  
+  // Editor tour for first-time users
+  const { shouldShowTour, completeTour } = useEditorTour();
+  const [showTour, setShowTour] = useState(false);
   
   const [book, setBook] = useState(null);
   const [chapters, setChapters] = useState([]);
@@ -708,6 +713,15 @@ export default function BookEditor() {
       );
     }
   }, [selectedPage]);
+  
+  // Show editor tour for first-time users after book loads
+  useEffect(() => {
+    if (book && !loading && shouldShowTour) {
+      // Delay slightly to let the UI render
+      const timer = setTimeout(() => setShowTour(true), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [book, loading, shouldShowTour]);
 
   // Handle page selection with proper state sync - FIXED VERSION
   const handlePageSelect = useCallback(async (pageId) => {
@@ -3496,6 +3510,17 @@ export default function BookEditor() {
           </Button>
         </div>
       </div>
+      
+      {/* Editor Tour for first-time users */}
+      {showTour && (
+        <EditorTourGuide 
+          isOpen={showTour}
+          onComplete={() => {
+            setShowTour(false);
+            completeTour();
+          }}
+        />
+      )}
     </div>
   );
 }
