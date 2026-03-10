@@ -430,34 +430,30 @@ export default function BookReader() {
     
     if (isTablet) {
       if (isLandscape) {
-        // Tablet landscape (iPad) - Fill screen aggressively
-        const bookWidth = Math.min(vw * 0.46, 680);
-        const bookHeight = Math.min(vh * 0.88, 900);
+        // Tablet landscape (iPad) - No header bar, fill screen aggressively
+        // Reserve ~60px on right for floating button sidebar
+        const bookWidth = Math.min((vw - 60) * 0.48, 720);
+        const bookHeight = Math.min(vh * 0.92, 950);
         return { width: bookWidth, height: bookHeight };
       } else {
-        // Tablet portrait - Fill screen aggressively
-        const bookWidth = Math.min(vw * 0.72, 640);
-        const bookHeight = Math.min(vh * 0.80, 880);
+        // Tablet portrait - No header bar, maximize book area
+        const bookWidth = Math.min(vw * 0.75, 680);
+        const bookHeight = Math.min(vh * 0.88, 950);
         return { width: bookWidth, height: bookHeight };
       }
     }
     
-    // Desktop - Large immersive experience (fill 80% of screen height)
+    // Desktop - No header bar, maximize book display
     if (isLandscape) {
-      // Desktop landscape: book should be very large and fill most of the viewport
-      // Target 80% of viewport height for the book
-      const targetHeight = vh * 0.80;
-      const availableHeight = vh - 100; // Minimal header + bottom controls
-      const bookHeight = Math.max(Math.min(targetHeight, availableHeight), 700); // At least 700px
-      // Each page width should maintain a book-like aspect ratio (roughly 0.65-0.7)
-      // Spread width will be 2x this, so make sure spread fits in viewport
-      // For a spread to fit, single page width should be max ~45% of viewport
-      const bookWidth = Math.min(bookHeight * 0.70, vw * 0.42);
+      const targetHeight = vh * 0.92;
+      const availableHeight = vh - 20; // Minimal padding only
+      const bookHeight = Math.max(Math.min(targetHeight, availableHeight), 700);
+      // Reserve ~60px on right for floating sidebar
+      const bookWidth = Math.min(bookHeight * 0.70, (vw - 60) * 0.44);
       return { width: bookWidth, height: bookHeight };
     } else {
-      // Desktop portrait (rare case)
-      const targetHeight = vh * 0.80;
-      const availableHeight = vh - 100;
+      const targetHeight = vh * 0.90;
+      const availableHeight = vh - 20;
       const bookHeight = Math.max(Math.min(targetHeight, availableHeight), 650);
       const bookWidth = Math.min(bookHeight * 0.72, vw * 0.50);
       return { width: bookWidth, height: bookHeight };
@@ -1961,121 +1957,83 @@ export default function BookReader() {
       
       {/* DESKTOP: Full header bar with all controls */}
       {!isMobilePortrait && !isMobileLandscape && (
-        <div className={`fixed top-0 left-0 right-0 z-[210] ${currentPageData?.isBackCover ? 'bg-[#1a0a2e] border-none' : 'bg-background/80 border-b border-border'} backdrop-blur-xl`}>
-          <div className={`max-w-7xl mx-auto px-2 sm:px-4 py-1.5 sm:py-3 flex items-center justify-between`}>
-            <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleBackToLibrary}
-                className={`rounded-full flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10`}
-              >
-                <FiArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-              </Button>
-              <div className="min-w-0">
-                <h1 className={`font-heading font-bold line-clamp-1 truncate text-sm sm:text-lg`}>{book?.title}</h1>
-                <p className="font-ui text-[10px] sm:text-xs text-muted-foreground truncate">
-                  {isCover ? 'Cover' : currentPage === -2 ? 'Back' : currentPageData?.isChapterTitle ? currentPageData?.chapterTitle : `Page ${currentPage + 1}`}
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 flex-shrink-0">
-              {/* Reading Progress */}
-              {user && readingProgress > 0 && (
-                <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full">
-                  <FiTrendingUp className="w-4 h-4 text-primary" />
-                  <span className="text-xs font-ui text-primary">{readingProgress}%</span>
-                </div>
-              )}
-              
-              {/* Reading Streak Badge */}
-              {readingStats?.current_streak > 0 && (
-                <div className="hidden lg:flex items-center gap-1 px-2 py-1 bg-orange-500/10 rounded-full">
-                  <FiAward className="w-4 h-4 text-orange-500" />
-                  <span className="text-xs font-ui text-orange-500">{readingStats.current_streak} day!</span>
-                </div>
-              )}
-              
-              {/* Ambient Sound Control */}
-              <div className="hidden sm:block">
-                <AmbientSound genre={book?.genre} isReading={currentPage >= 0} />
-              </div>
-              
-              {/* Order Printed Copy Button - Always visible */}
-              <button 
-                onClick={() => {
-                  if (user) {
-                    setShowPrintOrderModal(true);
-                  } else {
-                    toast.info('Please log in to order a printed copy', {
-                      action: {
-                        label: 'Log In',
-                        onClick: () => navigate('/login')
-                      }
-                    });
+        <div className="fixed right-4 top-1/2 -translate-y-1/2 z-[210] flex flex-col items-center gap-2.5" data-testid="desktop-sidebar-controls">
+          {/* Back Button */}
+          <button
+            onClick={handleBackToLibrary}
+            className="w-11 h-11 rounded-full bg-background/80 backdrop-blur-md border border-border/50 shadow-lg flex items-center justify-center hover:bg-background hover:shadow-xl transition-all duration-200 text-foreground/80 hover:text-foreground"
+            title="Back to Library"
+            data-testid="desktop-back-btn"
+          >
+            <FiArrowLeft className="w-5 h-5" />
+          </button>
+
+          {/* Order Printed Copy - circular icon */}
+          <button 
+            onClick={() => {
+              if (user) {
+                setShowPrintOrderModal(true);
+              } else {
+                toast.info('Please log in to order a printed copy', {
+                  action: {
+                    label: 'Log In',
+                    onClick: () => navigate('/login')
                   }
-                }} 
-                className="flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 hover:from-purple-500 hover:via-pink-400 hover:to-purple-500 text-white text-xs sm:text-sm font-medium rounded-full shadow-lg hover:shadow-purple-500/30 transition-all duration-300 hover:scale-105 animate-shimmer bg-[length:200%_100%]"
-                style={{
-                  animation: 'shimmer 3s ease-in-out infinite'
-                }}
-                title="Order a real printed book"
-                data-testid="order-printed-book-btn"
-              >
-                <FiPackage className="w-4 h-4" />
-                <span className="hidden sm:inline">Order Printed Copy</span>
-                <span className="sm:hidden">Print</span>
-                <span className="hidden sm:flex h-2 w-2 relative">
-                  <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-white opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-                </span>
-              </button>
-              
-              {/* Share Book Button */}
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={shareBook} 
-                className="rounded-full w-8 h-8 sm:w-10 sm:h-10"
-                title="Share this book"
-                data-testid="share-book-btn"
-              >
-                <FiShare2 className="w-4 h-4 sm:w-5 sm:h-5" />
-              </Button>
-              
-              {/* Edit Book Button - Only visible to book owner */}
-              {user && book && (book.author_id === user.id || book.user_id === user.id) && (
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  onClick={() => navigate(`/editor/${book.id}`)} 
-                  className="rounded-full w-8 h-8 sm:w-10 sm:h-10"
-                  title="Edit this book"
-                  data-testid="edit-book-btn"
-                >
-                  <FiEdit2 className="w-4 h-4 sm:w-5 sm:h-5" />
-                </Button>
-              )}
-              
-              <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full w-8 h-8 sm:w-10 sm:h-10">
-                {theme === 'dark' ? <FiSun className="w-4 h-4 sm:w-5 sm:h-5" /> : <FiMoon className="w-4 h-4 sm:w-5 sm:h-5" />}
-              </Button>
-              <Button variant="ghost" size="icon" onClick={toggleFullscreen} className="rounded-full w-10 h-10 md:w-12 md:h-12 ml-1" data-testid="fullscreen-toggle-btn">
-                {isFullscreen ? <FiMinimize2 className="w-5 h-5" /> : <FiMaximize2 className="w-5 h-5" />}
-              </Button>
-            </div>
-          </div>
-          
-          {/* Progress bar - hidden on back cover */}
-          {totalPages > 0 && !currentPageData?.isBackCover && (
-            <div className="h-0.5 sm:h-1 bg-muted">
-              <div 
-                className="h-full bg-primary transition-all duration-300"
-                style={{ width: `${((currentPage + 1) / (totalPages + 1)) * 100}%` }}
-              />
-            </div>
+                });
+              }
+            }} 
+            className="w-11 h-11 rounded-full bg-gradient-to-br from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-lg hover:shadow-purple-500/30 flex items-center justify-center transition-all duration-200 hover:scale-110 relative"
+            title="Order a real printed book"
+            data-testid="order-printed-book-btn"
+          >
+            <FiPrinter className="w-5 h-5" />
+            <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-pink-500"></span>
+            </span>
+          </button>
+
+          {/* Share */}
+          <button
+            onClick={shareBook}
+            className="w-11 h-11 rounded-full bg-background/80 backdrop-blur-md border border-border/50 shadow-lg flex items-center justify-center hover:bg-background hover:shadow-xl transition-all duration-200 text-foreground/80 hover:text-foreground"
+            title="Share this book"
+            data-testid="share-book-btn"
+          >
+            <FiShare2 className="w-5 h-5" />
+          </button>
+
+          {/* Edit - only for book owner */}
+          {user && book && (book.author_id === user.id || book.user_id === user.id) && (
+            <button
+              onClick={() => navigate(`/editor/${book.id}`)}
+              className="w-11 h-11 rounded-full bg-background/80 backdrop-blur-md border border-border/50 shadow-lg flex items-center justify-center hover:bg-background hover:shadow-xl transition-all duration-200 text-foreground/80 hover:text-foreground"
+              title="Edit this book"
+              data-testid="edit-book-btn"
+            >
+              <FiEdit2 className="w-5 h-5" />
+            </button>
           )}
+
+          {/* Theme toggle */}
+          <button
+            onClick={toggleTheme}
+            className="w-11 h-11 rounded-full bg-background/80 backdrop-blur-md border border-border/50 shadow-lg flex items-center justify-center hover:bg-background hover:shadow-xl transition-all duration-200 text-foreground/80 hover:text-foreground"
+            title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
+            data-testid="theme-toggle-btn"
+          >
+            {theme === 'dark' ? <FiSun className="w-5 h-5" /> : <FiMoon className="w-5 h-5" />}
+          </button>
+
+          {/* Fullscreen */}
+          <button
+            onClick={toggleFullscreen}
+            className="w-11 h-11 rounded-full bg-background/80 backdrop-blur-md border border-border/50 shadow-lg flex items-center justify-center hover:bg-background hover:shadow-xl transition-all duration-200 text-foreground/80 hover:text-foreground"
+            title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+            data-testid="fullscreen-toggle-btn"
+          >
+            {isFullscreen ? <FiMinimize2 className="w-5 h-5" /> : <FiMaximize2 className="w-5 h-5" />}
+          </button>
         </div>
       )}
       
@@ -2114,7 +2072,7 @@ export default function BookReader() {
         className={`${
           isMobilePortrait ? 'pt-0 pb-16' : 
           isMobileLandscape ? 'pt-0 pb-0' : 
-          'pt-14 sm:pt-16 pb-10 sm:pb-14'
+          'pt-2 pb-2'
         } px-1 sm:px-2 md:px-1 flex items-center justify-center min-h-screen transition-all duration-300 ${
           isFullscreen ? 'bg-black/95 fixed inset-0 z-50 pt-4 sm:pt-6 pb-4 sm:pb-6' : ''
         }`}
