@@ -1968,8 +1968,8 @@ export default function BookReader() {
           <FiArrowLeft className="w-5 h-5" />
         </button>
 
-        {/* Floating sidebar - right side */}
-        <div className="fixed right-4 top-1/2 -translate-y-1/2 z-[210] flex flex-col items-center gap-2.5" data-testid="desktop-sidebar-controls">
+        {/* Floating sidebar - top right corner */}
+        <div className="fixed right-4 top-4 z-[210] flex items-center gap-2" data-testid="desktop-sidebar-controls">
           {/* Order Printed Copy - circular icon */}
           <button 
             onClick={() => {
@@ -2025,16 +2025,6 @@ export default function BookReader() {
             data-testid="theme-toggle-btn"
           >
             {theme === 'dark' ? <FiSun className="w-5 h-5" /> : <FiMoon className="w-5 h-5" />}
-          </button>
-
-          {/* Fullscreen */}
-          <button
-            onClick={toggleFullscreen}
-            className="w-11 h-11 rounded-full bg-purple-600/80 backdrop-blur-md shadow-lg flex items-center justify-center hover:bg-purple-500 hover:shadow-xl transition-all duration-200 text-white"
-            title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
-            data-testid="fullscreen-toggle-btn"
-          >
-            {isFullscreen ? <FiMinimize2 className="w-5 h-5" /> : <FiMaximize2 className="w-5 h-5" />}
           </button>
         </div>
         </>

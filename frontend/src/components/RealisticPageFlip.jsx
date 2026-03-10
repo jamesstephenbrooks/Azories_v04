@@ -194,7 +194,7 @@ const Page = forwardRef(({ pageNumber, children, isLeft, isCover, isBackCover },
   return (
     <div 
       ref={ref}
-      className="demoPage page-wrapper relative w-full h-full"
+      className="demoPage page-wrapper relative w-full h-full cursor-grab active:cursor-grabbing"
       data-density={isCover || isBackCover ? "hard" : "soft"}
     >
       <div 
@@ -265,7 +265,7 @@ const CoverPage = forwardRef(({ book }, ref) => {
   return (
     <div 
       ref={ref}
-      className="demoPage page-wrapper relative w-full h-full cursor-pointer group"
+      className="demoPage page-wrapper relative w-full h-full cursor-grab active:cursor-grabbing group"
       data-density="hard"
     >
       <div 
@@ -333,7 +333,7 @@ const BackCoverPage = forwardRef(({ book }, ref) => {
   return (
     <div 
       ref={ref}
-      className="demoPage page-wrapper relative w-full h-full"
+      className="demoPage page-wrapper relative w-full h-full cursor-grab active:cursor-grabbing"
       data-density="hard"
     >
       <div 
@@ -423,7 +423,7 @@ const ImagePage = forwardRef(({ page, pageNumber, isCurrentPage = false, onImage
   return (
     <div 
       ref={ref}
-      className="demoPage page-wrapper relative w-full h-full"
+      className="demoPage page-wrapper relative w-full h-full cursor-grab active:cursor-grabbing"
       data-density="soft"
       data-page-number={pageNumber}
     >
