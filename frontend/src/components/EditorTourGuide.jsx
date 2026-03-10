@@ -167,6 +167,18 @@ export default function EditorTourGuide({ onComplete, isOpen = true }) {
     const padding = 16;
     const tooltipWidth = 320;
     const tooltipHeight = 200;
+    
+    // On mobile (small screens), always center the tooltip
+    const isMobile = window.innerWidth < 640;
+    if (isMobile) {
+      return {
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        maxWidth: 'calc(100vw - 32px)'
+      };
+    }
 
     switch (step.position) {
       case 'right':
@@ -239,7 +251,7 @@ export default function EditorTourGuide({ onComplete, isOpen = true }) {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -20, scale: 0.95 }}
           transition={{ duration: 0.3 }}
-          className="z-[202] w-80 bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl border border-purple-500/30 overflow-hidden"
+          className="z-[202] w-[calc(100vw-32px)] sm:w-80 max-w-[320px] bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl border border-purple-500/30 overflow-hidden"
           style={getTooltipStyle()}
         >
           {/* Header with mascot or icon */}
