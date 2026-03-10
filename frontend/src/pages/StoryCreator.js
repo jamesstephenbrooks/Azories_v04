@@ -412,7 +412,7 @@ export default function StoryCreator() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            {/* Blaze Animation */}
+            {/* Azora Animation */}
             <div className="relative mb-8">
               <motion.div
                 animate={{ 
@@ -423,8 +423,8 @@ export default function StoryCreator() {
                 className="w-32 h-32 mx-auto"
               >
                 <img 
-                  src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/e4683f4e6fd446e9d42b43b684bb626d31dedf1a1c3c13eb07267c59e97823fc.png"
-                  alt="Blaze the Dragon"
+                  src="https://customer-assets.emergentagent.com/job_145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/artifacts/03z1pd8h_azora_pose4_pointing.jpg"
+                  alt="Azora"
                   className="w-full h-full rounded-full object-cover shadow-lg"
                 />
               </motion.div>

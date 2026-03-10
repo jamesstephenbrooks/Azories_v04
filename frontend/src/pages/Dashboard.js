@@ -1388,6 +1388,19 @@ export default function Dashboard() {
                             <FiEdit2 className="mr-2 w-4 h-4" />
                             Edit
                           </Button>
+                          {/* Publish button - prominent placement */}
+                          {!book.is_published && book.publish_status !== 'published' && book.publish_status !== 'pending_review' && (
+                            <Button 
+                              variant="default" 
+                              size="sm" 
+                              className="rounded-full bg-green-600 hover:bg-green-700" 
+                              onClick={() => togglePublish(book)}
+                              data-testid={`publish-book-${book.id}`}
+                            >
+                              <FiGlobe className="mr-2 w-4 h-4" />
+                              Publish
+                            </Button>
+                          )}
                           <SaveOfflineButton
                             book={book}
                             isOffline={isBookOffline(book.id)}
