@@ -12,7 +12,7 @@ import {
   FiMaximize2, FiMinimize2, FiPlay, FiPause, FiVolume2, FiVolumeX, 
   FiSun, FiMoon, FiLock, FiBook, FiAward, FiTrendingUp, FiMic, FiX,
   FiPrinter, FiDownload, FiShare2, FiHome, FiBookmark, FiPackage, FiWifiOff,
-  FiEdit2
+  FiEdit2, FiLoader
 } from 'react-icons/fi';
 import confetti from 'canvas-confetti';
 import { useTheme } from '@/context/ThemeContext';
@@ -1511,6 +1511,11 @@ export default function BookReader() {
   }, [allPages, narratorVoice, volume, playbackSpeed, audioElement, preloadAudio, goToPage]);
 
   const toggleAudio = () => {
+    // Haptic feedback for better touch response
+    if (navigator.vibrate) {
+      navigator.vibrate(50);
+    }
+    
     // IPAD FIX: Create persistent audio element on first user tap
     // This must happen during user interaction to get autoplay permission
     if (!persistentAudioRef.current) {
@@ -1544,6 +1549,11 @@ export default function BookReader() {
 
   // Immediate stop when auto-read is turned off
   const handleAutoReadToggle = () => {
+    // Haptic feedback for better touch response
+    if (navigator.vibrate) {
+      navigator.vibrate(50);
+    }
+    
     const newValue = !autoRead;
     setAutoRead(newValue);
     autoReadRef.current = newValue; // Sync update
@@ -1557,6 +1567,11 @@ export default function BookReader() {
 
   // Start listening - flip to first page and enable auto-read with audio
   const startListening = useCallback(() => {
+    // Haptic feedback for better touch response
+    if (navigator.vibrate) {
+      navigator.vibrate(50);
+    }
+    
     // IPAD FIX: Create persistent audio element on first user tap
     // This must happen during user interaction to get autoplay permission
     if (!persistentAudioRef.current) {
@@ -2640,6 +2655,11 @@ export default function BookReader() {
           {/* Floating Listen/Pause button - z-index higher than tap zones (z-200) for iPad */}
           <button
             onClick={() => {
+              // Haptic feedback on press
+              if (navigator.vibrate) {
+                navigator.vibrate(50);
+              }
+              if (audioLoading || narrationPreparing) return; // Prevent clicks while loading
               if (isPlaying) {
                 // Stop narration
                 if (audioElement) {
@@ -2653,10 +2673,13 @@ export default function BookReader() {
                 startListening();
               }
             }}
-            className="w-10 h-10 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white shadow-lg flex items-center justify-center transition-colors touch-manipulation cursor-pointer"
+            disabled={audioLoading || narrationPreparing}
+            className={`w-10 h-10 rounded-full ${(audioLoading || narrationPreparing) ? 'bg-purple-400' : 'bg-purple-600 hover:bg-purple-500 active:bg-purple-700'} text-white shadow-lg flex items-center justify-center transition-colors touch-manipulation cursor-pointer`}
             data-testid="floating-listen-btn"
           >
-            {isPlaying ? (
+            {(audioLoading || narrationPreparing) ? (
+              <FiLoader className="w-5 h-5 animate-spin" />
+            ) : isPlaying ? (
               <FiPause className="w-5 h-5" />
             ) : (
               <FiPlay className="w-5 h-5 ml-0.5" />
@@ -2680,6 +2703,11 @@ export default function BookReader() {
           {/* Play button - z-index higher than tap zones (z-200) for iPad */}
           <button
             onClick={() => {
+              // Haptic feedback on press
+              if (navigator.vibrate) {
+                navigator.vibrate(50);
+              }
+              if (audioLoading || narrationPreparing) return; // Prevent clicks while loading
               if (isPlaying) {
                 if (audioElement) {
                   audioElement.pause();
@@ -2691,10 +2719,13 @@ export default function BookReader() {
                 startListening();
               }
             }}
-            className="w-10 h-10 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white shadow-lg flex items-center justify-center transition-colors touch-manipulation cursor-pointer"
+            disabled={audioLoading || narrationPreparing}
+            className={`w-10 h-10 rounded-full ${(audioLoading || narrationPreparing) ? 'bg-purple-400' : 'bg-purple-600 hover:bg-purple-500 active:bg-purple-700'} text-white shadow-lg flex items-center justify-center transition-colors touch-manipulation cursor-pointer`}
             data-testid="floating-listen-btn-visible"
           >
-            {isPlaying ? (
+            {(audioLoading || narrationPreparing) ? (
+              <FiLoader className="w-5 h-5 animate-spin" />
+            ) : isPlaying ? (
               <FiPause className="w-5 h-5" />
             ) : (
               <FiPlay className="w-5 h-5 ml-0.5" />
@@ -3066,7 +3097,7 @@ export default function BookReader() {
                 </div>
               </div>
               
-              {/* Buttons */}
+              {/* Buttons - Hide Download PDF on mobile (blank page issue) */}
               <div className="flex gap-3">
                 <Button
                   variant="outline"
@@ -3076,9 +3107,10 @@ export default function BookReader() {
                 >
                   Cancel
                 </Button>
+                {/* Download PDF hidden on mobile - causes blank page issue */}
                 <Button
                   onClick={handlePrintBook}
-                  className="flex-1 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 active:scale-95"
+                  className="hidden md:flex flex-1 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 active:scale-95"
                   disabled={isPrinting}
                   data-testid="confirm-print-btn"
                 >
@@ -3095,6 +3127,11 @@ export default function BookReader() {
                   )}
                 </Button>
               </div>
+              
+              {/* Mobile notice - shown only on mobile */}
+              <p className="md:hidden text-center text-sm text-muted-foreground mt-3">
+                PDF download is available on desktop. Use "Order Physical Copy" below for mobile!
+              </p>
               
               {/* Divider */}
               <div className="relative my-6">

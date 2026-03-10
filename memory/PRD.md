@@ -32,6 +32,22 @@ Build a full-featured AI Story Creator application named "Azories" with:
 - [x] Contact form with email notifications
 
 ## Recent Fixes (December 2026)
+
+### Session v1.0.8 (March 2026)
+- [x] **Hide PDF button on mobile** - Added `hidden md:flex` to Download PDF button with fallback message directing users to "Order Physical Copy"
+- [x] **Narration play button states** - Added loading spinner (`FiLoader`), pause icon states, and haptic feedback (`navigator.vibrate`) to floating listen buttons
+- [x] **Editor onboarding tour centering** - Enhanced EditorTourGuide.jsx to properly center on mobile in both portrait and landscape orientations with orientation change listener
+- [x] **Book summary text selection** - Fixed summary text in Library.js dialog to be selectable with `select-text` class and `userSelect: 'text'` styles
+- [x] **Info (i) icon button fix** - Improved info button with larger touch target (w-10 h-10), higher z-index (z-30), explicit pointer-events, and accessibility attributes
+- [x] **Firefox mobile compatibility** - Added comprehensive CSS fallbacks:
+  - dvh viewport unit fallbacks
+  - Firefox scrollbar styling (scrollbar-width: thin)
+  - backdrop-filter fallbacks for Firefox
+  - line-clamp fallbacks using overflow/max-height
+  - Touch action improvements for Firefox
+  - Modal/overlay touch fixes
+
+### Previous Session v1.0.7
 - [x] Fixed `/api/pro-studio/characters/{id}/generate-consistent` 500 error
   - Root cause: `physical_traits` stored as `None` causing `.get()` to fail
   - Fix: `character.get('physical_traits') or {}` handles explicit `None`
@@ -41,15 +57,18 @@ Build a full-featured AI Story Creator application named "Azories" with:
 - [x] Fixed author_id/user_id mismatch for book display
 - [x] Added admin endpoint for updating user credits
 - [x] Added Book Editor tooltip tour for new users
+- [x] Fixed AI book editing by adding fallback to find orphaned pages by book_id
 
 ## Known Issues
 
 ### P0 - Critical
 - [ ] **Production Environment Instability** - Intermittent 502/520 errors after deployments (infrastructure issue, not code)
+- [ ] **AI Story Editing** - Backend fix v1.0.7 pending deployment and user verification
 
 ### P1 - High Priority
 - [ ] **Data Discrepancy** - Preview and production databases are separate; changes in preview don't affect production
 - [ ] **Slow thumbnail loading** - Library/dashboard pages load thumbnails slowly
+- [ ] **Root cause of blank PDF downloads** - Currently hidden on mobile as temporary fix; needs proper debugging
 
 ### P2 - Medium Priority
 - [ ] **Mobile UI bugs** - Pro Studio image deletion, video download issues, oversized checkbox on iPad

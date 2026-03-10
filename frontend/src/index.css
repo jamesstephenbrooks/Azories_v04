@@ -468,3 +468,100 @@ html:has(.ai-story-creator-page.studio-mode-bg),
 body:has(.ai-story-creator-page.studio-mode-bg) {
   background-color: #1e1b4b !important;
 }
+
+
+/* ===========================================
+   Firefox Mobile Compatibility Fixes
+   =========================================== */
+
+/* Firefox doesn't support -webkit-overflow-scrolling, use standard overflow */
+@supports not (-webkit-overflow-scrolling: touch) {
+  .scroll-container,
+  [data-scrollable="true"] {
+    overflow-y: auto;
+    scroll-behavior: smooth;
+  }
+}
+
+/* Firefox fallback for dvh units */
+@supports not (min-height: 100dvh) {
+  #root,
+  .min-h-screen {
+    min-height: 100vh;
+  }
+}
+
+/* Firefox scrollbar styling */
+@supports (scrollbar-width: thin) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(128, 90, 213, 0.5) transparent;
+  }
+}
+
+/* Firefox backdrop-filter fallback */
+@supports not (backdrop-filter: blur(20px)) {
+  .backdrop-blur-lg,
+  .backdrop-blur-xl,
+  .backdrop-blur-md {
+    background-color: rgba(0, 0, 0, 0.85);
+  }
+  
+  .dark .backdrop-blur-lg,
+  .dark .backdrop-blur-xl,
+  .dark .backdrop-blur-md {
+    background-color: rgba(20, 20, 30, 0.95);
+  }
+}
+
+/* Firefox line-clamp fallback using standard properties */
+@supports not (-webkit-line-clamp: 2) {
+  .line-clamp-1,
+  .line-clamp-2,
+  .line-clamp-3 {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .line-clamp-2,
+  .line-clamp-3 {
+    white-space: normal;
+    max-height: 3em; /* Approximate 2 lines */
+  }
+  
+  .line-clamp-3 {
+    max-height: 4.5em; /* Approximate 3 lines */
+  }
+}
+
+/* Firefox touch action improvements */
+@-moz-document url-prefix() {
+  button,
+  [role="button"],
+  a,
+  input,
+  select,
+  textarea {
+    touch-action: manipulation;
+  }
+  
+  /* Ensure proper stacking context in Firefox */
+  .fixed {
+    will-change: transform;
+  }
+}
+
+/* Universal touch improvements for all browsers */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Ensure modals and overlays work correctly on all browsers */
+[role="dialog"],
+[aria-modal="true"] {
+  touch-action: auto;
+  overscroll-behavior: contain;
+}

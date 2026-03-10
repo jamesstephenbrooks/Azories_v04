@@ -87,11 +87,28 @@ export function useEditorTour() {
 export default function EditorTourGuide({ onComplete, isOpen = true }) {
   const [currentStep, setCurrentStep] = useState(0);
   const [targetRect, setTargetRect] = useState(null);
+  const [, forceUpdate] = useState(0); // For re-rendering on orientation change
 
   const step = EDITOR_TOUR_STEPS[currentStep];
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === EDITOR_TOUR_STEPS.length - 1;
   const Icon = step.icon;
+
+  // Force re-render on orientation change for proper centering
+  useEffect(() => {
+    const handleOrientationChange = () => {
+      // Small delay to let browser finish rotation
+      setTimeout(() => forceUpdate(n => n + 1), 150);
+    };
+
+    window.addEventListener('orientationchange', handleOrientationChange);
+    window.addEventListener('resize', handleOrientationChange);
+    
+    return () => {
+      window.removeEventListener('orientationchange', handleOrientationChange);
+      window.removeEventListener('resize', handleOrientationChange);
+    };
+  }, []);
 
   // Find and highlight the target element
   useEffect(() => {
@@ -233,7 +250,7 @@ export default function EditorTourGuide({ onComplete, isOpen = true }) {
           onClick={handleSkip} 
         />
 
-        {/* Tooltip card - ALWAYS centered with inline styles */}
+        {/* Tooltip card - ALWAYS centered with inline styles for all mobile orientations */}
         <motion.div
           key={currentStep}
           initial={{ opacity: 0, scale: 0.95 }}
@@ -246,9 +263,13 @@ export default function EditorTourGuide({ onComplete, isOpen = true }) {
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            width: '90vw',
+            width: 'min(90vw, 340px)',
             maxWidth: '340px',
-            zIndex: 10000
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            zIndex: 10000,
+            // Ensure it stays centered in both portrait and landscape
+            margin: '0 auto'
           }}
         >
           {/* Header with mascot or icon */}

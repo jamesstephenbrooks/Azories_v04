@@ -612,13 +612,20 @@ export default function Library() {
             <button
               onClick={(e) => {
                 e.stopPropagation();
+                e.preventDefault();
                 setSummaryBook(book);
               }}
-              className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 active:bg-black/80 text-white flex items-center justify-center transition-all duration-200 touch-manipulation cursor-pointer"
+              className="absolute top-3 right-3 z-30 w-10 h-10 rounded-full bg-black/60 hover:bg-black/80 active:bg-black/90 active:scale-95 text-white flex items-center justify-center transition-all duration-200 touch-manipulation cursor-pointer"
+              style={{ 
+                pointerEvents: 'auto',
+                touchAction: 'manipulation',
+                WebkitTapHighlightColor: 'transparent'
+              }}
               title="View Summary"
+              aria-label="View book summary"
               data-testid={`summary-btn-${book.id}`}
             >
-              <FiInfo className="w-4 h-4" />
+              <FiInfo className="w-5 h-5" />
             </button>
           )}
 
@@ -1292,7 +1299,10 @@ export default function Library() {
               <div className={`flex-1 ${summaryBook?.back_cover_image ? '' : 'w-full'}`}>
                 <div className="p-4 rounded-xl bg-muted/50 space-y-3 h-full">
                   <h4 className="font-heading font-semibold text-sm text-muted-foreground uppercase tracking-wide">Summary</h4>
-                  <p className="font-body text-base leading-relaxed">
+                  <p 
+                    className="font-body text-base leading-relaxed select-text cursor-text"
+                    style={{ userSelect: 'text', WebkitUserSelect: 'text' }}
+                  >
                     {summaryBook?.back_cover_text || summaryBook?.description || 'A magical story awaits you...'}
                   </p>
                 </div>
