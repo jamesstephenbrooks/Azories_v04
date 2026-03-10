@@ -14,6 +14,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
+// App version - increment this with each deployment
+const APP_VERSION = 'v1.0.0';
+
 export const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
   const { user, logout } = useAuth();
@@ -185,6 +188,11 @@ export const Navbar = () => {
                   <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/8fd79389761db4e4b8898ec4e7cdcdc944784be1c379c7516f96ab3dfcbd2819.png" alt="" className="w-5 h-5 mr-2 object-contain" />
                   Logout
                 </DropdownMenuItem>
+                
+                {/* Version number */}
+                <div className="px-2 py-2 mt-2 border-t border-border">
+                  <span className="text-xs text-muted-foreground">{APP_VERSION}</span>
+                </div>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
