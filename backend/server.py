@@ -14705,6 +14705,94 @@ async def download_bonus_pages_preview(book_id: str):
         raise HTTPException(status_code=500, detail=f"Failed to generate PDF: {str(e)}")
 
 
+
+
+# =============================================================================
+# AI BOOK PAGES MIGRATION ENDPOINT (Temporary - for fixing preview/production data)
+# =============================================================================
+
+@api_router.post("/admin/migrate-ai-pages")
+async def migrate_ai_book_pages(
+    dry_run: bool = True,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Migration endpoint to fix AI-generated book pages with missing book_id and page_number.
+    
+    - dry_run=True: Preview only, no changes made
+    - dry_run=False: Actually fix the data
+    
+    Requires admin authentication.
+    """
+    # Check admin access
+    if current_user.get("role") != "admin" and current_user.get("email") not in ["jamesstephenbrooks@outlook.com", "books@azories.com"]:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    from collections import defaultdict
+    
+    results = {
+        "dry_run": dry_run,
+        "step1_book_id": {"found": 0, "fixable": 0, "fixed": 0},
+        "step2_page_number": {"found": 0, "fixed": 0},
+        "sample_affected_books": []
+    }
+    
+    # STEP 1: Find pages with book_id = None
+    pages_null_book_id = await db.pages.find({'book_id': None}).to_list(10000)
+    results["step1_book_id"]["found"] = len(pages_null_book_id)
+    
+    for page in pages_null_book_id:
+        chapter_id = page.get('chapter_id')
+        if chapter_id:
+            chapter = await db.chapters.find_one({'id': chapter_id})
+            if chapter and chapter.get('book_id'):
+                results["step1_book_id"]["fixable"] += 1
+                if not dry_run:
+                    await db.pages.update_one(
+                        {'_id': page['_id']},
+                        {'$set': {'book_id': chapter['book_id']}}
+                    )
+                    results["step1_book_id"]["fixed"] += 1
+    
+    # STEP 2: Find pages with page_number = None
+    pages_null_page_number = await db.pages.find({'page_number': None}).to_list(10000)
+    results["step2_page_number"]["found"] = len(pages_null_page_number)
+    
+    if not dry_run:
+        # Group by chapter
+        pages_by_chapter = defaultdict(list)
+        for p in pages_null_page_number:
+            pages_by_chapter[p.get('chapter_id')].append(p)
+        
+        for chapter_id, chapter_pages in pages_by_chapter.items():
+            chapter_pages.sort(key=lambda p: (p.get('order', 0), str(p.get('_id'))))
+            for idx, page in enumerate(chapter_pages):
+                await db.pages.update_one(
+                    {'_id': page['_id']},
+                    {'$set': {'page_number': idx + 1}}
+                )
+                results["step2_page_number"]["fixed"] += 1
+    
+    # Get sample of affected books
+    affected_book_ids = set()
+    for page in (pages_null_book_id + pages_null_page_number)[:100]:
+        chapter_id = page.get('chapter_id')
+        if chapter_id:
+            chapter = await db.chapters.find_one({'id': chapter_id})
+            if chapter:
+                affected_book_ids.add(chapter.get('book_id'))
+    
+    for book_id in list(affected_book_ids)[:5]:
+        book = await db.books.find_one({'id': book_id}, {'_id': 0, 'title': 1})
+        if book:
+            results["sample_affected_books"].append({
+                "id": book_id,
+                "title": book.get('title', 'Unknown')
+            })
+    
+    return results
+
+
 app.include_router(api_router)
 
 # Note: CORS middleware is configured at the top of the file, right after app creation
