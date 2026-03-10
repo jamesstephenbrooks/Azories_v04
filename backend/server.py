@@ -4479,6 +4479,12 @@ Key requirements:
         style_prompts = get_style_prompts()
         style_desc = style_prompts.get(art_style, style_prompts.get("3d-pixar", ""))
         
+        # DEBUG: Log the art style being used
+        logger.info(f"[generate_page_image] Request art_style: {request.art_style}")
+        logger.info(f"[generate_page_image] Book art_style: {book.get('art_style')}")
+        logger.info(f"[generate_page_image] Final art_style: {art_style}")
+        logger.info(f"[generate_page_image] Style description (first 100 chars): {style_desc[:100] if style_desc else 'EMPTY'}")
+        
         # Deduct credits for AI image generation (2 credits per image)
         CREDITS_PER_PAGE_IMAGE = 2
         user_credits = current_user.get("credits", 0)
@@ -4535,7 +4541,7 @@ MANDATORY 3D CGI REQUIREMENTS:
 - Absolutely NOT hand-drawn, NOT watercolor, NOT flat illustration
 
 {style_desc}"""
-        elif art_style in ["anime"]:
+        elif art_style in ["anime", "manga"]:
             full_prompt = f"""CRITICAL STYLE REQUIREMENT: This image MUST be Japanese ANIME style.
 
 Scene to depict: {image_prompt}
@@ -4548,8 +4554,91 @@ MANDATORY ANIME REQUIREMENTS:
 - Japanese animation aesthetic
 
 {style_desc}"""
+        elif art_style in ["watercolor", "watercolour"]:
+            full_prompt = f"""CRITICAL STYLE REQUIREMENT: This image MUST be WATERCOLOR PAINTING style.
+
+Scene to depict: {image_prompt}
+
+MANDATORY WATERCOLOR REQUIREMENTS:
+- Traditional watercolor painting on textured paper
+- Visible wet-on-wet bleeding and color washes
+- Soft, organic edges with transparent layers
+- Hand-painted fine art aesthetic
+- Children's picture book illustration quality
+
+{style_desc}"""
+        elif art_style in ["cartoon"]:
+            full_prompt = f"""CRITICAL STYLE REQUIREMENT: This image MUST be CARTOON style.
+
+Scene to depict: {image_prompt}
+
+MANDATORY CARTOON REQUIREMENTS:
+- Bold thick black outlines
+- Flat, vibrant cel-shaded colors
+- Exaggerated proportions and expressions
+- Animated TV show quality
+- Fun and playful aesthetic
+
+{style_desc}"""
+        elif art_style in ["comic-book", "comic"]:
+            full_prompt = f"""CRITICAL STYLE REQUIREMENT: This image MUST be COMIC BOOK style.
+
+Scene to depict: {image_prompt}
+
+MANDATORY COMIC BOOK REQUIREMENTS:
+- Bold black ink outlines
+- Flat cel-shaded colors with Ben-Day dots
+- Dynamic action poses
+- American superhero comic aesthetic
+- Marvel/DC graphic novel quality
+
+{style_desc}"""
+        elif art_style in ["storybook", "vintage-storybook"]:
+            full_prompt = f"""CRITICAL STYLE REQUIREMENT: This image MUST be CLASSIC STORYBOOK ILLUSTRATION style.
+
+Scene to depict: {image_prompt}
+
+MANDATORY STORYBOOK REQUIREMENTS:
+- Classic Golden Book children's illustration style
+- Warm nostalgic color palette
+- Detailed painterly technique
+- Vintage fairy tale aesthetic
+- Mid-century illustration quality
+
+{style_desc}"""
+        elif art_style in ["oil-painting"]:
+            full_prompt = f"""CRITICAL STYLE REQUIREMENT: This image MUST be OIL PAINTING style.
+
+Scene to depict: {image_prompt}
+
+MANDATORY OIL PAINTING REQUIREMENTS:
+- Classical oil painting on canvas
+- Visible impasto brushstrokes
+- Rich layered glazes
+- Dramatic chiaroscuro lighting
+- Museum-quality fine art
+
+{style_desc}"""
+        elif art_style in ["sketch", "pencil-sketch", "hand-drawn"]:
+            full_prompt = f"""CRITICAL STYLE REQUIREMENT: This image MUST be PENCIL SKETCH / HAND-DRAWN style.
+
+Scene to depict: {image_prompt}
+
+MANDATORY SKETCH REQUIREMENTS:
+- Detailed graphite pencil drawing
+- Realistic hatching and cross-hatching
+- Visible paper texture
+- Professional artist sketch quality
+- Expressive linework
+
+{style_desc}"""
         else:
-            full_prompt = f"{image_prompt}. {style_desc}. High quality, detailed illustration suitable for a children's book."
+            # For any other style, use the style description directly with strong emphasis
+            full_prompt = f"""STYLE REQUIREMENT: {style_desc}
+
+Scene to depict: {image_prompt}
+
+Create this image in the exact style described above. High quality, detailed illustration."""
         
         logger.info(f"[generate_page_image] Art style: {art_style}, Full prompt length: {len(full_prompt)}")
         
