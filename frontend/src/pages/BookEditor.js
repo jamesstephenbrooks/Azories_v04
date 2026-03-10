@@ -1907,36 +1907,45 @@ export default function BookEditor() {
         <div className="flex-1 flex flex-col lg:flex-row overflow-hidden pb-20 lg:pb-0">
           {selectedPage ? (
             <>
-              {/* Mobile Panel Toggle */}
-              <div className="lg:hidden flex border-b border-border bg-card">
-                <button
-                  onClick={() => setMobileActivePanel('visual')}
-                  className={`flex-1 py-3 px-4 text-sm font-medium flex items-center justify-center gap-2 ${
-                    mobileActivePanel === 'visual' 
-                      ? 'text-primary border-b-2 border-primary' 
-                      : 'text-muted-foreground'
-                  }`}
-                >
-                  <FiImage className="w-4 h-4" />
-                  Visual
-                </button>
-                <button
-                  onClick={() => setMobileActivePanel('text')}
-                  className={`flex-1 py-3 px-4 text-sm font-medium flex items-center justify-center gap-2 ${
-                    mobileActivePanel === 'text' 
-                      ? 'text-primary border-b-2 border-primary' 
-                      : 'text-muted-foreground'
-                  }`}
-                >
-                  <FiBook className="w-4 h-4" />
-                  Text
-                </button>
+              {/* Mobile Panel Toggle with Page Counter */}
+              <div className="lg:hidden flex flex-col border-b border-border bg-card">
+                {/* Page Counter */}
+                <div className="flex items-center justify-center py-2 px-4 border-b border-border/50 bg-muted/30">
+                  <span className="text-sm font-medium text-muted-foreground">
+                    Page {pages.findIndex(p => p.id === selectedPage?.id) + 1} of {pages.length}
+                  </span>
+                </div>
+                {/* Visual / Text Toggle */}
+                <div className="flex">
+                  <button
+                    onClick={() => setMobileActivePanel('visual')}
+                    className={`flex-1 py-3 px-4 text-sm font-medium flex items-center justify-center gap-2 ${
+                      mobileActivePanel === 'visual' 
+                        ? 'text-primary border-b-2 border-primary' 
+                        : 'text-muted-foreground'
+                    }`}
+                  >
+                    <FiImage className="w-4 h-4" />
+                    Visual
+                  </button>
+                  <button
+                    onClick={() => setMobileActivePanel('text')}
+                    className={`flex-1 py-3 px-4 text-sm font-medium flex items-center justify-center gap-2 ${
+                      mobileActivePanel === 'text' 
+                        ? 'text-primary border-b-2 border-primary' 
+                        : 'text-muted-foreground'
+                    }`}
+                  >
+                    <FiBook className="w-4 h-4" />
+                    Text
+                  </button>
+                </div>
               </div>
               
               {/* Left - Visual Content Panel with Scroll */}
-              <div className={`${mobileActivePanel === 'visual' ? 'flex' : 'hidden'} lg:flex w-full lg:w-1/2 border-r border-border flex-col`}>
-                <ScrollArea className="flex-1">
-                  <div className="p-4 lg:p-8 space-y-4 lg:space-y-6">
+              <div className={`${mobileActivePanel === 'visual' ? 'flex' : 'hidden'} lg:flex w-full lg:w-1/2 border-r border-border flex-col overflow-hidden`}>
+                <ScrollArea className="flex-1 h-[calc(100vh-220px)] lg:h-auto">
+                  <div className="p-4 lg:p-8 space-y-4 lg:space-y-6 pb-8">
                     <div className="flex items-center justify-between">
                       <h3 className="font-heading font-semibold text-sm lg:text-lg">Visual Content</h3>
                       {isComicMode && (
@@ -2270,9 +2279,15 @@ export default function BookEditor() {
               </div>
               
               {/* Right - Text Panel */}
-              <div className={`${mobileActivePanel === 'text' ? 'flex' : 'hidden'} lg:flex w-full lg:w-1/2 p-4 lg:p-8 flex-col`}>
+              <div className={`${mobileActivePanel === 'text' ? 'flex' : 'hidden'} lg:flex w-full lg:w-1/2 p-4 lg:p-8 flex-col overflow-y-auto`}>
                 <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-4 gap-2">
-                  <h3 className="font-heading font-semibold text-sm lg:text-lg">Story Text</h3>
+                  <div className="flex items-center gap-3">
+                    <h3 className="font-heading font-semibold text-sm lg:text-lg">Story Text</h3>
+                    {/* Page counter - visible on desktop */}
+                    <span className="hidden lg:inline-flex items-center px-3 py-1 rounded-full bg-muted text-sm text-muted-foreground">
+                      Page {pages.findIndex(p => p.id === selectedPage?.id) + 1} of {pages.length}
+                    </span>
+                  </div>
                   
                   {/* Text Formatting Controls - Scrollable on mobile */}
                   <div className="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 w-full lg:w-auto">
