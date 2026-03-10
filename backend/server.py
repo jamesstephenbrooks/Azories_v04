@@ -5209,12 +5209,37 @@ async def create_character(request: CharacterCreate, current_user: dict = Depend
             "updated_at": now
         }
         
-        # If we generated a thumbnail but have no reference images, 
-        # add the thumbnail as the first reference image (enables PuLID later)
-        if converted_thumbnail and not character.get("reference_images"):
-            character["reference_images"] = [converted_thumbnail]
+        # If we generated a thumbnail, add it as the first reference image
+        # This enables PuLID and ensures the character always has at least one reference
+        if converted_thumbnail:
+            if character.get("reference_images"):
+                # Add thumbnail at the start if not already there
+                if converted_thumbnail not in character["reference_images"]:
+                    character["reference_images"] = [converted_thumbnail] + character["reference_images"]
+            else:
+                character["reference_images"] = [converted_thumbnail]
         
         await db.pro_studio_characters.insert_one(character)
+        
+        # If we generated a thumbnail, also add it to the user's gallery
+        if converted_thumbnail:
+            gallery_item = {
+                "id": str(uuid.uuid4()),
+                "user_id": current_user["id"],
+                "image_url": converted_thumbnail,
+                "thumbnail_url": converted_thumbnail,
+                "prompt": f"Character: {request.name}",
+                "type": "character_thumbnail",
+                "metadata": {
+                    "character_id": char_id,
+                    "character_name": request.name,
+                    "style": request.style,
+                    "genre": request.genre
+                },
+                "created_at": now
+            }
+            await db.pro_studio_gallery.insert_one(gallery_item)
+            logger.info(f"Added character thumbnail to gallery for character {char_id}")
         
         character.pop("_id", None)
         return {"character": character, "success": True}
@@ -5338,11 +5363,42 @@ async def generate_character_thumbnail(character_id: str, current_user: dict = D
         
         if result.get("images"):
             thumbnail_url = result["images"][0].get("url")
+            
+            # Get current reference images and add new thumbnail at the start
+            ref_images = character.get("reference_images", [])
+            if thumbnail_url and thumbnail_url not in ref_images:
+                ref_images = [thumbnail_url] + ref_images
+            
+            now = datetime.now(timezone.utc).isoformat()
+            
             await db.pro_studio_characters.update_one(
                 {"id": character_id},
-                {"$set": {"thumbnail": thumbnail_url, "updated_at": datetime.now(timezone.utc).isoformat()}}
+                {"$set": {
+                    "thumbnail": thumbnail_url,
+                    "reference_images": ref_images,
+                    "updated_at": now
+                }}
             )
-            return {"thumbnail": thumbnail_url, "success": True}
+            
+            # Also add to gallery
+            gallery_item = {
+                "id": str(uuid.uuid4()),
+                "user_id": current_user["id"],
+                "image_url": thumbnail_url,
+                "thumbnail_url": thumbnail_url,
+                "prompt": f"Character: {character['name']} thumbnail",
+                "type": "character_thumbnail",
+                "metadata": {
+                    "character_id": character_id,
+                    "character_name": character["name"],
+                    "style": character.get("style"),
+                    "genre": character.get("genre")
+                },
+                "created_at": now
+            }
+            await db.pro_studio_gallery.insert_one(gallery_item)
+            
+            return {"thumbnail": thumbnail_url, "reference_images": ref_images, "success": True}
         
         raise HTTPException(status_code=500, detail="Failed to generate thumbnail")
         
@@ -5569,11 +5625,44 @@ async def regenerate_character_thumbnail(character_id: str, current_user: dict =
                 thumbnail = f"data:image/png;base64,{image_base64}"
         
         if thumbnail:
+            # Convert to CDN URL if base64
+            converted_thumbnail = await convert_base64_to_cdn(thumbnail) if thumbnail else None
+            
+            # Get current reference images and add new thumbnail at the start
+            ref_images = character.get("reference_images", [])
+            if converted_thumbnail and converted_thumbnail not in ref_images:
+                ref_images = [converted_thumbnail] + ref_images
+            
+            now = datetime.now(timezone.utc).isoformat()
+            
             await db.pro_studio_characters.update_one(
                 {"id": character_id},
-                {"$set": {"thumbnail": thumbnail, "updated_at": datetime.now(timezone.utc).isoformat()}}
+                {"$set": {
+                    "thumbnail": converted_thumbnail,
+                    "reference_images": ref_images,
+                    "updated_at": now
+                }}
             )
-            return {"success": True, "thumbnail": thumbnail}
+            
+            # Also add to gallery
+            gallery_item = {
+                "id": str(uuid.uuid4()),
+                "user_id": current_user["id"],
+                "image_url": converted_thumbnail,
+                "thumbnail_url": converted_thumbnail,
+                "prompt": f"Character: {character['name']} (regenerated thumbnail)",
+                "type": "character_thumbnail",
+                "metadata": {
+                    "character_id": character_id,
+                    "character_name": character["name"],
+                    "style": character.get("style"),
+                    "genre": character.get("genre")
+                },
+                "created_at": now
+            }
+            await db.pro_studio_gallery.insert_one(gallery_item)
+            
+            return {"success": True, "thumbnail": converted_thumbnail, "reference_images": ref_images}
         else:
             raise HTTPException(status_code=500, detail="Could not generate thumbnail")
             
