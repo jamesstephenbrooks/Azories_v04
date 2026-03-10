@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 // App version - increment this with each deployment
-const APP_VERSION = 'v1.0.6';
+const APP_VERSION = 'v1.0.7';
 
 export const Navbar = () => {
   const { theme, toggleTheme } = useTheme();

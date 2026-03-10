@@ -4243,6 +4243,30 @@ async def get_pages(chapter_id: str, response: Response):
     # First try to find pages by chapter_id
     pages = await db.pages.find({"chapter_id": chapter_id}, {"_id": 0}).to_list(100)
     
+    # If no pages found, check if this chapter has a book with pages that need linking
+    if not pages:
+        chapter = await db.chapters.find_one({"id": chapter_id}, {"_id": 0})
+        if chapter:
+            book_id = chapter.get("book_id")
+            # Find orphaned pages for this book
+            orphan_pages = await db.pages.find({
+                "book_id": book_id,
+                "$or": [
+                    {"chapter_id": {"$exists": False}},
+                    {"chapter_id": None},
+                    {"chapter_id": ""}
+                ]
+            }, {"_id": 0}).to_list(100)
+            
+            if orphan_pages:
+                # Link orphaned pages to this chapter
+                await db.pages.update_many(
+                    {"book_id": book_id, "$or": [{"chapter_id": {"$exists": False}}, {"chapter_id": None}, {"chapter_id": ""}]},
+                    {"$set": {"chapter_id": chapter_id}}
+                )
+                # Refetch
+                pages = await db.pages.find({"chapter_id": chapter_id}, {"_id": 0}).to_list(100)
+    
     # Sort by order if available, otherwise by page_number (for AI-generated books)
     pages.sort(key=lambda p: (p.get("order", 0), p.get("page_number", 0)))
     
