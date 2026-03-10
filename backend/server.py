@@ -4120,12 +4120,27 @@ async def get_chapters(book_id: str, response: Response):
     
     chapters = await db.chapters.find({"book_id": book_id}, {"_id": 0}).sort("order", 1).to_list(100)
     
-    # If no chapters exist but book has pages (AI-generated book), create a default chapter
+    # If no chapters exist, check for AI-generated books with embedded or separate pages
     if not chapters:
-        # Check if book has pages in the pages collection
+        # AI books use UUID 'id' field as book_id in URLs (e.g., "fb341971-71be-4c8a-b764-a7cac7fb9a71")
+        # Look up by the 'id' field first (most common for AI books)
+        book = await db.books.find_one({"id": book_id}, {"_id": 0, "pages": 1, "title": 1})
+        
+        if not book:
+            # Fallback: Try with MongoDB ObjectId (for manually created books)
+            try:
+                from bson import ObjectId
+                book = await db.books.find_one({"_id": ObjectId(book_id)}, {"pages": 1, "title": 1})
+            except:
+                pass
+        
+        embedded_pages = book.get("pages", []) if book else []
+        
+        # Also check pages collection
         existing_pages = await db.pages.find({"book_id": book_id}, {"_id": 0}).to_list(1)
-        if existing_pages:
-            # Create default chapter for legacy AI books
+        
+        if embedded_pages or existing_pages:
+            # Create default chapter for AI books
             now = datetime.now(timezone.utc)
             chapter_id = str(uuid.uuid4())
             default_chapter = {
@@ -4137,6 +4152,30 @@ async def get_chapters(book_id: str, response: Response):
                 "updated_at": now.isoformat()
             }
             await db.chapters.insert_one({k: v for k, v in default_chapter.items() if k != "_id"})
+            
+            # If there are embedded pages, migrate them to the pages collection
+            if embedded_pages:
+                print(f"[get_chapters] Found {len(embedded_pages)} embedded pages for book {book_id}, migrating to pages collection")
+                for idx, page in enumerate(embedded_pages):
+                    page_id = page.get("id") or str(uuid.uuid4())
+                    page_doc = {
+                        "id": page_id,
+                        "book_id": book_id,
+                        "chapter_id": chapter_id,
+                        "page_number": page.get("page_number", idx + 1),
+                        "text_content": page.get("text_content") or page.get("text") or "",
+                        "image_url": page.get("image_url") or page.get("imageUrl") or "",
+                        "audio_url": page.get("audio_url") or "",
+                        "layout": page.get("layout", "full_spread"),
+                        "created_at": now.isoformat(),
+                        "updated_at": now.isoformat()
+                    }
+                    # Insert into pages collection if not already there
+                    existing = await db.pages.find_one({"book_id": book_id, "page_number": page_doc["page_number"]})
+                    if not existing:
+                        await db.pages.insert_one({k: v for k, v in page_doc.items() if k != "_id"})
+                
+                print(f"[get_chapters] Migrated {len(embedded_pages)} pages to pages collection for book {book_id}")
             
             # Update all orphan pages to belong to this chapter
             await db.pages.update_many(

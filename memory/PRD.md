@@ -33,6 +33,14 @@ Build a full-featured AI Story Creator application named "Azories" with:
 
 ## Recent Fixes (December 2026)
 
+### Session v1.0.9 (March 2026)
+- [x] **CRITICAL: Fixed AI Story Editing** - AI-generated books now load chapters and pages correctly in the editor
+  - Root cause: AI books store pages EMBEDDED in the book document, not in the `pages` collection
+  - Fix: Modified `/api/books/{book_id}/chapters` to detect embedded pages and migrate them to the `pages` collection
+  - Ran data migration script to fix 282 existing pages (book_id and page_number fields)
+  - Verified: "The Dragon's Secret Garden" and all other AI books now load with all pages editable
+- [x] **Removed Editor Tour on Mobile** - Tour was causing alignment issues; now auto-skipped on mobile devices
+
 ### Session v1.0.8 (March 2026)
 - [x] **Hide PDF button on mobile** - Added `hidden md:flex` to Download PDF button with fallback message directing users to "Order Physical Copy"
 - [x] **Narration play button states** - Added loading spinner (`FiLoader`), pause icon states, and haptic feedback (`navigator.vibrate`) to floating listen buttons
@@ -63,7 +71,7 @@ Build a full-featured AI Story Creator application named "Azories" with:
 
 ### P0 - Critical
 - [ ] **Production Environment Instability** - Intermittent 502/520 errors after deployments (infrastructure issue, not code)
-- [ ] **AI Story Editing** - Backend fix v1.0.7 pending deployment and user verification
+- [x] **AI Story Editing** - FIXED in v1.0.9. AI books now load chapters/pages correctly.
 
 ### P1 - High Priority
 - [ ] **Data Discrepancy** - Preview and production databases are separate; changes in preview don't affect production

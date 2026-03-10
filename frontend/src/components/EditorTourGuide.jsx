@@ -234,6 +234,14 @@ export default function EditorTourGuide({ onComplete, isOpen = true }) {
 
   if (!isOpen) return null;
 
+  // Don't show tour on mobile devices - user requested removal due to alignment issues
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  if (isMobile) {
+    // Auto-complete the tour for mobile users
+    onComplete?.();
+    return null;
+  }
+
   return (
     <AnimatePresence>
       <motion.div
