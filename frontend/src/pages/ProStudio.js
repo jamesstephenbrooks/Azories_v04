@@ -4038,12 +4038,12 @@ export default function ProStudio() {
             {selectedCharacter && (
               <div className="bg-black/40 rounded-xl border border-purple-500/20 p-6">
                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                  <FiZap className="text-amber-400" /> Generate Consistent Character
+                  <FiZap className="text-amber-400" /> Reference Image Creator
                 </h2>
                 <p className="text-gray-400 text-sm mb-4">
                   {selectedCharacter.lora_status === 'completed' 
-                    ? `Generate ${selectedCharacter.name} with 100% face consistency using trained LoRA.`
-                    : `Generate ${selectedCharacter.name} using face ID preservation (PuLID).`
+                    ? `Build ${selectedCharacter.name}'s character folder with expressions, poses and scenes using trained LoRA.`
+                    : `Build ${selectedCharacter.name}'s character folder — create reference images, expressions and poses to define your character.`
                   }
                 </p>
                 
