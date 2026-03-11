@@ -8,6 +8,7 @@ import { Textarea } from '../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Slider } from '../components/ui/slider';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
 import { toast } from 'sonner';
 import Cropper from 'react-easy-crop';
 import { 
@@ -16,7 +17,7 @@ import {
   FiFolder, FiUpload, FiCheck, FiEye, FiMaximize2, FiSettings, 
   FiX, FiPlay, FiPause, FiFilm, FiStar, FiAperture, FiEdit3, FiLayers,
   FiSun, FiCloud, FiMoon, FiCrop, FiChevronDown, FiChevronUp, FiAlertTriangle,
-  FiBook
+  FiBook, FiMoreVertical
 } from 'react-icons/fi';
 import {
   CAMERA_BODIES,
@@ -3092,14 +3093,14 @@ export default function ProStudio() {
                                 onError={(e) => handleImageError(e, false)}
                               />
                             )}
-                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
+                            {/* Desktop: hover overlay with buttons */}
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg hidden md:flex items-center justify-center gap-2">
                               {!isVideo && (
                                 <Button 
                                   size="sm" 
                                   variant="ghost"
                                   onClick={(e) => { 
                                     e.stopPropagation(); 
-                                    // Add to reference images for LoRA training
                                     addImageToReferences(viewingCharacter?.id, img.image_url);
                                   }}
                                   title="Add to References for LoRA"
@@ -3133,6 +3134,42 @@ export default function ProStudio() {
                                 <FiTrash2 className="text-white" size={14} />
                               </Button>
                               <FiMaximize2 className="text-white" size={18} />
+                            </div>
+                            {/* Mobile: compact dropdown menu */}
+                            <div className="absolute top-1 left-1 md:hidden z-10">
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                  <button className="w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-white">
+                                    <FiMoreVertical size={14} />
+                                  </button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="start" className="min-w-[140px]">
+                                  <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setPreviewImage({ url: img.image_url, prompt: img.prompt }); }}>
+                                    <FiMaximize2 className="mr-2" size={14} /> Enlarge
+                                  </DropdownMenuItem>
+                                  {!isVideo && (
+                                    <DropdownMenuItem onClick={(e) => { e.stopPropagation(); addImageToReferences(viewingCharacter?.id, img.image_url); }}>
+                                      <FiPlus className="mr-2" size={14} /> Add to Refs
+                                    </DropdownMenuItem>
+                                  )}
+                                  {!isVideo && (
+                                    <DropdownMenuItem onClick={(e) => { e.stopPropagation(); openCropModal(img.image_url, 'character', viewingCharacter?.id); }}>
+                                      <FiCrop className="mr-2" size={14} /> Crop
+                                    </DropdownMenuItem>
+                                  )}
+                                  <DropdownMenuItem 
+                                    className="text-red-600 focus:text-red-600"
+                                    onClick={(e) => { 
+                                      e.stopPropagation(); 
+                                      if (window.confirm('Delete this image?')) {
+                                        deleteFromCharacterFolder(viewingCharacter?.id, img.id);
+                                      }
+                                    }}
+                                  >
+                                    <FiTrash2 className="mr-2" size={14} /> Delete
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
                             </div>
                             {/* Type badge */}
                             {img.type && (
@@ -3362,7 +3399,8 @@ export default function ProStudio() {
                           alt={img.prompt || 'Generated'}
                           className="w-full aspect-video object-cover rounded-lg hover:ring-2 hover:ring-purple-500 transition-all"
                         />
-                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-1">
+                        {/* Desktop: hover overlay */}
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg hidden md:flex items-center justify-center gap-1">
                           <Button 
                             size="sm" 
                             variant="ghost"
@@ -3380,6 +3418,27 @@ export default function ProStudio() {
                             <FiSave className="text-white" size={14} />
                           </Button>
                           <FiMaximize2 className="text-white" size={18} />
+                        </div>
+                        {/* Mobile: compact dropdown */}
+                        <div className="absolute top-1 left-1 md:hidden z-10">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                              <button className="w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-white">
+                                <FiMoreVertical size={14} />
+                              </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start" className="min-w-[140px]">
+                              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setPreviewImage({ url: img.image_url, prompt: img.prompt }); }}>
+                                <FiMaximize2 className="mr-2" size={14} /> Enlarge
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); openCropModal(img.image_url, 'scene', viewingScene?.id); }}>
+                                <FiCrop className="mr-2" size={14} /> Crop
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); saveToArtStudioGallery(img.image_url, img.prompt, 'scene'); }}>
+                                <FiSave className="mr-2" size={14} /> Save to Gallery
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </div>
                       </div>
                     ))}
