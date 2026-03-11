@@ -7,6 +7,7 @@ import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { toast } from 'sonner';
+import Navbar from '@/components/Navbar';
 import { 
   FiImage, FiUser, FiLayers, FiGrid, FiSave, FiDownload, 
   FiTrash2, FiPlus, FiZap, FiSliders, FiDroplet, FiRefreshCw,
@@ -1312,79 +1313,62 @@ export default function ArtStudio() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1a1520] to-[#0d0a10]">
-      {/* Header */}
-      <header className="border-b border-white/10 bg-black/20 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button 
-              variant="ghost" 
-              onClick={() => navigate('/dashboard')}
-              className="text-white/70 hover:text-white"
-              data-testid="back-button"
-            >
-              <FiArrowLeft className="w-5 h-5 mr-2" />
-              My Books
-            </Button>
-            <Button 
-              variant="ghost" 
-              onClick={() => navigate('/library')}
-              className="text-white/70 hover:text-white"
-            >
-              Library
-            </Button>
-            <div>
-              <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-                <FiDroplet className="text-purple-400" />
-                Creators
-              </h1>
-              <p className="text-sm text-white/50">Create characters, scenes & illustrations for your books</p>
+      {/* Global Navbar */}
+      <Navbar />
+      
+      {/* Creator Controls Bar */}
+      <div className="pt-32 sm:pt-28">
+        <div className="border-b border-white/10 bg-black/20 backdrop-blur-sm">
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              {/* Left: Title + Pro Studio */}
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-1.5">
+                  <FiDroplet className="text-purple-400 w-4 h-4" />
+                  <span className="text-sm sm:text-base font-bold text-white">Creators</span>
+                </div>
+                <Button 
+                  onClick={() => navigate('/pro-studio')}
+                  size="sm"
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-xs rounded-full h-7 px-3"
+                  data-testid="pro-studio-btn"
+                >
+                  <FiVideo className="w-3 h-3 mr-1" />
+                  Pro Studio
+                  <span className="ml-1 text-[9px] px-1 py-0.5 bg-white/20 rounded">PRO</span>
+                </Button>
+              </div>
+              
+              {/* Right: Book selector + Gallery */}
+              <div className="flex items-center gap-2">
+                <Select value={selectedBookId} onValueChange={setSelectedBookId}>
+                  <SelectTrigger className="w-28 sm:w-40 bg-black/30 border-white/20 text-white text-xs sm:text-sm rounded-full h-8" data-testid="book-assignment-select">
+                    <SelectValue placeholder="Assign to book" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#1a1520] border-white/20">
+                    <SelectItem value="general" className="text-white hover:bg-white/10">General</SelectItem>
+                    {userBooks.map(book => (
+                      <SelectItem key={book.id} value={book.id} className="text-white hover:bg-white/10">
+                        {book.title?.substring(0, 20)}{book.title?.length > 20 ? '...' : ''}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
+                <Button 
+                  size="sm"
+                  className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white text-xs rounded-full h-7 px-3"
+                  onClick={() => setActiveTab('gallery')}
+                  data-testid="gallery-button"
+                >
+                  <FiFolder className="w-3 h-3 mr-1" />
+                  Gallery ({gallery.length})
+                </Button>
+              </div>
             </div>
-          </div>
-          
-          <div className="flex items-center gap-3">
-            {/* Pro Studio Link - Premium Feature */}
-            <Button 
-              onClick={() => navigate('/pro-studio')}
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
-              data-testid="pro-studio-btn"
-            >
-              <FiVideo className="w-4 h-4 mr-2" />
-              Pro Studio
-              <span className="ml-2 text-[10px] px-1.5 py-0.5 bg-white/20 rounded">PRO</span>
-            </Button>
-            
-            {/* Book Assignment Dropdown */}
-            <div className="flex items-center gap-2">
-              <FiBook className="text-purple-400 w-4 h-4" />
-              <Select value={selectedBookId} onValueChange={setSelectedBookId}>
-                <SelectTrigger className="w-48 bg-black/30 border-white/20 text-white text-sm" data-testid="book-assignment-select">
-                  <SelectValue placeholder="Assign to book..." />
-                </SelectTrigger>
-                <SelectContent className="bg-[#1a1520] border-white/20">
-                  <SelectItem value="general" className="text-white hover:bg-white/10">
-                    📁 General Library
-                  </SelectItem>
-                  {userBooks.map(book => (
-                    <SelectItem key={book.id} value={book.id} className="text-white hover:bg-white/10">
-                      📖 {book.title}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            {/* Gallery Button - More Prominent */}
-            <Button 
-              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg shadow-emerald-500/25"
-              onClick={() => setActiveTab('gallery')}
-              data-testid="gallery-button"
-            >
-              <FiFolder className="w-4 h-4 mr-2" />
-              My Gallery ({gallery.length})
-            </Button>
           </div>
         </div>
-      </header>
+      </div>
 
       <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-6 pb-28 lg:pb-6">
         {/* Tab Navigation - All FREE features */}
