@@ -1886,7 +1886,7 @@ export default function BookReader() {
       {(isMobilePortrait || isMobileLandscape) && (
         <>
           {/* Floating back button - top left */}
-          <div className="fixed top-3 left-3 z-50 flex items-center gap-2">
+          <div className="fixed left-3 z-50 flex items-center gap-2" style={{ top: 'max(1rem, env(safe-area-inset-top, 0.75rem))' }}>
             <Button
               variant="ghost"
               size="icon"
@@ -1907,7 +1907,7 @@ export default function BookReader() {
           </div>
           
           {/* Floating buttons - top right */}
-          <div className="fixed top-3 right-3 z-50 flex items-center gap-2">
+          <div className="fixed right-3 z-50 flex items-center gap-2" style={{ top: 'max(1rem, env(safe-area-inset-top, 0.75rem))' }}>
             {/* Order Printed Copy button - mobile */}
             <button
               onClick={() => {
@@ -2064,12 +2064,13 @@ export default function BookReader() {
       <div 
         id="book-container"
         className={`${
-          isMobilePortrait ? 'pt-0 pb-16' : 
+          isMobilePortrait ? 'pb-16' : 
           isMobileLandscape ? 'pt-0 pb-0' : 
           'pt-2 pb-2'
         } px-1 sm:px-2 md:px-1 flex items-center justify-center min-h-screen transition-all duration-300 ${
           isFullscreen ? 'bg-black/95 fixed inset-0 z-50 pt-4 sm:pt-6 pb-4 sm:pb-6' : ''
         }`}
+        style={isMobilePortrait && !isFullscreen ? { paddingTop: 'max(2.5rem, env(safe-area-inset-top, 1rem))' } : undefined}
         data-testid="book-container"
       >
         {/* Swipe hint indicators */}
