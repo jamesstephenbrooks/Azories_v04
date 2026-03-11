@@ -2687,7 +2687,7 @@ export default function ProStudio() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-950 to-gray-900 pb-20 sm:pb-0">
       {/* Header - Mobile optimized */}
-      <header className="bg-black/40 backdrop-blur-md border-b border-purple-500/20 sticky top-0 z-50">
+      <header className="bg-black/40 backdrop-blur-md border-b border-purple-500/20 sticky z-50" style={{ top: 'max(1.5rem, env(safe-area-inset-top, 0px))' }}>
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-3">
           {/* Mobile Header - Simplified */}
           <div className="flex items-center justify-between sm:hidden">
