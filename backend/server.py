@@ -4107,7 +4107,7 @@ async def create_chapter(book_id: str, chapter_data: ChapterCreate, current_user
         "book_id": book_id,
         "title": chapter_data.title,
         "order": chapter_data.order,
-        "created_at": now.isoformat()
+        "created_at": now
     }
     await db.chapters.insert_one(chapter)
     return ChapterResponse(**chapter)

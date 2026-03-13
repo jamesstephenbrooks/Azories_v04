@@ -611,7 +611,7 @@ export default function StoryCreator() {
       <div className="max-w-4xl mx-auto px-4 pt-32 md:pt-28 pb-24 flex-grow w-full">
         {/* Mode Toggle - extra top margin on mobile/tablet to avoid header overlap */}
         <div className="flex justify-center mb-8 mt-2 md:mt-0">
-          <div className={`inline-flex rounded-full p-1 ${creatorMode === 'kids' ? 'bg-white shadow-lg' : 'bg-gray-800'}`}>
+          <div className={`inline-flex rounded-full p-1 ${creatorMode === 'kids' ? 'bg-white dark:bg-gray-800 shadow-lg dark:shadow-none' : 'bg-gray-800'}`}>
             <button
               onClick={() => handleModeChange('kids')}
               className={`px-6 py-3 rounded-full text-sm font-medium transition-all ${
@@ -628,7 +628,7 @@ export default function StoryCreator() {
               className={`px-6 py-3 rounded-full text-sm font-medium transition-all ${
                 creatorMode === 'studio'
                   ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg'
-                  : creatorMode === 'kids' ? 'text-gray-600 hover:text-gray-800' : 'text-gray-400 hover:text-white'
+                  : creatorMode === 'kids' ? 'text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white' : 'text-gray-400 hover:text-white'
               }`}
               data-testid="studio-mode-btn"
             >
@@ -670,10 +670,10 @@ export default function StoryCreator() {
                 alt="Azora" 
                 className="w-28 h-28 mx-auto mb-4 rounded-2xl object-cover shadow-lg"
               />
-              <h1 className="text-4xl font-bold text-purple-900 mb-2">
+              <h1 className="text-4xl font-bold text-purple-900 dark:text-purple-300 mb-2">
                 AI Story Creator
               </h1>
-              <p className="text-purple-600">
+              <p className="text-purple-600 dark:text-purple-400">
                 Let Azora create a magical story just for you!
               </p>
             </>
@@ -692,7 +692,7 @@ export default function StoryCreator() {
         {/* Credits/Free Stories Banner */}
         <div className={`mb-6 p-4 rounded-xl ${
           creatorMode === 'kids' 
-            ? 'bg-white shadow-lg border border-purple-100' 
+            ? 'bg-white dark:bg-gray-800 shadow-lg dark:shadow-none border border-purple-100 dark:border-gray-700' 
             : 'bg-gray-800 border border-gray-700'
         }`}>
           <div className="flex items-center justify-between">
@@ -700,14 +700,14 @@ export default function StoryCreator() {
               {canCreateFree() ? (
                 <>
                   <span className="text-2xl">✨</span>
-                  <span className={creatorMode === 'kids' ? 'text-purple-700' : 'text-purple-300'}>
+                  <span className={creatorMode === 'kids' ? 'text-purple-700 dark:text-purple-300' : 'text-purple-300'}>
                     <strong>{trialStatus.free_stories_remaining}</strong> free {trialStatus.free_stories_remaining === 1 ? 'story' : 'stories'} remaining!
                   </span>
                 </>
               ) : (
                 <>
                   <FiZap className={creatorMode === 'kids' ? 'text-amber-500' : 'text-amber-400'} />
-                  <span className={creatorMode === 'kids' ? 'text-gray-700' : 'text-gray-300'}>
+                  <span className={creatorMode === 'kids' ? 'text-gray-700 dark:text-gray-300' : 'text-gray-300'}>
                     Cost: <strong>{getCreditsNeeded()} credits</strong> • You have <strong>{credits}</strong>
                   </span>
                 </>
@@ -749,7 +749,7 @@ export default function StoryCreator() {
                     }));
                     toast.success(`${template.emoji} ${template.title} template loaded!`);
                   }}
-                  className="p-4 rounded-xl bg-white shadow-md hover:shadow-lg border-2 border-transparent hover:border-purple-300 transition-all text-center"
+                  className="p-4 rounded-xl bg-white dark:bg-gray-800 shadow-md hover:shadow-lg border-2 border-transparent hover:border-purple-300 dark:hover:border-purple-600 transition-all text-center"
                   data-testid={`template-${template.title.toLowerCase().replace(' ', '-')}`}
                 >
                   {template.icon ? (
@@ -766,7 +766,7 @@ export default function StoryCreator() {
         
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
-          <Card className={creatorMode === 'kids' ? 'bg-white shadow-xl' : 'bg-gray-800 border-gray-700'}>
+          <Card className={creatorMode === 'kids' ? 'bg-white dark:bg-gray-800 shadow-xl dark:shadow-none dark:border-gray-700' : 'bg-gray-800 border-gray-700'}>
             <CardContent className="p-6 space-y-6">
               
               {/* Book Title Section */}
@@ -776,7 +776,7 @@ export default function StoryCreator() {
                 </h3>
                 
                 <div>
-                  <Label className={creatorMode === 'kids' ? 'text-purple-700' : 'text-gray-300'}>
+                  <Label className={creatorMode === 'kids' ? 'text-purple-700 dark:text-purple-300' : 'text-gray-300'}>
                     {creatorMode === 'kids' ? "What's your story called?" : 'Book Title'}
                   </Label>
                   <Input
@@ -786,7 +786,7 @@ export default function StoryCreator() {
                       ? "e.g., The Magic Garden, Luna's Big Adventure"
                       : "e.g., The Last Kingdom, Echoes of Tomorrow"
                     }
-                    className={creatorMode === 'kids' ? 'border-purple-200' : 'bg-gray-700 border-gray-600'}
+                    className={creatorMode === 'kids' ? 'border-purple-200 dark:border-gray-600 dark:bg-gray-700' : 'bg-gray-700 border-gray-600'}
                     data-testid="book-title-input"
                   />
                   <p className={`text-xs mt-1 ${creatorMode === 'kids' ? 'text-purple-600' : 'text-gray-400'}`}>
@@ -803,27 +803,27 @@ export default function StoryCreator() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label className={creatorMode === 'kids' ? 'text-purple-700' : 'text-gray-300'}>
+                    <Label className={creatorMode === 'kids' ? 'text-purple-700 dark:text-purple-300' : 'text-gray-300'}>
                       Character Name (optional)
                     </Label>
                     <Input
                       value={formData.character_name}
                       onChange={(e) => setFormData(prev => ({ ...prev, character_name: e.target.value }))}
                       placeholder="e.g., Luna, Max, Spark"
-                      className={creatorMode === 'kids' ? 'border-purple-200' : 'bg-gray-700 border-gray-600'}
+                      className={creatorMode === 'kids' ? 'border-purple-200 dark:border-gray-600 dark:bg-gray-700' : 'bg-gray-700 border-gray-600'}
                       data-testid="character-name-input"
                     />
                   </div>
                   
                   <div>
-                    <Label className={creatorMode === 'kids' ? 'text-purple-700' : 'text-gray-300'}>
+                    <Label className={creatorMode === 'kids' ? 'text-purple-700 dark:text-purple-300' : 'text-gray-300'}>
                       Who are they?
                     </Label>
                     <Input
                       value={formData.character_description}
                       onChange={(e) => setFormData(prev => ({ ...prev, character_description: e.target.value }))}
                       placeholder="e.g., A curious young dragon, A brave princess"
-                      className={creatorMode === 'kids' ? 'border-purple-200' : 'bg-gray-700 border-gray-600'}
+                      className={creatorMode === 'kids' ? 'border-purple-200 dark:border-gray-600 dark:bg-gray-700' : 'bg-gray-700 border-gray-600'}
                       data-testid="character-desc-input"
                     />
                   </div>
@@ -837,7 +837,7 @@ export default function StoryCreator() {
                 </h3>
                 
                 <div>
-                  <Label className={creatorMode === 'kids' ? 'text-purple-700' : 'text-gray-300'}>
+                  <Label className={creatorMode === 'kids' ? 'text-purple-700 dark:text-purple-300' : 'text-gray-300'}>
                     {creatorMode === 'kids' ? 'What happens in your story?' : 'Story Concept / Plot Summary'}
                   </Label>
                   <Textarea
@@ -847,7 +847,7 @@ export default function StoryCreator() {
                       ? "e.g., They find a magical map that leads to a hidden treasure..."
                       : "Describe your story concept, plot points, and key themes..."
                     }
-                    className={`min-h-[100px] ${creatorMode === 'kids' ? 'border-purple-200' : 'bg-gray-700 border-gray-600'}`}
+                    className={`min-h-[100px] ${creatorMode === 'kids' ? 'border-purple-200 dark:border-gray-600 dark:bg-gray-700' : 'bg-gray-700 border-gray-600'}`}
                     data-testid="story-desc-input"
                   />
                 </div>
@@ -894,14 +894,14 @@ export default function StoryCreator() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {/* Age Range */}
                   <div>
-                    <Label className={creatorMode === 'kids' ? 'text-purple-700' : 'text-gray-300'}>
+                    <Label className={creatorMode === 'kids' ? 'text-purple-700 dark:text-purple-300' : 'text-gray-300'}>
                       Age Range
                     </Label>
                     <Select
                       value={formData.age_range}
                       onValueChange={(v) => setFormData(prev => ({ ...prev, age_range: v }))}
                     >
-                      <SelectTrigger className={creatorMode === 'kids' ? 'border-purple-200' : 'bg-gray-700 border-gray-600'} data-testid="age-range-select">
+                      <SelectTrigger className={creatorMode === 'kids' ? 'border-purple-200 dark:border-gray-600 dark:bg-gray-700' : 'bg-gray-700 border-gray-600'} data-testid="age-range-select">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -916,14 +916,14 @@ export default function StoryCreator() {
                   
                   {/* Page Count */}
                   <div>
-                    <Label className={creatorMode === 'kids' ? 'text-purple-700' : 'text-gray-300'}>
+                    <Label className={creatorMode === 'kids' ? 'text-purple-700 dark:text-purple-300' : 'text-gray-300'}>
                       Pages
                     </Label>
                     <Select
                       value={String(formData.num_pages)}
                       onValueChange={(v) => setFormData(prev => ({ ...prev, num_pages: parseInt(v) }))}
                     >
-                      <SelectTrigger className={creatorMode === 'kids' ? 'border-purple-200' : 'bg-gray-700 border-gray-600'} data-testid="pages-select">
+                      <SelectTrigger className={creatorMode === 'kids' ? 'border-purple-200 dark:border-gray-600 dark:bg-gray-700' : 'bg-gray-700 border-gray-600'} data-testid="pages-select">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -938,14 +938,14 @@ export default function StoryCreator() {
                   
                   {/* Words per Page */}
                   <div>
-                    <Label className={creatorMode === 'kids' ? 'text-purple-700' : 'text-gray-300'}>
+                    <Label className={creatorMode === 'kids' ? 'text-purple-700 dark:text-purple-300' : 'text-gray-300'}>
                       Words per Page
                     </Label>
                     <Select
                       value={formData.words_per_page}
                       onValueChange={(v) => setFormData(prev => ({ ...prev, words_per_page: v }))}
                     >
-                      <SelectTrigger className={creatorMode === 'kids' ? 'border-purple-200' : 'bg-gray-700 border-gray-600'} data-testid="words-per-page-select">
+                      <SelectTrigger className={creatorMode === 'kids' ? 'border-purple-200 dark:border-gray-600 dark:bg-gray-700' : 'bg-gray-700 border-gray-600'} data-testid="words-per-page-select">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -981,14 +981,14 @@ export default function StoryCreator() {
                   
                   {/* Art Style */}
                   <div>
-                    <Label className={creatorMode === 'kids' ? 'text-purple-700' : 'text-gray-300'}>
+                    <Label className={creatorMode === 'kids' ? 'text-purple-700 dark:text-purple-300' : 'text-gray-300'}>
                       Art Style
                     </Label>
                     <Select
                       value={formData.art_style}
                       onValueChange={(v) => setFormData(prev => ({ ...prev, art_style: v }))}
                     >
-                      <SelectTrigger className={creatorMode === 'kids' ? 'border-purple-200' : 'bg-gray-700 border-gray-600'} data-testid="art-style-select">
+                      <SelectTrigger className={creatorMode === 'kids' ? 'border-purple-200 dark:border-gray-600 dark:bg-gray-700' : 'bg-gray-700 border-gray-600'} data-testid="art-style-select">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
