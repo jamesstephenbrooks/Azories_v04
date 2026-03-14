@@ -5,6 +5,14 @@ import axios from 'axios';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger,
+  DropdownMenuSeparator
+} from '@/components/ui/dropdown-menu';
+import { MoreVertical } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
 import { 
@@ -470,6 +478,9 @@ export default function BookReader() {
   const isMobile = windowSize.width < 768 || windowSize.height < 500;
   const isMobileLandscape = forceLandscapeTest || (isMobile && isLandscapeOrientation);
   const isMobilePortrait = !forceLandscapeTest && isMobile && !isLandscapeOrientation;
+  
+  // Tablet detection (iPad specific - shows dropdown menu)
+  const isTablet = isIPad || ((windowSize.width >= 768 && windowSize.width < 1280) && !isMobile);
   
   // Show navigation buttons on touch devices (iPad, iPhone, and other mobile)
   const showMobileNavButtons = isIPad || isIPhone || isMobile;
@@ -1956,7 +1967,7 @@ export default function BookReader() {
         </>
       )}
       
-      {/* DESKTOP: Full header bar with all controls */}
+      {/* DESKTOP/TABLET: Full header bar with all controls */}
       {!isMobilePortrait && !isMobileLandscape && (
         <>
         {/* Back button - top left corner */}
@@ -1971,7 +1982,7 @@ export default function BookReader() {
 
         {/* Floating sidebar - top right corner */}
         <div className="fixed right-4 top-4 z-[210] flex items-center gap-2" data-testid="desktop-sidebar-controls">
-          {/* Order Printed Copy - circular icon */}
+          {/* Order Printed Copy - circular icon - Always visible */}
           <button 
             onClick={() => {
               if (user) {
@@ -1996,37 +2007,86 @@ export default function BookReader() {
             </span>
           </button>
 
-          {/* Share */}
-          <button
-            onClick={shareBook}
-            className="w-11 h-11 rounded-full bg-purple-600/80 backdrop-blur-md shadow-lg flex items-center justify-center hover:bg-purple-500 hover:shadow-xl transition-all duration-200 text-white"
-            title="Share this book"
-            data-testid="share-book-btn"
-          >
-            <FiShare2 className="w-5 h-5" />
-          </button>
+          {/* TABLET: Dropdown menu for Share/Edit/Theme */}
+          {isTablet ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className="w-11 h-11 rounded-full bg-purple-600/80 backdrop-blur-md shadow-lg flex items-center justify-center hover:bg-purple-500 hover:shadow-xl transition-all duration-200 text-white"
+                  data-testid="tablet-actions-dropdown"
+                >
+                  <MoreVertical className="w-5 h-5" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48 bg-gray-900/95 backdrop-blur-md border-gray-700">
+                <DropdownMenuItem 
+                  onClick={shareBook}
+                  className="flex items-center gap-2 cursor-pointer text-white hover:bg-purple-600/50"
+                  data-testid="dropdown-share-btn"
+                >
+                  <FiShare2 className="w-4 h-4" />
+                  <span>Share Book</span>
+                </DropdownMenuItem>
+                
+                {user && book && (book.author_id === user.id || book.user_id === user.id) && (
+                  <DropdownMenuItem 
+                    onClick={() => navigate(`/editor/${book.id}`)}
+                    className="flex items-center gap-2 cursor-pointer text-white hover:bg-purple-600/50"
+                    data-testid="dropdown-edit-btn"
+                  >
+                    <FiEdit2 className="w-4 h-4" />
+                    <span>Edit Book</span>
+                  </DropdownMenuItem>
+                )}
+                
+                <DropdownMenuSeparator className="bg-gray-700" />
+                
+                <DropdownMenuItem 
+                  onClick={toggleTheme}
+                  className="flex items-center gap-2 cursor-pointer text-white hover:bg-purple-600/50"
+                  data-testid="dropdown-theme-btn"
+                >
+                  {theme === 'dark' ? <FiSun className="w-4 h-4" /> : <FiMoon className="w-4 h-4" />}
+                  <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <>
+              {/* DESKTOP: Individual buttons */}
+              {/* Share */}
+              <button
+                onClick={shareBook}
+                className="w-11 h-11 rounded-full bg-purple-600/80 backdrop-blur-md shadow-lg flex items-center justify-center hover:bg-purple-500 hover:shadow-xl transition-all duration-200 text-white"
+                title="Share this book"
+                data-testid="share-book-btn"
+              >
+                <FiShare2 className="w-5 h-5" />
+              </button>
 
-          {/* Edit - only for book owner */}
-          {user && book && (book.author_id === user.id || book.user_id === user.id) && (
-            <button
-              onClick={() => navigate(`/editor/${book.id}`)}
-              className="w-11 h-11 rounded-full bg-purple-600/80 backdrop-blur-md shadow-lg flex items-center justify-center hover:bg-purple-500 hover:shadow-xl transition-all duration-200 text-white"
-              title="Edit this book"
-              data-testid="edit-book-btn"
-            >
-              <FiEdit2 className="w-5 h-5" />
-            </button>
+              {/* Edit - only for book owner */}
+              {user && book && (book.author_id === user.id || book.user_id === user.id) && (
+                <button
+                  onClick={() => navigate(`/editor/${book.id}`)}
+                  className="w-11 h-11 rounded-full bg-purple-600/80 backdrop-blur-md shadow-lg flex items-center justify-center hover:bg-purple-500 hover:shadow-xl transition-all duration-200 text-white"
+                  title="Edit this book"
+                  data-testid="edit-book-btn"
+                >
+                  <FiEdit2 className="w-5 h-5" />
+                </button>
+              )}
+
+              {/* Theme toggle */}
+              <button
+                onClick={toggleTheme}
+                className="w-11 h-11 rounded-full bg-purple-600/80 backdrop-blur-md shadow-lg flex items-center justify-center hover:bg-purple-500 hover:shadow-xl transition-all duration-200 text-white"
+                title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
+                data-testid="theme-toggle-btn"
+              >
+                {theme === 'dark' ? <FiSun className="w-5 h-5" /> : <FiMoon className="w-5 h-5" />}
+              </button>
+            </>
           )}
-
-          {/* Theme toggle */}
-          <button
-            onClick={toggleTheme}
-            className="w-11 h-11 rounded-full bg-purple-600/80 backdrop-blur-md shadow-lg flex items-center justify-center hover:bg-purple-500 hover:shadow-xl transition-all duration-200 text-white"
-            title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
-            data-testid="theme-toggle-btn"
-          >
-            {theme === 'dark' ? <FiSun className="w-5 h-5" /> : <FiMoon className="w-5 h-5" />}
-          </button>
         </div>
         </>
       )}

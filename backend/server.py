@@ -7272,6 +7272,7 @@ async def run_story_generation_job(job_id: str, request_data: dict, user_data: d
             "age_rating": request.age_range,
             "art_style": selected_style,
             "is_published": False,
+            "publish_status": "pending_review",  # Auto-submit AI stories for review
             "status": "generating",  # Mark as generating until images done
             "created_at": now,
             "updated_at": now,
@@ -7672,7 +7673,7 @@ REQUIREMENTS:
 - Title: {title_instruction}
 - Target audience: {age_context}
 - MUST have exactly {request.num_pages} pages
-- Each page should have approximately {target_words} words
+- WORD COUNT IS CRITICAL: Each page MUST have EXACTLY {target_words} words (minimum {target_words - 10}, maximum {target_words + 20}). Count your words carefully!
 
 Return a JSON object:
 {{
@@ -7681,8 +7682,8 @@ Return a JSON object:
     "back_cover_text": "Back cover summary",
     "main_character_description": "Visual description of main character",
     "pages": [
-        {{"page_number": 1, "text": "Page text", "image_prompt": "Scene description"}},
-        ... (exactly {request.num_pages} pages)
+        {{"page_number": 1, "text": "Page text (MUST BE {target_words} words)", "image_prompt": "Scene description"}},
+        ... (exactly {request.num_pages} pages, each with {target_words} words)
     ]
 }}
 
@@ -8084,7 +8085,7 @@ REQUIREMENTS:
 - Title: {title_instruction}
 - Target audience: {age_context}{genre_context}{tone_context}
 - MUST have exactly {request.num_pages} pages - no more, no less
-- Each page MUST have approximately {target_words} words (±15 tolerance)
+- WORD COUNT IS CRITICAL: Each page MUST have EXACTLY {target_words} words (minimum {target_words - 10}, maximum {target_words + 20}). Count your words carefully!
 {chapter_instruction}
 
 CRITICAL: You MUST generate exactly {request.num_pages} pages. The story should have a beginning, middle, and end spread across all {request.num_pages} pages.
@@ -8096,8 +8097,8 @@ Return a JSON object with this EXACT structure:
     "back_cover_text": "Engaging back cover summary (2-3 sentences)",
     "main_character_description": "Detailed visual description of the main character",
     "pages": [
-        {{"page_number": 1, "text": "First page text (~{target_words} words)", "image_prompt": "Scene description"{', "chapter_title": "Chapter 1 Title"' if request.chapter_structure else ''}}},
-        {{"page_number": 2, "text": "Second page text (~{target_words} words)", "image_prompt": "Scene description"}},
+        {{"page_number": 1, "text": "First page text (MUST BE {target_words} words - count carefully!)", "image_prompt": "Scene description"{', "chapter_title": "Chapter 1 Title"' if request.chapter_structure else ''}}},
+        {{"page_number": 2, "text": "Second page text (MUST BE {target_words} words - count carefully!)", "image_prompt": "Scene description"}},
         ... (continue for all {request.num_pages} pages)
     ]
 }}
@@ -8113,7 +8114,7 @@ Story pacing guidelines for {request.num_pages} pages:
 
 IMPORTANT: 
 1. Generate EXACTLY {request.num_pages} pages in the pages array
-2. Each page text should be approximately {target_words} words
+2. WORD COUNT IS MANDATORY: Each page text MUST contain EXACTLY {target_words} words. If you write less than {target_words - 10} words on any page, the story will be rejected. Count every word!
 3. Image prompts should be detailed for {final_style} style illustrations
 4. {'Content can include mild peril, romance, and complex emotions appropriate for the age group' if is_story_studio else 'Keep content age-appropriate and positive'}
 
@@ -8240,7 +8241,7 @@ Return ONLY the JSON array, no other text."""
             "narrator_voice_id": "21m00Tcm4TlvDq8ikWAM",
             "narrator_voice_locked": False,  # Added - was missing
             "age_rating": request.age_rating,
-            "publish_status": "draft",  # Added - was missing
+            "publish_status": "pending_review",  # Auto-submit AI stories for review
             "moderation_flags": [],  # Added - was missing
             "view_count": 0,
             "read_count": 0,
