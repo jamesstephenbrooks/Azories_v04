@@ -33,6 +33,11 @@ Build a full-featured AI Story Creator application named "Azories" with:
 
 ## Recent Fixes (December 2026)
 
+### Session v1.0.20 (March 2026)
+- [x] **iPad Book Reader Dropdown** - Action buttons (Share, Theme, Edit) now grouped in vertical dropdown menu on tablets (768-1280px), Print button stays separate. Desktop shows individual buttons as before
+- [x] **Word Count Enforcement** - Strengthened AI story prompts with CRITICAL/MANDATORY language for word count (e.g., 150 words when "long" selected). Prompts now include min/max tolerance and explicit "count carefully" instructions
+- [x] **AI Story Auto-Publish** - New AI-generated stories automatically set to `publish_status: "pending_review"` instead of `"draft"`, streamlining the publishing workflow
+
 ### Session v1.0.19 (March 2026)
 - [x] **BookReader Redesign** - Removed black header bar, moved all controls to floating vertical sidebar on right side with purple-themed circular buttons. Back button moved to top-left corner
 - [x] **AI Book Editor Fix** - Fixed ChapterResponse/PageResponse datetime serialization (datetime objects → isoformat strings), enabling AI books to load chapters and pages correctly
