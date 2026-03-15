@@ -644,7 +644,7 @@ export default function Dashboard() {
                   <span className={`px-3 py-1 rounded-full text-sm font-ui ${
                     isPro ? 'bg-secondary/20 text-secondary' : 'bg-muted text-muted-foreground'
                   }`}>
-                    {user.pro_trial ? 'Pro Studio Trial (48hrs)' : 'Pro'}
+                    {user.pro_trial ? `Pro Studio Trial` : 'Pro'}
                   </span>
                 )}
               </div>

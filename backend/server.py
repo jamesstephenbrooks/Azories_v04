@@ -1614,11 +1614,11 @@ async def register(user_data: UserCreate, background_tasks: BackgroundTasks):
             created_at=now_iso,
             pro_trial=True,
             pro_trial_expires_at=trial_expires,
-            trial_days_remaining=2
+            trial_hours_remaining=48  # Always 48 hours for new registrations
         )
     )
 
-@api_router.post("/auth/login")
+@api_router.post("/auth/login", response_model=TokenResponse)
 async def login(user_data: UserLogin):
     user = await db.users.find_one({"email": user_data.email}, {"_id": 0})
     if not user or not verify_password(user_data.password, user["password"]):
@@ -1643,13 +1643,13 @@ async def login(user_data: UserLogin):
             )
             pro_trial = False
         else:
-            # Calculate time remaining
+            # Calculate time remaining - cap at 48 hours for trial
             time_remaining = expiry_date - now
             total_hours = int(time_remaining.total_seconds() / 3600)
-            if total_hours >= 24:
-                trial_days_remaining = time_remaining.days
-            else:
-                trial_hours_remaining = max(1, total_hours)  # At least 1 hour
+            total_hours = min(total_hours, 48)  # Cap at 48 hours
+            # Always use hours for 48-hour trial display
+            trial_hours_remaining = max(1, total_hours)
+            trial_days_remaining = None  # Don't use days for short trials
     
     token = create_token(user["id"], user["email"], user["role"], user_data.remember_me)
     logger.info(f"Login: remember_me={user_data.remember_me} for user {user['email']}")
@@ -1658,7 +1658,7 @@ async def login(user_data: UserLogin):
     return TokenResponse(
         access_token=token,
         user=UserResponse(
-            id=user["id"], 
+            id=user["id"],
             email=user["email"], 
             name=user["name"], 
             role=user["role"], 
@@ -1666,7 +1666,6 @@ async def login(user_data: UserLogin):
             created_at=user["created_at"],
             pro_trial=pro_trial,
             pro_trial_expires_at=trial_expires,
-            trial_days_remaining=trial_days_remaining,
             trial_hours_remaining=trial_hours_remaining,
             is_admin=is_admin_value
         )
@@ -1688,13 +1687,13 @@ async def get_me(current_user: dict = Depends(get_current_user)):
             subscription = "free"
             pro_trial = False
         else:
-            # Calculate time remaining
+            # Calculate time remaining - cap at 48 hours for trial
             time_remaining = expiry_date - now
             total_hours = int(time_remaining.total_seconds() / 3600)
-            if total_hours >= 24:
-                trial_days_remaining = time_remaining.days
-            else:
-                trial_hours_remaining = max(1, total_hours)  # At least 1 hour
+            total_hours = min(total_hours, 48)  # Cap at 48 hours
+            # Always use hours for 48-hour trial display
+            trial_hours_remaining = max(1, total_hours)
+            trial_days_remaining = None  # Don't use days for short trials
     
     return UserResponse(
         id=current_user["id"],
