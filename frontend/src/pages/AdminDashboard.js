@@ -1173,15 +1173,15 @@ export default function AdminDashboard() {
             </p>
             
             <div className="bg-white/5 backdrop-blur rounded-2xl border border-white/10 overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full min-w-0">
                 <thead>
                   <tr className="border-b border-white/10 text-left">
-                    <th className="p-4 text-white/60 font-ui text-sm">Name</th>
-                    <th className="p-4 text-white/60 font-ui text-sm">Email</th>
-                    <th className="p-4 text-white/60 font-ui text-sm hidden md:table-cell">Subscription</th>
-                    <th className="p-4 text-white/60 font-ui text-sm">Credits</th>
-                    <th className="p-4 text-white/60 font-ui text-sm hidden md:table-cell">Joined</th>
-                    <th className="p-4 text-white/60 font-ui text-sm">Action</th>
+                    <th className="p-3 md:p-4 text-white/60 font-ui text-sm">Name</th>
+                    <th className="p-3 md:p-4 text-white/60 font-ui text-sm hidden sm:table-cell">Email</th>
+                    <th className="p-3 md:p-4 text-white/60 font-ui text-sm hidden lg:table-cell">Subscription</th>
+                    <th className="p-3 md:p-4 text-white/60 font-ui text-sm">Credits</th>
+                    <th className="p-3 md:p-4 text-white/60 font-ui text-sm hidden lg:table-cell">Joined</th>
+                    <th className="p-3 md:p-4 text-white/60 font-ui text-sm text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1191,9 +1191,14 @@ export default function AdminDashboard() {
                       className="border-b border-white/5 hover:bg-white/5 active:bg-white/10 transition-colors"
                       data-testid={`user-row-${user.email}`}
                     >
-                      <td className="p-4 text-white font-medium">{user.name}</td>
-                      <td className="p-4 text-white/70 text-sm break-all">{user.email}</td>
-                      <td className="p-4 hidden md:table-cell">
+                      <td className="p-3 md:p-4">
+                        <div className="text-white font-medium text-sm">{user.name}</div>
+                        <div className="text-white/50 text-xs sm:hidden truncate max-w-[120px]">{user.email}</div>
+                      </td>
+                      <td className="p-3 md:p-4 text-white/70 text-sm hidden sm:table-cell">
+                        <span className="truncate block max-w-[200px]">{user.email}</span>
+                      </td>
+                      <td className="p-3 md:p-4 hidden lg:table-cell">
                         <span className={`text-xs px-2 py-1 rounded-full ${
                           user.subscription === 'pro' 
                             ? 'bg-purple-500/20 text-purple-400' 
@@ -1202,24 +1207,21 @@ export default function AdminDashboard() {
                           {user.subscription || 'Free'}
                         </span>
                       </td>
-                      <td className="p-4 text-white/70">
-                        <span className="flex items-center gap-1">
-                          {user.credits || 0}
-                          <FiDollarSign className="w-3 h-3 text-purple-400 opacity-50" />
-                        </span>
+                      <td className="p-3 md:p-4 text-white/70 text-sm">
+                        {user.credits || 0}
                       </td>
-                      <td className="p-4 text-white/50 text-sm hidden md:table-cell">
+                      <td className="p-3 md:p-4 text-white/50 text-sm hidden lg:table-cell">
                         {user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
                       </td>
-                      <td className="p-4">
+                      <td className="p-3 md:p-4 text-right">
                         <Button
                           size="sm"
                           onClick={() => openCreditModal(user)}
-                          className="bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1"
+                          className="bg-purple-600 hover:bg-purple-700 text-white text-xs px-2 py-1"
                           data-testid={`edit-credits-${user.email}`}
                         >
-                          <FiDollarSign className="w-3 h-3 mr-1" />
-                          Edit
+                          <FiDollarSign className="w-3 h-3 sm:mr-1" />
+                          <span className="hidden sm:inline">Edit</span>
                         </Button>
                       </td>
                     </tr>
