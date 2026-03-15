@@ -1169,31 +1169,31 @@ export default function AdminDashboard() {
             
             <p className="text-sm text-white/50 mb-2">
               <FiDollarSign className="inline w-4 h-4 mr-1" />
-              Click on any user row to add or modify their credits
+              Click the "Edit" button to add or modify user credits
             </p>
             
-            <div className="bg-white/5 backdrop-blur rounded-2xl border border-white/10 overflow-hidden">
+            <div className="bg-white/5 backdrop-blur rounded-2xl border border-white/10 overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-white/10 text-left">
                     <th className="p-4 text-white/60 font-ui text-sm">Name</th>
                     <th className="p-4 text-white/60 font-ui text-sm">Email</th>
-                    <th className="p-4 text-white/60 font-ui text-sm">Subscription</th>
+                    <th className="p-4 text-white/60 font-ui text-sm hidden md:table-cell">Subscription</th>
                     <th className="p-4 text-white/60 font-ui text-sm">Credits</th>
-                    <th className="p-4 text-white/60 font-ui text-sm">Joined</th>
+                    <th className="p-4 text-white/60 font-ui text-sm hidden md:table-cell">Joined</th>
+                    <th className="p-4 text-white/60 font-ui text-sm">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredUsers.map((user) => (
                     <tr 
                       key={user.id} 
-                      className="border-b border-white/5 hover:bg-white/5 cursor-pointer transition-colors"
-                      onClick={() => openCreditModal(user)}
+                      className="border-b border-white/5 hover:bg-white/5 active:bg-white/10 transition-colors"
                       data-testid={`user-row-${user.email}`}
                     >
                       <td className="p-4 text-white font-medium">{user.name}</td>
-                      <td className="p-4 text-white/70">{user.email}</td>
-                      <td className="p-4">
+                      <td className="p-4 text-white/70 text-sm break-all">{user.email}</td>
+                      <td className="p-4 hidden md:table-cell">
                         <span className={`text-xs px-2 py-1 rounded-full ${
                           user.subscription === 'pro' 
                             ? 'bg-purple-500/20 text-purple-400' 
@@ -1203,13 +1203,24 @@ export default function AdminDashboard() {
                         </span>
                       </td>
                       <td className="p-4 text-white/70">
-                        <span className="flex items-center gap-2">
+                        <span className="flex items-center gap-1">
                           {user.credits || 0}
                           <FiDollarSign className="w-3 h-3 text-purple-400 opacity-50" />
                         </span>
                       </td>
-                      <td className="p-4 text-white/50 text-sm">
+                      <td className="p-4 text-white/50 text-sm hidden md:table-cell">
                         {user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
+                      </td>
+                      <td className="p-4">
+                        <Button
+                          size="sm"
+                          onClick={() => openCreditModal(user)}
+                          className="bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1"
+                          data-testid={`edit-credits-${user.email}`}
+                        >
+                          <FiDollarSign className="w-3 h-3 mr-1" />
+                          Edit
+                        </Button>
                       </td>
                     </tr>
                   ))}
