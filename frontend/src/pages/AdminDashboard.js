@@ -189,6 +189,61 @@ export default function AdminDashboard() {
   // Delete Test Accounts State
   const [deletingTestAccounts, setDeletingTestAccounts] = useState(false);
   
+  // User Credits Modal State
+  const [creditModalOpen, setCreditModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [newCredits, setNewCredits] = useState('');
+  const [updatingCredits, setUpdatingCredits] = useState(false);
+  
+  // Open credit modal for a user
+  const openCreditModal = (user) => {
+    setSelectedUser(user);
+    setNewCredits(user.credits?.toString() || '0');
+    setCreditModalOpen(true);
+  };
+  
+  // Update user credits
+  const updateUserCredits = async () => {
+    if (!selectedUser) return;
+    
+    const creditsValue = parseInt(newCredits, 10);
+    if (isNaN(creditsValue) || creditsValue < 0) {
+      toast.error('Please enter a valid number of credits (0 or more)');
+      return;
+    }
+    
+    setUpdatingCredits(true);
+    try {
+      const token = localStorage.getItem('azories-admin-token');
+      const response = await axios.post(
+        `${API}/api/admin/users/update-credits`,
+        { email: selectedUser.email, credits: creditsValue },
+        { headers: { Authorization: `Bearer ${token}` }}
+      );
+      
+      if (response.data.success) {
+        toast.success(`Credits updated: ${response.data.old_credits} → ${response.data.new_credits}`);
+        
+        // Update local state
+        setUsers(users.map(u => 
+          u.email === selectedUser.email 
+            ? { ...u, credits: creditsValue }
+            : u
+        ));
+        
+        setCreditModalOpen(false);
+        setSelectedUser(null);
+      } else {
+        toast.error('Failed to update credits');
+      }
+    } catch (error) {
+      console.error('Error updating credits:', error);
+      toast.error(error.response?.data?.detail || 'Failed to update credits');
+    } finally {
+      setUpdatingCredits(false);
+    }
+  };
+  
   // Delete Test Accounts Function
   const deleteTestAccounts = async () => {
     if (!window.confirm('Are you sure you want to delete ALL test accounts? This cannot be undone.')) {
@@ -1112,6 +1167,11 @@ export default function AdminDashboard() {
               </Button>
             </div>
             
+            <p className="text-sm text-white/50 mb-2">
+              <FiDollarSign className="inline w-4 h-4 mr-1" />
+              Click on any user row to add or modify their credits
+            </p>
+            
             <div className="bg-white/5 backdrop-blur rounded-2xl border border-white/10 overflow-hidden">
               <table className="w-full">
                 <thead>
@@ -1125,7 +1185,12 @@ export default function AdminDashboard() {
                 </thead>
                 <tbody>
                   {filteredUsers.map((user) => (
-                    <tr key={user.id} className="border-b border-white/5 hover:bg-white/5">
+                    <tr 
+                      key={user.id} 
+                      className="border-b border-white/5 hover:bg-white/5 cursor-pointer transition-colors"
+                      onClick={() => openCreditModal(user)}
+                      data-testid={`user-row-${user.email}`}
+                    >
                       <td className="p-4 text-white font-medium">{user.name}</td>
                       <td className="p-4 text-white/70">{user.email}</td>
                       <td className="p-4">
@@ -1137,7 +1202,12 @@ export default function AdminDashboard() {
                           {user.subscription || 'Free'}
                         </span>
                       </td>
-                      <td className="p-4 text-white/70">{user.credits || 0}</td>
+                      <td className="p-4 text-white/70">
+                        <span className="flex items-center gap-2">
+                          {user.credits || 0}
+                          <FiDollarSign className="w-3 h-3 text-purple-400 opacity-50" />
+                        </span>
+                      </td>
                       <td className="p-4 text-white/50 text-sm">
                         {user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
                       </td>
@@ -1752,6 +1822,106 @@ export default function AdminDashboard() {
               >
                 <FiX className="w-4 h-4 mr-2" /> Reject
               </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+      
+      {/* User Credits Modal */}
+      <Dialog open={creditModalOpen} onOpenChange={setCreditModalOpen}>
+        <DialogContent className="max-w-md bg-slate-900 border-white/10">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <FiDollarSign className="w-5 h-5 text-purple-400" />
+              Manage User Credits
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedUser && (
+            <div className="space-y-6 pt-4">
+              {/* User Info */}
+              <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-full bg-purple-600/20 flex items-center justify-center">
+                    <FiUser className="w-5 h-5 text-purple-400" />
+                  </div>
+                  <div>
+                    <p className="text-white font-medium">{selectedUser.name}</p>
+                    <p className="text-white/60 text-sm">{selectedUser.email}</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-white/60">Current Credits:</span>
+                  <span className="text-purple-400 font-semibold">{selectedUser.credits || 0}</span>
+                </div>
+              </div>
+              
+              {/* Credit Input */}
+              <div className="space-y-2">
+                <Label className="text-white/80">New Credit Amount</Label>
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    min="0"
+                    value={newCredits}
+                    onChange={(e) => setNewCredits(e.target.value)}
+                    className="bg-white/5 border-white/10 text-white"
+                    placeholder="Enter credits"
+                    data-testid="credit-input"
+                  />
+                </div>
+                <p className="text-xs text-white/40">
+                  Enter the total credits the user should have (not credits to add)
+                </p>
+              </div>
+              
+              {/* Quick Add Buttons */}
+              <div className="space-y-2">
+                <Label className="text-white/80 text-sm">Quick Add</Label>
+                <div className="flex flex-wrap gap-2">
+                  {[10, 25, 50, 100, 250].map((amount) => (
+                    <Button
+                      key={amount}
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setNewCredits(String((parseInt(newCredits) || 0) + amount))}
+                      className="bg-white/5 border-white/10 text-white hover:bg-white/10"
+                      data-testid={`quick-add-${amount}`}
+                    >
+                      +{amount}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Actions */}
+              <div className="flex gap-3 pt-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setCreditModalOpen(false)}
+                  className="flex-1 bg-white/5 border-white/10 text-white hover:bg-white/10"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={updateUserCredits}
+                  disabled={updatingCredits}
+                  className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
+                  data-testid="save-credits-btn"
+                >
+                  {updatingCredits ? (
+                    <>
+                      <FiRefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <FiSave className="w-4 h-4 mr-2" />
+                      Save Credits
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
           )}
         </DialogContent>
