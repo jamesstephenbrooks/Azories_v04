@@ -476,8 +476,23 @@ async def seed_if_empty():
     Check if the database is empty and seed if needed.
     - If local export files exist, use them (preview environment)
     - Otherwise, fetch from preview URL (production environment)
+    
+    SAFEGUARD: Only seeds in preview/development environments, NOT production.
     """
     try:
+        # SAFEGUARD: Check environment - NEVER auto-seed in production
+        is_production = os.environ.get("ENVIRONMENT", "").lower() == "production"
+        backend_url = os.environ.get("REACT_APP_BACKEND_URL", "")
+        
+        # Detect production by URL pattern (no "preview" in URL)
+        if backend_url and "preview" not in backend_url.lower() and "localhost" not in backend_url.lower():
+            is_production = True
+        
+        if is_production:
+            logger.info("🔒 PRODUCTION ENVIRONMENT DETECTED - Auto-seed DISABLED for data safety")
+            logger.info("   To seed production, use the admin panel import feature manually")
+            return {"status": "skipped", "reason": "production_environment"}
+        
         # Check if we have any books (primary content)
         book_count = await db.books.count_documents({})
         user_count = await db.users.count_documents({})
@@ -14492,17 +14507,33 @@ async def list_import_collections(
 @api_router.post("/admin/import-collection")
 async def import_single_collection(
     collection: str = Query(..., description="Collection name to import"),
-    import_key: str = Query(..., description="Admin import key for security")
+    import_key: str = Query(..., description="Admin import key for security"),
+    confirm_overwrite: bool = Query(False, description="Must be true to confirm data overwrite")
 ):
     """
     Import a SINGLE collection from exports. Use this to import one at a time
     to avoid timeout issues with large databases.
+    
+    ⚠️ WARNING: This DROPS existing data in the collection before importing!
     """
     from bson import json_util
     
     IMPORT_KEY = os.environ.get('DB_IMPORT_KEY', 'azories-import-2026')
     if import_key != IMPORT_KEY:
         raise HTTPException(status_code=403, detail="Invalid import key")
+    
+    # SAFEGUARD: Require explicit confirmation for destructive operation
+    if not confirm_overwrite:
+        # Check if collection has data
+        coll = db[collection]
+        existing_count = await coll.count_documents({})
+        if existing_count > 0:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"⚠️ Collection '{collection}' has {existing_count} documents. "
+                       f"This import will DELETE ALL existing data. "
+                       f"Add 'confirm_overwrite=true' to proceed."
+            )
     
     json_file = f"/app/exports/collections/{collection}.json"
     
