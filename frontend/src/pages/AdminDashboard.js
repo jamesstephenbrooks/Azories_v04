@@ -773,27 +773,37 @@ export default function AdminDashboard() {
 
         {/* Tabs */}
         <Tabs defaultValue="reviews" className="space-y-6">
-          <TabsList className="bg-white/5 border border-white/10 p-1 rounded-full flex-wrap">
-            <TabsTrigger value="reviews" className="rounded-full data-[state=active]:bg-purple-600 text-white">
-              <FiClock className="w-4 h-4 mr-2" /> Pending ({pendingBooks.length})
+          <TabsList className="bg-white/5 border border-white/10 p-1.5 rounded-2xl grid grid-cols-4 md:flex md:flex-wrap gap-1">
+            <TabsTrigger value="reviews" className="rounded-xl data-[state=active]:bg-purple-600 text-white text-xs sm:text-sm px-2 sm:px-3">
+              <FiClock className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" /> 
+              <span className="hidden sm:inline">Pending ({pendingBooks.length})</span>
+              <span className="sm:hidden ml-1">{pendingBooks.length}</span>
             </TabsTrigger>
-            <TabsTrigger value="books" className="rounded-full data-[state=active]:bg-purple-600 text-white">
-              <FiBook className="w-4 h-4 mr-2" /> Books ({allBooks.length})
+            <TabsTrigger value="books" className="rounded-xl data-[state=active]:bg-purple-600 text-white text-xs sm:text-sm px-2 sm:px-3">
+              <FiBook className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Books ({allBooks.length})</span>
+              <span className="sm:hidden ml-1">{allBooks.length}</span>
             </TabsTrigger>
-            <TabsTrigger value="users" className="rounded-full data-[state=active]:bg-purple-600 text-white">
-              <FiUsers className="w-4 h-4 mr-2" /> Users ({users.length})
+            <TabsTrigger value="users" className="rounded-xl data-[state=active]:bg-purple-600 text-white text-xs sm:text-sm px-2 sm:px-3">
+              <FiUsers className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Users ({users.length})</span>
+              <span className="sm:hidden ml-1">{users.length}</span>
             </TabsTrigger>
-            <TabsTrigger value="print-orders" className="rounded-full data-[state=active]:bg-purple-600 text-white">
-              <FiPackage className="w-4 h-4 mr-2" /> Print Orders
+            <TabsTrigger value="print-orders" className="rounded-xl data-[state=active]:bg-purple-600 text-white text-xs sm:text-sm px-2 sm:px-3">
+              <FiPackage className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" /> 
+              <span className="hidden sm:inline">Orders</span>
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="rounded-full data-[state=active]:bg-purple-600 text-white">
-              <FiBarChart2 className="w-4 h-4 mr-2" /> Analytics
+            <TabsTrigger value="analytics" className="rounded-xl data-[state=active]:bg-purple-600 text-white text-xs sm:text-sm px-2 sm:px-3">
+              <FiBarChart2 className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" /> 
+              <span className="hidden sm:inline">Analytics</span>
             </TabsTrigger>
-            <TabsTrigger value="charts" className="rounded-full data-[state=active]:bg-purple-600 text-white">
-              <FiTrendingUp className="w-4 h-4 mr-2" /> Charts
+            <TabsTrigger value="charts" className="rounded-xl data-[state=active]:bg-purple-600 text-white text-xs sm:text-sm px-2 sm:px-3">
+              <FiTrendingUp className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Charts</span>
             </TabsTrigger>
-            <TabsTrigger value="settings" className="rounded-full data-[state=active]:bg-purple-600 text-white">
-              <FiSettings className="w-4 h-4 mr-2" /> Settings
+            <TabsTrigger value="settings" className="rounded-xl data-[state=active]:bg-purple-600 text-white text-xs sm:text-sm px-2 sm:px-3 col-span-2">
+              <FiSettings className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Settings</span>
             </TabsTrigger>
           </TabsList>
 
@@ -1142,8 +1152,9 @@ export default function AdminDashboard() {
           {/* Users Tab */}
           <TabsContent value="users">
             {/* User Search and Actions */}
-            <div className="mb-4 p-4 bg-white/5 rounded-xl border border-white/10 flex flex-wrap gap-4 items-center justify-between">
-              <div className="relative flex-1 max-w-md">
+            <div className="mb-4 space-y-3">
+              {/* Search Row */}
+              <div className="relative">
                 <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 w-4 h-4" />
                 <Input
                   placeholder="Search users by name or email..."
@@ -1154,23 +1165,29 @@ export default function AdminDashboard() {
                 />
               </div>
               
-              {/* Delete Test Accounts Button */}
-              <Button
-                variant="destructive"
-                onClick={deleteTestAccounts}
-                disabled={deletingTestAccounts}
-                className="bg-red-600 hover:bg-red-700 text-white"
-                data-testid="delete-test-accounts-btn"
-              >
-                <FiTrash2 className={`w-4 h-4 mr-2 ${deletingTestAccounts ? 'animate-spin' : ''}`} />
-                {deletingTestAccounts ? 'Deleting...' : 'Delete Test Accounts'}
-              </Button>
+              {/* Actions Row */}
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-xs sm:text-sm text-white/50 flex items-center">
+                  <FiDollarSign className="w-4 h-4 mr-1 text-purple-400" />
+                  <span className="hidden sm:inline">Click "Edit" to modify user credits</span>
+                  <span className="sm:hidden">Tap "Edit" for credits</span>
+                </p>
+                
+                {/* Delete Test Accounts Button */}
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={deleteTestAccounts}
+                  disabled={deletingTestAccounts}
+                  className="bg-red-600 hover:bg-red-700 text-white text-xs px-2 sm:px-3 whitespace-nowrap"
+                  data-testid="delete-test-accounts-btn"
+                >
+                  <FiTrash2 className={`w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 ${deletingTestAccounts ? 'animate-spin' : ''}`} />
+                  <span className="hidden sm:inline">{deletingTestAccounts ? 'Deleting...' : 'Delete Test Accounts'}</span>
+                  <span className="sm:hidden">{deletingTestAccounts ? '...' : 'Delete Test'}</span>
+                </Button>
+              </div>
             </div>
-            
-            <p className="text-sm text-white/50 mb-2">
-              <FiDollarSign className="inline w-4 h-4 mr-1" />
-              Click the "Edit" button to add or modify user credits
-            </p>
             
             <div className="bg-white/5 backdrop-blur rounded-2xl border border-white/10 overflow-x-auto">
               <table className="w-full min-w-0">
