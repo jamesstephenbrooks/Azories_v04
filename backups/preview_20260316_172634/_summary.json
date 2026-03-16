@@ -1,0 +1,30 @@
+{
+  "timestamp": "2026-03-16T17:26:35.196433",
+  "database": "azories",
+  "source": "preview (localhost:27017)",
+  "collections": {
+    "books": 86,
+    "chapters": 55,
+    "starter_library": 100,
+    "print_preparations": 37,
+    "reading_streaks": 3,
+    "art_studio_gallery": 10,
+    "audio_cache": 347,
+    "pages": 832,
+    "vip_usage": 17,
+    "system_settings": 1,
+    "reading_progress": 56,
+    "password_resets": 1,
+    "book_images": 58,
+    "story_jobs": 13,
+    "credit_usage": 2,
+    "art_studio_generations": 1,
+    "site_analytics": 4053,
+    "analytics": 712,
+    "pro_studio_characters": 1,
+    "users": 20,
+    "reading_stats": 3,
+    "payment_transactions": 16,
+    "profiles": 1
+  }
+}

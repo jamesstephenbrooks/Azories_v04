@@ -1,0 +1,344 @@
+[
+  {
+    "_id": {
+      "$oid": "6994b62e926adfc3c437862d"
+    },
+    "id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "email": "jamesstephenbrooks@outlook.com",
+    "password": "$2b$12$qvHDeNAnkk13pKYHEtmcSOfmfzxA9Iyehi/GDM1IrS.g0y9p6Za8C",
+    "name": "Jamie Brooks",
+    "role": "admin",
+    "created_at": "2026-02-17T18:40:45.872308+00:00",
+    "subscription": "pro",
+    "credits": 25,
+    "pro_trial": false,
+    "is_admin": true,
+    "hashed_password": "$2b$12$CtPoE0rvRF2O8E4uXWvhKOVcAUwch8KrfniC5jJ5y/rem6hntg/3a",
+    "free_stories_remaining": 0,
+    "free_stories_used": 3
+  },
+  {
+    "_id": {
+      "$oid": "699a3fb82d058f870711d41a"
+    },
+    "id": "azories-system",
+    "email": "stories@azories.com",
+    "password": "",
+    "name": "Azories Stories",
+    "role": "admin",
+    "subscription": "pro",
+    "created_at": "2026-02-21T23:28:56.357465+00:00",
+    "credits": 0
+  },
+  {
+    "_id": {
+      "$oid": "699acf4f51f56ed55588d374"
+    },
+    "id": "ca2a7bd3-79d9-4f26-988a-75d6993e64ab",
+    "email": "arianamillyb@icloud.com",
+    "password": "$2b$12$/TuyHTxRf.I7yzHrkrXKy.dHDd2T3uRmFjvXk2QrW/nfBfs3Tv/fG",
+    "name": "Azora",
+    "role": "user",
+    "subscription": "pro",
+    "pro_trial": true,
+    "pro_trial_expires_at": "2026-03-24T09:41:35.741997+00:00",
+    "created_at": "2026-02-22T09:41:35.741997+00:00",
+    "credits": 80
+  },
+  {
+    "_id": {
+      "$oid": "69a22eccf8c8105f0364b73e"
+    },
+    "id": "3fe70b95-1e68-43b7-8a26-37ea4f796bac",
+    "email": "palmbeach@hotmail.co.uk",
+    "password": "$2b$12$3mZYmQCcKIukLn4Ru/Q84OePfHMlIMLOGrTG9AG4wDDKtTzz/5OUy",
+    "name": "Jamie",
+    "role": "user",
+    "subscription": "pro",
+    "credits": 0,
+    "is_vip": false,
+    "pro_trial": true,
+    "pro_trial_expires_at": "2026-03-29T23:54:52.668163+00:00",
+    "created_at": "2026-02-27T23:54:52.668163+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69ab280edf49a0ba75eb29a2"
+    },
+    "id": "25e38d12-397f-4e50-8dbf-dbc06346ab61",
+    "email": "test@printtest.com",
+    "password": "$2b$12$UJVtY703bjsIW9RmLznOkunpLmb8CX9z9q3lr2TkQkWklHp7NTMPi",
+    "name": "Print Test User",
+    "role": "user",
+    "subscription": "free",
+    "credits": 150,
+    "is_vip": false,
+    "pro_trial": false,
+    "pro_trial_expires_at": "2026-03-09T19:16:30.492884+00:00",
+    "created_at": "2026-03-06T19:16:30.492884+00:00",
+    "free_stories_remaining": 3,
+    "free_stories_used": 0,
+    "updated_at": {
+      "$date": "2026-03-15T04:58:35.096Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "69ab4a124352316b2558b85a"
+    },
+    "id": "fca1abdc-b8ca-4d1e-ad84-e6eb125c943d",
+    "email": "hardcover@test.com",
+    "password": "$2b$12$XQSzKXz1b1hLgm1e/RYTHO8MK5eZZvZAl1vhKUPBPxc1B4DmkTkn6",
+    "name": "Hardcover Tester",
+    "role": "user",
+    "subscription": "pro",
+    "credits": 0,
+    "is_vip": false,
+    "pro_trial": true,
+    "pro_trial_expires_at": "2026-03-09T21:41:38.566784+00:00",
+    "created_at": "2026-03-06T21:41:38.566784+00:00",
+    "free_stories_remaining": 3,
+    "free_stories_used": 0
+  },
+  {
+    "_id": {
+      "$oid": "69ac745058eb60fa027b69d2"
+    },
+    "id": "32255cf8-00f9-43eb-923a-4c9679019b3f",
+    "email": "newuser_1772909648@test.com",
+    "password": "$2b$12$UJCAF4Mh.VMUB9WD7qO0Eea.er3FVftZ/tAkun30s6dJ6Jerz0y1m",
+    "name": "New Test User",
+    "role": "user",
+    "subscription": "pro",
+    "credits": 0,
+    "is_vip": false,
+    "pro_trial": true,
+    "pro_trial_expires_at": "2026-03-10T18:54:08.550572+00:00",
+    "created_at": "2026-03-07T18:54:08.550572+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69ac75003efe95e81761b136"
+    },
+    "id": "7409eec9-8df4-49a0-afb9-5450a6d25a3b",
+    "email": "freeuser_1772909823@test.com",
+    "password": "$2b$12$vKWgsHUQqJ5OIb9OJfqD9eQyN667ZbsfS/yDpQraKQy6e4zdjZ.ZS",
+    "name": "Free Test User",
+    "role": "user",
+    "subscription": "pro",
+    "credits": 0,
+    "is_vip": false,
+    "pro_trial": true,
+    "pro_trial_expires_at": "2026-03-10T18:57:03.871291+00:00",
+    "created_at": "2026-03-07T18:57:03.871291+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69ac75a516cee0a058d4d2d1"
+    },
+    "id": "04efc580-3e23-4905-b72c-f4145c5fccb6",
+    "email": "freetest_1772909988@test.com",
+    "password": "$2b$12$QLei9ZL5OwVzKMbrMUHLUebruR1ZnuJiAZGkFxEFxRCWPdIn3fwtK",
+    "name": "Free Test",
+    "role": "user",
+    "subscription": "pro",
+    "credits": 0,
+    "is_vip": false,
+    "pro_trial": true,
+    "pro_trial_expires_at": "2026-03-10T18:59:48.958435+00:00",
+    "created_at": "2026-03-07T18:59:48.958435+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69ad90229671df6041228224"
+    },
+    "id": "9817465e-7fa1-44d7-b519-2ae74a5072e2",
+    "email": "test@test.com",
+    "password": "$2b$12$LNMo.PP3Hi4cLdQBQXqibe10b7FuDpDj3gFR9C6Kvy6B1AIv47KSS",
+    "name": "Test User",
+    "role": "user",
+    "subscription": "pro",
+    "pro_trial": true,
+    "pro_trial_expires_at": "2026-03-24T13:31:53.620929+00:00",
+    "created_at": "2026-02-22T13:31:53.620929+00:00",
+    "credits": 2104
+  },
+  {
+    "_id": {
+      "$oid": "69ad90229671df6041228225"
+    },
+    "id": "c1c42b9f-c6cf-42c6-b874-918f6ca3cd9f",
+    "email": "testauthor@azories.com",
+    "password": "$2b$12$7rW0bpTP1BpsFI8G2Jbj5uKu42qsFzAc0S1EWFFObGd4kDuMh66Se",
+    "name": "Azories Team",
+    "role": "user",
+    "subscription": "pro",
+    "created_at": "2026-02-17T20:22:10.971054+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69ada0dc666924c6ea5c52e5"
+    },
+    "id": "660475ff-3915-41e6-ae62-f08ca42213cb",
+    "email": "karapoole@yahoo.co.uk",
+    "name": "Kara Poole",
+    "password_hash": "$2b$12$QIfpmcxssUvP7fdZjMsAl.DxMe3Xsc9q5TeqwaAbz57m55W2OzrLO",
+    "created_at": {
+      "$date": "2026-03-08T16:16:28.766Z"
+    },
+    "updated_at": {
+      "$date": "2026-03-08T19:33:04.754Z"
+    },
+    "is_active": true,
+    "is_admin": false,
+    "credits": 500,
+    "subscription_type": "free",
+    "email_verified": true,
+    "profile_image": null,
+    "bio": null
+  },
+  {
+    "_id": {
+      "$oid": "69ada0dc666924c6ea5c52e6"
+    },
+    "id": "b6c50c3d-8252-410e-92e6-77a2294798ab",
+    "email": "dales.preloved.shop@gmail.com",
+    "name": "Stephanie Dale",
+    "password_hash": "$2b$12$5NMA27ZiTB0E/RdIuaPXTu.kxIr8hpuq7sTEe8jeyezRTYPftpnTi",
+    "created_at": {
+      "$date": "2026-03-08T16:16:28.988Z"
+    },
+    "updated_at": {
+      "$date": "2026-03-08T16:16:28.988Z"
+    },
+    "is_active": true,
+    "is_admin": false,
+    "credits": 5,
+    "subscription_type": "free",
+    "email_verified": true,
+    "profile_image": null,
+    "bio": null
+  },
+  {
+    "_id": {
+      "$oid": "69af424ad5562d71ee381959"
+    },
+    "id": "a0f21582-299c-4272-916b-6c72a49de65c",
+    "email": "test_1773093449@test.com",
+    "password": "$2b$12$asaMo71yNvBiS3ajUl6hmuZsVF8JQ25WWrEz.zoeTpt/bmgaWG0Ri",
+    "name": "Test User",
+    "role": "user",
+    "subscription": "pro",
+    "credits": 0,
+    "is_vip": false,
+    "pro_trial": true,
+    "pro_trial_expires_at": "2026-03-12T21:57:30.258066+00:00",
+    "created_at": "2026-03-09T21:57:30.258066+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69af42828d2db7e2e9e26036"
+    },
+    "id": "19bf7b7a-227e-4cc6-9eae-64684468c858",
+    "email": "test_1773093505@test.com",
+    "password": "$2b$12$hxsTqANI8yQuFF04nkVvAueIiB6JBkfADdnFDyxZkH7lxj7zmH.Em",
+    "name": "Test User",
+    "role": "user",
+    "subscription": "pro",
+    "credits": 0,
+    "is_vip": false,
+    "pro_trial": true,
+    "pro_trial_expires_at": "2026-03-11T21:58:25.958929+00:00",
+    "created_at": "2026-03-09T21:58:25.958929+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69af42bab353f53637fb0225"
+    },
+    "id": "350bc910-b21e-440c-b44c-c6a1b3fe2cdd",
+    "email": "test_1773093561@test.com",
+    "password": "$2b$12$QDvB1NZ3vVt6quanRI7RoO2qbELjMe/cF.Nw03oh38h0x5O/A0YlC",
+    "name": "Test User",
+    "role": "user",
+    "subscription": "pro",
+    "credits": 0,
+    "is_vip": false,
+    "pro_trial": true,
+    "pro_trial_expires_at": "2026-03-11T21:59:22.161165+00:00",
+    "free_stories_remaining": 3,
+    "free_stories_used": 0,
+    "created_at": "2026-03-09T21:59:22.161165+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69af42cbb353f53637fb0226"
+    },
+    "id": "9d8bb43c-7f81-4160-8a48-a751a9f00e3d",
+    "email": "test_1773093579@test.com",
+    "password": "$2b$12$8f2UZfehggKuMHYito5LXe3xZsjuOvCYrV41w6D.oRhnSfwLq5wQa",
+    "name": "Test User",
+    "role": "user",
+    "subscription": "pro",
+    "credits": 0,
+    "is_vip": false,
+    "pro_trial": true,
+    "pro_trial_expires_at": "2026-03-11T21:59:39.640559+00:00",
+    "free_stories_remaining": 3,
+    "free_stories_used": 0,
+    "created_at": "2026-03-09T21:59:39.640559+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69b685bff78039e2b037ec95"
+    },
+    "id": "75105a8e-90ed-4bd0-ad6f-eca2babae2f1",
+    "email": "trialtest1773569470@test.com",
+    "password": "$2b$12$Fm.XxawzFZ/v9Ii3rdQ2iOG0PquVplLHWfBBgKOpBk.sjOI2dNuUW",
+    "name": "Trial Test User",
+    "role": "user",
+    "subscription": "pro",
+    "credits": 0,
+    "is_vip": false,
+    "pro_trial": true,
+    "pro_trial_expires_at": "2026-03-17T10:11:11.063712+00:00",
+    "free_stories_remaining": 3,
+    "free_stories_used": 0,
+    "created_at": "2026-03-15T10:11:11.063712+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69b71afe55cd442a7f5cf934"
+    },
+    "id": "13aaa54d-61c4-490d-91a8-8253d439056f",
+    "email": "testdiag@test.com",
+    "password": "$2b$12$kjTIcO22DqFadSQV49xa9ePTkspH9YpW8OQVwYWhzve2oUS5K7CFm",
+    "name": "Test User",
+    "role": "user",
+    "subscription": "pro",
+    "credits": 0,
+    "is_vip": false,
+    "pro_trial": true,
+    "pro_trial_expires_at": "2026-03-17T20:47:58.625067+00:00",
+    "free_stories_remaining": 3,
+    "free_stories_used": 0,
+    "created_at": "2026-03-15T20:47:58.625067+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69b71bb555cd442a7f5cf935"
+    },
+    "id": "721b11dd-27bc-425c-aff2-516a9f05e021",
+    "email": "test_diag_9999@example.com",
+    "password": "$2b$12$tnMrRsZbuqFJkOBsYsPwU.wdM5r2vvk5jgZroFWvCTfimBmjErDym",
+    "name": "Test User",
+    "role": "user",
+    "subscription": "pro",
+    "credits": 0,
+    "is_vip": false,
+    "pro_trial": true,
+    "pro_trial_expires_at": "2026-03-17T20:51:01.576539+00:00",
+    "free_stories_remaining": 3,
+    "free_stories_used": 0,
+    "created_at": "2026-03-15T20:51:01.576539+00:00"
+  }
+]

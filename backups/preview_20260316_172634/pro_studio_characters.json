@@ -1,0 +1,24 @@
+[
+  {
+    "_id": {
+      "$oid": "69ae7e80aef790791a105776"
+    },
+    "id": "9ca5a9f5-aa7d-47d4-9962-bc1985fe3082",
+    "user_id": "25e38d12-397f-4e50-8dbf-dbc06346ab61",
+    "name": "Luna the Mage",
+    "description": "Character: Luna the Mage\nStyle: 3d-animation - \nGenre: Fantasy\n\nAppearance: A young female mage with long silver hair, purple eyes, wearing dark blue robes with golden trim",
+    "description_prompt": "A young female mage with long silver hair, purple eyes, wearing dark blue robes with golden trim",
+    "style": "3d-animation",
+    "genre": "fantasy",
+    "physical_traits": null,
+    "personality": null,
+    "backstory": null,
+    "special_features": null,
+    "reference_images": [
+      "https://v3b.fal.media/files/b/0a91730c/vcWNXd0tJZ2Z0bxXYZ9s1.jpg"
+    ],
+    "thumbnail": "https://v3b.fal.media/files/b/0a91730c/vcWNXd0tJZ2Z0bxXYZ9s1.jpg",
+    "created_at": "2026-03-09T08:02:08.816783+00:00",
+    "updated_at": "2026-03-09T08:02:08.816783+00:00"
+  }
+]

@@ -1,0 +1,1602 @@
+[
+  {
+    "_id": {
+      "$oid": "69a5e736019b39d75b3fc344"
+    },
+    "id": "char_001",
+    "art_style": "watercolour",
+    "category": "character",
+    "created_at": "2026-03-04T13:58:06.294923+00:00",
+    "name": "Adventure Girl Maya",
+    "tags": [
+      "character",
+      "watercolour"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772632685/azories/starter_library/character/char_001.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772632685/azories/starter_library/character/char_001.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e73a019b39d75b3fc348"
+    },
+    "id": "char_002",
+    "art_style": "watercolour",
+    "category": "character",
+    "created_at": "2026-03-04T13:58:34.579439+00:00",
+    "name": "Friendly Dragon Pip",
+    "tags": [
+      "character",
+      "watercolour"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772632714/azories/starter_library/character/char_002.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772632714/azories/starter_library/character/char_002.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e73d019b39d75b3fc34a"
+    },
+    "id": "char_003",
+    "art_style": "watercolour",
+    "category": "character",
+    "created_at": "2026-03-04T13:58:38.015411+00:00",
+    "name": "Wise Owl Oliver",
+    "tags": [
+      "character",
+      "watercolour"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772632717/azories/starter_library/character/char_003.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772632717/azories/starter_library/character/char_003.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e741019b39d75b3fc34e"
+    },
+    "id": "char_004",
+    "art_style": "watercolour",
+    "category": "character",
+    "created_at": "2026-03-04T13:58:42.989480+00:00",
+    "name": "Princess Lily",
+    "tags": [
+      "character",
+      "watercolour"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772632721/azories/starter_library/character/char_004.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772632721/azories/starter_library/character/char_004.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e744019b39d75b3fc350"
+    },
+    "id": "char_005",
+    "art_style": "cartoon",
+    "category": "character",
+    "created_at": "2026-03-04T13:59:09.607224+00:00",
+    "name": "Robot Buddy Bolt",
+    "tags": [
+      "character",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772632748/azories/starter_library/character/char_005.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772632748/azories/starter_library/character/char_005.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e74e019b39d75b3fc355"
+    },
+    "id": "char_006",
+    "art_style": "cartoon",
+    "category": "character",
+    "created_at": "2026-03-02T19:38:54.382161+00:00",
+    "name": "Superhero Sam",
+    "tags": [
+      "character",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480333/azories/starter_library/character/char_006.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480333/azories/starter_library/character/char_006.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e751019b39d75b3fc357"
+    },
+    "id": "char_007",
+    "art_style": "cartoon",
+    "category": "character",
+    "created_at": "2026-03-02T19:38:57.255898+00:00",
+    "name": "Magical Unicorn Star",
+    "tags": [
+      "character",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480336/azories/starter_library/character/char_007.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480336/azories/starter_library/character/char_007.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e754019b39d75b3fc359"
+    },
+    "id": "char_008",
+    "art_style": "cartoon",
+    "category": "character",
+    "created_at": "2026-03-02T19:39:00.229767+00:00",
+    "name": "Pirate Captain Penny",
+    "tags": [
+      "character",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480339/azories/starter_library/character/char_008.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480339/azories/starter_library/character/char_008.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e757019b39d75b3fc35d"
+    },
+    "id": "char_009",
+    "art_style": "realistic",
+    "category": "character",
+    "created_at": "2026-03-02T19:39:03.400365+00:00",
+    "name": "Young Astronaut Alex",
+    "tags": [
+      "character",
+      "realistic"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480342/azories/starter_library/character/char_009.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480342/azories/starter_library/character/char_009.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e75a019b39d75b3fc35f"
+    },
+    "id": "char_010",
+    "art_style": "realistic",
+    "category": "character",
+    "created_at": "2026-03-02T19:39:06.657882+00:00",
+    "name": "Forest Fairy Fern",
+    "tags": [
+      "character",
+      "realistic"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480346/azories/starter_library/character/char_010.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480346/azories/starter_library/character/char_010.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e764019b39d75b3fc364"
+    },
+    "id": "char_011",
+    "art_style": "realistic",
+    "category": "character",
+    "created_at": "2026-03-02T19:39:16.006901+00:00",
+    "name": "Brave Knight Kit",
+    "tags": [
+      "character",
+      "realistic"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480355/azories/starter_library/character/char_011.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480355/azories/starter_library/character/char_011.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e768019b39d75b3fc366"
+    },
+    "id": "char_012",
+    "art_style": "realistic",
+    "category": "character",
+    "created_at": "2026-03-02T19:39:20.800724+00:00",
+    "name": "Ocean Mermaid Marina",
+    "tags": [
+      "character",
+      "realistic"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480360/azories/starter_library/character/char_012.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480360/azories/starter_library/character/char_012.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e76c019b39d75b3fc36a"
+    },
+    "id": "char_013",
+    "art_style": "storybook",
+    "category": "character",
+    "created_at": "2026-03-02T19:39:24.184614+00:00",
+    "name": "Teddy Bear Theodore",
+    "tags": [
+      "character",
+      "storybook"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480363/azories/starter_library/character/char_013.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480363/azories/starter_library/character/char_013.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e76e019b39d75b3fc36c"
+    },
+    "id": "char_014",
+    "art_style": "storybook",
+    "category": "character",
+    "created_at": "2026-03-02T19:39:26.968093+00:00",
+    "name": "Bunny Rabbit Bella",
+    "tags": [
+      "character",
+      "storybook"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480366/azories/starter_library/character/char_014.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480366/azories/starter_library/character/char_014.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e772019b39d75b3fc36e"
+    },
+    "id": "char_015",
+    "art_style": "storybook",
+    "category": "character",
+    "created_at": "2026-03-02T19:39:30.729694+00:00",
+    "name": "Little Red Riding Hood",
+    "tags": [
+      "character",
+      "storybook"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480370/azories/starter_library/character/char_015.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480370/azories/starter_library/character/char_015.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e803019b39d75b3fc393"
+    },
+    "id": "scene_001",
+    "art_style": "watercolour",
+    "category": "scene",
+    "created_at": "2026-03-02T19:41:55.957162+00:00",
+    "name": "Enchanted Forest",
+    "tags": [
+      "scene",
+      "watercolour"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480515/azories/starter_library/scene/scene_001.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480515/azories/starter_library/scene/scene_001.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e807019b39d75b3fc395"
+    },
+    "id": "scene_002",
+    "art_style": "watercolour",
+    "category": "scene",
+    "created_at": "2026-03-02T19:41:59.596686+00:00",
+    "name": "Cozy Treehouse",
+    "tags": [
+      "scene",
+      "watercolour"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480519/azories/starter_library/scene/scene_002.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480519/azories/starter_library/scene/scene_002.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e80b019b39d75b3fc399"
+    },
+    "id": "scene_003",
+    "art_style": "watercolour",
+    "category": "scene",
+    "created_at": "2026-03-02T19:42:03.000272+00:00",
+    "name": "Sunny Beach",
+    "tags": [
+      "scene",
+      "watercolour"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480522/azories/starter_library/scene/scene_003.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480522/azories/starter_library/scene/scene_003.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e80e019b39d75b3fc39b"
+    },
+    "id": "scene_004",
+    "art_style": "watercolour",
+    "category": "scene",
+    "created_at": "2026-03-02T19:42:06.948700+00:00",
+    "name": "Magical Garden",
+    "tags": [
+      "scene",
+      "watercolour"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480526/azories/starter_library/scene/scene_004.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480526/azories/starter_library/scene/scene_004.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e812019b39d75b3fc39d"
+    },
+    "id": "scene_005",
+    "art_style": "cartoon",
+    "category": "scene",
+    "created_at": "2026-03-02T19:42:10.646675+00:00",
+    "name": "Space Station",
+    "tags": [
+      "scene",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480530/azories/starter_library/scene/scene_005.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480530/azories/starter_library/scene/scene_005.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e81c019b39d75b3fc3a2"
+    },
+    "id": "scene_006",
+    "art_style": "cartoon",
+    "category": "scene",
+    "created_at": "2026-03-02T19:42:20.807717+00:00",
+    "name": "Underwater Kingdom",
+    "tags": [
+      "scene",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480539/azories/starter_library/scene/scene_006.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480539/azories/starter_library/scene/scene_006.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e821019b39d75b3fc3a6"
+    },
+    "id": "scene_007",
+    "art_style": "cartoon",
+    "category": "scene",
+    "created_at": "2026-03-02T19:42:25.162764+00:00",
+    "name": "Candy Land",
+    "tags": [
+      "scene",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480543/azories/starter_library/scene/scene_007.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480543/azories/starter_library/scene/scene_007.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e828019b39d75b3fc3aa"
+    },
+    "id": "scene_008",
+    "art_style": "cartoon",
+    "category": "scene",
+    "created_at": "2026-03-02T19:42:32.404463+00:00",
+    "name": "Dinosaur Valley",
+    "tags": [
+      "scene",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480551/azories/starter_library/scene/scene_008.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480551/azories/starter_library/scene/scene_008.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e82c019b39d75b3fc3ac"
+    },
+    "id": "scene_009",
+    "art_style": "realistic",
+    "category": "scene",
+    "created_at": "2026-03-02T19:42:36.019964+00:00",
+    "name": "Castle Kingdom",
+    "tags": [
+      "scene",
+      "realistic"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480555/azories/starter_library/scene/scene_009.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480555/azories/starter_library/scene/scene_009.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e82f019b39d75b3fc3ae"
+    },
+    "id": "scene_010",
+    "art_style": "realistic",
+    "category": "scene",
+    "created_at": "2026-03-02T19:42:39.340558+00:00",
+    "name": "Winter Wonderland",
+    "tags": [
+      "scene",
+      "realistic"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480558/azories/starter_library/scene/scene_010.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480558/azories/starter_library/scene/scene_010.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e838019b39d75b3fc3b3"
+    },
+    "id": "scene_011",
+    "art_style": "realistic",
+    "category": "scene",
+    "created_at": "2026-03-02T19:42:48.687485+00:00",
+    "name": "Pirate Ship",
+    "tags": [
+      "scene",
+      "realistic"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480568/azories/starter_library/scene/scene_011.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480568/azories/starter_library/scene/scene_011.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e83c019b39d75b3fc3b7"
+    },
+    "id": "scene_012",
+    "art_style": "realistic",
+    "category": "scene",
+    "created_at": "2026-03-02T19:42:52.006126+00:00",
+    "name": "Jungle Adventure",
+    "tags": [
+      "scene",
+      "realistic"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480571/azories/starter_library/scene/scene_012.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480571/azories/starter_library/scene/scene_012.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e83e019b39d75b3fc3b9"
+    },
+    "id": "scene_013",
+    "art_style": "storybook",
+    "category": "scene",
+    "created_at": "2026-03-02T19:42:54.879296+00:00",
+    "name": "Cozy Cottage",
+    "tags": [
+      "scene",
+      "storybook"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480574/azories/starter_library/scene/scene_013.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480574/azories/starter_library/scene/scene_013.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e844019b39d75b3fc3bb"
+    },
+    "id": "scene_014",
+    "art_style": "storybook",
+    "category": "scene",
+    "created_at": "2026-03-02T19:43:00.130066+00:00",
+    "name": "Village Square",
+    "tags": [
+      "scene",
+      "storybook"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480578/azories/starter_library/scene/scene_014.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480578/azories/starter_library/scene/scene_014.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e848019b39d75b3fc3bf"
+    },
+    "id": "scene_015",
+    "art_style": "storybook",
+    "category": "scene",
+    "created_at": "2026-03-02T19:43:04.353310+00:00",
+    "name": "Grandma's Kitchen",
+    "tags": [
+      "scene",
+      "storybook"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480583/azories/starter_library/scene/scene_015.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480583/azories/starter_library/scene/scene_015.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e883019b39d75b3fc3ce"
+    },
+    "id": "obj_001",
+    "art_style": "cartoon",
+    "category": "object",
+    "created_at": "2026-03-02T19:44:03.201126+00:00",
+    "name": "Magic Wand",
+    "tags": [
+      "object",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480642/azories/starter_library/object/obj_001.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480642/azories/starter_library/object/obj_001.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e886019b39d75b3fc3d0"
+    },
+    "id": "obj_002",
+    "art_style": "realistic",
+    "category": "object",
+    "created_at": "2026-03-02T19:44:06.347247+00:00",
+    "name": "Treasure Chest",
+    "tags": [
+      "object",
+      "realistic"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480645/azories/starter_library/object/obj_002.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480645/azories/starter_library/object/obj_002.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e88a019b39d75b3fc3d2"
+    },
+    "id": "obj_003",
+    "art_style": "watercolour",
+    "category": "object",
+    "created_at": "2026-03-02T19:44:10.387718+00:00",
+    "name": "Flying Carpet",
+    "tags": [
+      "object",
+      "watercolour"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480650/azories/starter_library/object/obj_003.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480650/azories/starter_library/object/obj_003.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e890019b39d75b3fc3d6"
+    },
+    "id": "obj_004",
+    "art_style": "realistic",
+    "category": "object",
+    "created_at": "2026-03-02T19:44:16.064896+00:00",
+    "name": "Crystal Ball",
+    "tags": [
+      "object",
+      "realistic"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480654/azories/starter_library/object/obj_004.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480654/azories/starter_library/object/obj_004.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e893019b39d75b3fc3d8"
+    },
+    "id": "obj_005",
+    "art_style": "storybook",
+    "category": "object",
+    "created_at": "2026-03-02T19:44:19.182239+00:00",
+    "name": "Enchanted Book",
+    "tags": [
+      "object",
+      "storybook"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480658/azories/starter_library/object/obj_005.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480658/azories/starter_library/object/obj_005.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e89d019b39d75b3fc3dd"
+    },
+    "id": "obj_006",
+    "art_style": "cartoon",
+    "category": "object",
+    "created_at": "2026-03-02T19:44:29.629154+00:00",
+    "name": "Rocket Ship",
+    "tags": [
+      "object",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480669/azories/starter_library/object/obj_006.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480669/azories/starter_library/object/obj_006.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e8a1019b39d75b3fc3e1"
+    },
+    "id": "obj_007",
+    "art_style": "watercolour",
+    "category": "object",
+    "created_at": "2026-03-02T19:44:33.108392+00:00",
+    "name": "Magic Potion",
+    "tags": [
+      "object",
+      "watercolour"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480672/azories/starter_library/object/obj_007.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480672/azories/starter_library/object/obj_007.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e8a3019b39d75b3fc3e3"
+    },
+    "id": "obj_008",
+    "art_style": "realistic",
+    "category": "object",
+    "created_at": "2026-03-02T19:44:35.789671+00:00",
+    "name": "Golden Crown",
+    "tags": [
+      "object",
+      "realistic"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480675/azories/starter_library/object/obj_008.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480675/azories/starter_library/object/obj_008.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e8a7019b39d75b3fc3e5"
+    },
+    "id": "obj_009",
+    "art_style": "storybook",
+    "category": "object",
+    "created_at": "2026-03-02T19:44:39.104303+00:00",
+    "name": "Pirate Map",
+    "tags": [
+      "object",
+      "storybook"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480678/azories/starter_library/object/obj_009.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480678/azories/starter_library/object/obj_009.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e8a9019b39d75b3fc3e9"
+    },
+    "id": "obj_010",
+    "art_style": "cartoon",
+    "category": "object",
+    "created_at": "2026-03-02T19:44:41.785059+00:00",
+    "name": "Magic Lamp",
+    "tags": [
+      "object",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480681/azories/starter_library/object/obj_010.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480681/azories/starter_library/object/obj_010.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e8b5019b39d75b3fc3ee"
+    },
+    "id": "act_001",
+    "art_style": "watercolour",
+    "category": "action",
+    "created_at": "2026-03-02T19:44:53.942486+00:00",
+    "name": "Child Reading Book",
+    "tags": [
+      "action",
+      "watercolour"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480693/azories/starter_library/action/act_001.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480693/azories/starter_library/action/act_001.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e8bb019b39d75b3fc3f0"
+    },
+    "id": "act_002",
+    "art_style": "cartoon",
+    "category": "action",
+    "created_at": "2026-03-02T19:44:59.549218+00:00",
+    "name": "Kids Playing Together",
+    "tags": [
+      "action",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480698/azories/starter_library/action/act_002.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480698/azories/starter_library/action/act_002.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e8d0019b39d75b3fc3f6"
+    },
+    "id": "act_003",
+    "art_style": "realistic",
+    "category": "action",
+    "created_at": "2026-03-02T19:45:20.915712+00:00",
+    "name": "Flying Through Clouds",
+    "tags": [
+      "action",
+      "realistic"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480719/azories/starter_library/action/act_003.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480719/azories/starter_library/action/act_003.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e8d4019b39d75b3fc3fa"
+    },
+    "id": "act_004",
+    "art_style": "storybook",
+    "category": "action",
+    "created_at": "2026-03-02T19:45:24.628908+00:00",
+    "name": "Sleeping Under Stars",
+    "tags": [
+      "action",
+      "storybook"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480723/azories/starter_library/action/act_004.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480723/azories/starter_library/action/act_004.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e8d7019b39d75b3fc3fc"
+    },
+    "id": "act_005",
+    "art_style": "watercolour",
+    "category": "action",
+    "created_at": "2026-03-02T19:45:27.851508+00:00",
+    "name": "Dancing in Rain",
+    "tags": [
+      "action",
+      "watercolour"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480727/azories/starter_library/action/act_005.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480727/azories/starter_library/action/act_005.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e8e6019b39d75b3fc403"
+    },
+    "id": "act_006",
+    "art_style": "cartoon",
+    "category": "action",
+    "created_at": "2026-03-02T19:45:42.237308+00:00",
+    "name": "Hugging Pet",
+    "tags": [
+      "action",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480739/azories/starter_library/action/act_006.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480739/azories/starter_library/action/act_006.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e8ea019b39d75b3fc405"
+    },
+    "id": "act_007",
+    "art_style": "realistic",
+    "category": "action",
+    "created_at": "2026-03-02T19:45:46.415314+00:00",
+    "name": "Climbing Tree",
+    "tags": [
+      "action",
+      "realistic"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480745/azories/starter_library/action/act_007.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480745/azories/starter_library/action/act_007.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e8ee019b39d75b3fc407"
+    },
+    "id": "act_008",
+    "art_style": "watercolour",
+    "category": "action",
+    "created_at": "2026-03-02T19:45:50.625465+00:00",
+    "name": "Painting Art",
+    "tags": [
+      "action",
+      "watercolour"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480750/azories/starter_library/action/act_008.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480750/azories/starter_library/action/act_008.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e8f2019b39d75b3fc40b"
+    },
+    "id": "act_009",
+    "art_style": "storybook",
+    "category": "action",
+    "created_at": "2026-03-02T19:45:54.096917+00:00",
+    "name": "Blowing Bubbles",
+    "tags": [
+      "action",
+      "storybook"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480753/azories/starter_library/action/act_009.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480753/azories/starter_library/action/act_009.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e8f6019b39d75b3fc411"
+    },
+    "id": "act_010",
+    "art_style": "cartoon",
+    "category": "action",
+    "created_at": "2026-03-02T19:45:58.843704+00:00",
+    "name": "Making Wish",
+    "tags": [
+      "action",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480756/azories/starter_library/action/act_010.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772480756/azories/starter_library/action/act_010.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea1b019b39d75b3fc560"
+    },
+    "id": "char_016",
+    "art_style": "cartoon",
+    "category": "character",
+    "created_at": "2026-03-02T19:50:51.058861+00:00",
+    "name": "Curious Cat Whiskers",
+    "tags": [
+      "character",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481050/azories/starter_library/character/char_016.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481050/azories/starter_library/character/char_016.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea1d019b39d75b3fc562"
+    },
+    "id": "char_017",
+    "art_style": "watercolour",
+    "category": "character",
+    "created_at": "2026-03-02T19:50:53.744220+00:00",
+    "name": "Grandpa with Glasses",
+    "tags": [
+      "character",
+      "watercolour"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481053/azories/starter_library/character/char_017.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481053/azories/starter_library/character/char_017.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea21019b39d75b3fc56a"
+    },
+    "id": "char_018",
+    "art_style": "storybook",
+    "category": "character",
+    "created_at": "2026-03-02T19:50:57.141882+00:00",
+    "name": "Grandma with Apron",
+    "tags": [
+      "character",
+      "storybook"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481056/azories/starter_library/character/char_018.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481056/azories/starter_library/character/char_018.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea23019b39d75b3fc56c"
+    },
+    "id": "char_019",
+    "art_style": "cartoon",
+    "category": "character",
+    "created_at": "2026-03-02T19:50:59.828223+00:00",
+    "name": "Friendly Giant",
+    "tags": [
+      "character",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481059/azories/starter_library/character/char_019.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481059/azories/starter_library/character/char_019.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea27019b39d75b3fc56e"
+    },
+    "id": "char_020",
+    "art_style": "cartoon",
+    "category": "character",
+    "created_at": "2026-03-02T19:51:03.004158+00:00",
+    "name": "Mischievous Monkey",
+    "tags": [
+      "character",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481062/azories/starter_library/character/char_020.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481062/azories/starter_library/character/char_020.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea30019b39d75b3fc573"
+    },
+    "id": "char_021",
+    "art_style": "realistic",
+    "category": "character",
+    "created_at": "2026-03-02T19:51:12.523491+00:00",
+    "name": "Wise Wizard",
+    "tags": [
+      "character",
+      "realistic"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481072/azories/starter_library/character/char_021.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481072/azories/starter_library/character/char_021.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea33019b39d75b3fc575"
+    },
+    "id": "char_022",
+    "art_style": "cartoon",
+    "category": "character",
+    "created_at": "2026-03-02T19:51:15.842947+00:00",
+    "name": "Silly Clown",
+    "tags": [
+      "character",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481074/azories/starter_library/character/char_022.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481074/azories/starter_library/character/char_022.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea36019b39d75b3fc579"
+    },
+    "id": "char_023",
+    "art_style": "realistic",
+    "category": "character",
+    "created_at": "2026-03-02T19:51:18.725385+00:00",
+    "name": "Brave Firefighter",
+    "tags": [
+      "character",
+      "realistic"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481078/azories/starter_library/character/char_023.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481078/azories/starter_library/character/char_023.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea3a019b39d75b3fc57b"
+    },
+    "id": "char_024",
+    "art_style": "cartoon",
+    "category": "character",
+    "created_at": "2026-03-02T19:51:22.004209+00:00",
+    "name": "Kind Doctor",
+    "tags": [
+      "character",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481081/azories/starter_library/character/char_024.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481081/azories/starter_library/character/char_024.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea3d019b39d75b3fc57d"
+    },
+    "id": "char_025",
+    "art_style": "watercolour",
+    "category": "character",
+    "created_at": "2026-03-02T19:51:25.056985+00:00",
+    "name": "Playful Puppy",
+    "tags": [
+      "character",
+      "watercolour"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481084/azories/starter_library/character/char_025.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481084/azories/starter_library/character/char_025.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea47019b39d75b3fc582"
+    },
+    "id": "char_026",
+    "art_style": "storybook",
+    "category": "character",
+    "created_at": "2026-03-02T19:51:35.060269+00:00",
+    "name": "Shy Hedgehog",
+    "tags": [
+      "character",
+      "storybook"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481094/azories/starter_library/character/char_026.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481094/azories/starter_library/character/char_026.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea4a019b39d75b3fc586"
+    },
+    "id": "char_027",
+    "art_style": "cartoon",
+    "category": "character",
+    "created_at": "2026-03-02T19:51:38.234601+00:00",
+    "name": "Jolly Snowman",
+    "tags": [
+      "character",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481097/azories/starter_library/character/char_027.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481097/azories/starter_library/character/char_027.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea4e019b39d75b3fc588"
+    },
+    "id": "char_028",
+    "art_style": "watercolour",
+    "category": "character",
+    "created_at": "2026-03-02T19:51:42.321032+00:00",
+    "name": "Tooth Fairy",
+    "tags": [
+      "character",
+      "watercolour"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481101/azories/starter_library/character/char_028.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481101/azories/starter_library/character/char_028.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea51019b39d75b3fc58a"
+    },
+    "id": "char_029",
+    "art_style": "cartoon",
+    "category": "character",
+    "created_at": "2026-03-02T19:51:45.464125+00:00",
+    "name": "Grumpy Troll",
+    "tags": [
+      "character",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481104/azories/starter_library/character/char_029.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481104/azories/starter_library/character/char_029.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea54019b39d75b3fc58e"
+    },
+    "id": "char_030",
+    "art_style": "storybook",
+    "category": "character",
+    "created_at": "2026-03-02T19:51:48.762793+00:00",
+    "name": "Easter Bunny",
+    "tags": [
+      "character",
+      "storybook"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481108/azories/starter_library/character/char_030.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481108/azories/starter_library/character/char_030.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea5e019b39d75b3fc593"
+    },
+    "id": "scene_016",
+    "art_style": "watercolour",
+    "category": "scene",
+    "created_at": "2026-03-02T19:51:58.872779+00:00",
+    "name": "Child's Bedroom Night",
+    "tags": [
+      "scene",
+      "watercolour"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481118/azories/starter_library/scene/scene_016.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481118/azories/starter_library/scene/scene_016.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea62019b39d75b3fc595"
+    },
+    "id": "scene_017",
+    "art_style": "cartoon",
+    "category": "scene",
+    "created_at": "2026-03-02T19:52:02.104208+00:00",
+    "name": "Sunny Playground",
+    "tags": [
+      "scene",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481121/azories/starter_library/scene/scene_017.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481121/azories/starter_library/scene/scene_017.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea65019b39d75b3fc597"
+    },
+    "id": "scene_018",
+    "art_style": "watercolour",
+    "category": "scene",
+    "created_at": "2026-03-02T19:52:05.837483+00:00",
+    "name": "Rainy Day Window",
+    "tags": [
+      "scene",
+      "watercolour"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481125/azories/starter_library/scene/scene_018.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481125/azories/starter_library/scene/scene_018.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea69019b39d75b3fc59b"
+    },
+    "id": "scene_019",
+    "art_style": "cartoon",
+    "category": "scene",
+    "created_at": "2026-03-02T19:52:09.442899+00:00",
+    "name": "Birthday Party Room",
+    "tags": [
+      "scene",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481128/azories/starter_library/scene/scene_019.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481128/azories/starter_library/scene/scene_019.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea6c019b39d75b3fc59d"
+    },
+    "id": "scene_020",
+    "art_style": "realistic",
+    "category": "scene",
+    "created_at": "2026-03-02T19:52:12.938954+00:00",
+    "name": "School Classroom",
+    "tags": [
+      "scene",
+      "realistic"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481131/azories/starter_library/scene/scene_020.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481131/azories/starter_library/scene/scene_020.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea77019b39d75b3fc5a2"
+    },
+    "id": "scene_021",
+    "art_style": "storybook",
+    "category": "scene",
+    "created_at": "2026-03-02T19:52:23.636947+00:00",
+    "name": "Farm Barn",
+    "tags": [
+      "scene",
+      "storybook"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481142/azories/starter_library/scene/scene_021.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481142/azories/starter_library/scene/scene_021.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea7a019b39d75b3fc5a4"
+    },
+    "id": "scene_022",
+    "art_style": "watercolour",
+    "category": "scene",
+    "created_at": "2026-03-02T19:52:26.623799+00:00",
+    "name": "Spooky Forest Path",
+    "tags": [
+      "scene",
+      "watercolour"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481146/azories/starter_library/scene/scene_022.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481146/azories/starter_library/scene/scene_022.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea7d019b39d75b3fc5a8"
+    },
+    "id": "scene_023",
+    "art_style": "cartoon",
+    "category": "scene",
+    "created_at": "2026-03-02T19:52:29.581590+00:00",
+    "name": "Circus Big Top",
+    "tags": [
+      "scene",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481149/azories/starter_library/scene/scene_023.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481149/azories/starter_library/scene/scene_023.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea80019b39d75b3fc5aa"
+    },
+    "id": "scene_024",
+    "art_style": "cartoon",
+    "category": "scene",
+    "created_at": "2026-03-02T19:52:32.460895+00:00",
+    "name": "Hospital Room",
+    "tags": [
+      "scene",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481152/azories/starter_library/scene/scene_024.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481152/azories/starter_library/scene/scene_024.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea83019b39d75b3fc5ac"
+    },
+    "id": "scene_025",
+    "art_style": "realistic",
+    "category": "scene",
+    "created_at": "2026-03-02T19:52:35.812690+00:00",
+    "name": "Tree House Interior",
+    "tags": [
+      "scene",
+      "realistic"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481155/azories/starter_library/scene/scene_025.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481155/azories/starter_library/scene/scene_025.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea8e019b39d75b3fc5b1"
+    },
+    "id": "scene_026",
+    "art_style": "watercolour",
+    "category": "scene",
+    "created_at": "2026-03-02T19:52:46.712358+00:00",
+    "name": "Snowy Mountain",
+    "tags": [
+      "scene",
+      "watercolour"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481165/azories/starter_library/scene/scene_026.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481165/azories/starter_library/scene/scene_026.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea92019b39d75b3fc5b5"
+    },
+    "id": "scene_027",
+    "art_style": "cartoon",
+    "category": "scene",
+    "created_at": "2026-03-02T19:52:50.656024+00:00",
+    "name": "Pet Shop",
+    "tags": [
+      "scene",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481169/azories/starter_library/scene/scene_027.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481169/azories/starter_library/scene/scene_027.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea97019b39d75b3fc5b7"
+    },
+    "id": "scene_028",
+    "art_style": "storybook",
+    "category": "scene",
+    "created_at": "2026-03-02T19:52:55.354860+00:00",
+    "name": "Library Reading Corner",
+    "tags": [
+      "scene",
+      "storybook"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481173/azories/starter_library/scene/scene_028.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481173/azories/starter_library/scene/scene_028.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea9b019b39d75b3fc5bb"
+    },
+    "id": "scene_029",
+    "art_style": "watercolour",
+    "category": "scene",
+    "created_at": "2026-03-02T19:52:59.546041+00:00",
+    "name": "Rainbow Sky",
+    "tags": [
+      "scene",
+      "watercolour"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481178/azories/starter_library/scene/scene_029.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481178/azories/starter_library/scene/scene_029.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ea9e019b39d75b3fc5bd"
+    },
+    "id": "scene_030",
+    "art_style": "realistic",
+    "category": "scene",
+    "created_at": "2026-03-02T19:53:02.748951+00:00",
+    "name": "Campfire Night",
+    "tags": [
+      "scene",
+      "realistic"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481182/azories/starter_library/scene/scene_030.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481182/azories/starter_library/scene/scene_030.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5eaa8019b39d75b3fc5c2"
+    },
+    "id": "obj_011",
+    "art_style": "cartoon",
+    "category": "object",
+    "created_at": "2026-03-02T19:53:12.475716+00:00",
+    "name": "Birthday Cake",
+    "tags": [
+      "object",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481192/azories/starter_library/object/obj_011.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481192/azories/starter_library/object/obj_011.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5eaab019b39d75b3fc5c4"
+    },
+    "id": "obj_012",
+    "art_style": "realistic",
+    "category": "object",
+    "created_at": "2026-03-02T19:53:15.254428+00:00",
+    "name": "School Backpack",
+    "tags": [
+      "object",
+      "realistic"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481194/azories/starter_library/object/obj_012.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481194/azories/starter_library/object/obj_012.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5eaae019b39d75b3fc5c8"
+    },
+    "id": "obj_013",
+    "art_style": "storybook",
+    "category": "object",
+    "created_at": "2026-03-02T19:53:18.286245+00:00",
+    "name": "Magic Mirror",
+    "tags": [
+      "object",
+      "storybook"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481197/azories/starter_library/object/obj_013.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481197/azories/starter_library/object/obj_013.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5eab0019b39d75b3fc5ca"
+    },
+    "id": "obj_014",
+    "art_style": "cartoon",
+    "category": "object",
+    "created_at": "2026-03-02T19:53:20.966958+00:00",
+    "name": "Pirate Sword",
+    "tags": [
+      "object",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481200/azories/starter_library/object/obj_014.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481200/azories/starter_library/object/obj_014.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5eab4019b39d75b3fc5cc"
+    },
+    "id": "obj_015",
+    "art_style": "watercolour",
+    "category": "object",
+    "created_at": "2026-03-02T19:53:24.435934+00:00",
+    "name": "Hot Air Balloon",
+    "tags": [
+      "object",
+      "watercolour"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481204/azories/starter_library/object/obj_015.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481204/azories/starter_library/object/obj_015.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5eabe019b39d75b3fc5d1"
+    },
+    "id": "obj_016",
+    "art_style": "realistic",
+    "category": "object",
+    "created_at": "2026-03-02T19:53:34.683354+00:00",
+    "name": "Magical Key",
+    "tags": [
+      "object",
+      "realistic"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481214/azories/starter_library/object/obj_016.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481214/azories/starter_library/object/obj_016.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5eac1019b39d75b3fc5d5"
+    },
+    "id": "obj_017",
+    "art_style": "watercolour",
+    "category": "object",
+    "created_at": "2026-03-02T19:53:37.733886+00:00",
+    "name": "Fairy Wings",
+    "tags": [
+      "object",
+      "watercolour"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481217/azories/starter_library/object/obj_017.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481217/azories/starter_library/object/obj_017.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5eac4019b39d75b3fc5d7"
+    },
+    "id": "obj_018",
+    "art_style": "cartoon",
+    "category": "object",
+    "created_at": "2026-03-02T19:53:40.555657+00:00",
+    "name": "Superhero Mask",
+    "tags": [
+      "object",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481220/azories/starter_library/object/obj_018.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481220/azories/starter_library/object/obj_018.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5eac7019b39d75b3fc5d9"
+    },
+    "id": "obj_019",
+    "art_style": "storybook",
+    "category": "object",
+    "created_at": "2026-03-02T19:53:43.366640+00:00",
+    "name": "Snow Globe",
+    "tags": [
+      "object",
+      "storybook"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481222/azories/starter_library/object/obj_019.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481222/azories/starter_library/object/obj_019.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5eaca019b39d75b3fc5db"
+    },
+    "id": "obj_020",
+    "art_style": "realistic",
+    "category": "object",
+    "created_at": "2026-03-02T19:53:46.544894+00:00",
+    "name": "Compass",
+    "tags": [
+      "object",
+      "realistic"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481225/azories/starter_library/object/obj_020.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481225/azories/starter_library/object/obj_020.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ead4019b39d75b3fc5e0"
+    },
+    "id": "act_011",
+    "art_style": "cartoon",
+    "category": "action",
+    "created_at": "2026-03-02T19:53:56.057444+00:00",
+    "name": "Opening Present",
+    "tags": [
+      "action",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481235/azories/starter_library/action/act_011.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481235/azories/starter_library/action/act_011.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5ead6019b39d75b3fc5e4"
+    },
+    "id": "act_012",
+    "art_style": "watercolour",
+    "category": "action",
+    "created_at": "2026-03-02T19:53:58.907455+00:00",
+    "name": "First Day of School",
+    "tags": [
+      "action",
+      "watercolour"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481238/azories/starter_library/action/act_012.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481238/azories/starter_library/action/act_012.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5eadb019b39d75b3fc5e6"
+    },
+    "id": "act_013",
+    "art_style": "realistic",
+    "category": "action",
+    "created_at": "2026-03-02T19:54:03.607375+00:00",
+    "name": "Catching Fireflies",
+    "tags": [
+      "action",
+      "realistic"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481243/azories/starter_library/action/act_013.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481243/azories/starter_library/action/act_013.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5eade019b39d75b3fc5e8"
+    },
+    "id": "act_014",
+    "art_style": "cartoon",
+    "category": "action",
+    "created_at": "2026-03-02T19:54:06.977428+00:00",
+    "name": "Building Sandcastle",
+    "tags": [
+      "action",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481245/azories/starter_library/action/act_014.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481245/azories/starter_library/action/act_014.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5eae1019b39d75b3fc5ec"
+    },
+    "id": "act_015",
+    "art_style": "storybook",
+    "category": "action",
+    "created_at": "2026-03-02T19:54:09.896877+00:00",
+    "name": "Sharing Cookie",
+    "tags": [
+      "action",
+      "storybook"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481249/azories/starter_library/action/act_015.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481249/azories/starter_library/action/act_015.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5eaeb019b39d75b3fc5f1"
+    },
+    "id": "act_016",
+    "art_style": "watercolour",
+    "category": "action",
+    "created_at": "2026-03-02T19:54:19.166022+00:00",
+    "name": "Riding Bicycle",
+    "tags": [
+      "action",
+      "watercolour"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481258/azories/starter_library/action/act_016.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481258/azories/starter_library/action/act_016.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5eaee019b39d75b3fc5f3"
+    },
+    "id": "act_017",
+    "art_style": "storybook",
+    "category": "action",
+    "created_at": "2026-03-02T19:54:22.400160+00:00",
+    "name": "Planting Seeds",
+    "tags": [
+      "action",
+      "storybook"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481261/azories/starter_library/action/act_017.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481261/azories/starter_library/action/act_017.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5eaf1019b39d75b3fc5f5"
+    },
+    "id": "act_018",
+    "art_style": "realistic",
+    "category": "action",
+    "created_at": "2026-03-02T19:54:25.277417+00:00",
+    "name": "Looking Through Telescope",
+    "tags": [
+      "action",
+      "realistic"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481264/azories/starter_library/action/act_018.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481264/azories/starter_library/action/act_018.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5eaf4019b39d75b3fc5f9"
+    },
+    "id": "act_019",
+    "art_style": "cartoon",
+    "category": "action",
+    "created_at": "2026-03-02T19:54:28.275373+00:00",
+    "name": "Baking with Mom",
+    "tags": [
+      "action",
+      "cartoon"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481267/azories/starter_library/action/act_019.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481267/azories/starter_library/action/act_019.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "69a5eaf7019b39d75b3fc5fb"
+    },
+    "id": "act_020",
+    "art_style": "watercolour",
+    "category": "action",
+    "created_at": "2026-03-02T19:54:31.866809+00:00",
+    "name": "Saying Goodnight",
+    "tags": [
+      "action",
+      "watercolour"
+    ],
+    "thumbnail_url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481271/azories/starter_library/action/act_020.jpg",
+    "url": "https://res.cloudinary.com/dlbmjqmoy/image/upload/v1772481271/azories/starter_library/action/act_020.jpg"
+  }
+]

@@ -1,0 +1,46 @@
+[
+  {
+    "_id": {
+      "$oid": "69a875b0af197b94922398c8"
+    },
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "streak": 1,
+    "best_streak": 1,
+    "last_read_date": "2026-03-04",
+    "total_books_read": 0,
+    "total_time_read": 180,
+    "genres_read": [
+      "General"
+    ],
+    "badges": [],
+    "reading_history": []
+  },
+  {
+    "_id": {
+      "$oid": "69ac4f258c05e06e06da1049"
+    },
+    "user_id": "25e38d12-397f-4e50-8dbf-dbc06346ab61",
+    "streak": 0,
+    "best_streak": 0,
+    "last_read_date": null,
+    "total_books_read": 0,
+    "total_time_read": 0,
+    "genres_read": [],
+    "badges": [],
+    "reading_history": []
+  },
+  {
+    "_id": {
+      "$oid": "69b685cff78039e2b037ec9b"
+    },
+    "user_id": "75105a8e-90ed-4bd0-ad6f-eca2babae2f1",
+    "streak": 0,
+    "best_streak": 0,
+    "last_read_date": null,
+    "total_books_read": 0,
+    "total_time_read": 0,
+    "genres_read": [],
+    "badges": [],
+    "reading_history": []
+  }
+]

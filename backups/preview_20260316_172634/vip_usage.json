@@ -1,0 +1,206 @@
+[
+  {
+    "_id": {
+      "$oid": "69a413226f606c225b462559"
+    },
+    "id": "d630ebdf-da7a-4bda-92d0-8c5e23e62e1c",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "user_email": "jamesstephenbrooks@outlook.com",
+    "operation": "ai_story_create",
+    "credits_would_cost": 5,
+    "actual_cost_usd": 0.5,
+    "timestamp": "2026-03-01T10:21:22.885738+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69a418c4ba4babd2d6a192f0"
+    },
+    "id": "46fd2a20-074b-4eff-9325-2c43d4970bd5",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "user_email": "jamesstephenbrooks@outlook.com",
+    "operation": "ai_story_create",
+    "credits_would_cost": 5,
+    "actual_cost_usd": 0.5,
+    "timestamp": "2026-03-01T10:45:24.513765+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69a418c4ba4babd2d6a192f1"
+    },
+    "id": "55195254-e524-498a-a4ae-625a89d81193",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "user_email": "jamesstephenbrooks@outlook.com",
+    "operation": "ai_story_create",
+    "credits_would_cost": 5,
+    "actual_cost_usd": 0.5,
+    "timestamp": "2026-03-01T10:45:24.962512+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69a419f69e6869a9fc7b98d4"
+    },
+    "id": "1372c108-431b-4aa1-a5e9-84c88f2ca3e2",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "user_email": "jamesstephenbrooks@outlook.com",
+    "operation": "ai_story_create",
+    "credits_would_cost": 5,
+    "actual_cost_usd": 0.5,
+    "timestamp": "2026-03-01T10:50:30.238487+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69a41a979e6869a9fc7b98dc"
+    },
+    "id": "513b883f-bde1-4682-89c7-bac2316328b7",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "user_email": "jamesstephenbrooks@outlook.com",
+    "operation": "ai_story_create",
+    "credits_would_cost": 5,
+    "actual_cost_usd": 0.5,
+    "timestamp": "2026-03-01T10:53:11.477441+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69a41c21e27590173b81cc4a"
+    },
+    "id": "5f49d95b-3050-4183-be28-1a0965fbe69e",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "user_email": "jamesstephenbrooks@outlook.com",
+    "operation": "ai_story_create",
+    "credits_would_cost": 5,
+    "actual_cost_usd": 0.5,
+    "timestamp": "2026-03-01T10:59:45.843401+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69a41d7fe27590173b81cc52"
+    },
+    "id": "eec81d1f-a523-419d-a6e6-ac3322fffb4b",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "user_email": "jamesstephenbrooks@outlook.com",
+    "operation": "ai_story_create",
+    "credits_would_cost": 5,
+    "actual_cost_usd": 0.5,
+    "timestamp": "2026-03-01T11:05:35.372403+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69a5df43f6591f6b2c705b7f"
+    },
+    "id": "06633a61-8f11-45a5-b3a7-70131097e175",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "user_email": "jamesstephenbrooks@outlook.com",
+    "operation": "ai_story_create",
+    "credits_would_cost": 5,
+    "actual_cost_usd": 0.5,
+    "timestamp": "2026-03-02T19:04:35.054548+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69a5dfc0ed430d2cd5878944"
+    },
+    "id": "f9ddd0f9-6446-49f9-a418-920068193672",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "user_email": "jamesstephenbrooks@outlook.com",
+    "operation": "ai_story_create",
+    "credits_would_cost": 5,
+    "actual_cost_usd": 0.5,
+    "timestamp": "2026-03-02T19:06:40.210993+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69a5dfe3ed8ff099821f8bb4"
+    },
+    "id": "d71a3f8b-c175-4908-a233-4a0ef2fa9d57",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "user_email": "jamesstephenbrooks@outlook.com",
+    "operation": "ai_story_create",
+    "credits_would_cost": 5,
+    "actual_cost_usd": 0.5,
+    "timestamp": "2026-03-02T19:07:15.533973+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69a5e02f89a535fef8ebf4a3"
+    },
+    "id": "2ca9c8b2-a3ec-47a8-9841-40a30d68a7c5",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "user_email": "jamesstephenbrooks@outlook.com",
+    "operation": "ai_story_create",
+    "credits_would_cost": 5,
+    "actual_cost_usd": 0.5,
+    "timestamp": "2026-03-02T19:08:31.253624+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69a5eb4bf05535ecee29befc"
+    },
+    "id": "89761ae7-ca90-40d5-bba7-649c87fc912d",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "user_email": "jamesstephenbrooks@outlook.com",
+    "operation": "shots_generate",
+    "credits_would_cost": 5,
+    "actual_cost_usd": 0.25,
+    "timestamp": "2026-03-02T19:55:55.534424+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69a5f8a743c8fee566d91fb7"
+    },
+    "id": "3def6140-600a-4fbf-934f-50e72a5775f8",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "user_email": "jamesstephenbrooks@outlook.com",
+    "operation": "shots_generate",
+    "credits_would_cost": 5,
+    "actual_cost_usd": 0.25,
+    "timestamp": "2026-03-02T20:52:55.333606+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69a606faff735a768d611380"
+    },
+    "id": "b1b26dcf-0175-43a1-8a13-0ff79c9af9d5",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "user_email": "jamesstephenbrooks@outlook.com",
+    "operation": "shots_generate",
+    "credits_would_cost": 5,
+    "actual_cost_usd": 0.25,
+    "timestamp": "2026-03-02T21:54:02.236929+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69a7504807c45e8e6525a945"
+    },
+    "id": "07e7edd6-7ce3-4b0c-b4b8-1656e8650318",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "user_email": "jamesstephenbrooks@outlook.com",
+    "operation": "video_generate",
+    "credits_would_cost": 10,
+    "actual_cost_usd": 0.5,
+    "timestamp": "2026-03-03T21:19:04.083975+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69a7505307c45e8e6525a946"
+    },
+    "id": "e61cffce-f849-4739-887f-e38ff0788ed9",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "user_email": "jamesstephenbrooks@outlook.com",
+    "operation": "video_generate",
+    "credits_would_cost": 10,
+    "actual_cost_usd": 0.5,
+    "timestamp": "2026-03-03T21:19:15.526749+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69a751aa07c45e8e6525a95a"
+    },
+    "id": "0f69943e-5cd1-4d93-a296-4d42e2c528be",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "user_email": "jamesstephenbrooks@outlook.com",
+    "operation": "video_generate",
+    "credits_would_cost": 10,
+    "actual_cost_usd": 0.5,
+    "timestamp": "2026-03-03T21:24:58.945841+00:00"
+  }
+]

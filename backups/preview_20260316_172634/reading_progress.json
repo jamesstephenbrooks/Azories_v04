@@ -1,0 +1,730 @@
+[
+  {
+    "_id": {
+      "$oid": "69a413725407cc6b5d783738"
+    },
+    "book_id": "957f15bf-b737-4fea-9601-fa97a7d60621",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": "01039d3d-f3c6-487d-b381-cb0ab47bd723",
+    "completed": true,
+    "current_page": 0,
+    "last_read": "2026-03-01T10:23:57.717689+00:00",
+    "progress_percent": 0.0,
+    "total_pages": 1
+  },
+  {
+    "_id": {
+      "$oid": "69a417a6a96e5667634ba633"
+    },
+    "book_id": "92a762e4-3719-4c1d-bfbb-76aa21eceb92",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 9,
+    "last_read": "2026-03-06T22:22:38.677873+00:00",
+    "progress_percent": 81.8,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a41de5a96e5667634bbbe3"
+    },
+    "book_id": "30797321-1139-4ee4-9167-a0408d24fa4c",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": "ac8bc15c-aa37-4be1-b906-86417418582d",
+    "completed": true,
+    "current_page": 0,
+    "last_read": "2026-03-01T11:07:17.868731+00:00",
+    "progress_percent": 0.0,
+    "total_pages": 1
+  },
+  {
+    "_id": {
+      "$oid": "69a4343d32655dcbed24d308"
+    },
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": "67b40688-b6cb-431b-a0c6-8baa1c28542c",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 0,
+    "last_read": "2026-03-06T20:37:58.689094+00:00",
+    "progress_percent": 0.0,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a4343d32655dcbed24d30a"
+    },
+    "book_id": "67b40688-b6cb-431b-a0c6-8baa1c28542c",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 0,
+    "last_read": "2026-03-01T12:42:37.512676+00:00",
+    "progress_percent": 0.0,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a4343d32655dcbed24d30c"
+    },
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": "67b40688-b6cb-431b-a0c6-8baa1c28542c",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": -1,
+    "last_read": "2026-03-01T12:42:37.512719+00:00",
+    "progress_percent": -9.1,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a434b232655dcbed24d541"
+    },
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": "efdc724b-18b0-4901-a22f-e211836d76c2",
+    "chapter_id": null,
+    "completed": true,
+    "current_page": 10,
+    "last_read": "2026-03-06T22:32:03.063472+00:00",
+    "progress_percent": 90.9,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a447b3276c5b90aed6ae32"
+    },
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": "621eef32-73b5-4caa-8e8e-8133abe492d4",
+    "chapter_id": "40587e4e-ceb7-4218-94b2-e32f19b36d7d",
+    "completed": false,
+    "current_page": 5,
+    "last_read": "2026-03-01T14:05:39.386228+00:00",
+    "progress_percent": 62.5,
+    "total_pages": 8
+  },
+  {
+    "_id": {
+      "$oid": "69a447b3276c5b90aed6ae31"
+    },
+    "book_id": "621eef32-73b5-4caa-8e8e-8133abe492d4",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": "40587e4e-ceb7-4218-94b2-e32f19b36d7d",
+    "completed": false,
+    "current_page": 0,
+    "last_read": "2026-03-01T14:05:39.373299+00:00",
+    "progress_percent": 0.0,
+    "total_pages": 8
+  },
+  {
+    "_id": {
+      "$oid": "69a447b3276c5b90aed6ae35"
+    },
+    "book_id": "621eef32-73b5-4caa-8e8e-8133abe492d4",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": "40587e4e-ceb7-4218-94b2-e32f19b36d7d",
+    "completed": false,
+    "current_page": 1,
+    "last_read": "2026-03-01T14:05:39.373424+00:00",
+    "progress_percent": 12.5,
+    "total_pages": 8
+  },
+  {
+    "_id": {
+      "$oid": "69a447b3276c5b90aed6ae3a"
+    },
+    "book_id": "621eef32-73b5-4caa-8e8e-8133abe492d4",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": "40587e4e-ceb7-4218-94b2-e32f19b36d7d",
+    "completed": false,
+    "current_page": 0,
+    "last_read": "2026-03-01T14:05:39.373365+00:00",
+    "progress_percent": 0.0,
+    "total_pages": 8
+  },
+  {
+    "_id": {
+      "$oid": "69a447e7276c5b90aed6afda"
+    },
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": "918ccc65-b41e-4df5-9f0a-9a6428eb50f8",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 3,
+    "last_read": "2026-03-10T20:01:24.603444+00:00",
+    "progress_percent": 27.3,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a448b1276c5b90aed6b4c3"
+    },
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": "fb341971-71be-4c8a-b764-a7cac7fb9a71",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 9,
+    "last_read": "2026-03-10T20:45:28.632498+00:00",
+    "progress_percent": 81.8,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a44a8e276c5b90aed6b96e"
+    },
+    "book_id": "995e0963-3ebe-472b-9db6-8a8f43794f4d",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 2,
+    "last_read": "2026-03-10T20:47:50.442456+00:00",
+    "progress_percent": 18.2,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a44a8e276c5b90aed6b96f"
+    },
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": "995e0963-3ebe-472b-9db6-8a8f43794f4d",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 0,
+    "last_read": "2026-03-01T14:17:50.449759+00:00",
+    "progress_percent": 0.0,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a499ef956645f62feea16a"
+    },
+    "book_id": "02f5b64a-4eed-4c69-8f48-f2e7b11e4c6a",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": -1,
+    "last_read": "2026-03-01T19:56:31.441419+00:00",
+    "progress_percent": -9.1,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a499ef956645f62feea16c"
+    },
+    "book_id": "02f5b64a-4eed-4c69-8f48-f2e7b11e4c6a",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 0,
+    "last_read": "2026-03-01T19:56:31.442134+00:00",
+    "progress_percent": 0.0,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a4b36b28eaba12b9e7b8ab"
+    },
+    "book_id": "f0a6f967-0b03-4a5e-b9a5-fa7141dc8a25",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 7,
+    "last_read": "2026-03-01T22:03:09.061929+00:00",
+    "progress_percent": 63.6,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a4b36b28eaba12b9e7b8ad"
+    },
+    "book_id": "f0a6f967-0b03-4a5e-b9a5-fa7141dc8a25",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 0,
+    "last_read": "2026-03-01T21:45:15.658493+00:00",
+    "progress_percent": 0.0,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a4b36b28eaba12b9e7b8af"
+    },
+    "book_id": "f0a6f967-0b03-4a5e-b9a5-fa7141dc8a25",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 2,
+    "last_read": "2026-03-01T21:45:15.658557+00:00",
+    "progress_percent": 18.2,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a4b36b28eaba12b9e7b8b1"
+    },
+    "book_id": "f0a6f967-0b03-4a5e-b9a5-fa7141dc8a25",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 1,
+    "last_read": "2026-03-01T21:45:15.658624+00:00",
+    "progress_percent": 9.1,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a4b43c28eaba12b9e7ba60"
+    },
+    "book_id": "b5cf1707-7930-4e72-a01c-8d21d052b693",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 7,
+    "last_read": "2026-03-01T23:16:27.425000+00:00",
+    "progress_percent": 63.6,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a4b43c28eaba12b9e7ba61"
+    },
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": "b5cf1707-7930-4e72-a01c-8d21d052b693",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 2,
+    "last_read": "2026-03-01T21:48:44.753796+00:00",
+    "progress_percent": 18.2,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a4b4e228eaba12b9e7be8f"
+    },
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": "ba53b445-c96f-4d4e-bd6a-c92828e99fe6",
+    "chapter_id": "embedded-chapter",
+    "completed": false,
+    "current_page": 0,
+    "last_read": "2026-03-06T20:49:55.480937+00:00",
+    "progress_percent": 0.0,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a4b53428eaba12b9e7bf1c"
+    },
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": "f7d9d8d6-20aa-495d-be23-382ac11a0927",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 8,
+    "last_read": "2026-03-01T21:52:52.980874+00:00",
+    "progress_percent": 72.7,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a4b64928eaba12b9e7c1b5"
+    },
+    "book_id": "3a413305-8f24-41b0-adec-02164007e1d9",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": true,
+    "current_page": -1,
+    "last_read": "2026-03-02T18:23:40.306784+00:00",
+    "progress_percent": -100.0,
+    "total_pages": 0
+  },
+  {
+    "_id": {
+      "$oid": "69a4b74c28eaba12b9e7c78c"
+    },
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": "56c45425-ba3b-421d-b17f-f13321c32f65",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 5,
+    "last_read": "2026-03-01T23:16:12.522668+00:00",
+    "progress_percent": 45.5,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a4bc5d28eaba12b9e7ced8"
+    },
+    "book_id": "32c78d01-b21c-4496-9bf5-476bfb92818b",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 6,
+    "last_read": "2026-03-01T23:16:20.124435+00:00",
+    "progress_percent": 54.5,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a4befb28eaba12b9e7dee3"
+    },
+    "book_id": "51c242bc-99a4-4456-b4dc-1821c2a75138",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": -1,
+    "last_read": "2026-03-02T08:00:00.174660+00:00",
+    "progress_percent": -9.1,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a4bfef28eaba12b9e7e896"
+    },
+    "book_id": "5ebe3908-18f9-4947-b049-7248c2700fa4",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 0,
+    "last_read": "2026-03-08T06:34:41.160266+00:00",
+    "progress_percent": 0.0,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a4c00a28eaba12b9e7e9cf"
+    },
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": "985bafe3-a3d6-4dce-a350-d45efff3c98e",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 0,
+    "last_read": "2026-03-04T07:03:12.378695+00:00",
+    "progress_percent": 0.0,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a4c03d28eaba12b9e7ef47"
+    },
+    "book_id": "b5b1797f-1899-4641-9f6c-fdc9a75cc248",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 4,
+    "last_read": "2026-03-02T07:59:35.895785+00:00",
+    "progress_percent": 36.4,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a4c07e28eaba12b9e7effe"
+    },
+    "book_id": "875cb08c-5634-4304-ae34-07fb0c446afe",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 4,
+    "last_read": "2026-03-01T22:41:02.728984+00:00",
+    "progress_percent": 36.4,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a4c07e28eaba12b9e7efff"
+    },
+    "book_id": "875cb08c-5634-4304-ae34-07fb0c446afe",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 1,
+    "last_read": "2026-03-01T22:41:02.728615+00:00",
+    "progress_percent": 9.1,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a4c10728eaba12b9e7f27f"
+    },
+    "book_id": "61dced03-0e50-4d76-826a-640b9ffa0f19",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 4,
+    "last_read": "2026-03-01T22:43:19.905983+00:00",
+    "progress_percent": 36.4,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a4c27f28eaba12b9e7f4a1"
+    },
+    "book_id": "c83e67ba-2fa4-421a-85a4-1f9e1f7384de",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 6,
+    "last_read": "2026-03-02T07:41:18.674428+00:00",
+    "progress_percent": 54.5,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a4c3d828eaba12b9e7f78c"
+    },
+    "book_id": "a0b23e67-5b1a-4ec7-9098-9c7a2aa397be",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 7,
+    "last_read": "2026-03-01T23:16:34.772863+00:00",
+    "progress_percent": 63.6,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a53f67000cc5f2a5b271c2"
+    },
+    "book_id": "d76924a2-eb27-4f7f-b9ae-5a7f9c922dad",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 0,
+    "last_read": "2026-03-02T19:05:42.966614+00:00",
+    "progress_percent": 0.0,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a53f67000cc5f2a5b271c4"
+    },
+    "book_id": "d76924a2-eb27-4f7f-b9ae-5a7f9c922dad",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 0,
+    "last_read": "2026-03-02T07:42:31.494750+00:00",
+    "progress_percent": 0.0,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a53f67000cc5f2a5b271c6"
+    },
+    "book_id": "d76924a2-eb27-4f7f-b9ae-5a7f9c922dad",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": -1,
+    "last_read": "2026-03-02T07:42:31.494609+00:00",
+    "progress_percent": -9.1,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a53f67000cc5f2a5b271c8"
+    },
+    "book_id": "d76924a2-eb27-4f7f-b9ae-5a7f9c922dad",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 1,
+    "last_read": "2026-03-02T07:42:31.494794+00:00",
+    "progress_percent": 9.1,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a5406d000cc5f2a5b27a68"
+    },
+    "book_id": "f6e35965-f823-4ed5-8b96-658a832daedd",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 5,
+    "last_read": "2026-03-02T07:46:53.070270+00:00",
+    "progress_percent": 45.5,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a5410d000cc5f2a5b27ff5"
+    },
+    "book_id": "ed34dc96-9c78-4eb7-8707-90245371bea4",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": true,
+    "current_page": 10,
+    "last_read": "2026-03-06T22:19:06.242811+00:00",
+    "progress_percent": 90.9,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a5410d000cc5f2a5b27ff6"
+    },
+    "book_id": "ed34dc96-9c78-4eb7-8707-90245371bea4",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 0,
+    "last_read": "2026-03-02T07:49:33.094852+00:00",
+    "progress_percent": 0.0,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69a5e1c6019b39d75b3fbe0a"
+    },
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": "b6a860c3-1473-4533-8945-642cd1247055",
+    "chapter_id": "b6c4d334-93e4-4a43-951f-1ce681c035a3",
+    "completed": false,
+    "current_page": 2,
+    "last_read": "2026-03-10T20:06:55.786183+00:00",
+    "progress_percent": 50.0,
+    "total_pages": 4
+  },
+  {
+    "_id": {
+      "$oid": "69a9a3f462337ec334ae250c"
+    },
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": "51f8263d-2836-409c-8424-30bc7ee5d35d",
+    "chapter_id": "89cbf40b-f8a8-42f0-b977-faeb32439b9d",
+    "completed": false,
+    "current_page": 0,
+    "last_read": "2026-03-06T09:32:18.076311+00:00",
+    "progress_percent": 0.0,
+    "total_pages": 9
+  },
+  {
+    "_id": {
+      "$oid": "69ab28239bf773fd19fc9c43"
+    },
+    "user_id": "25e38d12-397f-4e50-8dbf-dbc06346ab61",
+    "book_id": "fb341971-71be-4c8a-b764-a7cac7fb9a71",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 0,
+    "last_read": "2026-03-06T20:47:22.567594+00:00",
+    "progress_percent": 0.0,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69abe134169adb22f0b7aac7"
+    },
+    "user_id": "fca1abdc-b8ca-4d1e-ad84-e6eb125c943d",
+    "book_id": "fb341971-71be-4c8a-b764-a7cac7fb9a71",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 0,
+    "last_read": "2026-03-07T08:28:37.825474+00:00",
+    "progress_percent": 0.0,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69ac5937ff5db6044d311a8c"
+    },
+    "book_id": "1eb994a4-e00c-4ac6-a47f-d22544493608",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": null,
+    "completed": false,
+    "current_page": 0,
+    "last_read": "2026-03-07T16:58:31.528889+00:00",
+    "progress_percent": 0.0,
+    "total_pages": 11
+  },
+  {
+    "_id": {
+      "$oid": "69b07b2f21a989cf8818ca6f"
+    },
+    "book_id": "d624355f-1ab8-449d-a146-6b4c45d88250",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": "9388162d-b184-4ea5-a461-1a341a1f4446",
+    "completed": false,
+    "current_page": 0,
+    "last_read": "2026-03-10T20:34:20.705008+00:00",
+    "progress_percent": 0.0,
+    "total_pages": 5
+  },
+  {
+    "_id": {
+      "$oid": "69b07b2f21a989cf8818ca71"
+    },
+    "book_id": "d624355f-1ab8-449d-a146-6b4c45d88250",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": "9388162d-b184-4ea5-a461-1a341a1f4446",
+    "completed": false,
+    "current_page": 0,
+    "last_read": "2026-03-10T20:12:31.306676+00:00",
+    "progress_percent": 0.0,
+    "total_pages": 5
+  },
+  {
+    "_id": {
+      "$oid": "69b07b2f21a989cf8818ca73"
+    },
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": "d624355f-1ab8-449d-a146-6b4c45d88250",
+    "chapter_id": "9388162d-b184-4ea5-a461-1a341a1f4446",
+    "completed": false,
+    "current_page": 0,
+    "last_read": "2026-03-10T20:12:31.306739+00:00",
+    "progress_percent": 0.0,
+    "total_pages": 5
+  },
+  {
+    "_id": {
+      "$oid": "69b07b2f21a989cf8818ca74"
+    },
+    "book_id": "d624355f-1ab8-449d-a146-6b4c45d88250",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": "9388162d-b184-4ea5-a461-1a341a1f4446",
+    "completed": false,
+    "current_page": 1,
+    "last_read": "2026-03-10T20:12:31.306784+00:00",
+    "progress_percent": 20.0,
+    "total_pages": 5
+  },
+  {
+    "_id": {
+      "$oid": "69b07b2f21a989cf8818ca76"
+    },
+    "book_id": "d624355f-1ab8-449d-a146-6b4c45d88250",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": "9388162d-b184-4ea5-a461-1a341a1f4446",
+    "completed": false,
+    "current_page": 1,
+    "last_read": "2026-03-10T20:12:31.306846+00:00",
+    "progress_percent": 20.0,
+    "total_pages": 5
+  },
+  {
+    "_id": {
+      "$oid": "69b07b2f21a989cf8818ca79"
+    },
+    "book_id": "d624355f-1ab8-449d-a146-6b4c45d88250",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": "9388162d-b184-4ea5-a461-1a341a1f4446",
+    "completed": false,
+    "current_page": 2,
+    "last_read": "2026-03-10T20:12:31.308005+00:00",
+    "progress_percent": 40.0,
+    "total_pages": 5
+  },
+  {
+    "_id": {
+      "$oid": "69b0846f21a989cf8818d817"
+    },
+    "book_id": "638dfcf9-cfe3-4ce3-8bed-f70fa9425201",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "chapter_id": "a38fabf4-0e38-40e2-b418-311d742b3117",
+    "completed": false,
+    "current_page": 1,
+    "last_read": "2026-03-10T20:51:59.837072+00:00",
+    "progress_percent": 20.0,
+    "total_pages": 5
+  }
+]

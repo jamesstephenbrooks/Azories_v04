@@ -1,0 +1,10 @@
+[
+  {
+    "_id": {
+      "$oid": "69a476cf3f8c902fea04aa37"
+    },
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "display_name": "Test Name Change",
+    "updated_at": "2026-03-01T17:26:39.464288+00:00"
+  }
+]

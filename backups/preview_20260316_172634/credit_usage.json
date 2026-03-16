@@ -1,0 +1,26 @@
+[
+  {
+    "_id": {
+      "$oid": "69ae7e87aef790791a105777"
+    },
+    "id": "7faf5f1b-0ba8-4fb2-9540-a9e40c2d13c9",
+    "user_id": "25e38d12-397f-4e50-8dbf-dbc06346ab61",
+    "operation": "pulid_generate",
+    "credits_spent": 3,
+    "balance_before": 5,
+    "balance_after": 2,
+    "timestamp": "2026-03-09T08:02:15.867961+00:00"
+  },
+  {
+    "_id": {
+      "$oid": "69ae7ef06083e7bac187d881"
+    },
+    "id": "95218121-9676-4d68-ba6f-3a4ca8979a59",
+    "user_id": "25e38d12-397f-4e50-8dbf-dbc06346ab61",
+    "operation": "pulid_generate",
+    "credits_spent": 3,
+    "balance_before": 100,
+    "balance_after": 97,
+    "timestamp": "2026-03-09T08:04:00.327730+00:00"
+  }
+]

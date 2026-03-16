@@ -1,0 +1,827 @@
+[
+  {
+    "_id": {
+      "$oid": "69a7df1066bfde5458db6496"
+    },
+    "job_id": "3458cb0e-65e9-4722-bba1-9cdee2ab00bc",
+    "status": "partial",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": "5ca6185d-b5db-474c-939f-467e5744a9a2",
+    "progress_percent": 100,
+    "current_step": "Story complete! 5 images failed.",
+    "total_pages": 5,
+    "pages_completed": 5,
+    "story_text_done": true,
+    "images_status": {
+      "1": "failed",
+      "2": "failed",
+      "3": "failed",
+      "4": "failed",
+      "5": "failed"
+    },
+    "error_message": "Some illustrations couldn't be generated. Refunded 5 credits.",
+    "created_at": {
+      "$date": "2026-03-04T07:28:16.120Z"
+    },
+    "updated_at": {
+      "$date": "2026-03-04T07:28:32.360Z"
+    },
+    "completed_at": {
+      "$date": "2026-03-04T07:28:32.360Z"
+    },
+    "request_data": {
+      "title": "Test Story",
+      "age_range": "6-8",
+      "num_pages": 5,
+      "words_per_page": "medium",
+      "character_name": "Spark",
+      "character_description": "",
+      "story_description": "A brave little dragon learns to fly",
+      "genre": "Adventure",
+      "tone": "",
+      "plot_summary": "",
+      "chapter_structure": false,
+      "art_style": "3d-pixar",
+      "creator_mode": "kids",
+      "idea": "",
+      "age_rating": "All Ages",
+      "generate_images": true,
+      "media_type": "images",
+      "image_style": "3d-pixar"
+    },
+    "credits_charged": 5,
+    "used_free_story": false
+  },
+  {
+    "_id": {
+      "$oid": "69a7df745cc0022470dc35f7"
+    },
+    "job_id": "4388b5a7-ff57-439d-b59a-dfd7daf14e73",
+    "status": "completed",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": "200aedd4-d1d7-47db-a801-bad8b698a262",
+    "progress_percent": 100,
+    "current_step": "Your story is ready! \ud83c\udf89",
+    "total_pages": 5,
+    "pages_completed": 5,
+    "story_text_done": true,
+    "images_status": {
+      "1": "done",
+      "2": "done",
+      "3": "done",
+      "4": "done",
+      "5": "done"
+    },
+    "error_message": null,
+    "created_at": {
+      "$date": "2026-03-04T07:29:56.824Z"
+    },
+    "updated_at": {
+      "$date": "2026-03-04T07:31:41.663Z"
+    },
+    "completed_at": {
+      "$date": "2026-03-04T07:31:41.663Z"
+    },
+    "request_data": {
+      "title": "The Flying Dragon",
+      "age_range": "3-5",
+      "num_pages": 5,
+      "words_per_page": "medium",
+      "character_name": "Ember",
+      "character_description": "",
+      "story_description": "A small dragon named Ember learns to fly for the first time",
+      "genre": "Adventure",
+      "tone": "",
+      "plot_summary": "",
+      "chapter_structure": false,
+      "art_style": "3d-pixar",
+      "creator_mode": "kids",
+      "idea": "",
+      "age_rating": "All Ages",
+      "generate_images": true,
+      "media_type": "images",
+      "image_style": "3d-pixar"
+    },
+    "credits_charged": 5,
+    "used_free_story": false
+  },
+  {
+    "_id": {
+      "$oid": "69a7e1b02574f18bb8ec0752"
+    },
+    "job_id": "d46b188b-488c-4732-8992-578e757b2edd",
+    "status": "completed",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": "0bd7ab23-b18a-4eb4-bd64-c4ecbd737f9a",
+    "progress_percent": 100,
+    "current_step": "Your story is ready! \ud83c\udf89",
+    "total_pages": 5,
+    "pages_completed": 5,
+    "story_text_done": true,
+    "images_status": {
+      "1": "done",
+      "2": "done",
+      "3": "done",
+      "4": "done",
+      "5": "done"
+    },
+    "error_message": null,
+    "created_at": {
+      "$date": "2026-03-04T07:39:28.213Z"
+    },
+    "updated_at": {
+      "$date": "2026-03-04T07:41:15.429Z"
+    },
+    "completed_at": {
+      "$date": "2026-03-04T07:41:15.429Z"
+    },
+    "request_data": {
+      "title": "TEST_story_creator_test",
+      "age_range": "6-8",
+      "num_pages": 5,
+      "words_per_page": "medium",
+      "character_name": "Spark",
+      "character_description": "A small purple dragon",
+      "story_description": "A brave little dragon learns to fly",
+      "genre": "Adventure",
+      "tone": "",
+      "plot_summary": "",
+      "chapter_structure": false,
+      "art_style": "3d-pixar",
+      "creator_mode": "kids",
+      "idea": "",
+      "age_rating": "All Ages",
+      "generate_images": true,
+      "media_type": "images",
+      "image_style": "3d-pixar"
+    },
+    "credits_charged": 5,
+    "used_free_story": false
+  },
+  {
+    "_id": {
+      "$oid": "69a7e6d32574f18bb8ec0776"
+    },
+    "job_id": "87ff965b-ce65-404d-a7f6-e24cac1ec627",
+    "status": "completed",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": "30bbaec6-63ae-4797-909d-c4e996a5ebd5",
+    "progress_percent": 100,
+    "current_step": "Your story is ready! \ud83c\udf89",
+    "total_pages": 15,
+    "pages_completed": 15,
+    "story_text_done": true,
+    "images_status": {
+      "1": "done",
+      "2": "done",
+      "3": "done",
+      "4": "done",
+      "5": "done",
+      "6": "done",
+      "7": "done",
+      "8": "done",
+      "9": "done",
+      "10": "done",
+      "11": "done",
+      "12": "done",
+      "13": "done",
+      "14": "done",
+      "15": "done"
+    },
+    "error_message": null,
+    "created_at": {
+      "$date": "2026-03-04T08:01:23.456Z"
+    },
+    "updated_at": {
+      "$date": "2026-03-04T08:08:57.097Z"
+    },
+    "completed_at": {
+      "$date": "2026-03-04T08:08:57.097Z"
+    },
+    "request_data": {
+      "title": "",
+      "age_range": "13-16",
+      "num_pages": 15,
+      "words_per_page": "medium",
+      "character_name": "Max",
+      "character_description": "They are a sporty young boy who has ambition ",
+      "story_description": "Max is a young footballer who wants to get better and better and practice and go from the streets to World Cup glory with his national team over coming many oasis and injuries and knock backs . \n",
+      "genre": "Adventure",
+      "tone": "",
+      "plot_summary": "",
+      "chapter_structure": false,
+      "art_style": "photorealistic",
+      "creator_mode": "studio",
+      "idea": "Max is a young footballer who wants to get better and better and practice and go from the streets to World Cup glory with his national team over coming many oasis and injuries and knock backs . \n",
+      "age_rating": "All Ages",
+      "generate_images": true,
+      "media_type": "images",
+      "image_style": "3d-pixar"
+    },
+    "credits_charged": 12,
+    "used_free_story": false
+  },
+  {
+    "_id": {
+      "$oid": "69a7e7bf2574f18bb8ec078f"
+    },
+    "job_id": "1d2fe1ac-dbea-43f3-a8a0-efb257391816",
+    "status": "generating_story",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": "284b2fbd-1731-43aa-af37-a03a8e321cea",
+    "progress_percent": 52,
+    "current_step": "Creating illustration for page 8 of 20...",
+    "total_pages": 20,
+    "pages_completed": 7,
+    "story_text_done": true,
+    "images_status": {
+      "1": "done",
+      "2": "done",
+      "3": "done",
+      "4": "done",
+      "5": "done",
+      "6": "done",
+      "7": "done",
+      "8": "generating",
+      "9": "pending",
+      "10": "pending",
+      "11": "pending",
+      "12": "pending",
+      "13": "pending",
+      "14": "pending",
+      "15": "pending",
+      "16": "pending",
+      "17": "pending",
+      "18": "pending",
+      "19": "pending",
+      "20": "pending"
+    },
+    "error_message": null,
+    "created_at": {
+      "$date": "2026-03-04T08:05:19.841Z"
+    },
+    "updated_at": {
+      "$date": "2026-03-04T08:12:35.438Z"
+    },
+    "completed_at": null,
+    "request_data": {
+      "title": "The Dragon Quest",
+      "age_range": "13-16",
+      "num_pages": 20,
+      "words_per_page": "medium",
+      "character_name": "Elena",
+      "character_description": "",
+      "story_description": "A young hero discovers they have dragon blood and must journey to find the last dragon sanctuary",
+      "genre": "Fantasy",
+      "tone": "",
+      "plot_summary": "",
+      "chapter_structure": false,
+      "art_style": "dark-fantasy",
+      "creator_mode": "studio",
+      "idea": "",
+      "age_rating": "All Ages",
+      "generate_images": true,
+      "media_type": "images",
+      "image_style": "3d-pixar"
+    },
+    "credits_charged": 15,
+    "used_free_story": false
+  },
+  {
+    "_id": {
+      "$oid": "69a7e82e2574f18bb8ec0795"
+    },
+    "job_id": "f769e0d0-2a58-4169-9d92-2190d04ffca7",
+    "status": "generating_story",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": "34a94fe2-f410-4672-8f2f-77a734367894",
+    "progress_percent": 35,
+    "current_step": "Creating illustration for page 5 of 50...",
+    "total_pages": 50,
+    "pages_completed": 4,
+    "story_text_done": true,
+    "images_status": {
+      "1": "done",
+      "2": "done",
+      "3": "done",
+      "4": "done",
+      "5": "generating",
+      "6": "pending",
+      "7": "pending",
+      "8": "pending",
+      "9": "pending",
+      "10": "pending",
+      "11": "pending",
+      "12": "pending",
+      "13": "pending",
+      "14": "pending",
+      "15": "pending",
+      "16": "pending",
+      "17": "pending",
+      "18": "pending",
+      "19": "pending",
+      "20": "pending",
+      "21": "pending",
+      "22": "pending",
+      "23": "pending",
+      "24": "pending",
+      "25": "pending",
+      "26": "pending",
+      "27": "pending",
+      "28": "pending",
+      "29": "pending",
+      "30": "pending",
+      "31": "pending",
+      "32": "pending",
+      "33": "pending",
+      "34": "pending",
+      "35": "pending",
+      "36": "pending",
+      "37": "pending",
+      "38": "pending",
+      "39": "pending",
+      "40": "pending",
+      "41": "pending",
+      "42": "pending",
+      "43": "pending",
+      "44": "pending",
+      "45": "pending",
+      "46": "pending",
+      "47": "pending",
+      "48": "pending",
+      "49": "pending",
+      "50": "pending"
+    },
+    "error_message": null,
+    "created_at": {
+      "$date": "2026-03-04T08:07:10.104Z"
+    },
+    "updated_at": {
+      "$date": "2026-03-04T08:12:35.435Z"
+    },
+    "completed_at": null,
+    "request_data": {
+      "title": "The Last Kingdom",
+      "age_range": "17+",
+      "num_pages": 50,
+      "words_per_page": "medium",
+      "character_name": "",
+      "character_description": "",
+      "story_description": "An epic tale of a fallen kingdom and the orphan who rises to reclaim the throne",
+      "genre": "Historical",
+      "tone": "",
+      "plot_summary": "",
+      "chapter_structure": true,
+      "art_style": "oil-painting",
+      "creator_mode": "studio",
+      "idea": "",
+      "age_rating": "All Ages",
+      "generate_images": true,
+      "media_type": "images",
+      "image_style": "3d-pixar"
+    },
+    "credits_charged": 30,
+    "used_free_story": false
+  },
+  {
+    "_id": {
+      "$oid": "69a7e8e82574f18bb8ec07a0"
+    },
+    "job_id": "5a2cef45-3f1a-436d-beb2-8db4c3da506b",
+    "status": "generating_story",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": "90004412-6370-4abe-a055-54a8cea69ef9",
+    "progress_percent": 30,
+    "current_step": "Cover done! Creating page illustrations...",
+    "total_pages": 50,
+    "pages_completed": 0,
+    "story_text_done": true,
+    "images_status": {
+      "1": "pending",
+      "2": "pending",
+      "3": "pending",
+      "4": "pending",
+      "5": "pending",
+      "6": "pending",
+      "7": "pending",
+      "8": "pending",
+      "9": "pending",
+      "10": "pending",
+      "11": "pending",
+      "12": "pending",
+      "13": "pending",
+      "14": "pending",
+      "15": "pending",
+      "16": "pending",
+      "17": "pending",
+      "18": "pending",
+      "19": "pending",
+      "20": "pending",
+      "21": "pending",
+      "22": "pending",
+      "23": "pending",
+      "24": "pending",
+      "25": "pending",
+      "26": "pending",
+      "27": "pending",
+      "28": "pending",
+      "29": "pending",
+      "30": "pending",
+      "31": "pending",
+      "32": "pending",
+      "33": "pending",
+      "34": "pending",
+      "35": "pending",
+      "36": "pending",
+      "37": "pending",
+      "38": "pending",
+      "39": "pending",
+      "40": "pending",
+      "41": "pending",
+      "42": "pending",
+      "43": "pending",
+      "44": "pending",
+      "45": "pending",
+      "46": "pending",
+      "47": "pending",
+      "48": "pending",
+      "49": "pending",
+      "50": "pending"
+    },
+    "error_message": null,
+    "created_at": {
+      "$date": "2026-03-04T08:10:16.319Z"
+    },
+    "updated_at": {
+      "$date": "2026-03-04T08:12:35.438Z"
+    },
+    "completed_at": null,
+    "request_data": {
+      "title": "Epic Novel",
+      "age_range": "17+",
+      "num_pages": 50,
+      "words_per_page": "medium",
+      "character_name": "",
+      "character_description": "",
+      "story_description": "A grand adventure",
+      "genre": "Adventure",
+      "tone": "",
+      "plot_summary": "",
+      "chapter_structure": false,
+      "art_style": "oil-painting",
+      "creator_mode": "studio",
+      "idea": "",
+      "age_rating": "All Ages",
+      "generate_images": true,
+      "media_type": "images",
+      "image_style": "3d-pixar"
+    },
+    "credits_charged": 30,
+    "used_free_story": false
+  },
+  {
+    "_id": {
+      "$oid": "69a7e9a7fc4151754dbc8d49"
+    },
+    "job_id": "28d89d1d-9ece-4c45-8088-0f86e7d8be08",
+    "status": "partial",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": "9b6d6b85-0a6b-4a4d-a04a-7d6db29d68cc",
+    "progress_percent": 100,
+    "current_step": "Story complete! 1 images failed.",
+    "total_pages": 30,
+    "pages_completed": 30,
+    "story_text_done": true,
+    "images_status": {
+      "1": "done",
+      "2": "done",
+      "3": "done",
+      "4": "done",
+      "5": "done",
+      "6": "done",
+      "7": "done",
+      "8": "done",
+      "9": "done",
+      "10": "done",
+      "11": "done",
+      "12": "done",
+      "13": "done",
+      "14": "done",
+      "15": "done",
+      "16": "failed",
+      "17": "done",
+      "18": "done",
+      "19": "done",
+      "20": "done",
+      "21": "done",
+      "22": "done",
+      "23": "done",
+      "24": "done",
+      "25": "done",
+      "26": "done",
+      "27": "done",
+      "28": "done",
+      "29": "done",
+      "30": "done"
+    },
+    "error_message": "Some illustrations couldn't be generated. Refunded 0 credits.",
+    "created_at": {
+      "$date": "2026-03-04T08:13:27.816Z"
+    },
+    "updated_at": {
+      "$date": "2026-03-04T08:23:26.324Z"
+    },
+    "completed_at": {
+      "$date": "2026-03-04T08:23:26.324Z"
+    },
+    "request_data": {
+      "title": "The Mystery Manor",
+      "age_range": "13-16",
+      "num_pages": 30,
+      "words_per_page": "medium",
+      "character_name": "",
+      "character_description": "",
+      "story_description": "A group of teens discover that their new school is built on the ruins of a haunted mansion",
+      "genre": "Mystery",
+      "tone": "",
+      "plot_summary": "",
+      "chapter_structure": true,
+      "art_style": "dark-fantasy",
+      "creator_mode": "studio",
+      "idea": "",
+      "age_rating": "All Ages",
+      "generate_images": true,
+      "media_type": "images",
+      "image_style": "3d-pixar"
+    },
+    "credits_charged": 20,
+    "used_free_story": false
+  },
+  {
+    "_id": {
+      "$oid": "69aaa41c35f1e8b846d8545d"
+    },
+    "job_id": "8c5d80d0-ae22-4274-ab08-ad4460e19d35",
+    "status": "completed",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": "f1328a57-849f-4160-8820-a7caea04c1ea",
+    "progress_percent": 100,
+    "current_step": "Your story is ready! \ud83c\udf89",
+    "total_pages": 5,
+    "pages_completed": 5,
+    "story_text_done": true,
+    "images_status": {
+      "1": "done",
+      "2": "done",
+      "3": "done",
+      "4": "done",
+      "5": "done"
+    },
+    "error_message": null,
+    "created_at": {
+      "$date": "2026-03-06T09:53:32.779Z"
+    },
+    "updated_at": {
+      "$date": "2026-03-06T09:55:20.718Z"
+    },
+    "completed_at": {
+      "$date": "2026-03-06T09:55:20.718Z"
+    },
+    "request_data": {
+      "title": "",
+      "age_range": "3-5",
+      "num_pages": 5,
+      "words_per_page": "medium",
+      "character_name": "Benny",
+      "character_description": "A small white fluffy rabbit with long ears",
+      "story_description": "A brave little rabbit named Benny goes on an adventure to find the golden carrot",
+      "genre": "Adventure",
+      "tone": "",
+      "plot_summary": "",
+      "chapter_structure": false,
+      "art_style": "3d-pixar",
+      "creator_mode": "kids",
+      "idea": "A brave little rabbit goes on an adventure",
+      "age_rating": "All Ages",
+      "generate_images": true,
+      "media_type": "images",
+      "image_style": "3d-pixar"
+    },
+    "credits_charged": 5,
+    "used_free_story": false
+  },
+  {
+    "_id": {
+      "$oid": "69aaa6f0bfb1e9c3a2baa07f"
+    },
+    "job_id": "6a860b6b-800d-4a6e-8004-9936e9f59225",
+    "status": "failed",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": null,
+    "progress_percent": 5,
+    "current_step": "Story generation failed",
+    "total_pages": 8,
+    "pages_completed": 0,
+    "story_text_done": false,
+    "images_status": {
+      "1": "pending",
+      "2": "pending",
+      "3": "pending",
+      "4": "pending",
+      "5": "pending",
+      "6": "pending",
+      "7": "pending",
+      "8": "pending"
+    },
+    "error_message": "Failed to generate story: Please provide a story description",
+    "created_at": {
+      "$date": "2026-03-06T10:05:36.755Z"
+    },
+    "updated_at": {
+      "$date": "2026-03-06T10:05:36.758Z"
+    },
+    "completed_at": null,
+    "request_data": {
+      "title": "",
+      "age_range": "5-8",
+      "num_pages": 8,
+      "words_per_page": "medium",
+      "character_name": "",
+      "character_description": "",
+      "story_description": "",
+      "genre": "Adventure",
+      "tone": "",
+      "plot_summary": "",
+      "chapter_structure": false,
+      "art_style": "3d-pixar",
+      "creator_mode": "kids",
+      "idea": "",
+      "age_rating": "All Ages",
+      "generate_images": true,
+      "media_type": "images",
+      "image_style": "3d-pixar"
+    },
+    "credits_charged": 5,
+    "used_free_story": false
+  },
+  {
+    "_id": {
+      "$oid": "69aaa71617a1eda003c2fa8e"
+    },
+    "job_id": "15f276ca-c22e-4b32-bb60-7d8ba036e9cd",
+    "status": "failed",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": null,
+    "progress_percent": 5,
+    "current_step": "Story generation failed",
+    "total_pages": 8,
+    "pages_completed": 0,
+    "story_text_done": false,
+    "images_status": {
+      "1": "pending",
+      "2": "pending",
+      "3": "pending",
+      "4": "pending",
+      "5": "pending",
+      "6": "pending",
+      "7": "pending",
+      "8": "pending"
+    },
+    "error_message": "Failed to generate story: Please provide a story description",
+    "created_at": {
+      "$date": "2026-03-06T10:06:14.029Z"
+    },
+    "updated_at": {
+      "$date": "2026-03-06T10:06:14.036Z"
+    },
+    "completed_at": null,
+    "request_data": {
+      "title": "",
+      "age_range": "5-8",
+      "num_pages": 8,
+      "words_per_page": "medium",
+      "character_name": "",
+      "character_description": "",
+      "story_description": "",
+      "genre": "Adventure",
+      "tone": "",
+      "plot_summary": "",
+      "chapter_structure": false,
+      "art_style": "3d-pixar",
+      "creator_mode": "kids",
+      "idea": "",
+      "age_rating": "All Ages",
+      "generate_images": true,
+      "media_type": "images",
+      "image_style": "3d-pixar"
+    },
+    "credits_charged": 5,
+    "used_free_story": false
+  },
+  {
+    "_id": {
+      "$oid": "69b07ac311430d5e209e4a22"
+    },
+    "job_id": "f1244e13-c8a0-410a-81f5-f593b6df9ca6",
+    "status": "completed",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": "d624355f-1ab8-449d-a146-6b4c45d88250",
+    "progress_percent": 100,
+    "current_step": "Your story is ready! \ud83c\udf89",
+    "total_pages": 5,
+    "pages_completed": 5,
+    "story_text_done": true,
+    "images_status": {
+      "1": "done",
+      "2": "done",
+      "3": "done",
+      "4": "done",
+      "5": "done"
+    },
+    "error_message": null,
+    "created_at": {
+      "$date": "2026-03-10T20:10:43.259Z"
+    },
+    "updated_at": {
+      "$date": "2026-03-10T20:11:57.800Z"
+    },
+    "completed_at": {
+      "$date": "2026-03-10T20:11:57.800Z"
+    },
+    "request_data": {
+      "title": "Clippity Clappity",
+      "age_range": "6-8",
+      "num_pages": 5,
+      "words_per_page": "medium",
+      "character_name": "Cookie",
+      "character_description": "A horse ",
+      "story_description": "this is about a horse that can jump the highest and loves to be ridden through the forest ",
+      "genre": "Adventure",
+      "tone": "",
+      "plot_summary": "",
+      "chapter_structure": false,
+      "art_style": "3d-pixar",
+      "creator_mode": "kids",
+      "idea": "this is about a horse that can jump the highest and loves to be ridden through the forest ",
+      "age_rating": "All Ages",
+      "generate_images": true,
+      "media_type": "images",
+      "image_style": "3d-pixar"
+    },
+    "credits_charged": 5,
+    "used_free_story": false
+  },
+  {
+    "_id": {
+      "$oid": "69b083f1ea41589879079a8a"
+    },
+    "job_id": "d53b7700-646d-4b12-8906-5183376fbe14",
+    "status": "completed",
+    "user_id": "497e43e4-aa26-49a9-aa88-b2e9377a2196",
+    "book_id": "638dfcf9-cfe3-4ce3-8bed-f70fa9425201",
+    "progress_percent": 100,
+    "current_step": "Your story is ready! \ud83c\udf89",
+    "total_pages": 5,
+    "pages_completed": 5,
+    "story_text_done": true,
+    "images_status": {
+      "1": "done",
+      "2": "done",
+      "3": "done",
+      "4": "done",
+      "5": "done"
+    },
+    "error_message": null,
+    "created_at": {
+      "$date": "2026-03-10T20:49:53.977Z"
+    },
+    "updated_at": {
+      "$date": "2026-03-10T20:51:10.717Z"
+    },
+    "completed_at": {
+      "$date": "2026-03-10T20:51:10.717Z"
+    },
+    "request_data": {
+      "title": "The Magic Dragon ",
+      "age_range": "6-8",
+      "num_pages": 5,
+      "words_per_page": "medium",
+      "character_name": "Blaze",
+      "character_description": "A kind child",
+      "story_description": "Finds a tiny lost dragon egg in the garden and must help it hatch and find its family",
+      "genre": "Adventure",
+      "tone": "",
+      "plot_summary": "",
+      "chapter_structure": false,
+      "art_style": "3d-pixar",
+      "creator_mode": "kids",
+      "idea": "Finds a tiny lost dragon egg in the garden and must help it hatch and find its family",
+      "age_rating": "All Ages",
+      "generate_images": true,
+      "media_type": "images",
+      "image_style": "3d-pixar"
+    },
+    "credits_charged": 5,
+    "used_free_story": false
+  }
+]
