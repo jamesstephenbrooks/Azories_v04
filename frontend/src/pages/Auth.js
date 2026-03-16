@@ -300,8 +300,8 @@ export default function Auth() {
                 data-testid="auth-toggle-mode"
               >
                 {isLogin 
-                  ? "Don't have an account? Sign up" 
-                  : 'Already have an account? Sign in'}
+                  ? <>Don't have an account? <span className="text-purple-400 font-semibold hover:text-purple-300">Sign up here!</span></> 
+                  : <>Already have an account? <span className="text-purple-400 font-semibold hover:text-purple-300">Sign in</span></>}
               </button>
             </div>
               </>
