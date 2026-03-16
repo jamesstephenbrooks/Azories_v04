@@ -1081,8 +1081,9 @@ class PrintPDFGenerator:
         # Add all images to PDF
         for name, img in all_images:
             img_buffer = io.BytesIO()
-            # Use quality=75 to reduce file size while maintaining good print quality
-            img.save(img_buffer, format='JPEG', quality=75, dpi=(DPI, DPI), optimize=True)
+            # Use quality=60 to keep file size well under 10MB Cloudinary limit
+            # while still maintaining excellent print quality for Gelato
+            img.save(img_buffer, format='JPEG', quality=60, dpi=(DPI, DPI), optimize=True)
             img_buffer.seek(0)
             
             c.drawImage(

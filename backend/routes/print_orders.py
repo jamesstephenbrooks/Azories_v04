@@ -369,20 +369,24 @@ async def prepare_print_order(
             import cloudinary.uploader
             import os as os_module
             
-            # Check file size - use chunked upload for large files
             file_size = os_module.path.getsize(output_path)
+            logger.info(f"PDF generated: {file_size} bytes ({file_size/1024/1024:.1f} MB)")
             
-            if file_size > 10 * 1024 * 1024:  # > 10MB
-                # Use upload_large for chunked upload
+            if file_size > 10 * 1024 * 1024:
+                # File still too large - compress further with PDF library
+                try:
+                    from reportlab.lib.pagesizes import inch as rl_inch
+                    logger.warning(f"PDF size {file_size/1024/1024:.1f}MB exceeds Cloudinary limit, will upload_large")
+                except:
+                    pass
                 upload_result = cloudinary.uploader.upload_large(
                     output_path,
                     resource_type="raw",
                     folder="azories/print_pdfs",
                     public_id=f"print_{book_id}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}",
-                    chunk_size=6000000  # 6MB chunks
+                    chunk_size=6000000
                 )
             else:
-                # Standard upload for smaller files
                 upload_result = cloudinary.uploader.upload(
                     output_path,
                     resource_type="raw",
@@ -390,10 +394,15 @@ async def prepare_print_order(
                     public_id=f"print_{book_id}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"
                 )
             pdf_url = upload_result.get("secure_url")
+            logger.info(f"PDF uploaded to Cloudinary: {pdf_url}")
         except Exception as upload_error:
-            logger.warning(f"Could not upload PDF to Cloudinary: {upload_error}")
-            # Use local path as fallback
-            pdf_url = output_path
+            logger.error(f"Could not upload PDF to Cloudinary: {upload_error}")
+            # Cannot store a local /tmp/ path - it's inaccessible to Gelato.
+            # Raise so the user gets a clear error instead of a silently broken order.
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to upload PDF for printing. The generated PDF may be too large. Please try again or contact support."
+            )
         
         # Count pages in the PDF
         page_count = 24  # Default minimum
