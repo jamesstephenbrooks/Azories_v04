@@ -30,10 +30,18 @@ Build a full-featured AI Story Creator application named "Azories" with:
 - [x] Print-on-demand via Gelato
 - [x] Admin dashboard
 - [x] Contact form with email notifications
+- [x] Admin delete user with confirmation modal
+- [x] Mobile page-turn animation (Framer Motion slide transitions)
 
-## Recent Fixes (December 2026)
+## Recent Fixes (March 2026)
 
-### Session v1.0.20 (March 2026)
+### Session v1.0.21 (March 2026)
+- [x] **Mobile Page-Turn Animation** - Added Framer Motion `AnimatePresence` slide transitions to mobile portrait AND landscape views in BookReader.js. Pages now slide in/out with directional awareness (next=right-to-left, prev=left-to-right). Both portrait and landscape mobile views updated.
+- [x] **Header Icons White Background** - Applied `mix-blend-multiply dark:invert` CSS to all navbar icon images in Navbar.js. White backgrounds now blend with the navbar surface in both light and dark modes.
+- [x] **Delete Story Verified** - Confirmed `DELETE /api/books/{bookId}` endpoint works correctly (tested via curl). Frontend `deleteBook()` in Dashboard.js calls it correctly.
+- [x] **Admin Delete User** - New `DELETE /api/admin/users/{user_id}` backend endpoint deletes user + all books/chapters/pages/analytics. Admin Dashboard now shows red trash icon button per user row, with a confirmation modal showing user info + warning bullets. Also fixed 500→401 bug in `get_admin_user` when called without auth header.
+
+
 - [x] **iPad Book Reader Dropdown** - Action buttons (Share, Theme, Edit) now grouped in vertical dropdown menu on tablets (768-1280px), Print button stays separate. Desktop shows individual buttons as before
 - [x] **Word Count Enforcement** - Strengthened AI story prompts with CRITICAL/MANDATORY language for word count (e.g., 150 words when "long" selected). Prompts now include min/max tolerance and explicit "count carefully" instructions
 - [x] **AI Story Auto-Publish** - New AI-generated stories automatically set to `publish_status: "pending_review"` instead of `"draft"`, streamlining the publishing workflow
