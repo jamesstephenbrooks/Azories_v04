@@ -194,6 +194,11 @@ export default function AdminDashboard() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [newCredits, setNewCredits] = useState('');
   const [updatingCredits, setUpdatingCredits] = useState(false);
+
+  // Delete User Modal State
+  const [deleteUserModalOpen, setDeleteUserModalOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
+  const [deletingUser, setDeletingUser] = useState(false);
   
   // Open credit modal for a user
   const openCreditModal = (user) => {
@@ -241,6 +246,28 @@ export default function AdminDashboard() {
       toast.error(error.response?.data?.detail || 'Failed to update credits');
     } finally {
       setUpdatingCredits(false);
+    }
+  };
+
+  // Delete a single user
+  const deleteUser = async () => {
+    if (!userToDelete) return;
+    setDeletingUser(true);
+    try {
+      const token = localStorage.getItem('azories-admin-token');
+      await axios.delete(
+        `${API}/api/admin/users/${userToDelete.id}`,
+        { headers: { Authorization: `Bearer ${token}` }}
+      );
+      toast.success(`User ${userToDelete.email} deleted successfully`);
+      setUsers(users.filter(u => u.id !== userToDelete.id));
+      setDeleteUserModalOpen(false);
+      setUserToDelete(null);
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      toast.error(error.response?.data?.detail || 'Failed to delete user');
+    } finally {
+      setDeletingUser(false);
     }
   };
   
@@ -1231,15 +1258,25 @@ export default function AdminDashboard() {
                         {user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
                       </td>
                       <td className="p-3 md:p-4 text-right">
-                        <Button
-                          size="sm"
-                          onClick={() => openCreditModal(user)}
-                          className="bg-purple-600 hover:bg-purple-700 text-white text-xs px-2 py-1"
-                          data-testid={`edit-credits-${user.email}`}
-                        >
-                          <FiDollarSign className="w-3 h-3 sm:mr-1" />
-                          <span className="hidden sm:inline">Edit</span>
-                        </Button>
+                        <div className="flex items-center justify-end gap-1">
+                          <Button
+                            size="sm"
+                            onClick={() => openCreditModal(user)}
+                            className="bg-purple-600 hover:bg-purple-700 text-white text-xs px-2 py-1"
+                            data-testid={`edit-credits-${user.email}`}
+                          >
+                            <FiDollarSign className="w-3 h-3 sm:mr-1" />
+                            <span className="hidden sm:inline">Edit</span>
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={() => { setUserToDelete(user); setDeleteUserModalOpen(true); }}
+                            className="bg-red-600/80 hover:bg-red-700 text-white text-xs px-2 py-1"
+                            data-testid={`delete-user-${user.email}`}
+                          >
+                            <FiTrash2 className="w-3 h-3" />
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -1948,6 +1985,64 @@ export default function AdminDashboard() {
                     <>
                       <FiSave className="w-4 h-4 mr-2" />
                       Save Credits
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete User Confirmation Modal */}
+      <Dialog open={deleteUserModalOpen} onOpenChange={(open) => { if (!open) { setDeleteUserModalOpen(false); setUserToDelete(null); } }}>
+        <DialogContent className="bg-gray-900 border border-red-500/30 text-white max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-red-400 flex items-center gap-2">
+              <FiTrash2 className="w-5 h-5" />
+              Delete User Account
+            </DialogTitle>
+          </DialogHeader>
+          {userToDelete && (
+            <div className="space-y-4">
+              <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
+                <p className="text-white/90 text-sm mb-1">You are about to permanently delete:</p>
+                <p className="text-white font-semibold">{userToDelete.name || 'Unknown'}</p>
+                <p className="text-white/60 text-sm">{userToDelete.email}</p>
+              </div>
+              <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                <p className="text-yellow-400 text-sm font-medium">Warning: This will delete:</p>
+                <ul className="text-yellow-300/70 text-xs mt-1 space-y-0.5 list-disc list-inside">
+                  <li>The user account</li>
+                  <li>All their books, chapters and pages</li>
+                  <li>All their activity and credits history</li>
+                </ul>
+                <p className="text-red-400 text-xs mt-2 font-medium">This action cannot be undone.</p>
+              </div>
+              <div className="flex gap-3 pt-1">
+                <Button
+                  variant="outline"
+                  onClick={() => { setDeleteUserModalOpen(false); setUserToDelete(null); }}
+                  className="flex-1 bg-white/5 border-white/10 text-white hover:bg-white/10"
+                  data-testid="cancel-delete-user-btn"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={deleteUser}
+                  disabled={deletingUser}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                  data-testid="confirm-delete-user-btn"
+                >
+                  {deletingUser ? (
+                    <>
+                      <FiRefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    <>
+                      <FiTrash2 className="w-4 h-4 mr-2" />
+                      Delete User
                     </>
                   )}
                 </Button>

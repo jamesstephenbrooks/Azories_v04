@@ -479,6 +479,14 @@ export default function BookReader() {
   const isMobileLandscape = forceLandscapeTest || (isMobile && isLandscapeOrientation);
   const isMobilePortrait = !forceLandscapeTest && isMobile && !isLandscapeOrientation;
   
+  // Mobile page-turn animation variants
+  const mobilePageVariants = {
+    enter: (dir) => ({ x: dir === 'prev' ? '-100%' : '100%', opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit: (dir) => ({ x: dir === 'prev' ? '25%' : '-25%', opacity: 0 }),
+  };
+  const mobilePageTransition = { duration: 0.28, ease: [0.4, 0, 0.2, 1] };
+
   // Tablet detection (iPad specific - shows dropdown menu)
   const isTablet = isIPad || ((windowSize.width >= 768 && windowSize.width < 1280) && !isMobile);
   
@@ -1004,6 +1012,7 @@ export default function BookReader() {
     
     // For mobile portrait/landscape, directly set the page (no pageflip library)
     if (isMobilePortrait || isMobileLandscape) {
+      if (direction) setFlipDirection(direction);
       setCurrentPage(newPage);
       saveReadingProgress();
     } else if (realisticFlipRef.current) {
@@ -2257,7 +2266,7 @@ export default function BookReader() {
                 </div>
               </div>
             ) : isMobilePortrait && !isCover && currentPage >= 0 ? (
-              <div className="flex flex-col w-full max-w-md mx-auto relative" style={{ height: `calc(100vh - 140px)` }}>
+              <div className="flex flex-col w-full max-w-md mx-auto relative overflow-hidden" style={{ height: `calc(100vh - 140px)` }}>
                 {/* Navigation buttons for mobile portrait - smaller and positioned above page count */}
                 {!currentPageData?.isBackCover && (
                   <>
@@ -2287,120 +2296,18 @@ export default function BookReader() {
                   </>
                 )}
                 
-                {/* Back Cover - Full page with dark background extending to edges */}
-                {currentPageData?.isBackCover ? (
-                  <div 
-                    className="fixed inset-0 z-30"
-                    style={{ backgroundColor: '#1a0a2e' }}
-                  >
-                    <img 
-                      src={getImageSource(currentPageData) || currentPageData.image_url}
-                      alt="Back Cover"
-                      style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'contain',
-                        objectPosition: 'center'
-                      }}
-                    />
-                  </div>
-                ) : (
-                <>
-                {/* Top: Illustration - 55% of available height with portrait crop */}
-                {/* SWIPE HANDLERS ON IMAGE ONLY - text area is completely blocked */}
-                <div 
-                  className="relative flex-shrink-0 rounded-t-2xl overflow-hidden shadow-lg"
-                  style={{ height: '55%', touchAction: 'pan-x' }}
-                  {...swipeHandlers}
-                >
-                  {currentPageData?.image_url ? (
-                    <img 
-                      src={getImageSource(currentPageData) || currentPageData.image_url}
-                      alt=""
-                      style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                        objectPosition: 'center top'
-                      }}
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-muted/20">
-                      <span className="text-muted-foreground text-sm">No illustration</span>
-                    </div>
-                  )}
-                  {/* Page number badge */}
-                  <div className="absolute bottom-2 right-2 px-2 py-1 rounded-full bg-black/50 text-white text-xs">
-                    {currentPage + 1} / {allPages.length - (allPages[allPages.length - 1]?.isBackCover ? 1 : 0)}
-                  </div>
-                </div>
-                
-                {/* Bottom: Text content - 45% of available height */}
-                <div 
-                  className="flex-1 bg-[#fdfbf7] dark:bg-[#2a2a30] rounded-b-2xl shadow-lg overflow-hidden relative"
-                >
-                  <div 
-                    ref={textScrollRef}
-                    className="h-full overflow-y-auto px-5 py-4 pb-8 text-scroll-container"
-                    data-scrollable="true"
-                  >
-                    {(currentPageData?.text_content || currentPageData?.text || currentPageData?.content) ? (
-                      <p className="font-reader text-base leading-relaxed text-foreground/90 whitespace-pre-wrap">
-                        {currentPageData.text_content || currentPageData.text || currentPageData.content}
-                      </p>
-                    ) : currentPageData?.isChapterTitle ? (
-                      <div className="text-center py-4">
-                        <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
-                          {currentPageData.chapterNumber ? `Chapter ${currentPageData.chapterNumber}` : 'Chapter'}
-                        </p>
-                        <h2 className="font-heading text-xl font-bold">{currentPageData.chapterTitle}</h2>
-                      </div>
-                    ) : (
-                      <p className="text-muted-foreground text-sm italic text-center py-8">
-                        Swipe or tap arrows to continue...
-                      </p>
-                    )}
-                  </div>
-                  {/* Scroll indicator - shows when more content below */}
-                  {showScrollIndicator && !isPlaying && (
-                    <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
-                      <div className="h-16 bg-gradient-to-t from-[#fdfbf7] dark:from-[#2a2a30] to-transparent" />
-                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center">
-                        <div className="animate-bounce bg-[#fdfbf7] dark:bg-[#2a2a30] rounded-full p-1 shadow-sm">
-                          <FiChevronDown className="w-4 h-4 text-purple-500/70" />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  {/* Narration progress bar - shows during audio playback */}
-                  {isPlaying && audioProgress > 0 && (
-                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-purple-200/30 dark:bg-purple-900/30">
-                      <div 
-                        className="h-full bg-purple-500/60 transition-all duration-300 ease-out"
-                        style={{ width: `${audioProgress * 100}%` }}
-                      />
-                    </div>
-                  )}
-                </div>
-              </>
-              )}
-              </div>
-            ) : isMobileLandscape && !isCover && currentPage >= 0 ? (
-              /* Mobile Landscape Two-Page Spread - Optimized for PWA full screen */
-              <div className="relative w-full h-screen">
-                {/* Back Cover - Full page image in landscape */}
-                {currentPageData?.isBackCover ? (
-                  <div 
-                    className="flex items-center justify-center w-full px-4 pt-6 pb-2"
-                    style={{ height: 'calc(100vh - 24px)' }}
-                  >
-                    <div className="relative h-full aspect-[3/4] max-w-[50vw] rounded-lg overflow-hidden shadow-2xl">
+                {/* Animated page content - page-turn effect on mobile portrait */}
+                <AnimatePresence mode="wait" custom={flipDirection}>
+                  {currentPageData?.isBackCover ? (
+                    <motion.div
+                      key="back-cover"
+                      className="fixed inset-0 z-30"
+                      style={{ backgroundColor: '#1a0a2e' }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
                       <img 
                         src={getImageSource(currentPageData) || currentPageData.image_url}
                         alt="Back Cover"
@@ -2411,139 +2318,271 @@ export default function BookReader() {
                           width: '100%',
                           height: '100%',
                           objectFit: 'contain',
-                          objectPosition: 'center',
-                          backgroundColor: '#1a0a2e'
+                          objectPosition: 'center'
                         }}
                       />
-                      {/* Read Again Button Overlay */}
-                      <div className="absolute bottom-8 left-0 right-0 flex justify-center">
-                        <button
-                          onClick={() => {
-                            console.log('[BackCover Landscape] Read Again clicked');
-                            setCurrentPage(-1);
-                          }}
-                          className="px-8 py-3 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 active:scale-95 active:bg-purple-700 text-white font-semibold flex items-center gap-2 shadow-lg"
-                          data-testid="read-again-btn-landscape"
-                        >
-                          Read Again <FiPlay className="w-5 h-5" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  /* Two-Page Spread - Maximum screen usage */
-                  <div 
-                    className="flex w-full gap-0.5 px-2 pt-6 pb-0"
-                    style={{ height: 'calc(100vh - 24px)' }}
-                  >
-                    {/* Left Page: Illustration with portrait crop */}
-                    {/* SWIPE HANDLERS ON IMAGE ONLY - text area is completely blocked */}
-                    <div 
-                      className="relative flex-1 rounded-l-lg overflow-hidden"
-                      style={{ 
-                        boxShadow: '4px 0 15px -5px rgba(0,0,0,0.2)',
-                        touchAction: 'pan-x'
-                      }}
-                      {...swipeHandlers}
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key={currentPage}
+                      custom={flipDirection}
+                      variants={mobilePageVariants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={mobilePageTransition}
+                      className="flex flex-col h-full w-full overflow-hidden"
                     >
-                      {currentPageData?.image_url ? (
+                      {/* Top: Illustration - 55% of available height with portrait crop */}
+                      {/* SWIPE HANDLERS ON IMAGE ONLY - text area is completely blocked */}
+                      <div 
+                        className="relative flex-shrink-0 rounded-t-2xl overflow-hidden shadow-lg"
+                        style={{ height: '55%', touchAction: 'pan-x' }}
+                        {...swipeHandlers}
+                      >
+                        {currentPageData?.image_url ? (
+                          <img 
+                            src={getImageSource(currentPageData) || currentPageData.image_url}
+                            alt=""
+                            style={{
+                              position: 'absolute',
+                              top: 0,
+                              left: 0,
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover',
+                              objectPosition: 'center top'
+                            }}
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-muted/20">
+                            <span className="text-muted-foreground text-sm">No illustration</span>
+                          </div>
+                        )}
+                        {/* Page number badge */}
+                        <div className="absolute bottom-2 right-2 px-2 py-1 rounded-full bg-black/50 text-white text-xs">
+                          {currentPage + 1} / {allPages.length - (allPages[allPages.length - 1]?.isBackCover ? 1 : 0)}
+                        </div>
+                      </div>
+                      
+                      {/* Bottom: Text content - 45% of available height */}
+                      <div 
+                        className="flex-1 bg-[#fdfbf7] dark:bg-[#2a2a30] rounded-b-2xl shadow-lg overflow-hidden relative"
+                      >
+                        <div 
+                          ref={textScrollRef}
+                          className="h-full overflow-y-auto px-5 py-4 pb-8 text-scroll-container"
+                          data-scrollable="true"
+                        >
+                          {(currentPageData?.text_content || currentPageData?.text || currentPageData?.content) ? (
+                            <p className="font-reader text-base leading-relaxed text-foreground/90 whitespace-pre-wrap">
+                              {currentPageData.text_content || currentPageData.text || currentPageData.content}
+                            </p>
+                          ) : currentPageData?.isChapterTitle ? (
+                            <div className="text-center py-4">
+                              <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+                                {currentPageData.chapterNumber ? `Chapter ${currentPageData.chapterNumber}` : 'Chapter'}
+                              </p>
+                              <h2 className="font-heading text-xl font-bold">{currentPageData.chapterTitle}</h2>
+                            </div>
+                          ) : (
+                            <p className="text-muted-foreground text-sm italic text-center py-8">
+                              Swipe or tap arrows to continue...
+                            </p>
+                          )}
+                        </div>
+                        {/* Scroll indicator - shows when more content below */}
+                        {showScrollIndicator && !isPlaying && (
+                          <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
+                            <div className="h-16 bg-gradient-to-t from-[#fdfbf7] dark:from-[#2a2a30] to-transparent" />
+                            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center">
+                              <div className="animate-bounce bg-[#fdfbf7] dark:bg-[#2a2a30] rounded-full p-1 shadow-sm">
+                                <FiChevronDown className="w-4 h-4 text-purple-500/70" />
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        {/* Narration progress bar - shows during audio playback */}
+                        {isPlaying && audioProgress > 0 && (
+                          <div className="absolute bottom-0 left-0 right-0 h-1 bg-purple-200/30 dark:bg-purple-900/30">
+                            <div 
+                              className="h-full bg-purple-500/60 transition-all duration-300 ease-out"
+                              style={{ width: `${audioProgress * 100}%` }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : isMobileLandscape && !isCover && currentPage >= 0 ? (
+              /* Mobile Landscape Two-Page Spread - Optimized for PWA full screen */
+              <div className="relative w-full h-screen overflow-hidden">
+                {/* Animated page content - page-turn effect on mobile landscape */}
+                <AnimatePresence mode="wait" custom={flipDirection}>
+                  {currentPageData?.isBackCover ? (
+                    <motion.div
+                      key="back-cover"
+                      className="flex items-center justify-center w-full px-4 pt-6 pb-2"
+                      style={{ height: 'calc(100vh - 24px)' }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <div className="relative h-full aspect-[3/4] max-w-[50vw] rounded-lg overflow-hidden shadow-2xl">
                         <img 
                           src={getImageSource(currentPageData) || currentPageData.image_url}
-                          alt=""
+                          alt="Back Cover"
                           style={{
                             position: 'absolute',
                             top: 0,
                             left: 0,
                             width: '100%',
                             height: '100%',
-                            objectFit: 'cover',
-                            objectPosition: 'center top'
+                            objectFit: 'contain',
+                            objectPosition: 'center',
+                            backgroundColor: '#1a0a2e'
                           }}
                         />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-100 to-blue-50">
-                          <span className="text-purple-300 text-sm">No illustration</span>
+                        {/* Read Again Button Overlay */}
+                        <div className="absolute bottom-8 left-0 right-0 flex justify-center">
+                          <button
+                            onClick={() => {
+                              console.log('[BackCover Landscape] Read Again clicked');
+                              setCurrentPage(-1);
+                            }}
+                            className="px-8 py-3 rounded-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 active:scale-95 active:bg-purple-700 text-white font-semibold flex items-center gap-2 shadow-lg"
+                            data-testid="read-again-btn-landscape"
+                          >
+                            Read Again <FiPlay className="w-5 h-5" />
+                          </button>
                         </div>
-                      )}
-                    </div>
-                    
-                    {/* Right Page: Text with vertical centering */}
-                    <div 
-                      className="flex-1 bg-[#fdfbf7] dark:bg-[#2a2a30] rounded-r-lg overflow-hidden flex flex-col relative"
-                      style={{ 
-                        boxShadow: '-4px 0 15px -5px rgba(0,0,0,0.1)'
-                      }}
-                    >
-                      {/* Book/Chapter header - subtle */}
-                      <div className="px-4 pt-2 pb-1 flex items-center justify-between">
-                        <span className="text-[9px] uppercase tracking-widest text-muted-foreground/60 font-medium">
-                          {currentPageData?.chapterTitle || book?.title}
-                        </span>
-                        <span className="text-[9px] text-muted-foreground/50">
-                          {currentPage + 1}
-                        </span>
                       </div>
-                      
-                      {/* Text content - scrollable with indicator */}
+                    </motion.div>
+                  ) : (
+                    /* Two-Page Spread - Maximum screen usage */
+                    <motion.div 
+                      key={currentPage}
+                      custom={flipDirection}
+                      variants={mobilePageVariants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={mobilePageTransition}
+                      className="flex w-full gap-0.5 px-2 pt-6 pb-0"
+                      style={{ height: 'calc(100vh - 24px)' }}
+                    >
+                      {/* Left Page: Illustration with portrait crop */}
+                      {/* SWIPE HANDLERS ON IMAGE ONLY - text area is completely blocked */}
                       <div 
-                        ref={textScrollRefLandscape}
-                        className="flex-1 overflow-y-auto px-5 py-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent text-scroll-container"
-                        data-scrollable="true"
+                        className="relative flex-1 rounded-l-lg overflow-hidden"
+                        style={{ 
+                          boxShadow: '4px 0 15px -5px rgba(0,0,0,0.2)',
+                          touchAction: 'pan-x'
+                        }}
+                        {...swipeHandlers}
                       >
-                        {(currentPageData?.text_content || currentPageData?.text || currentPageData?.content) ? (
-                          <p className="font-reader text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap text-center">
-                            {currentPageData.text_content || currentPageData.text || currentPageData.content}
-                          </p>
-                        ) : currentPageData?.isChapterTitle ? (
-                          <div className="text-center">
-                            <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
-                              Chapter {currentPageData.chapterNumber || ''}
-                            </p>
-                            <h3 className="font-heading text-base font-bold text-foreground">
-                              {currentPageData.chapterTitle}
-                            </h3>
-                          </div>
+                        {currentPageData?.image_url ? (
+                          <img 
+                            src={getImageSource(currentPageData) || currentPageData.image_url}
+                            alt=""
+                            style={{
+                              position: 'absolute',
+                              top: 0,
+                              left: 0,
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover',
+                              objectPosition: 'center top'
+                            }}
+                          />
                         ) : (
-                          <p className="text-muted-foreground/60 text-xs italic text-center">
-                            Tap edges to navigate
-                          </p>
+                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-100 to-blue-50">
+                            <span className="text-purple-300 text-sm">No illustration</span>
+                          </div>
                         )}
                       </div>
                       
-                      {/* Scroll down indicator - shown when more text below */}
-                      {showScrollIndicator && !isPlaying && (
-                        <div className="absolute bottom-12 left-0 right-0 pointer-events-none">
-                          <div className="h-8 bg-gradient-to-t from-[#fdfbf7] dark:from-[#2a2a30] to-transparent" />
-                          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center">
-                            <div className="animate-bounce bg-[#fdfbf7] dark:bg-[#2a2a30] rounded-full p-1 shadow-sm">
-                              <FiChevronDown className="w-4 h-4 text-purple-500/70" />
+                      {/* Right Page: Text with vertical centering */}
+                      <div 
+                        className="flex-1 bg-[#fdfbf7] dark:bg-[#2a2a30] rounded-r-lg overflow-hidden flex flex-col relative"
+                        style={{ 
+                          boxShadow: '-4px 0 15px -5px rgba(0,0,0,0.1)'
+                        }}
+                      >
+                        {/* Book/Chapter header - subtle */}
+                        <div className="px-4 pt-2 pb-1 flex items-center justify-between">
+                          <span className="text-[9px] uppercase tracking-widest text-muted-foreground/60 font-medium">
+                            {currentPageData?.chapterTitle || book?.title}
+                          </span>
+                          <span className="text-[9px] text-muted-foreground/50">
+                            {currentPage + 1}
+                          </span>
+                        </div>
+                        
+                        {/* Text content - scrollable with indicator */}
+                        <div 
+                          ref={textScrollRefLandscape}
+                          className="flex-1 overflow-y-auto px-5 py-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent text-scroll-container"
+                          data-scrollable="true"
+                        >
+                          {(currentPageData?.text_content || currentPageData?.text || currentPageData?.content) ? (
+                            <p className="font-reader text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap text-center">
+                              {currentPageData.text_content || currentPageData.text || currentPageData.content}
+                            </p>
+                          ) : currentPageData?.isChapterTitle ? (
+                            <div className="text-center">
+                              <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
+                                Chapter {currentPageData.chapterNumber || ''}
+                              </p>
+                              <h3 className="font-heading text-base font-bold text-foreground">
+                                {currentPageData.chapterTitle}
+                              </h3>
+                            </div>
+                          ) : (
+                            <p className="text-muted-foreground/60 text-xs italic text-center">
+                              Tap edges to navigate
+                            </p>
+                          )}
+                        </div>
+                        
+                        {/* Scroll down indicator - shown when more text below */}
+                        {showScrollIndicator && !isPlaying && (
+                          <div className="absolute bottom-12 left-0 right-0 pointer-events-none">
+                            <div className="h-8 bg-gradient-to-t from-[#fdfbf7] dark:from-[#2a2a30] to-transparent" />
+                            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center">
+                              <div className="animate-bounce bg-[#fdfbf7] dark:bg-[#2a2a30] rounded-full p-1 shadow-sm">
+                                <FiChevronDown className="w-4 h-4 text-purple-500/70" />
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      )}
-                      {/* Narration progress bar - landscape */}
-                      {isPlaying && audioProgress > 0 && (
-                        <div className="absolute bottom-12 left-0 right-0 h-1 bg-purple-200/30 dark:bg-purple-900/30">
-                          <div 
-                            className="h-full bg-purple-500/60 transition-all duration-300 ease-out"
-                            style={{ width: `${audioProgress * 100}%` }}
-                          />
-                        </div>
-                      )}
-                      
-                      {/* Decorative footer element */}
-                      <div className="px-4 pb-2 flex justify-center">
-                        <div className="flex items-center gap-2 text-muted-foreground/30">
-                          <div className="w-8 h-px bg-current" />
-                          <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
-                          </svg>
-                          <div className="w-8 h-px bg-current" />
+                        )}
+                        {/* Narration progress bar - landscape */}
+                        {isPlaying && audioProgress > 0 && (
+                          <div className="absolute bottom-12 left-0 right-0 h-1 bg-purple-200/30 dark:bg-purple-900/30">
+                            <div 
+                              className="h-full bg-purple-500/60 transition-all duration-300 ease-out"
+                              style={{ width: `${audioProgress * 100}%` }}
+                            />
+                          </div>
+                        )}
+                        
+                        {/* Decorative footer element */}
+                        <div className="px-4 pb-2 flex justify-center">
+                          <div className="flex items-center gap-2 text-muted-foreground/30">
+                            <div className="w-8 h-px bg-current" />
+                            <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                            </svg>
+                            <div className="w-8 h-px bg-current" />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
                 
                 {/* Navigation buttons for landscape - prev on left, next on right */}
                 {!currentPageData?.isBackCover && (

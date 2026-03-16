@@ -807,6 +807,8 @@ async def health_check_fal():
 # Admin authentication helper (used by remaining admin endpoints)
 async def get_admin_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Verify admin JWT token"""
+    if not credentials:
+        raise HTTPException(status_code=401, detail="Admin token required")
     try:
         payload = jwt.decode(credentials.credentials, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         # Check for admin role in the payload
@@ -13524,6 +13526,41 @@ async def admin_update_user_credits(request: UpdateUserCreditsRequest, admin: di
     except Exception as e:
         logger.error(f"Failed to update credits for {request.email}: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to update credits: {str(e)}")
+
+
+@api_router.delete("/admin/users/{user_id}")
+async def delete_user(user_id: str, admin: dict = Depends(get_admin_user)):
+    """Delete a user and all their associated data (admin only)"""
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Prevent deleting admin accounts
+    if user.get("role") == "admin":
+        raise HTTPException(status_code=403, detail="Cannot delete admin accounts")
+    
+    user_email = user.get("email", user_id)
+    
+    # Delete all user's books and associated data
+    user_books = await db.books.find({"author_id": user_id}, {"id": 1, "_id": 0}).to_list(1000)
+    for book in user_books:
+        book_id = book["id"]
+        chapters = await db.chapters.find({"book_id": book_id}, {"id": 1, "_id": 0}).to_list(100)
+        for chapter in chapters:
+            await db.pages.delete_many({"chapter_id": chapter["id"]})
+        await db.chapters.delete_many({"book_id": book_id})
+        await db.analytics.delete_many({"book_id": book_id})
+    await db.books.delete_many({"author_id": user_id})
+    
+    # Delete other user data
+    await db.credit_usage.delete_many({"user_id": user_id})
+    await db.site_analytics.delete_many({"user_id": user_id})
+    
+    # Delete the user
+    await db.users.delete_one({"id": user_id})
+    
+    logger.info(f"Admin deleted user: {user_email}")
+    return {"message": f"User {user_email} and all their data deleted successfully"}
 
 
 # ============ AUDIO CACHING / PRE-GENERATION ============

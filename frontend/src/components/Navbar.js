@@ -67,7 +67,7 @@ export const Navbar = () => {
               className="font-ui text-foreground/80 hover:text-foreground transition-colors flex items-center gap-1.5"
               data-testid="nav-ai-stories"
             >
-              <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/8515ab60b7ad93f5867e025fe18e43b3916962f27b5c15dc8d66d45d6c530105.png" alt="" className="w-5 h-5 object-contain" />
+              <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/8515ab60b7ad93f5867e025fe18e43b3916962f27b5c15dc8d66d45d6c530105.png" alt="" className="w-5 h-5 object-contain mix-blend-multiply dark:invert" />
               AI Stories
             </Link>
           )}
@@ -78,7 +78,7 @@ export const Navbar = () => {
               className="font-ui text-foreground/80 hover:text-foreground transition-colors flex items-center gap-1.5"
               data-testid="nav-creators"
             >
-              <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/6abddb8323c8f308894f61fd3e7e9e87169635a50bed38649e770085b66c0a5b.png" alt="" className="w-5 h-5 object-contain" />
+              <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/6abddb8323c8f308894f61fd3e7e9e87169635a50bed38649e770085b66c0a5b.png" alt="" className="w-5 h-5 object-contain mix-blend-multiply dark:invert" />
               Image Creator
             </Link>
           )}
@@ -89,7 +89,7 @@ export const Navbar = () => {
               className="font-ui text-foreground/80 hover:text-foreground transition-colors flex items-center gap-1.5"
               data-testid="nav-pro-studio"
             >
-              <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/9de85d575bb699661553a31cef27fb34df03f2a5edf7d04dd8f27eda40e2df80.png" alt="" className="w-5 h-5 object-contain" />
+              <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/9de85d575bb699661553a31cef27fb34df03f2a5edf7d04dd8f27eda40e2df80.png" alt="" className="w-5 h-5 object-contain mix-blend-multiply dark:invert" />
               Pro Studio
             </Link>
           )}
@@ -177,7 +177,7 @@ export const Navbar = () => {
                   onClick={() => navigate('/credits')}
                   data-testid="menu-buy-credits"
                 >
-                  <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/1501b83d52263b743e57ba5b1060fd241424e47c1a4e7cb89ffdcb01e3177e1b.png" alt="" className="w-5 h-5 mr-2 object-contain" />
+                  <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/1501b83d52263b743e57ba5b1060fd241424e47c1a4e7cb89ffdcb01e3177e1b.png" alt="" className="w-5 h-5 mr-2 object-contain mix-blend-multiply dark:invert" />
                   Buy Credits
                 </DropdownMenuItem>
                 <DropdownMenuItem 
@@ -185,7 +185,7 @@ export const Navbar = () => {
                   className="text-destructive"
                   data-testid="menu-logout"
                 >
-                  <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/8fd79389761db4e4b8898ec4e7cdcdc944784be1c379c7516f96ab3dfcbd2819.png" alt="" className="w-5 h-5 mr-2 object-contain" />
+                  <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/8fd79389761db4e4b8898ec4e7cdcdc944784be1c379c7516f96ab3dfcbd2819.png" alt="" className="w-5 h-5 mr-2 object-contain mix-blend-multiply dark:invert" />
                   Logout
                 </DropdownMenuItem>
                 
@@ -246,7 +246,7 @@ export const Navbar = () => {
               onClick={() => setMobileOpen(false)}
               data-testid="mobile-nav-ai-stories"
             >
-              <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/8515ab60b7ad93f5867e025fe18e43b3916962f27b5c15dc8d66d45d6c530105.png" alt="" className="w-5 h-5 object-contain" />
+              <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/8515ab60b7ad93f5867e025fe18e43b3916962f27b5c15dc8d66d45d6c530105.png" alt="" className="w-5 h-5 object-contain mix-blend-multiply dark:invert" />
               AI Stories
             </Link>
           )}
@@ -257,7 +257,7 @@ export const Navbar = () => {
               onClick={() => setMobileOpen(false)}
               data-testid="mobile-nav-creators"
             >
-              <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/6abddb8323c8f308894f61fd3e7e9e87169635a50bed38649e770085b66c0a5b.png" alt="" className="w-5 h-5 object-contain" />
+              <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/6abddb8323c8f308894f61fd3e7e9e87169635a50bed38649e770085b66c0a5b.png" alt="" className="w-5 h-5 object-contain mix-blend-multiply dark:invert" />
               Image Creator
             </Link>
           )}
@@ -268,7 +268,7 @@ export const Navbar = () => {
               onClick={() => setMobileOpen(false)}
               data-testid="mobile-nav-pro-studio"
             >
-              <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/9de85d575bb699661553a31cef27fb34df03f2a5edf7d04dd8f27eda40e2df80.png" alt="" className="w-5 h-5 object-contain" />
+              <img src="https://static.prod-images.emergentagent.com/jobs/145964ea-a5d4-4590-8e1b-a21ed8ca2cd2/images/9de85d575bb699661553a31cef27fb34df03f2a5edf7d04dd8f27eda40e2df80.png" alt="" className="w-5 h-5 object-contain mix-blend-multiply dark:invert" />
               Pro Studio
             </Link>
           )}
