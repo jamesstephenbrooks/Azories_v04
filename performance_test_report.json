@@ -1,0 +1,608 @@
+{
+  "appName": "azories-preview",
+  "testDate": "2026-03-15T20:31:45.281010",
+  "previewUrl": "https://azories-preview.preview.emergentagent.com",
+  "deployedUrl": "https://azories-preview.emergent.host",
+  "result": [
+    {
+      "description": "Health Check",
+      "iterations": 5,
+      "route": "/api/health",
+      "backend_perf_result": [
+        {
+          "provider": "preview",
+          "latencyInMs": 4528.25,
+          "minLatencyInMs": 121.47,
+          "maxLatencyInMs": 10013.08
+        },
+        {
+          "provider": "caddy",
+          "latencyInMs": 124.35,
+          "minLatencyInMs": 109.82,
+          "maxLatencyInMs": 141.61
+        },
+        {
+          "provider": "cloudflare",
+          "latencyInMs": 129.2,
+          "minLatencyInMs": 108.92,
+          "maxLatencyInMs": 163.32
+        }
+      ]
+    },
+    {
+      "description": "Health Check FAL",
+      "iterations": 5,
+      "route": "/api/health/fal",
+      "backend_perf_result": [
+        {
+          "provider": "preview",
+          "latencyInMs": 119.13,
+          "minLatencyInMs": 105.69,
+          "maxLatencyInMs": 138.37
+        },
+        {
+          "provider": "caddy",
+          "latencyInMs": 1340.0,
+          "minLatencyInMs": 117.6,
+          "maxLatencyInMs": 6120.13
+        },
+        {
+          "provider": "cloudflare",
+          "latencyInMs": 138.63,
+          "minLatencyInMs": 121.83,
+          "maxLatencyInMs": 170.59
+        }
+      ]
+    },
+    {
+      "description": "Get Current User",
+      "iterations": 5,
+      "route": "/api/auth/me",
+      "backend_perf_result": [
+        {
+          "provider": "preview",
+          "latencyInMs": 124.3,
+          "minLatencyInMs": 105.55,
+          "maxLatencyInMs": 162.69
+        },
+        {
+          "provider": "caddy",
+          "latencyInMs": 1320.91,
+          "minLatencyInMs": 103.63,
+          "maxLatencyInMs": 6125.21
+        },
+        {
+          "provider": "cloudflare",
+          "latencyInMs": 126.16,
+          "minLatencyInMs": 110.95,
+          "maxLatencyInMs": 144.58
+        }
+      ]
+    },
+    {
+      "description": "AI Story Trial Info",
+      "iterations": 5,
+      "route": "/api/auth/ai-story-trial",
+      "backend_perf_result": [
+        {
+          "provider": "preview",
+          "latencyInMs": 140.43,
+          "minLatencyInMs": 107.83,
+          "maxLatencyInMs": 188.73
+        },
+        {
+          "provider": "caddy",
+          "latencyInMs": 128.33,
+          "minLatencyInMs": 112.79,
+          "maxLatencyInMs": 160.16
+        },
+        {
+          "provider": "cloudflare",
+          "latencyInMs": 295.42,
+          "minLatencyInMs": 115.3,
+          "maxLatencyInMs": 948.77
+        }
+      ]
+    },
+    {
+      "description": "Get Credits Balance",
+      "iterations": 5,
+      "route": "/api/credits/balance",
+      "backend_perf_result": [
+        {
+          "provider": "preview",
+          "latencyInMs": 120.84,
+          "minLatencyInMs": 103.96,
+          "maxLatencyInMs": 145.01
+        },
+        {
+          "provider": "caddy",
+          "latencyInMs": 3722.13,
+          "minLatencyInMs": 123.99,
+          "maxLatencyInMs": 6136.89
+        },
+        {
+          "provider": "cloudflare",
+          "latencyInMs": 1497.77,
+          "minLatencyInMs": 105.11,
+          "maxLatencyInMs": 6126.74
+        }
+      ]
+    },
+    {
+      "description": "Get All Books",
+      "iterations": 5,
+      "route": "/api/books",
+      "backend_perf_result": [
+        {
+          "provider": "preview",
+          "latencyInMs": 155.34,
+          "minLatencyInMs": 136.45,
+          "maxLatencyInMs": 177.45
+        },
+        {
+          "provider": "caddy",
+          "latencyInMs": 1550.3,
+          "minLatencyInMs": 300.58,
+          "maxLatencyInMs": 6303.75
+        },
+        {
+          "provider": "cloudflare",
+          "latencyInMs": 455.03,
+          "minLatencyInMs": 216.02,
+          "maxLatencyInMs": 1089.6
+        }
+      ]
+    },
+    {
+      "description": "Get Featured Books",
+      "iterations": 5,
+      "route": "/api/books/featured",
+      "backend_perf_result": [
+        {
+          "provider": "preview",
+          "latencyInMs": 122.86,
+          "minLatencyInMs": 106.63,
+          "maxLatencyInMs": 160.55
+        },
+        {
+          "provider": "caddy",
+          "latencyInMs": 134.63,
+          "minLatencyInMs": 109.29,
+          "maxLatencyInMs": 176.25
+        },
+        {
+          "provider": "cloudflare",
+          "latencyInMs": 132.52,
+          "minLatencyInMs": 108.21,
+          "maxLatencyInMs": 171.69
+        }
+      ]
+    },
+    {
+      "description": "Get Newly Added Books",
+      "iterations": 5,
+      "route": "/api/books/newly-added",
+      "backend_perf_result": [
+        {
+          "provider": "preview",
+          "latencyInMs": 151.43,
+          "minLatencyInMs": 143.29,
+          "maxLatencyInMs": 159.27
+        },
+        {
+          "provider": "caddy",
+          "latencyInMs": 336.8,
+          "minLatencyInMs": 217.37,
+          "maxLatencyInMs": 651.52
+        },
+        {
+          "provider": "cloudflare",
+          "latencyInMs": 276.52,
+          "minLatencyInMs": 214.95,
+          "maxLatencyInMs": 338.47
+        }
+      ]
+    },
+    {
+      "description": "Get Coming Soon Books",
+      "iterations": 5,
+      "route": "/api/books/coming-soon",
+      "backend_perf_result": [
+        {
+          "provider": "preview",
+          "latencyInMs": 110.98,
+          "minLatencyInMs": 107.05,
+          "maxLatencyInMs": 114.87
+        },
+        {
+          "provider": "caddy",
+          "latencyInMs": 172.32,
+          "minLatencyInMs": 125.54,
+          "maxLatencyInMs": 267.43
+        },
+        {
+          "provider": "cloudflare",
+          "latencyInMs": 194.9,
+          "minLatencyInMs": 139.88,
+          "maxLatencyInMs": 277.91
+        }
+      ]
+    },
+    {
+      "description": "Get My Books",
+      "iterations": 5,
+      "route": "/api/books/my",
+      "backend_perf_result": [
+        {
+          "provider": "preview",
+          "latencyInMs": 116.67,
+          "minLatencyInMs": 107.01,
+          "maxLatencyInMs": 122.65
+        },
+        {
+          "provider": "caddy",
+          "latencyInMs": 129.49,
+          "minLatencyInMs": 103.82,
+          "maxLatencyInMs": 200.48
+        },
+        {
+          "provider": "cloudflare",
+          "latencyInMs": 143.26,
+          "minLatencyInMs": 116.41,
+          "maxLatencyInMs": 203.28
+        }
+      ]
+    },
+    {
+      "description": "Get All Series",
+      "iterations": 5,
+      "route": "/api/series",
+      "backend_perf_result": [
+        {
+          "provider": "preview",
+          "latencyInMs": 121.41,
+          "minLatencyInMs": 109.3,
+          "maxLatencyInMs": 154.87
+        },
+        {
+          "provider": "caddy",
+          "latencyInMs": 158.92,
+          "minLatencyInMs": 99.06,
+          "maxLatencyInMs": 343.2
+        },
+        {
+          "provider": "cloudflare",
+          "latencyInMs": 123.32,
+          "minLatencyInMs": 106.78,
+          "maxLatencyInMs": 164.0
+        }
+      ]
+    },
+    {
+      "description": "Get User Profile",
+      "iterations": 5,
+      "route": "/api/users/test-user-id/profile",
+      "backend_perf_result": [
+        {
+          "provider": "preview",
+          "latencyInMs": 130.61,
+          "minLatencyInMs": 106.77,
+          "maxLatencyInMs": 148.93
+        },
+        {
+          "provider": "caddy",
+          "latencyInMs": 285.63,
+          "minLatencyInMs": 133.26,
+          "maxLatencyInMs": 878.93
+        },
+        {
+          "provider": "cloudflare",
+          "latencyInMs": 384.21,
+          "minLatencyInMs": 111.16,
+          "maxLatencyInMs": 1335.25
+        }
+      ]
+    },
+    {
+      "description": "Get Reading Progress",
+      "iterations": 5,
+      "route": "/api/reading-progress/test-book-id",
+      "backend_perf_result": [
+        {
+          "provider": "preview",
+          "latencyInMs": 120.74,
+          "minLatencyInMs": 109.19,
+          "maxLatencyInMs": 147.04
+        },
+        {
+          "provider": "caddy",
+          "latencyInMs": 152.93,
+          "minLatencyInMs": 114.08,
+          "maxLatencyInMs": 266.2
+        },
+        {
+          "provider": "cloudflare",
+          "latencyInMs": 128.43,
+          "minLatencyInMs": 99.44,
+          "maxLatencyInMs": 173.88
+        }
+      ]
+    },
+    {
+      "description": "Get Reading Stats",
+      "iterations": 5,
+      "route": "/api/reading-stats",
+      "backend_perf_result": [
+        {
+          "provider": "preview",
+          "latencyInMs": 117.84,
+          "minLatencyInMs": 104.49,
+          "maxLatencyInMs": 129.22
+        },
+        {
+          "provider": "caddy",
+          "latencyInMs": 119.19,
+          "minLatencyInMs": 111.61,
+          "maxLatencyInMs": 127.47
+        },
+        {
+          "provider": "cloudflare",
+          "latencyInMs": 110.99,
+          "minLatencyInMs": 103.83,
+          "maxLatencyInMs": 121.84
+        }
+      ]
+    },
+    {
+      "description": "Get Continue Reading",
+      "iterations": 5,
+      "route": "/api/continue-reading",
+      "backend_perf_result": [
+        {
+          "provider": "preview",
+          "latencyInMs": 124.74,
+          "minLatencyInMs": 110.33,
+          "maxLatencyInMs": 144.47
+        },
+        {
+          "provider": "caddy",
+          "latencyInMs": 130.66,
+          "minLatencyInMs": 120.74,
+          "maxLatencyInMs": 138.31
+        },
+        {
+          "provider": "cloudflare",
+          "latencyInMs": 140.65,
+          "minLatencyInMs": 110.16,
+          "maxLatencyInMs": 174.58
+        }
+      ]
+    },
+    {
+      "description": "Get Recommendations",
+      "iterations": 5,
+      "route": "/api/user/recommendations",
+      "backend_perf_result": [
+        {
+          "provider": "preview",
+          "latencyInMs": 128.66,
+          "minLatencyInMs": 112.22,
+          "maxLatencyInMs": 161.3
+        },
+        {
+          "provider": "caddy",
+          "latencyInMs": 121.46,
+          "minLatencyInMs": 110.12,
+          "maxLatencyInMs": 135.68
+        },
+        {
+          "provider": "cloudflare",
+          "latencyInMs": 378.11,
+          "minLatencyInMs": 126.67,
+          "maxLatencyInMs": 1318.23
+        }
+      ]
+    },
+    {
+      "description": "Get Voices",
+      "iterations": 5,
+      "route": "/api/voices",
+      "backend_perf_result": [
+        {
+          "provider": "preview",
+          "latencyInMs": 141.86,
+          "minLatencyInMs": 123.53,
+          "maxLatencyInMs": 172.13
+        },
+        {
+          "provider": "caddy",
+          "latencyInMs": 167.64,
+          "minLatencyInMs": 127.56,
+          "maxLatencyInMs": 213.02
+        },
+        {
+          "provider": "cloudflare",
+          "latencyInMs": 211.63,
+          "minLatencyInMs": 124.95,
+          "maxLatencyInMs": 438.87
+        }
+      ]
+    },
+    {
+      "description": "Get Pro Studio Characters",
+      "iterations": 5,
+      "route": "/api/pro-studio/characters",
+      "backend_perf_result": [
+        {
+          "provider": "preview",
+          "latencyInMs": 122.65,
+          "minLatencyInMs": 113.36,
+          "maxLatencyInMs": 132.69
+        },
+        {
+          "provider": "caddy",
+          "latencyInMs": 130.07,
+          "minLatencyInMs": 104.49,
+          "maxLatencyInMs": 148.71
+        },
+        {
+          "provider": "cloudflare",
+          "latencyInMs": 111.58,
+          "minLatencyInMs": 98.91,
+          "maxLatencyInMs": 120.91
+        }
+      ]
+    },
+    {
+      "description": "Get Character Styles",
+      "iterations": 5,
+      "route": "/api/pro-studio/character-styles",
+      "backend_perf_result": [
+        {
+          "provider": "preview",
+          "latencyInMs": 128.83,
+          "minLatencyInMs": 105.62,
+          "maxLatencyInMs": 183.96
+        },
+        {
+          "provider": "caddy",
+          "latencyInMs": 188.32,
+          "minLatencyInMs": 106.1,
+          "maxLatencyInMs": 460.47
+        },
+        {
+          "provider": "cloudflare",
+          "latencyInMs": 122.45,
+          "minLatencyInMs": 98.9,
+          "maxLatencyInMs": 187.71
+        }
+      ]
+    },
+    {
+      "description": "Get Genres",
+      "iterations": 5,
+      "route": "/api/genres",
+      "backend_perf_result": [
+        {
+          "provider": "preview",
+          "latencyInMs": 135.71,
+          "minLatencyInMs": 108.08,
+          "maxLatencyInMs": 154.51
+        },
+        {
+          "provider": "caddy",
+          "latencyInMs": 162.47,
+          "minLatencyInMs": 105.46,
+          "maxLatencyInMs": 302.55
+        },
+        {
+          "provider": "cloudflare",
+          "latencyInMs": 344.02,
+          "minLatencyInMs": 107.16,
+          "maxLatencyInMs": 1184.52
+        }
+      ]
+    },
+    {
+      "description": "Get Age Ratings",
+      "iterations": 5,
+      "route": "/api/age-ratings",
+      "backend_perf_result": [
+        {
+          "provider": "preview",
+          "latencyInMs": 132.16,
+          "minLatencyInMs": 105.01,
+          "maxLatencyInMs": 168.7
+        },
+        {
+          "provider": "caddy",
+          "latencyInMs": 131.36,
+          "minLatencyInMs": 112.15,
+          "maxLatencyInMs": 200.5
+        },
+        {
+          "provider": "cloudflare",
+          "latencyInMs": 145.44,
+          "minLatencyInMs": 107.81,
+          "maxLatencyInMs": 226.53
+        }
+      ]
+    },
+    {
+      "description": "Get Payment Packages",
+      "iterations": 5,
+      "route": "/api/payments/packages",
+      "backend_perf_result": [
+        {
+          "provider": "preview",
+          "latencyInMs": 135.84,
+          "minLatencyInMs": 99.39,
+          "maxLatencyInMs": 188.9
+        },
+        {
+          "provider": "caddy",
+          "latencyInMs": 126.79,
+          "minLatencyInMs": 108.98,
+          "maxLatencyInMs": 177.02
+        },
+        {
+          "provider": "cloudflare",
+          "latencyInMs": 155.13,
+          "minLatencyInMs": 105.83,
+          "maxLatencyInMs": 284.58
+        }
+      ]
+    },
+    {
+      "description": "Get Terms",
+      "iterations": 5,
+      "route": "/api/legal/terms",
+      "backend_perf_result": [
+        {
+          "provider": "preview",
+          "latencyInMs": 136.07,
+          "minLatencyInMs": 118.7,
+          "maxLatencyInMs": 153.43
+        },
+        {
+          "provider": "caddy",
+          "latencyInMs": 138.78,
+          "minLatencyInMs": 112.32,
+          "maxLatencyInMs": 197.69
+        },
+        {
+          "provider": "cloudflare",
+          "latencyInMs": 167.0,
+          "minLatencyInMs": 115.95,
+          "maxLatencyInMs": 276.15
+        }
+      ]
+    },
+    {
+      "description": "Get Privacy Policy",
+      "iterations": 5,
+      "route": "/api/legal/privacy",
+      "backend_perf_result": [
+        {
+          "provider": "preview",
+          "latencyInMs": 128.45,
+          "minLatencyInMs": 115.66,
+          "maxLatencyInMs": 154.06
+        },
+        {
+          "provider": "caddy",
+          "latencyInMs": 144.99,
+          "minLatencyInMs": 113.63,
+          "maxLatencyInMs": 188.11
+        },
+        {
+          "provider": "cloudflare",
+          "latencyInMs": 120.88,
+          "minLatencyInMs": 101.15,
+          "maxLatencyInMs": 130.79
+        }
+      ]
+    }
+  ]
+}
