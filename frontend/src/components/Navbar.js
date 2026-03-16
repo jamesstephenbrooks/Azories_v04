@@ -198,10 +198,10 @@ export const Navbar = () => {
           ) : (
             <Button 
               onClick={() => navigate('/auth')}
-              className="rounded-full font-ui"
+              className="rounded-full font-ui bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white shadow-md hover:shadow-lg transition-all"
               data-testid="nav-login-btn"
             >
-              Sign In
+              Sign Up / Login
             </Button>
           )}
           

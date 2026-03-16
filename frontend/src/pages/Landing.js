@@ -129,10 +129,9 @@ export default function Landing() {
                   <Button 
                     data-testid="get-started-btn"
                     onClick={() => navigate('/auth')}
-                    variant="outline"
-                    className="rounded-full px-8 py-6 text-lg font-ui border-2"
+                    className="rounded-full px-8 py-6 text-lg font-ui bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white border-0 shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all duration-300"
                   >
-                    Get Started Free
+                    Sign Up Free ✨
                   </Button>
                 )}
               </div>
