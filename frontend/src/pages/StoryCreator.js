@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/context/ThemeContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -38,9 +39,13 @@ const AzoraMascot = ({ className = "", animate = false }) => (
 
 export default function StoryCreator() {
   const { user, loading: authLoading } = useAuth();
+  const { theme } = useTheme();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const pollIntervalRef = useRef(null);
+  
+  // Check if dark mode is active
+  const isDarkMode = theme === 'dark';
   
   // Mode toggle: 'kids' or 'studio'
   const [creatorMode, setCreatorMode] = useState('kids');
@@ -124,11 +129,24 @@ export default function StoryCreator() {
     const originalBg = document.body.style.background;
     const originalHtml = document.documentElement.style.background;
     
-    // Set both body and html backgrounds to ensure full coverage on mobile (keyboard open/close)
-    const gradient = creatorMode === 'kids' 
-      ? 'linear-gradient(to bottom, #f3e8ff, #fdf2f8, #fffbeb)'
-      : 'linear-gradient(to bottom, #030712, #111827, #1e1b4b)';
-    const solidColor = creatorMode === 'kids' ? '#fffbeb' : '#1e1b4b';
+    // Determine gradient based on mode AND dark mode
+    let gradient, solidColor;
+    
+    if (creatorMode === 'kids') {
+      if (isDarkMode) {
+        // Kids mode + Dark mode = dark purple gradient
+        gradient = 'linear-gradient(to bottom, #1e1b4b, #312e81, #1e1b4b)';
+        solidColor = '#1e1b4b';
+      } else {
+        // Kids mode + Light mode = light purple/pink gradient
+        gradient = 'linear-gradient(to bottom, #f3e8ff, #fdf2f8, #fffbeb)';
+        solidColor = '#fffbeb';
+      }
+    } else {
+      // Story Studio mode = always dark
+      gradient = 'linear-gradient(to bottom, #030712, #111827, #1e1b4b)';
+      solidColor = '#1e1b4b';
+    }
     
     document.body.style.background = gradient;
     document.body.style.backgroundAttachment = 'fixed';
@@ -150,7 +168,7 @@ export default function StoryCreator() {
       document.documentElement.style.backgroundColor = '';
       document.documentElement.style.minHeight = '';
     };
-  }, [creatorMode]);
+  }, [creatorMode, isDarkMode]);
   
   const fetchPricing = async () => {
     try {
@@ -602,7 +620,7 @@ export default function StoryCreator() {
   return (
     <div 
       className={`ai-story-creator-page pb-safe flex flex-col ${creatorMode === 'kids' 
-        ? 'kids-mode-bg bg-gradient-to-b from-purple-100 via-pink-50 to-amber-50' 
+        ? 'kids-mode-bg bg-gradient-to-b from-purple-100 via-pink-50 to-amber-50 dark:from-indigo-950 dark:via-purple-950 dark:to-indigo-950' 
         : 'studio-mode-bg bg-gradient-to-b from-gray-950 via-gray-900 to-purple-950'}`}
       style={{ minHeight: '100vh', minHeight: '100dvh' }}
     >
@@ -686,7 +704,7 @@ export default function StoryCreator() {
                 Create sophisticated stories for teens and adults
               </p>
             </>
-          )}}}}
+          )}
         </div>
         
         {/* Credits/Free Stories Banner */}
