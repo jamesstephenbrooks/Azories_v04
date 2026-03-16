@@ -7154,7 +7154,7 @@ async def update_job_status(job_id: str, updates: dict):
     )
 
 async def send_story_ready_email(user_email: str, user_name: str, book_title: str, book_id: str):
-    """Send email notification when story is ready"""
+    """Send email notification when story is ready - notifies both user AND admin"""
     try:
         if not RESEND_API_KEY:
             logger.warning("Resend API key not configured, skipping email notification")
@@ -7163,9 +7163,11 @@ async def send_story_ready_email(user_email: str, user_name: str, book_title: st
         import resend
         resend.api_key = RESEND_API_KEY
         
-        book_url = f"https://azories.com/read/{book_id}"
+        app_url = os.environ.get("REACT_APP_BACKEND_URL", "https://azories.com")
+        book_url = f"{app_url}/read/{book_id}"
         
-        html_content = f"""
+        # Email to user
+        user_html = f"""
         <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <div style="text-align: center; margin-bottom: 30px;">
                 <h1 style="color: #7c3aed; margin: 0;">Your Story is Ready! 🐉</h1>
@@ -7184,7 +7186,7 @@ async def send_story_ready_email(user_email: str, user_name: str, book_title: st
             </div>
             
             <p style="font-size: 14px; color: #666;">
-                Your book is waiting in your library, complete with beautiful illustrations!
+                Your book has been submitted for review and is waiting in your library!
             </p>
             
             <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
@@ -7202,10 +7204,56 @@ async def send_story_ready_email(user_email: str, user_name: str, book_title: st
                 "from": "Azories <stories@azories.com>",
                 "to": user_email,
                 "subject": f"🐉 Your story \"{book_title}\" is ready!",
-                "html": html_content
+                "html": user_html
             })
         )
         logger.info(f"Story ready email sent to {user_email}")
+        
+        # Also notify admin about new submission
+        admin_email = os.environ.get("ADMIN_EMAIL", "jamesstephenbrooks@outlook.com")
+        admin_html = f"""
+        <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #7c3aed, #a855f7); padding: 20px; border-radius: 12px 12px 0 0;">
+                <h1 style="color: white; margin: 0; font-size: 24px;">📚 New AI Story for Review</h1>
+            </div>
+            
+            <div style="background: #ffffff; padding: 20px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+                <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+                    <tr><td style="padding: 8px 0; color: #6b7280;">Title:</td><td style="padding: 8px 0; color: #1f2937; font-weight: bold;">{book_title}</td></tr>
+                    <tr><td style="padding: 8px 0; color: #6b7280;">Author:</td><td style="padding: 8px 0; color: #1f2937;">{user_name} ({user_email})</td></tr>
+                </table>
+                
+                <div style="text-align: center; margin: 25px 0;">
+                    <a href="{app_url}/admin" style="background: #7c3aed; color: white; padding: 12px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; display: inline-block;">Review Book</a>
+                </div>
+            </div>
+        </div>
+        """
+        
+        await asyncio.get_event_loop().run_in_executor(
+            None,
+            lambda: resend.Emails.send({
+                "from": "Azories <stories@azories.com>",
+                "to": admin_email,
+                "subject": f"📚 New AI Story Submitted: '{book_title}'",
+                "html": admin_html
+            })
+        )
+        logger.info(f"Admin notification sent for story: {book_title}")
+        
+        # Also notify backup admin if configured
+        backup_admin = os.environ.get("BACKUP_ADMIN_EMAIL")
+        if backup_admin and backup_admin != admin_email:
+            await asyncio.get_event_loop().run_in_executor(
+                None,
+                lambda: resend.Emails.send({
+                    "from": "Azories <stories@azories.com>",
+                    "to": backup_admin,
+                    "subject": f"📚 New AI Story Submitted: '{book_title}'",
+                    "html": admin_html
+                })
+            )
+            
     except Exception as e:
         logger.error(f"Failed to send story ready email: {e}")
 
@@ -8437,6 +8485,96 @@ Return ONLY the JSON array, no other text."""
             }}
         )
         logger.info("Added Azories branded back cover to AI-created book")
+        
+        # Send email notifications for auto-submitted review
+        if email_configured():
+            app_url = os.environ.get("REACT_APP_BACKEND_URL", "https://azories.com")
+            admin_email = os.environ.get("ADMIN_EMAIL", "jamesstephenbrooks@outlook.com")
+            
+            # Send notification to admin
+            admin_subject = f"📚 New AI Story Submitted: '{story_data['title']}'"
+            admin_html = f"""
+            <html>
+            <body style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+                <div style="background: linear-gradient(135deg, #7c3aed, #a855f7); padding: 20px; border-radius: 12px 12px 0 0;">
+                    <h1 style="color: white; margin: 0; font-size: 24px;">📚 New AI Story for Review</h1>
+                </div>
+                
+                <div style="background: #ffffff; padding: 20px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+                    <h2 style="color: #1f2937; margin-top: 0;">New AI-Generated Story</h2>
+                    
+                    <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+                        <tr><td style="padding: 8px 0; color: #6b7280;">Title:</td><td style="padding: 8px 0; color: #1f2937; font-weight: bold;">{story_data['title']}</td></tr>
+                        <tr><td style="padding: 8px 0; color: #6b7280;">Author:</td><td style="padding: 8px 0; color: #1f2937;">{current_user.get('name', 'Unknown')} ({current_user.get('email', 'No email')})</td></tr>
+                        <tr><td style="padding: 8px 0; color: #6b7280;">Genre:</td><td style="padding: 8px 0; color: #1f2937;">{request.genre}</td></tr>
+                        <tr><td style="padding: 8px 0; color: #6b7280;">Age Rating:</td><td style="padding: 8px 0; color: #1f2937;">{request.age_rating}</td></tr>
+                        <tr><td style="padding: 8px 0; color: #6b7280;">Pages:</td><td style="padding: 8px 0; color: #1f2937;">{len(pages_created)}</td></tr>
+                        <tr><td style="padding: 8px 0; color: #6b7280;">Images:</td><td style="padding: 8px 0; color: #1f2937;">{images_generated}</td></tr>
+                    </table>
+                    
+                    <div style="text-align: center; margin: 25px 0;">
+                        <a href="{app_url}/admin" style="background: #7c3aed; color: white; padding: 12px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; display: inline-block;">Review Book</a>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+            
+            try:
+                await send_email(admin_email, admin_subject, admin_html)
+                logger.info(f"Admin notification sent for AI story: {story_data['title']}")
+                
+                # Send to backup admin if configured
+                backup_admin = os.environ.get("BACKUP_ADMIN_EMAIL")
+                if backup_admin and backup_admin != admin_email:
+                    await send_email(backup_admin, admin_subject, admin_html)
+            except Exception as email_err:
+                logger.error(f"Failed to send admin email: {email_err}")
+            
+            # Send confirmation to author
+            author_email = current_user.get("email")
+            if author_email:
+                author_subject = f"🎉 Your AI story '{story_data['title']}' is ready!"
+                author_html = f"""
+                <html>
+                <body style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+                    <div style="background: linear-gradient(135deg, #7c3aed, #a855f7); padding: 20px; border-radius: 12px 12px 0 0;">
+                        <h1 style="color: white; margin: 0; font-size: 24px;">🎉 Your Story is Ready!</h1>
+                    </div>
+                    
+                    <div style="background: #ffffff; padding: 20px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+                        <h2 style="color: #1f2937; margin-top: 0;">Hi {current_user.get('name', 'there')}! 👋</h2>
+                        
+                        <p style="color: #4b5563; line-height: 1.6;">
+                            Great news! Your AI-generated story <strong>"{story_data['title']}"</strong> has been created and automatically submitted for review.
+                        </p>
+                        
+                        <div style="background: #f3f4f6; border-radius: 8px; padding: 15px; margin: 20px 0;">
+                            <h3 style="color: #374151; margin: 0 0 10px 0;">What happens next?</h3>
+                            <ol style="color: #4b5563; margin: 0; padding-left: 20px; line-height: 1.8;">
+                                <li>Our team will review your story</li>
+                                <li>Once approved, it will appear in the public library</li>
+                                <li>You can read it anytime from your dashboard!</li>
+                            </ol>
+                        </div>
+                        
+                        <div style="text-align: center; margin: 25px 0;">
+                            <a href="{app_url}/read/{book_id}" style="background: #7c3aed; color: white; padding: 12px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; display: inline-block;">Read Your Story</a>
+                        </div>
+                        
+                        <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
+                        <p style="color: #9ca3af; font-size: 12px; text-align: center;">
+                            © 2026 Azories. Happy storytelling! ✨
+                        </p>
+                    </div>
+                </body>
+                </html>
+                """
+                try:
+                    await send_email(author_email, author_subject, author_html)
+                    logger.info(f"Author notification sent to {author_email}")
+                except Exception as author_err:
+                    logger.error(f"Failed to send author email: {author_err}")
         
         return {
             "success": True,
