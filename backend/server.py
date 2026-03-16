@@ -7158,14 +7158,11 @@ async def update_job_status(job_id: str, updates: dict):
 async def send_story_ready_email(user_email: str, user_name: str, book_title: str, book_id: str):
     """Send email notification when story is ready - notifies both user AND admin"""
     try:
-        if not RESEND_API_KEY:
-            logger.warning("Resend API key not configured, skipping email notification")
+        if not email_configured():
+            logger.warning("Email service not configured, skipping story ready notification")
             return
         
-        import resend
-        resend.api_key = RESEND_API_KEY
-        
-        app_url = os.environ.get("REACT_APP_BACKEND_URL", "https://azories.com")
+        app_url = os.environ.get("APP_URL", "https://azories.com")
         book_url = f"{app_url}/read/{book_id}"
         
         # Email to user
@@ -7200,19 +7197,11 @@ async def send_story_ready_email(user_email: str, user_name: str, book_title: st
         </div>
         """
         
-        await asyncio.get_event_loop().run_in_executor(
-            None,
-            lambda: resend.Emails.send({
-                "from": "Azories <stories@azories.com>",
-                "to": user_email,
-                "subject": f"🐉 Your story \"{book_title}\" is ready!",
-                "html": user_html
-            })
-        )
+        await send_email(user_email, f"🐉 Your story \"{book_title}\" is ready!", user_html)
         logger.info(f"Story ready email sent to {user_email}")
         
         # Also notify admin about new submission
-        admin_email = os.environ.get("ADMIN_EMAIL", "jamesstephenbrooks@outlook.com")
+        admin_email = os.environ.get("ADMIN_NOTIFY_EMAIL", os.environ.get("ADMIN_EMAIL", "jamesstephenbrooks@outlook.com"))
         admin_html = f"""
         <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <div style="background: linear-gradient(135deg, #7c3aed, #a855f7); padding: 20px; border-radius: 12px 12px 0 0;">
@@ -7232,29 +7221,13 @@ async def send_story_ready_email(user_email: str, user_name: str, book_title: st
         </div>
         """
         
-        await asyncio.get_event_loop().run_in_executor(
-            None,
-            lambda: resend.Emails.send({
-                "from": "Azories <stories@azories.com>",
-                "to": admin_email,
-                "subject": f"📚 New AI Story Submitted: '{book_title}'",
-                "html": admin_html
-            })
-        )
+        await send_email(admin_email, f"📚 New AI Story Submitted: '{book_title}'", admin_html)
         logger.info(f"Admin notification sent for story: {book_title}")
         
         # Also notify backup admin if configured
         backup_admin = os.environ.get("BACKUP_ADMIN_EMAIL")
         if backup_admin and backup_admin != admin_email:
-            await asyncio.get_event_loop().run_in_executor(
-                None,
-                lambda: resend.Emails.send({
-                    "from": "Azories <stories@azories.com>",
-                    "to": backup_admin,
-                    "subject": f"📚 New AI Story Submitted: '{book_title}'",
-                    "html": admin_html
-                })
-            )
+            await send_email(backup_admin, f"📚 New AI Story Submitted: '{book_title}'", admin_html)
             
     except Exception as e:
         logger.error(f"Failed to send story ready email: {e}")
