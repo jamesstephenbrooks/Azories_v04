@@ -36,7 +36,7 @@ Build a full-featured AI Story Creator application named "Azories" with:
 ## Recent Fixes (March 2026)
 
 ### Session v1.0.21 (March 2026)
-- [x] **Mobile Page-Turn Animation** - Added Framer Motion `AnimatePresence` slide transitions to mobile portrait AND landscape views in BookReader.js. Pages now slide in/out with directional awareness (next=right-to-left, prev=left-to-right). Both portrait and landscape mobile views updated.
+- [x] **Mobile Page-Turn Curl Animation RESTORED** — Removed custom Framer Motion slide animation from mobile portrait/landscape views (346 lines). Mobile now routes through `RealisticPageFlip` with `isMobilePortrait={true}` → `usePortrait={true}` in `HTMLFlipBook`, giving the authentic CSS 3D page-curl on swipe/tap. Also fixed `goToPage` to use `realisticFlipRef.current` for all devices.
 - [x] **Header Icons White Background** - Applied `mix-blend-multiply dark:invert` CSS to all navbar icon images in Navbar.js. White backgrounds now blend with the navbar surface in both light and dark modes.
 - [x] **Delete Story Verified** - Confirmed `DELETE /api/books/{bookId}` endpoint works correctly (tested via curl). Frontend `deleteBook()` in Dashboard.js calls it correctly.
 - [x] **Admin Delete User** - New `DELETE /api/admin/users/{user_id}` backend endpoint deletes user + all books/chapters/pages/analytics. Admin Dashboard now shows red trash icon button per user row, with a confirmation modal showing user info + warning bullets. Also fixed 500→401 bug in `get_admin_user` when called without auth header.
