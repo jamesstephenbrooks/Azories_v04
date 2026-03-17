@@ -8964,7 +8964,11 @@ async def get_voices():
     try:
         if eleven_client:
             try:
-                voices_response = eleven_client.voices.get_all()
+                loop = asyncio.get_event_loop()
+                voices_response = await asyncio.wait_for(
+                    loop.run_in_executor(None, eleven_client.voices.get_all),
+                    timeout=10.0
+                )
                 voices = []
                 for voice in voices_response.voices:
                     voices.append(VoiceResponse(
@@ -9013,24 +9017,32 @@ async def generate_tts(request: TTSRequest):
         
         audio_bytes = None
         provider = "unknown"
+        loop = asyncio.get_event_loop()
         
-        # Try ElevenLabs first
+        # Try ElevenLabs first (run_in_executor prevents blocking the async event loop)
         if eleven_client:
             try:
-                audio_generator = eleven_client.text_to_speech.convert(
-                    voice_id=voice_id,
-                    text=request.text,
-                    model_id="eleven_multilingual_v2",
-                    voice_settings=VoiceSettings(
-                        stability=0.5,
-                        similarity_boost=0.75,
-                        style=0.0,
-                        use_speaker_boost=True
+                def _call_eleven():
+                    gen = eleven_client.text_to_speech.convert(
+                        voice_id=voice_id,
+                        text=request.text,
+                        model_id="eleven_multilingual_v2",
+                        voice_settings=VoiceSettings(
+                            stability=0.5,
+                            similarity_boost=0.75,
+                            style=0.0,
+                            use_speaker_boost=True
+                        )
                     )
+                    return b"".join(gen)
+                audio_bytes = await asyncio.wait_for(
+                    loop.run_in_executor(None, _call_eleven),
+                    timeout=25.0
                 )
-                audio_bytes = b"".join(audio_generator)
                 provider = "elevenlabs"
                 logger.info("Generated audio with ElevenLabs")
+            except asyncio.TimeoutError:
+                logger.warning("ElevenLabs timed out after 25s, falling back to OpenAI")
             except Exception as eleven_err:
                 error_msg = str(eleven_err)
                 if "missing_permissions" in error_msg or "401" in error_msg:
@@ -9060,11 +9072,14 @@ async def generate_tts(request: TTSRequest):
             openai_voice = voice_mapping.get(voice_id, "nova")
             
             tts = OpenAITextToSpeech(api_key=emergent_key)
-            audio_base64 = await tts.generate_speech_base64(
-                text=request.text,
-                model="tts-1",
-                voice=openai_voice,
-                response_format="mp3"
+            audio_base64 = await asyncio.wait_for(
+                tts.generate_speech_base64(
+                    text=request.text,
+                    model="tts-1",
+                    voice=openai_voice,
+                    response_format="mp3"
+                ),
+                timeout=25.0
             )
             audio_bytes = base64.b64decode(audio_base64)
             provider = "openai"
@@ -9072,15 +9087,20 @@ async def generate_tts(request: TTSRequest):
         
         audio_base64 = base64.b64encode(audio_bytes).decode('utf-8')
         
-        # Upload to Cloudinary
+        # Upload to Cloudinary (run_in_executor to avoid blocking event loop)
         cloudinary_url = None
         try:
-            upload_result = cloudinary.uploader.upload(
-                audio_bytes,
-                resource_type="video",
-                folder="azories/audio/narration",
-                public_id=f"tts_{cache_key[:16]}",
-                format="mp3"
+            def _upload_audio():
+                return cloudinary.uploader.upload(
+                    audio_bytes,
+                    resource_type="video",
+                    folder="azories/audio/narration",
+                    public_id=f"tts_{cache_key[:16]}",
+                    format="mp3"
+                )
+            upload_result = await asyncio.wait_for(
+                loop.run_in_executor(None, _upload_audio),
+                timeout=20.0
             )
             cloudinary_url = upload_result.get("secure_url")
             logger.info(f"Audio uploaded to Cloudinary: {cloudinary_url}")
