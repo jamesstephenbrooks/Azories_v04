@@ -34,6 +34,7 @@ const PrintSuccess = lazy(() => import("@/pages/PrintSuccess"));
 const Contact = lazy(() => import("@/pages/Contact"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const PrintOrdersCMS = lazy(() => import("@/pages/admin/PrintOrdersCMS"));
+const MyOrders = lazy(() => import("@/pages/MyOrders"));
 
 // Legal page with named exports
 const TermsOfService = lazy(() => import("@/pages/Legal").then(m => ({ default: m.TermsOfService })));
@@ -139,6 +140,7 @@ function AppContent() {
           <Route path="/credits" element={<ProtectedRoute><Credits /></ProtectedRoute>} />
           <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
           <Route path="/print-success" element={<ProtectedRoute><PrintSuccess /></ProtectedRoute>} />
+          <Route path="/my-orders" element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
 
           {/* Admin routes — AdminDashboard handles its own authentication */}
           <Route path="/admin" element={<AdminDashboard />} />

@@ -4,12 +4,14 @@ Handles print-on-demand orders via Gelato with Stripe payments
 """
 
 from fastapi import APIRouter, HTTPException, Depends, Request
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 import uuid
 import logging
 import os
+import jwt
 from dotenv import load_dotenv
 
 from services.gelato_service import gelato_service
@@ -20,6 +22,26 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/print", tags=["Print Orders"])
+
+# Auth setup (mirrors admin.py pattern)
+_security = HTTPBearer(auto_error=False)
+_JWT_SECRET = os.environ.get("JWT_SECRET")
+_JWT_ALGORITHM = "HS256"
+
+
+async def _get_current_user(credentials: HTTPAuthorizationCredentials = Depends(_security)):
+    """Verify JWT and return current user payload"""
+    if not credentials:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    if not _JWT_SECRET:
+        raise HTTPException(status_code=500, detail="Auth not configured")
+    try:
+        payload = jwt.decode(credentials.credentials, _JWT_SECRET, algorithms=[_JWT_ALGORITHM])
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
 
 # Stripe integration
 STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY")
@@ -514,21 +536,50 @@ async def create_print_order(
     }
 
 
-@router.get("/orders")
-async def get_user_orders(
-    current_user: dict = None  # Will add auth dependency
-):
-    """Get all print orders for the current user"""
-    db = get_db()
+@router.get("/my-orders")
+async def get_my_orders(current_user: dict = Depends(_get_current_user)):
+    """Get all print orders for the authenticated user, ordered by date descending"""
+    _db = get_db()
     
-    # For now, get all orders (will add user filtering with auth)
-    orders = await db.print_orders.find().sort("created_at", -1).to_list(100)
+    user_id = current_user.get("user_id") or current_user.get("id") or current_user.get("sub")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Invalid token")
     
-    # Convert ObjectId to string
+    # Fetch user's orders
+    orders = await _db.print_orders.find(
+        {"user_id": user_id}, {"_id": 0}
+    ).sort("created_at", -1).to_list(200)
+    
+    # Enrich with book cover images
     for order in orders:
-        order.pop("_id", None)
+        book_id = order.get("book_id")
+        if book_id:
+            book = await _db.books.find_one({"id": book_id}, {"_id": 0, "cover_image_url": 1, "title": 1})
+            if book:
+                order["book_cover_url"] = book.get("cover_image_url")
+                if not order.get("book_title"):
+                    order["book_title"] = book.get("title")
+        
+        # Map status to user-friendly display status
+        raw_status = order.get("status", "processing")
+        if raw_status in ("paid", "submitted", "processing", "pending"):
+            order["display_status"] = "preparing"
+        elif raw_status in ("shipped", "in_transit"):
+            order["display_status"] = "shipped"
+        elif raw_status in ("delivered", "completed"):
+            order["display_status"] = "delivered"
+        elif raw_status == "cancelled":
+            order["display_status"] = "cancelled"
+        else:
+            order["display_status"] = "preparing"
+        
+        # Format amount
+        amount = order.get("amount_paid", 0)
+        currency = order.get("currency", "GBP").upper()
+        symbol = "£" if currency == "GBP" else "$" if currency == "USD" else "€"
+        order["price_display"] = f"{symbol}{amount:.2f}"
     
-    return {"orders": orders}
+    return {"orders": orders, "total": len(orders)}
 
 
 @router.get("/orders/{order_id}")

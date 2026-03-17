@@ -32,11 +32,6 @@ routers = [
 def setup_routes(app: FastAPI, db, email_funcs: dict = None):
     """
     Setup all routes with database and service dependencies.
-    
-    Args:
-        app: FastAPI application instance
-        db: MongoDB database connection
-        email_funcs: Dict of email functions (email_configured, send_email, etc.)
     """
     from . import admin
     

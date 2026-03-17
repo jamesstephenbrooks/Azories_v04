@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
-import { FiUser, FiLogOut, FiMenu, FiX, FiZap, FiDroplet, FiDollarSign } from 'react-icons/fi';
+import { FiUser, FiLogOut, FiMenu, FiX, FiZap, FiDroplet, FiDollarSign, FiPackage } from 'react-icons/fi';
 import { useState, useEffect } from 'react';
 import { ThemeToggleCompact } from './ThemeToggle';
 import { StreakDisplay } from './ReadingStreaks';
@@ -151,6 +151,13 @@ export const Navbar = () => {
                   data-testid="menu-dashboard"
                 >
                   My Books
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => navigate('/my-orders')}
+                  data-testid="menu-my-orders"
+                >
+                  <FiPackage className="w-4 h-4 mr-2 text-purple-400" />
+                  My Orders
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={() => navigate('/ai-stories')}
